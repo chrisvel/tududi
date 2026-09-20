@@ -164,6 +164,12 @@ async function eraseUserAccount(userId) {
         await UsageCounter.destroy(byUser);
         await BillingAccount.destroy(byUser);
 
+        // Accounts this one created stay, and just forget who created them.
+        await User.update(
+            { created_by_user_id: null },
+            { where: { created_by_user_id: userId }, ...tx }
+        );
+
         // Other people's contact cards that pointed at this account keep
         // their own data but lose the link.
         await Person.update(

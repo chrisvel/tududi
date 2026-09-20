@@ -295,7 +295,8 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
 28. **[People, Members & Roles](docs/19-people-and-roles.md)**
     - Vocabulary: member, contact, person, group, share, workspace, role, capability
     - Who a task can be assigned to, and what assigning does
-    - Members without an email (no sign-in yet), and the Everyone board
+    - Members without an email (no sign-in yet), adding members from the People page, and turning a contact into a member
+    - The Everyone board
     - Admin, user and guest roles with capabilities, and the admin Access page
 
 ---

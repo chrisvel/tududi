@@ -11,6 +11,13 @@ import PersonModal from './PersonModal';
 import { Person } from '../../entities/Person';
 import { fetchPeople, createPerson, updatePerson, deletePerson } from '../../utils/peopleService';
 import { useToast } from '../Shared/ToastContext';
+import { useTranslation } from 'react-i18next';
+import { useCan } from '../../hooks/useCan';
+import { useStore } from '../../store/useStore';
+import MemberModal from './MemberModal';
+import { CreatedMember } from '../../utils/membersService';
+
+type PeopleFilter = 'all' | 'members' | 'contacts';
 
 const RELATIONSHIP_LABELS: Record<string, string> = {
     family: 'Family',
@@ -28,6 +35,14 @@ const PeopleList: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [personToDelete, setPersonToDelete] = useState<Person | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const canCreatePeople = useCan('create_people');
+    const canInvite = useCan('invite_members');
+    const [filter, setFilter] = useState<PeopleFilter>('all');
+    const [memberModal, setMemberModal] = useState<{ open: boolean; person: Person | null }>({
+        open: false,
+        person: null,
+    });
     const justOpenedRef = useRef<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -124,7 +139,25 @@ const PeopleList: React.FC = () => {
         setIsConfirmDialogOpen(true);
     };
 
-    const displayPeople = people.filter((p) => !p.archived);
+    const visiblePeople = people.filter((p) => !p.archived);
+    const memberCount = visiblePeople.filter((p) => p.kind === 'member').length;
+    const contactCount = visiblePeople.length - memberCount;
+    const displayPeople = visiblePeople.filter((p) =>
+        filter === 'all' ? true : filter === 'members' ? p.kind === 'member' : p.kind !== 'member'
+    );
+
+    const openMember = (person: Person | null = null) => setMemberModal({ open: true, person });
+
+    // A new member shows up in the list and in every assignee list.
+    const handleMemberCreated = async (member: CreatedMember) => {
+        showSuccessToast(
+            member.invited && member.email_sent
+                ? t('people.memberInvited', 'Invitation sent to {{email}}', { email: member.email })
+                : t('people.memberAdded', 'Member added')
+        );
+        await load();
+        useStore.getState().peopleStore.loadPeople(true);
+    };
 
     const groupedPeople = displayPeople.reduce(
         (groups, person) => {
@@ -147,13 +180,51 @@ const PeopleList: React.FC = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-light">People</h2>
-                    <button
-                        onClick={openCreate}
-                        className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                        <PlusIcon className="w-4 h-4" />
-                        New Person
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {canInvite && (
+                            <button
+                                onClick={() => openMember()}
+                                data-testid="add-member-button"
+                                className="flex items-center gap-1.5 px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 text-sm rounded-md hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                            >
+                                <PlusIcon className="w-4 h-4" />
+                                {t('people.addMember', 'Add member')}
+                            </button>
+                        )}
+                        {canCreatePeople && (
+                            <button
+                                onClick={openCreate}
+                                data-testid="add-contact-button"
+                                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
+                            >
+                                <PlusIcon className="w-4 h-4" />
+                                {t('people.newContact', 'New contact')}
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                <div role="tablist" className="flex space-x-6 border-b border-gray-200 dark:border-gray-700 mb-6" data-testid="people-filters">
+                    {([
+                        ['all', t('people.filterAll', 'All'), visiblePeople.length],
+                        ['members', t('people.filterMembers', 'Members'), memberCount],
+                        ['contacts', t('people.filterContacts', 'Contacts'), contactCount],
+                    ] as [PeopleFilter, string, number][]).map(([id, label, count]) => (
+                        <button
+                            key={id}
+                            role="tab"
+                            aria-selected={filter === id}
+                            data-testid={`people-filter-${id}`}
+                            onClick={() => setFilter(id)}
+                            className={`-mb-px pb-3 text-sm font-medium border-b-2 focus:outline-none transition-colors ${
+                                filter === id
+                                    ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                            }`}
+                        >
+                            {label} <span className="text-xs">{count}</span>
+                        </button>
+                    ))}
                 </div>
 
                 {isLoading ? (
@@ -190,6 +261,7 @@ const PeopleList: React.FC = () => {
                                             style={person.color ? { backgroundColor: person.color } : {}}
                                         >
                                             {/* Three-dot dropdown */}
+                                            {person.can_edit !== false && (
                                             <div className="absolute top-2 right-2 z-10" ref={dropdownRef}>
                                                 <button
                                                     onClick={(e) => {
@@ -199,6 +271,8 @@ const PeopleList: React.FC = () => {
                                                         if (next !== null) justOpenedRef.current = true;
                                                         setDropdownOpen(next);
                                                     }}
+                                                    aria-label={t('people.actions', 'Person actions')}
+                                                    data-testid={`person-menu-${person.uid}`}
                                                     className={`flex items-center justify-center w-6 h-6 rounded focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
                                                         person.color
                                                             ? 'text-white/60 hover:text-white hover:bg-white/20'
@@ -208,7 +282,7 @@ const PeopleList: React.FC = () => {
                                                     <EllipsisVerticalIcon className="h-4 w-4" />
                                                 </button>
                                                 {dropdownOpen === person.uid && (
-                                                    <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
+                                                    <div className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
                                                         <button
                                                             onClick={(e) => {
                                                                 e.preventDefault();
@@ -220,6 +294,22 @@ const PeopleList: React.FC = () => {
                                                         >
                                                             Edit
                                                         </button>
+                                                        {person.kind !== 'member' && canInvite && (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    openMember(person);
+                                                                    setDropdownOpen(null);
+                                                                }}
+                                                                data-testid={`give-account-${person.uid}`}
+                                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                            >
+                                                                {t('people.giveAccount', 'Give account')}
+                                                            </button>
+                                                        )}
+                                                        {person.kind !== 'member' && (
+                                                            <>
                                                         <button
                                                             onClick={(e) => {
                                                                 e.preventDefault();
@@ -242,9 +332,12 @@ const PeopleList: React.FC = () => {
                                                         >
                                                             Delete
                                                         </button>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
+                                            )}
 
                                             {/* Name */}
                                             <div className="px-5 pt-6 pb-4 flex-1 flex items-center justify-center text-center">
@@ -284,7 +377,11 @@ const PeopleList: React.FC = () => {
                                                     <span className={`text-[10px] leading-none uppercase tracking-wide ${
                                                         person.color ? 'text-white/55' : 'text-gray-400 dark:text-gray-500'
                                                     }`}>
-                                                        {RELATIONSHIP_LABELS[person.relationship_type ?? 'other']}
+                                                        {person.kind === 'member'
+                                                            ? person.account_status === 'no_sign_in'
+                                                                ? t('people.memberNoSignIn', "Member, can't sign in yet")
+                                                                : t('people.member', 'Member')
+                                                            : RELATIONSHIP_LABELS[person.relationship_type ?? 'other']}
                                                     </span>
                                                 </div>
                                                 {person.email && (
@@ -311,6 +408,14 @@ const PeopleList: React.FC = () => {
                         person={editingPerson}
                         onSave={handleSave}
                         onClose={() => setModalOpen(false)}
+                    />
+                )}
+
+                {memberModal.open && (
+                    <MemberModal
+                        person={memberModal.person}
+                        onCreated={handleMemberCreated}
+                        onClose={() => setMemberModal({ open: false, person: null })}
                     />
                 )}
 

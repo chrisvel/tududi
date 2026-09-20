@@ -148,6 +148,7 @@ const PersonDetails: React.FC = () => {
                                 )}
                             </div>
                         </div>
+                        {person.can_edit !== false && (
                         <div className="flex items-center gap-1 flex-shrink-0">
                             <button
                                 onClick={() => setModalOpen(true)}
@@ -160,6 +161,8 @@ const PersonDetails: React.FC = () => {
                             >
                                 <PencilSquareIcon className="h-5 w-5" />
                             </button>
+                            {person.kind !== 'member' && (
+                            <>
                             <button
                                 onClick={handleArchive}
                                 className={`p-2 rounded-lg transition-colors ${
@@ -182,7 +185,10 @@ const PersonDetails: React.FC = () => {
                             >
                                 <TrashIcon className="h-5 w-5" />
                             </button>
+                            </>
+                            )}
                         </div>
+                        )}
                     </div>
 
                     {/* Contact info */}

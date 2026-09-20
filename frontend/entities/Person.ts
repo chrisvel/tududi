@@ -13,6 +13,9 @@ export interface Person {
     archived?: boolean;
     color?: string | null;
     is_self?: boolean;
+    kind?: 'member' | 'contact';
+    can_edit?: boolean;
+    account_status?: 'active' | 'invited' | 'no_sign_in';
     created_at?: string;
     updated_at?: string;
 }

@@ -76,7 +76,7 @@ const createAdminUser = async (
     name?: string,
     surname?: string,
     role?: RoleId,
-    linked_person_uid?: string,
+    person_uid?: string,
     require_verification?: boolean,
     capabilities?: Capabilities
 ): Promise<AdminUserItem> => {
@@ -85,7 +85,7 @@ const createAdminUser = async (
         name,
         surname,
         role,
-        linked_person_uid,
+        person_uid,
         require_verification,
         capabilities,
     };
@@ -394,17 +394,27 @@ const AddUserModal: React.FC<{
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {!editingUser && unlinkedPeople.length > 0 && (
                         <div>
-                            <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
-                                Link to existing person (optional)
+                            <label
+                                htmlFor="admin-user-contact"
+                                className="block text-sm text-gray-700 dark:text-gray-300 mb-1"
+                            >
+                                {t(
+                                    'admin.turnContactIntoAccount',
+                                    'Turn one of your contacts into this account (optional)'
+                                )}
                             </label>
                             <select
+                                id="admin-user-contact"
+                                data-testid="admin-user-contact"
                                 className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm"
                                 value={selectedPersonUid}
                                 onChange={(e) =>
                                     handlePersonSelect(e.target.value)
                                 }
                             >
-                                <option value="">— none —</option>
+                                <option value="">
+                                    {t('admin.noContact', '— none —')}
+                                </option>
                                 {unlinkedPeople.map((p) => (
                                     <option key={p.uid} value={p.uid}>
                                         {p.name}
@@ -412,6 +422,17 @@ const AddUserModal: React.FC<{
                                     </option>
                                 ))}
                             </select>
+                            {selectedPersonUid && (
+                                <p
+                                    className="mt-1 text-xs text-gray-500 dark:text-gray-400"
+                                    data-testid="admin-user-contact-note"
+                                >
+                                    {t(
+                                        'admin.turnContactNote',
+                                        'The contact keeps its history, so tasks assigned to it stay assigned. Your private notes on it are not carried over.'
+                                    )}
+                                </p>
+                            )}
                         </div>
                     )}
                     <div>

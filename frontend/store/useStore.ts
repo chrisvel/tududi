@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { Project } from '../entities/Project';
 import { Area } from '../entities/Area';
 import { Note } from '../entities/Note';
-import { Capabilities } from '../entities/Role';
+import { Capabilities, RoleId } from '../entities/Role';
 import { Task } from '../entities/Task';
 import { Tag } from '../entities/Tag';
 import { InboxItem } from '../entities/InboxItem';
@@ -121,6 +121,8 @@ interface UserSettingsStore {
     setHasCollaborators: (enabled: boolean) => void;
     capabilities: Capabilities | null;
     setCapabilities: (capabilities: Capabilities | null) => void;
+    role: RoleId | null;
+    setRole: (role: RoleId | null) => void;
     templatesEnabled: boolean;
     setTemplatesEnabled: (enabled: boolean) => void;
     aiAssistantEnabled: boolean;
@@ -1031,6 +1033,14 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     hasCollaborators: enabled,
+                },
+            })),
+        role: null,
+        setRole: (role) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    role,
                 },
             })),
         capabilities: null,

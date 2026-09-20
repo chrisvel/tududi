@@ -1,9 +1,10 @@
 const { Op } = require('sequelize');
-const { UserGroupMember } = require('../models');
+const { User, UserGroupMember } = require('../models');
 const permissionSources = require('./permissionSources');
 
 // The people a user works with: everyone they share something with (in either
-// direction) and everyone who is in a group with them. Shares are read through
+// direction), everyone who is in a group with them, and the accounts they
+// created or that created them. Shares are read through
 // permissionSources so group grants count, and only top-level (direct) grants
 // are needed, since an area, goal or project share always writes one.
 
@@ -40,12 +41,32 @@ async function getSharePartnerIds(userId) {
     ];
 }
 
+// The accounts a user created, and the account that created them, so a new
+// member is part of their creator's workspace before anything is shared.
+async function getCreationPartnerIds(userId) {
+    const [created, self] = await Promise.all([
+        User.findAll({
+            where: { created_by_user_id: userId },
+            attributes: ['id'],
+            raw: true,
+        }),
+        User.findByPk(userId, {
+            attributes: ['created_by_user_id'],
+            raw: true,
+        }),
+    ]);
+    const ids = created.map((row) => row.id);
+    if (self && self.created_by_user_id) ids.push(self.created_by_user_id);
+    return ids;
+}
+
 async function getWorkspaceUserIds(userId) {
-    const [groupIds, shareIds] = await Promise.all([
+    const [groupIds, shareIds, creationIds] = await Promise.all([
         getGroupCoMemberIds(userId),
         getSharePartnerIds(userId),
+        getCreationPartnerIds(userId),
     ]);
-    const ids = new Set([...groupIds, ...shareIds]);
+    const ids = new Set([...groupIds, ...shareIds, ...creationIds]);
     ids.delete(userId);
     return Array.from(ids);
 }

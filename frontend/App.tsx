@@ -141,6 +141,9 @@ const App: React.FC = () => {
                     );
                 useStore
                     .getState()
+                    .userSettingsStore.setRole(data.user.role ?? null);
+                useStore
+                    .getState()
                     .userSettingsStore.setAiAssistantEnabled(
                         data.user.features?.ai_assistant_enabled === true
                     );

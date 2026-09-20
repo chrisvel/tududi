@@ -5,6 +5,7 @@ import '@testing-library/jest-dom';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import AdminUsersPage from '../AdminUsersPage';
 import { fetchWithCsrf } from '../../../utils/csrfService';
+import { fetchPeople } from '../../../utils/peopleService';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -799,6 +800,35 @@ describe('Admin users and groups page', () => {
                 'Invitation pending'
             );
             expect(screen.queryByTestId('user-status-6')).toBeNull();
+        });
+
+        it('turns one of your contacts into the new account', async () => {
+            (fetchPeople as jest.Mock).mockResolvedValueOnce([
+                { uid: 'c1', name: 'Emma Veleris', email: null },
+            ]);
+            (fetchWithCsrf as jest.Mock).mockResolvedValue(created());
+            mockAdminApi();
+            renderPage();
+            await screen.findByTestId('admin-users-panel');
+            fireEvent.click(screen.getByText('Add user'));
+
+            const select = await screen.findByTestId('admin-user-contact');
+            expect(screen.queryByTestId('admin-user-contact-note')).toBeNull();
+            fireEvent.change(select, { target: { value: 'c1' } });
+
+            expect(
+                screen.getByTestId('admin-user-contact-note')
+            ).toHaveTextContent('not carried over');
+            fireEvent.click(screen.getByText('Create'));
+
+            await waitFor(() => expect(fetchWithCsrf).toHaveBeenCalled());
+            const body = JSON.parse(
+                (fetchWithCsrf as jest.Mock).mock.calls[0][1].body
+            );
+            expect(body.person_uid).toBe('c1');
+            expect(body.linked_person_uid).toBeUndefined();
+            expect(body.name).toBe('Emma');
+            expect(body.surname).toBe('Veleris');
         });
 
         it('lets an email be added to a member that has none', async () => {

@@ -104,14 +104,19 @@ async function assertCan(userUidOrId, capability) {
     }
 }
 
-async function setRole(userUidOrId, role) {
+async function setRole(userUidOrId, role, options = {}) {
     if (!ROLES.includes(role)) {
         throw new ValidationError(`Unknown role: ${role}`);
     }
     const userId = await resolveUserId(userUidOrId);
     if (!userId) throw new ValidationError('Invalid user');
 
-    await sequelize.transaction(async (transaction) => {
+    const inTransaction = (work) =>
+        options.transaction
+            ? work(options.transaction)
+            : sequelize.transaction(work);
+
+    await inTransaction(async (transaction) => {
         const row = await Role.findOne({
             where: { user_id: userId },
             transaction,
@@ -138,7 +143,8 @@ async function setRole(userUidOrId, role) {
 
 // Replaces the account's overrides with the given desired capabilities. Values
 // that match the role's defaults are not stored, and an admin has no overrides.
-async function setCapabilities(userUidOrId, desired) {
+async function setCapabilities(userUidOrId, desired, options = {}) {
+    const { transaction } = options;
     const entries = Object.entries(desired || {});
     for (const [capability, value] of entries) {
         if (!CAPABILITIES.includes(capability)) {
@@ -152,7 +158,7 @@ async function setCapabilities(userUidOrId, desired) {
     const userId = await resolveUserId(userUidOrId);
     if (!userId) throw new ValidationError('Invalid user');
 
-    const row = await Role.findOne({ where: { user_id: userId } });
+    const row = await Role.findOne({ where: { user_id: userId }, transaction });
     const role = effectiveRole(row);
 
     const overrides = {};
@@ -166,14 +172,17 @@ async function setCapabilities(userUidOrId, desired) {
     const stored = Object.keys(overrides).length > 0 ? overrides : null;
 
     if (row) {
-        await row.update({ capabilities: stored });
+        await row.update({ capabilities: stored }, { transaction });
     } else {
-        await Role.create({
-            user_id: userId,
-            role: 'user',
-            is_admin: false,
-            capabilities: stored,
-        });
+        await Role.create(
+            {
+                user_id: userId,
+                role: 'user',
+                is_admin: false,
+                capabilities: stored,
+            },
+            { transaction }
+        );
     }
 }
 

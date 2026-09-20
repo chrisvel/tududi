@@ -363,6 +363,7 @@ const oidcModule = require('./modules/oidc');
 const aiAssistantModule = require('./modules/ai-assistant');
 const adminAiUsageModule = require('./modules/admin-ai-usage');
 const peopleModule = require('./modules/people');
+const membersModule = require('./modules/members');
 const templatesModule = require('./modules/templates');
 const reportsModule = require('./modules/reports');
 const everyoneModule = require('./modules/everyone');
@@ -476,6 +477,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, aiAssistantModule.routes);
     app.use(basePath, adminAiUsageModule.routes);
     app.use(basePath, peopleModule.routes);
+    app.use(basePath, membersModule.routes);
     app.use(basePath, templatesModule.routes);
     app.use(basePath, reportsModule.routes);
     app.use(basePath, everyoneModule.routes);

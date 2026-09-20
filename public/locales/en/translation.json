@@ -1667,7 +1667,10 @@
     "status": {
       "noSignIn": "Can't sign in yet",
       "invited": "Invitation pending"
-    }
+    },
+    "turnContactIntoAccount": "Turn one of your contacts into this account (optional)",
+    "noContact": "— none —",
+    "turnContactNote": "The contact keeps its history, so tasks assigned to it stay assigned. Your private notes on it are not carried over."
   },
   "billing": {
     "title": "Plan & Billing",
@@ -2003,5 +2006,35 @@
     "noDate": "No date",
     "nothing": "Nothing right now",
     "empty": "Nothing shared is on right now. Share an area, project or goal, or assign someone a task, to see it here."
+  },
+  "people": {
+    "addMember": "Add member",
+    "newContact": "New contact",
+    "filterAll": "All",
+    "filterMembers": "Members",
+    "filterContacts": "Contacts",
+    "member": "Member",
+    "memberNoSignIn": "Member, can't sign in yet",
+    "giveAccount": "Give account",
+    "memberAdded": "Member added",
+    "memberInvited": "Invitation sent to {{email}}"
+  },
+  "members": {
+    "addTitle": "Add member",
+    "giveAccountTitle": "Give {{name}} an account",
+    "convertNote": "This contact becomes a member and keeps its history, so tasks assigned to them stay assigned. Your private notes on this contact are not carried over.",
+    "name": "Name",
+    "surname": "Surname",
+    "email": "Email",
+    "optional": "optional",
+    "emailHint": "Leave the password blank to send an invitation by email.",
+    "noEmailHint": "Without an email this member cannot sign in yet, but can still be in groups and be assigned tasks. You can add one later.",
+    "password": "Password",
+    "generate": "Generate",
+    "role": "Role",
+    "add": "Add member",
+    "giveAccount": "Give account",
+    "nameRequiredWithoutEmail": "Enter a name when there is no email",
+    "failedToAdd": "Failed to add member"
   }
 }
