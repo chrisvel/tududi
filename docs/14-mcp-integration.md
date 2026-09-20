@@ -423,7 +423,7 @@ Get a single project by UID.
 
 #### `create_project`
 
-Create a new project.
+Create a new project. Refused for an account whose role does not allow creating projects (a guest, or a user who was denied `create_projects`).
 
 **Parameters:**
 | Parameter | Type | Required | Description |
@@ -998,7 +998,7 @@ Get a specific person by UID, including their assigned task count.
 
 #### `create_person`
 
-Create a new person/contact.
+Create a new person/contact. Refused for an account whose role does not allow adding people (a guest, or a user who was denied `create_people`).
 
 **Parameters:**
 | Parameter | Type | Required | Description |

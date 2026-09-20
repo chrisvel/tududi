@@ -49,6 +49,11 @@ For the thinking behind tududi, read:
     - **Flexible Scheduling**: Set custom intervals (every 2 weeks, every 3 months, etc.)
     - **End Date Control**: Optional end dates for recurring series
 - **Project Sharing & Collaboration**: Share projects with team members and collaborate effectively
+- **Families & Small Teams**: One workspace for a household or a team, described in [People, Members and Roles](docs/19-people-and-roles.md):
+    - **Roles**: Admin, user and guest, with permissions an admin can adjust per account
+    - **Groups**: Share a project, area or goal with several people at once
+    - **Members without an email**: Add a child or another household member who has no email, put them in a group and assign them tasks
+    - **Assign to anyone**: Give a task to a member or to a contact such as a plumber, and see everyone's day on one Everyone board
 - **Quick Notes**: Create, update, delete, or assign text notes to projects.
 - **Tags**: Create tags for tasks and notes to enhance organization.
 - **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks and/or multiple notes.
@@ -261,6 +266,7 @@ For detailed setup instructions, configuration options, and getting started guid
 - **[Configuration](https://docs.tududi.com/getting-started/configuration)** - Environment variables and advanced settings
 - **[First Steps](https://docs.tududi.com/getting-started/first-steps)** - Learn the basics and get productive
 - **[Project Sharing](https://docs.tududi.com/features/project-sharing)** - Collaborate with your team
+- **[People, Members and Roles](docs/19-people-and-roles.md)** - Families and teams: roles, groups, members without an email and assigning tasks
 
 ## 🚧 Development
 
