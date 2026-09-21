@@ -10,6 +10,7 @@ jest.mock('../../../config/config', () => {
                     ...config.rateLimiting,
                     enabled: true,
                     auth: { windowMs: 60000, max: 2 },
+                    signInLink: { windowMs: 60000, max: 4 },
                     api: { windowMs: 60000, max: 2 },
                     authenticatedApi: { windowMs: 60000, max: 3 },
                     bearerFailure: { max: 2 },
@@ -27,6 +28,8 @@ const {
     authenticatedApiLimiter,
     bearerFailureLimiter,
     passwordConfirmLimiter,
+    signInLinkLimiter,
+    authLimiter,
     loginLimiter,
     requestIdentity,
 } = require('../../../middleware/rateLimiter');
@@ -250,4 +253,68 @@ describe('loginLimiter', () => {
             .send({ password: 'wrong' })
             .expect(429);
     });
+});
+
+describe('signInLinkLimiter', () => {
+    const post = (app, ip) =>
+        request(app).post('/ok').set('X-Forwarded-For', ip).send({});
+
+    it('lets a household use several links before it says stop', async () => {
+        const app = buildApp(signInLinkLimiter);
+        const ip = nextIp();
+
+        // Four requests are two devices (look, then sign in); the strict auth
+        // limit in this suite allows only two requests in all.
+        for (let i = 0; i < 4; i++) {
+            await post(app, ip).expect(200);
+        }
+        const res = await post(app, ip).expect(429);
+        expect(res.body.error).toBe('Too many sign-in link requests');
+    });
+
+    it('counts per IP', async () => {
+        const app = buildApp(signInLinkLimiter);
+        const first = nextIp();
+        for (let i = 0; i < 5; i++) await post(app, first);
+
+        const other = await post(app, nextIp());
+        expect(other.status).toBe(200);
+    });
+
+    it('does not share its count with the auth limit, in either direction', async () => {
+        const authApp = buildApp(authLimiter);
+        const linkApp = buildApp(signInLinkLimiter);
+        const ip = nextIp();
+
+        await post(authApp, ip).expect(200);
+        await post(authApp, ip).expect(200);
+        expect((await post(authApp, ip)).status).toBe(429);
+
+        await post(linkApp, ip).expect(200);
+        await post(linkApp, ip).expect(200);
+        await post(linkApp, ip).expect(200);
+        await post(linkApp, ip).expect(200);
+        await post(linkApp, ip).expect(429);
+        await post(authApp, ip).expect(429);
+    });
+});
+
+describe('the sign-in link routes', () => {
+    const handlersOf = (path) => {
+        const router = require('../../../modules/auth/routes');
+        const layer = router.stack.find(
+            (l) => l.route && l.route.path === path
+        );
+        return layer.route.stack.map((l) => l.handle);
+    };
+
+    it.each(['/sign-in-link/peek', '/sign-in-link/redeem'])(
+        'limit %s with the sign-in link limiter and not the login one',
+        (path) => {
+            const handlers = handlersOf(path);
+
+            expect(handlers).toContain(signInLinkLimiter);
+            expect(handlers).not.toContain(authLimiter);
+        }
+    );
 });

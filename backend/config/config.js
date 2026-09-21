@@ -355,6 +355,17 @@ const config = {
             max: parseInt(process.env.RATE_LIMIT_AUTH_MAX) || 5, // 5 requests per window
         },
 
+        // Sign-in links for members without an email (looking at a link and
+        // using it), per IP. Kept apart from the auth limit above so a
+        // household handing out links to several devices is not locked out,
+        // and generous because the token itself cannot be guessed.
+        signInLink: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_SIGN_IN_LINK_WINDOW_MS) ||
+                15 * 60 * 1000, // 15 minutes
+            max: parseInt(process.env.RATE_LIMIT_SIGN_IN_LINK_MAX) || 30,
+        },
+
         // Login and password reset attempts per email address, on top of
         // the per-IP limit above, so one address cannot be hammered from
         // many IPs and one shared IP does not lock everyone else out.

@@ -75,7 +75,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 14f. **Whoever made the account can make its links, within their own permissions.** A creator who is not an admin can only make a link for a member whose permissions are within their own, so raising a member's permissions later cannot hand the creator more rights than they have. Anyone else, including other members of the same group, is told the member does not exist.
 
-14g. **Taking access back signs the member out everywhere.** "Take access back" removes the live link and ends every session of that member. If the member is given an email or made an admin before using a link, the link stops working. Creating, using and revoking links is written to the sign-in audit log with who did it, and the link endpoints are rate limited.
+14g. **Taking access back signs the member out everywhere.** "Take access back" removes the live link and ends every session of that member. If the member is given an email or made an admin before using a link, the link stops working. Creating, using and revoking links is written to the sign-in audit log with who did it, and the link endpoints are rate limited on their own (30 requests per 15 minutes per IP by default, `RATE_LIMIT_SIGN_IN_LINK_MAX`), so several devices in one household can sign in.
 
 14b. **Without the admin role a member can only add users and guests, and cannot set permissions.** The invite permission cannot be used to hand out more than the person has. Creating members can send email, so it is rate limited per user.
 
