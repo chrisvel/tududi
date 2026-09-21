@@ -65,6 +65,27 @@ const authLimiter = rateLimit({
     },
 });
 
+// The two public sign-in link routes (look at a link, use it). Each device
+// needs two requests, so a household handing links to several devices would
+// use up the strict auth limit at once. The token is 256 random bits, so this
+// only has to stop floods, and it counts on its own.
+const signInLinkLimiter = rateLimit({
+    store: createRateLimitStore('sign-in-link'),
+    windowMs: rateLimitConfig.signInLink.windowMs,
+    max: rateLimitConfig.signInLink.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: skipInTest,
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Too many sign-in link requests',
+            message:
+                'Too many requests from this network. Please try again in a few minutes.',
+            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+        });
+    },
+});
+
 // Keys login and password-reset attempts by the submitted email address.
 // Complements authLimiter (per IP): a distributed attack on one account is
 // throttled, and users behind one shared IP do not exhaust each other's
@@ -328,6 +349,7 @@ const caldavAuthLimiter = rateLimit({
 module.exports = {
     caldavAuthLimiter,
     authLimiter,
+    signInLinkLimiter,
     authEmailLimiter,
     loginLimiter,
     loginEmailLimiter,

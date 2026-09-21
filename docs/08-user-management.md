@@ -222,6 +222,10 @@ to an account, so it cannot be used to discover who has signed up - Declining re
       (`RATE_LIMIT_PASSWORD_CONFIRM_MAX`, default 10 per 15 minutes), and
       repeated invalid API tokens from one IP are throttled
       (`RATE_LIMIT_BEARER_FAILURE_MAX`, default 50 per 15 minutes)
+    - Looking at and using a sign-in link for a member without an email has
+      its own limit per IP (`RATE_LIMIT_SIGN_IN_LINK_MAX`, default 30 per 15
+      minutes), separate from login, registration and password reset, so a
+      household can sign in several devices from one network
 
 23. **Password storage is secure**
     - Passwords are hashed using bcrypt (10 rounds)
