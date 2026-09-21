@@ -8,6 +8,7 @@
  * - Tag management for notes
  * - Project association with permission checks
  * - Note validation
+ * - Public sharing by link (owner-controlled, revocable)
  *
  * Usage:
  *   const notesModule = require('./modules/notes');
@@ -15,12 +16,14 @@
  */
 
 const routes = require('./routes');
+const publicRoutes = require('./publicRoutes');
 const notesService = require('./service');
 const notesRepository = require('./repository');
 const { validateUid, validateTitle } = require('./validation');
 
 module.exports = {
     routes,
+    publicRoutes,
     notesService,
     notesRepository,
     validateUid,

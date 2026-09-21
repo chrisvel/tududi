@@ -49,4 +49,29 @@ router.get(
     notesController.backlinks
 );
 
+// Public sharing: only the owner can read or change it (checked in the service)
+router.get(
+    '/note/:uid/public-share',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    notesController.getPublicShare
+);
+
+router.post(
+    '/note/:uid/public-share',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    notesController.enablePublicShare
+);
+
+router.delete(
+    '/note/:uid/public-share',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    notesController.disablePublicShare
+);
+
 module.exports = router;

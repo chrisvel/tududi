@@ -7,10 +7,15 @@ import {
     TagIcon,
     FolderIcon,
 } from '@heroicons/react/24/solid';
-import { DocumentDuplicateIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import {
+    DocumentDuplicateIcon,
+    GlobeAltIcon,
+    MapPinIcon,
+} from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
+import PublicShareModal from './PublicShareModal';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import BacklinksPanel from './BacklinksPanel';
 import { Note } from '../../entities/Note';
@@ -28,6 +33,7 @@ const NoteDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
     const [note, setNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
         useState<boolean>(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
@@ -246,6 +252,22 @@ const NoteDetails: React.FC = () => {
                             <MapPinIcon className="h-5 w-5" />
                         </button>
                         <button
+                            onClick={() => setIsShareModalOpen(true)}
+                            className={`focus:outline-none ${note.is_public ? 'text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300' : 'text-gray-500 hover:text-green-700 dark:hover:text-green-300'}`}
+                            aria-label={t('notes.publicShare.open', 'Share note')}
+                            title={
+                                note.is_public
+                                    ? t(
+                                          'notes.publicShare.sharedTitle',
+                                          'Shared with anyone who has the link'
+                                      )
+                                    : t('notes.publicShare.open', 'Share note')
+                            }
+                            data-testid="note-share-button"
+                        >
+                            <GlobeAltIcon className="h-5 w-5" />
+                        </button>
+                        <button
                             onClick={handleCopyNote}
                             className="text-gray-500 hover:text-green-700 dark:hover:text-green-300 focus:outline-none"
                             aria-label={t('notes.copyContent', 'Copy note content')}
@@ -309,6 +331,19 @@ const NoteDetails: React.FC = () => {
                         <BacklinksPanel noteUid={note.uid} noteTitle={note.title} />
                     )}
                 </div>
+                <PublicShareModal
+                    isOpen={isShareModalOpen}
+                    onClose={() => setIsShareModalOpen(false)}
+                    noteUid={note.uid ?? null}
+                    noteTitle={note.title}
+                    onChange={(isPublic) =>
+                        setNote((current) =>
+                            current
+                                ? { ...current, is_public: isPublic }
+                                : current
+                        )
+                    }
+                />
                 {/* NoteModal for editing */}
                 {isNoteModalOpen && (
                     <NoteModal

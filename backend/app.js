@@ -455,6 +455,8 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, featureFlagsModule.routes);
     app.use(basePath, demoModule.routes);
     app.use(`${basePath}/oidc`, oidcModule.routes);
+    // Public note links: reachable without signing in
+    app.use(basePath, notesModule.publicRoutes);
 
     app.use(basePath, requireAuth);
     // Instances that sell access close everything past this point until the

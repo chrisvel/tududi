@@ -87,6 +87,33 @@ class NotesRepository extends BaseRepository {
     }
 
     /**
+     * Find a note with the fields the public-share flow needs.
+     */
+    async findForPublicShare(uid) {
+        return this.model.findOne({
+            where: { uid },
+            attributes: [
+                'id',
+                'uid',
+                'user_id',
+                'public_token',
+                'public_shared_at',
+            ],
+        });
+    }
+
+    /**
+     * Find the note a public link points at. Only the fields a reader of the
+     * public page may see are selected.
+     */
+    async findByPublicToken(token) {
+        return this.model.findOne({
+            where: { public_token: token },
+            attributes: ['title', 'content', 'color', 'updated_at'],
+        });
+    }
+
+    /**
      * Find a note by ID with includes (for reloading after create/update).
      */
     async findByIdWithIncludes(id) {

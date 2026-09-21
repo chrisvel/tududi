@@ -53,6 +53,7 @@ This document explains how the Notes system works in tududi from a user behavior
 | **Color** | String | No | Background color (visual organization) |
 | **Created At** | Timestamp | Auto | Creation timestamp |
 | **Updated At** | Timestamp | Auto | Last modification timestamp |
+| **Public link** | Token | No | Set while the note is shared publicly (see [Sharing a Note Publicly](#sharing-a-note-publicly)) |
 
 ### Unique Identifier
 
@@ -406,6 +407,45 @@ This document explains how the Notes system works in tududi from a user behavior
 - Deletion is immediate and irreversible
 - No trash/archive feature
 - Ensure confirmation before proceeding
+
+---
+
+## Sharing a Note Publicly
+
+A note can be shared with anyone who has a link, without them having an account. It works like "Anyone with the link" in Google Drive.
+
+### Turning it on and off
+
+1. Open the note and click the **globe icon** (or **⋮ menu > Share note** in the notes editor)
+2. Under **General access**, choose **Anyone with the link**
+3. Copy the **public link** and send it to whoever should read the note
+4. To stop sharing, switch **General access** back to **Restricted**
+
+### Rules
+
+- **Owner only:** only the person who owns a note can share it publicly or stop sharing it. Collaborators with write access to the note's project cannot.
+- **Read only:** people with the link can read the note. They cannot edit it, and they see only the title, content and last updated date. Tags, project, owner and other notes are not shown.
+- **Always current:** the link shows the note as it is now, not a snapshot. Edits show up for readers right away.
+- **Disposable:** turning sharing off deletes the link's token. The old link shows "This note is not available" straight away, and turning sharing back on creates a **new** link. Deleting the note also ends the link.
+- **Unguessable:** the link contains 256 random bits, so it cannot be guessed. Anyone who has it can read the note, so treat it like a password-free document link.
+- **Kept out of search engines:** the public page sends `noindex` and `no-referrer` headers and is never cached.
+
+### The public page
+
+The link opens `/public/notes/<token>`, a page with no sidebar and no app navigation. It has only the tududi navbar (logo, dark mode toggle, **Sign In**, and **Sign Up** when registration is open) and the note. A visitor who is not signed in also sees a call to action: "Do you want to share your notes? Sign up now" (hidden when registration is closed). A signed-in visitor sees an **Open tududi** button instead.
+
+An unknown link, a link that was switched off and a deleted note all show the same "not available" page, so nobody can tell which it was.
+
+### API
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/note/:uid/public-share` | Owner | Current state: `{ enabled, token, shared_at }` |
+| POST | `/api/note/:uid/public-share` | Owner | Turn sharing on (keeps the same link if already on) |
+| DELETE | `/api/note/:uid/public-share` | Owner | Turn sharing off and delete the token |
+| GET | `/api/public/notes/:token` | None | Read a public note: `{ title, content, color, updated_at }` |
+
+Note payloads never include the token. They carry `is_public` (boolean) instead, so a collaborator who can read a note cannot lift its public link. Stored in `notes.public_token` (unique) and `notes.public_shared_at`.
 
 ---
 
