@@ -5,7 +5,8 @@ set -euo pipefail
 # release, commits and tags. Pushing the tag is what publishes the image and
 # creates the GitHub Release (.github/workflows/docker-publish.yml).
 #
-#   ./scripts/create-version.sh              ask which kind, propose the number
+#   ./scripts/create-version.sh              ask which kind (stable fix, minor,
+#                                            major, rc or dev), propose the number
 #   ./scripts/create-version.sh v1.5.0       take that version, no questions
 #   ./scripts/create-version.sh --no-push    stop at the local commit and tag
 #
@@ -63,7 +64,8 @@ if [[ -z "$VERSION" ]]; then
     exit 1
   fi
 
-  # Shell assignments: LATEST_STABLE/RC/DEV and NEXT_STABLE/RC/DEV.
+  # Shell assignments: LATEST_STABLE/RC/DEV, PROMOTE_STABLE, NEXT_FIX/MINOR/MAJOR
+  # and NEXT_RC/DEV.
   eval "$(node scripts/version-plan.js)"
 
   printf '\nLatest release on each channel\n\n'
@@ -71,19 +73,42 @@ if [[ -z "$VERSION" ]]; then
   printf '  rc      %s\n' "${LATEST_RC:-(none yet)}"
   printf '  dev     %s\n\n' "${LATEST_DEV:-(none yet)}"
 
+  LABELS=()
+  VERSIONS=()
+  NOTES=()
+  add_choice() {
+    LABELS+=("$1")
+    VERSIONS+=("$2")
+    NOTES+=("$3")
+  }
+
+  # Promoting the line already in flight comes first, so choice 1 stays the
+  # obvious "ship what is being tested". A bump that lands on the same number
+  # is not offered twice.
+  if [[ -n "$PROMOTE_STABLE" ]]; then
+    add_choice "stable, promote" "$PROMOTE_STABLE" "moves :latest"
+  fi
+  [[ "$NEXT_FIX" != "$PROMOTE_STABLE" ]] && add_choice "stable fix" "$NEXT_FIX" "moves :latest"
+  [[ "$NEXT_MINOR" != "$PROMOTE_STABLE" ]] && add_choice "stable minor" "$NEXT_MINOR" "moves :latest"
+  [[ "$NEXT_MAJOR" != "$PROMOTE_STABLE" ]] && add_choice "stable major" "$NEXT_MAJOR" "moves :latest"
+  add_choice "release candidate" "$NEXT_RC" "pre-release"
+  add_choice "development" "$NEXT_DEV" "pre-release"
+
+  COUNT=${#LABELS[@]}
+
   printf 'What kind of release is this?\n\n'
-  printf '  1) stable             %-18s moves :latest\n' "$NEXT_STABLE"
-  printf '  2) release candidate  %-18s pre-release\n' "$NEXT_RC"
-  printf '  3) development        %-18s pre-release\n\n' "$NEXT_DEV"
+  for ((i = 0; i < COUNT; i++)); do
+    printf '  %d) %-20s %-18s %s\n' "$((i + 1))" "${LABELS[$i]}" "${VERSIONS[$i]}" "${NOTES[$i]}"
+  done
+  printf '\n'
 
   # A bare `read` failing on Ctrl-D would exit silently under `set -e`.
-  read -r -p 'Choice [1-3]: ' CHOICE || { printf '\nCancelled.\n'; exit 1; }
-  case "$CHOICE" in
-    1) SUGGESTED="$NEXT_STABLE" ;;
-    2) SUGGESTED="$NEXT_RC" ;;
-    3) SUGGESTED="$NEXT_DEV" ;;
-    *) echo "Error: pick 1, 2 or 3." >&2; exit 1 ;;
-  esac
+  read -r -p "Choice [1-${COUNT}]: " CHOICE || { printf '\nCancelled.\n'; exit 1; }
+  if [[ ! "$CHOICE" =~ ^[0-9]+$ ]] || ((CHOICE < 1 || CHOICE > COUNT)); then
+    echo "Error: pick a number from 1 to ${COUNT}." >&2
+    exit 1
+  fi
+  SUGGESTED="${VERSIONS[$((CHOICE - 1))]}"
 
   printf '\n'
   read -r -p "Create ${SUGGESTED}? [Y/n, or type another version]: " ANSWER || { printf '\nCancelled.\n'; exit 1; }
