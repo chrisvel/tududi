@@ -22,9 +22,16 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
     currentUser,
 }) => {
     const { t } = useTranslation();
-    const templatesEnabled = useStore(
+    const templatesFeatureEnabled = useStore(
         (state) => state.userSettingsStore.templatesEnabled
     );
+    const visibleSections = useStore(
+        (state) => state.userSettingsStore.sidebarVisibleSections
+    );
+    const templatesEnabled =
+        templatesFeatureEnabled && visibleSections.templates !== false;
+    const accessVisible =
+        currentUser?.is_admin === true && visibleSections.access !== false;
     const [hosted, setHosted] = useState(false);
 
     useEffect(() => {
@@ -34,7 +41,13 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
             .catch(() => setHosted(false));
     }, [currentUser?.is_admin]);
 
-    if (!templatesEnabled && !currentUser?.is_admin) return null;
+    if (
+        !templatesEnabled &&
+        !accessVisible &&
+        !(currentUser?.is_admin === true && hosted)
+    ) {
+        return null;
+    }
 
     const linkClass = (path: string) => {
         const isActive = location.pathname.startsWith(path);
@@ -61,7 +74,7 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
                     {t('navigation.templates', 'Templates')}
                 </li>
             )}
-            {currentUser?.is_admin === true && (
+            {accessVisible && (
                 <li
                     className={linkClass('/admin/users')}
                     onClick={() =>

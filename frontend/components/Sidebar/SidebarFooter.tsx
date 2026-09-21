@@ -12,6 +12,8 @@ import {
     InboxIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
+import AppsGridIcon from '../Shared/Icons/AppsGridIcon';
+import AppLauncherModal from './AppLauncherModal';
 import { useTranslation } from 'react-i18next';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
@@ -26,7 +28,7 @@ import {
 } from '../../utils/keyboardShortcutsService';
 
 interface SidebarFooterProps {
-    currentUser: { email: string; avatar_image?: string };
+    currentUser: { email: string; is_admin?: boolean; avatar_image?: string };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     isSidebarOpen: boolean;
@@ -42,6 +44,7 @@ interface SidebarFooterProps {
 }
 
 const SidebarFooter: React.FC<SidebarFooterProps> = ({
+    currentUser,
     isDarkMode,
     toggleDarkMode,
     setIsSidebarOpen,
@@ -54,6 +57,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isLauncherOpen, setIsLauncherOpen] = useState(false);
     const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [version, setVersion] = useState<string>('v0.86');
@@ -133,6 +137,14 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
         setIsDropdownOpen(false);
     };
 
+    const handleLauncherSelect = (path: string, title: string) => {
+        navigate(path, { state: { title } });
+        setIsLauncherOpen(false);
+        if (window.innerWidth < 1024) {
+            setIsSidebarOpen(false);
+        }
+    };
+
     // Use the keyboard shortcuts hook
     useKeyboardShortcuts(
         shortcuts,
@@ -201,10 +213,10 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                 </span>
             </div>
 
-            {/* Toolbar row: + create | dark mode */}
+            {/* Toolbar row: + create, all entities | dark mode */}
             <div className="border-t border-gray-100 dark:border-white/10 px-[14px] py-[10px] flex items-center justify-between">
-                {/* Plus / Create dropdown */}
-                <div className="relative">
+                {/* Plus / Create dropdown + all entities launcher */}
+                <div className="relative flex items-center gap-1.5">
                     <button
                         onClick={toggleDropdown}
                         className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
@@ -237,6 +249,16 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                             </div>
                         </div>
                     )}
+
+                    <button
+                        onClick={() => setIsLauncherOpen(true)}
+                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        aria-label={t('sidebar.allEntities', 'All entities')}
+                        title={t('sidebar.allEntities', 'All entities')}
+                        data-testid="app-launcher-button"
+                    >
+                        <AppsGridIcon className="h-4 w-4" />
+                    </button>
                 </div>
 
                 {/* Right side: telegram + dark mode */}
@@ -264,6 +286,13 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     </button>
                 </div>
             </div>
+
+            <AppLauncherModal
+                isOpen={isLauncherOpen}
+                isAdmin={currentUser?.is_admin === true}
+                onClose={() => setIsLauncherOpen(false)}
+                onSelect={handleLauncherSelect}
+            />
         </div>
     );
 };

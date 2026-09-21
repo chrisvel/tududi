@@ -4,6 +4,7 @@ import type { SidebarVisibleSections } from '../types';
 
 interface SidebarTabProps {
     isActive: boolean;
+    isAdmin?: boolean;
     visibleSections: SidebarVisibleSections;
     onToggleSection: (key: keyof SidebarVisibleSections) => void;
 }
@@ -53,6 +54,7 @@ const ToggleRow: React.FC<ToggleRowProps> = ({
 
 const SidebarTab: React.FC<SidebarTabProps> = ({
     isActive,
+    isAdmin = false,
     visibleSections,
     onToggleSection,
 }) => {
@@ -92,6 +94,44 @@ const SidebarTab: React.FC<SidebarTabProps> = ({
             ),
         },
     ];
+
+    const entitySections: Array<{
+        key: keyof SidebarVisibleSections;
+        label: string;
+    }> = [
+        { key: 'favorites', label: t('sidebar.bookmarks', 'Favorites') },
+        { key: 'projects', label: t('sidebar.projects', 'Projects') },
+        { key: 'areas', label: t('sidebar.areas', 'Areas') },
+        { key: 'goals', label: t('sidebar.goals', 'Goals') },
+        { key: 'notes', label: t('sidebar.notes', 'Notes') },
+        { key: 'tags', label: t('sidebar.tags', 'Tags') },
+        { key: 'people', label: t('sidebar.people', 'People') },
+        { key: 'habits', label: t('sidebar.habits', 'Habits') },
+        { key: 'views', label: t('sidebar.views', 'Views') },
+        { key: 'boards', label: t('sidebar.boards', 'Boards') },
+        { key: 'insights', label: t('sidebar.insights', 'Insights') },
+        { key: 'calendar', label: t('sidebar.calendar', 'Calendar') },
+        { key: 'templates', label: t('navigation.templates', 'Templates') },
+        ...(isAdmin
+            ? [
+                  {
+                      key: 'access' as const,
+                      label: t('admin.access.title', 'Access'),
+                  },
+              ]
+            : []),
+    ];
+    for (const { key, label } of entitySections) {
+        sections.push({
+            key,
+            label,
+            description: t(
+                'profile.sidebarSectionDescription',
+                'Show the {{name}} section in the sidebar.',
+                { name: label }
+            ),
+        });
+    }
     sections.sort((a, b) => a.label.localeCompare(b.label));
 
     return (

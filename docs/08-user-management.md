@@ -417,6 +417,12 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     - Pinned views can be reordered
     - Order is stored in `sidebar_settings.pinnedViewsOrder` array
 
+    **Sidebar sections and the "All entities" launcher:**
+    - Profile > Sidebar toggles each sidebar section (Favorites, Projects, Areas, Goals, Notes, Tags, People, Habits, Views, Boards, Insights) plus the Calendar, Upcoming, Assigned to me, Everyone and Templates links, and the Access link for admins
+    - Visibility is stored in `sidebar_settings.visibleSections`; a missing key means the section is shown
+    - The grid button in the sidebar footer (right of **+**) opens a launcher with every page as an icon tile, including sections hidden from the sidebar
+    - The launcher leaves out pages whose feature is turned off (Calendar, Habits, Eisenhower, Kanban, Templates), shows Everyone only when the account has collaborators, and shows Access only to admins
+
 ### Task Summary Settings
 
 38. **Telegram task summaries can be scheduled:**

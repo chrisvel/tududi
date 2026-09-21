@@ -156,21 +156,8 @@ const App: React.FC = () => {
                     );
                 useStore
                     .getState()
-                    .userSettingsStore.setUpcomingTasksVisible(
-                        data.user.sidebar_settings?.visibleSections
-                            ?.upcomingTasks !== false
-                    );
-                useStore
-                    .getState()
-                    .userSettingsStore.setAssignedToMeVisible(
-                        data.user.sidebar_settings?.visibleSections
-                            ?.assignedToMe !== false
-                    );
-                useStore
-                    .getState()
-                    .userSettingsStore.setEveryoneVisible(
-                        data.user.sidebar_settings?.visibleSections
-                            ?.everyone !== false
+                    .userSettingsStore.setSidebarVisibleSections(
+                        data.user.sidebar_settings?.visibleSections ?? {}
                     );
             } else {
                 setCurrentUser(null);

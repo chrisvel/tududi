@@ -77,7 +77,11 @@
     "reports": "Reports",
     "productivityAssistant": "Productivity Assistant",
     "assignedToMe": "Assigned to me",
-    "everyone": "Everyone"
+    "everyone": "Everyone",
+    "people": "People",
+    "goals": "Goals",
+    "habits": "Habits",
+    "allEntities": "All entities"
   },
   "navigation": {
     "home": "Home",
@@ -259,6 +263,7 @@
   },
   "profile": {
     "settings": "Profile Settings",
+    "sidebarSectionDescription": "Show the {{name}} section in the sidebar.",
     "name": "Name",
     "surname": "Surname",
     "enterName": "Enter your name",

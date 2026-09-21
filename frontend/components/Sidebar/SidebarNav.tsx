@@ -32,14 +32,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const hasCollaborators = useStore(
         (state) => state.userSettingsStore.hasCollaborators
     );
-    const upcomingTasksVisible = useStore(
-        (state) => state.userSettingsStore.upcomingTasksVisible
-    );
-    const assignedToMeVisible = useStore(
-        (state) => state.userSettingsStore.assignedToMeVisible
-    );
-    const everyoneVisible = useStore(
-        (state) => state.userSettingsStore.everyoneVisible
+    const visibleSections = useStore(
+        (state) => state.userSettingsStore.sidebarVisibleSections
     );
 
     const inboxItemsCount = store.inboxStore.pagination.total;
@@ -95,16 +89,16 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
     const navLinks = allNavLinks.filter((link) => {
         if (link.userFlag === 'calendar') {
-            return calendarEnabled;
+            return calendarEnabled && visibleSections.calendar !== false;
         }
         if (link.userFlag === 'everyone') {
-            return hasCollaborators && everyoneVisible;
+            return hasCollaborators && visibleSections.everyone !== false;
         }
         if (link.userFlag === 'upcomingTasks') {
-            return upcomingTasksVisible;
+            return visibleSections.upcomingTasks !== false;
         }
         if (link.userFlag === 'assignedToMe') {
-            return assignedToMeVisible;
+            return visibleSections.assignedToMe !== false;
         }
         return true;
     });

@@ -40,6 +40,20 @@ export interface SidebarVisibleSections {
     upcomingTasks?: boolean;
     assignedToMe?: boolean;
     everyone?: boolean;
+    favorites?: boolean;
+    projects?: boolean;
+    areas?: boolean;
+    goals?: boolean;
+    notes?: boolean;
+    tags?: boolean;
+    people?: boolean;
+    habits?: boolean;
+    views?: boolean;
+    boards?: boolean;
+    insights?: boolean;
+    calendar?: boolean;
+    templates?: boolean;
+    access?: boolean;
 }
 
 export interface SidebarSettings {

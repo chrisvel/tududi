@@ -20,6 +20,7 @@ import SidebarAdmin from './Sidebar/SidebarAdmin';
 import SidebarBookmarks from './Sidebar/SidebarBookmarks';
 import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
 import { useStore } from '../store/useStore';
+import type { SidebarVisibleSections } from './Profile/types';
 
 interface SidebarProps {
     isSidebarOpen: boolean;
@@ -61,6 +62,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     const navigate = useNavigate();
     const location = useLocation();
     const habitsEnabled = useStore((state) => state.userSettingsStore.habitsEnabled);
+    const visibleSections = useStore(
+        (state) => state.userSettingsStore.sidebarVisibleSections
+    );
+    const isSectionVisible = (key: keyof SidebarVisibleSections) =>
+        visibleSections[key] !== false;
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -95,61 +101,75 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 openTaskModal={openTaskModal}
                             />
                         </div>
-                        <div className="mb-[6px]">
-                            <SidebarBookmarks
-                                handleNavClick={handleNavClick}
-                                location={location}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarProjects
-                                handleNavClick={handleNavClick}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                                openProjectModal={openProjectModal}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarAreas
-                                handleNavClick={handleNavClick}
-                                areas={areas}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                                openAreaModal={openAreaModal}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarGoals
-                                handleNavClick={handleNavClick}
-                                location={location}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarNotes
-                                handleNavClick={handleNavClick}
-                                onCreateNote={onCreateNote}
-                                notes={notes}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarTags
-                                handleNavClick={handleNavClick}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                                openTagModal={openTagModal}
-                                tags={tags}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarPeople
-                                handleNavClick={handleNavClick}
-                                location={location}
-                                openPersonModal={openPersonModal}
-                            />
-                        </div>
-                        {habitsEnabled && (
+                        {isSectionVisible('favorites') && (
+                            <div className="mb-[6px]">
+                                <SidebarBookmarks
+                                    handleNavClick={handleNavClick}
+                                    location={location}
+                                />
+                            </div>
+                        )}
+                        {isSectionVisible('projects') && (
+                            <div className="mb-[6px]">
+                                <SidebarProjects
+                                    handleNavClick={handleNavClick}
+                                    location={location}
+                                    isDarkMode={isDarkMode}
+                                    openProjectModal={openProjectModal}
+                                />
+                            </div>
+                        )}
+                        {isSectionVisible('areas') && (
+                            <div className="mb-[6px]">
+                                <SidebarAreas
+                                    handleNavClick={handleNavClick}
+                                    areas={areas}
+                                    location={location}
+                                    isDarkMode={isDarkMode}
+                                    openAreaModal={openAreaModal}
+                                />
+                            </div>
+                        )}
+                        {isSectionVisible('goals') && (
+                            <div className="mb-[6px]">
+                                <SidebarGoals
+                                    handleNavClick={handleNavClick}
+                                    location={location}
+                                />
+                            </div>
+                        )}
+                        {isSectionVisible('notes') && (
+                            <div className="mb-[6px]">
+                                <SidebarNotes
+                                    handleNavClick={handleNavClick}
+                                    onCreateNote={onCreateNote}
+                                    notes={notes}
+                                    location={location}
+                                    isDarkMode={isDarkMode}
+                                />
+                            </div>
+                        )}
+                        {isSectionVisible('tags') && (
+                            <div className="mb-[6px]">
+                                <SidebarTags
+                                    handleNavClick={handleNavClick}
+                                    location={location}
+                                    isDarkMode={isDarkMode}
+                                    openTagModal={openTagModal}
+                                    tags={tags}
+                                />
+                            </div>
+                        )}
+                        {isSectionVisible('people') && (
+                            <div className="mb-[6px]">
+                                <SidebarPeople
+                                    handleNavClick={handleNavClick}
+                                    location={location}
+                                    openPersonModal={openPersonModal}
+                                />
+                            </div>
+                        )}
+                        {habitsEnabled && isSectionVisible('habits') && (
                             <div className="mb-[6px]">
                                 <SidebarHabits
                                     handleNavClick={handleNavClick}
@@ -159,25 +179,31 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 />
                             </div>
                         )}
-                        <div className="mb-[6px]">
-                            <SidebarViews
-                                handleNavClick={handleNavClick}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarBoards
-                                handleNavClick={handleNavClick}
-                                location={location}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarInsights
-                                handleNavClick={handleNavClick}
-                                location={location}
-                            />
-                        </div>
+                        {isSectionVisible('views') && (
+                            <div className="mb-[6px]">
+                                <SidebarViews
+                                    handleNavClick={handleNavClick}
+                                    location={location}
+                                    isDarkMode={isDarkMode}
+                                />
+                            </div>
+                        )}
+                        {isSectionVisible('boards') && (
+                            <div className="mb-[6px]">
+                                <SidebarBoards
+                                    handleNavClick={handleNavClick}
+                                    location={location}
+                                />
+                            </div>
+                        )}
+                        {isSectionVisible('insights') && (
+                            <div className="mb-[6px]">
+                                <SidebarInsights
+                                    handleNavClick={handleNavClick}
+                                    location={location}
+                                />
+                            </div>
+                        )}
                         <div className="mb-[6px]">
                             <SidebarAdmin
                                 handleNavClick={handleNavClick}

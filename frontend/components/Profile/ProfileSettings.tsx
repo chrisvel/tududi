@@ -622,15 +622,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     sidebar_settings: {
                         ...(data.sidebar_settings || {}),
                         visibleSections: {
-                            upcomingTasks:
-                                data.sidebar_settings?.visibleSections
-                                    ?.upcomingTasks !== false,
-                            assignedToMe:
-                                data.sidebar_settings?.visibleSections
-                                    ?.assignedToMe !== false,
-                            everyone:
-                                data.sidebar_settings?.visibleSections
-                                    ?.everyone !== false,
+                            ...(data.sidebar_settings?.visibleSections || {}),
                         },
                     },
                 });
@@ -1351,39 +1343,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     );
             }
 
-            if (
-                updatedProfile.sidebar_settings?.visibleSections
-                    ?.upcomingTasks !== undefined
-            ) {
+            if (updatedProfile.sidebar_settings?.visibleSections) {
                 useStore
                     .getState()
-                    .userSettingsStore.setUpcomingTasksVisible(
+                    .userSettingsStore.setSidebarVisibleSections(
                         updatedProfile.sidebar_settings.visibleSections
-                            .upcomingTasks !== false
-                    );
-            }
-
-            if (
-                updatedProfile.sidebar_settings?.visibleSections
-                    ?.assignedToMe !== undefined
-            ) {
-                useStore
-                    .getState()
-                    .userSettingsStore.setAssignedToMeVisible(
-                        updatedProfile.sidebar_settings.visibleSections
-                            .assignedToMe !== false
-                    );
-            }
-
-            if (
-                updatedProfile.sidebar_settings?.visibleSections?.everyone !==
-                undefined
-            ) {
-                useStore
-                    .getState()
-                    .userSettingsStore.setEveryoneVisible(
-                        updatedProfile.sidebar_settings.visibleSections
-                            .everyone !== false
                     );
             }
 
@@ -1764,6 +1728,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                                 <SidebarTab
                                     isActive={activeTab === 'sidebar'}
+                                    isAdmin={currentUser?.is_admin === true}
                                     visibleSections={
                                         formData.sidebar_settings
                                             ?.visibleSections || {}

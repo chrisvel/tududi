@@ -8,6 +8,7 @@ import { Tag } from '../entities/Tag';
 import { InboxItem } from '../entities/InboxItem';
 import { Goal } from '../entities/Goal';
 import { Person } from '../entities/Person';
+import type { SidebarVisibleSections } from '../components/Profile/types';
 
 interface NotesStore {
     notes: Note[];
@@ -129,12 +130,8 @@ interface UserSettingsStore {
     setAiAssistantEnabled: (enabled: boolean) => void;
     showTaskContextMenu: boolean;
     setShowTaskContextMenu: (enabled: boolean) => void;
-    upcomingTasksVisible: boolean;
-    setUpcomingTasksVisible: (enabled: boolean) => void;
-    assignedToMeVisible: boolean;
-    setAssignedToMeVisible: (enabled: boolean) => void;
-    everyoneVisible: boolean;
-    setEveryoneVisible: (enabled: boolean) => void;
+    sidebarVisibleSections: SidebarVisibleSections;
+    setSidebarVisibleSections: (sections: SidebarVisibleSections) => void;
 }
 
 interface GoalsStore {
@@ -1075,28 +1072,12 @@ export const useStore = create<StoreState>((set: any) => ({
                     showTaskContextMenu: enabled,
                 },
             })),
-        upcomingTasksVisible: true,
-        setUpcomingTasksVisible: (enabled) =>
+        sidebarVisibleSections: {},
+        setSidebarVisibleSections: (sections) =>
             set((state) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
-                    upcomingTasksVisible: enabled,
-                },
-            })),
-        assignedToMeVisible: true,
-        setAssignedToMeVisible: (enabled) =>
-            set((state) => ({
-                userSettingsStore: {
-                    ...state.userSettingsStore,
-                    assignedToMeVisible: enabled,
-                },
-            })),
-        everyoneVisible: true,
-        setEveryoneVisible: (enabled) =>
-            set((state) => ({
-                userSettingsStore: {
-                    ...state.userSettingsStore,
-                    everyoneVisible: enabled,
+                    sidebarVisibleSections: sections,
                 },
             })),
     },
