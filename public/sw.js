@@ -88,6 +88,10 @@ self.addEventListener('fetch', (event) => {
 
     if (url.origin !== self.location.origin) return;
 
+    // A shared note stops working the moment its owner turns sharing off, so
+    // it must never be answered from a cache.
+    if (url.pathname.startsWith('/api/public/')) return;
+
     if (url.pathname.startsWith('/api/')) {
         if (request.method === 'GET') {
             event.respondWith(handleApiGet(request));

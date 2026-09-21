@@ -1,6 +1,7 @@
 'use strict';
 
 const notesService = require('./service');
+const publicSharing = require('./publicSharing');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
@@ -134,6 +135,67 @@ const notesController = {
             const uid = extractUidFromSlug(req.params.uid);
             const links = await notesService.getBacklinks(userId, uid);
             res.json(links);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * GET /api/note/:uid/public-share
+     * Read the public sharing state of a note (owner only).
+     */
+    async getPublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.get(userId, uid));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * POST /api/note/:uid/public-share
+     * Turn public sharing on and return the link token.
+     */
+    async enablePublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.enable(userId, uid));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * DELETE /api/note/:uid/public-share
+     * Turn public sharing off and kill the link.
+     */
+    async disablePublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.disable(userId, uid));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * GET /api/public/notes/:token
+     * Read a publicly shared note. No authentication.
+     */
+    async getPublicNote(req, res, next) {
+        try {
+            // The token is the credential: keep the page out of caches,
+            // search indexes and Referer headers.
+            res.set({
+                'Cache-Control': 'no-store',
+                'X-Robots-Tag': 'noindex, nofollow',
+                'Referrer-Policy': 'no-referrer',
+            });
+            res.json(await publicSharing.getPublicNote(req.params.token));
         } catch (error) {
             next(error);
         }

@@ -16,11 +16,13 @@ import {
     EllipsisVerticalIcon,
     XMarkIcon,
     ArrowsPointingOutIcon,
+    GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import PushPinIcon from './Shared/Icons/PushPinIcon';
 import { useToast } from './Shared/ToastContext';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import NoteModal from './Note/NoteModal';
+import PublicShareModal from './Note/PublicShareModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import DiscardChangesDialog from './Shared/DiscardChangesDialog';
 import MarkdownRenderer from './Shared/MarkdownRenderer';
@@ -66,6 +68,7 @@ const Notes: React.FC = () => {
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+    const [noteToShare, setNoteToShare] = useState<Note | null>(null);
     // Notes are browsed via the sidebar's folder tree now, not a list on
     // this page - this page is the editor/preview pane only. `orderBy`
     // still picks which note auto-selects first on load.
@@ -789,6 +792,18 @@ const Notes: React.FC = () => {
                                                     {editingNote.uid && (
                                                         <button
                                                             onClick={() => {
+                                                                setNoteToShare(editingNote);
+                                                                setShowNoteOptionsDropdown(false);
+                                                            }}
+                                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                                        >
+                                                            <GlobeAltIcon className="h-4 w-4" />
+                                                            {t('notes.publicShare.open', 'Share note')}
+                                                        </button>
+                                                    )}
+                                                    {editingNote.uid && (
+                                                        <button
+                                                            onClick={() => {
                                                                 setNoteToDelete(
                                                                     editingNote
                                                                 );
@@ -1163,6 +1178,16 @@ const Notes: React.FC = () => {
                                                     </button>
                                                     <button
                                                         onClick={() => {
+                                                            setNoteToShare(previewNote);
+                                                            setShowNoteOptionsDropdown(false);
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                                    >
+                                                        <GlobeAltIcon className="h-4 w-4" />
+                                                        {t('notes.publicShare.open', 'Share note')}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
                                                             setNoteToDelete(
                                                                 previewNote
                                                             );
@@ -1347,6 +1372,22 @@ const Notes: React.FC = () => {
                         onCreateProject={handleCreateProject}
                     />
                 )}
+
+                <PublicShareModal
+                    isOpen={!!noteToShare}
+                    onClose={() => setNoteToShare(null)}
+                    noteUid={noteToShare?.uid ?? null}
+                    noteTitle={noteToShare?.title}
+                    onChange={(isPublic) => {
+                        const uid = noteToShare?.uid;
+                        if (!uid) return;
+                        setNotes(
+                            notes.map((n) =>
+                                n.uid === uid ? { ...n, is_public: isPublic } : n
+                            )
+                        );
+                    }}
+                />
 
                 {isConfirmDialogOpen && noteToDelete && (
                     <ConfirmDialog

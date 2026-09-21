@@ -1244,6 +1244,22 @@
     "save": "Save",
     "tree": {
       "folders": "Folders"
+    },
+    "publicShare": {
+      "open": "Share note",
+      "sharedTitle": "Shared with anyone who has the link",
+      "title": "Share \"{{title}}\"",
+      "generalAccess": "General access",
+      "restricted": "Restricted",
+      "anyone": "Anyone with the link",
+      "restrictedHint": "Only you and the people you shared it with can open this note.",
+      "anyoneHint": "Anyone on the internet with the link can read this note, without signing in. They cannot edit it. Turn this off and the link stops working right away.",
+      "link": "Public link",
+      "copyLink": "Copy link",
+      "copied": "Copied",
+      "copyFailed": "Could not copy automatically. Select the link and copy it.",
+      "ownerOnly": "Only the owner of a note can share it publicly.",
+      "failed": "Something went wrong. Try again."
     }
   },
   "tags": {
@@ -2071,5 +2087,17 @@
     "stayHint": "You will stay signed in on this device for 30 days.",
     "invalid": "This sign-in link does not work any more.",
     "invalidHint": "It may have been used already or expired. Ask the person who sent it for a new one."
+  },
+  "publicNote": {
+    "toggleTheme": "Toggle dark mode",
+    "openApp": "Open tududi",
+    "updated": "Last updated {{date}}",
+    "unavailableTitle": "This note is not available",
+    "unavailableBody": "The link may be wrong, or the owner stopped sharing this note. Ask them for a new link.",
+    "failedTitle": "Could not load this note",
+    "failedBody": "Something went wrong on our side. Try again in a moment.",
+    "ctaTitle": "Do you want to share your notes?",
+    "ctaBody": "Write notes, keep them organized with your tasks and projects, and share any of them with a link.",
+    "ctaButton": "Sign up now"
   }
 }

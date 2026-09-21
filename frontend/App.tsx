@@ -68,6 +68,9 @@ import {
     clearSharedText,
     hasPendingSharedText,
 } from './utils/shareTargetService';
+const PublicNotePage = lazy(
+    () => import('./components/PublicNote/PublicNotePage')
+);
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 // Declared at module scope: the users page switches tabs through the query
@@ -326,6 +329,18 @@ const App: React.FC = () => {
                 {/* Reachable signed in or out: a browser that already has a
                     session can still open a member's link. */}
                 <Route path="/sign-in-link" element={<SignInLink />} />
+                {/* A shared note: readable by anyone with the link, signed in
+                    or not, and outside the app layout (no sidebar). */}
+                <Route
+                    path="/public/notes/:token"
+                    element={
+                        <PublicNotePage
+                            isSignedIn={!!currentUser}
+                            isDarkMode={isDarkMode}
+                            toggleDarkMode={toggleDarkMode}
+                        />
+                    }
+                />
                 {currentUser ? (
                     <>
                         <Route
