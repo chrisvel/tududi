@@ -87,12 +87,59 @@ function validateExpiresAt(expires_at) {
     return parsedDate;
 }
 
+const SIDEBAR_ORDER_MAX_ITEMS = 50;
+const SIDEBAR_ORDER_MAX_ID_LENGTH = 64;
+const SIDEBAR_WIDTH_MIN_PERCENT = 90;
+const SIDEBAR_WIDTH_MAX_PERCENT = 110;
+
 /**
  * Validate sidebar settings.
  */
 function validateSidebarSettings(body) {
-    const { pinnedViewsOrder, visibleSections } = body;
+    const {
+        pinnedViewsOrder,
+        visibleSections,
+        widthPercent,
+        linkOrder,
+        sectionOrder,
+    } = body;
     const result = {};
+
+    for (const [name, value] of [
+        ['linkOrder', linkOrder],
+        ['sectionOrder', sectionOrder],
+    ]) {
+        if (value === undefined) continue;
+        if (
+            !Array.isArray(value) ||
+            value.length > SIDEBAR_ORDER_MAX_ITEMS ||
+            value.some(
+                (id) =>
+                    typeof id !== 'string' ||
+                    id.length === 0 ||
+                    id.length > SIDEBAR_ORDER_MAX_ID_LENGTH
+            )
+        ) {
+            throw new ValidationError(
+                `${name} must be an array of at most ${SIDEBAR_ORDER_MAX_ITEMS} non-empty strings`
+            );
+        }
+        result[name] = value;
+    }
+
+    if (widthPercent !== undefined) {
+        if (
+            typeof widthPercent !== 'number' ||
+            !Number.isFinite(widthPercent) ||
+            widthPercent < SIDEBAR_WIDTH_MIN_PERCENT ||
+            widthPercent > SIDEBAR_WIDTH_MAX_PERCENT
+        ) {
+            throw new ValidationError(
+                `widthPercent must be a number between ${SIDEBAR_WIDTH_MIN_PERCENT} and ${SIDEBAR_WIDTH_MAX_PERCENT}`
+            );
+        }
+        result.widthPercent = widthPercent;
+    }
 
     if (pinnedViewsOrder !== undefined) {
         if (!Array.isArray(pinnedViewsOrder)) {

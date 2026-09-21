@@ -9,6 +9,15 @@ import { InboxItem } from '../entities/InboxItem';
 import { Goal } from '../entities/Goal';
 import { Person } from '../entities/Person';
 import type { SidebarVisibleSections } from '../components/Profile/types';
+import {
+    DEFAULT_LINK_ORDER,
+    DEFAULT_SECTION_ORDER,
+    resolveOrder,
+} from '../utils/sidebarLayout';
+import {
+    SIDEBAR_DEFAULT_PERCENT,
+    clampSidebarPercent,
+} from '../utils/sidebarWidth';
 
 interface NotesStore {
     notes: Note[];
@@ -132,6 +141,14 @@ interface UserSettingsStore {
     setShowTaskContextMenu: (enabled: boolean) => void;
     sidebarVisibleSections: SidebarVisibleSections;
     setSidebarVisibleSections: (sections: SidebarVisibleSections) => void;
+    sidebarLinkOrder: string[];
+    sidebarSectionOrder: string[];
+    setSidebarOrder: (order: {
+        linkOrder?: unknown;
+        sectionOrder?: unknown;
+    }) => void;
+    sidebarWidthPercent: number;
+    setSidebarWidthPercent: (percent: number | undefined) => void;
 }
 
 interface GoalsStore {
@@ -1078,6 +1095,30 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     sidebarVisibleSections: sections,
+                },
+            })),
+        sidebarLinkOrder: [...DEFAULT_LINK_ORDER],
+        sidebarSectionOrder: [...DEFAULT_SECTION_ORDER],
+        setSidebarOrder: ({ linkOrder, sectionOrder }) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    sidebarLinkOrder: resolveOrder(
+                        linkOrder,
+                        DEFAULT_LINK_ORDER
+                    ),
+                    sidebarSectionOrder: resolveOrder(
+                        sectionOrder,
+                        DEFAULT_SECTION_ORDER
+                    ),
+                },
+            })),
+        sidebarWidthPercent: SIDEBAR_DEFAULT_PERCENT,
+        setSidebarWidthPercent: (percent) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    sidebarWidthPercent: clampSidebarPercent(percent),
                 },
             })),
     },

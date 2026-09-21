@@ -185,6 +185,13 @@ select:focus {
   overflow: hidden !important;
 }
 
+html.sidebar-resizing,
+html.sidebar-resizing * {
+  transition: none !important;
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
 @layer utilities {
   .line-clamp-1,
   .line-clamp-2,

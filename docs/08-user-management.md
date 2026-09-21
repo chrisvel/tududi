@@ -418,9 +418,14 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     - Order is stored in `sidebar_settings.pinnedViewsOrder` array
 
     **Sidebar sections and the "All entities" launcher:**
-    - Profile > Sidebar toggles each sidebar section (Favorites, Projects, Areas, Goals, Notes, Tags, People, Habits, Views, Boards, Insights) plus the Calendar, Upcoming, Assigned to me, Everyone and Templates links, and the Access link for admins
+    - Profile > Sidebar shows a preview of the sidebar with a switch on every item: the top links (Inbox, Today, Upcoming, Calendar, All Tasks, Assigned to me, Everyone), the sections (Favorites, Projects, Areas, Goals, Notes, Tags, People, Habits, Views, Boards, Insights) and the Templates link, plus the Access link for admins
+    - The links and the sections can each be reordered by dragging their handle (or with the keyboard: focus the handle, press Space, use the arrow keys, press Space again). Templates and Access stay at the bottom and cannot be moved
+    - Switches and the order are applied when **Save Changes** is clicked, and take effect in the real sidebar straight away
+    - The order is stored in `sidebar_settings.linkOrder` and `sidebar_settings.sectionOrder` (arrays of item ids). Ids the saved order does not know about are shown after the ones it does, so a newly added item never disappears
     - Visibility is stored in `sidebar_settings.visibleSections`; a missing key means the section is shown
     - The grid button in the sidebar footer (right of **+**) opens a launcher with every page as an icon tile, including sections hidden from the sidebar
+    - The sidebar can be dragged wider or narrower by its right edge, from 90% to 110% of the default width (double-click the edge to reset; the arrow keys, Home and End also work when it is focused)
+    - The width is saved to the profile when the drag ends, as `sidebar_settings.widthPercent` (a number from 90 to 110, default 100)
     - The launcher leaves out pages whose feature is turned off (Calendar, Habits, Eisenhower, Kanban, Templates), shows Everyone only when the account has collaborators, and shows Access only to admins
 
 ### Task Summary Settings

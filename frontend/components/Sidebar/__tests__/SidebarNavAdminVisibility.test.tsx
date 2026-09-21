@@ -78,6 +78,76 @@ describe('SidebarNav calendar visibility', () => {
     });
 });
 
+describe('SidebarNav link order and visibility', () => {
+    const renderNav = () =>
+        render(
+            <SidebarNav
+                handleNavClick={jest.fn()}
+                location={location}
+                isDarkMode={false}
+                openTaskModal={jest.fn()}
+            />
+        );
+
+    const renderedLinks = () =>
+        screen
+            .getAllByTestId(/^sidebar-nav-/)
+            .map((el) => el.getAttribute('data-testid'));
+
+    afterEach(() => {
+        act(() => {
+            useStore.getState().userSettingsStore.setSidebarOrder({});
+        });
+    });
+
+    it('shows the links in the default order', () => {
+        setSettings({ calendarEnabled: true, hasCollaborators: true });
+
+        renderNav();
+
+        expect(renderedLinks()).toEqual([
+            'sidebar-nav-inbox',
+            'sidebar-nav-today',
+            'sidebar-nav-upcoming',
+            'sidebar-nav-calendar',
+            'sidebar-nav-tasks',
+            'sidebar-nav-tasks',
+            'sidebar-nav-everyone',
+        ]);
+    });
+
+    it('shows the links in the saved order', () => {
+        setSettings({ calendarEnabled: true, hasCollaborators: false });
+        act(() => {
+            useStore.getState().userSettingsStore.setSidebarOrder({
+                linkOrder: ['allTasks', 'today', 'inbox'],
+            });
+        });
+
+        renderNav();
+
+        expect(renderedLinks().slice(0, 3)).toEqual([
+            'sidebar-nav-tasks',
+            'sidebar-nav-today',
+            'sidebar-nav-inbox',
+        ]);
+    });
+
+    it.each([
+        ['inbox', 'Inbox'],
+        ['today', 'Today'],
+        ['allTasks', 'All Tasks'],
+        ['upcomingTasks', 'Upcoming'],
+        ['assignedToMe', 'Assigned to me'],
+    ])('hides %s when it is turned off', (key, label) => {
+        setSettings({ calendarEnabled: true }, { [key]: false });
+
+        renderNav();
+
+        expect(screen.queryByText(label)).toBeNull();
+    });
+});
+
 describe('SidebarAdmin templates and access visibility', () => {
     const renderAdmin = (isAdmin: boolean) =>
         render(

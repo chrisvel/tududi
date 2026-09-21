@@ -51,6 +51,11 @@ import OIDCTab from './tabs/OIDCTab';
 import ApiKeysTab from './tabs/ApiKeysTab';
 import FeaturesTab from './tabs/FeaturesTab';
 import SidebarTab from './tabs/SidebarTab';
+import {
+    DEFAULT_LINK_ORDER,
+    DEFAULT_SECTION_ORDER,
+    resolveOrder,
+} from '../../utils/sidebarLayout';
 import TelegramTab from './tabs/TelegramTab';
 import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
@@ -1126,6 +1131,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         body: JSON.stringify({
                             visibleSections:
                                 formData.sidebar_settings.visibleSections,
+                            ...(formData.sidebar_settings.linkOrder
+                                ? {
+                                      linkOrder:
+                                          formData.sidebar_settings.linkOrder,
+                                  }
+                                : {}),
+                            ...(formData.sidebar_settings.sectionOrder
+                                ? {
+                                      sectionOrder:
+                                          formData.sidebar_settings
+                                              .sectionOrder,
+                                  }
+                                : {}),
                         }),
                     }
                 );
@@ -1133,6 +1151,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     const sidebarData = await sidebarResponse.json();
                     updatedProfile.sidebar_settings =
                         sidebarData.sidebar_settings;
+                    useStore.getState().userSettingsStore.setSidebarOrder({
+                        linkOrder: sidebarData.sidebar_settings?.linkOrder,
+                        sectionOrder:
+                            sidebarData.sidebar_settings?.sectionOrder,
+                    });
                 }
             }
 
@@ -1732,6 +1755,25 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     visibleSections={
                                         formData.sidebar_settings
                                             ?.visibleSections || {}
+                                    }
+                                    linkOrder={resolveOrder(
+                                        formData.sidebar_settings?.linkOrder,
+                                        DEFAULT_LINK_ORDER
+                                    )}
+                                    sectionOrder={resolveOrder(
+                                        formData.sidebar_settings?.sectionOrder,
+                                        DEFAULT_SECTION_ORDER
+                                    )}
+                                    onReorder={(group, order) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            sidebar_settings: {
+                                                ...prev.sidebar_settings,
+                                                [group === 'links'
+                                                    ? 'linkOrder'
+                                                    : 'sectionOrder']: order,
+                                            },
+                                        }))
                                     }
                                     onToggleSection={(key) =>
                                         setFormData((prev) => ({

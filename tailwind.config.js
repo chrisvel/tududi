@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       spacing: {
-        sidebar: '22rem',
+        sidebar: 'var(--sidebar-width, 22rem)',
       },
       keyframes: {
         'scale-in': {
