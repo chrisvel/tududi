@@ -1661,11 +1661,11 @@
     },
     "emailOptional": "optional",
     "noEmail": "No email",
-    "noEmailHint": "Without an email this member cannot sign in yet, but can still be in groups and be assigned tasks. You can add one later.",
-    "noEmailHintEdit": "This member has no email, so cannot sign in yet. Add one to invite them.",
+    "noEmailHint": "Without an email this member has no password, but can still be in groups and be assigned tasks. You can give them a sign-in link or add an email later.",
+    "noEmailHintEdit": "This member has no email. Add one to invite them, or give them a sign-in link.",
     "nameRequiredWithoutEmail": "Enter a name when there is no email",
     "status": {
-      "noSignIn": "Can't sign in yet",
+      "noSignIn": "No email: can sign in with a link",
       "invited": "Invitation pending"
     },
     "turnContactIntoAccount": "Turn one of your contacts into this account (optional)",
@@ -2028,7 +2028,7 @@
     "email": "Email",
     "optional": "optional",
     "emailHint": "Leave the password blank to send an invitation by email.",
-    "noEmailHint": "Without an email this member cannot sign in yet, but can still be in groups and be assigned tasks. You can add one later.",
+    "noEmailHint": "Without an email this member has no password, but can still be in groups and be assigned tasks. You can give them a sign-in link or add an email later.",
     "password": "Password",
     "generate": "Generate",
     "role": "Role",
@@ -2036,5 +2036,28 @@
     "giveAccount": "Give account",
     "nameRequiredWithoutEmail": "Enter a name when there is no email",
     "failedToAdd": "Failed to add member"
+  },
+  "signInLink": {
+    "action": "Sign-in link",
+    "title": "Sign-in link for {{name}}",
+    "intro": "{{name}} has no email, so this link is how they sign in. Send it to them yourself. It works once, for 24 hours, and keeps them signed in for 30 days.",
+    "create": "Create link",
+    "createNew": "Create a new link",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "expires": "Valid until {{date}}. Shown only now: create a new link if you lose it.",
+    "revoke": "Take access back",
+    "revoked": "Access taken back. {{name}} is signed out everywhere and the link no longer works.",
+    "failedToCreate": "Failed to create the link",
+    "failedToRevoke": "Failed to take access back",
+    "failedToCopy": "Could not copy the link, select it and copy it by hand",
+    "pageTitle": "Sign in",
+    "signInAs": "Sign in as {{name}}?",
+    "signInAsYou": "Sign in?",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "stayHint": "You will stay signed in on this device for 30 days.",
+    "invalid": "This sign-in link does not work any more.",
+    "invalidHint": "It may have been used already or expired. Ask the person who sent it for a new one."
   }
 }

@@ -66,6 +66,7 @@ const Action = require('./action')(sequelize);
 const Permission = require('./permission')(sequelize);
 const UserGroup = require('./userGroup')(sequelize);
 const UserGroupMember = require('./userGroupMember')(sequelize);
+const MemberSignInLink = require('./memberSignInLink')(sequelize);
 const GroupShare = require('./groupShare')(sequelize);
 const GroupPermission = require('./groupPermission')(sequelize);
 const View = require('./view')(sequelize);
@@ -219,6 +220,7 @@ UserGroup.hasMany(UserGroupMember, {
 });
 UserGroupMember.belongsTo(UserGroup, { foreignKey: 'group_id', as: 'Group' });
 UserGroupMember.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+MemberSignInLink.belongsTo(User, { foreignKey: 'user_id', as: 'Member' });
 UserGroup.hasMany(GroupShare, {
     foreignKey: 'group_id',
     as: 'Shares',
@@ -501,6 +503,7 @@ module.exports = {
     Permission,
     UserGroup,
     UserGroupMember,
+    MemberSignInLink,
     GroupShare,
     GroupPermission,
     View,

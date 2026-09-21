@@ -16,6 +16,7 @@ export interface Person {
     kind?: 'member' | 'contact';
     can_edit?: boolean;
     account_status?: 'active' | 'invited' | 'no_sign_in';
+    can_sign_in_link?: boolean;
     created_at?: string;
     updated_at?: string;
 }

@@ -15,4 +15,17 @@ router.post(
     membersController.create
 );
 
+// A link that signs in a member who has no email. Whoever created the account,
+// or an admin, can make one and take it back.
+router.post(
+    '/members/:id/sign-in-link',
+    createResourceLimiter,
+    membersController.createSignInLink
+);
+router.delete(
+    '/members/:id/sign-in-link',
+    createResourceLimiter,
+    membersController.revokeSignInLink
+);
+
 module.exports = router;

@@ -50,6 +50,7 @@ const CLEANUP_TABLES = [
     'billing_events',
     'billing_accounts',
     'notifications',
+    'member_sign_in_links',
     'group_permissions',
     'group_shares',
     'user_group_members',

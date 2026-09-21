@@ -42,6 +42,15 @@ router.post(
     authController.forgotPassword
 );
 router.post('/reset-password', authLimiter, authController.resetPassword);
+// Sign-in links for members without an email. The token travels in the body,
+// not the URL, so it does not end up in access logs. Opening the link only
+// shows a page: signing in is a POST, so link previews cannot use it up.
+router.post('/sign-in-link/peek', authLimiter, authController.peekSignInLink);
+router.post(
+    '/sign-in-link/redeem',
+    authLimiter,
+    authController.redeemSignInLink
+);
 router.get('/logout', authController.logout);
 
 module.exports = router;

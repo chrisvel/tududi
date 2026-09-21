@@ -17,6 +17,7 @@ const {
     Permission,
     UserGroup,
     UserGroupMember,
+    MemberSignInLink,
     GroupShare,
     GroupPermission,
     View,
@@ -223,6 +224,12 @@ async function eraseUserAccount(userId) {
         await UserGroupMember.destroy({
             where: {
                 [Op.or]: [{ user_id: userId }, { added_by_user_id: userId }],
+            },
+            ...tx,
+        });
+        await MemberSignInLink.destroy({
+            where: {
+                [Op.or]: [{ user_id: userId }, { created_by_user_id: userId }],
             },
             ...tx,
         });

@@ -104,6 +104,11 @@ const inviteTokenExpiryHours = process.env.INVITE_TOKEN_EXPIRY_HOURS
     ? parseInt(process.env.INVITE_TOKEN_EXPIRY_HOURS, 10)
     : 168;
 
+// How long a sign-in link for a member without an email stays valid.
+const memberSignInLinkExpiryHours = process.env.MEMBER_SIGN_IN_LINK_EXPIRY_HOURS
+    ? parseInt(process.env.MEMBER_SIGN_IN_LINK_EXPIRY_HOURS, 10)
+    : 24;
+
 const config = {
     allowedOrigins: process.env.TUDUDI_ALLOWED_ORIGINS
         ? process.env.TUDUDI_ALLOWED_ORIGINS.split(',').map((origin) =>
@@ -261,6 +266,8 @@ const config = {
     passwordResetConfig,
 
     inviteTokenExpiryHours,
+
+    memberSignInLinkExpiryHours,
 
     uploadPath:
         process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),

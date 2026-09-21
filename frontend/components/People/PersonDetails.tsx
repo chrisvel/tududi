@@ -7,12 +7,14 @@ import {
     EnvelopeIcon,
     PhoneIcon,
     UserIcon,
+    LinkIcon,
 } from '@heroicons/react/24/outline';
 import { Person } from '../../entities/Person';
 import { Task } from '../../entities/Task';
 import { fetchPersonByUid, updatePerson, deletePerson } from '../../utils/peopleService';
 import { useToast } from '../Shared/ToastContext';
 import PersonModal from './PersonModal';
+import SignInLinkModal from './SignInLinkModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 
 const RELATIONSHIP_LABELS: Record<string, string> = {
@@ -32,6 +34,7 @@ const PersonDetails: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const [signInLinkOpen, setSignInLinkOpen] = useState(false);
 
     const load = async () => {
         if (!uid) return;
@@ -148,8 +151,23 @@ const PersonDetails: React.FC = () => {
                                 )}
                             </div>
                         </div>
-                        {person.can_edit !== false && (
+                        {(person.can_edit !== false || person.can_sign_in_link) && (
                         <div className="flex items-center gap-1 flex-shrink-0">
+                            {person.can_sign_in_link && (
+                            <button
+                                onClick={() => setSignInLinkOpen(true)}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    hasColor
+                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                                title="Sign-in link"
+                                data-testid="person-sign-in-link"
+                            >
+                                <LinkIcon className="h-5 w-5" />
+                            </button>
+                            )}
+                            {person.can_edit !== false && (
                             <button
                                 onClick={() => setModalOpen(true)}
                                 className={`p-2 rounded-lg transition-colors ${
@@ -161,7 +179,8 @@ const PersonDetails: React.FC = () => {
                             >
                                 <PencilSquareIcon className="h-5 w-5" />
                             </button>
-                            {person.kind !== 'member' && (
+                            )}
+                            {person.can_edit !== false && person.kind !== 'member' && (
                             <>
                             <button
                                 onClick={handleArchive}
@@ -264,6 +283,14 @@ const PersonDetails: React.FC = () => {
                     person={person}
                     onSave={handleSave}
                     onClose={() => setModalOpen(false)}
+                />
+            )}
+
+            {signInLinkOpen && person.linked_user_id != null && (
+                <SignInLinkModal
+                    memberId={person.linked_user_id}
+                    memberName={person.name}
+                    onClose={() => setSignInLinkOpen(false)}
                 />
             )}
 

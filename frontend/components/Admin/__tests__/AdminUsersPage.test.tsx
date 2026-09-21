@@ -697,7 +697,7 @@ describe('Admin users and groups page', () => {
             await openPlainForm();
 
             expect(screen.getByTestId('no-email-hint')).toHaveTextContent(
-                'cannot sign in yet'
+                'sign-in link'
             );
         });
 
@@ -831,12 +831,81 @@ describe('Admin users and groups page', () => {
 
             expect(await screen.findByText('No email')).toBeVisible();
             expect(screen.getByTestId('user-status-5')).toHaveTextContent(
-                "Can't sign in yet"
+                'No email: can sign in with a link'
             );
             expect(screen.getByTestId('user-status-7')).toHaveTextContent(
                 'Invitation pending'
             );
             expect(screen.queryByTestId('user-status-6')).toBeNull();
+        });
+
+        it('offers a sign-in link only for a member without an email who is not an admin', async () => {
+            mockAdminApi([
+                {
+                    id: 5,
+                    email: null,
+                    name: 'Emma',
+                    created_at: new Date().toISOString(),
+                    role: 'user',
+                    account_status: 'no_sign_in',
+                },
+                {
+                    id: 6,
+                    email: 'wife@example.com',
+                    created_at: new Date().toISOString(),
+                    role: 'user',
+                    account_status: 'active',
+                },
+                {
+                    id: 8,
+                    email: null,
+                    name: 'Boss',
+                    created_at: new Date().toISOString(),
+                    role: 'admin',
+                    account_status: 'no_sign_in',
+                },
+            ]);
+            renderPage();
+
+            expect(await screen.findByTestId('sign-in-link-5')).toBeVisible();
+            expect(screen.queryByTestId('sign-in-link-6')).toBeNull();
+            expect(screen.queryByTestId('sign-in-link-8')).toBeNull();
+        });
+
+        it('opens the sign-in link dialog for that member', async () => {
+            mockAdminApi([
+                {
+                    id: 5,
+                    email: null,
+                    name: 'Emma',
+                    created_at: new Date().toISOString(),
+                    role: 'user',
+                    account_status: 'no_sign_in',
+                },
+            ]);
+            renderPage();
+
+            fireEvent.click(await screen.findByTestId('sign-in-link-5'));
+
+            expect(await screen.findByTestId('sign-in-link-modal')).toBeVisible();
+            (fetchWithCsrf as jest.Mock).mockResolvedValue(
+                jsonResponse(
+                    {
+                        url: 'http://localhost:8080/sign-in-link?token=abc',
+            path: '/sign-in-link?token=abc',
+                        expires_at: new Date().toISOString(),
+                    },
+                    201
+                )
+            );
+
+            fireEvent.click(screen.getByTestId('sign-in-link-create'));
+
+            expect(await screen.findByTestId('sign-in-link-url')).toBeVisible();
+            expect(fetchWithCsrf).toHaveBeenCalledWith(
+                expect.stringContaining('members/5/sign-in-link'),
+                expect.objectContaining({ method: 'POST' })
+            );
         });
 
         it('turns one of your contacts into the new account', async () => {
