@@ -6,6 +6,7 @@ const { generateToken } = require('../../middleware/csrf');
 const { isPasswordAuthEnabled } = require('../../config/authConfig');
 const { getConfig } = require('../../config/config');
 const auditService = require('../oidc/auditService');
+const signInLinkService = require('../members/signInLinkService');
 const { isCloudClosed } = require('./registrationService');
 
 const authController = {
@@ -108,6 +109,42 @@ const authController = {
         } catch (error) {
             logError('Error fetching current user:', error);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    async peekSignInLink(req, res, next) {
+        try {
+            const result = await signInLinkService.peek(req.body?.token);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async redeemSignInLink(req, res, next) {
+        try {
+            const { member, issuedByUserId } = await signInLinkService.consume(
+                req.body?.token
+            );
+
+            // A fresh session, so whoever was signed in on this browser is
+            // signed out and no earlier session id carries over.
+            await new Promise((resolve, reject) =>
+                req.session.regenerate((err) => (err ? reject(err) : resolve()))
+            );
+            req.session.userId = member.id;
+            await new Promise((resolve, reject) =>
+                req.session.save((err) => (err ? reject(err) : resolve()))
+            );
+
+            await auditService.logSignInLinkUsed(
+                member.id,
+                issuedByUserId,
+                req
+            );
+            res.json(await authService.buildLoginResult(member));
+        } catch (error) {
+            next(error);
         }
     },
 

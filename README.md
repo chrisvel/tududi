@@ -52,7 +52,7 @@ For the thinking behind tududi, read:
 - **Families & Small Teams**: One workspace for a household or a team, described in [People, Members and Roles](docs/19-people-and-roles.md):
     - **Roles**: Admin, user and guest, each with a list of what it can do
     - **Groups**: Share a project, area or goal with several people at once
-    - **Members without an email**: Add a child or another household member who has no email, put them in a group and assign them tasks
+    - **Members without an email**: Add a child or another household member who has no email, put them in a group, assign them tasks and give them a sign-in link so they can sign in
     - **One People list**: Members and contacts in one list. Add members yourself with the invite permission, or turn a contact into a member without losing the tasks assigned to them
     - **Assign to anyone**: Give a task to a member or to a contact such as a plumber, and see everyone's day on one Everyone board
 - **Quick Notes**: Create, update, delete, or assign text notes to projects.

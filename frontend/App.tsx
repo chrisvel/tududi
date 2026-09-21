@@ -19,6 +19,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
+import SignInLink from './components/Auth/SignInLink';
 import OIDCCallback from './components/Auth/OIDCCallback';
 import NotFound from './components/Shared/NotFound';
 import ProjectDetails from './components/Project/ProjectDetails';
@@ -324,6 +325,9 @@ const App: React.FC = () => {
     return (
         <Suspense fallback={<LoadingComponent />}>
             <Routes>
+                {/* Reachable signed in or out: a browser that already has a
+                    session can still open a member's link. */}
+                <Route path="/sign-in-link" element={<SignInLink />} />
                 {currentUser ? (
                     <>
                         <Route

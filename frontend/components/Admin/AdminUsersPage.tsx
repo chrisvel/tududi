@@ -9,6 +9,7 @@ import {
     EyeIcon,
     EyeSlashIcon,
     KeyIcon,
+    LinkIcon,
     MinusIcon,
     PencilIcon,
     TrashIcon,
@@ -22,6 +23,7 @@ import { Person } from '../../entities/Person';
 import { generatePassword } from '../../utils/passwordPolicy';
 import AdminGroupsPanel from './AdminGroupsPanel';
 import AdminRolesPanel from './AdminRolesPanel';
+import SignInLinkModal from '../People/SignInLinkModal';
 import { capabilityHint, capabilityName, roleName } from './roleLabels';
 import { fetchRoles } from '../../utils/rolesService';
 import {
@@ -449,11 +451,11 @@ const AddUserModal: React.FC<{
                                 {editingUser
                                     ? t(
                                           'admin.noEmailHintEdit',
-                                          'This member has no email, so cannot sign in yet. Add one to invite them.'
+                                          'This member has no email. Add one to invite them, or give them a sign-in link.'
                                       )
                                     : t(
                                           'admin.noEmailHint',
-                                          'Without an email this member cannot sign in yet, but can still be in groups and be assigned tasks. You can add one later.'
+                                          'Without an email this member has no password, but can still be in groups and be assigned tasks. You can give them a sign-in link or add an email later.'
                                       )}
                             </p>
                         )}
@@ -784,6 +786,9 @@ const AdminUsersPanel: React.FC<{
     const [loading, setLoading] = useState<boolean>(true);
     const [addOpen, setAddOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<AdminUserItem | null>(null);
+    const [signInLinkUser, setSignInLinkUser] = useState<AdminUserItem | null>(
+        null
+    );
     const [userToDelete, setUserToDelete] = useState<AdminUserItem | null>(
         null
     );
@@ -930,7 +935,7 @@ const AdminUsersPanel: React.FC<{
                                                 >
                                                     {t(
                                                         'admin.status.noSignIn',
-                                                        "Can't sign in yet"
+                                                        'No email: can sign in with a link'
                                                     )}
                                                 </div>
                                             )}
@@ -973,6 +978,26 @@ const AdminUsersPanel: React.FC<{
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div className="flex items-center justify-end space-x-2">
+                                                {u.account_status ===
+                                                    'no_sign_in' &&
+                                                    !u.email &&
+                                                    u.role !== 'admin' && (
+                                                        <button
+                                                            onClick={() =>
+                                                                setSignInLinkUser(
+                                                                    u
+                                                                )
+                                                            }
+                                                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                                                            title={t(
+                                                                'signInLink.action',
+                                                                'Sign-in link'
+                                                            )}
+                                                            data-testid={`sign-in-link-${u.id}`}
+                                                        >
+                                                            <LinkIcon className="h-5 w-5" />
+                                                        </button>
+                                                    )}
                                                 <button
                                                     onClick={() => {
                                                         setEditingUser(u);
@@ -1070,6 +1095,14 @@ const AdminUsersPanel: React.FC<{
                             editingUser={editingUser}
                             roleDefaults={roleDefaults}
                         />
+
+                        {signInLinkUser && (
+                            <SignInLinkModal
+                                memberId={signInLinkUser.id}
+                                memberName={accountLabel(signInLinkUser)}
+                                onClose={() => setSignInLinkUser(null)}
+                            />
+                        )}
 
                         {userToDelete && (
                             <ConfirmDialog

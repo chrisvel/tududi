@@ -302,6 +302,11 @@ class AuthService {
             });
         });
 
+        return this.buildLoginResult(user);
+    }
+
+    // What the app receives after signing in, however the sign-in happened.
+    async buildLoginResult(user) {
         const admin = await isAdmin(user.uid);
         return {
             user: {

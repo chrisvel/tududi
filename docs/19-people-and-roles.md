@@ -59,13 +59,23 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 ### Members without an email
 
-11. **Anyone with the invite permission can add a member from the People page.** Add member asks for a name, an optional email, an optional password and a role. With an email the member is invited by email. With an email and a password they are signed up. With neither, they are added as a member who cannot sign in yet. An admin always has the permission, and can also add members in Admin > Access > Users.
+11. **Anyone with the invite permission can add a member from the People page.** Add member asks for a name, an optional email, an optional password and a role. With an email the member is invited by email. With an email and a password they are signed up. With neither, they are added as a member with no password, who signs in with a sign-in link (rules 14c to 14g). An admin always has the permission, and can also add members in Admin > Access > Users.
 
-12. **A member who cannot sign in yet is meant for someone with no email address**, such as a child or another household member. There is no password and nothing to sign in with, and no invitation or verification email is sent. The list shows "No email" and "Can't sign in yet".
+12. **A member who cannot sign in yet is meant for someone with no email address**, such as a child or another household member. There is no password, and no invitation or verification email is sent. The list shows "No email" and "No email: can sign in with a link".
 
 13. **Everything else works like any other member.** They get their own person, can be put in groups, can be given shares, and can be assigned tasks. Assigned tasks show on the Everyone board.
 
 14. **An email can be added later, but not removed.** Adding one is the first step to inviting them. Emails stay unique across accounts. Any number of accounts can have no email.
+
+14c. **A member without an email signs in with a sign-in link.** The person who created the account, or an admin, opens the member in People (or Admin > Access > Users) and chooses Sign-in link, then sends the link themselves (chat, message, in person). Opening it asks "Sign in as Emma?" and the button signs them in for 30 days. The link is only for accounts without an email and never for an admin account.
+
+14d. **A link works once and only for 24 hours.** Creating a new link replaces the old one, so an account has at most one live link. The link is shown once, right after it is created: only a hash is stored, so a lost link is replaced, not recovered. The 24 hours can be changed with `MEMBER_SIGN_IN_LINK_EXPIRY_HOURS`. The app shows the link on the address you are using it at (`FRONTEND_URL` is only used for the `url` field of the API), so a link made on your phone or another machine points there.
+
+14e. **Opening a link does not use it up.** The page only asks the question, and signing in is the button, so chat apps and link scanners that preview a link cannot spend it. Signing in starts a fresh session on that browser, which signs out anyone who was signed in there.
+
+14f. **Whoever made the account can make its links, within their own permissions.** A creator who is not an admin can only make a link for a member whose permissions are within their own, so raising a member's permissions later cannot hand the creator more rights than they have. Anyone else, including other members of the same group, is told the member does not exist.
+
+14g. **Taking access back signs the member out everywhere.** "Take access back" removes the live link and ends every session of that member. If the member is given an email or made an admin before using a link, the link stops working. Creating, using and revoking links is written to the sign-in audit log with who did it, and the link endpoints are rate limited.
 
 14b. **Without the admin role a member can only add users and guests, and cannot set permissions.** The invite permission cannot be used to hand out more than the person has. Creating members can send email, so it is rate limited per user.
 
@@ -110,12 +120,14 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 | `GET /api/everyone` | The Everyone board |
 | `GET /api/admin/roles` | The three roles, their default capabilities and how many accounts hold each (admin) |
 | `POST /api/admin/users`, `PUT /api/admin/users/:id` | Create or change an account, including `role`, `capabilities` and an optional email (admin) |
+| `POST /api/members/:id/sign-in-link`, `DELETE /api/members/:id/sign-in-link` | Create a sign-in link for a member without an email (`201`, `{ url, path, expires_at }`), or take access back (`204`). Creator or admin |
+| `POST /api/sign-in-link/peek`, `POST /api/sign-in-link/redeem` | Public. Peek says whose link a token is (first name only), redeem signs in and uses the link up. The token goes in the body |
 
 ---
 
 ## Limits today
 
-- A member without an email cannot sign in. There is no login link or PIN yet.
+- A member without an email signs in only with a link that someone makes for them. There is no PIN, and the link is not sent for you, since there is nowhere to send it.
 - Your People list only shows your workspace. An admin sees every account in Admin > Access, but not on the People page, unless they share something with it, are in a group with it, or created it.
 - Contacts and members are separate records. Turning a contact into a member merges them. Linking a contact to an existing account keeps both, and assignee lists show that person only once.
 - The Roles tab is read only. The set of roles and their defaults live in code, so no permission can be given to a user or guest yet. That means only an admin can add members for now, since the invite permission belongs to the admin role.
