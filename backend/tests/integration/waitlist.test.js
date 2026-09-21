@@ -1,3 +1,4 @@
+const dns = require('dns');
 const request = require('supertest');
 const app = require('../../app');
 const { Setting, WaitlistSubscriber } = require('../../models');
@@ -33,7 +34,7 @@ describe('Waitlist on the app host', () => {
         const res = await request(app)
             .post('/api/register')
             .send({
-                email: `shut_${Date.now()}@example.com`,
+                email: `shut_${Date.now()}@tududi-test.dev`,
                 password: 'password123',
             });
         expect(res.status).toBe(404);
@@ -56,7 +57,7 @@ describe('Waitlist on the app host', () => {
     });
 
     it('stores an address left on the register page', async () => {
-        const email = `app_${Date.now()}@example.com`;
+        const email = `app_${Date.now()}@tududi-test.dev`;
         const res = await request(app)
             .post('/api/waitlist')
             .send({ email, locale: 'de' });
@@ -70,7 +71,7 @@ describe('Waitlist on the app host', () => {
     });
 
     it('counts a second submission rather than refusing it', async () => {
-        const email = `again_${Date.now()}@example.com`;
+        const email = `again_${Date.now()}@tududi-test.dev`;
         await request(app).post('/api/waitlist').send({ email });
         const res = await request(app).post('/api/waitlist').send({ email });
         expect(res.status).toBe(200);
@@ -95,7 +96,7 @@ describe('Waitlist on the app host', () => {
 
     it('refuses a signup once Cloud is open', async () => {
         config.pricing.cloudOpen = true;
-        const email = `open_${Date.now()}@example.com`;
+        const email = `open_${Date.now()}@tududi-test.dev`;
         const res = await request(app).post('/api/waitlist').send({ email });
         expect(res.status).toBe(404);
         expect(await WaitlistSubscriber.count({ where: { email } })).toBe(0);
@@ -103,14 +104,14 @@ describe('Waitlist on the app host', () => {
 
     it('refuses a signup on a self-hosted instance', async () => {
         config.hosted.enabled = false;
-        const email = `selfhost_${Date.now()}@example.com`;
+        const email = `selfhost_${Date.now()}@tududi-test.dev`;
         const res = await request(app).post('/api/waitlist').send({ email });
         expect(res.status).toBe(404);
         expect(await WaitlistSubscriber.count({ where: { email } })).toBe(0);
     });
 
     it('normalizes the address it stores', async () => {
-        const email = `MiXeD_${Date.now()}@Example.COM`;
+        const email = `MiXeD_${Date.now()}@Tududi-Test.DEV`;
         await request(app)
             .post('/api/waitlist')
             .send({ email: `  ${email} ` });
@@ -119,5 +120,51 @@ describe('Waitlist on the app host', () => {
             where: { email: email.toLowerCase() },
         });
         expect(row).not.toBeNull();
+    });
+
+    it('stores nothing for a placeholder address', async () => {
+        const before = await WaitlistSubscriber.count();
+        const res = await request(app)
+            .post('/api/waitlist')
+            .send({ email: 'example@example.com' });
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ joined: true });
+        expect(await WaitlistSubscriber.count()).toBe(before);
+    });
+
+    describe('with the mail server check on', () => {
+        let mx;
+
+        beforeEach(() => {
+            config.waitlist.mxCheck = true;
+            mx = jest.spyOn(dns.promises.Resolver.prototype, 'resolveMx');
+        });
+
+        afterEach(() => {
+            config.waitlist.mxCheck = false;
+            jest.restoreAllMocks();
+        });
+
+        it('stores an address whose domain takes mail', async () => {
+            mx.mockResolvedValue([{ exchange: 'mx.tududi-test.dev' }]);
+            const email = `mx_${Date.now()}@tududi-test.dev`;
+            await request(app).post('/api/waitlist').send({ email });
+            expect(await WaitlistSubscriber.count({ where: { email } })).toBe(
+                1
+            );
+        });
+
+        it('says the same thing but stores nothing for a domain with no mail', async () => {
+            mx.mockResolvedValue([{ exchange: '' }]);
+            const email = `nomx_${Date.now()}@tududi-test.dev`;
+            const res = await request(app)
+                .post('/api/waitlist')
+                .send({ email });
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual({ joined: true });
+            expect(await WaitlistSubscriber.count({ where: { email } })).toBe(
+                0
+            );
+        });
     });
 });

@@ -280,7 +280,7 @@ describe('Landing page', () => {
         const { WaitlistSubscriber } = require('../../models');
 
         it('stores an address and answers the same way twice', async () => {
-            const email = `wait_${Date.now()}@example.com`;
+            const email = `wait_${Date.now()}@tududi-test.dev`;
             const first = await request(app)
                 .post('/waitlist')
                 .set('Host', 'tududi.com')
@@ -310,7 +310,7 @@ describe('Landing page', () => {
         });
 
         it('lower-cases the address and comes back in the visitor locale', async () => {
-            const email = `MiXeD_${Date.now()}@Example.COM`;
+            const email = `MiXeD_${Date.now()}@Tududi-Test.DEV`;
             const res = await request(app)
                 .post('/waitlist')
                 .set('Host', 'tududi.com')
@@ -351,12 +351,12 @@ describe('Landing page', () => {
                 .post('/waitlist')
                 .set('Host', 'app.tududi.com')
                 .type('form')
-                .send({ email: 'x@example.com' });
+                .send({ email: 'x@tududi-test.dev' });
             expect(res.status).not.toBe(303);
         });
 
         it('trips the honeypot without showing it', async () => {
-            const email = `hp_${Date.now()}@example.com`;
+            const email = `hp_${Date.now()}@tududi-test.dev`;
             const res = await request(app)
                 .post('/waitlist')
                 .set('Host', 'tududi.com')
@@ -392,13 +392,13 @@ describe('Landing page', () => {
                         .set('Host', 'tududi.com')
                         .type('form')
                         .send({
-                            email: `rl_${Date.now()}_${i}@example.com`,
+                            email: `rl_${Date.now()}_${i}@tududi-test.dev`,
                             source: 'hero',
                         });
                     expect(res.status).toBe(303);
                 }
 
-                const overflowEmail = `rl_over_${Date.now()}@example.com`;
+                const overflowEmail = `rl_over_${Date.now()}@tududi-test.dev`;
                 const res = await request(app)
                     .post('/waitlist')
                     .set('Host', 'tududi.com')
@@ -447,7 +447,7 @@ describe('Landing page', () => {
         });
 
         it('stores an address from the pricing card', async () => {
-            const email = `pricing_${Date.now()}@example.com`;
+            const email = `pricing_${Date.now()}@tududi-test.dev`;
             const res = await request(app)
                 .post('/waitlist')
                 .set('Host', 'tududi.com')

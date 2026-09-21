@@ -1,7 +1,9 @@
 'use strict';
 
+const dns = require('dns');
 const { Op } = require('sequelize');
 const { logError } = require('./logService');
+const { getConfig } = require('../config/config');
 
 // People who asked to be told when Cloud opens. Three doors lead here: the
 // marketing page's forms, the pricing card while Cloud is shut, and the
@@ -19,8 +21,67 @@ const normalizeEmail = (value) =>
         .trim()
         .toLowerCase();
 
+// Domains reserved for documentation and testing (RFC 2606, RFC 6761), plus
+// .local (RFC 6762). Nobody real owns a mailbox on any of them, so a form
+// filled with example@example.com is a test or a bot, never a signup.
+const RESERVED_DOMAINS = ['example.com', 'example.net', 'example.org'];
+const RESERVED_TLDS = new Set([
+    'example',
+    'invalid',
+    'localhost',
+    'test',
+    'local',
+]);
+
+const domainOf = (email) => email.slice(email.lastIndexOf('@') + 1);
+
+const isReservedDomain = (domain) =>
+    RESERVED_TLDS.has(domain.split('.').pop()) ||
+    RESERVED_DOMAINS.some((d) => domain === d || domain.endsWith(`.${d}`));
+
 const isValidEmail = (email) =>
-    email.length <= MAX_EMAIL_LENGTH && EMAIL_SHAPE.test(email);
+    email.length <= MAX_EMAIL_LENGTH &&
+    EMAIL_SHAPE.test(email) &&
+    !isReservedDomain(domainOf(email));
+
+// Short timeout and a single try: the visitor is waiting on the redirect, and
+// a slow resolver is not worth a slow page.
+const resolver = new dns.promises.Resolver({ timeout: 2000, tries: 1 });
+
+// These mean the name is definitively not there (or has no such record). Any
+// other error is DNS itself misbehaving, which says nothing about the address.
+const NO_RECORD_CODES = new Set(['ENOTFOUND', 'ENODATA']);
+
+async function hasAddressRecord(domain) {
+    for (const lookup of ['resolve4', 'resolve6']) {
+        try {
+            const records = await resolver[lookup](domain);
+            if (records.length > 0) return true;
+        } catch (error) {
+            if (!NO_RECORD_CODES.has(error.code)) throw error;
+        }
+    }
+    return false;
+}
+
+// Whether mail to this domain could be delivered. A domain with no MX record
+// still takes mail at its A/AAAA address (RFC 5321), and a null MX ("0 .",
+// RFC 7505, which example.com publishes) says it takes none. Only a definite
+// "no" returns false: a timeout or a SERVFAIL fails open, because losing a
+// real signup to a flaky resolver is worse than keeping a dud row.
+async function acceptsMail(domain) {
+    try {
+        const records = await resolver.resolveMx(domain);
+        return records.some((r) => r.exchange && r.exchange !== '.');
+    } catch (error) {
+        if (!NO_RECORD_CODES.has(error.code)) return true;
+    }
+    try {
+        return await hasAddressRecord(domain);
+    } catch (error) {
+        return true;
+    }
+}
 
 // Never throws: a capture failure must not show a stranger a stack trace,
 // and it must not lose the page they were on either.
@@ -33,6 +94,12 @@ async function capture({
 }) {
     const address = normalizeEmail(email);
     if (!isValidEmail(address)) return { accepted: false, created: false };
+    if (
+        getConfig().waitlist.mxCheck &&
+        !(await acceptsMail(domainOf(address)))
+    ) {
+        return { accepted: false, created: false };
+    }
 
     try {
         const { WaitlistSubscriber } = require('../models');
@@ -150,5 +217,6 @@ module.exports = {
     remove,
     toCsv,
     isValidEmail,
+    acceptsMail,
     normalizeEmail,
 };
