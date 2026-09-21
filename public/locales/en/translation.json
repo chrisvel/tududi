@@ -1669,7 +1669,7 @@
       "invited": "Invitation pending"
     },
     "turnContactIntoAccount": "Turn one of your contacts into this account (optional)",
-    "noContact": "— none —",
+    "noContact": "(none)",
     "turnContactNote": "The contact keeps its history, so tasks assigned to it stay assigned. Your private notes on it are not carried over."
   },
   "billing": {
