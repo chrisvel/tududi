@@ -173,6 +173,15 @@ const config = {
         },
     },
 
+    // Whether a waitlist address must belong to a domain that can receive
+    // mail (an MX lookup, failing open when DNS itself is unreachable). On by
+    // default, off under test so the suite never touches the network.
+    waitlist: {
+        mxCheck: process.env.WAITLIST_MX_CHECK
+            ? process.env.WAITLIST_MX_CHECK === 'true'
+            : environment !== 'test',
+    },
+
     // Public demo sandbox: one shared account, seeded and wiped on a timer.
     // Off unless TUDUDI_DEMO_ENABLED is set, so a self-hosted instance never
     // grows a public login.
