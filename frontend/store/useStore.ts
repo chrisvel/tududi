@@ -8,6 +8,16 @@ import { Tag } from '../entities/Tag';
 import { InboxItem } from '../entities/InboxItem';
 import { Goal } from '../entities/Goal';
 import { Person } from '../entities/Person';
+import type { SidebarVisibleSections } from '../components/Profile/types';
+import {
+    DEFAULT_LINK_ORDER,
+    DEFAULT_SECTION_ORDER,
+    resolveOrder,
+} from '../utils/sidebarLayout';
+import {
+    SIDEBAR_DEFAULT_PERCENT,
+    clampSidebarPercent,
+} from '../utils/sidebarWidth';
 
 interface NotesStore {
     notes: Note[];
@@ -129,12 +139,16 @@ interface UserSettingsStore {
     setAiAssistantEnabled: (enabled: boolean) => void;
     showTaskContextMenu: boolean;
     setShowTaskContextMenu: (enabled: boolean) => void;
-    upcomingTasksVisible: boolean;
-    setUpcomingTasksVisible: (enabled: boolean) => void;
-    assignedToMeVisible: boolean;
-    setAssignedToMeVisible: (enabled: boolean) => void;
-    everyoneVisible: boolean;
-    setEveryoneVisible: (enabled: boolean) => void;
+    sidebarVisibleSections: SidebarVisibleSections;
+    setSidebarVisibleSections: (sections: SidebarVisibleSections) => void;
+    sidebarLinkOrder: string[];
+    sidebarSectionOrder: string[];
+    setSidebarOrder: (order: {
+        linkOrder?: unknown;
+        sectionOrder?: unknown;
+    }) => void;
+    sidebarWidthPercent: number;
+    setSidebarWidthPercent: (percent: number | undefined) => void;
 }
 
 interface GoalsStore {
@@ -1075,28 +1089,36 @@ export const useStore = create<StoreState>((set: any) => ({
                     showTaskContextMenu: enabled,
                 },
             })),
-        upcomingTasksVisible: true,
-        setUpcomingTasksVisible: (enabled) =>
+        sidebarVisibleSections: {},
+        setSidebarVisibleSections: (sections) =>
             set((state) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
-                    upcomingTasksVisible: enabled,
+                    sidebarVisibleSections: sections,
                 },
             })),
-        assignedToMeVisible: true,
-        setAssignedToMeVisible: (enabled) =>
+        sidebarLinkOrder: [...DEFAULT_LINK_ORDER],
+        sidebarSectionOrder: [...DEFAULT_SECTION_ORDER],
+        setSidebarOrder: ({ linkOrder, sectionOrder }) =>
             set((state) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
-                    assignedToMeVisible: enabled,
+                    sidebarLinkOrder: resolveOrder(
+                        linkOrder,
+                        DEFAULT_LINK_ORDER
+                    ),
+                    sidebarSectionOrder: resolveOrder(
+                        sectionOrder,
+                        DEFAULT_SECTION_ORDER
+                    ),
                 },
             })),
-        everyoneVisible: true,
-        setEveryoneVisible: (enabled) =>
+        sidebarWidthPercent: SIDEBAR_DEFAULT_PERCENT,
+        setSidebarWidthPercent: (percent) =>
             set((state) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
-                    everyoneVisible: enabled,
+                    sidebarWidthPercent: clampSidebarPercent(percent),
                 },
             })),
     },

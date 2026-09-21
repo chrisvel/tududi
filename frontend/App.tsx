@@ -156,21 +156,19 @@ const App: React.FC = () => {
                     );
                 useStore
                     .getState()
-                    .userSettingsStore.setUpcomingTasksVisible(
-                        data.user.sidebar_settings?.visibleSections
-                            ?.upcomingTasks !== false
+                    .userSettingsStore.setSidebarVisibleSections(
+                        data.user.sidebar_settings?.visibleSections ?? {}
                     );
                 useStore
                     .getState()
-                    .userSettingsStore.setAssignedToMeVisible(
-                        data.user.sidebar_settings?.visibleSections
-                            ?.assignedToMe !== false
-                    );
+                    .userSettingsStore.setSidebarOrder({
+                        linkOrder: data.user.sidebar_settings?.linkOrder,
+                        sectionOrder: data.user.sidebar_settings?.sectionOrder,
+                    });
                 useStore
                     .getState()
-                    .userSettingsStore.setEveryoneVisible(
-                        data.user.sidebar_settings?.visibleSections
-                            ?.everyone !== false
+                    .userSettingsStore.setSidebarWidthPercent(
+                        data.user.sidebar_settings?.widthPercent
                     );
             } else {
                 setCurrentUser(null);

@@ -37,14 +37,34 @@ export interface UiSettings {
 }
 
 export interface SidebarVisibleSections {
+    inbox?: boolean;
+    today?: boolean;
+    allTasks?: boolean;
     upcomingTasks?: boolean;
     assignedToMe?: boolean;
     everyone?: boolean;
+    favorites?: boolean;
+    projects?: boolean;
+    areas?: boolean;
+    goals?: boolean;
+    notes?: boolean;
+    tags?: boolean;
+    people?: boolean;
+    habits?: boolean;
+    views?: boolean;
+    boards?: boolean;
+    insights?: boolean;
+    calendar?: boolean;
+    templates?: boolean;
+    access?: boolean;
 }
 
 export interface SidebarSettings {
     pinnedViewsOrder?: string[];
     visibleSections?: SidebarVisibleSections;
+    widthPercent?: number;
+    linkOrder?: string[];
+    sectionOrder?: string[];
 }
 
 export interface NotificationPreferences {

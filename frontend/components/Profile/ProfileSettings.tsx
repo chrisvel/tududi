@@ -51,6 +51,11 @@ import OIDCTab from './tabs/OIDCTab';
 import ApiKeysTab from './tabs/ApiKeysTab';
 import FeaturesTab from './tabs/FeaturesTab';
 import SidebarTab from './tabs/SidebarTab';
+import {
+    DEFAULT_LINK_ORDER,
+    DEFAULT_SECTION_ORDER,
+    resolveOrder,
+} from '../../utils/sidebarLayout';
 import TelegramTab from './tabs/TelegramTab';
 import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
@@ -622,15 +627,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     sidebar_settings: {
                         ...(data.sidebar_settings || {}),
                         visibleSections: {
-                            upcomingTasks:
-                                data.sidebar_settings?.visibleSections
-                                    ?.upcomingTasks !== false,
-                            assignedToMe:
-                                data.sidebar_settings?.visibleSections
-                                    ?.assignedToMe !== false,
-                            everyone:
-                                data.sidebar_settings?.visibleSections
-                                    ?.everyone !== false,
+                            ...(data.sidebar_settings?.visibleSections || {}),
                         },
                     },
                 });
@@ -1134,6 +1131,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         body: JSON.stringify({
                             visibleSections:
                                 formData.sidebar_settings.visibleSections,
+                            ...(formData.sidebar_settings.linkOrder
+                                ? {
+                                      linkOrder:
+                                          formData.sidebar_settings.linkOrder,
+                                  }
+                                : {}),
+                            ...(formData.sidebar_settings.sectionOrder
+                                ? {
+                                      sectionOrder:
+                                          formData.sidebar_settings
+                                              .sectionOrder,
+                                  }
+                                : {}),
                         }),
                     }
                 );
@@ -1141,6 +1151,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     const sidebarData = await sidebarResponse.json();
                     updatedProfile.sidebar_settings =
                         sidebarData.sidebar_settings;
+                    useStore.getState().userSettingsStore.setSidebarOrder({
+                        linkOrder: sidebarData.sidebar_settings?.linkOrder,
+                        sectionOrder:
+                            sidebarData.sidebar_settings?.sectionOrder,
+                    });
                 }
             }
 
@@ -1351,39 +1366,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     );
             }
 
-            if (
-                updatedProfile.sidebar_settings?.visibleSections
-                    ?.upcomingTasks !== undefined
-            ) {
+            if (updatedProfile.sidebar_settings?.visibleSections) {
                 useStore
                     .getState()
-                    .userSettingsStore.setUpcomingTasksVisible(
+                    .userSettingsStore.setSidebarVisibleSections(
                         updatedProfile.sidebar_settings.visibleSections
-                            .upcomingTasks !== false
-                    );
-            }
-
-            if (
-                updatedProfile.sidebar_settings?.visibleSections
-                    ?.assignedToMe !== undefined
-            ) {
-                useStore
-                    .getState()
-                    .userSettingsStore.setAssignedToMeVisible(
-                        updatedProfile.sidebar_settings.visibleSections
-                            .assignedToMe !== false
-                    );
-            }
-
-            if (
-                updatedProfile.sidebar_settings?.visibleSections?.everyone !==
-                undefined
-            ) {
-                useStore
-                    .getState()
-                    .userSettingsStore.setEveryoneVisible(
-                        updatedProfile.sidebar_settings.visibleSections
-                            .everyone !== false
                     );
             }
 
@@ -1764,9 +1751,29 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                                 <SidebarTab
                                     isActive={activeTab === 'sidebar'}
+                                    isAdmin={currentUser?.is_admin === true}
                                     visibleSections={
                                         formData.sidebar_settings
                                             ?.visibleSections || {}
+                                    }
+                                    linkOrder={resolveOrder(
+                                        formData.sidebar_settings?.linkOrder,
+                                        DEFAULT_LINK_ORDER
+                                    )}
+                                    sectionOrder={resolveOrder(
+                                        formData.sidebar_settings?.sectionOrder,
+                                        DEFAULT_SECTION_ORDER
+                                    )}
+                                    onReorder={(group, order) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            sidebar_settings: {
+                                                ...prev.sidebar_settings,
+                                                [group === 'links'
+                                                    ? 'linkOrder'
+                                                    : 'sectionOrder']: order,
+                                            },
+                                        }))
                                     }
                                     onToggleSection={(key) =>
                                         setFormData((prev) => ({
