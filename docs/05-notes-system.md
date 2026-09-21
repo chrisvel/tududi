@@ -145,6 +145,16 @@ This document explains how the Notes system works in tududi from a user behavior
 - Italic: `_text_`
 - Code: `` `inline` `` or triple backticks for blocks
 - Checkboxes: `- [ ] unchecked` or `- [x] checked`
+- Diagrams: a fenced block with the language `mermaid` renders as a [Mermaid](https://mermaid.js.org) diagram
+
+**Mermaid diagrams:**
+- Supports every diagram type Mermaid supports (flowchart, sequence, class, state, ER, gantt, pie, and so on)
+- The diagram follows the light or dark theme and switches live when the theme is toggled
+- If the source is invalid, the block shows the error and the raw source instead of a diagram
+- Diagrams are rendered in Mermaid's `strict` security mode, so labels are sanitized and click handlers are disabled (important for publicly shared notes)
+- Card previews in the notes list show `[Diagram hidden in preview]` instead of the diagram
+- The Mermaid library is loaded on demand, only when a note with a diagram is opened
+- The same rendering applies wherever Markdown is rendered (task descriptions, focus mode, public notes)
 
 **Preview rendering:**
 - Content renders as formatted Markdown in preview mode
