@@ -159,4 +159,67 @@ describe('Sidebar section visibility', () => {
 
         expect(screen.queryByTestId('habits')).toBeNull();
     });
+
+    it('applies the saved sidebar width as a CSS variable', () => {
+        act(() => {
+            useStore.getState().userSettingsStore.setSidebarWidthPercent(95);
+        });
+
+        renderSidebar();
+
+        expect(
+            document.documentElement.style.getPropertyValue('--sidebar-width')
+        ).toBe('20.9rem');
+
+        act(() => {
+            useStore.getState().userSettingsStore.setSidebarWidthPercent(100);
+        });
+        expect(
+            document.documentElement.style.getPropertyValue('--sidebar-width')
+        ).toBe('22rem');
+    });
+
+    it('offers a resize handle while the sidebar is open', () => {
+        renderSidebar();
+
+        expect(screen.getByTestId('sidebar-resize-handle')).toBeInTheDocument();
+    });
+
+    it('renders the sections in the saved order', () => {
+        act(() => {
+            useStore.getState().userSettingsStore.setSidebarOrder({
+                sectionOrder: ['insights', 'notes'],
+            });
+        });
+
+        renderSidebar();
+
+        const rendered = screen
+            .getAllByTestId(new RegExp(`^(${sections.join('|')})$`))
+            .map((el) => el.getAttribute('data-testid'));
+        expect(rendered.slice(0, 2)).toEqual(['insights', 'notes']);
+        expect(rendered).toHaveLength(sections.length);
+
+        act(() => {
+            useStore.getState().userSettingsStore.setSidebarOrder({});
+        });
+    });
+
+    it('keeps a hidden section hidden after it is moved', () => {
+        act(() => {
+            useStore.getState().userSettingsStore.setSidebarOrder({
+                sectionOrder: ['projects', 'notes'],
+            });
+        });
+        setVisibleSections({ projects: false });
+
+        renderSidebar();
+
+        expect(screen.queryByTestId('projects')).toBeNull();
+        expect(screen.getByTestId('notes')).toBeInTheDocument();
+
+        act(() => {
+            useStore.getState().userSettingsStore.setSidebarOrder({});
+        });
+    });
 });

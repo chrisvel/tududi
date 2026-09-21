@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
+import { SidebarLinkId, sortByOrder } from '../../utils/sidebarLayout';
 
 interface SidebarNavProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -36,6 +37,10 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         (state) => state.userSettingsStore.sidebarVisibleSections
     );
 
+    const linkOrder = useStore(
+        (state) => state.userSettingsStore.sidebarLinkOrder
+    );
+
     const inboxItemsCount = store.inboxStore.pagination.total;
 
     useEffect(() => {
@@ -44,64 +49,60 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
     const allNavLinks = [
         {
+            id: 'inbox',
             path: '/inbox',
             title: t('sidebar.inbox', 'Inbox'),
             icon: <InboxIcon className="h-[15px] w-[15px]" />,
         },
         {
+            id: 'today',
             path: '/today',
             title: t('sidebar.today', 'Today'),
             icon: <CalendarDaysIcon className="h-[15px] w-[15px]" />,
             query: 'type=today',
         },
         {
+            id: 'upcomingTasks',
             path: '/upcoming?status=active',
             title: t('sidebar.upcoming', 'Upcoming'),
             icon: <ClockIcon className="h-[15px] w-[15px]" />,
-            userFlag: 'upcomingTasks',
         },
         {
+            id: 'calendar',
             path: '/calendar',
             title: t('sidebar.calendar', 'Calendar'),
             icon: <CalendarIcon className="h-[15px] w-[15px]" />,
-            userFlag: 'calendar',
         },
         {
+            id: 'allTasks',
             path: '/tasks?status=active',
             title: t('sidebar.allTasks', 'All Tasks'),
             icon: <ListBulletIcon className="h-[15px] w-[15px]" />,
             query: 'status=active',
         },
         {
+            id: 'assignedToMe',
             path: '/tasks?assigned_to=me&status=active',
             title: t('sidebar.assignedToMe', 'Assigned to me'),
             icon: <UserIcon className="h-[15px] w-[15px]" />,
             query: 'assigned_to=me',
-            userFlag: 'assignedToMe',
         },
         {
+            id: 'everyone',
             path: '/everyone',
             title: t('sidebar.everyone', 'Everyone'),
             icon: <UsersIcon className="h-[15px] w-[15px]" />,
-            userFlag: 'everyone',
         },
     ];
 
-    const navLinks = allNavLinks.filter((link) => {
-        if (link.userFlag === 'calendar') {
-            return calendarEnabled && visibleSections.calendar !== false;
-        }
-        if (link.userFlag === 'everyone') {
-            return hasCollaborators && visibleSections.everyone !== false;
-        }
-        if (link.userFlag === 'upcomingTasks') {
-            return visibleSections.upcomingTasks !== false;
-        }
-        if (link.userFlag === 'assignedToMe') {
-            return visibleSections.assignedToMe !== false;
-        }
-        return true;
-    });
+    const navLinks = sortByOrder(
+        allNavLinks.filter((link) => {
+            if (link.id === 'calendar' && !calendarEnabled) return false;
+            if (link.id === 'everyone' && !hasCollaborators) return false;
+            return visibleSections[link.id as SidebarLinkId] !== false;
+        }),
+        linkOrder
+    );
 
     const activeClass =
         'bg-blue-50 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(90%_0.01_250)] font-semibold hover:bg-blue-100 dark:hover:bg-[oklch(27%_0.02_250)]';

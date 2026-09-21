@@ -159,6 +159,17 @@ const App: React.FC = () => {
                     .userSettingsStore.setSidebarVisibleSections(
                         data.user.sidebar_settings?.visibleSections ?? {}
                     );
+                useStore
+                    .getState()
+                    .userSettingsStore.setSidebarOrder({
+                        linkOrder: data.user.sidebar_settings?.linkOrder,
+                        sectionOrder: data.user.sidebar_settings?.sectionOrder,
+                    });
+                useStore
+                    .getState()
+                    .userSettingsStore.setSidebarWidthPercent(
+                        data.user.sidebar_settings?.widthPercent
+                    );
             } else {
                 setCurrentUser(null);
                 setUserInStorage(null);

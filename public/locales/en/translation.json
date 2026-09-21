@@ -81,7 +81,8 @@
     "people": "People",
     "goals": "Goals",
     "habits": "Habits",
-    "allEntities": "All entities"
+    "allEntities": "All entities",
+    "resize": "Resize sidebar"
   },
   "navigation": {
     "home": "Home",
@@ -264,6 +265,12 @@
   "profile": {
     "settings": "Profile Settings",
     "sidebarSectionDescription": "Show the {{name}} section in the sidebar.",
+    "sidebarLayoutDescription": "This is a preview of your sidebar. Use the switches to choose what appears, and drag the handles to change the order.",
+    "sidebarLayoutHint": "Templates and Access stay at the bottom. Items marked as off in Features stay hidden until you turn the feature on.",
+    "sidebarShowItem": "Show {{name}}",
+    "sidebarMoveItem": "Move {{name}}",
+    "sidebarFeatureOff": "Off in Features",
+    "sidebarNoCollaborators": "No collaborators",
     "name": "Name",
     "surname": "Surname",
     "enterName": "Enter your name",

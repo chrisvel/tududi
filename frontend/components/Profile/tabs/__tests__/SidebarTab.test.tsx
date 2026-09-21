@@ -2,6 +2,10 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SidebarTab from '../SidebarTab';
+import {
+    DEFAULT_LINK_ORDER,
+    DEFAULT_SECTION_ORDER,
+} from '../../../../utils/sidebarLayout';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -15,90 +19,57 @@ jest.mock('react-i18next', () => ({
     }),
 }));
 
-const entityLabels = [
-    'Favorites',
-    'Projects',
-    'Areas',
-    'Goals',
-    'Notes',
-    'Tags',
-    'People',
-    'Habits',
-    'Views',
-    'Boards',
-    'Insights',
-    'Calendar',
-    'Templates',
-];
+const renderTab = (
+    props: Partial<React.ComponentProps<typeof SidebarTab>> = {}
+) => {
+    const onToggleSection = jest.fn();
+    const onReorder = jest.fn();
+    const utils = render(
+        <SidebarTab
+            isActive
+            visibleSections={{}}
+            linkOrder={[...DEFAULT_LINK_ORDER]}
+            sectionOrder={[...DEFAULT_SECTION_ORDER]}
+            onToggleSection={onToggleSection}
+            onReorder={onReorder}
+            {...props}
+        />
+    );
+    return { ...utils, onToggleSection, onReorder };
+};
 
 describe('SidebarTab', () => {
     it('renders nothing when the tab is not active', () => {
-        const { container } = render(
-            <SidebarTab
-                isActive={false}
-                visibleSections={{}}
-                onToggleSection={jest.fn()}
-            />
-        );
+        const { container } = renderTab({ isActive: false });
 
         expect(container).toBeEmptyDOMElement();
     });
 
-    it('offers a toggle for every entity section and the existing links', () => {
-        render(
-            <SidebarTab
-                isActive
-                visibleSections={{}}
-                onToggleSection={jest.fn()}
-            />
-        );
+    it('shows a preview of the sidebar with its explanation', () => {
+        renderTab();
 
-        for (const label of [
-            ...entityLabels,
-            'Upcoming',
-            'Assigned to me',
-            'Everyone',
-        ]) {
-            expect(screen.getByText(label)).toBeInTheDocument();
-        }
+        expect(screen.getByText('Sidebar')).toBeInTheDocument();
+        expect(screen.getByTestId('sidebar-preview')).toBeInTheDocument();
         expect(
-            screen.getByText('Show the Projects section in the sidebar.')
+            screen.getByText(/preview of your sidebar/i)
         ).toBeInTheDocument();
     });
 
-    it('offers the Access toggle to admins only', () => {
-        const { rerender } = render(
-            <SidebarTab
-                isActive
-                visibleSections={{}}
-                onToggleSection={jest.fn()}
-            />
-        );
+    it('offers the Access row to admins only', () => {
+        const { unmount } = renderTab();
         expect(screen.queryByText('Access')).toBeNull();
+        unmount();
 
-        rerender(
-            <SidebarTab
-                isActive
-                isAdmin
-                visibleSections={{}}
-                onToggleSection={jest.fn()}
-            />
-        );
+        renderTab({ isAdmin: true });
         expect(screen.getByText('Access')).toBeInTheDocument();
     });
 
-    it('reports the section key when a toggle is clicked', () => {
-        const onToggleSection = jest.fn();
-        render(
-            <SidebarTab
-                isActive
-                visibleSections={{ projects: false }}
-                onToggleSection={onToggleSection}
-            />
-        );
+    it('passes a switch click on as the item key', () => {
+        const { onToggleSection } = renderTab({
+            visibleSections: { projects: false },
+        });
 
-        const row = screen.getByText('Projects').closest('div.flex');
-        fireEvent.click(row!.querySelector('div.cursor-pointer')!);
+        fireEvent.click(screen.getByRole('switch', { name: 'Show Projects' }));
 
         expect(onToggleSection).toHaveBeenCalledWith('projects');
     });
