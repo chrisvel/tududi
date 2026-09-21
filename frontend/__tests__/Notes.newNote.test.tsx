@@ -147,7 +147,7 @@ describe('Notes new-note flow', () => {
         ).not.toBeInTheDocument();
     });
 
-    it('persists the note when the user saves with a title, then shows it in preview', async () => {
+    it('persists the note when the user saves with a title and stays in the editor', async () => {
         const user = userEvent.setup();
         const { unmount } = renderNotes({ newNote: 12345 });
 
@@ -175,8 +175,8 @@ describe('Notes new-note flow', () => {
             })
         );
 
-        // Editor exits into preview mode showing the saved note
-        expect(await screen.findByText('Groceries')).toBeInTheDocument();
+        // The note stays open in the editor after saving
+        expect(await screen.findByDisplayValue('Groceries')).toBeInTheDocument();
 
         // Let the 1s autosave debounce flush so no timer is pending at
         // teardown (prevents the jest force-exit warning).
