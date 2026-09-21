@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import hljs from 'highlight.js';
 import CalloutBlock from './CalloutBlock';
+import MermaidDiagram, { getMermaidSource } from './MermaidDiagram';
 import { detectCallout } from '../../utils/calloutParser';
 import { useStore } from '../../store/useStore';
 
@@ -414,7 +415,19 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             );
                         }
                     },
-                    pre: ({ ...props }) => <CodeBlock {...props} />,
+                    pre: ({ node, ...props }) => {
+                        const mermaidSource = getMermaidSource(node);
+                        if (mermaidSource === null) {
+                            return <CodeBlock {...props} />;
+                        }
+                        return summaryMode ? (
+                            <span className="text-gray-500 italic">
+                                [Diagram hidden in preview]
+                            </span>
+                        ) : (
+                            <MermaidDiagram code={mermaidSource} />
+                        );
+                    },
 
                     // Customize blockquote styles — detect Obsidian-style callouts
                     blockquote: ({ node, children, ...props }) => {
