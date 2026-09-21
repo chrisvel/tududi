@@ -36,6 +36,15 @@ function errorHandler(err, req, res, next) {
         });
     }
 
+    // The CSRF middleware (lusca) sets the response to 403 and passes on a plain
+    // Error, so without this the request would be answered as a server error.
+    if (/^CSRF token (missing|mismatch)$/.test(err.message)) {
+        return res.status(403).json({
+            error: err.message,
+            code: 'CSRF_ERROR',
+        });
+    }
+
     // Handle express-rate-limit trust proxy validation errors
     if (err.code === 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR') {
         return res.status(500).json({
