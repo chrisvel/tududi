@@ -102,10 +102,20 @@ function nextPre(channel, latest) {
     return `v${nextPatch(stable)}-${channel}.1`;
 }
 
+// The next pre-release of a channel on an explicit version, e.g. the rc for
+// 1.6.0: one past the highest number already cut on that exact version.
+function preOn(channel, version) {
+    const numbers = tags
+        .filter((t) => t.channel === channel && base(t) === version)
+        .map((t) => t.number);
+    return `v${version}-${channel}.${Math.max(0, ...numbers) + 1}`;
+}
+
 // Promoting a stable release takes whichever pre-release line is furthest
 // along, so 1.5.0-rc.7 becomes 1.5.0 rather than inventing a number. Fix,
 // minor and major are the explicit bumps of the last stable release, for when
-// the next release is not the line already in flight.
+// the next release is not the line already in flight. Each channel offers all
+// three, so a 2.0.0 release candidate is as reachable as a 2.0.0 stable.
 const promote = inFlight || null;
 
 const out = {
@@ -113,12 +123,21 @@ const out = {
     LATEST_RC: rc ? rc.tag : '',
     LATEST_DEV: dev ? dev.tag : '',
     PROMOTE_STABLE: promote ? `v${base(promote)}` : '',
-    NEXT_FIX: `v${nextPatch(stable)}`,
-    NEXT_MINOR: `v${nextMinor(stable)}`,
-    NEXT_MAJOR: `v${nextMajor(stable)}`,
     NEXT_RC: nextPre('rc', rc),
     NEXT_DEV: nextPre('dev', dev),
 };
+
+const bumps = {
+    FIX: nextPatch(stable),
+    MINOR: nextMinor(stable),
+    MAJOR: nextMajor(stable),
+};
+
+for (const [name, version] of Object.entries(bumps)) {
+    out[`STABLE_${name}`] = `v${version}`;
+    out[`RC_${name}`] = preOn('rc', version);
+    out[`DEV_${name}`] = preOn('dev', version);
+}
 
 for (const [key, value] of Object.entries(out)) {
     process.stdout.write(`${key}='${value}'\n`);
