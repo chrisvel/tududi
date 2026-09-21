@@ -123,6 +123,89 @@ describe('AppLauncherModal', () => {
         expect(screen.getByTestId('app-launcher-everyone')).toBeInTheDocument();
     });
 
+    describe('groups', () => {
+        const idsIn = (group: string) =>
+            Array.from(
+                screen
+                    .getByTestId(`app-launcher-group-${group}`)
+                    .querySelectorAll('[data-testid^="app-launcher-"]')
+            ).map((el) =>
+                el.getAttribute('data-testid')!.replace('app-launcher-', '')
+            );
+
+        it('splits the tiles into links, sections and the bottom group like the sidebar', () => {
+            setSettings({ hasCollaborators: true });
+            renderModal({ isAdmin: true });
+
+            expect(idsIn('links')).toEqual([
+                'inbox',
+                'today',
+                'upcoming',
+                'calendar',
+                'tasks',
+                'assigned-to-me',
+                'everyone',
+            ]);
+            expect(idsIn('sections')).toEqual([
+                'projects',
+                'areas',
+                'goals',
+                'notes',
+                'tags',
+                'people',
+                'habits',
+                'views',
+                'eisenhower',
+                'kanban',
+                'productivity',
+                'reports',
+            ]);
+            expect(idsIn('bottom')).toEqual(['templates', 'access']);
+        });
+
+        it('follows the saved sidebar order inside each group', () => {
+            act(() => {
+                useStore.getState().userSettingsStore.setSidebarOrder({
+                    linkOrder: ['allTasks', 'today'],
+                    sectionOrder: ['insights', 'notes', 'boards'],
+                });
+            });
+
+            renderModal();
+
+            expect(idsIn('links').slice(0, 2)).toEqual(['tasks', 'today']);
+            expect(idsIn('sections').slice(0, 5)).toEqual([
+                'productivity',
+                'reports',
+                'notes',
+                'eisenhower',
+                'kanban',
+            ]);
+
+            act(() => {
+                useStore.getState().userSettingsStore.setSidebarOrder({});
+            });
+        });
+
+        it('leaves out a group with nothing in it', () => {
+            setSettings({ templatesEnabled: false });
+
+            renderModal();
+
+            expect(
+                screen.queryByTestId('app-launcher-group-bottom')
+            ).toBeNull();
+        });
+
+        it('separates the groups with space only, no lines or headings', () => {
+            renderModal({ isAdmin: true });
+
+            const html = screen.getByRole('dialog').innerHTML;
+            expect(html).not.toMatch(/<hr|border-t|border-b|divide-/);
+            expect(screen.getAllByRole('heading')).toHaveLength(1);
+        });
+    });
+
     it('shows Access only to admins', () => {
         const { unmount } = render(
             <AppLauncherModal isOpen onClose={jest.fn()} onSelect={jest.fn()} />

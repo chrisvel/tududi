@@ -40,6 +40,8 @@ interface LauncherEntry {
     title: string;
     Icon: React.ComponentType<{ className?: string }>;
     gradient: string;
+    group: 'links' | 'sections' | 'bottom';
+    orderKey: string;
 }
 
 const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
@@ -69,10 +71,19 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
         (state) => state.userSettingsStore.hasCollaborators
     );
 
-    const entries = useMemo<LauncherEntry[]>(() => {
+    const linkOrder = useStore(
+        (state) => state.userSettingsStore.sidebarLinkOrder
+    );
+    const sectionOrder = useStore(
+        (state) => state.userSettingsStore.sidebarSectionOrder
+    );
+
+    const groups = useMemo(() => {
         const all: Array<LauncherEntry | false> = [
             {
                 id: 'inbox',
+                group: 'links',
+                orderKey: 'inbox',
                 path: '/inbox',
                 title: t('sidebar.inbox', 'Inbox'),
                 Icon: InboxIcon,
@@ -80,6 +91,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'today',
+                group: 'links',
+                orderKey: 'today',
                 path: '/today',
                 title: t('sidebar.today', 'Today'),
                 Icon: CalendarDaysIcon,
@@ -87,6 +100,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'upcoming',
+                group: 'links',
+                orderKey: 'upcomingTasks',
                 path: '/upcoming?status=active',
                 title: t('sidebar.upcoming', 'Upcoming'),
                 Icon: ClockIcon,
@@ -94,6 +109,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             calendarEnabled && {
                 id: 'calendar',
+                group: 'links',
+                orderKey: 'calendar',
                 path: '/calendar',
                 title: t('sidebar.calendar', 'Calendar'),
                 Icon: CalendarIcon,
@@ -101,6 +118,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'tasks',
+                group: 'links',
+                orderKey: 'allTasks',
                 path: '/tasks?status=active',
                 title: t('sidebar.allTasks', 'All Tasks'),
                 Icon: ListBulletIcon,
@@ -108,6 +127,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'assigned-to-me',
+                group: 'links',
+                orderKey: 'assignedToMe',
                 path: '/tasks?assigned_to=me&status=active',
                 title: t('sidebar.assignedToMe', 'Assigned to me'),
                 Icon: UserIcon,
@@ -115,6 +136,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             hasCollaborators && {
                 id: 'everyone',
+                group: 'links',
+                orderKey: 'everyone',
                 path: '/everyone',
                 title: t('sidebar.everyone', 'Everyone'),
                 Icon: UsersIcon,
@@ -122,6 +145,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'projects',
+                group: 'sections',
+                orderKey: 'projects',
                 path: '/projects',
                 title: t('sidebar.projects', 'Projects'),
                 Icon: FolderIcon,
@@ -129,6 +154,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'areas',
+                group: 'sections',
+                orderKey: 'areas',
                 path: '/areas',
                 title: t('sidebar.areas', 'Areas'),
                 Icon: Squares2X2Icon,
@@ -136,6 +163,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'goals',
+                group: 'sections',
+                orderKey: 'goals',
                 path: '/goals',
                 title: t('sidebar.goals', 'Goals'),
                 Icon: FlagIcon,
@@ -143,6 +172,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'notes',
+                group: 'sections',
+                orderKey: 'notes',
                 path: '/notes',
                 title: t('sidebar.notes', 'Notes'),
                 Icon: BookOpenIcon,
@@ -150,6 +181,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'tags',
+                group: 'sections',
+                orderKey: 'tags',
                 path: '/tags',
                 title: t('sidebar.tags', 'Tags'),
                 Icon: TagIcon,
@@ -157,6 +190,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'people',
+                group: 'sections',
+                orderKey: 'people',
                 path: '/people',
                 title: t('sidebar.people', 'People'),
                 Icon: UserGroupIcon,
@@ -164,6 +199,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             habitsEnabled && {
                 id: 'habits',
+                group: 'sections',
+                orderKey: 'habits',
                 path: '/habits',
                 title: t('sidebar.habits', 'Habits'),
                 Icon: FireIcon,
@@ -171,6 +208,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'views',
+                group: 'sections',
+                orderKey: 'views',
                 path: '/views',
                 title: t('sidebar.views', 'Views'),
                 Icon: QueueListIcon,
@@ -178,6 +217,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             eisenhowerEnabled && {
                 id: 'eisenhower',
+                group: 'sections',
+                orderKey: 'boards',
                 path: '/boards/eisenhower',
                 title: t('sidebar.eisenhower', 'Eisenhower Matrix'),
                 Icon: RectangleGroupIcon,
@@ -185,6 +226,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             kanbanEnabled && {
                 id: 'kanban',
+                group: 'sections',
+                orderKey: 'boards',
                 path: '/boards/kanban',
                 title: t('sidebar.kanban', 'Kanban Board'),
                 Icon: ViewColumnsIcon,
@@ -192,6 +235,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'productivity',
+                group: 'sections',
+                orderKey: 'insights',
                 path: '/insights/productivity',
                 title: t(
                     'sidebar.productivityAssistant',
@@ -202,6 +247,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             {
                 id: 'reports',
+                group: 'sections',
+                orderKey: 'insights',
                 path: '/insights/reports',
                 title: t('sidebar.reports', 'Reports'),
                 Icon: ChartBarIcon,
@@ -209,6 +256,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             templatesEnabled && {
                 id: 'templates',
+                group: 'bottom',
+                orderKey: 'templates',
                 path: '/templates',
                 title: t('navigation.templates', 'Templates'),
                 Icon: RectangleStackIcon,
@@ -216,13 +265,29 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
             },
             isAdmin && {
                 id: 'access',
+                group: 'bottom',
+                orderKey: 'access',
                 path: '/admin/users',
                 title: t('admin.access.title', 'Access'),
                 Icon: ShieldCheckIcon,
                 gradient: 'from-slate-500 to-zinc-700',
             },
         ];
-        return all.filter((entry): entry is LauncherEntry => entry !== false);
+        const entries = all.filter(
+            (entry): entry is LauncherEntry => entry !== false
+        );
+        const inOrder = (group: LauncherEntry['group'], order: string[]) =>
+            entries
+                .filter((entry) => entry.group === group)
+                .sort(
+                    (a, b) =>
+                        order.indexOf(a.orderKey) - order.indexOf(b.orderKey)
+                );
+        return [
+            inOrder('links', linkOrder),
+            inOrder('sections', sectionOrder),
+            entries.filter((entry) => entry.group === 'bottom'),
+        ].filter((group) => group.length > 0);
     }, [
         t,
         calendarEnabled,
@@ -232,6 +297,8 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
         templatesEnabled,
         hasCollaborators,
         isAdmin,
+        linkOrder,
+        sectionOrder,
     ]);
 
     useEffect(() => {
@@ -277,30 +344,47 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
                         <XMarkIcon className="h-5 w-5" />
                     </button>
                 </div>
-                <ul className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-x-3 gap-y-7">
-                    {entries.map(
-                        ({ id, path, title, Icon, gradient }, index) => (
-                            <li key={id}>
-                                <button
-                                    type="button"
-                                    ref={index === 0 ? firstTileRef : undefined}
-                                    onClick={() => onSelect(path, title)}
-                                    data-testid={`app-launcher-${id}`}
-                                    className="group w-full flex flex-col items-center gap-2 rounded-xl p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                                >
-                                    <span
-                                        className={`flex items-center justify-center h-16 w-16 rounded-[22px] bg-gradient-to-br ${gradient} text-white shadow-md ring-1 ring-inset ring-white/20 transition duration-150 group-hover:scale-105 group-hover:shadow-lg group-active:scale-95`}
-                                    >
-                                        <Icon className="h-8 w-8 drop-shadow-sm" />
-                                    </span>
-                                    <span className="text-[13px] font-medium text-center text-gray-700 dark:text-gray-200 leading-tight line-clamp-2">
-                                        {title}
-                                    </span>
-                                </button>
-                            </li>
-                        )
-                    )}
-                </ul>
+                <div className="flex flex-col gap-10">
+                    {groups.map((group, groupIndex) => (
+                        <ul
+                            key={group[0].group}
+                            data-testid={`app-launcher-group-${group[0].group}`}
+                            className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-x-3 gap-y-7"
+                        >
+                            {group.map(
+                                (
+                                    { id, path, title, Icon, gradient },
+                                    index
+                                ) => (
+                                    <li key={id}>
+                                        <button
+                                            type="button"
+                                            ref={
+                                                groupIndex === 0 && index === 0
+                                                    ? firstTileRef
+                                                    : undefined
+                                            }
+                                            onClick={() =>
+                                                onSelect(path, title)
+                                            }
+                                            data-testid={`app-launcher-${id}`}
+                                            className="group w-full flex flex-col items-center gap-2 rounded-xl p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                        >
+                                            <span
+                                                className={`flex items-center justify-center h-16 w-16 rounded-[22px] bg-gradient-to-br ${gradient} text-white shadow-md ring-1 ring-inset ring-white/20 transition duration-150 group-hover:scale-105 group-hover:shadow-lg group-active:scale-95`}
+                                            >
+                                                <Icon className="h-8 w-8 drop-shadow-sm" />
+                                            </span>
+                                            <span className="text-[13px] font-medium text-center text-gray-700 dark:text-gray-200 leading-tight line-clamp-2">
+                                                {title}
+                                            </span>
+                                        </button>
+                                    </li>
+                                )
+                            )}
+                        </ul>
+                    ))}
+                </div>
             </div>
         </div>,
         document.body

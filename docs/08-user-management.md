@@ -424,6 +424,7 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     - The order is stored in `sidebar_settings.linkOrder` and `sidebar_settings.sectionOrder` (arrays of item ids). Ids the saved order does not know about are shown after the ones it does, so a newly added item never disappears
     - Visibility is stored in `sidebar_settings.visibleSections`; a missing key means the section is shown
     - The grid button in the sidebar footer (right of **+**) opens a launcher with every page as an icon tile, including sections hidden from the sidebar
+    - The launcher splits the tiles into the same three parts as the sidebar (the top links, the sections, then Templates and Access), separated by space only, and each part follows your saved sidebar order
     - The sidebar can be dragged wider or narrower by its right edge, from 90% to 110% of the default width (double-click the edge to reset; the arrow keys, Home and End also work when it is focused)
     - The width is saved to the profile when the drag ends, as `sidebar_settings.widthPercent` (a number from 90 to 110, default 100)
     - The launcher leaves out pages whose feature is turned off (Calendar, Habits, Eisenhower, Kanban, Templates), shows Everyone only when the account has collaborators, and shows Access only to admins
