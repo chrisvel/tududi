@@ -6,6 +6,7 @@ import {
     CreditCardIcon,
     EnvelopeIcon,
     RectangleStackIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
 import { handleAuthResponse } from '../../utils/authUtils';
@@ -164,13 +165,24 @@ const AdminDashboardPage: React.FC = () => {
                     <UsersIcon className="w-4 h-4 mr-2" />
                     {t('admin.users.title', 'Users')}
                 </Link>
-                <Link
-                    to="/admin/billing"
-                    className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                    <CreditCardIcon className="w-4 h-4 mr-2" />
-                    {t('admin.billing.title', 'Billing')}
-                </Link>
+                {data.billing.hosted && (
+                    <>
+                        <Link
+                            to="/admin/billing"
+                            className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                            <CreditCardIcon className="w-4 h-4 mr-2" />
+                            {t('admin.billing.title', 'Billing')}
+                        </Link>
+                        <Link
+                            to="/admin/ai-usage"
+                            className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                            <SparklesIcon className="w-4 h-4 mr-2" />
+                            {t('admin.aiUsage.title', 'AI Usage')}
+                        </Link>
+                    </>
+                )}
                 <Link
                     to="/admin/waitlist"
                     className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"

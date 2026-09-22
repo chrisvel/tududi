@@ -1,14 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Location } from 'react-router-dom';
-import {
-    RectangleStackIcon,
-    UsersIcon,
-    CreditCardIcon,
-    SparklesIcon,
-} from '@heroicons/react/24/outline';
+import { RectangleStackIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
-import { getFeatureFlags } from '../../utils/featureFlags';
 
 interface SidebarAdminProps {
     handleNavClick: (path: string, title: string) => void;
@@ -32,20 +26,8 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
         templatesFeatureEnabled && visibleSections.templates !== false;
     const accessVisible =
         currentUser?.is_admin === true && visibleSections.access !== false;
-    const [hosted, setHosted] = useState(false);
 
-    useEffect(() => {
-        if (!currentUser?.is_admin) return;
-        getFeatureFlags()
-            .then((flags) => setHosted(!!flags.hosted))
-            .catch(() => setHosted(false));
-    }, [currentUser?.is_admin]);
-
-    if (
-        !templatesEnabled &&
-        !accessVisible &&
-        !(currentUser?.is_admin === true && hosted)
-    ) {
+    if (!templatesEnabled && !accessVisible) {
         return null;
     }
 
@@ -86,34 +68,6 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
                 >
                     <UsersIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
                     {t('admin.access.title', 'Access')}
-                </li>
-            )}
-            {currentUser?.is_admin === true && hosted && (
-                <li
-                    className={linkClass('/admin/billing')}
-                    onClick={() =>
-                        handleNavClick(
-                            '/admin/billing',
-                            t('admin.billing.title', 'Billing')
-                        )
-                    }
-                >
-                    <CreditCardIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
-                    {t('admin.billing.title', 'Billing')}
-                </li>
-            )}
-            {currentUser?.is_admin === true && hosted && (
-                <li
-                    className={linkClass('/admin/ai-usage')}
-                    onClick={() =>
-                        handleNavClick(
-                            '/admin/ai-usage',
-                            t('admin.aiUsage.title', 'AI Usage')
-                        )
-                    }
-                >
-                    <SparklesIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
-                    {t('admin.aiUsage.title', 'AI Usage')}
                 </li>
             )}
         </ul>

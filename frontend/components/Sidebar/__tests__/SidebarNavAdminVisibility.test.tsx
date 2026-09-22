@@ -16,10 +16,6 @@ jest.mock('../../../utils/inboxService', () => ({
     loadInboxItemsToStore: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('../../../utils/featureFlags', () => ({
-    getFeatureFlags: jest.fn().mockResolvedValue({ hosted: false }),
-}));
-
 const location = {
     pathname: '/today',
     search: '',
