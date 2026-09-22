@@ -11,6 +11,7 @@ const {
     RecurringCompletion,
     Role,
     TaskAttachment,
+    User,
 } = require('../../models');
 const { getConfig } = require('../../config/config');
 const {
@@ -103,6 +104,28 @@ async function seedSource(user) {
     });
     await note.setTags([tag.id]);
 
+    // Files stored on disk and referenced by URL (project cover image,
+    // user avatar) rather than embedded in the backup like task attachments.
+    const projectImagesDir = path.join(config.uploadPath, 'projects');
+    await fs.mkdir(projectImagesDir, { recursive: true });
+    const projectImageFile = `roundtrip-project-${Date.now()}.png`;
+    await fs.writeFile(
+        path.join(projectImagesDir, projectImageFile),
+        'project image bytes'
+    );
+    await project.update({
+        image_url: `/api/uploads/projects/${projectImageFile}`,
+    });
+
+    const avatarsDir = path.join(config.uploadPath, 'avatars');
+    await fs.mkdir(avatarsDir, { recursive: true });
+    const avatarFile = `roundtrip-avatar-${Date.now()}.png`;
+    await fs.writeFile(path.join(avatarsDir, avatarFile), 'avatar bytes');
+    await user.update({
+        avatar_image: `/uploads/avatars/${avatarFile}`,
+        appearance: 'dark',
+    });
+
     return {
         area,
         goal,
@@ -153,6 +176,14 @@ describe('Backup export and import round trip (format 2)', () => {
         expect(project.area_uid).toBe(seeded.area.uid);
         expect(project.goal_uid).toBe(seeded.goal.uid);
         expect(project.tag_uids).toEqual([seeded.tag.uid]);
+        expect(Buffer.from(project.cover_image.data, 'base64').toString()).toBe(
+            'project image bytes'
+        );
+
+        expect(backup.user.appearance).toBe('dark');
+        expect(
+            Buffer.from(backup.user.avatar_image_data.data, 'base64').toString()
+        ).toBe('avatar bytes');
 
         const parent = backup.data.tasks.find((t) => t.name === 'Parent');
         expect(parent.project_uid).toBe(seeded.project.uid);
@@ -204,6 +235,32 @@ describe('Backup export and import round trip (format 2)', () => {
         expect((await project.getTags()).map((t) => t.name)).toEqual([
             'urgent',
         ]);
+        expect(project.image_url).toMatch(/^\/api\/uploads\/projects\//);
+        const projectImageContent = await fs.readFile(
+            path.join(
+                config.uploadPath,
+                'projects',
+                path.basename(project.image_url)
+            ),
+            'utf8'
+        );
+        expect(projectImageContent).toBe('project image bytes');
+
+        // The target's own profile picks up the backed-up account details
+        // (#1603), but never the source's email/password.
+        const updatedTarget = await User.findByPk(target.id);
+        expect(updatedTarget.appearance).toBe('dark');
+        expect(updatedTarget.email).toBe(target.email);
+        expect(updatedTarget.avatar_image).toMatch(/^\/uploads\/avatars\//);
+        const avatarContent = await fs.readFile(
+            path.join(
+                config.uploadPath,
+                'avatars',
+                path.basename(updatedTarget.avatar_image)
+            ),
+            'utf8'
+        );
+        expect(avatarContent).toBe('avatar bytes');
 
         const parent = await Task.findOne({
             where: { user_id: target.id, name: 'Parent' },
@@ -299,6 +356,17 @@ describe('Backup export and import round trip (format 2)', () => {
         for (const key of ['tasks', 'projects', 'notes', 'tags', 'areas']) {
             expect(stats[key]).toEqual({ created: 0, skipped: 0 });
         }
+    });
+
+    it('does not touch the account profile when merge is disabled', async () => {
+        const backup = await exportUserData(source.id);
+        await peopleService.createSelfPerson(target);
+
+        await importUserData(target.id, backup, { merge: false });
+
+        const untouchedTarget = await User.findByPk(target.id);
+        expect(untouchedTarget.appearance).toBe('light');
+        expect(untouchedTarget.avatar_image).toBeFalsy();
     });
 
     it('never links a legacy backup to another user rows by numeric id', async () => {
