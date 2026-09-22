@@ -8,6 +8,7 @@ import {
     fetchComments,
     createComment,
     deleteComment,
+    setCommentReaction,
 } from '../../../utils/commentsService';
 import { fetchPeople } from '../../../utils/peopleService';
 
@@ -33,6 +34,7 @@ jest.mock('../../../utils/commentsService', () => ({
     fetchComments: jest.fn(),
     createComment: jest.fn(),
     deleteComment: jest.fn(),
+    setCommentReaction: jest.fn(),
 }));
 
 jest.mock('../../../utils/peopleService', () => ({
@@ -43,11 +45,12 @@ jest.mock('../../../utils/peopleService', () => ({
 // The composer is a contentEditable div (no .value/.selectionStart), so
 // simulating typing means mutating its DOM directly, placing a real
 // Selection at the end of the text, then firing the native `input` event
-// React listens for.
-function typeIntoComposer(container: HTMLElement, text: string) {
-    const editor = container.querySelector(
-        '[contenteditable="true"]'
-    ) as HTMLElement;
+// React listens for. `index` picks which editor when more than one is on
+// screen (the main composer plus an open reply composer).
+function typeIntoComposer(container: HTMLElement, text: string, index = 0) {
+    const editor = container.querySelectorAll('[contenteditable="true"]')[
+        index
+    ] as HTMLElement;
     editor.textContent = text;
     const textNode = editor.firstChild as Text;
     const range = document.createRange();
@@ -77,6 +80,10 @@ const baseComment: Comment = {
         person_uid: 'person-alice',
     },
     is_own: false,
+    replies: [],
+    likes_count: 0,
+    dislikes_count: 0,
+    my_reaction: null,
 };
 
 const ownComment: Comment = {
@@ -221,5 +228,207 @@ describe('TaskComments', () => {
         expect(screen.queryByText('My own comment')).not.toBeInTheDocument();
         expect(screen.queryByLabelText('Delete comment')).toBeNull();
         expect(onCommentCountChange).toHaveBeenLastCalledWith(0);
+    });
+
+    it('keeps a reply visible after its parent comment is deleted', async () => {
+        const reply: Comment = {
+            ...baseComment,
+            uid: 'comment-reply',
+            body: 'A reply',
+        };
+        const parent: Comment = {
+            ...ownComment,
+            uid: 'comment-parent',
+            body: 'Parent comment',
+            replies: [reply],
+        };
+        (fetchComments as jest.Mock).mockResolvedValue([parent]);
+        // The tombstone response never carries replies of its own - deleting
+        // a comment doesn't touch them.
+        (deleteComment as jest.Mock).mockResolvedValue({
+            ...parent,
+            body: '',
+            mentioned_person_uids: [],
+            mentioned_people: [],
+            deleted_at: new Date().toISOString(),
+            replies: [],
+        });
+
+        render(<TaskComments task={task} />);
+        await screen.findByText('Parent comment');
+
+        fireEvent.click(screen.getByLabelText('Delete comment'));
+        fireEvent.click(screen.getByTestId('confirm-dialog-confirm'));
+
+        await waitFor(() =>
+            expect(deleteComment).toHaveBeenCalledWith('comment-parent')
+        );
+        expect(await screen.findByText('Comment deleted')).toBeInTheDocument();
+        expect(screen.getByText('A reply')).toBeInTheDocument();
+    });
+
+    describe('replies', () => {
+        it('opens a reply composer and nests the posted reply under its parent', async () => {
+            const parent: Comment = {
+                ...baseComment,
+                uid: 'comment-parent',
+                body: 'Parent comment',
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([parent]);
+            const postedReply: Comment = {
+                ...baseComment,
+                uid: 'comment-reply',
+                body: 'A reply',
+                is_own: true,
+            };
+            (createComment as jest.Mock).mockResolvedValue(postedReply);
+            const onCommentCountChange = jest.fn();
+
+            const { container } = render(
+                <TaskComments
+                    task={task}
+                    onCommentCountChange={onCommentCountChange}
+                />
+            );
+            await screen.findByText('Parent comment');
+
+            fireEvent.click(screen.getByText('Reply'));
+
+            const editors = container.querySelectorAll(
+                '[contenteditable="true"]'
+            );
+            expect(editors).toHaveLength(2);
+
+            typeIntoComposer(container, 'A reply', 0);
+            // Two "Reply" buttons are on screen now: the toggle and the
+            // open composer's submit button (the latter renders second).
+            const replyButtons = screen.getAllByRole('button', {
+                name: 'Reply',
+            });
+            fireEvent.click(replyButtons[replyButtons.length - 1]);
+
+            await waitFor(() =>
+                expect(createComment).toHaveBeenCalledWith('task-1', {
+                    body: 'A reply',
+                    mentionedPersonUids: [],
+                    parentCommentUid: 'comment-parent',
+                })
+            );
+            expect(await screen.findByText('A reply')).toBeInTheDocument();
+            expect(onCommentCountChange).toHaveBeenLastCalledWith(2);
+            // The reply composer closes after a successful post.
+            expect(
+                container.querySelectorAll('[contenteditable="true"]')
+            ).toHaveLength(1);
+        });
+
+        it('does not offer a Reply action on a reply itself', async () => {
+            const reply: Comment = {
+                ...baseComment,
+                uid: 'comment-reply',
+                body: 'A reply',
+            };
+            const parent: Comment = {
+                ...baseComment,
+                uid: 'comment-parent',
+                body: 'Parent comment',
+                replies: [reply],
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([parent]);
+
+            render(<TaskComments task={task} />);
+            await screen.findByText('A reply');
+
+            // Only the parent's Reply action exists.
+            expect(screen.getAllByText('Reply')).toHaveLength(1);
+        });
+    });
+
+    describe('reactions', () => {
+        it('likes a comment and shows the updated count', async () => {
+            const comment: Comment = {
+                ...baseComment,
+                uid: 'comment-1',
+                body: 'Nice work',
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([comment]);
+            (setCommentReaction as jest.Mock).mockResolvedValue({
+                uid: 'comment-1',
+                likes_count: 1,
+                dislikes_count: 0,
+                my_reaction: 'like',
+            });
+
+            render(<TaskComments task={task} />);
+            await screen.findByText('Nice work');
+
+            fireEvent.click(screen.getByLabelText('Like'));
+
+            await waitFor(() =>
+                expect(setCommentReaction).toHaveBeenCalledWith(
+                    'comment-1',
+                    'like'
+                )
+            );
+            expect(await screen.findByText('1')).toBeInTheDocument();
+        });
+
+        it('clicking Like again clears the reaction (toggle off)', async () => {
+            const comment: Comment = {
+                ...baseComment,
+                uid: 'comment-1',
+                body: 'Nice work',
+                likes_count: 1,
+                my_reaction: 'like',
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([comment]);
+            (setCommentReaction as jest.Mock).mockResolvedValue({
+                uid: 'comment-1',
+                likes_count: 0,
+                dislikes_count: 0,
+                my_reaction: null,
+            });
+
+            render(<TaskComments task={task} />);
+            await screen.findByText('Nice work');
+
+            fireEvent.click(screen.getByLabelText('Like'));
+
+            await waitFor(() =>
+                expect(setCommentReaction).toHaveBeenCalledWith(
+                    'comment-1',
+                    null
+                )
+            );
+        });
+
+        it('disliking after liking switches the reaction', async () => {
+            const comment: Comment = {
+                ...baseComment,
+                uid: 'comment-1',
+                body: 'Nice work',
+                likes_count: 1,
+                my_reaction: 'like',
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([comment]);
+            (setCommentReaction as jest.Mock).mockResolvedValue({
+                uid: 'comment-1',
+                likes_count: 0,
+                dislikes_count: 1,
+                my_reaction: 'dislike',
+            });
+
+            render(<TaskComments task={task} />);
+            await screen.findByText('Nice work');
+
+            fireEvent.click(screen.getByLabelText('Dislike'));
+
+            await waitFor(() =>
+                expect(setCommentReaction).toHaveBeenCalledWith(
+                    'comment-1',
+                    'dislike'
+                )
+            );
+        });
     });
 });

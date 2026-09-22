@@ -224,14 +224,19 @@
     "failedToLoad": "Failed to load comments",
     "empty": "No comments yet",
     "placeholder": "Write a comment... use @ to mention someone",
+    "replyPlaceholder": "Write a reply...",
     "submit": "Comment",
+    "reply": "Reply",
     "unknownAuthor": "Unknown",
     "delete": "Delete comment",
     "deleteConfirmTitle": "Delete Comment",
     "deleteConfirmMessage": "Are you sure you want to delete this comment? This action cannot be undone.",
     "deletedPlaceholder": "Comment deleted",
     "failedToPost": "Failed to post comment",
-    "failedToDelete": "Failed to delete comment"
+    "failedToDelete": "Failed to delete comment",
+    "like": "Like",
+    "dislike": "Dislike",
+    "failedToReact": "Failed to update reaction"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",

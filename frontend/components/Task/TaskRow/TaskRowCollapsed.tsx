@@ -231,7 +231,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                             {currentName}
                         </span>
                     )}
-                    {commentCount > 0 && (
+                    {!editable && commentCount > 0 && (
                         <span
                             className="ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full text-gray-400 dark:text-gray-500 flex-shrink-0"
                             title={t('comments.count', '{{count}} comments', {
@@ -244,7 +244,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                             </span>
                         </span>
                     )}
-                    {hasSubtasks && onSubtasksToggle && (
+                    {!editable && hasSubtasks && onSubtasksToggle && (
                         <button
                             type="button"
                             onClick={(e) => {
@@ -257,7 +257,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                     ? t('tasks.hideSubtasks', 'Hide subtasks')
                                     : t('tasks.showSubtasks', 'Show subtasks')
                             }
-                            className={`ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full border transition-colors ${
+                            className={`ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full border transition-colors flex-shrink-0 ${
                                 showSubtasks
                                     ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-100'
                                     : 'text-gray-400 border-transparent hover:border-gray-200 hover:text-gray-600 dark:hover:border-gray-600'

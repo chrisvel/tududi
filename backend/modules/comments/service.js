@@ -45,9 +45,15 @@ async function resolveAuthorPersonUidMap(userIds) {
 function serializeComment(
     comment,
     mentionedPeopleByUid = new Map(),
-    authorPersonUidByUserId = new Map()
+    authorPersonUidByUserId = new Map(),
+    reactionCountsByCommentId = {},
+    myReactionByCommentId = {}
 ) {
     const mentionedPersonUids = comment.mentioned_person_uids || [];
+    const reactionCounts = reactionCountsByCommentId[comment.id] || {
+        like: 0,
+        dislike: 0,
+    };
     return {
         uid: comment.uid,
         task_id: comment.task_id,
@@ -67,6 +73,12 @@ function serializeComment(
                       authorPersonUidByUserId.get(comment.Author.id) || null,
               }
             : null,
+        // Populated by listComments for a top-level comment; a reply never
+        // carries its own nested replies (one level of nesting only).
+        replies: [],
+        likes_count: reactionCounts.like || 0,
+        dislikes_count: reactionCounts.dislike || 0,
+        my_reaction: myReactionByCommentId[comment.id] || null,
     };
 }
 
@@ -91,28 +103,100 @@ async function listComments(userId, taskUid) {
     const allAuthorUserIds = [
         ...new Set(comments.map((c) => c.user_id).filter(Boolean)),
     ];
-    const [mentionedPeopleByUid, authorPersonUidByUserId] = await Promise.all([
+    const allCommentIds = comments.map((c) => c.id);
+    const [
+        mentionedPeopleByUid,
+        authorPersonUidByUserId,
+        reactionCountsByCommentId,
+        myReactionByCommentId,
+    ] = await Promise.all([
         resolveMentionedPeopleMap(allMentionedUids),
         resolveAuthorPersonUidMap(allAuthorUserIds),
+        commentsRepository.countReactionsByComment(allCommentIds),
+        commentsRepository.findMyReactionsByComment(allCommentIds, userId),
     ]);
-    return comments.map((comment) => ({
-        ...serializeComment(
-            comment,
-            mentionedPeopleByUid,
-            authorPersonUidByUserId
-        ),
-        is_own: comment.user_id === userId,
-    }));
+    // One level of nesting: fold every reply into its top-level parent's
+    // `replies`, in the same chronological order the flat query returned.
+    const rowsById = new Map();
+    const topLevel = [];
+    for (const comment of comments) {
+        const row = {
+            ...serializeComment(
+                comment,
+                mentionedPeopleByUid,
+                authorPersonUidByUserId,
+                reactionCountsByCommentId,
+                myReactionByCommentId
+            ),
+            is_own: comment.user_id === userId,
+        };
+        rowsById.set(comment.id, row);
+        if (!comment.parent_comment_id) {
+            topLevel.push(row);
+        }
+    }
+    // Second pass: parent rows are guaranteed to exist by now (a reply is
+    // always created after, never before, the comment it replies to). A
+    // reply whose parent is missing for some other reason is dropped rather
+    // than surfaced as a top-level comment it never was.
+    for (const comment of comments) {
+        if (!comment.parent_comment_id) continue;
+        const parentRow = rowsById.get(comment.parent_comment_id);
+        parentRow?.replies.push(rowsById.get(comment.id));
+    }
+    return topLevel;
 }
 
 // Best-effort: a notification failure must never fail the comment write.
-async function notifyAboutComment(task, comment, actingUserId) {
+async function notifyAboutComment(
+    task,
+    comment,
+    actingUserId,
+    parentAuthorUserId = null
+) {
     try {
         const actor = await User.findByPk(actingUserId, {
             attributes: ['id', 'name', 'email'],
         });
         const actorLabel = actor?.name || actor?.email || 'Someone';
         const notified = new Set([actingUserId]);
+
+        if (parentAuthorUserId && !notified.has(parentAuthorUserId)) {
+            const parentAuthor = await User.findByPk(parentAuthorUserId, {
+                attributes: [
+                    'id',
+                    'name',
+                    'email',
+                    'notification_preferences',
+                    'telegram_bot_token',
+                    'telegram_chat_id',
+                ],
+            });
+            if (
+                parentAuthor &&
+                shouldSendInAppNotification(parentAuthor, 'comment_added')
+            ) {
+                notified.add(parentAuthor.id);
+                const sources = shouldSendTelegramNotification(
+                    parentAuthor,
+                    'comment_added'
+                )
+                    ? ['telegram']
+                    : [];
+                await Notification.createNotification({
+                    userId: parentAuthor.id,
+                    type: 'comment_added',
+                    title: `${actorLabel} replied to your comment`,
+                    message: comment.body,
+                    data: {
+                        taskUid: task.uid,
+                        taskName: task.name,
+                        commentUid: comment.uid,
+                    },
+                    sources,
+                });
+            }
+        }
 
         const mentionedPersonUids = comment.mentioned_person_uids || [];
         for (const personUid of mentionedPersonUids) {
@@ -190,7 +274,11 @@ async function notifyAboutComment(task, comment, actingUserId) {
     }
 }
 
-async function addComment(userId, taskUid, { body, mentionedPersonUids }) {
+async function addComment(
+    userId,
+    taskUid,
+    { body, mentionedPersonUids, parentCommentUid }
+) {
     const trimmed = (body || '').trim();
     if (!trimmed) {
         throw new ValidationError('Comment body is required');
@@ -203,11 +291,26 @@ async function addComment(userId, taskUid, { body, mentionedPersonUids }) {
     // still take part in the discussion.
     const task = await requireTaskAccess(userId, taskUid);
 
+    let parentId = null;
+    let parentAuthorUserId = null;
+    if (parentCommentUid) {
+        const parent = await commentsRepository.findByUid(parentCommentUid);
+        if (!parent || parent.task_id !== task.id || parent.deleted_at) {
+            throw new ValidationError('Comment not found');
+        }
+        if (parent.parent_comment_id) {
+            throw new ValidationError('Cannot reply to a reply');
+        }
+        parentId = parent.id;
+        parentAuthorUserId = parent.user_id;
+    }
+
     const comment = await commentsRepository.createForTask(task.id, userId, {
         body: trimmed,
         mentionedPersonUids: Array.isArray(mentionedPersonUids)
             ? mentionedPersonUids.filter((v) => typeof v === 'string')
             : [],
+        parentCommentId: parentId,
     });
 
     await taskEventService.logEvent({
@@ -217,7 +320,7 @@ async function addComment(userId, taskUid, { body, mentionedPersonUids }) {
         metadata: { action: 'comment_added', commentUid: comment.uid },
     });
 
-    await notifyAboutComment(task, comment, userId);
+    await notifyAboutComment(task, comment, userId, parentAuthorUserId);
 
     comment.Author = await User.findByPk(userId, {
         attributes: ['id', 'uid', 'name', 'email'],
@@ -273,4 +376,41 @@ async function removeComment(userId, commentUid) {
     };
 }
 
-module.exports = { listComments, addComment, removeComment };
+// type is 'like' | 'dislike' | null (null clears the caller's reaction).
+// Returns just the counts/my_reaction - the client already has the rest of
+// the comment and only needs to patch those in.
+async function setReaction(userId, commentUid, type) {
+    if (type !== null && type !== 'like' && type !== 'dislike') {
+        throw new ValidationError('Invalid reaction type');
+    }
+
+    const comment = await commentsRepository.findByUid(commentUid);
+    if (!comment || comment.deleted_at) {
+        throw new NotFoundError('Comment not found');
+    }
+
+    const task = await Task.findByPk(comment.task_id, {
+        attributes: ['uid'],
+    });
+    const access = task
+        ? await permissionsService.getAccess(userId, 'task', task.uid)
+        : permissionsService.ACCESS.NONE;
+    if (access === permissionsService.ACCESS.NONE) {
+        throw new NotFoundError('Comment not found');
+    }
+
+    await commentsRepository.setReaction(comment.id, userId, type);
+
+    const counts = (
+        await commentsRepository.countReactionsByComment([comment.id])
+    )[comment.id] || { like: 0, dislike: 0 };
+
+    return {
+        uid: comment.uid,
+        likes_count: counts.like || 0,
+        dislikes_count: counts.dislike || 0,
+        my_reaction: type,
+    };
+}
+
+module.exports = { listComments, addComment, removeComment, setReaction };

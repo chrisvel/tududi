@@ -62,6 +62,7 @@ const Note = require('./note')(sequelize);
 const InboxItem = require('./inbox_item')(sequelize);
 const TaskEvent = require('./task_event')(sequelize);
 const Comment = require('./comment')(sequelize);
+const CommentReaction = require('./comment_reaction')(sequelize);
 const Role = require('./role')(sequelize);
 const Action = require('./action')(sequelize);
 const Permission = require('./permission')(sequelize);
@@ -146,6 +147,17 @@ User.hasMany(Comment, { foreignKey: 'user_id', as: 'Comments' });
 Comment.belongsTo(User, { foreignKey: 'user_id', as: 'Author' });
 Task.hasMany(Comment, { foreignKey: 'task_id', as: 'Comments' });
 Comment.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+Comment.hasMany(Comment, { foreignKey: 'parent_comment_id', as: 'Replies' });
+Comment.belongsTo(Comment, {
+    foreignKey: 'parent_comment_id',
+    as: 'ParentComment',
+});
+Comment.hasMany(CommentReaction, {
+    foreignKey: 'comment_id',
+    as: 'Reactions',
+});
+CommentReaction.belongsTo(Comment, { foreignKey: 'comment_id' });
+CommentReaction.belongsTo(User, { foreignKey: 'user_id' });
 
 Task.belongsTo(Task, {
     as: 'ParentTask',
@@ -505,6 +517,7 @@ module.exports = {
     InboxItem,
     TaskEvent,
     Comment,
+    CommentReaction,
     Role,
     Action,
     Permission,
