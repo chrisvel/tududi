@@ -280,7 +280,7 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
         <div className="relative">
             <div className="relative">
                 {!hasContent && (
-                    <span className="pointer-events-none absolute left-2.5 top-2 text-sm text-gray-400 dark:text-gray-500">
+                    <span className="pointer-events-none absolute left-3.5 top-3 text-sm text-gray-400 dark:text-gray-500">
                         {placeholder ??
                             t(
                                 'comments.placeholder',
@@ -361,7 +361,7 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
                         }
                     }}
                     className={`w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        compact ? 'min-h-[2.25rem] p-2' : 'min-h-[4.5rem] p-2.5'
+                        compact ? 'min-h-[2.5rem] p-3' : 'min-h-[5rem] p-3.5'
                     }`}
                 />
                 <SuggestionsDropdown
@@ -375,12 +375,12 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
                     renderLabel={(person) => <>@{person.name}</>}
                 />
             </div>
-            <div className="flex justify-end gap-2 mt-2">
+            <div className="flex justify-end gap-3 mt-3">
                 {onCancel && (
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        className="px-4 py-2 text-xs font-medium rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
                         {t('common.cancel', 'Cancel')}
                     </button>
@@ -389,7 +389,7 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
                     type="button"
                     onClick={handleSubmit}
                     disabled={!hasContent || submitting}
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-500 dark:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
+                    className="px-4 py-2 text-xs font-medium rounded-lg bg-blue-500 dark:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
                 >
                     {submitLabel ?? t('comments.submit', 'Comment')}
                 </button>

@@ -213,17 +213,17 @@ const CommentRow: React.FC<CommentRowProps> = ({
     const isDeleted = !!comment.deleted_at;
 
     return (
-        <div className="flex gap-3 group">
+        <div className="flex gap-4 group">
             <span
                 className={`flex-shrink-0 rounded-full flex items-center justify-center font-semibold text-white ${avatarColor(
                     authorName
-                )} ${isReply ? 'h-7 w-7 text-[10px]' : 'h-9 w-9 text-xs'}`}
+                )} ${isReply ? 'h-8 w-8 text-[10px]' : 'h-10 w-10 text-xs'}`}
                 title={authorName}
             >
                 {initials(authorName)}
             </span>
             <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-2.5">
                     {comment.author?.person_uid ? (
                         <Link
                             to={`/person/${comment.author.person_uid}`}
@@ -242,17 +242,17 @@ const CommentRow: React.FC<CommentRowProps> = ({
                     </span>
                 </div>
                 {isDeleted ? (
-                    <div className="flex items-center gap-1.5 text-sm italic text-gray-400 dark:text-gray-500 mt-0.5">
+                    <div className="flex items-center gap-1.5 text-sm italic text-gray-400 dark:text-gray-500 mt-1">
                         <NoSymbolIcon className="h-3.5 w-3.5 flex-shrink-0" />
                         {t('comments.deletedPlaceholder', 'Comment deleted')}
                     </div>
                 ) : (
-                    <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words mt-0.5">
+                    <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words leading-relaxed mt-1">
                         {renderBody(comment.body, comment.mentioned_people)}
                     </div>
                 )}
                 {!isDeleted && (
-                    <div className="flex items-center gap-3 mt-1">
+                    <div className="flex items-center gap-4 mt-2">
                         <button
                             type="button"
                             onClick={() => onReact('like')}
@@ -431,14 +431,14 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
     return (
         <div className="w-full">
             {comments.length === 0 ? (
-                <div className="flex items-center gap-2 py-8 text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-3 py-10 text-gray-500 dark:text-gray-400">
                     <ChatBubbleLeftIcon className="h-8 w-8 flex-shrink-0 opacity-50" />
                     <span className="text-sm">
                         {t('comments.empty', 'No comments yet')}
                     </span>
                 </div>
             ) : (
-                <div className="space-y-5 mb-5 max-h-[32rem] overflow-y-auto pr-1">
+                <div className="space-y-6 mb-6 max-h-[32rem] overflow-y-auto pr-2">
                     {comments.map((comment) => (
                         <div key={comment.uid}>
                             <CommentRow
@@ -456,7 +456,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
                             />
                             {(comment.replies.length > 0 ||
                                 replyingToUid === comment.uid) && (
-                                <div className="ml-12 mt-3 space-y-3">
+                                <div className="ml-14 mt-4 space-y-4">
                                     {comment.replies.map((reply) => (
                                         <CommentRow
                                             key={reply.uid}

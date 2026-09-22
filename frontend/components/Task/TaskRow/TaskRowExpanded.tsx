@@ -429,7 +429,7 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                 )}
 
                 {openSection === 'comments' && task.uid && (
-                    <div className={sectionBox}>
+                    <div className="mt-3 rounded-md border border-gray-200 dark:border-gray-700 p-5">
                         <TaskComments
                             task={task}
                             onCommentCountChange={onCommentCountChange}
