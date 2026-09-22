@@ -26,7 +26,11 @@ import WikilinkMenu, { NoteTitle } from './WikilinkMenu';
 import { useNavigate } from 'react-router-dom';
 import { livePreviewExtension } from './editor';
 import { blockUxKeymap } from './editor/keymaps';
-import { blockHandlePlugin, blockHandleTheme } from './editor/blockHandle';
+import {
+    blockHandlePlugin,
+    blockHandleDomHandlers,
+    blockHandleTheme,
+} from './editor/blockHandle';
 import {
     wrapSelection as wrapSelectionCmd,
     setHeading as setHeadingCmd,
@@ -112,9 +116,7 @@ const CLOSED_WIKI: WikilinkMenuState = {
     to: 0,
 };
 
-function detectSlashTrigger(
-    view: EditorView
-): {
+function detectSlashTrigger(view: EditorView): {
     from: number;
     to: number;
     filter: string;
@@ -146,9 +148,7 @@ function detectSlashTrigger(
     };
 }
 
-function detectWikilinkTrigger(
-    view: EditorView
-): {
+function detectWikilinkTrigger(view: EditorView): {
     from: number;
     to: number;
     filter: string;
@@ -274,6 +274,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 drawSelection(),
                 keymap.of(blockUxKeymap),
                 blockHandlePlugin,
+                blockHandleDomHandlers,
                 blockHandleTheme,
                 keymap.of([...defaultKeymap, ...historyKeymap]),
                 EditorView.lineWrapping,

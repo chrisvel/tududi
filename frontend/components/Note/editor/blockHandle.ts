@@ -51,8 +51,6 @@ class BlockHandlePlugin {
     private onMouseLeave = () => {
         if (!this.dragSource) this.hide();
     };
-    private onDragOver = (e: DragEvent) => this.handleDragOver(e);
-    private onDrop = (e: DragEvent) => this.handleDrop(e);
     private onDocClick = (e: MouseEvent) => {
         if (this.menu && !this.menu.contains(e.target as Node)) {
             this.closeMenu();
@@ -109,10 +107,17 @@ class BlockHandlePlugin {
             view.dom.append(this.layer);
             view.dom.addEventListener('mousemove', this.onMouseMove);
             view.dom.addEventListener('mouseleave', this.onMouseLeave);
-            view.dom.addEventListener('dragover', this.onDragOver);
-            view.dom.addEventListener('drop', this.onDrop);
             document.addEventListener('mousedown', this.onDocClick);
         }
+        // dragover/drop are NOT attached here with addEventListener: they go
+        // through the blockHandleDomHandlers extension below instead, using
+        // CodeMirror's own domEventHandlers facet. CodeMirror has its own
+        // built-in drop handling that inserts the dropped text/plain payload
+        // at the drop position, and that ran *before* a plain
+        // addEventListener('drop', ...) here ever got a chance to
+        // preventDefault it - it pasted the dataTransfer payload as literal
+        // text. Only a handler registered through that same facet can
+        // suppress CodeMirror's own default action.
     }
 
     update(update: ViewUpdate) {
@@ -126,8 +131,6 @@ class BlockHandlePlugin {
     destroy() {
         this.view.dom.removeEventListener('mousemove', this.onMouseMove);
         this.view.dom.removeEventListener('mouseleave', this.onMouseLeave);
-        this.view.dom.removeEventListener('dragover', this.onDragOver);
-        this.view.dom.removeEventListener('drop', this.onDrop);
         document.removeEventListener('mousedown', this.onDocClick);
         this.closeMenu();
         this.layer.remove();
@@ -278,7 +281,13 @@ class BlockHandlePlugin {
             return;
         }
         this.dragSource = this.hovered;
-        e.dataTransfer?.setData('text/plain', 'block');
+        // Some browsers require at least one setData call for a drag to
+        // proceed, but the value itself is never read back - dropTarget is
+        // tracked in our own JS state, not through dataTransfer. Keeping it
+        // empty means that if CodeMirror's own drop handling ever runs
+        // anyway (see blockHandleDomHandlers below), it has nothing to
+        // insert.
+        e.dataTransfer?.setData('text/plain', '');
         if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
         this.closeMenu();
     }
@@ -289,21 +298,25 @@ class BlockHandlePlugin {
         this.dropLine.style.display = 'none';
     }
 
-    private handleDragOver(e: DragEvent) {
-        if (!this.dragSource) return;
+    // Returns true when the event is ours to handle, which - via the
+    // blockHandleDomHandlers extension below - also tells CodeMirror to
+    // skip its own default handling (including the built-in "insert the
+    // dropped text" behaviour that a plain addEventListener can't suppress).
+    handleDragOver(e: DragEvent): boolean {
+        if (!this.dragSource) return false;
         e.preventDefault();
         const pos = this.view.posAtCoords({ x: e.clientX, y: e.clientY });
-        if (pos == null) return;
+        if (pos == null) return true;
         const block = blockAt(this.view.state, pos);
         if (!block || sameBlock(block, this.dragSource)) {
             this.dropLine.style.display = 'none';
             this.dropTarget = null;
-            return;
+            return true;
         }
 
         const top = this.view.coordsAtPos(block.from);
         const bottom = this.view.coordsAtPos(block.to);
-        if (!top || !bottom) return;
+        if (!top || !bottom) return true;
         const midpoint = (top.top + bottom.bottom) / 2;
         const before = e.clientY < midpoint;
         this.dropTarget = { block, before };
@@ -312,10 +325,11 @@ class BlockHandlePlugin {
         const lineY = (before ? top.top : bottom.bottom) - editorBox.top;
         this.dropLine.style.display = 'block';
         this.dropLine.style.top = `${lineY}px`;
+        return true;
     }
 
-    private handleDrop(e: DragEvent) {
-        if (!this.dragSource || !this.dropTarget) return;
+    handleDrop(e: DragEvent): boolean {
+        if (!this.dragSource || !this.dropTarget) return false;
         e.preventDefault();
         const spec = reorderBlock(
             this.view.state,
@@ -326,6 +340,7 @@ class BlockHandlePlugin {
         if (spec) this.view.dispatch(spec);
         this.handleDragEnd();
         this.hide();
+        return true;
     }
 }
 
@@ -334,6 +349,18 @@ function sameBlock(a: Block, b: Block): boolean {
 }
 
 export const blockHandlePlugin = ViewPlugin.fromClass(BlockHandlePlugin);
+
+// dragover/drop have to go through CodeMirror's own domEventHandlers facet,
+// not a plain addEventListener, for the plugin's `true` return to actually
+// suppress CodeMirror's built-in drop-to-insert-text handling.
+export const blockHandleDomHandlers = EditorView.domEventHandlers({
+    dragover(event, view) {
+        return view.plugin(blockHandlePlugin)?.handleDragOver(event) ?? false;
+    },
+    drop(event, view) {
+        return view.plugin(blockHandlePlugin)?.handleDrop(event) ?? false;
+    },
+});
 
 export const blockHandleTheme = EditorView.baseTheme({
     '.cm-block-handle-layer': {
