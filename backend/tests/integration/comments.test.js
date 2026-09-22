@@ -253,4 +253,125 @@ describe('Task comments and mentions', () => {
         );
         expect(secondAttempt.status).toBe(404);
     });
+
+    describe('replies', () => {
+        test('a reply nests under its parent in the list, and is not a top-level entry', async () => {
+            const parent = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Top level' });
+
+            const reply = await collaboratorAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'A reply', parent_comment_uid: parent.body.uid });
+            expect(reply.status).toBe(201);
+            expect(reply.body.replies).toEqual([]);
+
+            const listResponse = await ownerAgent.get(
+                `/api/task/${task.uid}/comments`
+            );
+            expect(listResponse.body.comments).toHaveLength(1);
+            const listedParent = listResponse.body.comments[0];
+            expect(listedParent.uid).toBe(parent.body.uid);
+            expect(listedParent.replies).toHaveLength(1);
+            expect(listedParent.replies[0].uid).toBe(reply.body.uid);
+            expect(listedParent.replies[0].body).toBe('A reply');
+        });
+
+        test('replying to a reply is refused', async () => {
+            const parent = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Top level' });
+            const reply = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'A reply', parent_comment_uid: parent.body.uid });
+
+            const nestedReply = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({
+                    body: 'Reply to a reply',
+                    parent_comment_uid: reply.body.uid,
+                });
+            expect(nestedReply.status).toBe(400);
+        });
+
+        test('replying to a comment on a different task is refused', async () => {
+            const otherTaskResponse = await ownerAgent
+                .post('/api/task')
+                .send({ name: 'Other task', project_uid: project.uid });
+            const parent = await ownerAgent
+                .post(`/api/task/${otherTaskResponse.body.uid}/comments`)
+                .send({ body: 'Top level elsewhere' });
+
+            const reply = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Reply', parent_comment_uid: parent.body.uid });
+            expect(reply.status).toBe(400);
+        });
+
+        test('replying to a deleted comment is refused', async () => {
+            const parent = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Will be deleted' });
+            await ownerAgent.delete(`/api/comment/${parent.body.uid}`);
+
+            const reply = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Reply', parent_comment_uid: parent.body.uid });
+            expect(reply.status).toBe(400);
+        });
+
+        test('the parent comment author is notified of a reply', async () => {
+            const parent = await collaboratorAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Top level by collaborator' });
+
+            await ownerAgent.post(`/api/task/${task.uid}/comments`).send({
+                body: 'Owner replies',
+                parent_comment_uid: parent.body.uid,
+            });
+
+            const notifications = await Notification.findAll({
+                where: {
+                    user_id: collaboratorUser.id,
+                    type: 'comment_added',
+                },
+            });
+            expect(notifications).toHaveLength(1);
+            expect(notifications[0].title).toContain('replied to your comment');
+        });
+
+        test('deleting a reply tombstones it in place under its parent', async () => {
+            const parent = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Top level' });
+            const reply = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'A reply', parent_comment_uid: parent.body.uid });
+
+            await ownerAgent.delete(`/api/comment/${reply.body.uid}`);
+
+            const listResponse = await ownerAgent.get(
+                `/api/task/${task.uid}/comments`
+            );
+            const listedParent = listResponse.body.comments[0];
+            expect(listedParent.replies).toHaveLength(1);
+            expect(listedParent.replies[0].body).toBe('');
+            expect(listedParent.replies[0].deleted_at).not.toBeNull();
+        });
+
+        test('comments_count includes replies', async () => {
+            const parent = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Top level' });
+            await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'A reply', parent_comment_uid: parent.body.uid });
+
+            const listResponse = await ownerAgent.get('/api/tasks');
+            const listedTask = listResponse.body.tasks.find(
+                (t) => t.uid === task.uid
+            );
+            expect(listedTask.comments_count).toBe(2);
+        });
+    });
 });

@@ -43,11 +43,12 @@ jest.mock('../../../utils/peopleService', () => ({
 // The composer is a contentEditable div (no .value/.selectionStart), so
 // simulating typing means mutating its DOM directly, placing a real
 // Selection at the end of the text, then firing the native `input` event
-// React listens for.
-function typeIntoComposer(container: HTMLElement, text: string) {
-    const editor = container.querySelector(
-        '[contenteditable="true"]'
-    ) as HTMLElement;
+// React listens for. `index` picks which editor when more than one is on
+// screen (the main composer plus an open reply composer).
+function typeIntoComposer(container: HTMLElement, text: string, index = 0) {
+    const editor = container.querySelectorAll('[contenteditable="true"]')[
+        index
+    ] as HTMLElement;
     editor.textContent = text;
     const textNode = editor.firstChild as Text;
     const range = document.createRange();
@@ -77,6 +78,7 @@ const baseComment: Comment = {
         person_uid: 'person-alice',
     },
     is_own: false,
+    replies: [],
 };
 
 const ownComment: Comment = {
@@ -221,5 +223,82 @@ describe('TaskComments', () => {
         expect(screen.queryByText('My own comment')).not.toBeInTheDocument();
         expect(screen.queryByLabelText('Delete comment')).toBeNull();
         expect(onCommentCountChange).toHaveBeenLastCalledWith(0);
+    });
+
+    describe('replies', () => {
+        it('opens a reply composer and nests the posted reply under its parent', async () => {
+            const parent: Comment = {
+                ...baseComment,
+                uid: 'comment-parent',
+                body: 'Parent comment',
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([parent]);
+            const postedReply: Comment = {
+                ...baseComment,
+                uid: 'comment-reply',
+                body: 'A reply',
+                is_own: true,
+            };
+            (createComment as jest.Mock).mockResolvedValue(postedReply);
+            const onCommentCountChange = jest.fn();
+
+            const { container } = render(
+                <TaskComments
+                    task={task}
+                    onCommentCountChange={onCommentCountChange}
+                />
+            );
+            await screen.findByText('Parent comment');
+
+            fireEvent.click(screen.getByText('Reply'));
+
+            const editors = container.querySelectorAll(
+                '[contenteditable="true"]'
+            );
+            expect(editors).toHaveLength(2);
+
+            typeIntoComposer(container, 'A reply', 0);
+            // Two "Reply" buttons are on screen now: the toggle and the
+            // open composer's submit button (the latter renders second).
+            const replyButtons = screen.getAllByRole('button', {
+                name: 'Reply',
+            });
+            fireEvent.click(replyButtons[replyButtons.length - 1]);
+
+            await waitFor(() =>
+                expect(createComment).toHaveBeenCalledWith('task-1', {
+                    body: 'A reply',
+                    mentionedPersonUids: [],
+                    parentCommentUid: 'comment-parent',
+                })
+            );
+            expect(await screen.findByText('A reply')).toBeInTheDocument();
+            expect(onCommentCountChange).toHaveBeenLastCalledWith(2);
+            // The reply composer closes after a successful post.
+            expect(
+                container.querySelectorAll('[contenteditable="true"]')
+            ).toHaveLength(1);
+        });
+
+        it('does not offer a Reply action on a reply itself', async () => {
+            const reply: Comment = {
+                ...baseComment,
+                uid: 'comment-reply',
+                body: 'A reply',
+            };
+            const parent: Comment = {
+                ...baseComment,
+                uid: 'comment-parent',
+                body: 'Parent comment',
+                replies: [reply],
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([parent]);
+
+            render(<TaskComments task={task} />);
+            await screen.findByText('A reply');
+
+            // Only the parent's Reply action exists.
+            expect(screen.getAllByText('Reply')).toHaveLength(1);
+        });
     });
 });

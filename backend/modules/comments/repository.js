@@ -37,12 +37,17 @@ class CommentsRepository extends BaseRepository {
         });
     }
 
-    async createForTask(taskId, userId, { body, mentionedPersonUids }) {
+    async createForTask(
+        taskId,
+        userId,
+        { body, mentionedPersonUids, parentCommentId = null }
+    ) {
         return this.model.create({
             task_id: taskId,
             user_id: userId,
             body,
             mentioned_person_uids: mentionedPersonUids,
+            parent_comment_id: parentCommentId,
         });
     }
 }

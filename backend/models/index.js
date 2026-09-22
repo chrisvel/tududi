@@ -146,6 +146,11 @@ User.hasMany(Comment, { foreignKey: 'user_id', as: 'Comments' });
 Comment.belongsTo(User, { foreignKey: 'user_id', as: 'Author' });
 Task.hasMany(Comment, { foreignKey: 'task_id', as: 'Comments' });
 Comment.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+Comment.hasMany(Comment, { foreignKey: 'parent_comment_id', as: 'Replies' });
+Comment.belongsTo(Comment, {
+    foreignKey: 'parent_comment_id',
+    as: 'ParentComment',
+});
 
 Task.belongsTo(Task, {
     as: 'ParentTask',

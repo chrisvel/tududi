@@ -13,4 +13,7 @@ export interface Comment {
         person_uid: string | null;
     } | null;
     is_own: boolean;
+    // One level deep: populated on a top-level comment, always empty on a
+    // reply (replying to a reply isn't offered).
+    replies: Comment[];
 }

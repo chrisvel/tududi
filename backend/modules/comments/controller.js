@@ -23,12 +23,15 @@ const commentsController = {
      */
     async create(req, res, next) {
         try {
-            const { body, mentioned_person_uids: mentionedPersonUids } =
-                req.body;
+            const {
+                body,
+                mentioned_person_uids: mentionedPersonUids,
+                parent_comment_uid: parentCommentUid,
+            } = req.body;
             const comment = await commentsService.addComment(
                 req.currentUser.id,
                 req.params.uid,
-                { body, mentionedPersonUids }
+                { body, mentionedPersonUids, parentCommentUid }
             );
             res.status(201).json(comment);
         } catch (error) {

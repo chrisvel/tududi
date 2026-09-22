@@ -15,7 +15,11 @@ export const fetchComments = async (taskUid: string): Promise<Comment[]> => {
 
 export const createComment = async (
     taskUid: string,
-    data: { body: string; mentionedPersonUids: string[] }
+    data: {
+        body: string;
+        mentionedPersonUids: string[];
+        parentCommentUid?: string;
+    }
 ): Promise<Comment> => {
     const response = await fetch(getApiPath(`task/${taskUid}/comments`), {
         method: 'POST',
@@ -24,6 +28,7 @@ export const createComment = async (
         body: JSON.stringify({
             body: data.body,
             mentioned_person_uids: data.mentionedPersonUids,
+            parent_comment_uid: data.parentCommentUid,
         }),
     });
     await handleAuthResponse(response, 'Failed to post comment.');
