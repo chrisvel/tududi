@@ -36,6 +36,11 @@ jest.mock('../components/Note/MarkdownEditor', () => ({
     ),
 }));
 
+jest.mock('../components/Shared/MarkdownRenderer', () => ({
+    __esModule: true,
+    default: ({ content }: any) => <div>{content}</div>,
+}));
+
 jest.mock('../components/Note/NoteModal', () => ({
     __esModule: true,
     default: () => null,

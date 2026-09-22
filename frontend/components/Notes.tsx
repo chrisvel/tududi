@@ -40,6 +40,7 @@ import { sortNotesByOrder } from '../utils/notesTreeUtils';
 import { COLORS } from './Shared/ColorPicker';
 import NoteFocusMode from './Note/NoteFocusMode';
 import MarkdownEditor from './Note/MarkdownEditor';
+import NoteCard from './Shared/NoteCard';
 
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
@@ -911,7 +912,24 @@ const Notes: React.FC = () => {
                                     />
                                 </div>
                             </div>
-                        ) : previewNote ? null : (
+                        ) : previewNote ? null : sortedNotes.length > 0 ? (
+                            // No note selected yet (mobile lands here since
+                            // it skips auto-selecting the most recent note,
+                            // and desktop briefly does too before that
+                            // effect runs). Show every note to pick from
+                            // instead of a dead-end placeholder (#1527).
+                            <div className="flex-1 overflow-y-auto p-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                    {sortedNotes.map((note) => (
+                                        <NoteCard
+                                            key={note.uid}
+                                            note={note}
+                                            showActions={false}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
                             <div className="flex items-center justify-center flex-1 text-gray-500 dark:text-gray-400">
                                 {t(
                                     'notes.selectNote',
