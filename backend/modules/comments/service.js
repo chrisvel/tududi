@@ -45,9 +45,15 @@ async function resolveAuthorPersonUidMap(userIds) {
 function serializeComment(
     comment,
     mentionedPeopleByUid = new Map(),
-    authorPersonUidByUserId = new Map()
+    authorPersonUidByUserId = new Map(),
+    reactionCountsByCommentId = {},
+    myReactionByCommentId = {}
 ) {
     const mentionedPersonUids = comment.mentioned_person_uids || [];
+    const reactionCounts = reactionCountsByCommentId[comment.id] || {
+        like: 0,
+        dislike: 0,
+    };
     return {
         uid: comment.uid,
         task_id: comment.task_id,
@@ -70,6 +76,9 @@ function serializeComment(
         // Populated by listComments for a top-level comment; a reply never
         // carries its own nested replies (one level of nesting only).
         replies: [],
+        likes_count: reactionCounts.like || 0,
+        dislikes_count: reactionCounts.dislike || 0,
+        my_reaction: myReactionByCommentId[comment.id] || null,
     };
 }
 
@@ -94,9 +103,17 @@ async function listComments(userId, taskUid) {
     const allAuthorUserIds = [
         ...new Set(comments.map((c) => c.user_id).filter(Boolean)),
     ];
-    const [mentionedPeopleByUid, authorPersonUidByUserId] = await Promise.all([
+    const allCommentIds = comments.map((c) => c.id);
+    const [
+        mentionedPeopleByUid,
+        authorPersonUidByUserId,
+        reactionCountsByCommentId,
+        myReactionByCommentId,
+    ] = await Promise.all([
         resolveMentionedPeopleMap(allMentionedUids),
         resolveAuthorPersonUidMap(allAuthorUserIds),
+        commentsRepository.countReactionsByComment(allCommentIds),
+        commentsRepository.findMyReactionsByComment(allCommentIds, userId),
     ]);
     // One level of nesting: fold every reply into its top-level parent's
     // `replies`, in the same chronological order the flat query returned.
@@ -107,7 +124,9 @@ async function listComments(userId, taskUid) {
             ...serializeComment(
                 comment,
                 mentionedPeopleByUid,
-                authorPersonUidByUserId
+                authorPersonUidByUserId,
+                reactionCountsByCommentId,
+                myReactionByCommentId
             ),
             is_own: comment.user_id === userId,
         };
@@ -357,4 +376,41 @@ async function removeComment(userId, commentUid) {
     };
 }
 
-module.exports = { listComments, addComment, removeComment };
+// type is 'like' | 'dislike' | null (null clears the caller's reaction).
+// Returns just the counts/my_reaction - the client already has the rest of
+// the comment and only needs to patch those in.
+async function setReaction(userId, commentUid, type) {
+    if (type !== null && type !== 'like' && type !== 'dislike') {
+        throw new ValidationError('Invalid reaction type');
+    }
+
+    const comment = await commentsRepository.findByUid(commentUid);
+    if (!comment || comment.deleted_at) {
+        throw new NotFoundError('Comment not found');
+    }
+
+    const task = await Task.findByPk(comment.task_id, {
+        attributes: ['uid'],
+    });
+    const access = task
+        ? await permissionsService.getAccess(userId, 'task', task.uid)
+        : permissionsService.ACCESS.NONE;
+    if (access === permissionsService.ACCESS.NONE) {
+        throw new NotFoundError('Comment not found');
+    }
+
+    await commentsRepository.setReaction(comment.id, userId, type);
+
+    const counts = (
+        await commentsRepository.countReactionsByComment([comment.id])
+    )[comment.id] || { like: 0, dislike: 0 };
+
+    return {
+        uid: comment.uid,
+        likes_count: counts.like || 0,
+        dislikes_count: counts.dislike || 0,
+        my_reaction: type,
+    };
+}
+
+module.exports = { listComments, addComment, removeComment, setReaction };

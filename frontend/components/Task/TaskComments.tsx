@@ -4,12 +4,22 @@ import { useTranslation } from 'react-i18next';
 import {
     ChatBubbleLeftIcon,
     ExclamationTriangleIcon,
+    HandThumbDownIcon,
+    HandThumbUpIcon,
     NoSymbolIcon,
 } from '@heroicons/react/24/outline';
+import {
+    HandThumbDownIcon as HandThumbDownIconSolid,
+    HandThumbUpIcon as HandThumbUpIconSolid,
+} from '@heroicons/react/24/solid';
 import { Task } from '../../entities/Task';
 import { Person } from '../../entities/Person';
-import { Comment } from '../../entities/Comment';
-import { fetchComments, deleteComment } from '../../utils/commentsService';
+import { Comment, CommentReactionResult } from '../../entities/Comment';
+import {
+    fetchComments,
+    deleteComment,
+    setCommentReaction,
+} from '../../utils/commentsService';
 import {
     fetchPeople,
     fetchAssignablePeopleForProject,
@@ -149,6 +159,25 @@ function appendReply(
     );
 }
 
+function patchReactionInTree(
+    list: Comment[],
+    uid: string,
+    patch: CommentReactionResult
+): Comment[] {
+    return list.map((comment) => {
+        if (comment.uid === uid) return { ...comment, ...patch };
+        if (comment.replies.some((r) => r.uid === uid)) {
+            return {
+                ...comment,
+                replies: comment.replies.map((r) =>
+                    r.uid === uid ? { ...r, ...patch } : r
+                ),
+            };
+        }
+        return comment;
+    });
+}
+
 function formatTimeAgo(dateString: string) {
     const date = new Date(dateString);
     const diffMs = Date.now() - date.getTime();
@@ -168,6 +197,7 @@ interface CommentRowProps {
     isReply: boolean;
     onReply?: () => void;
     onDelete: () => void;
+    onReact: (type: 'like' | 'dislike') => void;
 }
 
 const CommentRow: React.FC<CommentRowProps> = ({
@@ -175,6 +205,7 @@ const CommentRow: React.FC<CommentRowProps> = ({
     isReply,
     onReply,
     onDelete,
+    onReact,
 }) => {
     const { t } = useTranslation();
     const authorName =
@@ -222,6 +253,43 @@ const CommentRow: React.FC<CommentRowProps> = ({
                 )}
                 {!isDeleted && (
                     <div className="flex items-center gap-3 mt-1">
+                        <button
+                            type="button"
+                            onClick={() => onReact('like')}
+                            className={`flex items-center gap-1 text-xs font-medium ${
+                                comment.my_reaction === 'like'
+                                    ? 'text-blue-600 dark:text-blue-400'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                            }`}
+                            aria-label={t('comments.like', 'Like')}
+                            aria-pressed={comment.my_reaction === 'like'}
+                        >
+                            {comment.my_reaction === 'like' ? (
+                                <HandThumbUpIconSolid className="h-3.5 w-3.5" />
+                            ) : (
+                                <HandThumbUpIcon className="h-3.5 w-3.5" />
+                            )}
+                            {comment.likes_count > 0 && comment.likes_count}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => onReact('dislike')}
+                            className={`flex items-center gap-1 text-xs font-medium ${
+                                comment.my_reaction === 'dislike'
+                                    ? 'text-red-600 dark:text-red-400'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                            }`}
+                            aria-label={t('comments.dislike', 'Dislike')}
+                            aria-pressed={comment.my_reaction === 'dislike'}
+                        >
+                            {comment.my_reaction === 'dislike' ? (
+                                <HandThumbDownIconSolid className="h-3.5 w-3.5" />
+                            ) : (
+                                <HandThumbDownIcon className="h-3.5 w-3.5" />
+                            )}
+                            {comment.dislikes_count > 0 &&
+                                comment.dislikes_count}
+                        </button>
                         {onReply && (
                             <button
                                 type="button"
@@ -320,9 +388,24 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
         }
     };
 
+    const handleReact = async (comment: Comment, type: 'like' | 'dislike') => {
+        const nextType = comment.my_reaction === type ? null : type;
+        try {
+            const result = await setCommentReaction(comment.uid, nextType);
+            setComments((prev) =>
+                patchReactionInTree(prev, comment.uid, result)
+            );
+        } catch (err) {
+            console.error('Error updating reaction:', err);
+            showErrorToast(
+                t('comments.failedToReact', 'Failed to update reaction')
+            );
+        }
+    };
+
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center h-32 text-gray-500 dark:text-gray-400">
+            <div className="flex items-center h-32 text-gray-500 dark:text-gray-400">
                 <span className="text-sm">
                     {t('comments.loading', 'Loading comments...')}
                 </span>
@@ -332,19 +415,19 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 
     if (error) {
         return (
-            <div className="flex flex-col items-center justify-center h-32 text-red-500">
-                <ExclamationTriangleIcon className="h-6 w-6 mb-2" />
+            <div className="flex items-center gap-2 h-32 text-red-500">
+                <ExclamationTriangleIcon className="h-6 w-6 flex-shrink-0" />
                 <span className="text-sm">{error}</span>
             </div>
         );
     }
 
     return (
-        <div className="max-w-2xl mx-auto w-full">
+        <div className="max-w-2xl w-full">
             {comments.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
-                    <ChatBubbleLeftIcon className="h-12 w-12 mb-3 opacity-50" />
-                    <span className="text-sm text-center">
+                <div className="flex items-center gap-2 py-8 text-gray-500 dark:text-gray-400">
+                    <ChatBubbleLeftIcon className="h-8 w-8 flex-shrink-0 opacity-50" />
+                    <span className="text-sm">
                         {t('comments.empty', 'No comments yet')}
                     </span>
                 </div>
@@ -363,6 +446,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
                                     )
                                 }
                                 onDelete={() => setCommentToDelete(comment)}
+                                onReact={(type) => handleReact(comment, type)}
                             />
                             {(comment.replies.length > 0 ||
                                 replyingToUid === comment.uid) && (
@@ -374,6 +458,9 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
                                             isReply
                                             onDelete={() =>
                                                 setCommentToDelete(reply)
+                                            }
+                                            onReact={(type) =>
+                                                handleReact(reply, type)
                                             }
                                         />
                                     ))}

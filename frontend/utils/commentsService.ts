@@ -1,4 +1,4 @@
-import { Comment } from '../entities/Comment';
+import { Comment, CommentReactionResult } from '../entities/Comment';
 import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
@@ -48,5 +48,20 @@ export const deleteComment = async (uid: string): Promise<Comment> => {
         },
     });
     await handleAuthResponse(response, 'Failed to delete comment.');
+    return response.json();
+};
+
+// type is null to clear the caller's own reaction.
+export const setCommentReaction = async (
+    uid: string,
+    type: 'like' | 'dislike' | null
+): Promise<CommentReactionResult> => {
+    const response = await fetch(getApiPath(`comment/${uid}/reaction`), {
+        method: 'POST',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({ type }),
+    });
+    await handleAuthResponse(response, 'Failed to update reaction.');
     return response.json();
 };

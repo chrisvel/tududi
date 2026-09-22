@@ -233,7 +233,10 @@
     "deleteConfirmMessage": "Are you sure you want to delete this comment? This action cannot be undone.",
     "deletedPlaceholder": "Comment deleted",
     "failedToPost": "Failed to post comment",
-    "failedToDelete": "Failed to delete comment"
+    "failedToDelete": "Failed to delete comment",
+    "like": "Like",
+    "dislike": "Dislike",
+    "failedToReact": "Failed to update reaction"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",

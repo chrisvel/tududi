@@ -56,6 +56,25 @@ const commentsController = {
             next(error);
         }
     },
+
+    /**
+     * POST /api/comment/:uid/reaction
+     * Body: { type: 'like' | 'dislike' | null }. null clears the caller's
+     * own reaction. Returns just the updated counts and the caller's
+     * current reaction.
+     */
+    async react(req, res, next) {
+        try {
+            const result = await commentsService.setReaction(
+                req.currentUser.id,
+                req.params.uid,
+                req.body.type ?? null
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = commentsController;

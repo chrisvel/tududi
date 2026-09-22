@@ -374,4 +374,138 @@ describe('Task comments and mentions', () => {
             expect(listedTask.comments_count).toBe(2);
         });
     });
+
+    describe('reactions', () => {
+        test('liking and disliking a comment updates its counts', async () => {
+            const created = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'React to me' });
+
+            const liked = await ownerAgent
+                .post(`/api/comment/${created.body.uid}/reaction`)
+                .send({ type: 'like' });
+            expect(liked.status).toBe(200);
+            expect(liked.body).toEqual({
+                uid: created.body.uid,
+                likes_count: 1,
+                dislikes_count: 0,
+                my_reaction: 'like',
+            });
+
+            const collaboratorDisliked = await collaboratorAgent
+                .post(`/api/comment/${created.body.uid}/reaction`)
+                .send({ type: 'dislike' });
+            expect(collaboratorDisliked.body).toEqual({
+                uid: created.body.uid,
+                likes_count: 1,
+                dislikes_count: 1,
+                my_reaction: 'dislike',
+            });
+
+            const listResponse = await ownerAgent.get(
+                `/api/task/${task.uid}/comments`
+            );
+            const listed = listResponse.body.comments[0];
+            expect(listed.likes_count).toBe(1);
+            expect(listed.dislikes_count).toBe(1);
+            expect(listed.my_reaction).toBe('like');
+        });
+
+        test('switching from like to dislike replaces the reaction, not adds to it', async () => {
+            const created = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'React to me' });
+
+            await ownerAgent
+                .post(`/api/comment/${created.body.uid}/reaction`)
+                .send({ type: 'like' });
+            const switched = await ownerAgent
+                .post(`/api/comment/${created.body.uid}/reaction`)
+                .send({ type: 'dislike' });
+
+            expect(switched.body).toEqual({
+                uid: created.body.uid,
+                likes_count: 0,
+                dislikes_count: 1,
+                my_reaction: 'dislike',
+            });
+        });
+
+        test('sending type null clears the reaction', async () => {
+            const created = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'React to me' });
+
+            await ownerAgent
+                .post(`/api/comment/${created.body.uid}/reaction`)
+                .send({ type: 'like' });
+            const cleared = await ownerAgent
+                .post(`/api/comment/${created.body.uid}/reaction`)
+                .send({ type: null });
+
+            expect(cleared.body).toEqual({
+                uid: created.body.uid,
+                likes_count: 0,
+                dislikes_count: 0,
+                my_reaction: null,
+            });
+        });
+
+        test('an invalid reaction type is rejected', async () => {
+            const created = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'React to me' });
+
+            const response = await ownerAgent
+                .post(`/api/comment/${created.body.uid}/reaction`)
+                .send({ type: 'love' });
+            expect(response.status).toBe(400);
+        });
+
+        test('a user with no access to the task cannot react', async () => {
+            const created = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'React to me' });
+
+            const response = await outsiderAgent
+                .post(`/api/comment/${created.body.uid}/reaction`)
+                .send({ type: 'like' });
+            expect(response.status).toBe(404);
+        });
+
+        test('reacting to a deleted comment is refused', async () => {
+            const created = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Will be deleted' });
+            await ownerAgent.delete(`/api/comment/${created.body.uid}`);
+
+            const response = await ownerAgent
+                .post(`/api/comment/${created.body.uid}/reaction`)
+                .send({ type: 'like' });
+            expect(response.status).toBe(404);
+        });
+
+        test('a reply can be reacted to independently of its parent', async () => {
+            const parent = await ownerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: 'Top level' });
+            const reply = await collaboratorAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({
+                    body: 'A reply',
+                    parent_comment_uid: parent.body.uid,
+                });
+
+            await ownerAgent
+                .post(`/api/comment/${reply.body.uid}/reaction`)
+                .send({ type: 'like' });
+
+            const listResponse = await ownerAgent.get(
+                `/api/task/${task.uid}/comments`
+            );
+            const listedParent = listResponse.body.comments[0];
+            expect(listedParent.likes_count).toBe(0);
+            expect(listedParent.replies[0].likes_count).toBe(1);
+        });
+    });
 });

@@ -31,4 +31,11 @@ router.delete('/comment/:uid', (req, res, next) => {
     return commentsController.delete(req, res, next);
 });
 
+router.post('/comment/:uid/reaction', (req, res, next) => {
+    if (!isValidUid(req.params.uid)) {
+        return res.status(400).json({ error: 'Invalid UID' });
+    }
+    return commentsController.react(req, res, next);
+});
+
 module.exports = router;

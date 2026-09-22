@@ -8,6 +8,7 @@ import {
     fetchComments,
     createComment,
     deleteComment,
+    setCommentReaction,
 } from '../../../utils/commentsService';
 import { fetchPeople } from '../../../utils/peopleService';
 
@@ -33,6 +34,7 @@ jest.mock('../../../utils/commentsService', () => ({
     fetchComments: jest.fn(),
     createComment: jest.fn(),
     deleteComment: jest.fn(),
+    setCommentReaction: jest.fn(),
 }));
 
 jest.mock('../../../utils/peopleService', () => ({
@@ -79,6 +81,9 @@ const baseComment: Comment = {
     },
     is_own: false,
     replies: [],
+    likes_count: 0,
+    dislikes_count: 0,
+    my_reaction: null,
 };
 
 const ownComment: Comment = {
@@ -299,6 +304,94 @@ describe('TaskComments', () => {
 
             // Only the parent's Reply action exists.
             expect(screen.getAllByText('Reply')).toHaveLength(1);
+        });
+    });
+
+    describe('reactions', () => {
+        it('likes a comment and shows the updated count', async () => {
+            const comment: Comment = {
+                ...baseComment,
+                uid: 'comment-1',
+                body: 'Nice work',
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([comment]);
+            (setCommentReaction as jest.Mock).mockResolvedValue({
+                uid: 'comment-1',
+                likes_count: 1,
+                dislikes_count: 0,
+                my_reaction: 'like',
+            });
+
+            render(<TaskComments task={task} />);
+            await screen.findByText('Nice work');
+
+            fireEvent.click(screen.getByLabelText('Like'));
+
+            await waitFor(() =>
+                expect(setCommentReaction).toHaveBeenCalledWith(
+                    'comment-1',
+                    'like'
+                )
+            );
+            expect(await screen.findByText('1')).toBeInTheDocument();
+        });
+
+        it('clicking Like again clears the reaction (toggle off)', async () => {
+            const comment: Comment = {
+                ...baseComment,
+                uid: 'comment-1',
+                body: 'Nice work',
+                likes_count: 1,
+                my_reaction: 'like',
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([comment]);
+            (setCommentReaction as jest.Mock).mockResolvedValue({
+                uid: 'comment-1',
+                likes_count: 0,
+                dislikes_count: 0,
+                my_reaction: null,
+            });
+
+            render(<TaskComments task={task} />);
+            await screen.findByText('Nice work');
+
+            fireEvent.click(screen.getByLabelText('Like'));
+
+            await waitFor(() =>
+                expect(setCommentReaction).toHaveBeenCalledWith(
+                    'comment-1',
+                    null
+                )
+            );
+        });
+
+        it('disliking after liking switches the reaction', async () => {
+            const comment: Comment = {
+                ...baseComment,
+                uid: 'comment-1',
+                body: 'Nice work',
+                likes_count: 1,
+                my_reaction: 'like',
+            };
+            (fetchComments as jest.Mock).mockResolvedValue([comment]);
+            (setCommentReaction as jest.Mock).mockResolvedValue({
+                uid: 'comment-1',
+                likes_count: 0,
+                dislikes_count: 1,
+                my_reaction: 'dislike',
+            });
+
+            render(<TaskComments task={task} />);
+            await screen.findByText('Nice work');
+
+            fireEvent.click(screen.getByLabelText('Dislike'));
+
+            await waitFor(() =>
+                expect(setCommentReaction).toHaveBeenCalledWith(
+                    'comment-1',
+                    'dislike'
+                )
+            );
         });
     });
 });
