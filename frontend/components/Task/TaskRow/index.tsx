@@ -95,6 +95,10 @@ const TaskRow: React.FC<TaskRowProps> = ({
     const [subtasks, setSubtasks] = useState<Task[]>(task.subtasks || []);
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
     const [showSubtasks, setShowSubtasks] = useState(false);
+    // Lifted above TaskRowExpanded (which unmounts on collapse) so the count
+    // survives an expand/collapse cycle instead of resetting to the possibly
+    // stale task.comments_count every time the panel remounts.
+    const [commentCount, setCommentCount] = useState(task.comments_count ?? 0);
 
     const canExpand = !disableExpand && !task.habit_mode && !!task.uid;
     // Virtual occurrences of a recurring task share the parent's uid, so
@@ -141,6 +145,9 @@ const TaskRow: React.FC<TaskRowProps> = ({
     useEffect(() => {
         setSubtasks(task.subtasks || []);
     }, [task.id, task.subtasks]);
+    useEffect(() => {
+        setCommentCount(task.comments_count ?? 0);
+    }, [task.id, task.comments_count]);
     useEffect(() => {
         setShowSubtasks(false);
     }, [task.id]);
@@ -368,6 +375,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
                             ? handleSubtasksToggle
                             : undefined
                     }
+                    commentCount={commentCount}
                     editable={isExpanded}
                     onSaveTitle={setters.setTitle}
                     onEscape={collapse}
@@ -389,6 +397,8 @@ const TaskRow: React.FC<TaskRowProps> = ({
                             } as React.MouseEvent);
                         }}
                         onAddSubtask={handleAddSubtask}
+                        commentCount={commentCount}
+                        onCommentCountChange={setCommentCount}
                     />
                 )}
 

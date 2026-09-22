@@ -45,6 +45,7 @@ export interface Task {
     subtasks?: Task[];
     parent_child_logic_executed?: boolean;
     attachments?: Attachment[];
+    comments_count?: number;
     habit_mode?: boolean;
     habit_target_count?: number;
     habit_frequency_period?: 'daily' | 'weekly' | 'monthly';
@@ -60,7 +61,15 @@ export interface Task {
     // Transient UI field set by suggestion scoring - never persisted or sent to server
     _suggestionMeta?: {
         score: number;
-        reason: 'area_balance' | 'due' | 'goal' | 'fits_now' | 'revive' | 'high' | 'aging_review' | 'next_step';
+        reason:
+            | 'area_balance'
+            | 'due'
+            | 'goal'
+            | 'fits_now'
+            | 'revive'
+            | 'high'
+            | 'aging_review'
+            | 'next_step';
         reasonLabel: string;
         reasonColor: string;
     };

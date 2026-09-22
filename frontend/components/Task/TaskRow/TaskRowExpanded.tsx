@@ -13,6 +13,7 @@ import { useReducedMotion } from '../../../hooks/useReducedMotion';
 import { useStore } from '../../../store/useStore';
 import TagInput from '../../Tag/TagInput';
 import TaskAttachmentsCard from '../TaskDetails/TaskAttachmentsCard';
+import TaskComments from '../TaskComments';
 import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import { TaskRowSetters } from './useTaskRowSave';
 import TaskRowToolbar, { TaskRowSection } from './TaskRowToolbar';
@@ -30,6 +31,8 @@ interface TaskRowExpandedProps {
     onAddSubtask: (name: string) => void;
     onDelete: (e: React.MouseEvent) => void;
     fullPagePath: string;
+    commentCount: number;
+    onCommentCountChange: (count: number) => void;
 }
 
 interface RecurrenceFormState {
@@ -66,6 +69,8 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
     onAddSubtask,
     onDelete,
     fullPagePath,
+    commentCount,
+    onCommentCountChange,
 }) => {
     const { t } = useTranslation();
     const reducedMotion = useReducedMotion();
@@ -263,6 +268,7 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                     onToggleSection={toggleSection}
                     onDelete={onDelete}
                     fullPagePath={fullPagePath}
+                    commentCount={commentCount}
                 />
 
                 {openSection === 'note' && (
@@ -372,8 +378,7 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                                 recurrenceForm.recurrence_interval
                             }
                             recurrenceEndDate={
-                                recurrenceForm.recurrence_end_date ||
-                                undefined
+                                recurrenceForm.recurrence_end_date || undefined
                             }
                             recurrenceWeekday={
                                 recurrenceForm.recurrence_weekday ?? undefined
@@ -382,8 +387,7 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                                 recurrenceForm.recurrence_weekdays || []
                             }
                             recurrenceMonthDay={
-                                recurrenceForm.recurrence_month_day ??
-                                undefined
+                                recurrenceForm.recurrence_month_day ?? undefined
                             }
                             recurrenceWeekOfMonth={
                                 recurrenceForm.recurrence_week_of_month ??
@@ -421,6 +425,15 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                 {openSection === 'attachments' && task.uid && (
                     <div className="mt-2">
                         <TaskAttachmentsCard taskUid={task.uid} />
+                    </div>
+                )}
+
+                {openSection === 'comments' && task.uid && (
+                    <div className={sectionBox}>
+                        <TaskComments
+                            task={task}
+                            onCommentCountChange={onCommentCountChange}
+                        />
                     </div>
                 )}
             </div>

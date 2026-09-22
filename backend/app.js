@@ -357,6 +357,7 @@ const searchModule = require('./modules/search');
 const sharesModule = require('./modules/shares');
 const tagsModule = require('./modules/tags');
 const tasksModule = require('./modules/tasks');
+const commentsModule = require('./modules/comments');
 const telegramModule = require('./modules/telegram');
 const urlModule = require('./modules/url');
 const usersModule = require('./modules/users');
@@ -464,6 +465,7 @@ const registerApiRoutes = (basePath) => {
     // open. A no-op unless TUDUDI_REQUIRE_SUBSCRIPTION is set.
     app.use(basePath, requireSubscription);
     app.use(basePath, tasksModule.routes);
+    app.use(basePath, commentsModule.routes);
     app.use(basePath, habitsModule.routes);
     app.use(basePath, projectsModule.routes);
     app.use(basePath, adminModule.routes);
