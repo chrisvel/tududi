@@ -336,13 +336,20 @@ const NoteDetails: React.FC = () => {
                     onClose={() => setIsShareModalOpen(false)}
                     noteUid={note.uid ?? null}
                     noteTitle={note.title}
-                    onChange={(isPublic) =>
+                    onChange={(isPublic) => {
                         setNote((current) =>
                             current
                                 ? { ...current, is_public: isPublic }
                                 : current
-                        )
-                    }
+                        );
+                        setStoreNotes(
+                            storeNotes.map((n) =>
+                                n.uid === note.uid
+                                    ? { ...n, is_public: isPublic }
+                                    : n
+                            )
+                        );
+                    }}
                 />
                 {/* NoteModal for editing */}
                 {isNoteModalOpen && (
