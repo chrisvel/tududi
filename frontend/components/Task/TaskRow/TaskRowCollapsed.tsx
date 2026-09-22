@@ -9,6 +9,7 @@ import {
     CheckIcon,
     ListBulletIcon,
     ChevronDownIcon,
+    ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
 import { FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { Task } from '../../../entities/Task';
@@ -36,6 +37,7 @@ interface TaskRowCollapsedProps {
     hasSubtasks?: boolean;
     showSubtasks?: boolean;
     onSubtasksToggle?: (e: React.MouseEvent) => void;
+    commentCount?: number;
     // When the row is expanded the title becomes an inline editable field.
     editable?: boolean;
     onSaveTitle?: (name: string) => void | Promise<void>;
@@ -70,6 +72,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     hasSubtasks,
     showSubtasks,
     onSubtasksToggle,
+    commentCount = 0,
     editable = false,
     onSaveTitle,
     onEscape,
@@ -226,6 +229,19 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                             }`}
                         >
                             {currentName}
+                        </span>
+                    )}
+                    {commentCount > 0 && (
+                        <span
+                            className="ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full text-gray-400 dark:text-gray-500 flex-shrink-0"
+                            title={t('comments.count', '{{count}} comments', {
+                                count: commentCount,
+                            })}
+                        >
+                            <ChatBubbleLeftIcon className="h-3.5 w-3.5" />
+                            <span className="text-[11px] font-medium">
+                                {commentCount}
+                            </span>
                         </span>
                     )}
                     {hasSubtasks && onSubtasksToggle && (

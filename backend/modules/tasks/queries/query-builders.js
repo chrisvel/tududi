@@ -434,10 +434,23 @@ async function filterTasksByParams(
         [Op.and]: [ownedOrShared, whereClause],
     };
 
+    // CAST keeps the count numeric on PostgreSQL, where COUNT(*) is a bigint
+    // that the driver would otherwise return as a string (matches the
+    // tags_count pattern in modules/tags/repository.js). Deleted comments
+    // are tombstones, not removed, so they are excluded here the same way
+    // the client excludes them from its own "N comments" badge.
+    const commentsCountAttribute = [
+        sequelize.literal(
+            'CAST((SELECT COUNT(*) FROM comments WHERE comments.task_id = "Task"."id" AND comments.deleted_at IS NULL) AS INTEGER)'
+        ),
+        'comments_count',
+    ];
+
     if (page) {
         const { rows, count } = await Task.findAndCountAll({
             where: finalWhereClause,
             include: includeClause,
+            attributes: { include: [commentsCountAttribute] },
             order: orderClause,
             distinct: true,
             col: 'id',
@@ -450,6 +463,7 @@ async function filterTasksByParams(
     return await Task.findAll({
         where: finalWhereClause,
         include: includeClause,
+        attributes: { include: [commentsCountAttribute] },
         order: orderClause,
         distinct: true,
     });

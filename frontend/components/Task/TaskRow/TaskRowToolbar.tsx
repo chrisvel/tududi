@@ -12,6 +12,7 @@ import {
     ListBulletIcon,
     DocumentTextIcon,
     PaperClipIcon,
+    ChatBubbleLeftIcon,
     ArrowTopRightOnSquareIcon,
     TrashIcon,
 } from '@heroicons/react/24/outline';
@@ -35,7 +36,8 @@ export type TaskRowSection =
     | 'tags'
     | 'recurrence'
     | 'subtasks'
-    | 'attachments';
+    | 'attachments'
+    | 'comments';
 
 interface TaskRowToolbarProps {
     task: Task;
@@ -44,6 +46,7 @@ interface TaskRowToolbarProps {
     onToggleSection: (section: TaskRowSection) => void;
     onDelete: (e: React.MouseEvent) => void;
     fullPagePath: string;
+    commentCount?: number;
 }
 
 const normalizePriorityLabel = (
@@ -78,6 +81,7 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
     onToggleSection,
     onDelete,
     fullPagePath,
+    commentCount = 0,
 }) => {
     const { t } = useTranslation();
 
@@ -255,6 +259,16 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
                         : undefined
                 }
                 icon={<PaperClipIcon className="h-4 w-4" />}
+            />
+
+            {/* Comments */}
+            <ToolbarButton
+                onClick={() => onToggleSection('comments')}
+                open={openSection === 'comments'}
+                active={commentCount > 0}
+                label={t('task.comments', 'Comments')}
+                badge={commentCount > 0 ? String(commentCount) : undefined}
+                icon={<ChatBubbleLeftIcon className="h-4 w-4" />}
             />
 
             <div className="flex-1" />

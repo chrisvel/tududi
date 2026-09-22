@@ -38,6 +38,7 @@ const CLEANUP_TABLES = [
     'projects_tags',
     'task_events',
     'task_attachments',
+    'comments',
     'recurring_completions',
     'caldav_occurrence_overrides',
     'caldav_sync_state',

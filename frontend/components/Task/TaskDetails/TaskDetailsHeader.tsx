@@ -39,6 +39,7 @@ interface TaskDetailsHeaderProps {
     onAiInsightsClick?: () => void;
     aiInsightsActive?: boolean;
     attachmentCount?: number;
+    commentCount?: number;
     autoEditTitle?: boolean;
     ancestorChain?: Array<{ uid: string; name: string }>;
 }
@@ -62,6 +63,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     onAiInsightsClick,
     aiInsightsActive = false,
     attachmentCount = 0,
+    commentCount = 0,
     autoEditTitle = false,
     ancestorChain = [],
 }) => {
@@ -285,9 +287,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                 ref={titleInputRef}
                                 type="text"
                                 value={editedTitle}
-                                onChange={(e) =>
-                                    setEditedTitle(e.target.value)
-                                }
+                                onChange={(e) => setEditedTitle(e.target.value)}
                                 onKeyDown={handleTitleKeyDown}
                                 onBlur={handleSaveTitle}
                                 className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
@@ -621,6 +621,19 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                             )}
                         </button>
                         <button
+                            onClick={() => onPillChange('comments')}
+                            className={`h-7 px-3 flex items-center rounded-lg text-xs font-medium transition-colors relative ${
+                                activePill === 'comments'
+                                    ? 'bg-blue-500 dark:bg-blue-600 text-white'
+                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                            }`}
+                        >
+                            {t('task.comments', 'Comments')}
+                            {commentCount > 0 && (
+                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
+                            )}
+                        </button>
+                        <button
                             onClick={() => onPillChange('activity')}
                             className={`h-7 px-3 flex items-center rounded-lg text-xs font-medium transition-colors ${
                                 activePill === 'activity'
@@ -632,37 +645,59 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                         </button>
                     </div>
                     <div className="flex items-center gap-2 min-w-0">
-                        {task.parent_task && (() => {
-                            const chain = ancestorChain.length > 0 ? ancestorChain : [{ uid: task.parent_task.uid, name: task.parent_task.name }];
-                            const tooltipText = chain.map(a => a.name).join(' < ');
-                            return (
-                                <Tooltip content={tooltipText} position="bottom">
-                                    <span className="inline-flex items-stretch h-7 rounded-lg overflow-hidden border border-blue-200 dark:border-blue-700/70 transition-opacity hover:opacity-80 min-w-0 shrink">
-                                        <span className="flex sm:hidden items-center px-1.5 text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60 select-none flex-shrink-0">
-                                            <ArrowUpIcon className="h-3 w-3" />
-                                        </span>
-                                        <span className="hidden sm:flex items-center px-1.5 text-[0.72em] font-bold uppercase tracking-wide text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60 select-none whitespace-nowrap flex-shrink-0">
-                                            PARENT TASK:
-                                        </span>
-                                        <span className="flex items-center gap-1 px-1.5 bg-blue-50/80 dark:bg-blue-900/30 overflow-hidden min-w-0">
-                                            {chain.map((ancestor, i) => (
-                                                <React.Fragment key={ancestor.uid}>
-                                                    {i > 0 && (
-                                                        <span className="text-blue-300 dark:text-blue-600 text-[0.8em] select-none flex-shrink-0">&lt;</span>
-                                                    )}
-                                                    <button
-                                                        onClick={() => navigate(`/task/${ancestor.uid}`)}
-                                                        className="text-[0.9em] text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100 transition-colors truncate min-w-0"
+                        {task.parent_task &&
+                            (() => {
+                                const chain =
+                                    ancestorChain.length > 0
+                                        ? ancestorChain
+                                        : [
+                                              {
+                                                  uid: task.parent_task.uid,
+                                                  name: task.parent_task.name,
+                                              },
+                                          ];
+                                const tooltipText = chain
+                                    .map((a) => a.name)
+                                    .join(' < ');
+                                return (
+                                    <Tooltip
+                                        content={tooltipText}
+                                        position="bottom"
+                                    >
+                                        <span className="inline-flex items-stretch h-7 rounded-lg overflow-hidden border border-blue-200 dark:border-blue-700/70 transition-opacity hover:opacity-80 min-w-0 shrink">
+                                            <span className="flex sm:hidden items-center px-1.5 text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60 select-none flex-shrink-0">
+                                                <ArrowUpIcon className="h-3 w-3" />
+                                            </span>
+                                            <span className="hidden sm:flex items-center px-1.5 text-[0.72em] font-bold uppercase tracking-wide text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60 select-none whitespace-nowrap flex-shrink-0">
+                                                PARENT TASK:
+                                            </span>
+                                            <span className="flex items-center gap-1 px-1.5 bg-blue-50/80 dark:bg-blue-900/30 overflow-hidden min-w-0">
+                                                {chain.map((ancestor, i) => (
+                                                    <React.Fragment
+                                                        key={ancestor.uid}
                                                     >
-                                                        {ancestor.name}
-                                                    </button>
-                                                </React.Fragment>
-                                            ))}
+                                                        {i > 0 && (
+                                                            <span className="text-blue-300 dark:text-blue-600 text-[0.8em] select-none flex-shrink-0">
+                                                                &lt;
+                                                            </span>
+                                                        )}
+                                                        <button
+                                                            onClick={() =>
+                                                                navigate(
+                                                                    `/task/${ancestor.uid}`
+                                                                )
+                                                            }
+                                                            className="text-[0.9em] text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100 transition-colors truncate min-w-0"
+                                                        >
+                                                            {ancestor.name}
+                                                        </button>
+                                                    </React.Fragment>
+                                                ))}
+                                            </span>
                                         </span>
-                                    </span>
-                                </Tooltip>
-                            );
-                        })()}
+                                    </Tooltip>
+                                );
+                            })()}
                         {onAiInsightsClick && (
                             <button
                                 onClick={onAiInsightsClick}
@@ -672,8 +707,14 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         : 'bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
                                 }`}
                                 aria-pressed={aiInsightsActive}
-                                aria-label={t('aiAssistant.taskInsightsTitle', 'AI Insights')}
-                                title={t('aiAssistant.taskInsightsTitle', 'AI Insights')}
+                                aria-label={t(
+                                    'aiAssistant.taskInsightsTitle',
+                                    'AI Insights'
+                                )}
+                                title={t(
+                                    'aiAssistant.taskInsightsTitle',
+                                    'AI Insights'
+                                )}
                             >
                                 <SparklesIcon
                                     className={`h-4 w-4 ${
@@ -685,130 +726,132 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                             </button>
                         )}
                         {(showOverdueIcon || onQuickStatusToggle) && (
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                            {showOverdueIcon && (
-                                <div
-                                    className="relative flex items-center z-20"
-                                    data-overdue-toggle
-                                >
-                                    <button
-                                        data-overdue-toggle
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            onOverdueIconClick?.();
-                                        }}
-                                        className={`flex items-center justify-center w-8 h-8 rounded-full border text-xs transition-colors ${
-                                            isOverdueAlertVisible
-                                                ? 'border-amber-500 bg-amber-50 text-amber-700 dark:border-amber-400 dark:bg-amber-900/30 dark:text-amber-300'
-                                                : 'border-amber-200 text-amber-600 hover:bg-amber-50 dark:border-amber-500/40 dark:text-amber-300 dark:hover:bg-amber-900/40'
-                                        }`}
-                                        title={t(
-                                            'task.showOverdueWarning',
-                                            'Show overdue warning'
-                                        )}
-                                        aria-label={t(
-                                            'task.showOverdueWarning',
-                                            'Show overdue warning'
-                                        )}
-                                    >
-                                        <ExclamationTriangleIcon className="h-4 w-4" />
-                                    </button>
-                                    {isOverdueAlertVisible && (
-                                        <div
-                                            data-overdue-toggle
-                                            className="absolute right-0 top-full translate-y-2 w-[30rem] max-w-lg z-30"
-                                        >
-                                            <div className="relative rounded-lg shadow-2xl bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-600 px-4 py-3 text-xs text-amber-800 dark:text-amber-100">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        onDismissOverdueAlert?.();
-                                                    }}
-                                                    className="absolute top-2 right-2 text-amber-600 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-100 transition-colors"
-                                                    aria-label={t(
-                                                        'common.close',
-                                                        'Close'
-                                                    )}
-                                                >
-                                                    <XMarkIcon className="h-3.5 w-3.5" />
-                                                </button>
-                                                <div className="flex items-start space-x-2 pr-4">
-                                                    <ExclamationTriangleIcon className="h-4 w-4 text-amber-600 dark:text-amber-300 mt-0.5 flex-shrink-0" />
-                                                    <div>
-                                                        <p className="font-medium">
-                                                            {t(
-                                                                'task.overdueAlert',
-                                                                "This task was in your plan yesterday and wasn't completed."
-                                                            )}
-                                                        </p>
-                                                        <p className="mt-1 text-[11px] text-amber-700 dark:text-amber-200">
-                                                            {t(
-                                                                'task.overdueYesterday',
-                                                                'Consider prioritizing this task or breaking it into smaller steps.'
-                                                            )}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            <div
-                                className="relative flex items-center"
-                                ref={actionsMenuRef}
-                            >
-                                <button
-                                    className="h-7 w-7 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setActionsMenuOpen(!actionsMenuOpen);
-                                    }}
-                                    aria-haspopup="true"
-                                    aria-expanded={actionsMenuOpen}
-                                    aria-label={t(
-                                        'common.moreActions',
-                                        'More actions'
-                                    )}
-                                >
-                                    <span className="text-lg leading-none">
-                                        ...
-                                    </span>
-                                </button>
-                                {actionsMenuOpen && (
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                                {showOverdueIcon && (
                                     <div
-                                        ref={actionsMenuDropdownRef}
-                                        style={{
-                                            ...actionsMenuStyle,
-                                            visibility: actionsMenuReady
-                                                ? 'visible'
-                                                : 'hidden',
-                                        }}
-                                        className="z-30 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                                        className="relative flex items-center z-20"
+                                        data-overdue-toggle
                                     >
                                         <button
-                                            className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                            data-overdue-toggle
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                setActionsMenuOpen(false);
-                                                onDelete();
+                                                onOverdueIconClick?.();
                                             }}
+                                            className={`flex items-center justify-center w-8 h-8 rounded-full border text-xs transition-colors ${
+                                                isOverdueAlertVisible
+                                                    ? 'border-amber-500 bg-amber-50 text-amber-700 dark:border-amber-400 dark:bg-amber-900/30 dark:text-amber-300'
+                                                    : 'border-amber-200 text-amber-600 hover:bg-amber-50 dark:border-amber-500/40 dark:text-amber-300 dark:hover:bg-amber-900/40'
+                                            }`}
+                                            title={t(
+                                                'task.showOverdueWarning',
+                                                'Show overdue warning'
+                                            )}
+                                            aria-label={t(
+                                                'task.showOverdueWarning',
+                                                'Show overdue warning'
+                                            )}
                                         >
-                                            {t('common.delete', 'Delete')}
+                                            <ExclamationTriangleIcon className="h-4 w-4" />
                                         </button>
+                                        {isOverdueAlertVisible && (
+                                            <div
+                                                data-overdue-toggle
+                                                className="absolute right-0 top-full translate-y-2 w-[30rem] max-w-lg z-30"
+                                            >
+                                                <div className="relative rounded-lg shadow-2xl bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-600 px-4 py-3 text-xs text-amber-800 dark:text-amber-100">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            onDismissOverdueAlert?.();
+                                                        }}
+                                                        className="absolute top-2 right-2 text-amber-600 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-100 transition-colors"
+                                                        aria-label={t(
+                                                            'common.close',
+                                                            'Close'
+                                                        )}
+                                                    >
+                                                        <XMarkIcon className="h-3.5 w-3.5" />
+                                                    </button>
+                                                    <div className="flex items-start space-x-2 pr-4">
+                                                        <ExclamationTriangleIcon className="h-4 w-4 text-amber-600 dark:text-amber-300 mt-0.5 flex-shrink-0" />
+                                                        <div>
+                                                            <p className="font-medium">
+                                                                {t(
+                                                                    'task.overdueAlert',
+                                                                    "This task was in your plan yesterday and wasn't completed."
+                                                                )}
+                                                            </p>
+                                                            <p className="mt-1 text-[11px] text-amber-700 dark:text-amber-200">
+                                                                {t(
+                                                                    'task.overdueYesterday',
+                                                                    'Consider prioritizing this task or breaking it into smaller steps.'
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
+                                <div
+                                    className="relative flex items-center"
+                                    ref={actionsMenuRef}
+                                >
+                                    <button
+                                        className="h-7 w-7 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setActionsMenuOpen(
+                                                !actionsMenuOpen
+                                            );
+                                        }}
+                                        aria-haspopup="true"
+                                        aria-expanded={actionsMenuOpen}
+                                        aria-label={t(
+                                            'common.moreActions',
+                                            'More actions'
+                                        )}
+                                    >
+                                        <span className="text-lg leading-none">
+                                            ...
+                                        </span>
+                                    </button>
+                                    {actionsMenuOpen && (
+                                        <div
+                                            ref={actionsMenuDropdownRef}
+                                            style={{
+                                                ...actionsMenuStyle,
+                                                visibility: actionsMenuReady
+                                                    ? 'visible'
+                                                    : 'hidden',
+                                            }}
+                                            className="z-30 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                                        >
+                                            <button
+                                                className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setActionsMenuOpen(false);
+                                                    onDelete();
+                                                }}
+                                            >
+                                                {t('common.delete', 'Delete')}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     );
 };
 
