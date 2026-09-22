@@ -51,6 +51,36 @@ async function readAttachmentData(attachment) {
     }
 }
 
+// Project cover images and user avatars are stored as files on disk and
+// referenced by URL (unlike task attachments, whose backup already embeds
+// the file). Without embedding the bytes here too, the URL in the backup
+// points at a file that no longer exists after a fresh install, so the
+// picture silently disappears on restore.
+async function readUploadedImage(url, subdir) {
+    if (!url) return null;
+    try {
+        const filename = path.basename(url.split('?')[0]);
+        const filePath = path.join(getConfig().uploadPath, subdir, filename);
+        const buffer = await fs.readFile(filePath);
+        return { filename, data: buffer.toString('base64') };
+    } catch (_) {
+        return null;
+    }
+}
+
+async function writeUploadedImage(image, subdir, prefix) {
+    if (!image || !image.data) return null;
+    const ext = path.extname(image.filename || '') || '';
+    const storedFilename = `${prefix}-${generateUid()}${ext}`;
+    const dir = path.join(getConfig().uploadPath, subdir);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(
+        path.join(dir, storedFilename),
+        Buffer.from(image.data, 'base64')
+    );
+    return storedFilename;
+}
+
 async function exportUserData(userId) {
     const user = await User.findByPk(userId, {
         attributes: {
@@ -126,6 +156,20 @@ async function exportUserData(userId) {
     const projectUid = uidById(projects);
     const taskUid = uidById(tasks);
 
+    const exportedProjects = [];
+    for (const project of projects) {
+        const data = plain(project);
+        data.tag_uids = (project.Tags || []).map((t) => t.uid);
+        data.area_uid = areaUid[data.area_id] || null;
+        data.goal_uid = goalUid[data.goal_id] || null;
+        data.cover_image = await readUploadedImage(
+            project.image_url,
+            'projects'
+        );
+        delete data.Tags;
+        exportedProjects.push(data);
+    }
+
     const exportedTasks = [];
     for (const task of tasks) {
         const data = plain(task);
@@ -182,6 +226,10 @@ async function exportUserData(userId) {
             ui_settings: user.ui_settings,
             notification_preferences: user.notification_preferences,
             ai_profile: user.ai_profile,
+            avatar_image_data: await readUploadedImage(
+                user.avatar_image,
+                'avatars'
+            ),
         },
         data: {
             areas: areas.map(plain),
@@ -189,14 +237,7 @@ async function exportUserData(userId) {
                 ...plain(g),
                 area_uid: areaUid[g.area_id] || null,
             })),
-            projects: projects.map((p) => {
-                const data = plain(p);
-                data.tag_uids = (p.Tags || []).map((t) => t.uid);
-                data.area_uid = areaUid[data.area_id] || null;
-                data.goal_uid = goalUid[data.goal_id] || null;
-                delete data.Tags;
-                return data;
-            }),
+            projects: exportedProjects,
             tasks: exportedTasks,
             tags: tags.map(plain),
             notes: notes.map((n) => {
@@ -296,6 +337,49 @@ async function importUserData(userId, backupData, options = { merge: true }) {
     const writtenFiles = [];
     const transaction = await sequelize.transaction();
     const resolve = makeResolver(userId, transaction);
+
+    // Restore the account's own profile and preferences (never email or
+    // password, which are the account's login identity and must not change
+    // just because a backup made on another install gets restored here).
+    if (merge && backupData.user) {
+        const bu = backupData.user;
+        const profileUpdates = {
+            name: bu.name,
+            surname: bu.surname,
+            appearance: bu.appearance,
+            language: bu.language,
+            timezone: bu.timezone,
+            first_day_of_week: bu.first_day_of_week,
+            telegram_bot_token: bu.telegram_bot_token,
+            telegram_chat_id: bu.telegram_chat_id,
+            telegram_allowed_users: bu.telegram_allowed_users,
+            task_summary_enabled: bu.task_summary_enabled,
+            task_summary_frequency: bu.task_summary_frequency,
+            features: bu.features,
+            today_settings: bu.today_settings,
+            sidebar_settings: bu.sidebar_settings,
+            ui_settings: bu.ui_settings,
+            notification_preferences: bu.notification_preferences,
+            ai_profile: bu.ai_profile,
+        };
+        for (const key of Object.keys(profileUpdates)) {
+            if (profileUpdates[key] === undefined) delete profileUpdates[key];
+        }
+        if (bu.avatar_image_data) {
+            const storedFilename = await writeUploadedImage(
+                bu.avatar_image_data,
+                'avatars',
+                'avatar'
+            );
+            if (storedFilename) {
+                writtenFiles.push({ dir: 'avatars', name: storedFilename });
+                profileUpdates.avatar_image = `/uploads/avatars/${storedFilename}`;
+            }
+        }
+        if (Object.keys(profileUpdates).length) {
+            await user.update(profileUpdates, { transaction });
+        }
+    }
 
     // uids are unique across the whole table, not per user. A row with the
     // backup's uid that belongs to this user is the same record (skip); one
@@ -427,31 +511,48 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                 Project,
                 'projects',
                 project.uid,
-                async () => ({
-                    name: project.name,
-                    description: project.description,
-                    pin_to_sidebar: project.pin_to_sidebar,
-                    priority: project.priority,
-                    due_date_at: project.due_date_at,
-                    image_url: null,
-                    color: project.color,
-                    task_show_completed: project.task_show_completed,
-                    task_sort_order: project.task_sort_order,
-                    status: project.status || project.state,
-                    is_maintenance: !!project.is_maintenance,
-                    area_id: await resolve(
-                        Area,
-                        project.area_uid,
-                        project.area_id,
-                        uidMaps.areas
-                    ),
-                    goal_id: await resolve(
-                        Goal,
-                        project.goal_uid,
-                        project.goal_id,
-                        uidMaps.goals
-                    ),
-                })
+                async () => {
+                    let imageUrl = null;
+                    if (project.cover_image) {
+                        const storedFilename = await writeUploadedImage(
+                            project.cover_image,
+                            'projects',
+                            'project'
+                        );
+                        if (storedFilename) {
+                            writtenFiles.push({
+                                dir: 'projects',
+                                name: storedFilename,
+                            });
+                            imageUrl = `/api/uploads/projects/${storedFilename}`;
+                        }
+                    }
+                    return {
+                        name: project.name,
+                        description: project.description,
+                        pin_to_sidebar: project.pin_to_sidebar,
+                        priority: project.priority,
+                        due_date_at: project.due_date_at,
+                        image_url: imageUrl,
+                        color: project.color,
+                        task_show_completed: project.task_show_completed,
+                        task_sort_order: project.task_sort_order,
+                        status: project.status || project.state,
+                        is_maintenance: !!project.is_maintenance,
+                        area_id: await resolve(
+                            Area,
+                            project.area_uid,
+                            project.area_id,
+                            uidMaps.areas
+                        ),
+                        goal_id: await resolve(
+                            Goal,
+                            project.goal_uid,
+                            project.goal_id,
+                            uidMaps.goals
+                        ),
+                    };
+                }
             );
             if (created && project.tag_uids?.length) {
                 const tagIds = project.tag_uids
@@ -543,7 +644,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
             for (const attachment of task.attachments || []) {
                 const file = await writeAttachmentFile(attachment);
                 if (!file) continue;
-                writtenFiles.push(file.storedFilename);
+                writtenFiles.push({ dir: 'tasks', name: file.storedFilename });
                 await TaskAttachment.create(
                     {
                         uid: generateUid(),
@@ -638,9 +739,9 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         return stats;
     } catch (error) {
         await transaction.rollback();
-        const dir = path.join(getConfig().uploadPath, 'tasks');
-        for (const name of writtenFiles) {
-            await fs.unlink(path.join(dir, name)).catch(() => {});
+        for (const { dir, name } of writtenFiles) {
+            const filePath = path.join(getConfig().uploadPath, dir, name);
+            await fs.unlink(filePath).catch(() => {});
         }
         throw error;
     }
