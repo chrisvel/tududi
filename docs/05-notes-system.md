@@ -156,14 +156,25 @@ Only `http(s)` and `mailto:` links are followed, and only `http(s)` or same-orig
 ### Formatting Toolbar and Slash Commands
 
 - Select text to show the formatting toolbar (bold, italic, strikethrough, code, link, headings).
-- Type `/` at the start of a line or after a space for the slash menu (headings, lists, to-do, quote, code block, divider, link, note link).
+- Type `/` at the start of a line or after a space for the slash menu: headings, bold/italic/strikethrough/inline code, code block, quote, to-do, bulleted and numbered lists, divider, link, note link, all five callout types, a 3x3 table, a Mermaid diagram template, and today's date.
 - Type `[[` to search your notes and insert a note link.
+
+Formatting and block shortcuts are listed with the rest of the editor's keyboard shortcuts, below.
+
+### Block Handle
+
+Hover the left edge of a paragraph, heading, list item, quote, code block or table (desktop with a mouse only - not on touch) to reveal two small controls:
+
+- **`+`** inserts a new block right below and opens the slash menu.
+- **`⋮⋮`** (drag handle): click for a menu (Turn into, Duplicate, Move up/down, Delete), or drag it to reorder blocks. Dropping before or after another block is decided by which half of that block the drop lands in.
+
+"Turn into" only works on a block that is a single line (a multi-line quote, list item or code block is left alone, since it's ambiguous which line the conversion should use).
 
 ### Multi-line Editing
 
 - The editor grows with its content and scrolls with the page
 - Minimum height: 300px
-- `Enter` continues lists, quotes and to-do items
+- `Enter` continues lists, quotes and to-do items, but pressing it again on an already-empty list line exits the list rather than adding a blank line - press `Enter` once more if you want a blank paragraph separator
 
 ## Note Organization
 
@@ -610,6 +621,15 @@ Note payloads never include the token. They carry `is_public` (boolean) instead,
 | `[[` | Open the note link menu |
 | Cmd/Ctrl-click a link | Open the link or note |
 | Select text | Show the formatting toolbar |
+| `Cmd/Ctrl-B` | Bold |
+| `Cmd/Ctrl-I` | Italic |
+| `Cmd/Ctrl-Shift-X` | Strikethrough |
+| `Cmd/Ctrl-E` | Inline code |
+| `Cmd/Ctrl-K` | Link |
+| `Cmd/Ctrl-1` / `2` / `3` | Heading 1-3 |
+| `Tab` / `Shift-Tab` | Indent or outdent the current list item |
+| `Alt-Up` / `Alt-Down` | Move the current block up or down |
+| `Cmd/Ctrl-Shift-D` | Duplicate the current block |
 
 ### In focus mode
 
@@ -888,11 +908,12 @@ Note payloads never include the token. They carry `is_public` (boolean) instead,
    - Cannot upload files/images to notes
    - Workaround: Host elsewhere, link via Markdown
 
-6. **Live Markdown, not a block editor:**
-   - Notes are plain Markdown (no block tree, no drag handles)
+6. **Live Markdown, not a full block editor:**
+   - Notes are plain Markdown underneath, not a block tree - the block handle's "Turn into" and reordering work on the Markdown structure, but only on a block that is a single line
    - Images must be linked by URL (no upload or paste yet)
    - Tables are edited as source: click a rendered table to edit its Markdown
    - Code fences are not syntax highlighted in the editor
+   - The block handle (hover to reveal `+` and `⋮⋮`) needs a mouse; touch devices use the slash menu instead
 
 ### Technical Constraints
 

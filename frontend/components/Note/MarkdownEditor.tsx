@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import React, {
+    useEffect,
+    useRef,
+    useState,
+    useCallback,
+    useMemo,
+} from 'react';
 import {
     EditorView,
     ViewUpdate,
@@ -9,13 +15,23 @@ import {
 import { EditorState, Compartment } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands';
-import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
+import {
+    syntaxHighlighting,
+    defaultHighlightStyle,
+} from '@codemirror/language';
 import { oneDark } from '@codemirror/theme-one-dark';
 import FormattingToolbar from './FormattingToolbar';
 import SlashCommandMenu from './SlashCommandMenu';
 import WikilinkMenu, { NoteTitle } from './WikilinkMenu';
 import { useNavigate } from 'react-router-dom';
 import { livePreviewExtension } from './editor';
+import { blockUxKeymap } from './editor/keymaps';
+import { blockHandlePlugin, blockHandleTheme } from './editor/blockHandle';
+import {
+    wrapSelection as wrapSelectionCmd,
+    setHeading as setHeadingCmd,
+    insertLink as insertLinkCmd,
+} from './editor/textCommands';
 import { useStore } from '../../store/useStore';
 
 interface MarkdownEditorProps {
@@ -39,47 +55,7 @@ const shouldUseLightText = (hexColor: string | undefined): boolean => {
     return luminance < 0.4;
 };
 
-export function wrapSelection(view: EditorView, prefix: string, suffix: string = prefix) {
-    const { from, to } = view.state.selection.main;
-    const selected = view.state.sliceDoc(from, to);
-    if (selected.startsWith(prefix) && selected.endsWith(suffix) && selected.length > prefix.length + suffix.length) {
-        view.dispatch({
-            changes: { from, to, insert: selected.slice(prefix.length, selected.length - suffix.length) },
-            selection: { anchor: from, head: to - prefix.length - suffix.length },
-        });
-    } else {
-        view.dispatch({
-            changes: { from, to, insert: `${prefix}${selected}${suffix}` },
-            selection: { anchor: from, head: to + prefix.length + suffix.length },
-        });
-    }
-    view.focus();
-}
-
-export function setHeading(view: EditorView, level: number) {
-    const prefix = '#'.repeat(level) + ' ';
-    const { from } = view.state.selection.main;
-    const line = view.state.doc.lineAt(from);
-    const existing = line.text.match(/^(#{1,6})\s/);
-    if (existing) {
-        view.dispatch({
-            changes: { from: line.from, to: line.from + existing[0].length, insert: prefix },
-        });
-    } else {
-        view.dispatch({
-            changes: { from: line.from, to: line.from, insert: prefix },
-        });
-    }
-    view.focus();
-}
-
-export function insertLink(view: EditorView) {
-    const { from, to } = view.state.selection.main;
-    const selected = view.state.sliceDoc(from, to);
-    const insertion = selected ? `[${selected}](url)` : '[link text](url)';
-    view.dispatch({ changes: { from, to, insert: insertion } });
-    view.focus();
-}
+export { wrapSelection, setHeading, insertLink } from './editor/textCommands';
 
 const baseEditorTheme = EditorView.theme({
     '&': { fontSize: 'inherit' },
@@ -92,8 +68,12 @@ const baseEditorTheme = EditorView.theme({
     },
     '.cm-line': { padding: '0 2px' },
     '.cm-scroller': { fontFamily: 'inherit', overflow: 'visible' },
-    '.cm-selectionBackground': { backgroundColor: 'rgba(59, 130, 246, 0.25) !important' },
-    '&.cm-focused .cm-selectionBackground': { backgroundColor: 'rgba(59, 130, 246, 0.35) !important' },
+    '.cm-selectionBackground': {
+        backgroundColor: 'rgba(59, 130, 246, 0.25) !important',
+    },
+    '&.cm-focused .cm-selectionBackground': {
+        backgroundColor: 'rgba(59, 130, 246, 0.35) !important',
+    },
     '.cm-cursor, .cm-dropCursor': { borderLeftWidth: '2px' },
 });
 
@@ -115,12 +95,31 @@ interface WikilinkMenuState {
     to: number;
 }
 
-const CLOSED_SLASH: SlashMenuState = { open: false, x: 0, y: 0, filter: '', from: 0, to: 0 };
-const CLOSED_WIKI: WikilinkMenuState = { open: false, x: 0, y: 0, filter: '', from: 0, to: 0 };
+const CLOSED_SLASH: SlashMenuState = {
+    open: false,
+    x: 0,
+    y: 0,
+    filter: '',
+    from: 0,
+    to: 0,
+};
+const CLOSED_WIKI: WikilinkMenuState = {
+    open: false,
+    x: 0,
+    y: 0,
+    filter: '',
+    from: 0,
+    to: 0,
+};
 
 function detectSlashTrigger(
     view: EditorView
-): { from: number; to: number; filter: string; coords: { x: number; y: number } } | null {
+): {
+    from: number;
+    to: number;
+    filter: string;
+    coords: { x: number; y: number };
+} | null {
     const { main } = view.state.selection;
     if (!main.empty) return null;
 
@@ -139,12 +138,22 @@ function detectSlashTrigger(
     const coords = view.coordsAtPos(cursor);
     if (!coords) return null;
 
-    return { from: slashAbsPos, to: cursor, filter, coords: { x: coords.left, y: coords.top } };
+    return {
+        from: slashAbsPos,
+        to: cursor,
+        filter,
+        coords: { x: coords.left, y: coords.top },
+    };
 }
 
 function detectWikilinkTrigger(
     view: EditorView
-): { from: number; to: number; filter: string; coords: { x: number; y: number } } | null {
+): {
+    from: number;
+    to: number;
+    filter: string;
+    coords: { x: number; y: number };
+} | null {
     const { main } = view.state.selection;
     if (!main.empty) return null;
 
@@ -163,7 +172,12 @@ function detectWikilinkTrigger(
     const coords = view.coordsAtPos(cursor);
     if (!coords) return null;
 
-    return { from: openBracketAbsPos, to: cursor, filter, coords: { x: coords.left, y: coords.top } };
+    return {
+        from: openBracketAbsPos,
+        to: cursor,
+        filter,
+        coords: { x: coords.left, y: coords.top },
+    };
 }
 
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
@@ -192,7 +206,10 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     }, [hasNotesLoaded, loadNotes]);
 
     const noteTitles: NoteTitle[] = useMemo(
-        () => storeNotes.filter((n) => n.uid).map((n) => ({ uid: n.uid as string, title: n.title })),
+        () =>
+            storeNotes
+                .filter((n) => n.uid)
+                .map((n) => ({ uid: n.uid as string, title: n.title })),
         [storeNotes]
     );
 
@@ -208,7 +225,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     }>({ visible: false, x: 0, y: 0 });
 
     const [slashMenu, setSlashMenu] = useState<SlashMenuState>(CLOSED_SLASH);
-    const [wikilinkMenu, setWikilinkMenu] = useState<WikilinkMenuState>(CLOSED_WIKI);
+    const [wikilinkMenu, setWikilinkMenu] =
+        useState<WikilinkMenuState>(CLOSED_WIKI);
 
     const slashMenuRef = useRef(slashMenu);
     slashMenuRef.current = slashMenu;
@@ -216,7 +234,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     wikilinkMenuRef.current = wikilinkMenu;
 
     const lightText = shouldUseLightText(noteColor);
-    const textColor = noteColor ? (lightText ? '#ffffff' : '#333333') : undefined;
+    const textColor = noteColor
+        ? lightText
+            ? '#ffffff'
+            : '#333333'
+        : undefined;
 
     const closeSlash = useCallback(() => setSlashMenu(CLOSED_SLASH), []);
     const closeWikilink = useCallback(() => setWikilinkMenu(CLOSED_WIKI), []);
@@ -234,7 +256,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         const colorOverride = noteColor
             ? EditorView.theme({
                   '.cm-content': { color: textColor, caretColor: textColor },
-                  '.cm-cursor, .cm-dropCursor': { borderLeftColor: textColor || 'auto' },
+                  '.cm-cursor, .cm-dropCursor': {
+                      borderLeftColor: textColor || 'auto',
+                  },
               })
             : [];
 
@@ -248,6 +272,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 // line box; the native caret rides the font box and appears
                 // to hang below the placeholder text.
                 drawSelection(),
+                keymap.of(blockUxKeymap),
+                blockHandlePlugin,
+                blockHandleTheme,
                 keymap.of([...defaultKeymap, ...historyKeymap]),
                 EditorView.lineWrapping,
                 cmPlaceholder(placeholder),
@@ -280,12 +307,19 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                             const midX = (fromCoords.left + toCoords.right) / 2;
                             const topY = Math.min(fromCoords.top, toCoords.top);
                             setToolbarState((prev) => {
-                                if (prev.visible && Math.abs(prev.x - midX) < 1 && Math.abs(prev.y - topY) < 1) return prev;
+                                if (
+                                    prev.visible &&
+                                    Math.abs(prev.x - midX) < 1 &&
+                                    Math.abs(prev.y - topY) < 1
+                                )
+                                    return prev;
                                 return { visible: true, x: midX, y: topY };
                             });
                         }
                     } else {
-                        setToolbarState((prev) => (prev.visible ? { ...prev, visible: false } : prev));
+                        setToolbarState((prev) =>
+                            prev.visible ? { ...prev, visible: false } : prev
+                        );
                     }
 
                     // Slash command trigger detection
@@ -301,7 +335,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                         });
                         setWikilinkMenu(CLOSED_WIKI);
                     } else {
-                        if (slashMenuRef.current.open) setSlashMenu(CLOSED_SLASH);
+                        if (slashMenuRef.current.open)
+                            setSlashMenu(CLOSED_SLASH);
 
                         // Wikilink trigger detection (only when slash not active)
                         const wikilinkTrigger = detectWikilinkTrigger(view);
@@ -315,7 +350,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                                 to: wikilinkTrigger.to,
                             });
                         } else {
-                            if (wikilinkMenuRef.current.open) setWikilinkMenu(CLOSED_WIKI);
+                            if (wikilinkMenuRef.current.open)
+                                setWikilinkMenu(CLOSED_WIKI);
                         }
                     }
                 }),
@@ -330,9 +366,13 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         }
 
         const observer = new MutationObserver(() => {
-            view.dispatch({ effects: themeCompartment.reconfigure(getThemeExtension()) });
+            view.dispatch({
+                effects: themeCompartment.reconfigure(getThemeExtension()),
+            });
         });
-        observer.observe(document.documentElement, { attributeFilter: ['class'] });
+        observer.observe(document.documentElement, {
+            attributeFilter: ['class'],
+        });
 
         return () => {
             observer.disconnect();
@@ -348,17 +388,33 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         const current = view.state.doc.toString();
         if (current !== value) {
             view.dispatch({
-                changes: { from: 0, to: view.state.doc.length, insert: value ?? '' },
+                changes: {
+                    from: 0,
+                    to: view.state.doc.length,
+                    insert: value ?? '',
+                },
             });
         }
     }, [value]);
 
-    const handleBold = useCallback(() => { if (viewRef.current) wrapSelection(viewRef.current, '**'); }, []);
-    const handleItalic = useCallback(() => { if (viewRef.current) wrapSelection(viewRef.current, '_'); }, []);
-    const handleStrikethrough = useCallback(() => { if (viewRef.current) wrapSelection(viewRef.current, '~~'); }, []);
-    const handleCode = useCallback(() => { if (viewRef.current) wrapSelection(viewRef.current, '`'); }, []);
-    const handleLink = useCallback(() => { if (viewRef.current) insertLink(viewRef.current); }, []);
-    const handleHeading = useCallback((level: number) => { if (viewRef.current) setHeading(viewRef.current, level); }, []);
+    const handleBold = useCallback(() => {
+        if (viewRef.current) wrapSelectionCmd(viewRef.current, '**');
+    }, []);
+    const handleItalic = useCallback(() => {
+        if (viewRef.current) wrapSelectionCmd(viewRef.current, '_');
+    }, []);
+    const handleStrikethrough = useCallback(() => {
+        if (viewRef.current) wrapSelectionCmd(viewRef.current, '~~');
+    }, []);
+    const handleCode = useCallback(() => {
+        if (viewRef.current) wrapSelectionCmd(viewRef.current, '`');
+    }, []);
+    const handleLink = useCallback(() => {
+        if (viewRef.current) insertLinkCmd(viewRef.current);
+    }, []);
+    const handleHeading = useCallback((level: number) => {
+        if (viewRef.current) setHeadingCmd(viewRef.current, level);
+    }, []);
 
     return (
         <div
