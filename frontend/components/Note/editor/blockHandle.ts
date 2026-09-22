@@ -46,10 +46,24 @@ class BlockHandlePlugin {
     dragSource: Block | null = null;
     dropTarget: { block: Block; before: boolean } | null = null;
     enabled = canHover();
+    // True from the moment the mouse goes down on the handle until either a
+    // real drag starts or the mouse comes back up. The browser still fires
+    // ordinary mousemove events during that in-between window (before it
+    // commits to a drag gesture), and the pointer can drift a pixel or two
+    // off the small handle during that jitter - without this freeze, such a
+    // stray mousemove would reassign `hovered` to whatever block is now
+    // under the cursor, so the drag that follows moves the wrong block.
+    private pointerDownOnHandle = false;
 
     private onMouseMove = (e: MouseEvent) => this.handleMouseMove(e);
     private onMouseLeave = () => {
         if (!this.dragSource) this.hide();
+    };
+    private onHandleMouseDown = () => {
+        this.pointerDownOnHandle = true;
+    };
+    private onDocMouseUp = () => {
+        this.pointerDownOnHandle = false;
     };
     private onDocClick = (e: MouseEvent) => {
         if (this.menu && !this.menu.contains(e.target as Node)) {
@@ -87,6 +101,7 @@ class BlockHandlePlugin {
         // (it uses mousedown to detect the drag gesture). The button lives
         // outside .cm-content, so clicking it doesn't move the editor's
         // caret anyway - there's nothing to guard against.
+        this.handleBtn.addEventListener('mousedown', this.onHandleMouseDown);
         this.handleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.toggleMenu();
@@ -108,6 +123,7 @@ class BlockHandlePlugin {
             view.dom.addEventListener('mousemove', this.onMouseMove);
             view.dom.addEventListener('mouseleave', this.onMouseLeave);
             document.addEventListener('mousedown', this.onDocClick);
+            document.addEventListener('mouseup', this.onDocMouseUp);
         }
         // dragover/drop are NOT attached here with addEventListener: they go
         // through the blockHandleDomHandlers extension below instead, using
@@ -132,6 +148,7 @@ class BlockHandlePlugin {
         this.view.dom.removeEventListener('mousemove', this.onMouseMove);
         this.view.dom.removeEventListener('mouseleave', this.onMouseLeave);
         document.removeEventListener('mousedown', this.onDocClick);
+        document.removeEventListener('mouseup', this.onDocMouseUp);
         this.closeMenu();
         this.layer.remove();
     }
@@ -144,6 +161,10 @@ class BlockHandlePlugin {
 
     private handleMouseMove(e: MouseEvent) {
         if (this.dragSource) return;
+        // Frozen from mousedown-on-handle until the drag actually starts (or
+        // the mouse comes back up without one starting) - see
+        // pointerDownOnHandle's comment.
+        if (this.pointerDownOnHandle) return;
         // Moving onto our own overlay (the handle button, the menu) must not
         // recompute which block is "hovered" - it should stay exactly what
         // it was when the button was positioned, otherwise a mousemove that
@@ -276,6 +297,7 @@ class BlockHandlePlugin {
     }
 
     private handleDragStart(e: DragEvent) {
+        this.pointerDownOnHandle = false;
         if (!this.hovered) {
             e.preventDefault();
             return;
@@ -305,9 +327,28 @@ class BlockHandlePlugin {
     handleDragOver(e: DragEvent): boolean {
         if (!this.dragSource) return false;
         e.preventDefault();
-        const pos = this.view.posAtCoords({ x: e.clientX, y: e.clientY });
-        if (pos == null) return true;
-        const block = blockAt(this.view.state, pos);
+
+        let pos = this.view.posAtCoords({ x: e.clientX, y: e.clientY });
+        if (pos == null) {
+            // Dragged above or below all content - treat it as targeting the
+            // very start or end of the document rather than giving up.
+            const editorBox = this.view.dom.getBoundingClientRect();
+            pos = e.clientY < editorBox.top ? 0 : this.view.state.doc.length;
+        }
+
+        let block = blockAt(this.view.state, pos);
+        if (!block) {
+            // The exact position landed in a blank-line gap between two
+            // blocks rather than inside either one - the nearest block is
+            // still a perfectly good drop target.
+            block =
+                blockAt(this.view.state, Math.max(0, pos - 1)) ??
+                blockAt(
+                    this.view.state,
+                    Math.min(this.view.state.doc.length, pos + 1)
+                );
+        }
+
         if (!block || sameBlock(block, this.dragSource)) {
             this.dropLine.style.display = 'none';
             this.dropTarget = null;
