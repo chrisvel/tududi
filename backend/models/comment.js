@@ -41,6 +41,14 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // Only one level deep: a reply's parent is always a top-level
+            // comment, never another reply (enforced in the service layer).
+            parent_comment_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: { model: 'comments', key: 'id' },
+                onDelete: 'CASCADE',
+            },
         },
         {
             tableName: 'comments',
@@ -50,6 +58,10 @@ module.exports = (sequelize) => {
                 {
                     fields: ['task_id', 'created_at'],
                     name: 'comments_task_id_created_at',
+                },
+                {
+                    fields: ['parent_comment_id'],
+                    name: 'comments_parent_comment_id',
                 },
             ],
         }

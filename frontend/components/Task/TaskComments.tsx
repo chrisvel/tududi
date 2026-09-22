@@ -1,19 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     ChatBubbleLeftIcon,
     ExclamationTriangleIcon,
+    HandThumbDownIcon,
+    HandThumbUpIcon,
     NoSymbolIcon,
-    TrashIcon,
 } from '@heroicons/react/24/outline';
+import {
+    HandThumbDownIcon as HandThumbDownIconSolid,
+    HandThumbUpIcon as HandThumbUpIconSolid,
+} from '@heroicons/react/24/solid';
 import { Task } from '../../entities/Task';
 import { Person } from '../../entities/Person';
-import { Comment } from '../../entities/Comment';
+import { Comment, CommentReactionResult } from '../../entities/Comment';
 import {
     fetchComments,
-    createComment,
     deleteComment,
+    setCommentReaction,
 } from '../../utils/commentsService';
 import {
     fetchPeople,
@@ -21,7 +26,7 @@ import {
 } from '../../utils/peopleService';
 import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
-import SuggestionsDropdown from '../Inbox/SuggestionsDropdown';
+import CommentComposer from './CommentComposer';
 
 interface TaskCommentsProps {
     task: Task;
@@ -39,8 +44,7 @@ function escapeRegExp(value: string): string {
 
 function renderBody(
     body: string,
-    mentionedPeople: { uid: string; name: string }[],
-    isOwn: boolean
+    mentionedPeople: { uid: string; name: string }[]
 ) {
     if (!mentionedPeople || mentionedPeople.length === 0) {
         return body;
@@ -71,9 +75,7 @@ function renderBody(
                 key={`mention-${key++}`}
                 to={`/person/${byName.get(name)}`}
                 onClick={(e) => e.stopPropagation()}
-                className={`font-semibold hover:underline ${
-                    isOwn ? 'text-blue-100' : 'text-blue-600 dark:text-blue-400'
-                }`}
+                className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
             >
                 @{name}
             </Link>
@@ -114,133 +116,66 @@ function initials(name: string): string {
     return (first + last).toUpperCase();
 }
 
-const MENTION_CHIP_CLASS =
-    'mention-chip font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer';
-
-// Reads the composer's caret position out of the live Selection, so a
-// mention typed anywhere in the box can be matched to an "@query" - unlike
-// a <textarea>, a contentEditable box has no single .value/.selectionStart,
-// so this only looks at the text node the caret currently sits in (which
-// covers ordinary typing; the caret landing exactly on a node boundary right
-// after a just-inserted mention chip is treated as "no trigger").
-function findMentionTriggerInEditor(
-    root: HTMLElement
-): { range: Range; query: string } | null {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || !selection.isCollapsed) {
-        return null;
-    }
-    const { anchorNode, anchorOffset } = selection;
-    if (
-        !anchorNode ||
-        anchorNode.nodeType !== Node.TEXT_NODE ||
-        !root.contains(anchorNode)
-    ) {
-        return null;
-    }
-
-    const text = anchorNode.textContent || '';
-    const upToCaret = text.slice(0, anchorOffset);
-    const at = upToCaret.lastIndexOf('@');
-    if (at === -1) return null;
-    if (at > 0 && !/\s/.test(upToCaret[at - 1])) return null;
-    const query = upToCaret.slice(at + 1);
-    if (/\s/.test(query)) return null;
-
-    const range = document.createRange();
-    range.setStart(anchorNode, at);
-    range.setEnd(anchorNode, anchorOffset);
-    return { range, query };
-}
-
-// Replaces the "@query" the trigger range spans with an atomic, non-editable
-// mention link, then places the caret right after it.
-function insertMentionAtRange(range: Range, person: Person, root: HTMLElement) {
-    const anchor = document.createElement('a');
-    anchor.href = `/person/${person.uid}`;
-    anchor.textContent = `@${person.name}`;
-    anchor.contentEditable = 'false';
-    anchor.dataset.personUid = person.uid || '';
-    anchor.className = MENTION_CHIP_CLASS;
-
-    const space = document.createTextNode(' ');
-    const fragment = document.createDocumentFragment();
-    fragment.appendChild(anchor);
-    fragment.appendChild(space);
-
-    range.deleteContents();
-    range.insertNode(fragment);
-
-    const caretRange = document.createRange();
-    caretRange.setStart(space, space.length);
-    caretRange.collapse(true);
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    selection?.addRange(caretRange);
-    root.focus();
-}
-
-// Walks the composer's DOM to recover the plain comment text (a mention
-// chip's "@Name" textContent stands in for itself) and the uids still
-// actually present - a chip the user backspaced away is simply absent here.
-function serializeEditableContent(root: HTMLElement): {
-    text: string;
-    mentionedUids: string[];
-} {
-    let text = '';
-    const mentionedUids: string[] = [];
-    const seen = new Set<string>();
-
-    const walk = (node: ChildNode) => {
-        if (node.nodeType === Node.TEXT_NODE) {
-            text += node.textContent || '';
-            return;
-        }
-        if (node.nodeType !== Node.ELEMENT_NODE) return;
-        const el = node as HTMLElement;
-        if (el.tagName === 'A' && el.dataset.personUid) {
-            text += el.textContent || '';
-            const uid = el.dataset.personUid;
-            if (!seen.has(uid)) {
-                seen.add(uid);
-                mentionedUids.push(uid);
-            }
-            return;
-        }
-        if (el.tagName === 'BR') {
-            text += '\n';
-            return;
-        }
-        el.childNodes.forEach(walk);
-    };
-
-    root.childNodes.forEach(walk);
-    return { text, mentionedUids };
-}
-
-function getCaretCoords(root: HTMLElement): { left: number; top: number } {
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0).cloneRange();
-        range.collapse(true);
-        // Not implemented in jsdom (no real layout engine) - fall through
-        // to the root-relative estimate below in that environment.
-        if (typeof range.getBoundingClientRect === 'function') {
-            const rect = range.getBoundingClientRect();
-            if (rect.left || rect.top || rect.width || rect.height) {
-                return { left: rect.left, top: rect.bottom + 4 };
-            }
-        }
-    }
-    const rootRect = root.getBoundingClientRect();
-    return { left: rootRect.left, top: rootRect.top + 20 };
-}
-
 // A deleted comment is a tombstone that still occupies its place in the
 // thread, but has nothing left to read - it doesn't count toward the
-// "N comments" badge.
+// "N comments" badge. Replies count too, one level deep.
 function countActive(list: Comment[]): number {
-    return list.filter((c) => !c.deleted_at).length;
+    let count = 0;
+    for (const comment of list) {
+        if (!comment.deleted_at) count++;
+        count += comment.replies.filter((r) => !r.deleted_at).length;
+    }
+    return count;
+}
+
+function replaceInTree(
+    list: Comment[],
+    uid: string,
+    updated: Comment
+): Comment[] {
+    return list.map((comment) => {
+        if (comment.uid === uid) return updated;
+        if (comment.replies.some((r) => r.uid === uid)) {
+            return {
+                ...comment,
+                replies: comment.replies.map((r) =>
+                    r.uid === uid ? updated : r
+                ),
+            };
+        }
+        return comment;
+    });
+}
+
+function appendReply(
+    list: Comment[],
+    parentUid: string,
+    reply: Comment
+): Comment[] {
+    return list.map((comment) =>
+        comment.uid === parentUid
+            ? { ...comment, replies: [...comment.replies, reply] }
+            : comment
+    );
+}
+
+function patchReactionInTree(
+    list: Comment[],
+    uid: string,
+    patch: CommentReactionResult
+): Comment[] {
+    return list.map((comment) => {
+        if (comment.uid === uid) return { ...comment, ...patch };
+        if (comment.replies.some((r) => r.uid === uid)) {
+            return {
+                ...comment,
+                replies: comment.replies.map((r) =>
+                    r.uid === uid ? { ...r, ...patch } : r
+                ),
+            };
+        }
+        return comment;
+    });
 }
 
 function formatTimeAgo(dateString: string) {
@@ -257,33 +192,147 @@ function formatTimeAgo(dateString: string) {
     return date.toLocaleDateString();
 }
 
+interface CommentRowProps {
+    comment: Comment;
+    isReply: boolean;
+    onReply?: () => void;
+    onDelete: () => void;
+    onReact: (type: 'like' | 'dislike') => void;
+}
+
+const CommentRow: React.FC<CommentRowProps> = ({
+    comment,
+    isReply,
+    onReply,
+    onDelete,
+    onReact,
+}) => {
+    const { t } = useTranslation();
+    const authorName =
+        comment.author?.name || t('comments.unknownAuthor', 'Unknown');
+    const isDeleted = !!comment.deleted_at;
+
+    return (
+        <div className="flex gap-3 group">
+            <span
+                className={`flex-shrink-0 rounded-full flex items-center justify-center font-semibold text-white ${avatarColor(
+                    authorName
+                )} ${isReply ? 'h-7 w-7 text-[10px]' : 'h-9 w-9 text-xs'}`}
+                title={authorName}
+            >
+                {initials(authorName)}
+            </span>
+            <div className="flex-1 min-w-0">
+                <div className="flex items-baseline gap-2">
+                    {comment.author?.person_uid ? (
+                        <Link
+                            to={`/person/${comment.author.person_uid}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+                        >
+                            {authorName}
+                        </Link>
+                    ) : (
+                        <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            {authorName}
+                        </span>
+                    )}
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                        {formatTimeAgo(comment.created_at)}
+                    </span>
+                </div>
+                {isDeleted ? (
+                    <div className="flex items-center gap-1.5 text-sm italic text-gray-400 dark:text-gray-500 mt-0.5">
+                        <NoSymbolIcon className="h-3.5 w-3.5 flex-shrink-0" />
+                        {t('comments.deletedPlaceholder', 'Comment deleted')}
+                    </div>
+                ) : (
+                    <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words mt-0.5">
+                        {renderBody(comment.body, comment.mentioned_people)}
+                    </div>
+                )}
+                {!isDeleted && (
+                    <div className="flex items-center gap-3 mt-1">
+                        <button
+                            type="button"
+                            onClick={() => onReact('like')}
+                            className={`flex items-center gap-1 text-xs font-medium ${
+                                comment.my_reaction === 'like'
+                                    ? 'text-blue-600 dark:text-blue-400'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                            }`}
+                            aria-label={t('comments.like', 'Like')}
+                            aria-pressed={comment.my_reaction === 'like'}
+                        >
+                            {comment.my_reaction === 'like' ? (
+                                <HandThumbUpIconSolid className="h-3.5 w-3.5" />
+                            ) : (
+                                <HandThumbUpIcon className="h-3.5 w-3.5" />
+                            )}
+                            {comment.likes_count > 0 && comment.likes_count}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => onReact('dislike')}
+                            className={`flex items-center gap-1 text-xs font-medium ${
+                                comment.my_reaction === 'dislike'
+                                    ? 'text-red-600 dark:text-red-400'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                            }`}
+                            aria-label={t('comments.dislike', 'Dislike')}
+                            aria-pressed={comment.my_reaction === 'dislike'}
+                        >
+                            {comment.my_reaction === 'dislike' ? (
+                                <HandThumbDownIconSolid className="h-3.5 w-3.5" />
+                            ) : (
+                                <HandThumbDownIcon className="h-3.5 w-3.5" />
+                            )}
+                            {comment.dislikes_count > 0 &&
+                                comment.dislikes_count}
+                        </button>
+                        {onReply && (
+                            <button
+                                type="button"
+                                onClick={onReply}
+                                className="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                            >
+                                {t('comments.reply', 'Reply')}
+                            </button>
+                        )}
+                        {comment.is_own && (
+                            <button
+                                type="button"
+                                onClick={onDelete}
+                                className="text-xs font-medium text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500"
+                                aria-label={t(
+                                    'comments.delete',
+                                    'Delete comment'
+                                )}
+                            >
+                                {t('comments.delete', 'Delete comment')}
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const TaskComments: React.FC<TaskCommentsProps> = ({
     task,
     onCommentCountChange,
 }) => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const { showErrorToast } = useToast();
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [hasContent, setHasContent] = useState(false);
-    const [mentionQuery, setMentionQuery] = useState<string | null>(null);
-    const [mentionPosition, setMentionPosition] = useState({
-        left: 0,
-        top: 0,
-    });
-    const [mentionIndex, setMentionIndex] = useState(-1);
     const [people, setPeople] = useState<Person[]>([]);
-    const [submitting, setSubmitting] = useState(false);
     const [commentToDelete, setCommentToDelete] = useState<Comment | null>(
         null
     );
-    const editorRef = useRef<HTMLDivElement>(null);
-    // The DOM Range the current "@query" spans, captured when the trigger is
-    // detected - insertion uses this instead of the live selection, since
-    // clicking a dropdown suggestion moves focus off the editor first.
-    const mentionRangeRef = useRef<Range | null>(null);
+    const [replyingToUid, setReplyingToUid] = useState<string | null>(null);
 
     useEffect(() => {
         if (!task.uid) {
@@ -322,115 +371,19 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
         load.catch(() => []).then((p) => p && setPeople(p));
     }, [task.project_uid]);
 
-    const mentionMatches = (
-        mentionQuery === null
-            ? []
-            : people
-                  .filter((p) => !p.archived)
-                  .filter((p) =>
-                      p.name
-                          .toLowerCase()
-                          .startsWith(mentionQuery.toLowerCase())
-                  )
-    ).slice(0, 5);
-
-    const handleEditorInput = () => {
-        const root = editorRef.current;
-        if (!root) return;
-
-        const { text } = serializeEditableContent(root);
-        setHasContent(text.trim().length > 0);
-        setMentionIndex(-1);
-
-        const trigger = findMentionTriggerInEditor(root);
-        if (trigger) {
-            mentionRangeRef.current = trigger.range;
-            setMentionQuery(trigger.query);
-            setMentionPosition(getCaretCoords(root));
-        } else {
-            mentionRangeRef.current = null;
-            setMentionQuery(null);
-        }
-    };
-
-    const handleSelectMention = (person: Person) => {
-        const root = editorRef.current;
-        if (!person.uid || !root || !mentionRangeRef.current) return;
-
-        insertMentionAtRange(mentionRangeRef.current, person, root);
-        mentionRangeRef.current = null;
-        setMentionQuery(null);
-        setMentionIndex(-1);
-        setHasContent(true);
-    };
-
-    const handleMentionClick = (e: React.MouseEvent) => {
-        const target = (e.target as HTMLElement).closest('a[data-person-uid]');
-        if (target) {
-            e.preventDefault();
-            navigate(target.getAttribute('href') || '/');
-        }
-    };
-
-    // Pasting keeps only plain text - a rich paste (from a webpage, another
-    // app) would otherwise carry its own formatting straight into the DOM
-    // here, which serializeEditableContent then has to strip out anyway.
-    const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        const selection = window.getSelection();
-        if (!selection || selection.rangeCount === 0) return;
-
-        const text = e.clipboardData.getData('text/plain');
-        const range = selection.getRangeAt(0);
-        range.deleteContents();
-        const textNode = document.createTextNode(text);
-        range.insertNode(textNode);
-        range.setStartAfter(textNode);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
-
-        handleEditorInput();
-    };
-
-    const handleSubmit = async () => {
-        const root = editorRef.current;
-        if (!root || !task.uid || submitting) return;
-
-        const { text, mentionedUids } = serializeEditableContent(root);
-        const trimmed = text.trim();
-        if (!trimmed) return;
-
-        setSubmitting(true);
-        try {
-            const comment = await createComment(task.uid, {
-                body: trimmed,
-                mentionedPersonUids: mentionedUids,
-            });
-            const next = [...comments, comment];
-            setComments(next);
-            onCommentCountChange?.(countActive(next));
-            root.replaceChildren();
-            setHasContent(false);
-        } catch (err) {
-            console.error('Error posting comment:', err);
-            showErrorToast(
-                t('comments.failedToPost', 'Failed to post comment')
-            );
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
     const handleConfirmDelete = async () => {
         if (!commentToDelete) return;
         const target = commentToDelete;
         setCommentToDelete(null);
         try {
             const tombstoned = await deleteComment(target.uid);
-            const next = comments.map((c) =>
-                c.uid === target.uid ? tombstoned : c
-            );
+            // The server's tombstone response has no replies of its own
+            // (deleting a comment doesn't touch its replies) - keep the ones
+            // already loaded here instead of wiping them from view.
+            const next = replaceInTree(comments, target.uid, {
+                ...tombstoned,
+                replies: target.replies,
+            });
             setComments(next);
             onCommentCountChange?.(countActive(next));
         } catch (err) {
@@ -441,9 +394,24 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
         }
     };
 
+    const handleReact = async (comment: Comment, type: 'like' | 'dislike') => {
+        const nextType = comment.my_reaction === type ? null : type;
+        try {
+            const result = await setCommentReaction(comment.uid, nextType);
+            setComments((prev) =>
+                patchReactionInTree(prev, comment.uid, result)
+            );
+        } catch (err) {
+            console.error('Error updating reaction:', err);
+            showErrorToast(
+                t('comments.failedToReact', 'Failed to update reaction')
+            );
+        }
+    };
+
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center h-32 text-gray-500 dark:text-gray-400">
+            <div className="flex items-center h-32 text-gray-500 dark:text-gray-400">
                 <span className="text-sm">
                     {t('comments.loading', 'Loading comments...')}
                 </span>
@@ -453,217 +421,103 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 
     if (error) {
         return (
-            <div className="flex flex-col items-center justify-center h-32 text-red-500">
-                <ExclamationTriangleIcon className="h-6 w-6 mb-2" />
+            <div className="flex items-center gap-2 h-32 text-red-500">
+                <ExclamationTriangleIcon className="h-6 w-6 flex-shrink-0" />
                 <span className="text-sm">{error}</span>
             </div>
         );
     }
 
     return (
-        <div>
+        <div className="w-full">
             {comments.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
-                    <ChatBubbleLeftIcon className="h-12 w-12 mb-3 opacity-50" />
-                    <span className="text-sm text-center">
+                <div className="flex items-center gap-2 py-8 text-gray-500 dark:text-gray-400">
+                    <ChatBubbleLeftIcon className="h-8 w-8 flex-shrink-0 opacity-50" />
+                    <span className="text-sm">
                         {t('comments.empty', 'No comments yet')}
                     </span>
                 </div>
             ) : (
-                <div className="space-y-3 mb-4 max-h-96 overflow-y-auto pr-1">
-                    {comments.map((comment) => {
-                        const authorName =
-                            comment.author?.name ||
-                            t('comments.unknownAuthor', 'Unknown');
-                        const isDeleted = !!comment.deleted_at;
-                        return (
-                            <div
-                                key={comment.uid}
-                                className={`flex items-end gap-2 group ${
-                                    comment.is_own
-                                        ? 'flex-row-reverse'
-                                        : 'flex-row'
-                                }`}
-                            >
-                                <span
-                                    className={`flex-shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-[11px] font-semibold text-white ${avatarColor(
-                                        authorName
-                                    )}`}
-                                    title={authorName}
-                                >
-                                    {initials(authorName)}
-                                </span>
-                                <div
-                                    className={`flex flex-col max-w-[min(75%,28rem)] ${
-                                        comment.is_own
-                                            ? 'items-end'
-                                            : 'items-start'
-                                    }`}
-                                >
-                                    <div className="flex items-center gap-1.5 px-1 mb-0.5">
-                                        {!comment.is_own &&
-                                            (comment.author?.person_uid ? (
-                                                <Link
-                                                    to={`/person/${comment.author.person_uid}`}
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
-                                                    className="text-xs font-medium text-gray-600 dark:text-gray-300 hover:underline hover:text-blue-600 dark:hover:text-blue-400"
-                                                >
-                                                    {authorName}
-                                                </Link>
-                                            ) : (
-                                                <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                                                    {authorName}
-                                                </span>
-                                            ))}
-                                        <span className="text-[11px] text-gray-400 dark:text-gray-500">
-                                            {formatTimeAgo(comment.created_at)}
-                                        </span>
-                                        {comment.is_own && !isDeleted && (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setCommentToDelete(comment)
-                                                }
-                                                className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500"
-                                                aria-label={t(
-                                                    'comments.delete',
-                                                    'Delete comment'
-                                                )}
-                                            >
-                                                <TrashIcon className="h-3 w-3" />
-                                            </button>
-                                        )}
-                                    </div>
-                                    {isDeleted ? (
-                                        <div className="flex items-center gap-1.5 text-sm italic px-3 py-2 shadow-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-2xl">
-                                            <NoSymbolIcon className="h-3.5 w-3.5 flex-shrink-0" />
-                                            {t(
-                                                'comments.deletedPlaceholder',
-                                                'Comment deleted'
+                <div className="space-y-5 mb-5 max-h-[32rem] overflow-y-auto pr-1">
+                    {comments.map((comment) => (
+                        <div key={comment.uid}>
+                            <CommentRow
+                                comment={comment}
+                                isReply={false}
+                                onReply={() =>
+                                    setReplyingToUid((prev) =>
+                                        prev === comment.uid
+                                            ? null
+                                            : comment.uid
+                                    )
+                                }
+                                onDelete={() => setCommentToDelete(comment)}
+                                onReact={(type) => handleReact(comment, type)}
+                            />
+                            {(comment.replies.length > 0 ||
+                                replyingToUid === comment.uid) && (
+                                <div className="ml-12 mt-3 space-y-3">
+                                    {comment.replies.map((reply) => (
+                                        <CommentRow
+                                            key={reply.uid}
+                                            comment={reply}
+                                            isReply
+                                            onDelete={() =>
+                                                setCommentToDelete(reply)
+                                            }
+                                            onReact={(type) =>
+                                                handleReact(reply, type)
+                                            }
+                                        />
+                                    ))}
+                                    {replyingToUid === comment.uid && (
+                                        <CommentComposer
+                                            task={task}
+                                            people={people}
+                                            parentCommentUid={comment.uid}
+                                            compact
+                                            autoFocus
+                                            placeholder={t(
+                                                'comments.replyPlaceholder',
+                                                'Write a reply...'
                                             )}
-                                        </div>
-                                    ) : (
-                                        <div
-                                            className={`text-sm whitespace-pre-wrap break-words px-3 py-2 shadow-sm ${
-                                                comment.is_own
-                                                    ? 'bg-blue-500 dark:bg-blue-600 text-white rounded-2xl rounded-br-sm'
-                                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl rounded-bl-sm'
-                                            }`}
-                                        >
-                                            {renderBody(
-                                                comment.body,
-                                                comment.mentioned_people,
-                                                comment.is_own
+                                            submitLabel={t(
+                                                'comments.reply',
+                                                'Reply'
                                             )}
-                                        </div>
+                                            onCancel={() =>
+                                                setReplyingToUid(null)
+                                            }
+                                            onSubmitted={(reply) => {
+                                                const next = appendReply(
+                                                    comments,
+                                                    comment.uid,
+                                                    reply
+                                                );
+                                                setComments(next);
+                                                onCommentCountChange?.(
+                                                    countActive(next)
+                                                );
+                                                setReplyingToUid(null);
+                                            }}
+                                        />
                                     )}
                                 </div>
-                            </div>
-                        );
-                    })}
+                            )}
+                        </div>
+                    ))}
                 </div>
             )}
 
-            <div className="relative">
-                {!hasContent && (
-                    <span className="pointer-events-none absolute left-2.5 top-2 text-sm text-gray-400 dark:text-gray-500">
-                        {t(
-                            'comments.placeholder',
-                            'Write a comment... use @ to mention someone'
-                        )}
-                    </span>
-                )}
-                <div
-                    ref={editorRef}
-                    contentEditable
-                    suppressContentEditableWarning
-                    role="textbox"
-                    aria-multiline="true"
-                    aria-label={t('comments.submit', 'Comment')}
-                    onInput={handleEditorInput}
-                    onClick={handleMentionClick}
-                    onPaste={handlePaste}
-                    onKeyDown={(e) => {
-                        const hasMentionSuggestions =
-                            mentionQuery !== null && mentionMatches.length > 0;
-
-                        if (hasMentionSuggestions) {
-                            if (e.key === 'ArrowDown') {
-                                e.preventDefault();
-                                setMentionIndex((prev) =>
-                                    prev < mentionMatches.length - 1
-                                        ? prev + 1
-                                        : 0
-                                );
-                                return;
-                            }
-                            if (e.key === 'ArrowUp') {
-                                e.preventDefault();
-                                setMentionIndex((prev) =>
-                                    prev > 0
-                                        ? prev - 1
-                                        : mentionMatches.length - 1
-                                );
-                                return;
-                            }
-                            if (e.key === 'Tab') {
-                                e.preventDefault();
-                                handleSelectMention(
-                                    mentionMatches[
-                                        mentionIndex >= 0 ? mentionIndex : 0
-                                    ]
-                                );
-                                return;
-                            }
-                            if (e.key === 'Enter' && mentionIndex >= 0) {
-                                e.preventDefault();
-                                handleSelectMention(
-                                    mentionMatches[mentionIndex]
-                                );
-                                return;
-                            }
-                            if (e.key === 'Escape') {
-                                e.preventDefault();
-                                setMentionQuery(null);
-                                setMentionIndex(-1);
-                                return;
-                            }
-                        }
-
-                        if (
-                            mentionQuery === null &&
-                            e.key === 'Enter' &&
-                            (e.metaKey || e.ctrlKey)
-                        ) {
-                            e.preventDefault();
-                            handleSubmit();
-                        }
-                    }}
-                    className="w-full min-h-[4.5rem] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 p-2.5 whitespace-pre-wrap break-words focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <SuggestionsDropdown
-                    isVisible={
-                        mentionQuery !== null && mentionMatches.length > 0
-                    }
-                    items={mentionMatches}
-                    position={mentionPosition}
-                    selectedIndex={mentionIndex}
-                    onSelect={handleSelectMention}
-                    renderLabel={(person) => <>@{person.name}</>}
-                />
-                <div className="flex justify-end mt-2">
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={!hasContent || submitting}
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-500 dark:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
-                    >
-                        {t('comments.submit', 'Comment')}
-                    </button>
-                </div>
-            </div>
+            <CommentComposer
+                task={task}
+                people={people}
+                onSubmitted={(comment) => {
+                    const next = [...comments, comment];
+                    setComments(next);
+                    onCommentCountChange?.(countActive(next));
+                }}
+            />
 
             {commentToDelete && (
                 <ConfirmDialog

@@ -23,12 +23,15 @@ const commentsController = {
      */
     async create(req, res, next) {
         try {
-            const { body, mentioned_person_uids: mentionedPersonUids } =
-                req.body;
+            const {
+                body,
+                mentioned_person_uids: mentionedPersonUids,
+                parent_comment_uid: parentCommentUid,
+            } = req.body;
             const comment = await commentsService.addComment(
                 req.currentUser.id,
                 req.params.uid,
-                { body, mentionedPersonUids }
+                { body, mentionedPersonUids, parentCommentUid }
             );
             res.status(201).json(comment);
         } catch (error) {
@@ -49,6 +52,25 @@ const commentsController = {
                 req.params.uid
             );
             res.json(comment);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * POST /api/comment/:uid/reaction
+     * Body: { type: 'like' | 'dislike' | null }. null clears the caller's
+     * own reaction. Returns just the updated counts and the caller's
+     * current reaction.
+     */
+    async react(req, res, next) {
+        try {
+            const result = await commentsService.setReaction(
+                req.currentUser.id,
+                req.params.uid,
+                req.body.type ?? null
+            );
+            res.json(result);
         } catch (error) {
             next(error);
         }

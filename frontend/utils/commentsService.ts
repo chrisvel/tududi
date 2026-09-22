@@ -1,4 +1,4 @@
-import { Comment } from '../entities/Comment';
+import { Comment, CommentReactionResult } from '../entities/Comment';
 import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
@@ -15,7 +15,11 @@ export const fetchComments = async (taskUid: string): Promise<Comment[]> => {
 
 export const createComment = async (
     taskUid: string,
-    data: { body: string; mentionedPersonUids: string[] }
+    data: {
+        body: string;
+        mentionedPersonUids: string[];
+        parentCommentUid?: string;
+    }
 ): Promise<Comment> => {
     const response = await fetch(getApiPath(`task/${taskUid}/comments`), {
         method: 'POST',
@@ -24,6 +28,7 @@ export const createComment = async (
         body: JSON.stringify({
             body: data.body,
             mentioned_person_uids: data.mentionedPersonUids,
+            parent_comment_uid: data.parentCommentUid,
         }),
     });
     await handleAuthResponse(response, 'Failed to post comment.');
@@ -43,5 +48,20 @@ export const deleteComment = async (uid: string): Promise<Comment> => {
         },
     });
     await handleAuthResponse(response, 'Failed to delete comment.');
+    return response.json();
+};
+
+// type is null to clear the caller's own reaction.
+export const setCommentReaction = async (
+    uid: string,
+    type: 'like' | 'dislike' | null
+): Promise<CommentReactionResult> => {
+    const response = await fetch(getApiPath(`comment/${uid}/reaction`), {
+        method: 'POST',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({ type }),
+    });
+    await handleAuthResponse(response, 'Failed to update reaction.');
     return response.json();
 };

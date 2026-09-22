@@ -13,4 +13,17 @@ export interface Comment {
         person_uid: string | null;
     } | null;
     is_own: boolean;
+    // One level deep: populated on a top-level comment, always empty on a
+    // reply (replying to a reply isn't offered).
+    replies: Comment[];
+    likes_count: number;
+    dislikes_count: number;
+    my_reaction: 'like' | 'dislike' | null;
+}
+
+export interface CommentReactionResult {
+    uid: string;
+    likes_count: number;
+    dislikes_count: number;
+    my_reaction: 'like' | 'dislike' | null;
 }
