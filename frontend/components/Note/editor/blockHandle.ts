@@ -35,6 +35,10 @@ const SHOW_PLUS_BUTTON = false;
 // Must match the width/height in blockHandleTheme's `.cm-block-handle-btn`.
 const BUTTON_SIZE = 20;
 
+// Pixels of mouse movement before a mousedown-on-handle counts as a drag
+// rather than a click.
+const DRAG_THRESHOLD = 4;
+
 class BlockHandlePlugin {
     layer: HTMLDivElement;
     plusBtn: HTMLButtonElement;
@@ -46,25 +50,20 @@ class BlockHandlePlugin {
     dragSource: Block | null = null;
     dropTarget: { block: Block; before: boolean } | null = null;
     enabled = canHover();
-    // True from the moment the mouse goes down on the handle until either a
-    // real drag starts or the mouse comes back up. The browser still fires
-    // ordinary mousemove events during that in-between window (before it
-    // commits to a drag gesture), and the pointer can drift a pixel or two
-    // off the small handle during that jitter - without this freeze, such a
-    // stray mousemove would reassign `hovered` to whatever block is now
-    // under the cursor, so the drag that follows moves the wrong block.
-    private pointerDownOnHandle = false;
+
+    private dragStartPos: { x: number; y: number } | null = null;
+    // True once a mousedown-on-handle has moved past DRAG_THRESHOLD. The
+    // click event that follows mouseup is suppressed for that one gesture so
+    // a completed drag doesn't also pop the menu open.
+    private didDrag = false;
 
     private onMouseMove = (e: MouseEvent) => this.handleMouseMove(e);
     private onMouseLeave = () => {
         if (!this.dragSource) this.hide();
     };
-    private onHandleMouseDown = () => {
-        this.pointerDownOnHandle = true;
-    };
-    private onDocMouseUp = () => {
-        this.pointerDownOnHandle = false;
-    };
+    private onHandleMouseDown = (e: MouseEvent) => this.startDrag(e);
+    private onDragMove = (e: MouseEvent) => this.continueDrag(e);
+    private onDragUp = (e: MouseEvent) => this.finishDrag(e);
     private onDocClick = (e: MouseEvent) => {
         if (this.menu && !this.menu.contains(e.target as Node)) {
             this.closeMenu();
@@ -90,26 +89,29 @@ class BlockHandlePlugin {
             this.insertBelow();
         });
 
+        // Dragging is implemented by hand with mousedown/mousemove/mouseup
+        // rather than native HTML5 drag-and-drop (`draggable`/dragstart/
+        // dragover/drop). Native DnD turned out unreliable here: it
+        // interacts unpredictably with CodeMirror's own event handling
+        // (its built-in drop-to-insert-text behaviour fired before this
+        // plugin's own drop handler got a chance to run), and the
+        // mousedown-to-dragstart handoff is finicky across browsers.
+        // Notion, Linear and most other block editors implement block
+        // dragging the same manual way for the same reasons.
         this.handleBtn = document.createElement('button');
         this.handleBtn.type = 'button';
         this.handleBtn.className = 'cm-block-handle-btn cm-block-handle-drag';
         this.handleBtn.textContent = '⋮⋮';
         this.handleBtn.title = 'Drag to move, click for more actions';
-        this.handleBtn.draggable = true;
-        // No mousedown preventDefault here: calling it on a draggable
-        // element stops the browser's own drag-and-drop from ever starting
-        // (it uses mousedown to detect the drag gesture). The button lives
-        // outside .cm-content, so clicking it doesn't move the editor's
-        // caret anyway - there's nothing to guard against.
         this.handleBtn.addEventListener('mousedown', this.onHandleMouseDown);
         this.handleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (this.didDrag) {
+                this.didDrag = false;
+                return;
+            }
             this.toggleMenu();
         });
-        this.handleBtn.addEventListener('dragstart', (e) =>
-            this.handleDragStart(e)
-        );
-        this.handleBtn.addEventListener('dragend', () => this.handleDragEnd());
 
         this.dropLine = document.createElement('div');
         this.dropLine.className = 'cm-block-handle-dropline';
@@ -123,17 +125,7 @@ class BlockHandlePlugin {
             view.dom.addEventListener('mousemove', this.onMouseMove);
             view.dom.addEventListener('mouseleave', this.onMouseLeave);
             document.addEventListener('mousedown', this.onDocClick);
-            document.addEventListener('mouseup', this.onDocMouseUp);
         }
-        // dragover/drop are NOT attached here with addEventListener: they go
-        // through the blockHandleDomHandlers extension below instead, using
-        // CodeMirror's own domEventHandlers facet. CodeMirror has its own
-        // built-in drop handling that inserts the dropped text/plain payload
-        // at the drop position, and that ran *before* a plain
-        // addEventListener('drop', ...) here ever got a chance to
-        // preventDefault it - it pasted the dataTransfer payload as literal
-        // text. Only a handler registered through that same facet can
-        // suppress CodeMirror's own default action.
     }
 
     update(update: ViewUpdate) {
@@ -148,7 +140,9 @@ class BlockHandlePlugin {
         this.view.dom.removeEventListener('mousemove', this.onMouseMove);
         this.view.dom.removeEventListener('mouseleave', this.onMouseLeave);
         document.removeEventListener('mousedown', this.onDocClick);
-        document.removeEventListener('mouseup', this.onDocMouseUp);
+        document.removeEventListener('mousemove', this.onDragMove);
+        document.removeEventListener('mouseup', this.onDragUp);
+        if (this.didDrag) document.body.style.cursor = '';
         this.closeMenu();
         this.layer.remove();
     }
@@ -160,17 +154,14 @@ class BlockHandlePlugin {
     }
 
     private handleMouseMove(e: MouseEvent) {
+        // While a drag is in progress, dropTarget tracking (continueDrag,
+        // driven by its own document-level listener) owns the mouse -
+        // this hover logic must not reposition the handle out from under
+        // an active drag.
         if (this.dragSource) return;
-        // Frozen from mousedown-on-handle until the drag actually starts (or
-        // the mouse comes back up without one starting) - see
-        // pointerDownOnHandle's comment.
-        if (this.pointerDownOnHandle) return;
         // Moving onto our own overlay (the handle button, the menu) must not
         // recompute which block is "hovered" - it should stay exactly what
-        // it was when the button was positioned, otherwise a mousemove that
-        // lands slightly outside the text (still within .cm-content's own
-        // padding) right as a drag gesture starts could null it out from
-        // under handleDragStart.
+        // it was when the button was positioned.
         if (e.target instanceof Node && this.layer.contains(e.target)) return;
         const pos = this.view.posAtCoords({ x: e.clientX, y: e.clientY });
         if (pos == null) {
@@ -296,44 +287,41 @@ class BlockHandlePlugin {
         this.menu = menu;
     }
 
-    private handleDragStart(e: DragEvent) {
-        this.pointerDownOnHandle = false;
-        if (!this.hovered) {
-            e.preventDefault();
-            return;
-        }
-        this.dragSource = this.hovered;
-        // Some browsers require at least one setData call for a drag to
-        // proceed, but the value itself is never read back - dropTarget is
-        // tracked in our own JS state, not through dataTransfer. Keeping it
-        // empty means that if CodeMirror's own drop handling ever runs
-        // anyway (see blockHandleDomHandlers below), it has nothing to
-        // insert.
-        e.dataTransfer?.setData('text/plain', '');
-        if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
-        this.closeMenu();
-    }
-
-    private handleDragEnd() {
-        this.dragSource = null;
-        this.dropTarget = null;
-        this.dropLine.style.display = 'none';
-    }
-
-    // Returns true when the event is ours to handle, which - via the
-    // blockHandleDomHandlers extension below - also tells CodeMirror to
-    // skip its own default handling (including the built-in "insert the
-    // dropped text" behaviour that a plain addEventListener can't suppress).
-    handleDragOver(e: DragEvent): boolean {
-        if (!this.dragSource) return false;
+    private startDrag(e: MouseEvent) {
+        if (e.button !== 0 || !this.hovered) return;
+        // Safe to prevent here (unlike native drag-and-drop, nothing else
+        // depends on this mousedown reaching the browser's default
+        // handling), which stops it from also starting a text selection.
         e.preventDefault();
+        this.dragSource = this.hovered;
+        this.dragStartPos = { x: e.clientX, y: e.clientY };
+        this.didDrag = false;
+        this.closeMenu();
+        document.addEventListener('mousemove', this.onDragMove);
+        document.addEventListener('mouseup', this.onDragUp);
+    }
 
-        let pos = this.view.posAtCoords({ x: e.clientX, y: e.clientY });
+    private continueDrag(e: MouseEvent) {
+        if (!this.dragSource) return;
+        if (!this.didDrag && this.dragStartPos) {
+            const dx = e.clientX - this.dragStartPos.x;
+            const dy = e.clientY - this.dragStartPos.y;
+            if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+            this.didDrag = true;
+            document.body.style.cursor = 'grabbing';
+        }
+        this.updateDropTarget(e.clientX, e.clientY);
+    }
+
+    private updateDropTarget(clientX: number, clientY: number) {
+        if (!this.dragSource) return;
+
+        let pos = this.view.posAtCoords({ x: clientX, y: clientY });
         if (pos == null) {
             // Dragged above or below all content - treat it as targeting the
             // very start or end of the document rather than giving up.
             const editorBox = this.view.dom.getBoundingClientRect();
-            pos = e.clientY < editorBox.top ? 0 : this.view.state.doc.length;
+            pos = clientY < editorBox.top ? 0 : this.view.state.doc.length;
         }
 
         let block = blockAt(this.view.state, pos);
@@ -352,36 +340,50 @@ class BlockHandlePlugin {
         if (!block || sameBlock(block, this.dragSource)) {
             this.dropLine.style.display = 'none';
             this.dropTarget = null;
-            return true;
+            return;
         }
 
         const top = this.view.coordsAtPos(block.from);
         const bottom = this.view.coordsAtPos(block.to);
-        if (!top || !bottom) return true;
+        if (!top || !bottom) return;
         const midpoint = (top.top + bottom.bottom) / 2;
-        const before = e.clientY < midpoint;
+        const before = clientY < midpoint;
         this.dropTarget = { block, before };
 
         const editorBox = this.view.dom.getBoundingClientRect();
         const lineY = (before ? top.top : bottom.bottom) - editorBox.top;
         this.dropLine.style.display = 'block';
         this.dropLine.style.top = `${lineY}px`;
-        return true;
     }
 
-    handleDrop(e: DragEvent): boolean {
-        if (!this.dragSource || !this.dropTarget) return false;
-        e.preventDefault();
-        const spec = reorderBlock(
-            this.view.state,
-            this.dragSource.from,
-            this.dropTarget.block.from,
-            this.dropTarget.before
-        );
-        if (spec) this.view.dispatch(spec);
-        this.handleDragEnd();
-        this.hide();
-        return true;
+    private finishDrag(e: MouseEvent) {
+        document.removeEventListener('mousemove', this.onDragMove);
+        document.removeEventListener('mouseup', this.onDragUp);
+        document.body.style.cursor = '';
+
+        const wasDrag = this.didDrag;
+        if (wasDrag && this.dragSource) {
+            this.updateDropTarget(e.clientX, e.clientY);
+            if (this.dropTarget) {
+                const spec = reorderBlock(
+                    this.view.state,
+                    this.dragSource.from,
+                    this.dropTarget.block.from,
+                    this.dropTarget.before
+                );
+                if (spec) this.view.dispatch(spec);
+            }
+        }
+
+        this.dragSource = null;
+        this.dropTarget = null;
+        this.dragStartPos = null;
+        this.dropLine.style.display = 'none';
+        // Only hide (which clears `hovered`) after an actual drag. For a
+        // plain click, the 'click' event fires right after this and needs
+        // `hovered` to still point at the block the handle was on, to open
+        // its menu.
+        if (wasDrag) this.hide();
     }
 }
 
@@ -390,18 +392,6 @@ function sameBlock(a: Block, b: Block): boolean {
 }
 
 export const blockHandlePlugin = ViewPlugin.fromClass(BlockHandlePlugin);
-
-// dragover/drop have to go through CodeMirror's own domEventHandlers facet,
-// not a plain addEventListener, for the plugin's `true` return to actually
-// suppress CodeMirror's built-in drop-to-insert-text handling.
-export const blockHandleDomHandlers = EditorView.domEventHandlers({
-    dragover(event, view) {
-        return view.plugin(blockHandlePlugin)?.handleDragOver(event) ?? false;
-    },
-    drop(event, view) {
-        return view.plugin(blockHandlePlugin)?.handleDrop(event) ?? false;
-    },
-});
 
 export const blockHandleTheme = EditorView.baseTheme({
     '.cm-block-handle-layer': {

@@ -26,11 +26,7 @@ import WikilinkMenu, { NoteTitle } from './WikilinkMenu';
 import { useNavigate } from 'react-router-dom';
 import { livePreviewExtension } from './editor';
 import { blockUxKeymap } from './editor/keymaps';
-import {
-    blockHandlePlugin,
-    blockHandleDomHandlers,
-    blockHandleTheme,
-} from './editor/blockHandle';
+import { blockHandlePlugin, blockHandleTheme } from './editor/blockHandle';
 import {
     wrapSelection as wrapSelectionCmd,
     setHeading as setHeadingCmd,
@@ -274,7 +270,6 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 drawSelection(),
                 keymap.of(blockUxKeymap),
                 blockHandlePlugin,
-                blockHandleDomHandlers,
                 blockHandleTheme,
                 keymap.of([...defaultKeymap, ...historyKeymap]),
                 EditorView.lineWrapping,
