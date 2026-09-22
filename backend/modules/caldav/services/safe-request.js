@@ -13,8 +13,13 @@ const {
 
 const MAX_REDIRECTS = 5;
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
+// Self-hosted CalDAV servers (Baikal, Nextcloud, Radicale) on the same LAN
+// are a very common setup, so the block is named as a setting to change
+// rather than a dead end (#1518).
 const PRIVATE_ADDRESS_MESSAGE =
-    'Cannot connect to private, local, or internal network addresses';
+    'Cannot connect to private, local, or internal network addresses. ' +
+    'If this server is on your own network, ask your administrator to set ' +
+    'CALDAV_ALLOW_PRIVATE_HOSTS=true.';
 
 const allowPrivateHosts = () => !!getConfig().caldav?.allowPrivateHosts;
 
