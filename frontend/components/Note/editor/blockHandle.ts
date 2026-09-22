@@ -28,6 +28,13 @@ const canHover = (): boolean =>
     typeof window !== 'undefined' &&
     window.matchMedia?.('(hover: hover) and (pointer: fine)').matches !== false;
 
+// The "+" insert-below button is disabled for now (kept in place so it's a
+// one-line flip to bring back) - only the drag handle shows.
+const SHOW_PLUS_BUTTON = false;
+
+// Must match the width/height in blockHandleTheme's `.cm-block-handle-btn`.
+const BUTTON_SIZE = 20;
+
 class BlockHandlePlugin {
     layer: HTMLDivElement;
     plusBtn: HTMLButtonElement;
@@ -77,7 +84,11 @@ class BlockHandlePlugin {
         this.handleBtn.textContent = '⋮⋮';
         this.handleBtn.title = 'Drag to move, click for more actions';
         this.handleBtn.draggable = true;
-        this.handleBtn.addEventListener('mousedown', (e) => e.preventDefault());
+        // No mousedown preventDefault here: calling it on a draggable
+        // element stops the browser's own drag-and-drop from ever starting
+        // (it uses mousedown to detect the drag gesture). The button lives
+        // outside .cm-content, so clicking it doesn't move the editor's
+        // caret anyway - there's nothing to guard against.
         this.handleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.toggleMenu();
@@ -90,7 +101,8 @@ class BlockHandlePlugin {
         this.dropLine = document.createElement('div');
         this.dropLine.className = 'cm-block-handle-dropline';
 
-        this.layer.append(this.plusBtn, this.handleBtn, this.dropLine);
+        this.layer.append(this.handleBtn, this.dropLine);
+        if (SHOW_PLUS_BUTTON) this.layer.append(this.plusBtn);
         this.hide();
 
         if (this.enabled) {
@@ -123,12 +135,19 @@ class BlockHandlePlugin {
 
     private hide() {
         this.hovered = null;
-        this.plusBtn.style.display = 'none';
+        if (SHOW_PLUS_BUTTON) this.plusBtn.style.display = 'none';
         this.handleBtn.style.display = 'none';
     }
 
     private handleMouseMove(e: MouseEvent) {
         if (this.dragSource) return;
+        // Moving onto our own overlay (the handle button, the menu) must not
+        // recompute which block is "hovered" - it should stay exactly what
+        // it was when the button was positioned, otherwise a mousemove that
+        // lands slightly outside the text (still within .cm-content's own
+        // padding) right as a drag gesture starts could null it out from
+        // under handleDragStart.
+        if (e.target instanceof Node && this.layer.contains(e.target)) return;
         const pos = this.view.posAtCoords({ x: e.clientX, y: e.clientY });
         if (pos == null) {
             this.hide();
@@ -151,11 +170,17 @@ class BlockHandlePlugin {
             return;
         }
         const editorBox = this.view.dom.getBoundingClientRect();
-        const top = coords.top - editorBox.top;
+        // Center the (fixed-height) button on the line's own box rather than
+        // pinning it to the line's top edge, so it doesn't sit visually high
+        // against taller lines (headings) or short ones.
+        const lineHeight = coords.bottom - coords.top;
+        const top = coords.top - editorBox.top + (lineHeight - BUTTON_SIZE) / 2;
         this.handleBtn.style.display = 'flex';
         this.handleBtn.style.top = `${top}px`;
-        this.plusBtn.style.display = 'flex';
-        this.plusBtn.style.top = `${top}px`;
+        if (SHOW_PLUS_BUTTON) {
+            this.plusBtn.style.display = 'flex';
+            this.plusBtn.style.top = `${top}px`;
+        }
     }
 
     private insertBelow() {
@@ -345,14 +370,14 @@ export const blockHandleTheme = EditorView.baseTheme({
         background: 'rgba(255,255,255,0.12)',
     },
     // Reserve a permanent left gutter inside the editor's own box for the
-    // buttons, rather than pushing them into negative space that depends on
+    // handle, rather than pushing it into negative space that depends on
     // whatever padding the embedding page happens to provide - MarkdownEditor
     // is used inside several different containers (Notes.tsx, NoteModal,
     // NoteFocusMode, task descriptions), and some of those don't leave
-    // enough room, which silently hides the buttons behind other UI.
-    '.cm-content': { paddingLeft: '44px !important' },
+    // enough room, which silently hides it behind other UI.
+    '.cm-content': { paddingLeft: '28px !important' },
     '.cm-block-handle-plus': { left: '2px' },
-    '.cm-block-handle-drag': { left: '24px', cursor: 'grab' },
+    '.cm-block-handle-drag': { left: '2px', cursor: 'grab' },
     '.cm-block-handle-dropline': {
         position: 'absolute',
         left: '0',
