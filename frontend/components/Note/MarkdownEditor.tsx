@@ -14,7 +14,8 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import FormattingToolbar from './FormattingToolbar';
 import SlashCommandMenu from './SlashCommandMenu';
 import WikilinkMenu, { NoteTitle } from './WikilinkMenu';
-import { livePreviewExtension } from './livePreviewExtension';
+import { useNavigate } from 'react-router-dom';
+import { livePreviewExtension } from './editor';
 import { useStore } from '../../store/useStore';
 
 interface MarkdownEditorProps {
@@ -179,6 +180,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     const viewRef = useRef<EditorView | null>(null);
     const onChangeRef = useRef(onChange);
     onChangeRef.current = onChange;
+    const navigate = useNavigate();
 
     // Load notes from store for wikilink autocomplete
     const storeNotes = useStore((state) => state.notesStore.notes);
@@ -193,6 +195,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         () => storeNotes.filter((n) => n.uid).map((n) => ({ uid: n.uid as string, title: n.title })),
         [storeNotes]
     );
+
+    const noteTitlesRef = useRef(noteTitles);
+    noteTitlesRef.current = noteTitles;
+    const navigateRef = useRef(navigate);
+    navigateRef.current = navigate;
 
     const [toolbarState, setToolbarState] = useState<{
         visible: boolean;
@@ -247,7 +254,16 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 baseEditorTheme,
                 themeCompartment.of(getThemeExtension()),
                 colorOverride,
-                livePreviewExtension,
+                livePreviewExtension({
+                    onOpenWikilink: (title) => {
+                        const target = noteTitlesRef.current.find(
+                            (n) =>
+                                n.title.trim().toLowerCase() ===
+                                title.toLowerCase()
+                        );
+                        if (target) navigateRef.current(`/notes/${target.uid}`);
+                    },
+                }),
                 EditorView.updateListener.of((update: ViewUpdate) => {
                     if (update.docChanged) {
                         onChangeRef.current(update.state.doc.toString());

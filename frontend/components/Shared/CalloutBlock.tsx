@@ -10,7 +10,7 @@ interface CalloutConfig {
     defaultLabel: string;
 }
 
-const CALLOUT_CONFIG: Record<CalloutType, CalloutConfig> = {
+export const CALLOUT_CONFIG: Record<CalloutType, CalloutConfig> = {
     NOTE: {
         borderClass: 'border-blue-400 dark:border-blue-500',
         bgClass: 'bg-blue-50 dark:bg-blue-950/30',

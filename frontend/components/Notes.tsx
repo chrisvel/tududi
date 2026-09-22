@@ -4,6 +4,7 @@ import React, {
     useMemo,
     useRef,
     useCallback,
+    useLayoutEffect,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from 'use-debounce';
@@ -20,12 +21,11 @@ import {
 } from '@heroicons/react/24/outline';
 import PushPinIcon from './Shared/Icons/PushPinIcon';
 import { useToast } from './Shared/ToastContext';
-import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import NoteModal from './Note/NoteModal';
 import PublicShareModal from './Note/PublicShareModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import DiscardChangesDialog from './Shared/DiscardChangesDialog';
-import MarkdownRenderer from './Shared/MarkdownRenderer';
 import TagInput from './Tag/TagInput';
 import { Note } from '../entities/Note';
 import {
@@ -53,6 +53,21 @@ const shouldUseLightText = (hexColor: string | undefined): boolean => {
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
     return luminance < 0.4;
+};
+
+// The editor is always live, so the user may have kept typing while a save
+// was in flight. Only take the server's identity and timestamps, never its
+// copy of title/content, and ignore a save for a note we have left.
+const mergeSavedNote = (current: Note | null, saved: Note): Note | null => {
+    if (!current) return current;
+    if (current.uid && current.uid !== saved.uid) return current;
+    return {
+        ...current,
+        id: saved.id,
+        uid: saved.uid,
+        created_at: saved.created_at,
+        updated_at: saved.updated_at,
+    };
 };
 
 const Notes: React.FC = () => {
@@ -122,11 +137,13 @@ const Notes: React.FC = () => {
                     n.uid === noteToSave.uid ? savedNote : n
                 );
                 setNotes(updatedNotes);
-                setEditingNote(savedNote);
+                setEditingNote((current) =>
+                    mergeSavedNote(current, savedNote)
+                );
             } else {
                 const newNote = await createNote(noteToSave);
                 setNotes([newNote, ...notes]);
-                setEditingNote(newNote);
+                setEditingNote((current) => mergeSavedNote(current, newNote));
                 navigate(`/notes/${newNote.uid}`, { replace: true });
             }
 
@@ -151,6 +168,14 @@ const Notes: React.FC = () => {
         },
         [editingNote, debouncedSave]
     );
+
+    const leaveEditing = useCallback(() => {
+        debouncedSave.flush();
+        setIsEditing(false);
+        setEditingNote(null);
+        setShowProjectDropdown(false);
+        setShowTagsInput(false);
+    }, [debouncedSave]);
 
     const handleSelectNote = async (note: Note | null) => {
         if (isEditing && editingNote) {
@@ -234,50 +259,24 @@ const Notes: React.FC = () => {
         setSaveStatus('saved');
     };
 
-    const handleSaveInlineNote = async () => {
-        if (!editingNote || !editingNote.title) return;
-
-        try {
-            if (editingNote.tags && editingNote.tags.length > 0) {
-                const { tagsStore } = useStore.getState();
-                tagsStore.addNewTags(editingNote.tags.map((t) => t.name));
-            }
-
-            if (editingNote.uid) {
-                const savedNote = await updateNote(
-                    editingNote.uid,
-                    editingNote
-                );
-                const updatedNotes = notes.map((note) =>
-                    note.uid === editingNote.uid ? savedNote : note
-                );
-                setNotes(updatedNotes);
-                setIsEditing(false);
-                setEditingNote(null);
-                setShowProjectDropdown(false);
-                setShowTagsInput(false);
-                setPreviewNote(savedNote);
-                navigate(`/notes/${savedNote.uid}`, {
-                    replace: true,
-                    state: {},
-                });
-            } else {
-                const newNote = await createNote(editingNote);
-                setNotes([newNote, ...notes]);
-                setIsEditing(false);
-                setEditingNote(null);
-                setShowProjectDropdown(false);
-                setShowTagsInput(false);
-                setPreviewNote(newNote);
-                navigate(`/notes/${newNote.uid}`, {
-                    replace: true,
-                    state: {},
-                });
-            }
-        } catch (err) {
-            console.error('Error saving note:', err);
+    // Notes always open in the live editor: selecting one (sidebar, URL,
+    // auto-select) puts it straight into edit mode, and switching to another
+    // note flushes the pending save of the one being left first.
+    useLayoutEffect(() => {
+        if (!previewNote) return;
+        if (
+            isEditing &&
+            editingNote?.uid &&
+            previewNote.uid &&
+            editingNote.uid !== previewNote.uid
+        ) {
+            leaveEditing();
+            return;
         }
-    };
+        if (!isEditing) {
+            handleEditNote(previewNote);
+        }
+    }, [previewNote, isEditing, editingNote?.uid, leaveEditing]);
 
     const handleCancelEdit = () => {
         setIsEditing(false);
@@ -492,15 +491,13 @@ const Notes: React.FC = () => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isEditing) {
                 e.preventDefault();
-                if (editingNote?.title) {
-                    handleSaveInlineNote();
-                }
+                debouncedSave.flush();
             }
         };
 
         document.addEventListener('keydown', handleEscape);
         return () => document.removeEventListener('keydown', handleEscape);
-    }, [isEditing, editingNote]);
+    }, [isEditing, debouncedSave]);
 
     if (isLoading) {
         return (
@@ -559,7 +556,7 @@ const Notes: React.FC = () => {
                                                 paddingLeft: 0,
                                                 paddingRight: 0,
                                             }}
-                                            autoFocus
+                                            autoFocus={!editingNote.uid}
                                         />
                                         <div
                                             className="flex flex-col text-xs text-gray-500 dark:text-gray-400 space-y-1 mb-2"
@@ -760,7 +757,7 @@ const Notes: React.FC = () => {
                                                             if (
                                                                 editingNote.title
                                                             ) {
-                                                                handleSaveInlineNote();
+                                                                debouncedSave.flush();
                                                             } else {
                                                                 setShowDiscardDialog(
                                                                     true
@@ -914,357 +911,7 @@ const Notes: React.FC = () => {
                                     />
                                 </div>
                             </div>
-                        ) : previewNote ? (
-                            <div className="flex-1 flex flex-col overflow-hidden">
-                                <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-5">
-                                    <div className="flex-1">
-                                        <h1
-                                            onClick={() =>
-                                                handleEditNote(previewNote)
-                                            }
-                                            className="cursor-pointer text-gray-900 dark:text-gray-100 transition-colors pt-5 mb-4"
-                                            style={{
-                                                color: previewNoteColor
-                                                    ? shouldUseLightText(
-                                                          previewNoteColor
-                                                      )
-                                                        ? '#ffffff'
-                                                        : '#333333'
-                                                    : undefined,
-                                                fontSize: '2rem',
-                                                lineHeight: '2rem',
-                                                fontWeight: 500,
-                                            }}
-                                            title={t('notes.clickToEdit')}
-                                        >
-                                            {previewNote.title ||
-                                                t(
-                                                    'notes.untitled',
-                                                    'Untitled Note'
-                                                )}
-                                        </h1>
-                                        <div
-                                            className="flex flex-col md:flex-row md:flex-wrap md:items-center text-xs text-gray-500 dark:text-gray-400 space-y-1 md:space-y-0 md:gap-3 mb-2"
-                                            style={{
-                                                color: previewNoteColor
-                                                    ? shouldUseLightText(
-                                                          previewNoteColor
-                                                      )
-                                                        ? '#e0e0e0'
-                                                        : '#333333'
-                                                    : undefined,
-                                            }}
-                                        >
-                                            <div className="flex items-center">
-                                                <ClockIcon className="h-3 w-3 mr-1" />
-                                                <span>
-                                                    {new Date(
-                                                        previewNote.updated_at ||
-                                                            previewNote.created_at ||
-                                                            ''
-                                                    ).toLocaleDateString()}
-                                                </span>
-                                            </div>
-                                            {(previewNote.project ||
-                                                previewNote.Project) && (
-                                                <div className="flex items-center">
-                                                    <FolderIcon className="h-3 w-3 mr-1" />
-                                                    <Link
-                                                        to={
-                                                            (
-                                                                previewNote.project ||
-                                                                previewNote.Project
-                                                            )?.uid
-                                                                ? `/project/${(previewNote.project || previewNote.Project).uid}-${(
-                                                                      previewNote.project ||
-                                                                      previewNote.Project
-                                                                  )?.name
-                                                                      .toLowerCase()
-                                                                      .replace(
-                                                                          /[^a-z0-9]+/g,
-                                                                          '-'
-                                                                      )
-                                                                      .replace(
-                                                                          /^-|-$/g,
-                                                                          ''
-                                                                      )}`
-                                                                : `/project/${(previewNote.project || previewNote.Project)?.id}`
-                                                        }
-                                                        className="hover:underline"
-                                                        onClick={(e) =>
-                                                            e.stopPropagation()
-                                                        }
-                                                    >
-                                                        {
-                                                            (
-                                                                previewNote.project ||
-                                                                previewNote.Project
-                                                            )?.name
-                                                        }
-                                                    </Link>
-                                                </div>
-                                            )}
-                                            {((previewNote.tags &&
-                                                previewNote.tags.length > 0) ||
-                                                (previewNote.Tags &&
-                                                    previewNote.Tags.length >
-                                                        0)) && (
-                                                <div className="flex items-center">
-                                                    <TagIconOutline className="h-3 w-3 mr-1" />
-                                                    <span>
-                                                        {(
-                                                            previewNote.tags ||
-                                                            previewNote.Tags ||
-                                                            []
-                                                        ).map((tag, idx) => (
-                                                            <React.Fragment
-                                                                key={tag.name}
-                                                            >
-                                                                {idx > 0 &&
-                                                                    ', '}
-                                                                <Link
-                                                                    to={
-                                                                        tag.uid
-                                                                            ? `/tag/${tag.uid}-${tag.name
-                                                                                  .toLowerCase()
-                                                                                  .replace(
-                                                                                      /[^a-z0-9]+/g,
-                                                                                      '-'
-                                                                                  )
-                                                                                  .replace(
-                                                                                      /^-|-$/g,
-                                                                                      ''
-                                                                                  )}`
-                                                                            : `/tag/${tag.name
-                                                                                  .toLowerCase()
-                                                                                  .replace(
-                                                                                      /[^a-z0-9]+/g,
-                                                                                      '-'
-                                                                                  )
-                                                                                  .replace(
-                                                                                      /^-|-$/g,
-                                                                                      ''
-                                                                                  )}`
-                                                                    }
-                                                                    className="hover:underline"
-                                                                    onClick={(
-                                                                        e
-                                                                    ) =>
-                                                                        e.stopPropagation()
-                                                                    }
-                                                                >
-                                                                    {tag.name}
-                                                                </Link>
-                                                            </React.Fragment>
-                                                        ))}
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <button
-                                            onClick={() => setIsFocusMode(true)}
-                                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                            style={{
-                                                color: previewNoteColor
-                                                    ? shouldUseLightText(
-                                                          previewNoteColor
-                                                      )
-                                                        ? '#e0e0e0'
-                                                        : '#333333'
-                                                    : undefined,
-                                            }}
-                                            aria-label={t('notes.focusMode')}
-                                            title={t('notes.focusMode')}
-                                        >
-                                            <ArrowsPointingOutIcon className="h-5 w-5" />
-                                        </button>
-                                    <div
-                                        className="relative"
-                                        ref={noteOptionsDropdownRef}
-                                    >
-                                        <button
-                                            onClick={() =>
-                                                setShowNoteOptionsDropdown(
-                                                    !showNoteOptionsDropdown
-                                                )
-                                            }
-                                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                            style={{
-                                                color: previewNoteColor
-                                                    ? shouldUseLightText(
-                                                          previewNoteColor
-                                                      )
-                                                        ? '#e0e0e0'
-                                                        : '#333333'
-                                                    : undefined,
-                                            }}
-                                            aria-label={t('notes.noteOptions')}
-                                        >
-                                            <EllipsisVerticalIcon className="h-5 w-5" />
-                                        </button>
-                                        {showNoteOptionsDropdown && (
-                                            <div className="absolute right-0 mt-1 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                                <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
-                                                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
-                                                        Background Color
-                                                    </div>
-                                                    <div className="grid grid-cols-5 gap-2">
-                                                        {COLORS.map(
-                                                            (
-                                                                colorOption
-                                                            ) => (
-                                                                <button
-                                                                    key={
-                                                                        colorOption.value
-                                                                    }
-                                                                    onClick={() =>
-                                                                        handleColorChange(
-                                                                            colorOption.value,
-                                                                            previewNote
-                                                                        )
-                                                                    }
-                                                                    className={`w-8 h-8 rounded-md border-2 transition-all hover:scale-110 flex items-center justify-center ${
-                                                                        previewNote.color ===
-                                                                        colorOption.value
-                                                                            ? 'border-blue-500 dark:border-blue-400 ring-2 ring-blue-200 dark:ring-blue-800'
-                                                                            : 'border-gray-300 dark:border-gray-600'
-                                                                    }`}
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            colorOption.value ||
-                                                                            '#ffffff',
-                                                                    }}
-                                                                    title={
-                                                                        colorOption.name
-                                                                    }
-                                                                    aria-label={`Set background to ${colorOption.name}`}
-                                                                >
-                                                                    {!colorOption.value && (
-                                                                        <XMarkIcon className="h-5 w-5 text-gray-400" />
-                                                                    )}
-                                                                </button>
-                                                            )
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                <div className="py-1">
-                                                    <button
-                                                        onClick={() => {
-                                                            handleEditNote(
-                                                                previewNote
-                                                            );
-                                                            setShowNoteOptionsDropdown(
-                                                                false
-                                                            );
-                                                        }}
-                                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                                                    >
-                                                        <PencilIcon className="h-4 w-4" />
-                                                        {t('notes.edit', 'Edit')}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            handleTogglePin(previewNote);
-                                                            setShowNoteOptionsDropdown(false);
-                                                        }}
-                                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                                                    >
-                                                        <PushPinIcon className="h-4 w-4" />
-                                                        {previewNote.pin_to_sidebar
-                                                            ? t('notes.unpinFromSidebar', 'Unpin from sidebar')
-                                                            : t('notes.pinToSidebar', 'Pin to sidebar')}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setNoteToShare(previewNote);
-                                                            setShowNoteOptionsDropdown(false);
-                                                        }}
-                                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                                                    >
-                                                        <GlobeAltIcon className="h-4 w-4" />
-                                                        {t('notes.publicShare.open', 'Share note')}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setNoteToDelete(
-                                                                previewNote
-                                                            );
-                                                            setIsConfirmDialogOpen(
-                                                                true
-                                                            );
-                                                            setShowNoteOptionsDropdown(
-                                                                false
-                                                            );
-                                                        }}
-                                                        className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                                                    >
-                                                        <TrashIcon className="h-4 w-4" />
-                                                        {t(
-                                                            'notes.delete',
-                                                            'Delete'
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    onClick={() => handleEditNote(previewNote)}
-                                    className="text-sm md:text-base flex-1 overflow-y-auto cursor-pointer px-6 md:px-8 py-4 text-gray-900 dark:text-gray-100"
-                                    style={{
-                                        color: previewNoteColor
-                                            ? shouldUseLightText(
-                                                  previewNoteColor
-                                              )
-                                                ? '#ffffff'
-                                                : '#333333'
-                                            : undefined,
-                                    }}
-                                    title={t('notes.clickToEdit')}
-                                >
-                                    <MarkdownRenderer
-                                        content={previewNote.content}
-                                        noteColor={previewNoteColor}
-                                        onContentChange={async (newContent) => {
-                                            const updatedNote = {
-                                                ...previewNote,
-                                                content: newContent,
-                                            };
-                                            setPreviewNote(updatedNote);
-
-                                            if (previewNote.uid) {
-                                                try {
-                                                    const savedNote =
-                                                        await updateNote(
-                                                            previewNote.uid,
-                                                            updatedNote
-                                                        );
-                                                    const updatedNotes =
-                                                        notes.map((n) =>
-                                                            n.uid ===
-                                                            previewNote.uid
-                                                                ? savedNote
-                                                                : n
-                                                        );
-                                                    setNotes(updatedNotes);
-                                                    setPreviewNote(savedNote);
-                                                } catch (err) {
-                                                    console.error(
-                                                        'Error updating note:',
-                                                        err
-                                                    );
-                                                }
-                                            }
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        ) : (
+                        ) : previewNote ? null : (
                             <div className="flex items-center justify-center flex-1 text-gray-500 dark:text-gray-400">
                                 {t(
                                     'notes.selectNote',
@@ -1275,56 +922,16 @@ const Notes: React.FC = () => {
                     </div>
                 </div>
 
-                {isFocusMode && (isEditing ? editingNote : previewNote) && (
+                {isFocusMode && editingNote && (
                     <NoteFocusMode
-                        note={(isEditing ? editingNote : previewNote)!}
-                        isEditing={isEditing}
+                        note={editingNote}
+                        isEditing
                         saveStatus={saveStatus}
                         onNoteChange={handleNoteChange}
-                        onContentChange={
-                            !isEditing && previewNote
-                                ? async (newContent) => {
-                                      const updatedNote = {
-                                          ...previewNote,
-                                          content: newContent,
-                                      };
-                                      setPreviewNote(updatedNote);
-                                      if (previewNote.uid) {
-                                          try {
-                                              const savedNote =
-                                                  await updateNote(
-                                                      previewNote.uid,
-                                                      updatedNote
-                                                  );
-                                              const updatedNotes = notes.map(
-                                                  (n) =>
-                                                      n.uid === previewNote.uid
-                                                          ? savedNote
-                                                          : n
-                                              );
-                                              setNotes(updatedNotes);
-                                              setPreviewNote(savedNote);
-                                          } catch (err) {
-                                              console.error(
-                                                  'Error updating note:',
-                                                  err
-                                              );
-                                          }
-                                      }
-                                  }
-                                : undefined
-                        }
-                        onEditNote={() => {
-                            if (previewNote) {
-                                handleEditNote(previewNote);
-                            }
-                        }}
+                        onEditNote={() => undefined}
                         onExitEditing={() => {
-                            if (editingNote?.title) {
-                                handleSaveInlineNote();
-                            } else {
-                                handleCancelEdit();
-                            }
+                            debouncedSave.flush();
+                            setIsFocusMode(false);
                         }}
                         onClose={() => setIsFocusMode(false)}
                     />
