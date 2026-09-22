@@ -58,6 +58,14 @@ describe('assertSafeCalDavUrl', () => {
         ).rejects.toMatchObject({ statusCode: 400 });
     });
 
+    it('points at the setting that allows a LAN server instead of a dead end (#1518)', async () => {
+        await expect(
+            assertSafeCalDavUrl('https://192.168.1.10/dav/')
+        ).rejects.toMatchObject({
+            message: expect.stringContaining('CALDAV_ALLOW_PRIVATE_HOSTS'),
+        });
+    });
+
     it('accepts a public address on any port', async () => {
         const parsed = await assertSafeCalDavUrl(
             'https://93.184.216.34:8443/dav/'
