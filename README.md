@@ -62,7 +62,7 @@ For the thinking behind tududi, read:
 - **Due Date Tracking**: Set due dates for tasks and view them based on due date categories.
 - **Responsive Design**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
 - **Installable PWA**: Add tududi to your home screen on Android, iOS, and desktop browsers for a native app-like experience. The app stays readable from cache when offline, and write operations are queued and synced automatically when connectivity returns.
-- **Multi-Language Support**: Available in 24 languages with full localization support for a truly global productivity experience.
+- **Multi-Language Support**: Available in 25 languages with full localization support for a truly global productivity experience.
 - **Telegram Integration**:
     - Create tasks directly through Telegram messages
     - Receive daily digests of your tasks

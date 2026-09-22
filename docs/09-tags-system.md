@@ -51,8 +51,24 @@ This document explains how the Tags system works in tududi from a user behavior 
 | **UID** | String | Auto | Unique identifier (immutable) |
 | **Name** | String | Yes | Tag name (unique per user) |
 | **User ID** | Integer | Auto | Owner of the tag |
+| **Tag type** | String | Auto | `user` for your own tags, `system` for the built-in `today` and `someday` |
+| **Pinned** | Boolean | No | Pinned tags come first in the tag input's quick-access chips |
+| **Color** | String | No | Optional chip color |
 | **Created At** | Timestamp | Auto | Creation timestamp |
 | **Updated At** | Timestamp | Auto | Last modification timestamp |
+
+### System Tags
+
+Every user gets two system tags, created on sign-up (`seedSystemTagsForUser`) and for existing accounts by migration:
+
+- **`today`**: open tasks with this tag are listed in a **today** panel on the Today page (toggle "Show Tagged Today"), a way to pin a task to today without touching its status or due date.
+- **`someday`**: parks work for later. Someday-tagged tasks, and tasks in a someday-tagged project, are left out of the Kanban board; someday-tagged projects are hidden from the Projects page until its **Someday** filter is switched on (remembered in the browser). Filing an inbox item as "Someday / Maybe" creates a task with this tag.
+
+System tags cannot be renamed (a name sent in an update is ignored) or deleted (`403 System tags cannot be deleted`); their color and pinned state can still be changed.
+
+### Pinned Tags
+
+The tag input shows up to 5 quick-access chips for tags not yet on the item: your pinned tags when you have any, otherwise your 5 most used tags (alphabetical on ties). Pin or unpin a tag from its edit dialog (`PATCH /api/tag/:uid` with `pinned`).
 
 ### Unique Identifier
 
@@ -835,6 +851,6 @@ Tags are automatically created when you add them to a task, note, or project:
 
 ---
 
-**Document Version:** 1.0.1
-**Last Updated:** 2026-03-23
+**Document Version:** 1.1.0
+**Last Updated:** 2026-09-22
 **Audience:** Developers, AI assistants, and end users

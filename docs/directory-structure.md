@@ -7,7 +7,7 @@
 ## Project Root
 
 ```
-/Users/chris/c0deLab/ProjectLand/tududi/
+tududi/                      # Repository root
 ├── README.md                # User-facing documentation
 ├── CLAUDE.md               # This developer guide (index)
 ├── LICENSE                 # MIT License
@@ -65,7 +65,7 @@
 ## Backend Structure
 
 ```
-/Users/chris/c0deLab/ProjectLand/tududi/backend/
+/backend/
 │
 ├── app.js                 # Main Express application entry point
 │                          # - Middleware setup (Helmet, CORS, compression)
@@ -120,58 +120,77 @@
 │   │   ├── repository.js
 │   │   ├── service.js
 │   │   └── controller.js
-│   ├── notes/            # Notes management
-│   ├── tags/             # Tag system
-│   ├── users/            # User management
-│   ├── auth/             # Authentication (login/register)
-│   ├── shares/           # Project sharing & permissions
+│   ├── notes/            # Notes management, public note links
+│   ├── tags/             # Tag system, today/someday system tags
+│   ├── comments/         # Task comments, replies, mentions, reactions
+│   ├── templates/        # Project templates and marketplace
+│   ├── users/            # User profile and settings
+│   ├── auth/             # Authentication (login/register/password reset)
+│   ├── oidc/             # OIDC/SSO login and provider config
+│   ├── oauth/            # OAuth2 protected-resource metadata
+│   ├── shares/           # Sharing, invitations & permissions
+│   ├── groups/           # Admin-managed user groups
+│   ├── people/           # Contacts and assignable people
+│   ├── members/          # Workspace members, sign-in links
+│   ├── everyone/         # The Everyone board
 │   ├── telegram/         # Telegram bot integration
+│   ├── caldav/           # CalDAV server and remote calendar sync
+│   ├── mcp/              # Model Context Protocol server and tools
+│   ├── ai-assistant/     # Daily Brief, task and project insights
 │   ├── inbox/            # Inbox items
 │   ├── habits/           # Habit tracking
 │   ├── notifications/    # Notification system
+│   ├── reports/          # GTD report
 │   ├── search/           # Universal search
 │   ├── views/            # Saved views
 │   ├── admin/            # Admin functions
-│   ├── backup/           # Backup/restore (33KB, complex)
+│   ├── admin-ai-usage/   # Admin AI usage (hosted mode)
+│   ├── billing/          # Subscriptions and plan limits (hosted mode)
+│   ├── landing/          # Marketing pages (TUDUDI_LANDING_HOSTS)
+│   ├── demo/             # Public demo sandbox
+│   ├── backup/           # Backup/restore (complex)
 │   ├── feature-flags/    # Feature flag management
 │   ├── quotes/           # Daily quotes
-│   └── url/              # URL handling
+│   └── url/              # URL title extraction (SSRF guarded)
 │
-├── models/               # Sequelize model definitions
+├── models/               # Sequelize model definitions (one file per model)
 │   ├── index.js         # Model initialization & associations
 │   ├── task.js          # Task model (recurrence fields, goal_id)
-│   ├── project.js       # Project model (goal_id, is_maintenance)
-│   ├── area.js          # Area model
-│   ├── goal.js          # Goal model (standalone, area optional)
-│   ├── note.js          # Note model
-│   ├── tag.js           # Tag model
+│   ├── project.js       # Project model (goal_id, is_maintenance, is_template)
+│   ├── area.js / goal.js / note.js / tag.js
 │   ├── user.js          # User model (bcrypt password, settings)
-│   ├── permission.js    # Permission/sharing model
-│   ├── apiToken.js      # API token model
-│   ├── recurringCompletion.js
-│   ├── taskEvent.js     # Task audit log
-│   ├── taskAttachment.js
-│   ├── inboxItem.js
-│   ├── notification.js
-│   ├── role.js
-│   ├── view.js
-│   ├── backup.js
-│   ├── setting.js
-│   └── action.js
+│   ├── role.js          # admin / user / guest roles
+│   ├── permission.js    # Direct shares
+│   ├── groupPermission.js, groupShare.js, userGroup.js, userGroupMember.js  # Group sharing
+│   ├── person.js, memberSignInLink.js       # People and members
+│   ├── comment.js, comment_reaction.js      # Task comments
+│   ├── api_token.js, auth_audit_log.js, oidc_identity.js, oidc_state_nonce.js
+│   ├── recurringCompletion.js, task_event.js, task_attachment.js
+│   ├── inbox_item.js, notification.js, view.js, backup.js, setting.js, action.js
+│   ├── caldav_*.js, calendar_token.js       # CalDAV
+│   ├── user_project_area.js                 # Per-user area placement of shared projects
+│   ├── billing_account.js, billing_event.js, usage_counter.js, waitlist_subscriber.js  # Hosted mode
+│   └── rate_limit.js    # Rate limit store
 │
-├── migrations/           # Database migrations (64+ files)
-│   ├── 20240101120000-initial-schema.js
-│   ├── 20240115140000-add-recurring-tasks.js
+├── migrations/           # Database migrations (130+ files)
+│   ├── 20250615000001-create-users.js
 │   └── ... (timestamped migration files)
 │
-├── seeders/             # Database seed data
-│   └── (seed files if any)
+├── seeders/             # Development seed data
+│   ├── dev-seeder.js
+│   └── expanded-tasks.js
 │
 ├── middleware/          # Global middleware
 │   ├── auth.js         # Authentication (session + Bearer token)
 │   ├── authorize.js    # Authorization (permission checking)
 │   ├── roles.js        # requireCapability: what a role may create
-│   ├── rateLimiter.js  # Rate limiting config (5 different limiters)
+│   ├── numericIdParam.js # Accept numeric ids on uid routes
+│   ├── csrf.js         # CSRF protection
+│   ├── captcha.js      # Turnstile captcha (registration, password reset)
+│   ├── entitlements.js # Plan limits (hosted mode)
+│   ├── demo.js         # Demo sandbox guards
+│   ├── uploadsAccess.js # Access checks for uploaded files
+│   ├── rateLimiter.js, rateLimitStore.js  # Rate limiting
 │   ├── queryLogger.js  # Development query logging
 │   └── permissionCache.js
 │
@@ -188,11 +207,8 @@
 ├── shared/              # Shared utilities
 │   ├── errors/         # Custom error classes
 │   │   ├── AppError.js
-│   │   ├── NotFoundError.js
-│   │   ├── ValidationError.js
-│   │   ├── ConflictError.js
-│   │   ├── UnauthorizedError.js
-│   │   └── ForbiddenError.js
+│   │   └── index.js    # NotFoundError, ValidationError, ConflictError, UnauthorizedError,
+│   │                   # ForbiddenError, ServiceUnavailableError and the plan/billing errors
 │   ├── middleware/
 │   │   └── errorHandler.js       # Global error handler
 │   └── database/
@@ -254,18 +270,14 @@
     │       ├── db-dialect.test.js
     │       └── migration-utils.test.js
     │
-    └── integration/    # Integration tests (47+ test directories)
-        ├── tasks/
-        │   ├── tasks.test.js
-        │   ├── subtasks.test.js
-        │   └── recurring.test.js
-        ├── projects/
-        ├── areas/
-        ├── notes/
-        ├── tags/
-        ├── auth/
-        ├── shares/
-        └── ...
+    ├── integration/    # Integration tests (flat, 110+ files)
+    │   ├── tasks.test.js
+    │   ├── projects.test.js
+    │   ├── comments.test.js
+    │   ├── mcp/        # MCP tool tests
+    │   └── ...
+    ├── upgrade/        # Legacy database upgrade suite
+    └── fixtures/legacy # SQLite files produced by older releases
 ```
 
 ---
@@ -273,7 +285,7 @@
 ## Frontend Structure
 
 ```
-/Users/chris/c0deLab/ProjectLand/tududi/frontend/
+/frontend/
 │
 ├── index.tsx            # React application entry point
 │                        # - React root initialization
@@ -297,29 +309,32 @@
 ├── components/          # React components (feature-based)
 │   │
 │   ├── Task/           # Task-related components
-│   │   ├── TasksToday.tsx
+│   │   ├── TasksToday.tsx         # Today page
+│   │   ├── TodaySettingsDropdown.tsx
 │   │   ├── TaskDetails.tsx
-│   │   ├── TaskItem.tsx
-│   │   ├── TaskList.tsx
+│   │   ├── TaskItem.tsx, TaskList.tsx, GroupedTaskList.tsx
+│   │   ├── TaskComments.tsx, CommentComposer.tsx
+│   │   ├── AreaBalanceBar.tsx, ActiveProjectsSection.tsx, BurndownChart.tsx
 │   │   ├── TaskDetails/         # Task detail sidebar cards
 │   │   │   ├── TaskProjectCard.tsx
 │   │   │   ├── TaskAreaCard.tsx
 │   │   │   ├── TaskGoalCard.tsx  # Goal picker card in task detail
 │   │   │   ├── TaskTagsCard.tsx
 │   │   │   └── ...
+│   │   ├── TaskForm/, TaskRow/
 │   │   └── ...
 │   │
 │   ├── Project/        # Project components
 │   │   ├── ProjectDetails.tsx
-│   │   ├── ProjectForm.tsx
-│   │   ├── ProjectList.tsx
-│   │   ├── ProjectCard.tsx
+│   │   ├── ProjectModal.tsx
+│   │   ├── ProjectItem.tsx
+│   │   ├── ProjectShareModal.tsx
 │   │   └── ...
+│   ├── Projects.tsx    # Projects list page
 │   │
 │   ├── Area/           # Area components
 │   │   ├── AreaDetails.tsx  # Area detail + goals spine + project buckets
-│   │   ├── AreaModal.tsx
-│   │   └── ...
+│   │   └── AreaModal.tsx
 │   │
 │   ├── Goal/           # Goal components (standalone goals system)
 │   │   ├── GoalDetails.tsx  # Goal detail page (projects + tasks)
@@ -329,10 +344,14 @@
 │   │
 │   ├── Note/           # Note components
 │   │   ├── NoteDetails.tsx
-│   │   ├── NoteForm.tsx
+│   │   ├── NoteModal.tsx
+│   │   ├── MarkdownEditor.tsx
+│   │   ├── PublicShareModal.tsx
+│   │   ├── editor/     # Block editor
 │   │   └── ...
+│   ├── PublicNote/     # Public note page (/public/notes/:token)
 │   │
-│   ├── Tag/            # Tag components
+│   ├── Tag/            # TagDetails, TagInput, TagModal
 │   │
 │   ├── Sidebar/        # Sidebar sub-components
 │   │   ├── SidebarAreas.tsx
@@ -340,47 +359,45 @@
 │   │   ├── SidebarTags.tsx
 │   │   └── ...
 │   │
-│   ├── Habits/         # Recurring tasks UI
+│   ├── Habits/         # Habit tracking UI
 │   ├── Inbox/          # Inbox management
-│   │
-│   ├── Calendar/       # Calendar view (27KB)
-│   │   └── Calendar.tsx
+│   ├── Calendar/       # Calendar view
+│   ├── Kanban/         # Kanban board
+│   ├── Eisenhower/     # Eisenhower matrix
+│   ├── Everyone/       # Everyone board
+│   ├── People/         # People page (members and contacts)
+│   ├── Templates/      # Project templates and marketplace
+│   ├── Insights/       # Daily Brief, Productivity and Reports pages
+│   ├── Metrics/        # Productivity metrics
+│   ├── Productivity/   # Analytics dashboard
+│   ├── AI/             # Daily Brief and insights
+│   ├── CalDAV/         # CalDAV setup
+│   ├── Billing/        # Billing (hosted mode)
+│   ├── Notifications/  # Notification system
+│   ├── UniversalSearch/ # Search interface
 │   │
 │   ├── Sidebar.tsx     # Left navigation sidebar
 │   ├── Navbar.tsx      # Top navigation bar
 │   │
-│   ├── Metrics/        # Productivity metrics
-│   │   └── ...
-│   │
-│   ├── Notifications/  # Notification system
-│   ├── UniversalSearch/ # Search interface
-│   │
-│   ├── Shared/         # Shared UI components (41 items)
-│   │   ├── Modal components
-│   │   │   ├── Modal.tsx
-│   │   │   ├── ConfirmDialog.tsx
-│   │   │   └── ...
-│   │   ├── Form inputs
-│   │   │   ├── Input.tsx
-│   │   │   ├── Select.tsx
-│   │   │   ├── DatePicker.tsx
-│   │   │   └── ...
+│   ├── Shared/         # Shared UI components
+│   │   ├── ConfirmDialog.tsx, DiscardChangesDialog.tsx
+│   │   ├── DatePicker.tsx, DateTimePicker.tsx
+│   │   ├── *Dropdown.tsx          # Area, Goal, Project, Person, Priority, Status, ...
+│   │   ├── ShareModal.tsx         # User/group sharing
+│   │   ├── MarkdownRenderer.tsx, MermaidDiagram.tsx
 │   │   ├── ToastContext.tsx
 │   │   ├── LoadingScreen.tsx
-│   │   ├── Button.tsx
-│   │   ├── Badge.tsx
 │   │   └── ...
 │   │
-│   ├── Admin/          # Admin panel
+│   ├── Admin/          # Admin dashboard, users, roles, groups, waitlist, billing, AI usage
 │   ├── Backup/         # Backup/restore UI
 │   ├── Profile/        # User profile settings
 │   │   ├── ProfileSettings.tsx
-│   │   ├── ApiTokens.tsx
+│   │   ├── tabs/       # General, Security, ApiKeys, AIAssistant, CalDAV, Telegram, ...
 │   │   └── ...
-│   ├── Productivity/   # Analytics dashboard
-│   └── Login/Register  # Auth pages
-│       ├── Login.tsx
-│       └── Register.tsx
+│   ├── Auth/           # Password reset, OIDC callback, sign-in link, captcha
+│   ├── Login.tsx       # Login page
+│   └── Register.tsx    # Registration page
 │
 ├── store/              # Zustand state management
 │   └── useStore.ts    # Global store
@@ -467,16 +484,17 @@
 ## E2E Tests Structure
 
 ```
-/Users/chris/c0deLab/ProjectLand/tududi/e2e/
+/e2e/
 ├── tests/              # Playwright test specs
-│   ├── login.spec.ts
-│   ├── tasks.spec.ts
-│   ├── projects.spec.ts
-│   ├── subtasks.spec.ts
-│   ├── recurring-tasks.spec.ts
-│   └── ...
+│   ├── caldav-client.spec.ts
+│   ├── inbox.spec.ts
+│   ├── notes-editor.spec.ts
+│   ├── registration.spec.ts
+│   ├── share-target.spec.ts
+│   └── today-view.spec.ts
 └── bin/
-    └── run-e2e.sh     # Test runner script
+    ├── run-e2e.sh          # Test runner script
+    └── run-single-test.sh  # Run one spec
 ```
 
 ---

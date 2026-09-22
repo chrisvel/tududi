@@ -13,21 +13,51 @@ All Sequelize models are defined in `/backend/models/` and associations are conf
 | Model | File | Purpose | Key Fields |
 |-------|------|---------|------------|
 | **User** | `user.js` | User accounts | email, password (bcrypt), settings, preferences, timezone |
+| **Role** | `role.js` | Role per user | user_id, role (admin/user/guest), is_admin, capabilities |
 | **Task** | `task.js` | Tasks with recurrence | name, due_date, priority, status, recurrence_type, parent_task_id |
-| **Project** | `project.js` | Project grouping | name, area_id, user_id |
-| **Area** | `area.js` | Area categorization | name, user_id |
-| **Note** | `note.js` | Notes | text, project_id, user_id |
-| **Tag** | `tag.js` | Tags | name, color, user_id |
-| **Permission** | `permission.js` | Sharing/permissions | user_id, resource_type, resource_uid, access_level |
-| **ApiToken** | `apiToken.js` | API tokens | user_id, token_hash, expires_at |
+| **Project** | `project.js` | Project grouping | name, area_id, goal_id, status, is_maintenance, is_template, user_id |
+| **Area** | `area.js` | Area categorization | name, color, user_id |
+| **Goal** | `goal.js` | Outcome-level goals | title, why, horizon, target_date, status, color, area_id |
+| **Note** | `note.js` | Notes | title, content, project_id, color, public_token, user_id |
+| **Tag** | `tag.js` | Tags | name, tag_type (user/system), pinned, color, user_id |
+| **Permission** | `permission.js` | Direct shares | user_id, resource_type, resource_uid, access_level, status (pending/accepted) |
+| **ApiToken** | `api_token.js` | API tokens | user_id, name, token_hash, token_prefix, expires_at, revoked_at |
 | **RecurringCompletion** | `recurringCompletion.js` | Recurring task history | task_id, completed_at, due_date |
-| **TaskEvent** | `taskEvent.js` | Task audit log | task_id, user_id, action, changes |
-| **TaskAttachment** | `taskAttachment.js` | File attachments | task_id, filename, path |
-| **InboxItem** | `inboxItem.js` | Inbox entries | name, user_id |
-| **Notification** | `notification.js` | User notifications | user_id, type, read, linked_resource |
-| **Role** | `role.js` | User roles | name, is_admin |
-| **View** | `view.js` | Saved views | name, filters, user_id |
-| **Backup** | `backup.js` | Backup records | user_id, filename, created_at |
+| **TaskEvent** | `task_event.js` | Task audit log | task_id, user_id, event_type, field_name, old_value, new_value |
+| **TaskAttachment** | `task_attachment.js` | File attachments | task_id, original_filename, stored_filename, mime_type, file_size |
+| **Comment** | `comment.js` | Task comments | task_id, user_id, body, parent_comment_id, mentioned_person_uids, deleted_at |
+| **CommentReaction** | `comment_reaction.js` | Comment reactions | comment_id, user_id, reaction_type (like/dislike) |
+| **InboxItem** | `inbox_item.js` | Inbox entries | content, title, status, source, user_id |
+| **Notification** | `notification.js` | User notifications | user_id, type, level, title, data, read_at, dismissed_at |
+| **View** | `view.js` | Saved views | name, search_query, filters, is_pinned, user_id |
+| **Backup** | `backup.js` | Backup records | user_id, file_path, file_size, item_counts, version |
+
+### Sharing, People and Groups
+
+| Model | File | Purpose | Key Fields |
+|-------|------|---------|------------|
+| **UserGroup** | `userGroup.js` | Admin-managed group | name, description, created_by_user_id |
+| **UserGroupMember** | `userGroupMember.js` | Group membership | group_id, user_id |
+| **GroupShare** | `groupShare.js` | An item shared with a group | group_id, resource_type, resource_uid, access_level |
+| **GroupPermission** | `groupPermission.js` | Per-member grant from a group share | group_share_id, user_id, resource_uid, access_level, status |
+| **Person** | `person.js` | Contact or member card | name, linked_user_id, relationship_type, email |
+| **MemberSignInLink** | `memberSignInLink.js` | Sign-in link for members without an email | user_id, token_hash, expires_at, used_at |
+| **UserProjectArea** | `user_project_area.js` | Per-user area placement of a shared project | user_id, project_id, area_id |
+
+Read shared access through `permissionSources`, never `Permission` alone: group grants live in `group_permissions` (see [User Groups](18-user-groups.md)).
+
+### Auth, Integrations and Hosted Mode
+
+| Model | File | Purpose |
+|-------|------|---------|
+| **OIDCIdentity**, **OIDCStateNonce** | `oidc_identity.js`, `oidc_state_nonce.js` | Linked SSO identities and login state |
+| **AuthAuditLog** | `auth_audit_log.js` | Sign-in and auth events |
+| **CalDAVCalendar**, **CalDAVRemoteCalendar**, **CalDAVSyncState**, **CalDAVOccurrenceOverride** | `caldav_*.js` | CalDAV server and sync (see [CalDAV](11-caldav-sync.md)) |
+| **CalendarToken** | `calendar_token.js` | External calendar OAuth tokens |
+| **BillingAccount**, **BillingEvent**, **UsageCounter** | `billing_account.js`, `billing_event.js`, `usage_counter.js` | Subscriptions, webhook events and metered usage (see [Hosted Mode](17-hosted-mode.md)) |
+| **WaitlistSubscriber** | `waitlist_subscriber.js` | Cloud waitlist sign-ups |
+| **RateLimit** | `rate_limit.js` | Shared rate-limit store |
+| **Setting**, **Action** | `setting.js`, `action.js` | Instance key-value settings; audit trail of share actions (actor, verb, resource, target) |
 
 ---
 
