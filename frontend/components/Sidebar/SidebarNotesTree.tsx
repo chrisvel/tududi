@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
     BookOpenIcon,
     ChevronRightIcon,
+    GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import { Note } from '../../entities/Note';
 import { Project } from '../../entities/Project';
@@ -145,6 +146,20 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
                             {row.note.title ||
                                 t('notes.untitled', 'Untitled Note')}
                         </span>
+                        {row.note.is_public && (
+                            <GlobeAltIcon
+                                className="h-3.5 w-3.5 flex-shrink-0 text-green-600 dark:text-green-400"
+                                title={t(
+                                    'notes.publicShare.sharedTitle',
+                                    'Shared with anyone who has the link'
+                                )}
+                                aria-label={t(
+                                    'notes.publicShare.sharedTitle',
+                                    'Shared with anyone who has the link'
+                                )}
+                                data-testid={`note-shared-indicator-${row.note.uid}`}
+                            />
+                        )}
                     </div>
                 );
             })}
