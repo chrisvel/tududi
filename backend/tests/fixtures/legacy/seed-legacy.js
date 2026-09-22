@@ -578,6 +578,15 @@ async function seedCalDav(alice, tasks, recurring) {
 }
 
 async function applyLegacyQuirks() {
+    // Versions that already ship the lowercase-user-emails migration cannot
+    // hold a mixed-case email, so the quirk is only planted for older ones.
+    const [lowercased] = await sequelize.query(
+        "SELECT name FROM SequelizeMeta WHERE name = '20260906000001-lowercase-user-emails.js'"
+    );
+    if (lowercased.length > 0) {
+        return applyAgeQuirks();
+    }
+
     // Hooks lowercase emails on write, so the mixed-case email that pre-2026
     // accounts carry has to be planted with raw SQL.
     await sequelize.query(
@@ -589,6 +598,10 @@ async function applyLegacyQuirks() {
             "UPDATE users SET email = 'Carol@Example.com' WHERE email = 'carol2@example.com'"
         );
     }
+    await applyAgeQuirks();
+}
+
+async function applyAgeQuirks() {
     // Make a few rows look old.
     await sequelize.query(
         "UPDATE tasks SET created_at = '2025-11-02 10:00:00.000 +00:00', updated_at = '2025-11-02 10:00:00.000 +00:00' WHERE name = 'Overdue task'"
