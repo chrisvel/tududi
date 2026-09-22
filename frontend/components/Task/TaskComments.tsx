@@ -377,7 +377,13 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
         setCommentToDelete(null);
         try {
             const tombstoned = await deleteComment(target.uid);
-            const next = replaceInTree(comments, target.uid, tombstoned);
+            // The server's tombstone response has no replies of its own
+            // (deleting a comment doesn't touch its replies) - keep the ones
+            // already loaded here instead of wiping them from view.
+            const next = replaceInTree(comments, target.uid, {
+                ...tombstoned,
+                replies: target.replies,
+            });
             setComments(next);
             onCommentCountChange?.(countActive(next));
         } catch (err) {
@@ -423,7 +429,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
     }
 
     return (
-        <div className="max-w-2xl w-full">
+        <div className="w-full">
             {comments.length === 0 ? (
                 <div className="flex items-center gap-2 py-8 text-gray-500 dark:text-gray-400">
                     <ChatBubbleLeftIcon className="h-8 w-8 flex-shrink-0 opacity-50" />

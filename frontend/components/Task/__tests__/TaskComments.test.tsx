@@ -230,6 +230,43 @@ describe('TaskComments', () => {
         expect(onCommentCountChange).toHaveBeenLastCalledWith(0);
     });
 
+    it('keeps a reply visible after its parent comment is deleted', async () => {
+        const reply: Comment = {
+            ...baseComment,
+            uid: 'comment-reply',
+            body: 'A reply',
+        };
+        const parent: Comment = {
+            ...ownComment,
+            uid: 'comment-parent',
+            body: 'Parent comment',
+            replies: [reply],
+        };
+        (fetchComments as jest.Mock).mockResolvedValue([parent]);
+        // The tombstone response never carries replies of its own - deleting
+        // a comment doesn't touch them.
+        (deleteComment as jest.Mock).mockResolvedValue({
+            ...parent,
+            body: '',
+            mentioned_person_uids: [],
+            mentioned_people: [],
+            deleted_at: new Date().toISOString(),
+            replies: [],
+        });
+
+        render(<TaskComments task={task} />);
+        await screen.findByText('Parent comment');
+
+        fireEvent.click(screen.getByLabelText('Delete comment'));
+        fireEvent.click(screen.getByTestId('confirm-dialog-confirm'));
+
+        await waitFor(() =>
+            expect(deleteComment).toHaveBeenCalledWith('comment-parent')
+        );
+        expect(await screen.findByText('Comment deleted')).toBeInTheDocument();
+        expect(screen.getByText('A reply')).toBeInTheDocument();
+    });
+
     describe('replies', () => {
         it('opens a reply composer and nests the posted reply under its parent', async () => {
             const parent: Comment = {
