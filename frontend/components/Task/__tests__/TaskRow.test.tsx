@@ -105,6 +105,32 @@ describe('TaskRow', () => {
         expect(navigateMock).not.toHaveBeenCalled();
     });
 
+    it('hides the title-row comment/subtask badges while editing, so the growing input does not push them to the far right', () => {
+        const task = baseTask({
+            comments_count: 3,
+            subtasks: [
+                {
+                    id: 2,
+                    uid: 'sub-1',
+                    name: 'Sub',
+                    status: 'not_started',
+                    completed_at: null,
+                } as Task,
+            ],
+        });
+        renderRow(task);
+
+        expect(screen.getByTitle('{{count}} comments')).toBeInTheDocument();
+        expect(screen.getByTitle('Show subtasks')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByText('Buy tickets'));
+
+        expect(
+            screen.queryByTitle('{{count}} comments')
+        ).not.toBeInTheDocument();
+        expect(screen.queryByTitle('Show subtasks')).not.toBeInTheDocument();
+    });
+
     it('collapses on Escape', () => {
         renderRow(baseTask());
         fireEvent.click(screen.getByText('Buy tickets'));
