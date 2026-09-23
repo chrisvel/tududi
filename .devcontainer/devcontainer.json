@@ -1,0 +1,19 @@
+{
+  "name": "Tududi Dev",
+  "dockerFile": "Dockerfile.dev",
+  "context": "..",
+  "postCreateCommand": "cp backend/.env.example backend/.env && npm run db:init && npm run db:seed",
+  "postStartCommand": "echo 'Tududi ready! Run: npm run backend:dev & npm run frontend:dev'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-eslint",
+        "qwtel.sqlite-viewer"
+      ]
+    }
+  },
+  "runArgs": ["--init"]
+}
