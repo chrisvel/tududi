@@ -3,6 +3,8 @@ const path = require('path');
 const { getConfig } = require('../../../config/config');
 const {
     ALLOWED_TYPES,
+    INLINE_SAFE_EXTENSIONS,
+    UNKNOWN_TYPE_EXTENSION,
     validateFileType,
     getExtensionFromMimeType,
     formatFileSize,
@@ -80,6 +82,34 @@ describe('Attachment Utils', () => {
 
         it('should reject null MIME type', () => {
             expect(validateFileType(null)).toBe(false);
+        });
+    });
+
+    describe('with fileUploadAllowAllTypes enabled', () => {
+        beforeEach(() => {
+            config.fileUploadAllowAllTypes = true;
+        });
+
+        afterEach(() => {
+            config.fileUploadAllowAllTypes = false;
+        });
+
+        it('should accept any MIME type', () => {
+            expect(validateFileType('application/vnd.tcpdump.pcap')).toBe(true);
+            expect(validateFileType('application/octet-stream')).toBe(true);
+        });
+
+        it('should store unknown types with a neutral extension', () => {
+            expect(getExtensionFromMimeType('text/html')).toBe(
+                UNKNOWN_TYPE_EXTENSION
+            );
+            expect(INLINE_SAFE_EXTENSIONS.has(UNKNOWN_TYPE_EXTENSION)).toBe(
+                false
+            );
+        });
+
+        it('should keep the real extension for built-in types', () => {
+            expect(getExtensionFromMimeType('image/png')).toBe('.png');
         });
     });
 

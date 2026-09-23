@@ -162,10 +162,10 @@ This document explains how tasks work in tududi from a user behavior perspective
 
 23. **Allowed file types:**
     - Images: jpg, jpeg, png, gif, webp
-    - Documents: pdf, doc, docx, xls, xlsx, ppt, pptx
+    - Documents: pdf, doc, docx, xls, xlsx
     - Text: txt, md, csv
-    - Archives: zip, tar, gz
-    - Other common formats
+    - Archives: zip
+    - Any other type when `FILE_UPLOAD_ALLOW_ALL_TYPES=true` is set (off by default). Those files are stored with a neutral `.bin` extension, always served as downloads, and keep their original name when downloaded.
 
 24. **Attachment metadata:**
     - Original filename is preserved in database

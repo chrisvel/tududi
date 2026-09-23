@@ -49,19 +49,20 @@ const INLINE_SAFE_EXTENSIONS = new Set([
     '.webp',
 ]);
 
-/**
- * Validate if file type is allowed
- */
+// Stored extension for types outside ALLOWED_TYPES when
+// FILE_UPLOAD_ALLOW_ALL_TYPES is on. It is not inline-safe, so these files are
+// always served as downloads with a generic Content-Type, whatever the client
+// claimed the MIME type was. The original filename is kept in the DB row.
+const UNKNOWN_TYPE_EXTENSION = '.bin';
+
 function validateFileType(mimetype) {
-    return !!ALLOWED_TYPES[mimetype];
+    return config.fileUploadAllowAllTypes || !!ALLOWED_TYPES[mimetype];
 }
 
-/**
- * Get file extension from MIME type
- */
 function getExtensionFromMimeType(mimetype) {
     const extensions = ALLOWED_TYPES[mimetype];
-    return extensions ? extensions[0] : '';
+    if (extensions) return extensions[0];
+    return config.fileUploadAllowAllTypes ? UNKNOWN_TYPE_EXTENSION : '';
 }
 
 /**
@@ -161,6 +162,7 @@ function getFileUrl(storedFilename) {
 module.exports = {
     ALLOWED_TYPES,
     INLINE_SAFE_EXTENSIONS,
+    UNKNOWN_TYPE_EXTENSION,
     validateFileType,
     getExtensionFromMimeType,
     formatFileSize,

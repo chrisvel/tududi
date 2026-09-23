@@ -8,6 +8,7 @@ import {
     downloadAttachment,
     fetchAttachments,
     validateFile,
+    ALLOWED_FILE_EXTENSIONS,
     getAttachmentType,
 } from '../../../utils/attachmentsService';
 import {
@@ -39,6 +40,7 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
     const [attachmentToDelete, setAttachmentToDelete] =
         useState<Attachment | null>(null);
     const [maxSizeMB, setMaxSizeMB] = useState(getFileUploadLimitMB());
+    const [allowAllTypes, setAllowAllTypes] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Load attachments on mount
@@ -49,7 +51,10 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
     // Fetch the actual server-configured upload limit
     useEffect(() => {
         getServerConfig()
-            .then((config) => setMaxSizeMB(config.fileUploadLimitMB))
+            .then((config) => {
+                setMaxSizeMB(config.fileUploadLimitMB);
+                setAllowAllTypes(!!config.fileUploadAllowAllTypes);
+            })
             .catch(() => {
                 // Keep the fallback default if the config can't be fetched
             });
@@ -222,7 +227,9 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                         className="hidden"
                         onChange={handleFileSelect}
                         disabled={uploading}
-                        accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.xls,.xlsx,.csv,.zip"
+                        accept={
+                            allowAllTypes ? undefined : ALLOWED_FILE_EXTENSIONS
+                        }
                     />
                     <div
                         className="bg-gray-200 dark:bg-gray-700 flex flex-col items-center justify-center rounded-t-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
@@ -248,10 +255,15 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                             })}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">
-                            {t(
-                                'task.attachments.supportedFormats',
-                                'PDF, images, docs & more'
-                            )}
+                            {allowAllTypes
+                                ? t(
+                                      'task.attachments.anyFormat',
+                                      'Any file type'
+                                  )
+                                : t(
+                                      'task.attachments.supportedFormats',
+                                      'PDF, images, docs & more'
+                                  )}
                         </p>
                     </div>
                 </div>

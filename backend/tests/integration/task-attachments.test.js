@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs').promises;
 const { Task, TaskAttachment, User } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
+const { getConfig } = require('../../config/config');
 
 describe('Task Attachments Routes', () => {
     let user, agent, task;
@@ -222,6 +223,78 @@ describe('Task Attachments Routes', () => {
                     'Not authorized to upload to this task'
                 );
             });
+        });
+    });
+
+    describe('POST /api/upload/task-attachment with FILE_UPLOAD_ALLOW_ALL_TYPES', () => {
+        const config = getConfig();
+
+        beforeEach(() => {
+            config.fileUploadAllowAllTypes = true;
+        });
+
+        afterEach(() => {
+            config.fileUploadAllowAllTypes = false;
+        });
+
+        it('should accept a file type outside the built-in list', async () => {
+            const response = await agent
+                .post('/api/upload/task-attachment')
+                .field('taskUid', task.uid)
+                .attach('file', Buffer.from('pcap bytes'), {
+                    filename: 'capture.pcap',
+                    contentType: 'application/vnd.tcpdump.pcap',
+                });
+
+            expect(response.status).toBe(201);
+            expect(response.body.original_filename).toBe('capture.pcap');
+            expect(response.body.mime_type).toBe(
+                'application/vnd.tcpdump.pcap'
+            );
+            expect(response.body.stored_filename).toMatch(/\.bin$/);
+        });
+
+        it('should keep the real extension for built-in types', async () => {
+            const response = await agent
+                .post('/api/upload/task-attachment')
+                .field('taskUid', task.uid)
+                .attach('file', path.join(testFilesDir, 'test.png'));
+
+            expect(response.status).toBe(201);
+            expect(response.body.stored_filename).toMatch(/\.png$/);
+        });
+
+        it('should serve an HTML upload as a download, not a page', async () => {
+            const upload = await agent
+                .post('/api/upload/task-attachment')
+                .field('taskUid', task.uid)
+                .attach('file', Buffer.from('<script>alert(1)</script>'), {
+                    filename: 'evil.html',
+                    contentType: 'text/html',
+                });
+
+            expect(upload.status).toBe(201);
+            expect(upload.body.stored_filename).toMatch(/\.bin$/);
+
+            const served = await agent.get(upload.body.file_url);
+            expect(served.status).toBe(200);
+            expect(served.headers['content-disposition']).toBe('attachment');
+            expect(served.headers['content-type']).not.toMatch(/html/);
+            expect(served.headers['x-content-type-options']).toBe('nosniff');
+        });
+
+        it('should still reject unknown types when the flag is off', async () => {
+            config.fileUploadAllowAllTypes = false;
+
+            const response = await agent
+                .post('/api/upload/task-attachment')
+                .field('taskUid', task.uid)
+                .attach('file', Buffer.from('pcap bytes'), {
+                    filename: 'capture.pcap',
+                    contentType: 'application/vnd.tcpdump.pcap',
+                });
+
+            expect(response.status).toBe(500);
         });
     });
 

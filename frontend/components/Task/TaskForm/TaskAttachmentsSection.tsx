@@ -7,6 +7,7 @@ import {
     deleteAttachment,
     downloadAttachment,
     validateFile,
+    ALLOWED_FILE_EXTENSIONS,
 } from '../../../utils/attachmentsService';
 import {
     getServerConfig,
@@ -35,12 +36,16 @@ const TaskAttachmentsSection: React.FC<TaskAttachmentsSectionProps> = ({
     const [previewAttachment, setPreviewAttachment] =
         useState<Attachment | null>(null);
     const [maxSizeMB, setMaxSizeMB] = useState(getFileUploadLimitMB());
+    const [allowAllTypes, setAllowAllTypes] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Fetch the actual server-configured upload limit
     useEffect(() => {
         getServerConfig()
-            .then((config) => setMaxSizeMB(config.fileUploadLimitMB))
+            .then((config) => {
+                setMaxSizeMB(config.fileUploadLimitMB);
+                setAllowAllTypes(!!config.fileUploadAllowAllTypes);
+            })
             .catch(() => {
                 // Keep the fallback default if the config can't be fetched
             });
@@ -151,7 +156,7 @@ const TaskAttachmentsSection: React.FC<TaskAttachmentsSectionProps> = ({
                     className="hidden"
                     onChange={handleFileSelect}
                     disabled={disabled || uploading}
-                    accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.xls,.xlsx,.csv,.zip"
+                    accept={allowAllTypes ? undefined : ALLOWED_FILE_EXTENSIONS}
                 />
                 <CloudArrowUpIcon className="h-10 w-10 mx-auto mb-2 text-gray-400 dark:text-gray-500" />
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -163,11 +168,17 @@ const TaskAttachmentsSection: React.FC<TaskAttachmentsSectionProps> = ({
                           )}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {t(
-                        'task.attachments.allowedTypes',
-                        'PDF, DOC, DOCX, TXT, MD, Images, XLS, XLSX, CSV, ZIP (max {{size}}MB)',
-                        { size: maxSizeMB }
-                    )}
+                    {allowAllTypes
+                        ? t(
+                              'task.attachments.anyTypeAllowed',
+                              'Any file type (max {{size}}MB)',
+                              { size: maxSizeMB }
+                          )
+                        : t(
+                              'task.attachments.allowedTypes',
+                              'PDF, DOC, DOCX, TXT, MD, Images, XLS, XLSX, CSV, ZIP (max {{size}}MB)',
+                              { size: maxSizeMB }
+                          )}
                 </p>
             </div>
 

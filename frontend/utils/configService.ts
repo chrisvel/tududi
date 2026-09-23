@@ -2,6 +2,7 @@ import { getApiPath } from '../config/paths';
 
 interface ServerConfig {
     fileUploadLimitMB: number;
+    fileUploadAllowAllTypes?: boolean;
 }
 
 let cachedConfig: ServerConfig | null = null;
