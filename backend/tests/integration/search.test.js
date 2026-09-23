@@ -635,6 +635,46 @@ describe('Universal Search Routes', () => {
                 expect(response.status).toBe(200);
                 expect(response.body.results).toEqual([]);
             });
+
+            it('should restrict Tag results to the requested tags, not every tag in the account', async () => {
+                const response = await agent.get('/api/search').query({
+                    tags: 'work',
+                    filters: 'Tag',
+                });
+
+                expect(response.status).toBe(200);
+                const tags = response.body.results.filter(
+                    (r) => r.type === 'Tag'
+                );
+                expect(tags.length).toBe(1);
+                expect(tags[0].name).toBe('work');
+            });
+
+            it('should restrict Tag results to all requested tags when multiple are given', async () => {
+                const response = await agent.get('/api/search').query({
+                    tags: 'work,personal',
+                    filters: 'Tag',
+                });
+
+                expect(response.status).toBe(200);
+                const tagNames = response.body.results
+                    .filter((r) => r.type === 'Tag')
+                    .map((r) => r.name)
+                    .sort();
+                expect(tagNames).toEqual(['personal', 'work']);
+            });
+
+            it('should count only the requested tags in pagination.total when filtering Tag by tags', async () => {
+                const response = await agent.get('/api/search').query({
+                    tags: 'work',
+                    filters: 'Tag',
+                    limit: 20,
+                    offset: 0,
+                });
+
+                expect(response.status).toBe(200);
+                expect(response.body.pagination.total).toBe(1);
+            });
         });
 
         describe('Combined Filters', () => {

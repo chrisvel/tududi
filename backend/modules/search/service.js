@@ -476,10 +476,14 @@ class SearchService {
     /**
      * Search tags.
      */
-    async searchTags(userId, params) {
+    async searchTags(userId, params, tagIds) {
         const { searchQuery, hasPagination, limit, offset } = params;
 
         const conditions = { user_id: userId };
+
+        if (tagIds.length > 0) {
+            conditions.id = { [Op.in]: tagIds };
+        }
 
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
@@ -597,7 +601,7 @@ class SearchService {
         }
 
         if (filterTypes.includes('Tag')) {
-            const tagResults = await this.searchTags(userId, params);
+            const tagResults = await this.searchTags(userId, params, tagIds);
             results.push(...tagResults.results);
             totalCount += tagResults.count;
         }
