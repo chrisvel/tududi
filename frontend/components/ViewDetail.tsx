@@ -339,7 +339,7 @@ const ViewDetail: React.FC = () => {
 
     useEffect(() => {
         fetchViewAndResults();
-    }, [uid]);
+    }, [uid, taskStatusFilter]);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -441,6 +441,7 @@ const ViewDetail: React.FC = () => {
                 limit: limit,
                 offset: currentOffset,
                 excludeSubtasks: true,
+                status: taskStatusFilter,
             });
 
             // Separate results by type

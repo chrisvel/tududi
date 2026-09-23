@@ -11,6 +11,7 @@ interface SearchParams {
     limit?: number;
     offset?: number;
     excludeSubtasks?: boolean;
+    status?: 'active' | 'completed' | 'all';
 }
 
 interface SearchResult {
@@ -88,6 +89,10 @@ export const searchUniversal = async (
 
         if (params.excludeSubtasks) {
             queryParams.append('excludeSubtasks', 'true');
+        }
+
+        if (params.status) {
+            queryParams.append('status', params.status);
         }
 
         const response = await fetch(

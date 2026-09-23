@@ -10,6 +10,13 @@ const { UnauthorizedError } = require('../../shared/errors');
 
 class SearchService {
     /**
+     * Task statuses considered "completed" for the active/completed status filter.
+     */
+    completedTaskStatuses() {
+        return [Task.STATUS.DONE, Task.STATUS.ARCHIVED, Task.STATUS.CANCELLED];
+    }
+
+    /**
      * Build date range condition for due/defer filters.
      */
     buildDateCondition(filterValue, startOfToday, fieldName) {
@@ -55,8 +62,14 @@ class SearchService {
         deferDateCondition,
         nowDate
     ) {
-        const { searchQuery, priority, recurring, extras, excludeSubtasks } =
-            params;
+        const {
+            searchQuery,
+            priority,
+            recurring,
+            extras,
+            excludeSubtasks,
+            status,
+        } = params;
 
         const conditions = { user_id: userId };
         const extraConditions = [];
@@ -64,6 +77,12 @@ class SearchService {
         if (excludeSubtasks) {
             conditions.parent_task_id = null;
             conditions.recurring_parent_id = null;
+        }
+
+        if (status === 'active') {
+            conditions.status = { [Op.notIn]: this.completedTaskStatuses() };
+        } else if (status === 'completed') {
+            conditions.status = { [Op.in]: this.completedTaskStatuses() };
         }
 
         if (searchQuery) {
