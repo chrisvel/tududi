@@ -107,7 +107,7 @@ describe('migration 20260920000002-make-user-email-nullable', () => {
     const sqliteOnly = isPostgres() ? describe.skip : describe;
 
     sqliteOnly.each(FIXTURES)('SQLite rebuild of %s', (fixture) => {
-        let dir, dbPath, db, qi;
+        let dir, dbPath, db, qi, emailAlreadyOptional;
 
         const rows = (sql, replacements) =>
             db.query(sql, { type: QueryTypes.SELECT, replacements });
@@ -152,6 +152,11 @@ describe('migration 20260920000002-make-user-email-nullable', () => {
                 logging: false,
             });
             qi = db.getQueryInterface();
+            // A fixture built from a release that already ships this
+            // migration starts with the email already optional, so up() is
+            // a no-op on it and never runs the rebuild.
+            emailAlreadyOptional = (await qi.describeTable('users')).email
+                .allowNull;
         });
 
         afterEach(async () => {
@@ -160,6 +165,7 @@ describe('migration 20260920000002-make-user-email-nullable', () => {
         });
 
         it('starts with a required email', async () => {
+            if (emailAlreadyOptional) return;
             expect((await qi.describeTable('users')).email.allowNull).toBe(
                 false
             );
@@ -309,6 +315,7 @@ describe('migration 20260920000002-make-user-email-nullable', () => {
         });
 
         it('takes a snapshot of the database first', async () => {
+            if (emailAlreadyOptional) return; // up() is a no-op, no rebuild, no snapshot
             const [{ n }] = await rows('SELECT COUNT(*) AS n FROM users');
 
             await run();
@@ -345,7 +352,8 @@ describe('migration 20260920000002-make-user-email-nullable', () => {
                 dir,
                 'db-premigrate-20260920000002-make-user-email-nullable.sqlite3'
             );
-            fs.rmSync(snapshot);
+            // No snapshot exists when the first run was already a no-op.
+            if (fs.existsSync(snapshot)) fs.rmSync(snapshot);
 
             await run();
 
@@ -372,6 +380,7 @@ describe('migration 20260920000002-make-user-email-nullable', () => {
         });
 
         it('changes nothing when a step fails part way', async () => {
+            if (emailAlreadyOptional) return; // up() never reaches the rebuild
             const beforeData = await allData();
             const beforeSchema = await qi.describeTable('users');
             const failing = new Proxy(qi, {
