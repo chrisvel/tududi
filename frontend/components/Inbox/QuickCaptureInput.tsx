@@ -756,7 +756,7 @@ const QuickCaptureInput = React.forwardRef<
 
             return text
                 .replace(/#[a-zA-Z0-9_-]+/g, '')
-                .replace(/\+\S+/g, '')
+                .replace(/\+(?:"[^"]+"|\S+)/g, '')
                 .trim();
         };
 
@@ -1340,11 +1340,7 @@ const QuickCaptureInput = React.forwardRef<
                                             status: 'not_started',
                                             priority: null,
                                             tags: taskTags,
-                                            Project: projectUid
-                                                ? ({
-                                                      uid: projectUid,
-                                                  } as Project)
-                                                : undefined,
+                                            project_uid: projectUid,
                                             completed_at: null,
                                         };
                                         void openTaskModal(newTask);
