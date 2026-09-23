@@ -233,17 +233,15 @@ CalDAV Expansion:
 
 ## Configuration
 
-CalDAV is configured via environment variables in your `.env` file. After making changes, **restart the Tududi server** for them to take effect.
+CalDAV is enabled by default and configured via environment variables in your
+`.env` file. After making changes, **restart the Tududi server** for them to
+take effect.
 
 ### Quick Setup
 
-**Enable CalDAV:**
+**Set an encryption key** (used to encrypt remote calendar passwords):
 
 ```bash
-# Enable CalDAV feature
-CALDAV_ENABLED=true
-
-# Encryption key for remote calendar passwords (32 characters minimum)
 ENCRYPTION_KEY=$(openssl rand -hex 32)
 
 # Optional: Configure defaults
@@ -268,7 +266,6 @@ npm start              # For standalone
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `FF_ENABLE_CALDAV` | Yes | `false` | Enable the CalDAV feature: the `/caldav/*` endpoints, the sync scheduler, and the profile tab. `CALDAV_ENABLED=true` is accepted as an older spelling. While off, the protocol endpoints answer 404. |
 | `CALDAV_PROJECTS_AS_CALENDARS` | No | `false` | Serve one CalDAV calendar **per project** (plus a "(No Project)" calendar) instead of a single combined `tasks/` calendar. With it on, clients such as Apple Reminders show one list per project. |
 | `ENCRYPTION_KEY` | Recommended | `SECRET_KEY` | AES-256-GCM encryption key for passwords |
 | `CALDAV_ALLOW_PRIVATE_HOSTS` | No | `false` | Allow remote calendars on private, loopback or LAN addresses, and plain `http`. By default a remote calendar must use HTTPS and resolve to a public address (checked before every sync and on every redirect). |
@@ -589,9 +586,8 @@ Tududi supports CalDAV recurring tasks via RRULE (RFC 5545):
 
 **Solutions:**
 1. Verify credentials (email and password are correct)
-2. Check that `CALDAV_ENABLED=true` in environment
-3. Ensure HTTP Basic Auth is supported by client
-4. Try creating a new API token in Profile settings
+2. Ensure HTTP Basic Auth is supported by client
+3. Try creating a new API token in Profile settings
 
 ### Tasks Not Syncing
 
@@ -667,9 +663,6 @@ CalDAV endpoints are rate-limited:
 ## Environment Variables
 
 ```bash
-# Feature toggle
-CALDAV_ENABLED=true
-
 # Encryption key (32 characters minimum)
 ENCRYPTION_KEY=your-256-bit-encryption-key
 

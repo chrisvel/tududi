@@ -186,13 +186,12 @@ docker run \
 
 ### CalDAV Synchronization
 
-Tududi supports the industry-standard CalDAV protocol, enabling seamless task synchronization with popular CalDAV clients and servers.
+Tududi supports the industry-standard CalDAV protocol, enabling seamless task synchronization with popular CalDAV clients and servers. It's enabled by default.
 
 **Quick Setup:**
 
 ```bash
 docker run \
-  -e CALDAV_ENABLED=true \
   -e ENCRYPTION_KEY=$(openssl rand -hex 32) \
   ...
 ```

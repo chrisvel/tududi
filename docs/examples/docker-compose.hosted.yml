@@ -108,6 +108,5 @@ volumes:
 #   ENABLE_EMAIL=true EMAIL_SMTP_HOST=... EMAIL_SMTP_PORT=587 EMAIL_FROM_ADDRESS=... (EMAIL_SMTP_USERNAME/EMAIL_SMTP_PASSWORD optional, omit both for a passwordless relay)
 #   LEMONSQUEEZY_API_KEY=... LEMONSQUEEZY_STORE_ID=... LEMONSQUEEZY_WEBHOOK_SECRET=... LEMONSQUEEZY_VARIANT_PRO_MONTHLY=... LEMONSQUEEZY_VARIANT_PRO_ANNUAL=...
 #   (or the STRIPE_* set, see docs/17-hosted-mode.md)
-#   FF_ENABLE_BACKUPS=true FF_ENABLE_CALDAV=true FF_ENABLE_MCP=true
 # Optional: LLM_API_KEY, TUDUDI_PLANS_JSON, TUDUDI_TRIAL_DAYS, LOG_LEVEL.
 # The server refuses to start in hosted mode until the required ones are set.

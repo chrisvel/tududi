@@ -128,9 +128,7 @@ ENV NODE_ENV=production \
     DISABLE_SCHEDULER=false \
     TUDUDI_UPLOAD_PATH="/app/uploads" \
     TUDUDI_BACKUP_PATH="/app/backups" \
-    SWAGGER_ENABLED=false \
-    FF_ENABLE_BACKUPS=false \
-    FF_ENABLE_CALDAV=false
+    SWAGGER_ENABLED=false
 
 HEALTHCHECK --interval=60s --timeout=3s --start-period=10s --retries=2 \
     CMD ["wget", "-q", "--spider", "http://127.0.0.1:3002/api/health"]
