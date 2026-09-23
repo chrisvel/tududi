@@ -113,7 +113,7 @@ describe('migration 20260921000002-create-member-sign-in-links', () => {
             return out;
         };
 
-        beforeEach(() => {
+        beforeEach(async () => {
             dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sign-in-links-'));
             const dbPath = path.join(dir, 'db.sqlite3');
             fs.copyFileSync(path.join(FIXTURE_DIR, fixture), dbPath);
@@ -123,6 +123,14 @@ describe('migration 20260921000002-create-member-sign-in-links', () => {
                 logging: false,
             });
             qi = db.getQueryInterface();
+            // Fixtures newer than this migration already carry the table,
+            // so undo it to get every fixture to the same "before" state.
+            const tables = (await qi.showAllTables()).map((t) =>
+                typeof t === 'string' ? t : t.tableName
+            );
+            if (tables.includes('member_sign_in_links')) {
+                await migration.down(qi);
+            }
         });
 
         afterEach(async () => {

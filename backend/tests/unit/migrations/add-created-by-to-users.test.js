@@ -79,7 +79,7 @@ describe('migration 20260920000003-add-created-by-to-users', () => {
         const rows = (sql) => db.query(sql, { type: QueryTypes.SELECT });
         const run = () => migration.up(qi, Sequelize);
 
-        beforeEach(() => {
+        beforeEach(async () => {
             dir = fs.mkdtempSync(path.join(os.tmpdir(), 'created-by-'));
             const dbPath = path.join(dir, 'db.sqlite3');
             fs.copyFileSync(path.join(FIXTURE_DIR, fixture), dbPath);
@@ -89,6 +89,9 @@ describe('migration 20260920000003-add-created-by-to-users', () => {
                 logging: false,
             });
             qi = db.getQueryInterface();
+            // Fixtures newer than this migration already carry the column,
+            // so undo it to get every fixture to the same "before" state.
+            await migration.down(qi);
         });
 
         afterEach(async () => {
