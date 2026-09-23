@@ -1,5 +1,7 @@
 'use strict';
 
+const VALID_TASK_STATUS_FILTERS = ['active', 'completed', 'all'];
+
 /**
  * Parse and validate search query parameters.
  */
@@ -16,6 +18,7 @@ function parseSearchParams(query) {
         limit: limitParam,
         offset: offsetParam,
         excludeSubtasks,
+        status: statusParam,
     } = query;
 
     const searchQuery = q ? q.trim() : '';
@@ -23,6 +26,10 @@ function parseSearchParams(query) {
     const filterTypes = filters
         ? filters.split(',').map((f) => f.trim())
         : ['Task', 'Project', 'Area', 'Note', 'Tag'];
+
+    const status = VALID_TASK_STATUS_FILTERS.includes(statusParam)
+        ? statusParam
+        : undefined;
 
     const tagNames = tagsParam ? tagsParam.split(',').map((t) => t.trim()) : [];
 
@@ -51,6 +58,7 @@ function parseSearchParams(query) {
         limit,
         offset,
         excludeSubtasks: excludeSubtasks === 'true',
+        status,
     };
 }
 
