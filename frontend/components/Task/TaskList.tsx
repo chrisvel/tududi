@@ -2,6 +2,7 @@ import React from 'react';
 import TaskItem from './TaskItem';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
+import { isTaskActive } from '../../constants/taskStatus';
 
 interface TaskListProps {
     tasks: Task[];
@@ -34,16 +35,7 @@ const TaskList: React.FC<TaskListProps> = ({
     // Conditionally filter tasks based on showCompletedTasks prop
     const filteredTasks = showCompletedTasks
         ? tasks
-        : tasks.filter((task) => {
-              const isCompleted =
-                  task.status === 'done' ||
-                  task.status === 'archived' ||
-                  task.status === 'cancelled' ||
-                  task.status === 2 ||
-                  task.status === 3 ||
-                  task.status === 5;
-              return !isCompleted;
-          });
+        : tasks.filter((task) => isTaskActive(task.status));
 
     return (
         <div className="task-list-container space-y-1.5 overflow-visible">

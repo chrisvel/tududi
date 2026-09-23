@@ -9,6 +9,7 @@ import TaskItem from './TaskItem';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { GroupedTasks } from '../../utils/tasksService';
+import { isTaskActive } from '../../constants/taskStatus';
 
 interface GroupedTaskListProps {
     tasks: Task[];
@@ -71,15 +72,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
         // Filter tasks based on completion status
         const filteredTasks = showCompletedTasks
             ? tasks
-            : tasks.filter((task) => {
-                  // Show only non-completed tasks
-                  const isCompleted =
-                      task.status === 'done' ||
-                      task.status === 'archived' ||
-                      task.status === 2 ||
-                      task.status === 3;
-                  return !isCompleted;
-              });
+            : tasks.filter((task) => isTaskActive(task.status));
 
         const groups = new Map<number, TaskGroup>();
         const standalone: Task[] = [];
@@ -145,15 +138,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             // Filter by completion status
             let filteredTasks = showCompletedTasks
                 ? groupTasks
-                : groupTasks.filter((task) => {
-                      // Show only non-completed tasks
-                      const isCompleted =
-                          task.status === 'done' ||
-                          task.status === 'archived' ||
-                          task.status === 2 ||
-                          task.status === 3;
-                      return !isCompleted;
-                  });
+                : groupTasks.filter((task) => isTaskActive(task.status));
 
             // Apply search filter if search query provided
             if (searchQuery.trim()) {
@@ -190,14 +175,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
         // Apply completion filter
         const filtered = showCompletedTasks
             ? tasks
-            : tasks.filter((task) => {
-                  const isCompleted =
-                      task.status === 'done' ||
-                      task.status === 'archived' ||
-                      task.status === 2 ||
-                      task.status === 3;
-                  return !isCompleted;
-              });
+            : tasks.filter((task) => isTaskActive(task.status));
 
         // Apply search
         const filteredBySearch = searchQuery.trim()

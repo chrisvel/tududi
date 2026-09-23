@@ -31,6 +31,7 @@ import { SortOption } from './Shared/SortFilterButton';
 import IconSortDropdown from './Shared/IconSortDropdown';
 import { useStore } from '../store/useStore';
 import { getCsrfToken } from '../utils/csrfService';
+import { isTaskActive, isTaskCompleted } from '../constants/taskStatus';
 
 interface View {
     id: number;
@@ -177,20 +178,12 @@ const ViewDetail: React.FC = () => {
 
         // Filter by completion status
         if (taskStatusFilter === 'completed') {
-            filteredTasks = tasks.filter(
-                (task: Task) =>
-                    task.status === 'done' ||
-                    task.status === 'archived' ||
-                    task.status === 2 ||
-                    task.status === 3
+            filteredTasks = tasks.filter((task: Task) =>
+                isTaskCompleted(task.status)
             );
         } else if (taskStatusFilter === 'active') {
-            filteredTasks = tasks.filter(
-                (task: Task) =>
-                    task.status !== 'done' &&
-                    task.status !== 'archived' &&
-                    task.status !== 2 &&
-                    task.status !== 3
+            filteredTasks = tasks.filter((task: Task) =>
+                isTaskActive(task.status)
             );
         } else {
             // taskStatusFilter === 'all'
