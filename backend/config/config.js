@@ -282,10 +282,6 @@ const config = {
         ? parseInt(process.env.FILE_UPLOAD_LIMIT_MB, 10)
         : 10,
 
-    // Accept task attachments of any type, not only the built-in allow-list.
-    // Off by default; meant for single-user or trusted self-hosted setups.
-    fileUploadAllowAllTypes: process.env.FILE_UPLOAD_ALLOW_ALL_TYPES === 'true',
-
     // API Documentation (Swagger)
     swagger: {
         enabled: process.env.SWAGGER_ENABLED !== 'false',

@@ -19,7 +19,6 @@ const authController = {
         const { publicCaptchaConfig } = require('../../middleware/captcha');
         res.json({
             fileUploadLimitMB: config.fileUploadLimitMB,
-            fileUploadAllowAllTypes: config.fileUploadAllowAllTypes,
             captcha: publicCaptchaConfig(),
         });
     },

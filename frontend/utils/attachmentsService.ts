@@ -3,33 +3,12 @@ import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
 import { getServerConfig } from './configService';
 
-// Keep in sync with ALLOWED_TYPES in backend/utils/attachment-utils.js.
-const ALLOWED_TYPES = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain',
-    'text/markdown',
-    'image/png',
-    'image/jpeg',
-    'image/gif',
-    'image/webp',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'text/csv',
-    'application/zip',
-    'application/x-zip-compressed',
-];
-
 const INLINE_IMAGE_TYPES = [
     'image/png',
     'image/jpeg',
     'image/gif',
     'image/webp',
 ];
-
-export const ALLOWED_FILE_EXTENSIONS =
-    '.pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.xls,.xlsx,.csv,.zip';
 
 /**
  * Upload a file attachment to a task
@@ -156,8 +135,8 @@ export function getAttachmentType(mimeType: string): AttachmentType {
  */
 export function canPreviewInline(mimeType: string): boolean {
     const type = getAttachmentType(mimeType);
-    // Images outside the built-in list are stored as generic downloads when
-    // FILE_UPLOAD_ALLOW_ALL_TYPES is on, so the browser can't render them.
+    // Images outside the known list are stored as generic .bin downloads, so
+    // the browser can't render them.
     if (type === 'image') return INLINE_IMAGE_TYPES.includes(mimeType);
     return type === 'pdf' || type === 'text';
 }
@@ -187,13 +166,6 @@ export async function validateFile(
         return {
             valid: false,
             error: `File size exceeds ${config.fileUploadLimitMB}MB limit`,
-        };
-    }
-
-    if (!config.fileUploadAllowAllTypes && !ALLOWED_TYPES.includes(file.type)) {
-        return {
-            valid: false,
-            error: 'File type not allowed',
         };
     }
 

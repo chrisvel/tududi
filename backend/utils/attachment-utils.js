@@ -5,7 +5,8 @@ const { getConfig } = require('../config/config');
 
 const config = getConfig();
 
-// Allowed MIME types and their extensions.
+// MIME types stored under their own extension. Any other type is accepted
+// too but stored as UNKNOWN_TYPE_EXTENSION.
 // SVG is intentionally excluded: it's an XML format that can embed <script>,
 // and uploaded attachments are served back to the browser, so allowing it
 // would enable stored XSS (GHSA-x24w-9w59-wqhq).
@@ -49,20 +50,15 @@ const INLINE_SAFE_EXTENSIONS = new Set([
     '.webp',
 ]);
 
-// Stored extension for types outside ALLOWED_TYPES when
-// FILE_UPLOAD_ALLOW_ALL_TYPES is on. It is not inline-safe, so these files are
-// always served as downloads with a generic Content-Type, whatever the client
-// claimed the MIME type was. The original filename is kept in the DB row.
+// Stored extension for any type outside ALLOWED_TYPES. It is not
+// inline-safe, so these files are always served as downloads with a generic
+// Content-Type, whatever MIME type the client claimed. The original filename
+// is kept in the DB row and used when downloading.
 const UNKNOWN_TYPE_EXTENSION = '.bin';
-
-function validateFileType(mimetype) {
-    return config.fileUploadAllowAllTypes || !!ALLOWED_TYPES[mimetype];
-}
 
 function getExtensionFromMimeType(mimetype) {
     const extensions = ALLOWED_TYPES[mimetype];
-    if (extensions) return extensions[0];
-    return config.fileUploadAllowAllTypes ? UNKNOWN_TYPE_EXTENSION : '';
+    return extensions ? extensions[0] : UNKNOWN_TYPE_EXTENSION;
 }
 
 /**
@@ -163,7 +159,6 @@ module.exports = {
     ALLOWED_TYPES,
     INLINE_SAFE_EXTENSIONS,
     UNKNOWN_TYPE_EXTENSION,
-    validateFileType,
     getExtensionFromMimeType,
     formatFileSize,
     isImageFile,
