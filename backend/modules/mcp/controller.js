@@ -69,8 +69,7 @@ async function handleMcpMessage(req, res) {
  * Get MCP feature flag status
  */
 async function getMcpStatus(req, res) {
-    const mcpEnabled = process.env.FF_ENABLE_MCP === 'true';
-    res.json({ enabled: mcpEnabled });
+    res.json({ enabled: true });
 }
 
 /**

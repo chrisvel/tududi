@@ -1,10 +1,8 @@
 'use strict';
 
-// One definition of "CalDAV is on" for the routes, the sync scheduler, and
-// the flag the UI reads. CALDAV_ENABLED is the older name and still works.
-const isCalDAVEnabled = () =>
-    process.env.FF_ENABLE_CALDAV === 'true' ||
-    process.env.CALDAV_ENABLED === 'true';
+// CalDAV, backups and MCP are always on; this stays a function (rather than
+// a plain `true`) since the sync scheduler and CalDAV routes both call it.
+const isCalDAVEnabled = () => true;
 
 class FeatureFlagsService {
     /**
@@ -14,9 +12,9 @@ class FeatureFlagsService {
         const { getConfig } = require('../../config/config');
         const hosted = getConfig().hosted || {};
         return {
-            backups: process.env.FF_ENABLE_BACKUPS === 'true',
+            backups: true,
             caldav: isCalDAVEnabled(),
-            mcp: process.env.FF_ENABLE_MCP === 'true',
+            mcp: true,
             hosted: hosted.enabled === true,
             billing: require('../billing/providers').isBillingConfigured(),
         };

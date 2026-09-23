@@ -47,7 +47,7 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 - **59 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
-- **Feature Flag:** Opt-in via `FF_ENABLE_MCP` to control availability
+- **Enabled by default:** No configuration needed to turn MCP on
 - **Frontend Configuration:** Web UI for generating client configurations
 
 ---
@@ -92,29 +92,19 @@ Tududi's MCP server works with any MCP-compatible client:
 
 1. **Tududi installed and running** — v1.0.0 or later
 2. **An API token** — Generate one at `Profile → API Keys`
-3. **Feature flag enabled** — Set `FF_ENABLE_MCP=true` in your `.env`
-4. **An MCP-compatible client** — Claude Desktop, Cursor, etc.
+3. **An MCP-compatible client** — Claude Desktop, Cursor, etc.
 
 ### Quick Setup
 
-1. **Enable MCP:**
-
-    ```bash
-    # In your .env file
-    FF_ENABLE_MCP=true
-    ```
-
-    Restart server/container if necessary
-
-2. **Generate an API token:**
+1. **Generate an API token:**
     - Navigate to `Profile → API Keys` in Tududi
     - Create a new token (keep it secure)
 
-3. **Choose your transport mode:**
+2. **Choose your transport mode:**
     - **Stdio:** For local Desktop/CLI client integration
     - **HTTP:** For remote access or Docker deployments
 
-4. **Configure your client** — Use the configuration below
+3. **Configure your client** — Use the configuration below
 
 ---
 
@@ -1244,11 +1234,10 @@ const result = await client.callTool({
 - Tokens can be revoked at any time from `Profile → API Keys`
 - HTTP mode uses Bearer token in the `Authorization` header
 
-### Feature Flag
+### Access Control
 
-MCP is behind a feature flag (`FF_ENABLE_MCP`). This means:
+MCP is enabled by default:
 
-- **Opt-in only:** Administrators must explicitly enable MCP by setting `FF_ENABLE_MCP=true`.
 - **Token required:** Each user must generate their own API token to use the MCP tools.
 
 ### Data Isolation
@@ -1272,18 +1261,6 @@ Every MCP tool query includes `user_id` filtering:
 1. Go to `Profile → API Keys`
 2. Generate a new token
 3. Update your MCP client configuration
-
-### "MCP feature is not enabled"
-
-**Cause:** The feature flag is not set.
-
-**Fix:**
-
-```bash
-# In your .env file
-FF_ENABLE_MCP=true
-# Restart Tududi
-```
 
 ### HTTP Connection Refused
 
@@ -1331,7 +1308,6 @@ FF_ENABLE_MCP=true
             ports:
                 - '3002:3002'
             environment:
-                - FF_ENABLE_MCP=true
                 - BACKEND_URL=http://tududi.yourdomain.com:3002
     ```
 

@@ -13,41 +13,7 @@ const {
 
 describe('MCP Controller', () => {
     describe('getMcpStatus', () => {
-        let originalEnv;
-
-        beforeEach(() => {
-            originalEnv = process.env.FF_ENABLE_MCP;
-        });
-
-        afterEach(() => {
-            if (originalEnv === undefined) {
-                delete process.env.FF_ENABLE_MCP;
-            } else {
-                process.env.FF_ENABLE_MCP = originalEnv;
-            }
-        });
-
-        it('should return enabled: false when FF_ENABLE_MCP is not set', async () => {
-            delete process.env.FF_ENABLE_MCP;
-
-            const res = { json: jest.fn() };
-            await controller.getMcpStatus({}, res);
-
-            expect(res.json).toHaveBeenCalledWith({ enabled: false });
-        });
-
-        it('should return enabled: false when FF_ENABLE_MCP is false', async () => {
-            process.env.FF_ENABLE_MCP = 'false';
-
-            const res = { json: jest.fn() };
-            await controller.getMcpStatus({}, res);
-
-            expect(res.json).toHaveBeenCalledWith({ enabled: false });
-        });
-
-        it('should return enabled: true when FF_ENABLE_MCP is true', async () => {
-            process.env.FF_ENABLE_MCP = 'true';
-
+        it('should always return enabled: true', async () => {
             const res = { json: jest.fn() };
             await controller.getMcpStatus({}, res);
 

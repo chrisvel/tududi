@@ -145,7 +145,7 @@ npm start
 
 ## Per-User Backup Exports
 
-The in-app export (Profile > Backup, `FF_ENABLE_BACKUPS=true`) writes each
+The in-app export (Profile > Backup) writes each
 user's `.json.gz` under `TUDUDI_BACKUP_PATH` (default `backend/backups`,
 `/app/backups` in the Docker image, declared as a volume). Mount it like
 `uploads`, or those exports disappear when the container is recreated.
@@ -160,7 +160,7 @@ storage). Restore with `gunzip -c <file> | psql "$DATABASE_URL"`.
 
 ## Per-User Export Format
 
-Exports (Profile > Backup, `FF_ENABLE_BACKUPS=true`) are JSON (`format: 2`)
+Exports (Profile > Backup) are JSON (`format: 2`)
 with every relation expressed by uid (`area_uid`, `project_uid`,
 `parent_task_uid`, ...), attachment files embedded as base64, and goals and
 people included alongside areas, projects, tasks, tags, notes, inbox items
