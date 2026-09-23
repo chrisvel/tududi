@@ -2,6 +2,7 @@ import { Project } from '../entities/Project';
 import { handleAuthResponse } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
+import { refreshTagCountsIfTagsChanged } from './tagsService';
 
 export const fetchProjects = async (
     stateFilter = 'all',
@@ -74,7 +75,9 @@ export const createProject = async (
     });
 
     await handleAuthResponse(response, 'Failed to create project.');
-    return await response.json();
+    const created = await response.json();
+    refreshTagCountsIfTagsChanged(projectData);
+    return created;
 };
 
 export const updateProject = async (
@@ -94,7 +97,9 @@ export const updateProject = async (
     });
 
     await handleAuthResponse(response, 'Failed to update project.');
-    return await response.json();
+    const updated = await response.json();
+    refreshTagCountsIfTagsChanged(projectData);
+    return updated;
 };
 
 export const deleteProject = async (projectUid: string): Promise<void> => {
@@ -125,6 +130,7 @@ export const deleteProject = async (projectUid: string): Promise<void> => {
     }
 
     await handleAuthResponse(response, 'Failed to delete project.');
+    refreshTagCountsIfTagsChanged();
 };
 
 export const fetchProjectBySlug = async (uidSlug: string): Promise<Project> => {
