@@ -25,7 +25,7 @@ import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
 import ProjectItem from './Project/ProjectItem';
 import ConfirmDialog from './Shared/ConfirmDialog';
-import { searchUniversal } from '../utils/searchService';
+import { searchUniversal, resolveViewFilters } from '../utils/searchService';
 import { getApiPath } from '../config/paths';
 import { SortOption } from './Shared/SortFilterButton';
 import IconSortDropdown from './Shared/IconSortDropdown';
@@ -433,7 +433,7 @@ const ViewDetail: React.FC = () => {
             // Fetch search results with pagination and exclude subtasks
             const response = await searchUniversal({
                 query: normalizedView.search_query || '',
-                filters: normalizedView.filters,
+                filters: resolveViewFilters(normalizedView.filters),
                 priority: normalizedView.priority || undefined,
                 due: normalizedView.due || undefined,
                 defer: normalizedView.defer || undefined,
