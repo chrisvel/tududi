@@ -7,6 +7,7 @@ import {
 } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { isTaskDone, TASK_STATUS } from '../constants/taskStatus';
+import { refreshTagCountsIfTagsChanged } from './tagsService';
 
 export interface GroupedTasks {
     [groupName: string]: Task[];
@@ -85,7 +86,9 @@ export const createTask = async (taskData: Task): Promise<Task> => {
     });
 
     await handleAuthResponse(response, 'Failed to create task.');
-    return await response.json();
+    const created = await response.json();
+    refreshTagCountsIfTagsChanged(taskData);
+    return created;
 };
 
 export const updateTask = async (
@@ -110,7 +113,9 @@ export const updateTask = async (
     );
 
     await handleAuthResponse(response, 'Failed to update task.');
-    return await response.json();
+    const updated = await response.json();
+    refreshTagCountsIfTagsChanged(taskData);
+    return updated;
 };
 
 export const toggleTaskCompletion = async (
@@ -173,6 +178,7 @@ export const deleteTask = async (taskUid: string): Promise<void> => {
     }
 
     await handleAuthResponse(response, 'Failed to delete task.');
+    refreshTagCountsIfTagsChanged();
 };
 
 export const fetchTaskById = async (taskId: number): Promise<Task> => {

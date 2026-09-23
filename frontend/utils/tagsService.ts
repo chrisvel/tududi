@@ -3,6 +3,28 @@ import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { extractUidFromSlug } from './slugUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
+import { useStore } from '../store/useStore';
+
+// Task/note/project create, update, and delete calls pass their request
+// payload here so the cached per-tag counts on the Tags page don't go stale.
+// Only payloads that actually touch `tags` (or removals, which always affect
+// membership) trigger a refetch, so unrelated field updates (status toggles,
+// project moves, etc.) don't cause extra requests.
+export const refreshTagCountsIfTagsChanged = (payload?: {
+    tags?: unknown;
+}): void => {
+    if (payload && !('tags' in payload)) return;
+
+    useStore
+        .getState()
+        .tagsStore.refreshTags()
+        .catch((error) =>
+            console.error(
+                'refreshTagCountsIfTagsChanged: Failed to refresh tags:',
+                error
+            )
+        );
+};
 
 export const fetchTags = async (): Promise<Tag[]> => {
     try {

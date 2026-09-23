@@ -5,6 +5,7 @@ import {
     getPostHeadersWithCsrf,
 } from './authUtils';
 import { getApiPath } from '../config/paths';
+import { refreshTagCountsIfTagsChanged } from './tagsService';
 
 export const fetchNotes = async (): Promise<Note[]> => {
     const response = await fetch(getApiPath('notes'), {
@@ -43,7 +44,9 @@ export const createNote = async (noteData: Note): Promise<Note> => {
     });
 
     await handleAuthResponse(response, 'Failed to create note.');
-    return await response.json();
+    const created = await response.json();
+    refreshTagCountsIfTagsChanged(noteData);
+    return created;
 };
 
 export const updateNote = async (
@@ -75,7 +78,9 @@ export const updateNote = async (
     });
 
     await handleAuthResponse(response, 'Failed to update note.');
-    return await response.json();
+    const updated = await response.json();
+    refreshTagCountsIfTagsChanged(noteData);
+    return updated;
 };
 
 export const deleteNote = async (noteUid: string): Promise<void> => {
@@ -86,6 +91,7 @@ export const deleteNote = async (noteUid: string): Promise<void> => {
     });
 
     await handleAuthResponse(response, 'Failed to delete note.');
+    refreshTagCountsIfTagsChanged();
 };
 
 export interface BacklinkNote {
