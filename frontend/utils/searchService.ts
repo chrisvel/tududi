@@ -36,6 +36,14 @@ interface SearchResponse {
     pagination?: Pagination;
 }
 
+// A View with no entity-type filter configured must search Tasks only.
+// Passing an empty array through to searchUniversal omits the `filters`
+// query param entirely, which makes the backend default to searching (and
+// summing the counts of) every entity type: Task, Project, Area, Note, Tag.
+export const resolveViewFilters = (
+    filters: string[] | null | undefined
+): string[] => (filters && filters.length > 0 ? filters : ['Task']);
+
 export const searchUniversal = async (
     params: SearchParams
 ): Promise<SearchResponse> => {
