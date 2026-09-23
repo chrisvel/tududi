@@ -27,26 +27,23 @@
 │       ├── attachment-utils.test.js
 │       └── migration-utils.test.js
 │
-└── integration/              # Integration tests for API endpoints
-    ├── tasks/
-    │   ├── tasks.test.js
-    │   ├── subtasks.test.js
-    │   └── recurring.test.js
-    ├── projects/
-    │   └── projects.test.js
-    ├── areas/
-    ├── notes/
-    ├── tags/
-    ├── auth/
-    ├── shares/
-    └── ... (47+ test directories)
+├── integration/              # Integration tests for API endpoints (flat, 110+ files)
+│   ├── tasks.test.js
+│   ├── projects.test.js
+│   ├── areas.test.js
+│   ├── comments.test.js
+│   ├── mcp/                  # MCP tool tests
+│   └── ...
+│
+└── upgrade/                  # Legacy database upgrade suite (own Jest config)
 
 /e2e/tests/                   # E2E tests (Playwright)
-├── login.spec.ts
-├── tasks.spec.ts
-├── projects.spec.ts
-├── subtasks.spec.ts
-└── ...
+├── caldav-client.spec.ts
+├── inbox.spec.ts
+├── notes-editor.spec.ts
+├── registration.spec.ts
+├── share-target.spec.ts
+└── today-view.spec.ts
 
 /frontend/__tests__/          # Frontend tests
 ├── setup.ts                 # Test configuration
@@ -102,7 +99,7 @@ npm run test:ui
 npm run test:ui:headed
 
 # Specific test file
-npx playwright test e2e/tests/tasks.spec.ts
+npx playwright test e2e/tests/inbox.spec.ts
 
 # Debug mode
 npx playwright test --debug
@@ -180,7 +177,7 @@ it('should not return completed tasks in Today view', async () => {
 **Arrange-Act-Assert Pattern:**
 
 ```javascript
-// /backend/tests/integration/tasks/tasks.test.js
+// /backend/tests/integration/tasks.test.js
 const request = require('supertest');
 const app = require('../../../app');
 const { Task, User } = require('../../../models');
@@ -295,7 +292,7 @@ describe('timezone-utils', () => {
 ### Frontend Component Test
 
 ```typescript
-// /frontend/components/Task/__tests__/TaskItem.test.tsx
+// /frontend/components/Task/__tests__/TaskItem.test.tsx (illustrative; see TaskRow.test.tsx for a real one)
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TaskItem } from '../TaskItem';
 import { Task } from '../../../entities/Task';
@@ -360,7 +357,7 @@ describe('TaskItem', () => {
 ### E2E Test (Playwright)
 
 ```typescript
-// /e2e/tests/tasks.spec.ts
+// /e2e/tests/tasks.spec.ts (illustrative; see inbox.spec.ts for a real one)
 import { test, expect } from '@playwright/test';
 
 test.describe('Task Management', () => {

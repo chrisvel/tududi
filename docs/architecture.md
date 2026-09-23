@@ -14,7 +14,7 @@
 - **Styling:** Tailwind CSS 3.4.13 + Heroicons
 - **State Management:** Zustand 5.0.3 (global state), SWR 2.2.5 (server state)
 - **Routing:** React Router DOM 6.26.2
-- **Internationalization:** i18next + react-i18next (24 languages)
+- **Internationalization:** i18next + react-i18next (25 languages)
 - **Charts/Analytics:** Recharts 2.15.4
 - **Drag & Drop:** @dnd-kit (sortable tasks)
 - **Development:** webpack-dev-server with proxy configuration
@@ -199,10 +199,12 @@ graph TD
 1. **Ownership** → Automatic RW access
    - User has RW for resources they created
 
-2. **Project Sharing** → Granted via Permission model
-   - Permission record grants RO/RW/ADMIN to specific user
-   - resource_type: 'project', 'task', 'note'
+2. **Sharing** → Granted via the Permission model (direct shares) and `group_permissions` (group shares)
+   - Shares grant RO or RW; `ADMIN` exists in the access enum but the share API does not hand it out
+   - A share is a pending invitation until the recipient accepts
+   - resource_type: 'project', 'task', 'note', 'area', 'goal'
    - resource_uid: unique identifier
+   - Read shared access through `permissionSources`, never `Permission` alone (see [User Groups](18-user-groups.md))
 
 3. **Inheritance**
    - Tasks inherit access from parent Project
@@ -226,31 +228,48 @@ router.get('/task/:id',
 
 ## Core Modules Overview
 
-### Backend Modules (19 total)
+### Backend Modules (36 total)
 
 Located in `/backend/modules/`, each follows consistent architecture:
 
 | Module | Purpose | Complexity |
 |--------|---------|------------|
-| **tasks** | Task management, subtasks, recurring | High - most complex module |
+| **tasks** | Task management, subtasks, recurring, Today/Upcoming lists | High - most complex module |
 | **projects** | Project CRUD and organization | Medium |
 | **areas** | Area categorization | Low |
-| **notes** | Note-taking system | Medium |
-| **tags** | Tagging system | Low |
-| **users** | User management | Medium |
-| **auth** | Authentication (login/register) | Medium |
-| **shares** | Project sharing & permissions | High |
-| **telegram** | Telegram bot integration | Medium |
-| **inbox** | Quick capture inbox | Low |
+| **goals** | Outcome-level goals between areas and projects | Medium |
+| **notes** | Note-taking system, public note links | Medium |
+| **tags** | Tagging system, `today`/`someday` system tags | Low |
+| **comments** | Task comments, replies, @mentions, reactions | Medium |
+| **templates** | Project templates and the optional marketplace | Medium |
 | **habits** | Habit tracking | Medium |
-| **notifications** | In-app notifications | Medium |
-| **search** | Universal search | Medium |
+| **inbox** | Quick capture inbox | Low |
 | **views** | Saved custom views | Low |
-| **admin** | Admin operations | Low |
+| **search** | Universal search | Medium |
+| **reports** | GTD report (`/api/reports/gtd`) | Low |
+| **everyone** | The Everyone board across members | Medium |
+| **people** | Contacts and assignable people | Medium |
+| **members** | Workspace members, sign-in links for members without an email | Medium |
+| **groups** | Admin-managed user groups | Medium |
+| **shares** | Sharing, invitations and permissions | High |
+| **users** | User profile and settings | Medium |
+| **auth** | Authentication (login/register/password reset) | Medium |
+| **oidc** | OIDC/SSO login, providers configurable in the database | High |
+| **oauth** | OAuth2 protected-resource metadata for JWT bearer tokens | Low |
+| **admin** | Admin operations (users, roles, dashboard) | Medium |
+| **admin-ai-usage** | Admin view of AI token usage (hosted mode) | Low |
+| **ai-assistant** | Daily Brief, task and project insights | Medium |
+| **mcp** | Model Context Protocol server (59 tools) | High |
+| **caldav** | CalDAV server and remote calendar sync | High |
+| **telegram** | Telegram bot integration | Medium |
+| **notifications** | In-app notifications | Medium |
 | **backup** | Backup/restore functionality | High |
+| **billing** | Subscriptions and plan limits (hosted mode) | Medium |
+| **landing** | Marketing pages served for `TUDUDI_LANDING_HOSTS` | Low |
+| **demo** | Public demo sandbox | Low |
 | **feature-flags** | Feature flag management | Low |
 | **quotes** | Daily quotes | Low |
-| **url** | URL handling | Low |
+| **url** | URL title extraction (with SSRF guard) | Low |
 
 ---
 

@@ -36,8 +36,12 @@ This document explains how projects work in tududi from a user behavior perspect
    - "Stalled" detection for projects with no active tasks
 
 4. **Projects can be shared**
-   - Share with other users (read-only or read-write)
+   - Share with other users or with a whole group (read-only or read-write)
+   - The recipient has to accept the invitation before they see anything
    - Shared project access extends to all tasks/notes within
+
+5. **Projects can become templates**
+   - Save a project as a reusable template and start new projects from it (see [Project Templates](#project-templates))
 
 ---
 
@@ -413,13 +417,18 @@ No Area
 **How to share:**
 1. Open project detail page
 2. Click "Share" button
-3. Enter email of user to share with
+3. Choose **User** and enter their email, or choose **Group** (the toggle appears once the instance has a group, see [User Groups](18-user-groups.md))
 4. Select access level (read-only or read-write)
-5. User receives notification
+5. The recipient gets a `share_invitation` notification
+
+**Invitations:**
+- Sharing creates a pending invitation; the project stays invisible to the recipient until they accept
+- Declining removes the invitation; the owner can invite again later
+- The share dialog answers the same way whether or not the email belongs to an account, so it cannot be used to find out who has signed up
+- Sharing with a group invites every member separately (see [User Groups](18-user-groups.md))
 
 **Requirements:**
-- Other user must have a tududi account
-- Must use exact email address
+- Access only takes effect for someone with a tududi account who accepts
 - Cannot share with yourself
 
 ### Access Inheritance
@@ -443,13 +452,24 @@ No Area
 - Shared projects appear in their Projects list
 - Can filter projects by ownership vs shared
 - Shared indicator shown on project card
-- Cannot change Area (only owner can)
+- Can file the project under one of their own areas: the placement is stored per user (`user_project_areas`) and does not move the project for the owner or anyone else
 - Cannot delete project (only owner can)
 
 **Notifications:**
 - Project owner sees share count badge
 - Shared users see owner's name
 - Activity on shared project can trigger notifications
+
+---
+
+## Project Templates
+
+A template is a project row with `is_template = true`. Templates live on the **Templates** page, not in the Projects list.
+
+- **Save as template**: from a project (`POST /api/project/:uid/save-as-template`). Tasks are copied with their status reset, and tags are copied.
+- **Create from template**: clone a template into a new project (`POST /api/template/:uid/clone`). The default name is "<template> (Copy)" and task statuses are reset unless the caller passes `resetStatus: false`.
+- **Manage**: `GET /api/templates`, `POST /api/template`, `GET`/`PATCH`/`DELETE /api/template/:uid`.
+- **Marketplace**: when `MARKETPLACE_URL` (and optionally `MARKETPLACE_API_KEY`) is set, the Templates page also lists shared templates from that marketplace, which can be previewed and installed (`GET /api/marketplace/templates`, `POST /api/marketplace/templates/:uid/install`). Without it the marketplace list is empty.
 
 ---
 
@@ -917,6 +937,6 @@ Displayed on project cards and detail page:
 
 ---
 
-**Document Version:** 1.0.0
-**Last Updated:** 2026-03-14
+**Document Version:** 1.1.0
+**Last Updated:** 2026-09-22
 **Audience:** Developers, AI assistants, and end users

@@ -262,7 +262,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
 
 23. **[MCP Integration](docs/14-mcp-integration.md)**
     - Model Context Protocol server for AI tool integration
-    - 16 tools: tasks, projects, inbox, and search operations
+    - 59 tools across tasks, projects, areas, goals, notes, tags, habits, people, views, inbox and search
     - Stdio and HTTP transport modes
     - Claude Desktop, Cursor, VS Code configuration
     - API token authentication and security
@@ -314,12 +314,12 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 **Key Capabilities:**
 - **Hierarchical Organization:** Areas > Goals > Projects > Tasks > Subtasks
 - **Smart Recurring Tasks:** Multiple patterns with parent-child tracking
-- **Multi-Language Support:** 24 languages via i18next
+- **Multi-Language Support:** 25 languages via i18next
 - **Collaboration:** Project sharing with granular permissions
 - **REST API:** Swagger docs + personal API tokens
 - **Telegram Integration:** Create tasks via messages, daily digests
 - **Tag System:** Flexible tagging across tasks, notes, projects
-- **MCP Integration:** AI tool connectivity via Model Context Protocol (16 tools)
+- **MCP Integration:** AI tool connectivity via Model Context Protocol (59 tools)
 
 **Target Users:** Self-hosting individuals and teams managing personal or collaborative productivity
 
@@ -332,7 +332,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - Webpack 5 (build) + webpack-dev-server (development)
 - Tailwind CSS 3.4 + Heroicons
 - Zustand (global state) + SWR (server state)
-- React Router 6, i18next (24 languages)
+- React Router 6, i18next (25 languages)
 
 **Backend:**
 - Express 4.21 + Sequelize 6.37 (ORM)

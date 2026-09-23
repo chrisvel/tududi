@@ -278,6 +278,25 @@ This document explains how tasks work in tududi from a user behavior perspective
 
 ---
 
+## **Comments**
+
+1. **Anyone who can read the task can comment** - Read-only collaborators included; no access answers 404
+2. **Body** - Plain text, trimmed, up to 10,000 characters
+3. **Replies are one level deep** - You can reply to a comment but not to a reply (`Cannot reply to a reply`)
+4. **@mentions** - The composer inserts people you can assign to; mentioned people are stored as person uids and resolved to names when comments are listed
+5. **Reactions** - One reaction per person per comment, `like` or `dislike`; sending `null` removes yours. Counts come back as `likes_count` / `dislikes_count` with your own `my_reaction`
+6. **Deleting is soft and author-only** - Only the author can delete; the row keeps its place with `deleted_at` set and the body and mentions cleared, and the UI shows a "Comment deleted" placeholder so replies stay in context. Deleted comments cannot be replied to or reacted to
+7. **Notifications** (`comment_added`, `mention`, subject to each person's notification preferences, optionally also sent to Telegram):
+   - The author of the parent comment gets "replied to your comment"
+   - The task owner and the assignee get "commented on <task>"
+   - Each mentioned person gets "mentioned you"
+   - Nobody is notified twice for one comment, and never for their own comment
+   - A failed notification never fails the comment
+
+**Endpoints:** `GET`/`POST /api/task/:uid/comments` (post takes `body`, optional `mentioned_person_uids` and `parent_comment_uid`), `DELETE /api/comment/:uid`, `POST /api/comment/:uid/reaction` (takes `type`).
+
+---
+
 ## **Task Events & History**
 
 ### Activity Tracking
@@ -533,6 +552,6 @@ A mode that transforms a task into a habit tracker with streak counting, target 
 
 ---
 
-**Document Version:** 1.0.0
-**Last Updated:** 2026-03-15
+**Document Version:** 1.1.0
+**Last Updated:** 2026-09-22
 **Audience:** Developers, AI assistants, and end users

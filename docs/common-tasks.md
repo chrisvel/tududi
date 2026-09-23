@@ -38,11 +38,11 @@ Quick reference for frequently performed development tasks with complete file li
    - `/frontend/entities/Task.ts` - Add to interface (if exists)
 
 8. **Update UI**
-   - `/frontend/components/Task/TaskForm.tsx` - Add input field
+   - `/frontend/components/Task/TaskForm/` - Add a section component (e.g. next to `TaskPrioritySection.tsx`)
    - `/frontend/components/Task/TaskItem.tsx` - Display field (if needed)
 
 9. **Add tests**
-   - `/backend/tests/integration/tasks/tasks.test.js` - Test CRUD with new field
+   - `/backend/tests/integration/tasks.test.js` - Test CRUD with new field
 
 ### Commands
 
@@ -65,7 +65,7 @@ npm run format:fix
 
 1. **Create directory structure**
    ```bash
-   mkdir -p /Users/chris/c0deLab/ProjectLand/tududi/backend/modules/labels
+   mkdir -p /backend/modules/labels
    ```
 
 2. **Create files**
@@ -219,7 +219,7 @@ npm run backend:test
 
 1. **Write failing test first**
    
-   Edit `/backend/tests/integration/tasks/tasks.test.js`:
+   Edit `/backend/tests/integration/tasks.test.js`:
    ```javascript
    it('should not return completed tasks in Today view', async () => {
      // Arrange - Create completed task
@@ -318,11 +318,9 @@ Backend typically doesn't use translations (API responses in English).
    };
    ```
 
-3. **Sync translations (if tool available)**
-   ```bash
-   npm run translations:sync
-   npm run translations:check
-   ```
+3. **Add the key to every locale**
+   - Add it to `public/locales/<code>/translation.json` for all 25 languages
+   - There is no sync script: copy the English text into the other files (or translate it) so no locale falls back silently
 
 ---
 
@@ -488,7 +486,7 @@ This is already implemented in tududi, but here's the pattern:
    - `/backend/modules/tasks/taskScheduler.js` - Ensure cron job handles new pattern
 
 4. **Frontend**
-   - `/frontend/components/Task/TaskForm.tsx` - Add UI for new pattern
+   - `/frontend/components/Task/TaskForm/TaskRecurrenceSection.tsx` - Add UI for new pattern
 
 ---
 
@@ -500,9 +498,10 @@ Already implemented in tududi:
 
 ```bash
 # Via API (after login)
-POST /api/v1/backup
+POST /api/backup/export
 
 # Returns JSON file with all user data
+# Related: GET /api/backup/list, POST /api/backup/import, POST /api/backup/validate
 ```
 
 See `/backend/modules/backup/` for implementation details.

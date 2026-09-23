@@ -12,7 +12,7 @@ The **Upcoming view** is a forward-looking calendar that shows tasks scheduled f
 - Shows tasks due in the next 7 days
 - Grouped by day of the week
 - Displays recurring task occurrences
-- Includes deferred tasks when they become available
+- Includes deferred tasks whose defer date falls in the window
 - Shows upcoming projects
 
 **URL:** `/upcoming`
@@ -28,7 +28,7 @@ The **Upcoming view** is a forward-looking calendar that shows tasks scheduled f
 2. **Grouped by day, not by status or project**
    - Tasks organized into columns/sections by due date
    - Labels: "Today", "Tomorrow", "Monday, March 17", etc.
-   - Tasks without due dates appear in "No Due Date" section
+   - Deferred tasks without a due date appear in a "No Due Date" section
 
 3. **All tasks are loaded at once**
    - No "Load More" or pagination
@@ -57,16 +57,16 @@ A task appears in Upcoming if it matches **any** of these conditions:
 
 2. **Tasks becoming available from deferral**
    - "Defer Until" date falls within the next 7 days
-   - Shows when the task becomes actionable, not when it's due
+   - Still placed by due date, not by defer date (see [Defer Until Behavior](#defer-until-behavior))
 
 3. **Recurring task occurrences**
    - All occurrences of recurring tasks in the next 7 days
    - Generated automatically from the recurring pattern
    - Each occurrence appears on its scheduled date
 
-4. **Tasks without due dates**
-   - Appear in "No Due Date" section
-   - Only if they match other filters (status, etc.)
+4. **Deferred tasks without due dates**
+   - Appear in the "No Due Date" section
+   - Only tasks picked up by rule 2; undated tasks that are not deferred into the window do not appear
 
 ### Tasks Excluded
 
@@ -80,13 +80,11 @@ A task appears in Upcoming if it matches **any** of these conditions:
    - Only shows the next 7-day window
    - Tasks due next month won't appear
 
-3. **Completed tasks** (by default)
-   - Unless you select "Completed" status filter
+3. **Completed tasks, when the "Active" filter is selected**
+   - The default filter is "All", which includes completed tasks
    - Can toggle between Active/Completed/All
 
-4. **Subtasks**
-   - Only parent tasks appear
-   - Subtasks are shown within their parent task details
+Subtasks are included: the view requests `include_subtasks=true`, so a subtask with a due date in the window appears on its own day like any other task.
 
 ---
 
@@ -159,7 +157,7 @@ Tasks are organized into date columns/sections:
 4. **"No Due Date"** - Tasks without due dates
 
 **Languages:**
-- Group labels are translated into 24 supported languages
+- Group labels are translated into all 25 supported languages
 - Date formats respect your locale settings
 
 ### Within Each Day
@@ -191,21 +189,21 @@ Unlike the main Tasks view:
 
 You can filter what appears in Upcoming:
 
-1. **Active** (default)
-   - Shows only non-completed tasks
-   - Includes: Not Started, In Progress, Planned, Waiting
-
-2. **Completed**
-   - Shows only completed tasks from the past 7 days
-   - Useful for reviewing what you finished
-
-3. **All** (no filter)
+1. **All** (default, no `status` in the URL)
    - Shows both active and completed tasks
    - Mixed view of everything
 
+2. **Active**
+   - Shows only open tasks
+   - Excludes done, archived and cancelled tasks
+
+3. **Completed**
+   - Shows done and archived tasks whose due date falls in the 7-day window
+   - It is not a history of the past week: a task due next Tuesday that you already finished shows here, one finished yesterday does not
+
 ### How to Filter
 
-- Click the status filter dropdown in the toolbar
+- Open the sort dropdown in the toolbar and pick an option under "Show"
 - Selection is saved to URL (can bookmark)
 - Changes immediately update the view
 
@@ -215,36 +213,38 @@ You can filter what appears in Upcoming:
 
 ### How Deferred Tasks Appear
 
-Tasks with "Defer Until" dates show special behavior:
+A defer date in the window makes the backend fetch a task, but the view always places tasks by **due date**:
 
-1. **Task deferred to future date within 7 days**
-   - Appears in Upcoming on the defer date
-   - Shows in the day column for when it becomes available
-   - May have a different due date (later than defer date)
+1. **Deferred into the window, due inside the window**
+   - Appears on its due date
+   - The same would happen without the defer date
 
-2. **Task deferred beyond 7 days**
-   - Doesn't appear in Upcoming
-   - Hidden until defer date gets closer
+2. **Deferred into the window, no due date**
+   - Appears in the "No Due Date" section
+   - This is the only way an undated task reaches Upcoming
 
-3. **Task deferred to today or past**
-   - Appears immediately in Upcoming
-   - Acts like a normal task
+3. **Deferred into the window, due after the window**
+   - Does not appear: grouping drops every task due after the last day
+
+4. **Deferred beyond the window**
+   - Appears only if its due date is in the window (it is then fetched by its due date, like any task)
+   - Otherwise it does not appear until the defer date is within 7 days
 
 ### Example Scenarios
 
-**Scenario 1: Deferred task appears**
+**Scenario 1: Deferred, no due date**
 - Task: "Review contract"
-- Due date: March 20
+- Due date: none
 - Defer until: March 15
 - Today: March 12
-- **Shows in Upcoming:** Yes, under "March 15" (when it becomes available)
+- **Shows in Upcoming:** Yes, under "No Due Date"
 
-**Scenario 2: Deferred task hidden**
+**Scenario 2: Deferred, due after the window**
 - Task: "Q2 planning"
 - Due date: April 1
-- Defer until: March 25
+- Defer until: March 14
 - Today: March 12
-- **Shows in Upcoming:** No (defer date is beyond 7 days)
+- **Shows in Upcoming:** No (due date is beyond the 7-day window)
 
 ---
 
@@ -255,14 +255,13 @@ Tasks with "Defer Until" dates show special behavior:
 Projects show separately at the bottom of Upcoming if:
 - Project has a due date set
 - Due date falls within the next 7 days
-- Project is not archived or completed
+- Project status is not done or cancelled
 
 ### Project Display
 
-- Shown below all tasks
-- Grouped by the same date system
+- Shown in an "Upcoming Projects" list below the tasks
+- Sorted by due date
 - Click to view project details
-- Shows project progress and task count
 
 ---
 
@@ -298,7 +297,6 @@ The Upcoming view automatically refreshes:
 - When you complete a task
 - When you change task status
 - When you edit a task's due date
-- Every few minutes to catch external changes
 
 ---
 
@@ -323,7 +321,7 @@ The Upcoming view automatically refreshes:
 
 | Setting | Default | How to Change |
 |---------|---------|---------------|
-| **Status filter** | Active | Dropdown in toolbar |
+| **Status filter** | All | "Show" options in the sort dropdown |
 | **Sort order** | Created date (newest) | Sort dropdown in toolbar |
 | **Sort direction** | Descending | Toggle in sort dropdown |
 
@@ -355,16 +353,15 @@ The Upcoming view automatically refreshes:
 ### 3. Finding Available Tasks
 
 **What to do:**
-- Check "No Due Date" section
-- See tasks you deferred that become available
-- Plan when to work on undated tasks
+- Check the "No Due Date" section
+- It lists undated tasks you deferred into this week
+- Plan when to work on them
 
 ### 4. Reviewing Completed Work
 
 **What to do:**
 - Switch to "Completed" status filter
-- See what you finished this week
-- Track recurring task completion history
+- See which tasks due this week are already done
 
 ---
 
@@ -407,14 +404,14 @@ The Upcoming view automatically refreshes:
 
 **Setup:**
 - Task: "Review proposal"
-- Due date: March 25
+- Due date: March 15
 - Defer until: March 14
 - Today: March 10
 
 **Shows in Upcoming:**
-- Thursday, March 14: Review proposal
-- (Not shown on March 10-13 because still deferred)
-- (Won't show on March 15-16 unless due date moves)
+- Saturday, March 15: Review proposal
+- (Placed on its due date, not on the defer date)
+- (With a due date of March 25 it would not appear at all)
 
 ### Scenario 4: One-Time Task with Due Date
 
@@ -424,7 +421,7 @@ The Upcoming view automatically refreshes:
 - Today: March 10
 
 **Shows in Upcoming:**
-- Friday, March 15: Submit report
+- Saturday, March 15: Submit report
 
 **Total appearances:** 1 time (not recurring)
 
@@ -437,9 +434,9 @@ The Upcoming view automatically refreshes:
 **Check these:**
 1. Is the due date more than 7 days away? (Only shows next 7 days)
 2. Is the due date in the past? (Overdue tasks don't appear)
-3. Is it marked as completed? (Switch to "Completed" filter to see)
-4. Is it a subtask? (Only parent tasks appear)
-5. Is it deferred beyond 7 days? (Won't appear until defer date is closer)
+3. Is it marked as completed? (Switch the filter to "All" or "Completed")
+4. Is it deferred? (It still shows on its due date; with no due date it is under "No Due Date"; due after the window it does not show)
+5. Does it have no due date and no defer date in the window? (Undated tasks only appear when deferred into the window)
 
 ### "My recurring task shows too many times"
 
@@ -476,6 +473,6 @@ The Upcoming view automatically refreshes:
 
 ---
 
-**Document Version:** 1.0.0
-**Last Updated:** 2026-03-14
+**Document Version:** 1.1.0
+**Last Updated:** 2026-09-22
 **Audience:** Developers, AI assistants, and end users

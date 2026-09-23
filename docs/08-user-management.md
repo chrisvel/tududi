@@ -163,7 +163,7 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 17. **User preferences stored in profile:**
     - **Appearance:** Light or dark theme
-    - **Language:** One of 24 supported languages
+    - **Language:** One of 25 supported languages
     - **Timezone:** User's timezone for date/time display
     - **First day of week:** 0 (Sunday) to 6 (Saturday)
 
