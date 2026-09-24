@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import { isTaskDone } from '../../constants/taskStatus';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
@@ -16,11 +17,43 @@ export const formatMinute = (minute: number): string => {
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 };
 
+// Translated through the app's i18next instance; plain English when it is
+// not initialised (unit tests).
+const translate = (
+    key: string,
+    fallback: string,
+    values: Record<string, number>
+): string => {
+    if (i18next.isInitialized) {
+        return i18next.t(key, { defaultValue: fallback, ...values });
+    }
+    return fallback.replace(/{{(\w+)}}/g, (_m, name) => String(values[name]));
+};
+
 export const formatDuration = (minutes: number): string => {
-    if (minutes < 60) return `${minutes}m`;
+    if (minutes < 60) {
+        return translate('dailyPlan.durationMinutes', '{{minutes}}m', {
+            minutes,
+        });
+    }
     const hours = Math.floor(minutes / 60);
     const rest = minutes % 60;
-    return rest ? `${hours}h ${rest}m` : `${hours}h`;
+    return rest
+        ? translate(
+              'dailyPlan.durationHoursMinutes',
+              '{{hours}}h {{minutes}}m',
+              {
+                  hours,
+                  minutes: rest,
+              }
+          )
+        : translate('dailyPlan.durationHours', '{{hours}}h', { hours });
+};
+
+// The app's language codes are not all valid locales (jp, ua).
+export const intlLocale = (language: string | undefined): string => {
+    const code = (language || 'en').split('-')[0];
+    return { jp: 'ja', ua: 'uk' }[code] || language || 'en';
 };
 
 export const snapToSlot = (minute: number): number =>

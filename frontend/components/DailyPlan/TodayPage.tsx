@@ -35,6 +35,7 @@ import {
     itemEnd,
     isItemDone,
     minuteOfDay,
+    intlLocale,
 } from './planUtils';
 
 const TodayPage: React.FC = () => {
@@ -321,7 +322,7 @@ const TodayPage: React.FC = () => {
         range.end - range.start - busyMinutes(events, range)
     );
     const dateLabel = planResponse
-        ? new Intl.DateTimeFormat(i18n.language, {
+        ? new Intl.DateTimeFormat(intlLocale(i18n.language), {
               weekday: 'long',
               month: 'long',
               day: 'numeric',

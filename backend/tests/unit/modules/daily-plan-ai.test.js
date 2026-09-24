@@ -143,3 +143,14 @@ describe('slots', () => {
         ).toBe(660);
     });
 });
+
+describe('languageInstruction', () => {
+    const { languageInstruction } = require('../../../modules/daily-plan/ai');
+
+    it('asks for the user language, mapping the app codes', () => {
+        expect(languageInstruction('en')).toBe('');
+        expect(languageInstruction('el')).toContain('Greek');
+        expect(languageInstruction('jp')).toContain('Japanese');
+        expect(languageInstruction('ua')).toContain('Ukrainian');
+    });
+});

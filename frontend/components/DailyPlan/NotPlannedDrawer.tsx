@@ -54,7 +54,12 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
     ].filter((group) => group.tasks.length > 0);
     const total = groups.reduce((sum, g) => sum + g.tasks.length, 0);
     const summary = groups
-        .map((g) => `${g.tasks.length} ${g.label.toLowerCase()}`)
+        .map((g) =>
+            t(`dailyPlan.countOf.${g.key}`, {
+                count: g.tasks.length,
+                defaultValue: `{{count}} ${g.label.toLowerCase()}`,
+            })
+        )
         .join(' · ');
 
     return (

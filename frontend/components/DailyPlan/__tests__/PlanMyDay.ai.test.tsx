@@ -15,12 +15,18 @@ let aiEnabled = false;
 jest.mock('react-i18next', () => {
     const t = (
         _key: string,
-        fallback: string,
+        fallback: string | Record<string, unknown>,
         values?: Record<string, unknown>
-    ) =>
-        fallback.replace(/{{(\w+)}}/g, (_m, name) =>
-            String(values?.[name] ?? '')
+    ) => {
+        const options = typeof fallback === 'object' ? fallback : values;
+        const text =
+            typeof fallback === 'string'
+                ? fallback
+                : String(fallback?.defaultValue ?? _key);
+        return text.replace(/{{(\w+)}}/g, (_m, name) =>
+            String(options?.[name] ?? '')
         );
+    };
     const value = { t, i18n: { language: 'en' } };
     return { useTranslation: () => value };
 });

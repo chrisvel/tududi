@@ -34,7 +34,7 @@ const STATUS_LABELS = {
 // this keeps the API honest too.
 async function assertAiEnabled(userId) {
     const user = await User.findByPk(userId, {
-        attributes: ['id', 'features', 'ai_profile', 'timezone'],
+        attributes: ['id', 'features', 'ai_profile', 'timezone', 'language'],
     });
     let features = user?.features;
     if (typeof features === 'string') {
@@ -50,6 +50,19 @@ async function assertAiEnabled(userId) {
         );
     }
     return user;
+}
+
+// The app's language codes are not all standard (jp, ua).
+function languageInstruction(language) {
+    const code = { jp: 'ja', ua: 'uk' }[language] || language || 'en';
+    if (code === 'en') return '';
+    let name = code;
+    try {
+        name = new Intl.DisplayNames(['en'], { type: 'language' }).of(code);
+    } catch {
+        // Keep the code; the model understands it.
+    }
+    return `\nWrite every text field (summary, reasons, wins, pattern) in ${name}.`;
 }
 
 async function chargeForCall(userId) {
@@ -302,7 +315,7 @@ Rules:
 - reason: at most 8 words, specific to the task (e.g. "Due today, 15 minutes fits before Work").
 - summary: at most 20 words describing the shape of the day.
 - skipped: up to 5 notable candidates left out, with a short reason.
-- Plain text, no markdown. Return only the JSON object.`,
+- Plain text, no markdown. Return only the JSON object.${languageInstruction(user.language)}`,
         user: context,
     });
 
@@ -510,7 +523,7 @@ async function wrapUpDay(userId, date) {
 - wins: 0 to 3 short items (at most 8 words each) naming what got done.
 - carry_over: unfinished tasks worth doing tomorrow, using task_uid values from the list, each with a reason of at most 8 words. Leave out tasks that look optional.
 - pattern: at most 20 words on one useful pattern (e.g. morning blocks slipped, overplanned by 2h), or an empty string.
-Plain text, no markdown. Return only the JSON object.`,
+Plain text, no markdown. Return only the JSON object.${languageInstruction(user.language)}`,
         user: [
             `Date: ${planDate}.`,
             user.ai_profile ? `About the user: ${user.ai_profile}` : '',
@@ -560,6 +573,7 @@ function clearEstimateCache() {
 
 module.exports = {
     assertAiEnabled,
+    languageInstruction,
     sanitizeDraft,
     sanitizeEstimate,
     draftDay,
