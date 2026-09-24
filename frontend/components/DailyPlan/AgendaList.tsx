@@ -47,12 +47,41 @@ const AgendaList: React.FC<AgendaListProps> = ({
 
     if (agenda.length === 0) return null;
 
+    // The "now" line goes before the first entry that has not started yet;
+    // untimed tasks always come after it.
+    const nowIndex = (() => {
+        const index = agenda.findIndex(
+            (entry) => entry.start === null || entry.start > now
+        );
+        return index === -1 ? agenda.length : index;
+    })();
+    const nowMarker = (
+        <div
+            key="now-marker"
+            className="flex items-center gap-3"
+            aria-label={t('dailyPlan.nowMarker', 'Now, {{time}}', {
+                time: formatMinute(now),
+            })}
+            data-testid="now-marker"
+        >
+            <span className="w-32 shrink-0 text-xs font-medium text-red-500/80 dark:text-red-400/70">
+                {formatMinute(now)}
+            </span>
+            <div className="relative flex-1">
+                <span className="absolute -left-1 -top-[3px] h-1.5 w-1.5 rounded-full bg-red-500/70 dark:bg-red-400/60" />
+                <div className="border-t border-red-500/40 dark:border-red-400/30" />
+            </div>
+        </div>
+    );
+
     return (
         <section className="flex flex-col gap-2" data-testid="agenda-list">
-            {agenda.map((entry) => {
+            {agenda.flatMap((entry, index) => {
+                const marker = index === nowIndex ? [nowMarker] : [];
                 if (entry.kind === 'event') {
                     const { event } = entry;
-                    return (
+                    return [
+                        ...marker,
                         <div
                             key={`event-${event.feed_uid}-${event.uid}-${event.start}`}
                             className="flex items-center gap-3"
@@ -73,8 +102,8 @@ const AgendaList: React.FC<AgendaListProps> = ({
                                     {event.title}
                                 </span>
                             </div>
-                        </div>
-                    );
+                        </div>,
+                    ];
                 }
 
                 const { item } = entry;
@@ -85,7 +114,8 @@ const AgendaList: React.FC<AgendaListProps> = ({
                         ? `${formatMinute(item.start_minute)} · ${formatDuration(item.duration_minutes)}`
                         : `${t('dailyPlan.anytime', 'Anytime')} · ${formatDuration(item.duration_minutes)}`;
 
-                return (
+                return [
+                    ...marker,
                     <div
                         key={`task-${item.task_uid}`}
                         className="flex items-start gap-3"
@@ -132,9 +162,10 @@ const AgendaList: React.FC<AgendaListProps> = ({
                                 compact
                             />
                         </div>
-                    </div>
-                );
+                    </div>,
+                ];
             })}
+            {nowIndex === agenda.length && nowMarker}
         </section>
     );
 };

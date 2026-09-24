@@ -173,6 +173,15 @@ describe('TodayPage', () => {
         expect(await screen.findByTestId('late-late')).toBeInTheDocument();
         expect(screen.queryByTestId('late-done')).not.toBeInTheDocument();
         expect(screen.queryByTestId('late-later')).not.toBeInTheDocument();
+        const order = Array.from(
+            screen.getByTestId('agenda-list').children
+        ).map((el) => el.getAttribute('data-testid'));
+        expect(order).toEqual([
+            'agenda-task-late',
+            'agenda-task-done',
+            'now-marker',
+            'agenda-task-later',
+        ]);
         jest.useRealTimers();
     });
 
