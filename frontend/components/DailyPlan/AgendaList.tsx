@@ -16,8 +16,8 @@ import {
     isItemDone,
     itemEnd,
     pickCurrentItem,
-    tint,
 } from './planUtils';
+import CalendarBadge from './CalendarBadge';
 
 interface AgendaListProps {
     items: DailyPlanItem[];
@@ -91,32 +91,21 @@ const AgendaList: React.FC<AgendaListProps> = ({
                                 {formatMinute(event.start_minute ?? 0)}–
                                 {formatMinute(event.end_minute ?? 0)}
                             </span>
-                            <div
-                                className={`flex min-w-0 flex-1 items-center gap-3 rounded-lg px-3 py-2 ${
-                                    event.color
-                                        ? ''
-                                        : 'bg-gray-100/70 dark:bg-gray-800/40'
-                                }`}
-                                style={{
-                                    backgroundColor: tint(event.color, 0.14),
-                                }}
-                                title={event.feed_name}
-                            >
+                            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-lg bg-gray-100/70 px-3 py-2 dark:bg-gray-800/40">
                                 <CalendarIcon
                                     className="h-5 w-5 shrink-0 text-gray-500"
-                                    style={
-                                        event.color
-                                            ? { color: event.color }
-                                            : undefined
-                                    }
                                     aria-label={t(
                                         'dailyPlan.calendarEvent',
                                         'Calendar event'
                                     )}
                                 />
-                                <span className="truncate text-sm text-gray-700 dark:text-gray-300">
+                                <span className="min-w-0 flex-1 truncate text-sm text-gray-700 dark:text-gray-300">
                                     {event.title}
                                 </span>
+                                <CalendarBadge
+                                    name={event.feed_name}
+                                    color={event.color}
+                                />
                             </div>
                         </div>,
                     ];

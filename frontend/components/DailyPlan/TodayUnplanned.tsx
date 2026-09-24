@@ -5,6 +5,7 @@ import { ClockIcon } from '@heroicons/react/24/outline';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import { PlanCandidates } from '../../utils/dailyPlanService';
 import { formatDuration, formatMinute } from './planUtils';
+import CalendarBadge from './CalendarBadge';
 
 interface TodayUnplannedProps {
     candidates: PlanCandidates | null;
@@ -124,18 +125,13 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
                                 {formatMinute(event.start_minute ?? 0)}–
                                 {formatMinute(event.end_minute ?? 0)}
                             </span>
-                            <span
-                                className="h-2 w-2 shrink-0 rounded-full bg-gray-400"
-                                style={
-                                    event.color
-                                        ? { backgroundColor: event.color }
-                                        : undefined
-                                }
-                                aria-hidden="true"
-                            />
-                            <span className="text-gray-800 dark:text-gray-200">
+                            <span className="min-w-0 truncate text-gray-800 dark:text-gray-200">
                                 {event.title}
                             </span>
+                            <CalendarBadge
+                                name={event.feed_name}
+                                color={event.color}
+                            />
                         </div>
                     ))}
                 </div>
