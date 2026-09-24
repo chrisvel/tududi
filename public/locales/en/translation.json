@@ -2230,6 +2230,8 @@
     "moreInInbox": "{{count}} more in the inbox",
     "sidebarProgress": "{{done}} of {{total}} planned tasks done",
     "oldTodayLink": "Go to the old Today page instead",
-    "nowMarker": "Now, {{time}}"
+    "nowMarker": "Now, {{time}}",
+    "beta": "Beta",
+    "betaHint": "The planned Today page is new. The classic page is still at the bottom of this page."
   }
 }

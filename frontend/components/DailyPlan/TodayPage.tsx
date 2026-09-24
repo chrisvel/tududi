@@ -299,6 +299,16 @@ const TodayPage: React.FC = () => {
                         <span className="text-lg font-light text-gray-500 dark:text-gray-400">
                             {dateLabel}
                         </span>
+                        <span
+                            className="self-center rounded-full border border-blue-300 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                            title={t(
+                                'dailyPlan.betaHint',
+                                'The planned Today page is new. The classic page is still at the bottom of this page.'
+                            )}
+                            data-testid="today-beta-badge"
+                        >
+                            {t('dailyPlan.beta', 'Beta')}
+                        </span>
                     </div>
                     {started && (
                         <div className="flex items-center gap-3">
