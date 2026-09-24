@@ -65,7 +65,7 @@ const AgendaList: React.FC<AgendaListProps> = ({
             })}
             data-testid="now-marker"
         >
-            <span className="w-32 shrink-0 text-xs font-medium text-red-500/80 dark:text-red-400/70">
+            <span className="w-12 shrink-0 text-xs font-medium text-red-500/80 sm:w-32 dark:text-red-400/70">
                 {formatMinute(now)}
             </span>
             <div className="relative flex-1">
@@ -85,9 +85,9 @@ const AgendaList: React.FC<AgendaListProps> = ({
                         ...marker,
                         <div
                             key={`event-${event.feed_uid}-${event.uid}-${event.start}`}
-                            className="flex items-center gap-3"
+                            className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3"
                         >
-                            <span className="w-32 shrink-0 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            <span className="shrink-0 whitespace-nowrap text-xs text-gray-500 sm:w-32 sm:text-sm dark:text-gray-400">
                                 {formatMinute(event.start_minute ?? 0)}–
                                 {formatMinute(event.end_minute ?? 0)}
                             </span>
@@ -123,11 +123,11 @@ const AgendaList: React.FC<AgendaListProps> = ({
                     ...marker,
                     <div
                         key={`task-${item.task_uid}`}
-                        className="flex items-start gap-3"
+                        className="flex flex-col gap-1 sm:flex-row sm:items-start sm:gap-3"
                         data-testid={`agenda-task-${item.task_uid}`}
                     >
                         <span
-                            className={`flex w-32 shrink-0 items-center gap-1.5 whitespace-nowrap pt-3 text-sm ${
+                            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs sm:w-32 sm:pt-3 sm:text-sm ${
                                 late
                                     ? 'font-medium text-amber-700 dark:text-amber-400'
                                     : isCurrent

@@ -153,7 +153,7 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
             <div className="flex flex-wrap items-center gap-5">
                 <Link
                     to="/today/plan"
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-blue-600 px-5 text-[15px] font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     data-testid="plan-your-day"
                 >
                     <ClockIcon className="h-5 w-5" />

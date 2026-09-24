@@ -757,7 +757,7 @@ const PlanMyDay: React.FC = () => {
                                 type="button"
                                 onClick={startDraft}
                                 disabled={drafting || !date}
-                                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium text-violet-700 hover:bg-violet-50 disabled:opacity-60 dark:text-violet-300 dark:hover:bg-violet-900/30"
+                                className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium text-violet-700 hover:bg-violet-50 disabled:opacity-60 dark:text-violet-300 dark:hover:bg-violet-900/30"
                                 data-testid="ai-draft-button"
                             >
                                 <SparklesIcon
@@ -822,7 +822,7 @@ const PlanMyDay: React.FC = () => {
                                 onClick={() => setMoreOpen((open) => !open)}
                                 aria-expanded={moreOpen}
                                 aria-label={t('dailyPlan.more', 'More options')}
-                                className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                                className="flex h-[34px] w-[34px] items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
                                 data-testid="plan-more"
                             >
                                 <EllipsisHorizontalIcon className="h-5 w-5" />
@@ -871,7 +871,7 @@ const PlanMyDay: React.FC = () => {
                             type="button"
                             onClick={() => leave(true)}
                             disabled={leaving || !date}
-                            className="min-h-[36px] rounded-lg bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                            className="min-h-[34px] rounded-lg px-3.5 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             data-testid="start-my-day"
                         >
                             {started

@@ -372,7 +372,7 @@ const TodayPage: React.FC = () => {
                             </span>
                             <Link
                                 to="/today/plan"
-                                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg bg-gray-100 px-4 text-sm text-gray-900 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
+                                className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
                             >
                                 <ArrowPathIcon className="h-4 w-4" />
                                 {t('dailyPlan.replan', 'Replan')}

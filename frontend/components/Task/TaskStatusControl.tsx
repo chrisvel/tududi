@@ -128,8 +128,8 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
         ? 'rounded-lg'
         : 'rounded-full';
     const completionButtonPaddingClass = isSquareVariant
-        ? 'px-2.5 py-1'
-        : 'px-3 py-1';
+        ? 'px-2 py-1 sm:px-2.5'
+        : 'px-2 py-1 sm:px-3';
     const quickButtonPaddingClass = isSquareVariant ? 'px-1.5' : 'px-2';
     const hoverPaddingClass = isSquareVariant
         ? 'md:group-hover:px-1.5'
@@ -301,13 +301,15 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     };
 
     const quickButtonBaseClasses = `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200`;
+    // On phones the start/done shortcuts are hidden (both stay in the menu)
+    // so the task title keeps its width.
     const quickButtonClasses = hoverRevealQuickActions
-        ? `${quickButtonBaseClasses} ${quickButtonPaddingClass} md:px-0 md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0 ${hoverPaddingClass} md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:border-l`
-        : `${quickButtonBaseClasses} ${quickButtonPaddingClass}`;
+        ? `${quickButtonBaseClasses} ${quickButtonPaddingClass} md:px-0 md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0 ${hoverPaddingClass} md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:border-l max-sm:hidden`
+        : `${quickButtonBaseClasses} ${quickButtonPaddingClass} max-sm:hidden`;
 
     const quickCompleteClasses = hoverRevealQuickActions
-        ? `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200 ${quickButtonPaddingClass} md:px-0 md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0 ${hoverPaddingClass} md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:border-l`
-        : `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200 ${quickButtonPaddingClass}`;
+        ? `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200 ${quickButtonPaddingClass} md:px-0 md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0 ${hoverPaddingClass} md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:border-l max-sm:hidden`
+        : `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200 ${quickButtonPaddingClass} max-sm:hidden`;
 
     const statusDisplayConfig: Record<
         ReturnType<typeof getStatusString>,
@@ -383,7 +385,12 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                     }
                 >
                     <CompletionIcon className={iconSizeClass} />
-                    {!hideLabel && completionButtonLabel}
+                    {!hideLabel && (
+                        // Icon only on phones so the task title keeps its room.
+                        <span className="sr-only sm:not-sr-only">
+                            {completionButtonLabel}
+                        </span>
+                    )}
                 </button>
                 {showQuickStartButton && (
                     <button
