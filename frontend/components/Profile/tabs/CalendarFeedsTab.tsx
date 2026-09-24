@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { CalendarDaysIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../../Shared/ToastContext';
 import ConfirmDialog from '../../Shared/ConfirmDialog';
+import ColorPicker from '../../Shared/ColorPicker';
 import {
     CalendarFeed,
     createCalendarFeed,
@@ -21,7 +22,7 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState('');
     const [url, setUrl] = useState('');
-    const [color, setColor] = useState('#6b7280');
+    const [color, setColor] = useState('');
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
     const [toDelete, setToDelete] = useState<CalendarFeed | null>(null);
@@ -46,7 +47,11 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
         setFormError(null);
         setSaving(true);
         try {
-            const feed = await createCalendarFeed({ name, url, color });
+            const feed = await createCalendarFeed({
+                name,
+                url,
+                color: color || null,
+            });
             setFeeds((current) => [...current, feed]);
             setName('');
             setUrl('');
@@ -217,20 +222,11 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
                         )}
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <label
-                        htmlFor="calendar-feed-color"
-                        className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
+                <div>
+                    <span className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {t('profile.calendars.color', 'Color')}
-                    </label>
-                    <input
-                        id="calendar-feed-color"
-                        type="color"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}
-                        className="h-8 w-12 cursor-pointer rounded border border-gray-300 dark:border-gray-600"
-                    />
+                    </span>
+                    <ColorPicker value={color} onChange={setColor} />
                 </div>
                 {formError && (
                     <p

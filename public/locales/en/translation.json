@@ -2227,6 +2227,7 @@
     "noCandidates": "Nothing here. Nice.",
     "addAsTask": "Add as task",
     "moreInInbox": "{{count}} more in the inbox",
-    "sidebarProgress": "{{done}} of {{total}} planned tasks done"
+    "sidebarProgress": "{{done}} of {{total}} planned tasks done",
+    "oldTodayLink": "Go to the old Today page instead"
   }
 }

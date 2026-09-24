@@ -226,8 +226,8 @@ const TodayPage: React.FC = () => {
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-10">
             <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
-                <div className="flex flex-wrap items-end gap-x-3 gap-y-2">
-                    <div className="flex flex-1 items-end gap-2">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <div className="flex flex-1 items-baseline gap-2">
                         <h2 className="text-2xl font-light">
                             {t('tasks.today', 'Today')},
                         </h2>
@@ -319,6 +319,19 @@ const TodayPage: React.FC = () => {
                         onPushLater={handlePushLater}
                         onAdd={handleAdd}
                     />
+                )}
+
+                {planResponse && (
+                    <Link
+                        to="/today_legacy"
+                        className="self-center pt-4 text-xs text-gray-400 underline-offset-2 hover:text-gray-600 hover:underline dark:text-gray-500 dark:hover:text-gray-300"
+                        data-testid="old-today-link"
+                    >
+                        {t(
+                            'dailyPlan.oldTodayLink',
+                            'Go to the old Today page instead'
+                        )}
+                    </Link>
                 )}
             </div>
         </div>
