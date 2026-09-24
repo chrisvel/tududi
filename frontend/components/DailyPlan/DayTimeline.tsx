@@ -9,6 +9,7 @@ import {
     formatDuration,
     formatMinute,
     freeGaps,
+    tint,
 } from './planUtils';
 
 export const PX_PER_HOUR = 64;
@@ -223,6 +224,16 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                     })}
 
                     {timedEvents.map((event) => {
+                        // Long blocks (a workday) get a fainter tint so they
+                        // do not flood the timeline.
+                        const long =
+                            (event.end_minute ?? 0) -
+                                (event.start_minute ?? 0) >
+                            180;
+                        const background = tint(
+                            event.color,
+                            !event.busy ? 0.08 : long ? 0.09 : 0.18
+                        );
                         const start = Math.max(
                             range.start,
                             event.start_minute as number
@@ -240,12 +251,28 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                             <div
                                 key={`${event.feed_uid}-${event.uid}-${event.start}`}
                                 className={`absolute left-1 right-1 flex items-start gap-2 overflow-hidden rounded-md px-2.5 text-[13px] ${
-                                    event.busy
-                                        ? 'bg-gray-100/80 text-gray-500 dark:bg-gray-800/50 dark:text-gray-400'
-                                        : 'bg-gray-50 text-gray-400 dark:bg-gray-800/20 dark:text-gray-500'
+                                    background
+                                        ? event.busy
+                                            ? 'text-gray-700 dark:text-gray-300'
+                                            : 'text-gray-500 dark:text-gray-400'
+                                        : event.busy
+                                          ? 'bg-gray-100/80 text-gray-500 dark:bg-gray-800/50 dark:text-gray-400'
+                                          : 'bg-gray-50 text-gray-400 dark:bg-gray-800/20 dark:text-gray-500'
                                 } ${blockHeight < 40 ? 'items-center' : 'py-1.5'}`}
-                                style={{ top: top + 1, height: blockHeight }}
+                                style={{
+                                    top: top + 1,
+                                    height: blockHeight,
+                                    backgroundColor: background,
+                                }}
+                                title={event.feed_name}
                             >
+                                {event.color && (
+                                    <span
+                                        className={`h-2 w-2 shrink-0 rounded-full ${blockHeight < 40 ? '' : 'mt-1'}`}
+                                        style={{ backgroundColor: event.color }}
+                                        aria-hidden="true"
+                                    />
+                                )}
                                 <span className="shrink-0 text-gray-400 dark:text-gray-500">
                                     {formatMinute(event.start_minute as number)}
                                 </span>

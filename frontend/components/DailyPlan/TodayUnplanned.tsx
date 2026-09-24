@@ -118,12 +118,21 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
                     {timedEvents.map((event) => (
                         <div
                             key={`${event.feed_uid}-${event.uid}-${event.start}`}
-                            className="flex gap-3 text-sm"
+                            className="flex items-center gap-3 text-sm"
                         >
                             <span className="w-28 shrink-0 text-gray-500 dark:text-gray-400">
                                 {formatMinute(event.start_minute ?? 0)}–
                                 {formatMinute(event.end_minute ?? 0)}
                             </span>
+                            <span
+                                className="h-2 w-2 shrink-0 rounded-full bg-gray-400"
+                                style={
+                                    event.color
+                                        ? { backgroundColor: event.color }
+                                        : undefined
+                                }
+                                aria-hidden="true"
+                            />
                             <span className="text-gray-800 dark:text-gray-200">
                                 {event.title}
                             </span>

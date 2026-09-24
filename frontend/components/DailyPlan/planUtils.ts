@@ -241,3 +241,14 @@ export const pickCurrentItem = (
     const late = open.find((item) => item.start_minute !== null);
     return late ? { item: late, state: 'anytime' } : null;
 };
+
+// A soft tint of a calendar's colour (#rrggbb) for event backgrounds.
+export const tint = (
+    color: string | null | undefined,
+    alpha: number
+): string | undefined => {
+    const match = color ? /^#([0-9a-f]{6})$/i.exec(color) : null;
+    if (!match) return undefined;
+    const value = parseInt(match[1], 16);
+    return `rgba(${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}, ${alpha})`;
+};
