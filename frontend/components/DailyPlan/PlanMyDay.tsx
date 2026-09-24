@@ -530,7 +530,7 @@ const PlanMyDay: React.FC = () => {
 
     if (error) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-gray-50 p-6 dark:bg-gray-950">
+            <div className="flex items-center justify-center p-6">
                 <p className="text-red-600 dark:text-red-400">{error}</p>
             </div>
         );
@@ -544,14 +544,14 @@ const PlanMyDay: React.FC = () => {
             onDragEnd={handleDragEnd}
             onDragCancel={() => setDragLabel(null)}
         >
-            <div className="flex h-screen flex-col bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-                <header className="flex shrink-0 flex-wrap items-center gap-x-6 gap-y-3 border-b border-gray-200 bg-white px-4 py-3 sm:px-8 dark:border-gray-800 dark:bg-gray-900">
+            <div className="mx-auto flex h-full w-full max-w-7xl flex-col gap-4 px-4 pb-4 pt-4 sm:px-6 lg:px-8">
+                <header className="flex shrink-0 flex-wrap items-center gap-x-6 gap-y-3">
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <h1 className="text-xl font-normal">
+                        <h2 className="text-2xl font-light">
                             {t('dailyPlan.planTitle', 'Plan {{date}}', {
                                 date: dateLabel,
                             })}
-                        </h1>
+                        </h2>
                         <span className="text-[13px] text-gray-600 dark:text-gray-400">
                             {mode === 'timeline'
                                 ? t(
@@ -654,8 +654,8 @@ const PlanMyDay: React.FC = () => {
                         {t('common.loading', 'Loading...')}
                     </p>
                 ) : (
-                    <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-                        <aside className="shrink-0 overflow-y-auto border-b border-gray-200 bg-white px-4 py-5 sm:px-6 md:w-[440px] md:border-b-0 md:border-r dark:border-gray-800 dark:bg-gray-900">
+                    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto md:flex-row md:overflow-hidden">
+                        <aside className="shrink-0 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-5 md:w-[420px] md:overflow-y-auto dark:border-gray-800 dark:bg-gray-900">
                             <CandidateList
                                 candidates={candidates}
                                 planned={plannedMap}
@@ -676,7 +676,7 @@ const PlanMyDay: React.FC = () => {
                                 today={date ?? ''}
                             />
                         </aside>
-                        <section className="min-w-0 flex-1 overflow-y-auto px-4 py-5 sm:px-8">
+                        <section className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-6 md:overflow-y-auto dark:border-gray-800 dark:bg-gray-900">
                             {mode === 'timeline' ? (
                                 <DayTimeline
                                     items={items}

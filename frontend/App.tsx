@@ -348,17 +348,6 @@ const App: React.FC = () => {
                             element={<SubscriptionRequired />}
                         />
                         <Route path="/demo" element={<DemoEntry />} />
-                        {/* Full-screen planner, outside the sidebar layout. */}
-                        <Route
-                            path="/today/plan"
-                            element={
-                                <SubscriptionGate>
-                                    <Suspense fallback={<LoadingScreen />}>
-                                        <PlanMyDay />
-                                    </Suspense>
-                                </SubscriptionGate>
-                            }
-                        />
                         <Route
                             element={
                                 <SubscriptionGate>
@@ -381,6 +370,23 @@ const App: React.FC = () => {
                             <Route
                                 path="/today_legacy"
                                 element={<TasksToday />}
+                            />
+                            <Route
+                                path="/today/plan"
+                                element={
+                                    <Suspense
+                                        fallback={
+                                            <div className="p-4">
+                                                {i18n.t(
+                                                    'common.loading',
+                                                    'Loading...'
+                                                )}
+                                            </div>
+                                        }
+                                    >
+                                        <PlanMyDay />
+                                    </Suspense>
+                                }
                             />
                             <Route
                                 path="/task/:uid"
