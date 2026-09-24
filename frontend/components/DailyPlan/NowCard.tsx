@@ -84,7 +84,7 @@ const NowCard: React.FC<NowCardProps> = ({
 
     return (
         <section
-            className="flex flex-col gap-4 rounded-2xl bg-blue-50 px-6 py-5 sm:flex-row sm:items-center dark:bg-blue-900/20"
+            className="flex flex-col gap-4 rounded-2xl border border-blue-300/50 bg-blue-50/50 px-6 py-5 sm:flex-row sm:items-center dark:border-blue-500/25 dark:bg-blue-900/10"
             data-testid="now-card"
         >
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
