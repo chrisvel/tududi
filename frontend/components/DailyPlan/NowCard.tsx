@@ -101,12 +101,12 @@ const NowCard: React.FC<NowCardProps> = ({
                     </span>
                 )}
             </div>
-            <div className="flex gap-3">
+            <div className="flex items-center gap-2">
                 <button
                     type="button"
                     onClick={() => onPushLater(item)}
                     disabled={isBusy}
-                    className="min-h-[44px] rounded-lg bg-white/80 px-4 text-sm text-gray-700 hover:bg-white disabled:opacity-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+                    className="min-h-[30px] rounded-md bg-white/80 px-2.5 text-xs text-gray-700 hover:bg-white disabled:opacity-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
                 >
                     {t('dailyPlan.pushLater', 'Push to later')}
                 </button>
@@ -114,7 +114,7 @@ const NowCard: React.FC<NowCardProps> = ({
                     type="button"
                     onClick={() => onDone(item)}
                     disabled={isBusy}
-                    className="min-h-[44px] rounded-lg bg-blue-600 px-5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="min-h-[30px] rounded-md bg-blue-600 px-3 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
                     data-testid="now-card-done"
                 >
                     {t('dailyPlan.markDone', 'Mark done')}
