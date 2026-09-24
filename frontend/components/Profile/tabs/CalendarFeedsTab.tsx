@@ -42,8 +42,20 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
 
     if (!isActive) return null;
 
-    const handleAdd = async (event: React.FormEvent) => {
-        event.preventDefault();
+    // This tab renders inside the profile page's own <form>, so it must not
+    // nest a form or use submit buttons: that would submit (and reload) the
+    // whole profile page.
+    const handleAdd = async () => {
+        if (saving) return;
+        if (!name.trim() || !url.trim()) {
+            setFormError(
+                t(
+                    'profile.calendars.missingFields',
+                    'Add a name and the calendar address'
+                )
+            );
+            return;
+        }
         setFormError(null);
         setSaving(true);
         try {
@@ -165,9 +177,17 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
                 ))}
             </div>
 
-            <form
-                onSubmit={handleAdd}
+            <section
                 className="space-y-4 rounded-lg border border-gray-200 p-5 dark:border-gray-700"
+                onKeyDown={(event) => {
+                    if (
+                        event.key === 'Enter' &&
+                        event.target instanceof HTMLInputElement
+                    ) {
+                        event.preventDefault();
+                        void handleAdd();
+                    }
+                }}
             >
                 <h4 className="text-base font-medium text-gray-900 dark:text-white">
                     {t('profile.calendars.addTitle', 'Connect a calendar')}
@@ -188,7 +208,6 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
                             'profile.calendars.namePlaceholder',
                             'Work, Family…'
                         )}
-                        required
                         maxLength={100}
                         className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                     />
@@ -208,7 +227,6 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         placeholder="https://calendar.google.com/calendar/ical/…/basic.ics"
-                        required
                         className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 font-mono text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                         aria-describedby="calendar-feed-url-help"
                     />
@@ -237,7 +255,8 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
                     </p>
                 )}
                 <button
-                    type="submit"
+                    type="button"
+                    onClick={() => void handleAdd()}
                     disabled={saving}
                     className="inline-flex min-h-[40px] items-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
                 >
@@ -248,7 +267,7 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
                           )
                         : t('profile.calendars.add', 'Connect')}
                 </button>
-            </form>
+            </section>
 
             {toDelete && (
                 <ConfirmDialog

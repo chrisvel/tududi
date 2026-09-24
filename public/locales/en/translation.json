@@ -627,7 +627,8 @@
       "add": "Connect",
       "removeTitle": "Remove calendar",
       "removeMessage": "Stop showing \"{{name}}\" on Today? The calendar itself is not touched.",
-      "removeConfirm": "Remove"
+      "removeConfirm": "Remove",
+      "missingFields": "Add a name and the calendar address"
     }
   },
   "productivity": {
