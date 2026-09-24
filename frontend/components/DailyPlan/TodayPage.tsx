@@ -340,7 +340,7 @@ const TodayPage: React.FC = () => {
                             {dateLabel}
                         </span>
                         <span
-                            className="self-center rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                            className="self-center rounded-full border border-blue-300/50 bg-blue-50 px-2 py-0.5 dark:border-blue-500/30 text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
                             title={t(
                                 'dailyPlan.betaHint',
                                 'The planned Today page is new. The classic page is still at the bottom of this page.'
