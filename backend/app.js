@@ -343,6 +343,8 @@ const errorHandler = require('./shared/middleware/errorHandler');
 const adminModule = require('./modules/admin');
 const areasModule = require('./modules/areas');
 const goalsModule = require('./modules/goals');
+const dailyPlanModule = require('./modules/daily-plan');
+const calendarFeedsModule = require('./modules/calendar-feeds');
 const authModule = require('./modules/auth');
 const backupModule = require('./modules/backup');
 const featureFlagsModule = require('./modules/feature-flags');
@@ -472,6 +474,8 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, sharesModule.routes);
     app.use(basePath, areasModule.routes);
     app.use(basePath, goalsModule.routes);
+    app.use(basePath, dailyPlanModule.routes);
+    app.use(basePath, calendarFeedsModule.routes);
     app.use(basePath, notesModule.routes);
     app.use(basePath, tagsModule.routes);
     app.use(basePath, usersModule.routes);

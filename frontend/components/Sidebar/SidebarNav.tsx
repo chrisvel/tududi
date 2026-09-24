@@ -11,6 +11,7 @@ import {
     UsersIcon,
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
+import { useDailyPlanProgress } from '../../store/dailyPlanStore';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
 import { SidebarLinkId, sortByOrder } from '../../utils/sidebarLayout';
 
@@ -42,6 +43,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     );
 
     const inboxItemsCount = store.inboxStore.pagination.total;
+    const planProgress = useDailyPlanProgress((state) => state.progress);
 
     useEffect(() => {
         loadInboxItemsToStore(false).catch(console.error);
@@ -110,12 +112,10 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         'text-gray-700 dark:text-[oklch(75%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)]';
 
     const isActiveLink = (path: string, query?: string): boolean => {
-        if (
-            path === '/inbox' ||
-            path === '/today' ||
-            path === '/calendar' ||
-            path === '/everyone'
-        ) {
+        if (path === '/today') {
+            return location.pathname.startsWith('/today');
+        }
+        if (path === '/inbox' || path === '/calendar' || path === '/everyone') {
             return location.pathname === path;
         }
         if (path.startsWith('/upcoming')) {
@@ -156,6 +156,18 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                         <span className="flex-1 text-left text-[13.5px]">
                             {link.title}
                         </span>
+                        {link.path === '/today' && planProgress && (
+                            <span
+                                className="text-[12px] text-gray-400 dark:text-[oklch(60%_0.01_250)]"
+                                aria-label={t(
+                                    'dailyPlan.sidebarProgress',
+                                    '{{done}} of {{total}} planned tasks done',
+                                    planProgress
+                                )}
+                            >
+                                {planProgress.done}/{planProgress.total}
+                            </span>
+                        )}
                         {link.path === '/inbox' && inboxItemsCount > 0 && (
                             <span className="text-[12px] text-gray-400 dark:text-[oklch(60%_0.01_250)]">
                                 {inboxItemsCount > 99 ? '99+' : inboxItemsCount}

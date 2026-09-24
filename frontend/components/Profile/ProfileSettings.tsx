@@ -20,6 +20,7 @@ import {
     CommandLineIcon,
     CpuChipIcon,
     CalendarIcon,
+    CalendarDaysIcon,
     SparklesIcon,
     SwatchIcon,
     CreditCardIcon,
@@ -61,6 +62,7 @@ import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
 import McpTab from './tabs/McpTab';
 import CalDAVTab from './tabs/CalDAVTab';
+import CalendarFeedsTab from './tabs/CalendarFeedsTab';
 import AIAssistantTab from './tabs/AIAssistantTab';
 import BillingTab from './tabs/BillingTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
@@ -113,6 +115,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'telegram',
             'keyboard-shortcuts',
             'caldav',
+            'calendars',
             'mcp',
             'ai-assistant',
             'features',
@@ -1453,6 +1456,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <CommandLineIcon className="w-5 h-5" />,
         },
         {
+            id: 'calendars',
+            name: t('profile.tabs.calendars', 'Calendars'),
+            icon: <CalendarDaysIcon className="w-5 h-5" />,
+        },
+        {
             id: 'caldav',
             name: t('profile.tabs.caldav', 'CalDAV Sync'),
             icon: <CalendarIcon className="w-5 h-5" />,
@@ -1783,11 +1791,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 visibleSections: {
                                                     ...prev.sidebar_settings
                                                         ?.visibleSections,
-                                                    [key]: !(prev
-                                                        .sidebar_settings
-                                                        ?.visibleSections?.[
-                                                        key
-                                                    ] !== false),
+                                                    [key]: !(
+                                                        prev.sidebar_settings
+                                                            ?.visibleSections?.[
+                                                            key
+                                                        ] !== false
+                                                    ),
                                                 },
                                             },
                                         }))
@@ -1899,6 +1908,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <McpTab isActive={activeTab === 'mcp'} />
 
                                 <CalDAVTab isActive={activeTab === 'caldav'} />
+
+                                <CalendarFeedsTab
+                                    isActive={activeTab === 'calendars'}
+                                />
 
                                 <BillingTab
                                     isActive={activeTab === 'billing'}

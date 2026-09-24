@@ -88,6 +88,9 @@ const CalDAVOccurrenceOverride = require('./caldav_occurrence_override')(
 );
 const CalDAVRemoteCalendar = require('./caldav_remote_calendar')(sequelize);
 const CalendarToken = require('./calendar_token')(sequelize);
+const CalendarFeed = require('./calendar_feed')(sequelize);
+const DailyPlan = require('./daily_plan')(sequelize);
+const DailyPlanItem = require('./daily_plan_item')(sequelize);
 const Goal = require('./goal')(sequelize);
 const Person = require('./person')(sequelize);
 const UserProjectArea = require('./user_project_area')(sequelize);
@@ -344,6 +347,23 @@ User.hasMany(CalendarToken, {
 });
 CalendarToken.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// Day plans and read-only calendar feeds
+User.hasMany(DailyPlan, { foreignKey: 'user_id', as: 'DailyPlans' });
+DailyPlan.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+DailyPlan.hasMany(DailyPlanItem, {
+    foreignKey: 'daily_plan_id',
+    as: 'Items',
+    onDelete: 'CASCADE',
+});
+DailyPlanItem.belongsTo(DailyPlan, {
+    foreignKey: 'daily_plan_id',
+    as: 'DailyPlan',
+});
+Task.hasMany(DailyPlanItem, { foreignKey: 'task_id', as: 'DailyPlanItems' });
+DailyPlanItem.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+User.hasMany(CalendarFeed, { foreignKey: 'user_id', as: 'CalendarFeeds' });
+CalendarFeed.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+
 // UserProjectArea associations (per-user area placement for shared projects)
 User.hasMany(UserProjectArea, {
     foreignKey: 'user_id',
@@ -541,6 +561,9 @@ module.exports = {
     CalDAVOccurrenceOverride,
     CalDAVRemoteCalendar,
     CalendarToken,
+    CalendarFeed,
+    DailyPlan,
+    DailyPlanItem,
     Person,
     UserProjectArea,
     RateLimit,

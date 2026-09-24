@@ -299,6 +299,12 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - The Everyone board
     - Admin, user and guest roles with capabilities, and the admin Access page
 
+29. **[Daily Plan](docs/20-daily-plan.md)**
+    - Today in two modes: planning (`/today/plan`) and doing (`/today`); classic page at `/today_legacy`
+    - Timeline and list planning, task estimates, the Now card
+    - Read-only iCal calendar feeds (Google secret address), encrypted and SSRF-guarded
+    - Daily plan API and schema
+
 ---
 
 ## Project Overview

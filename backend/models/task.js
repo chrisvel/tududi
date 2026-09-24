@@ -32,6 +32,14 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            estimated_minutes: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                validate: {
+                    min: 5,
+                    max: 720,
+                },
+            },
             priority: {
                 type: DataTypes.INTEGER,
                 allowNull: true,

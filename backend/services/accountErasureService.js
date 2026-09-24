@@ -33,6 +33,9 @@ const {
     CalDAVOccurrenceOverride,
     CalDAVRemoteCalendar,
     CalendarToken,
+    CalendarFeed,
+    DailyPlan,
+    DailyPlanItem,
     Person,
     UserProjectArea,
     BillingAccount,
@@ -135,7 +138,27 @@ async function eraseUserAccount(userId) {
                 where: { task_id: taskIds },
                 ...tx,
             });
+            // Other people may have planned one of these (shared) tasks.
+            await DailyPlanItem.destroy({
+                where: { task_id: taskIds },
+                ...tx,
+            });
         }
+
+        const plans = await DailyPlan.findAll({
+            where: { user_id: userId },
+            attributes: ['id'],
+            raw: true,
+            ...tx,
+        });
+        if (plans.length > 0) {
+            await DailyPlanItem.destroy({
+                where: { daily_plan_id: plans.map((p) => p.id) },
+                ...tx,
+            });
+        }
+        await DailyPlan.destroy(byUser);
+        await CalendarFeed.destroy(byUser);
 
         const calendars = await CalDAVCalendar.findAll({
             where: { user_id: userId },

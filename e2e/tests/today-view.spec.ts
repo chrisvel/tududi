@@ -70,7 +70,7 @@ test.describe('Today', () => {
         }
 
         // Navigate to today page
-        await page.goto(`${appUrl}/today`);
+        await page.goto(`${appUrl}/today_legacy`);
 
         // Wait for Planned section to appear (indicates page loaded)
         const plannedSection = page.getByTestId('planned-section');
@@ -100,11 +100,7 @@ test.describe('Today', () => {
         }
     });
 
-    test('Overdue: shows overdue tasks', async ({
-        page,
-        context,
-        baseURL,
-    }) => {
+    test('Overdue: shows overdue tasks', async ({ page, context, baseURL }) => {
         // Login first
         await loginViaUI(page, baseURL);
 
@@ -133,7 +129,7 @@ test.describe('Today', () => {
         }
 
         // Navigate to today page
-        await page.goto(`${appUrl}/today`);
+        await page.goto(`${appUrl}/today_legacy`);
 
         // Check if Overdue section exists using data-testid
         const overdueSection = page.getByTestId('overdue-section');
@@ -158,11 +154,7 @@ test.describe('Today', () => {
         }
     });
 
-    test('Due Today: shows tasks', async ({
-        page,
-        context,
-        baseURL,
-    }) => {
+    test('Due Today: shows tasks', async ({ page, context, baseURL }) => {
         // Login first
         await loginViaUI(page, baseURL);
 
@@ -191,7 +183,7 @@ test.describe('Today', () => {
         }
 
         // Navigate to today page
-        await page.goto(`${appUrl}/today`);
+        await page.goto(`${appUrl}/today_legacy`);
 
         // Check if Due Today section exists using data-testid
         const dueTodaySection = page.getByTestId('due-today-section');
@@ -215,16 +207,13 @@ test.describe('Today', () => {
         }
     });
 
-    test('Collapse/expand sections', async ({
-        page,
-        baseURL,
-    }) => {
+    test('Collapse/expand sections', async ({ page, baseURL }) => {
         // Login first
         await loginViaUI(page, baseURL);
 
         const appUrl =
             baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
-        await page.goto(`${appUrl}/today`);
+        await page.goto(`${appUrl}/today_legacy`);
 
         // Test Planned section collapse/expand if it exists using data-testid
         const plannedHeader = page.getByTestId('planned-section-header');
