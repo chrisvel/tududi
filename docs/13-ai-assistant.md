@@ -72,6 +72,9 @@ Each feature's `max_tokens` cap can be overridden independently. Unset falls bac
 LLM_MAX_TOKENS_DAILY_BRIEF=1500       # default 1500
 LLM_MAX_TOKENS_TASK_INSIGHTS=1000     # default 1000
 LLM_MAX_TOKENS_PROJECT_INSIGHTS=600   # default 600
+LLM_MAX_TOKENS_DAY_PLAN=6000          # default 6000 (Draft with AI)
+LLM_MAX_TOKENS_ESTIMATES=4000         # default 4000 (task length guesses)
+LLM_MAX_TOKENS_WRAP_UP=3000           # default 3000 (day wrap-up)
 ```
 
 Non-numeric or non-positive values are ignored and fall back to the default.
@@ -201,6 +204,10 @@ Appears in the project detail panel. Generated on demand and cached per project.
 
 **Dismissing:** `PATCH /api/ai-assistant/project-insights/:projectUid/dismissed` with `{ "dismissed": true }` hides the panel.
 
+### Day planning
+
+Help in the planner and on Today (see [Daily Plan](20-daily-plan.md#ai-help)): **Draft with AI**, length guesses for tasks without an estimate, and an end-of-day wrap-up. It follows the same per-user **AI assistant** switch as everything above; with it off, the UI hides these and the endpoints return `403`. Each draft, estimate batch or wrap-up costs one AI credit in hosted mode. The planning tips ("30m free at 09:30 fits …") are worked out locally and never call the model.
+
 ---
 
 ## API Endpoints
@@ -215,6 +222,9 @@ Appears in the project detail panel. Generated on demand and cached per project.
 | `GET` | `/api/ai-assistant/project-insights/:projectUid` | Return cached project insights (or null) |
 | `POST` | `/api/ai-assistant/project-insights` | Generate project insights (body: `ProjectInsightsRequest`) |
 | `PATCH` | `/api/ai-assistant/project-insights/:projectUid/dismissed` | Set `dismissed` flag on project insights |
+| `POST` | `/api/daily-plan/ai/draft` | Draft the day (body: `{ date, mode: "fill" \| "replace" }`); returned, not saved |
+| `POST` | `/api/daily-plan/ai/estimates` | Guess lengths for up to 40 tasks (body: `{ task_uids }`) |
+| `POST` | `/api/daily-plan/:date/ai/wrap-up` | Generate and store the day's wrap-up |
 | `GET` | `/api/profile/ai-settings` | Return the caller's AI provider settings (API key masked) |
 | `PUT` | `/api/profile/ai-settings` | Set/clear the caller's `ai_api_key`/`ai_base_url`/`ai_model` |
 

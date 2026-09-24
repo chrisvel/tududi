@@ -65,6 +65,7 @@ Profile → **Calendars** connects read-only iCal feeds, such as Google Calendar
 |-------|---------|
 | `daily_plans` | One row per user per local date (`plan_date`), with `started_at` set by **Start my day** |
 | `daily_plan_items` | The tasks in a plan: `position`, `start_minute` (minutes after local midnight, null for untimed) and `duration_minutes` |
+| `daily_plans.ai_wrap_up` | The stored AI wrap-up for that day (JSON, optional) |
 | `calendar_feeds` | Name, color, encrypted URL, host, last fetch time and last error |
 
 Plans and feeds are not included in backups: plans are short-lived, and feed addresses are encrypted with this server's key.
@@ -79,11 +80,36 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | GET | `/api/daily-plan/candidates` | `{ overdue, due_today, in_progress, suggested, inbox, inbox_count }`, each task in one group only |
 | PUT | `/api/daily-plan/:date` | Replaces all items: `{ items: [{ task_uid, start_minute, duration_minutes }] }`, in order. Rejects overlaps, slots past midnight, duplicates and tasks the user cannot see |
 | POST | `/api/daily-plan/:date/start` | Marks the day started |
+| POST | `/api/daily-plan/:date/carry-over` | Appends `{ task_uids }` to that day's plan without a time, skipping tasks already there |
 | DELETE | `/api/daily-plan/:date` | Clears the plan. `:date` may be `today` |
 | GET/POST/PATCH/DELETE | `/api/calendar-feeds[/:uid]` | Manage feeds. POST fetches the feed once and refuses it if it cannot be read |
 | GET | `/api/calendar-feeds/events?date=` | `{ date, events, errors }` for that day |
 
 ---
+
+## AI help
+
+Everything in this section appears only while the **AI assistant** is switched on for the user (Profile → Features), the same switch as the Daily Brief. With it off the planner and Today look exactly as described above, and the AI endpoints return `403`.
+
+- **Planning tips** (planner and Today): worked out locally, no model call, at most three at a time.
+  - Missed blocks: offers **Move to next free slots**.
+  - Overbooking: "Planned 3h 30m, only 1h 25m free: 2h 5m over".
+  - A free gap that fits an unplanned task: offers **Place it**.
+  - No break for three hours or more.
+  - Today shows only the missed-block and gap tips.
+- **Draft with AI** (planner header):
+  - On an empty plan it drafts straight away; otherwise it offers **Fill free time** (keeps what is planned) or **Start over**.
+  - The server gives the model the candidates (up to 60), busy meetings, free gaps, the current time and the user's "About you".
+  - The server then cleans up the answer (`sanitizeDraft` in `backend/modules/daily-plan/ai.js`): only known tasks, 15-minute grid, never in the past or on top of a meeting or another block. A clash moves to the next free slot, or loses its time.
+  - The draft is applied locally, so it autosaves like any edit. **Undo** restores the previous plan. Drafted blocks show a sparkle, with the AI's reason as a tooltip.
+- **Length guesses:** when the planner opens, one request estimates up to 40 candidates without an estimate. The guess is pre-selected on the card's chips (marked with a dot) and saved as the task's estimate only when the task is added. Guesses are cached per server process for 24 hours.
+- **Day wrap-up** (Today):
+  - Offered once the last timed block has ended, or when everything is done.
+  - Returns a short summary, wins, a pattern and the unfinished tasks worth carrying over.
+  - **Add to tomorrow** appends the selected ones, untimed, to the next day's plan (`POST /api/daily-plan/:date/carry-over`).
+  - Stored in `daily_plans.ai_wrap_up`, so it is not regenerated on every visit.
+
+Each draft, estimate batch or wrap-up counts as one AI request, and one AI credit in hosted mode. See [AI Assistant](13-ai-assistant.md).
 
 ## Known limitations
 

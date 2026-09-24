@@ -7,7 +7,11 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+    Bars3Icon,
+    SparklesIcon,
+    XMarkIcon,
+} from '@heroicons/react/24/outline';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
 import DurationChips from './DurationChips';
 import { formatMinute } from './planUtils';
@@ -17,6 +21,7 @@ interface PlanListProps {
     onDurationChange: (taskUid: string, duration: number) => void;
     onTimeChange: (taskUid: string, startMinute: number | null) => void;
     onRemove: (taskUid: string) => void;
+    aiReasons?: Record<string, string>;
 }
 
 const parseTime = (value: string): number | null => {
@@ -32,7 +37,8 @@ const PlanRow: React.FC<{
     onDurationChange: (duration: number) => void;
     onTimeChange: (startMinute: number | null) => void;
     onRemove: () => void;
-}> = ({ item, index, onDurationChange, onTimeChange, onRemove }) => {
+    aiReason?: string;
+}> = ({ item, index, onDurationChange, onTimeChange, onRemove, aiReason }) => {
     const { t } = useTranslation();
     const {
         attributes,
@@ -73,8 +79,20 @@ const PlanRow: React.FC<{
                 <span className="w-5 shrink-0 text-right text-xs text-gray-500">
                     {index + 1}
                 </span>
-                <span className="min-w-0 flex-1 truncate text-sm text-gray-900 dark:text-gray-100">
-                    {item.task.name}
+                <span
+                    className="flex min-w-0 flex-1 items-center gap-1.5 text-sm text-gray-900 dark:text-gray-100"
+                    title={aiReason || undefined}
+                >
+                    {aiReason !== undefined && (
+                        <SparklesIcon
+                            className="h-4 w-4 shrink-0 text-violet-600 dark:text-violet-300"
+                            aria-label={t(
+                                'dailyPlan.ai.suggested',
+                                'Suggested by AI'
+                            )}
+                        />
+                    )}
+                    <span className="truncate">{item.task.name}</span>
                 </span>
             </div>
             <div className="flex flex-wrap items-center gap-2 pl-11 sm:pl-0">
@@ -121,6 +139,7 @@ const PlanList: React.FC<PlanListProps> = ({
     onDurationChange,
     onTimeChange,
     onRemove,
+    aiReasons,
 }) => {
     const { t } = useTranslation();
     const { setNodeRef, isOver } = useDroppable({ id: 'plan-list' });
@@ -157,6 +176,7 @@ const PlanList: React.FC<PlanListProps> = ({
                                     onTimeChange(item.task_uid, start)
                                 }
                                 onRemove={() => onRemove(item.task_uid)}
+                                aiReason={aiReasons?.[item.task_uid]}
                             />
                         ))}
                     </ol>

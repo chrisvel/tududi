@@ -75,6 +75,12 @@ class DailyPlanRepository {
         return plan;
     }
 
+    async saveWrapUp(userId, planDate, wrapUp) {
+        const plan = await this.findOrCreatePlan(userId, planDate);
+        await plan.update({ ai_wrap_up: wrapUp });
+        return plan;
+    }
+
     async deletePlan(userId, planDate) {
         return sequelize.transaction(async (transaction) => {
             const plan = await DailyPlan.findOne({

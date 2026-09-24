@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import {
+    AiWrapUp,
     DailyPlanItem,
     DailyPlanResponse,
     PlanCandidates,
@@ -24,12 +25,14 @@ import { useDailyPlanProgress } from '../../store/dailyPlanStore';
 import { useStore } from '../../store/useStore';
 import TodayUnplanned from './TodayUnplanned';
 import TodayPlanned from './TodayPlanned';
+import { buildTips, rescheduleMissed } from './tips';
 import { useDailyQuote } from './useDailyQuote';
 import {
     DEFAULT_DURATION,
     busyMinutes,
     dayRange,
     formatDuration,
+    itemEnd,
     isItemDone,
     minuteOfDay,
 } from './planUtils';
@@ -251,14 +254,14 @@ const TodayPage: React.FC = () => {
     );
 
     const handleAdd = useCallback(
-        (task: Task) => {
+        (task: Task, startMinute: number | null = null) => {
             if (!task.uid) return;
             replaceItems([
                 ...items,
                 {
                     task_uid: task.uid,
                     position: items.length,
-                    start_minute: null,
+                    start_minute: startMinute,
                     duration_minutes:
                         task.estimated_minutes ?? DEFAULT_DURATION,
                     task,
@@ -276,6 +279,43 @@ const TodayPage: React.FC = () => {
         ? Math.round((doneCount / items.length) * 100)
         : 0;
     const range = dayRange(items, events);
+    const aiEnabled = useStore(
+        (state) => state.userSettingsStore.aiAssistantEnabled
+    );
+    const tips =
+        aiEnabled && started
+            ? buildTips({
+                  items,
+                  events,
+                  candidates: candidates
+                      ? [
+                            ...candidates.overdue,
+                            ...candidates.due_today,
+                            ...candidates.in_progress,
+                            ...candidates.suggested,
+                        ]
+                      : [],
+                  range,
+                  now,
+                  durationFor: (task) =>
+                      task.estimated_minutes || DEFAULT_DURATION,
+                  include: ['missed', 'gapFit'],
+              })
+            : [];
+    // The wrap-up is offered once the last timed block is over, or when
+    // everything is done.
+    const lastEnd = items
+        .filter((item) => item.start_minute !== null)
+        .reduce((max, item) => Math.max(max, itemEnd(item)), 0);
+    const dayIsOver =
+        items.length > 0 &&
+        (items.every(isItemDone) || (lastEnd > 0 && now >= lastEnd));
+    const setWrapUp = (wrapUp: AiWrapUp) =>
+        setPlanResponse((current) =>
+            current?.plan
+                ? { ...current, plan: { ...current.plan, ai_wrap_up: wrapUp } }
+                : current
+        );
     const freeMinutes = Math.max(
         0,
         range.end - range.start - busyMinutes(events, range)
@@ -400,6 +440,20 @@ const TodayPage: React.FC = () => {
                             replaceCandidate(task.uid, task)
                         }
                         onCandidateDelete={handleDeleteTask}
+                        tips={tips}
+                        onMoveMissed={() =>
+                            replaceItems(
+                                rescheduleMissed(items, events, range, now)
+                            )
+                        }
+                        onPlaceTip={(tip) => handleAdd(tip.task, tip.start)}
+                        wrapUp={{
+                            show:
+                                aiEnabled && (dayIsOver || !!plan?.ai_wrap_up),
+                            date: planResponse.date,
+                            value: plan?.ai_wrap_up ?? null,
+                            onGenerated: setWrapUp,
+                        }}
                     />
                 )}
 

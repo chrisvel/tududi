@@ -22,6 +22,7 @@ interface CandidateListProps {
     filter: CandidateFilter;
     onFilterChange: (filter: CandidateFilter) => void;
     durations: Record<string, number>;
+    aiEstimates?: Record<string, number>;
     onDurationChange: (taskUid: string, minutes: number) => void;
     onAdd: (task: Task) => void;
     onRemove: (taskUid: string) => void;
@@ -43,6 +44,7 @@ interface CandidateCardProps {
     group: TaskGroupKey;
     planned?: DailyPlanItem;
     duration: number;
+    suggested?: number | null;
     today: string;
     onDurationChange: (minutes: number) => void;
     onAdd: () => void;
@@ -56,6 +58,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
     group,
     planned,
     duration,
+    suggested = null,
     today,
     onDurationChange,
     onAdd,
@@ -191,7 +194,11 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
                 </button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-                <DurationChips value={duration} onChange={onDurationChange} />
+                <DurationChips
+                    value={duration}
+                    onChange={onDurationChange}
+                    suggested={suggested}
+                />
                 {group === 'overdue' && (
                     <div className="ml-auto flex gap-3 text-xs">
                         <button
@@ -228,6 +235,7 @@ const CandidateList: React.FC<CandidateListProps> = ({
     filter,
     onFilterChange,
     durations,
+    aiEstimates = {},
     onDurationChange,
     onAdd,
     onRemove,
@@ -340,7 +348,13 @@ const CandidateList: React.FC<CandidateListProps> = ({
                                 duration={
                                     durations[task.uid] ??
                                     task.estimated_minutes ??
+                                    aiEstimates[task.uid] ??
                                     DEFAULT_DURATION
+                                }
+                                suggested={
+                                    task.estimated_minutes
+                                        ? null
+                                        : (aiEstimates[task.uid] ?? null)
                                 }
                                 today={today}
                                 onDurationChange={(minutes) =>

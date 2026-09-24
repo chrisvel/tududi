@@ -14,11 +14,36 @@ export interface DailyPlanItem {
     task: Task;
 }
 
+export interface AiWrapUp {
+    summary: string;
+    wins: string[];
+    carry_over: { task_uid: string; name?: string; reason: string }[];
+    pattern: string;
+    generated_at: string;
+}
+
 export interface DailyPlan {
     uid: string;
     date: string;
     started_at: string | null;
+    ai_wrap_up?: AiWrapUp | null;
     items: DailyPlanItem[];
+}
+
+export interface AiDraftItem {
+    task_uid: string;
+    start_minute: number | null;
+    duration_minutes: number;
+    reason: string;
+    task: Task;
+}
+
+export interface AiDraft {
+    date: string;
+    mode: 'fill' | 'replace';
+    summary: string;
+    items: AiDraftItem[];
+    skipped: { task_uid: string; name: string; reason: string }[];
 }
 
 export interface DailyPlanResponse {
@@ -122,3 +147,66 @@ export const toPlanItemInputs = (items: DailyPlanItem[]): PlanItemInput[] =>
         start_minute: item.start_minute,
         duration_minutes: item.duration_minutes,
     }));
+
+export const draftDayWithAi = async (
+    date: string,
+    mode: 'fill' | 'replace'
+): Promise<AiDraft> => {
+    const response = await fetch(getApiPath('daily-plan/ai/draft'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({ date, mode }),
+    });
+    await handleAuthResponse(response, 'Could not draft the day.');
+    return response.json();
+};
+
+export const estimateWithAi = async (
+    taskUids: string[]
+): Promise<Record<string, number>> => {
+    const response = await fetch(getApiPath('daily-plan/ai/estimates'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({ task_uids: taskUids }),
+    });
+    await handleAuthResponse(response, 'Could not estimate the tasks.');
+    const body: { estimates: { task_uid: string; minutes: number }[] } =
+        await response.json();
+    return Object.fromEntries(
+        body.estimates.map((e) => [e.task_uid, e.minutes])
+    );
+};
+
+export const wrapUpDayWithAi = async (
+    date: string
+): Promise<{ date: string; wrap_up: AiWrapUp }> => {
+    const response = await fetch(
+        getApiPath(`daily-plan/${encodeURIComponent(date)}/ai/wrap-up`),
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+        }
+    );
+    await handleAuthResponse(response, 'Could not wrap up the day.');
+    return response.json();
+};
+
+export const carryOverTasks = async (
+    date: string,
+    taskUids: string[]
+): Promise<DailyPlanResponse> => {
+    const response = await fetch(
+        getApiPath(`daily-plan/${encodeURIComponent(date)}/carry-over`),
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+            body: JSON.stringify({ task_uids: taskUids }),
+        }
+    );
+    await handleAuthResponse(response, 'Could not add the tasks.');
+    return response.json();
+};

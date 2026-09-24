@@ -31,6 +31,8 @@ import {
     saveDailyPlanItems,
     startDailyPlan,
     toPlanItemInputs,
+    draftDayWithAi,
+    estimateWithAi,
 } from '../../utils/dailyPlanService';
 import {
     CalendarEvent,
@@ -41,6 +43,10 @@ import { processInboxItem } from '../../utils/inboxService';
 import { getUserTimezone } from '../../utils/dateUtils';
 import { TASK_STATUS } from '../../constants/taskStatus';
 import { useToast } from '../Shared/ToastContext';
+import { useStore } from '../../store/useStore';
+import { SparklesIcon } from '@heroicons/react/24/outline';
+import PlanTips from './PlanTips';
+import { buildTips, rescheduleMissed } from './tips';
 import CandidateList, { CandidateFilter } from './CandidateList';
 import DayTimeline, { PX_PER_MINUTE } from './DayTimeline';
 import PlanList from './PlanList';
@@ -131,6 +137,18 @@ const PlanMyDay: React.FC = () => {
     const [now, setNow] = useState(() =>
         minuteOfDay(new Date(), getUserTimezone())
     );
+    const aiEnabled = useStore(
+        (state) => state.userSettingsStore.aiAssistantEnabled
+    );
+    const [aiEstimates, setAiEstimates] = useState<Record<string, number>>({});
+    const [aiDraft, setAiDraft] = useState<{
+        summary: string;
+        skipped: { task_uid: string; name: string; reason: string }[];
+        previous: DailyPlanItem[];
+        reasons: Record<string, string>;
+    } | null>(null);
+    const [drafting, setDrafting] = useState(false);
+    const [draftChoiceOpen, setDraftChoiceOpen] = useState(false);
 
     const mode: Mode = narrow ? 'list' : preferredMode;
     const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -220,6 +238,32 @@ const PlanMyDay: React.FC = () => {
         []
     );
 
+    // One AI call for rough lengths of the tasks that have none yet.
+    const estimatesRequested = useRef(false);
+    useEffect(() => {
+        if (!aiEnabled || !candidates || estimatesRequested.current) return;
+        estimatesRequested.current = true;
+        const uids = [
+            ...candidates.overdue,
+            ...candidates.due_today,
+            ...candidates.in_progress,
+            ...candidates.suggested,
+        ]
+            .filter((task) => task.uid && !task.estimated_minutes)
+            .map((task) => task.uid as string)
+            .slice(0, 40);
+        if (uids.length === 0) return;
+        let cancelled = false;
+        estimateWithAi(uids)
+            .then((estimates) => {
+                if (!cancelled) setAiEstimates(estimates);
+            })
+            .catch(() => undefined);
+        return () => {
+            cancelled = true;
+        };
+    }, [aiEnabled, candidates]);
+
     const range = useMemo(() => dayRange(items, events), [items, events]);
     const freeMinutes = Math.max(
         0,
@@ -243,6 +287,7 @@ const PlanMyDay: React.FC = () => {
     const durationFor = (task: Task) =>
         (task.uid && durations[task.uid]) ||
         task.estimated_minutes ||
+        (task.uid && aiEstimates[task.uid]) ||
         DEFAULT_DURATION;
 
     const addTask = useCallback(
@@ -285,7 +330,18 @@ const PlanMyDay: React.FC = () => {
                 );
             }
         },
-        [items, events, range, now, mode, durations, plannedMap, persist, t]
+        [
+            items,
+            events,
+            range,
+            now,
+            mode,
+            durations,
+            aiEstimates,
+            plannedMap,
+            persist,
+            t,
+        ]
     );
 
     const removeItem = (taskUid: string) =>
@@ -396,6 +452,87 @@ const PlanMyDay: React.FC = () => {
             );
         }
     };
+
+    const runDraft = async (draftMode: 'fill' | 'replace') => {
+        if (!date) return;
+        setDraftChoiceOpen(false);
+        setDrafting(true);
+        try {
+            const draft = await draftDayWithAi(date, draftMode);
+            if (draft.items.length === 0) {
+                showSuccessToast(
+                    t(
+                        'dailyPlan.ai.nothingToAdd',
+                        'Nothing to add: there is no free time or no task to plan.'
+                    )
+                );
+                return;
+            }
+            const previous = items;
+            const drafted: DailyPlanItem[] = draft.items.map((item, i) => ({
+                task_uid: item.task_uid,
+                position: i,
+                start_minute: item.start_minute,
+                duration_minutes: item.duration_minutes,
+                task: item.task,
+            }));
+            persist(draftMode === 'fill' ? [...items, ...drafted] : drafted);
+            setAiDraft({
+                summary: draft.summary,
+                skipped: draft.skipped,
+                previous,
+                reasons: Object.fromEntries(
+                    draft.items.map((item) => [item.task_uid, item.reason])
+                ),
+            });
+        } catch (err) {
+            showErrorToast(
+                err instanceof Error
+                    ? err.message
+                    : t('dailyPlan.ai.draftError', 'Could not draft the day.')
+            );
+        } finally {
+            setDrafting(false);
+        }
+    };
+
+    const startDraft = () => {
+        if (items.length === 0) {
+            void runDraft('replace');
+        } else {
+            setDraftChoiceOpen((open) => !open);
+        }
+    };
+
+    const undoDraft = () => {
+        if (!aiDraft) return;
+        persist(aiDraft.previous);
+        setAiDraft(null);
+    };
+
+    const allCandidates = useMemo(
+        () =>
+            candidates
+                ? [
+                      ...candidates.overdue,
+                      ...candidates.due_today,
+                      ...candidates.in_progress,
+                      ...candidates.suggested,
+                  ]
+                : [],
+        [candidates]
+    );
+
+    const tips = aiEnabled
+        ? buildTips({
+              items,
+              events,
+              candidates: allCandidates,
+              range,
+              now,
+              durationFor,
+          })
+        : [];
 
     const leave = async (start: boolean) => {
         if (!date) return;
@@ -595,6 +732,65 @@ const PlanMyDay: React.FC = () => {
                         </div>
                     </div>
 
+                    {aiEnabled && (
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={startDraft}
+                                disabled={drafting || !date}
+                                className="inline-flex min-h-[38px] items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 text-[13px] font-medium text-blue-800 hover:bg-blue-100 disabled:opacity-60 dark:border-blue-900 dark:bg-blue-900/30 dark:text-blue-200"
+                                data-testid="ai-draft-button"
+                            >
+                                <SparklesIcon
+                                    className={`h-4 w-4 ${drafting ? 'animate-pulse' : ''}`}
+                                />
+                                {drafting
+                                    ? t('dailyPlan.ai.drafting', 'Drafting…')
+                                    : t('dailyPlan.ai.draft', 'Draft with AI')}
+                            </button>
+                            {draftChoiceOpen && (
+                                <div className="absolute right-0 z-40 mt-1 flex w-56 flex-col rounded-lg border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                                    <button
+                                        type="button"
+                                        onClick={() => void runDraft('fill')}
+                                        className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    >
+                                        <span className="block font-medium">
+                                            {t(
+                                                'dailyPlan.ai.fill',
+                                                'Fill free time'
+                                            )}
+                                        </span>
+                                        <span className="block text-xs text-gray-500 dark:text-gray-400">
+                                            {t(
+                                                'dailyPlan.ai.fillHint',
+                                                'Keep what is planned, add around it'
+                                            )}
+                                        </span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => void runDraft('replace')}
+                                        className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    >
+                                        <span className="block font-medium">
+                                            {t(
+                                                'dailyPlan.ai.replace',
+                                                'Start over'
+                                            )}
+                                        </span>
+                                        <span className="block text-xs text-gray-500 dark:text-gray-400">
+                                            {t(
+                                                'dailyPlan.ai.replaceHint',
+                                                'Draft the whole day again (you can undo)'
+                                            )}
+                                        </span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {!narrow && (
                         <div
                             className="flex rounded-lg bg-gray-100 p-0.5 dark:bg-gray-800"
@@ -662,6 +858,7 @@ const PlanMyDay: React.FC = () => {
                                 filter={filter}
                                 onFilterChange={setFilter}
                                 durations={durations}
+                                aiEstimates={aiEnabled ? aiEstimates : {}}
                                 onDurationChange={(uid, minutes) =>
                                     setDurations((d) => ({
                                         ...d,
@@ -677,8 +874,100 @@ const PlanMyDay: React.FC = () => {
                             />
                         </aside>
                         <section className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-6 md:overflow-y-auto dark:border-gray-800 dark:bg-gray-900">
+                            {aiDraft && (
+                                <section
+                                    className="mb-3 flex flex-col gap-2.5 rounded-xl border border-violet-200 bg-violet-50/70 px-4 py-3 dark:border-violet-900/60 dark:bg-violet-900/15"
+                                    data-testid="ai-draft-banner"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <SparklesIcon className="h-4 w-4 shrink-0 text-violet-700 dark:text-violet-300" />
+                                        <span className="flex-1 text-xs font-semibold uppercase tracking-wider text-violet-800 dark:text-violet-300">
+                                            {t(
+                                                'dailyPlan.ai.draftTitle',
+                                                'AI draft'
+                                            )}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={undoDraft}
+                                            className="rounded-md px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-white dark:text-gray-300 dark:hover:bg-gray-800"
+                                            data-testid="ai-draft-undo"
+                                        >
+                                            {t('dailyPlan.ai.undo', 'Undo')}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setAiDraft(null)}
+                                            className="rounded-md bg-violet-600 px-3 py-1 text-xs font-medium text-white hover:bg-violet-700"
+                                        >
+                                            {t('dailyPlan.ai.keep', 'Keep')}
+                                        </button>
+                                    </div>
+
+                                    <p className="text-sm leading-relaxed text-gray-800 dark:text-gray-200">
+                                        {aiDraft.summary ||
+                                            t(
+                                                'dailyPlan.ai.drafted',
+                                                'Here is a draft for your day.'
+                                            )}
+                                    </p>
+
+                                    {aiDraft.skipped.length > 0 && (
+                                        <details className="group rounded-lg bg-white/70 px-3 py-2 dark:bg-gray-900/40">
+                                            <summary className="cursor-pointer select-none text-xs font-medium text-gray-700 dark:text-gray-300">
+                                                {t(
+                                                    'dailyPlan.ai.skippedCount',
+                                                    'Left out ({{count}})',
+                                                    {
+                                                        count: aiDraft.skipped
+                                                            .length,
+                                                    }
+                                                )}
+                                            </summary>
+                                            <ul className="mt-2 flex flex-col gap-1.5">
+                                                {aiDraft.skipped.map((s) => (
+                                                    <li
+                                                        key={s.task_uid}
+                                                        className="flex flex-col text-sm sm:flex-row sm:gap-2"
+                                                    >
+                                                        <span className="font-medium text-gray-900 dark:text-gray-100 sm:w-64 sm:shrink-0 sm:truncate">
+                                                            {s.name}
+                                                        </span>
+                                                        <span className="text-gray-600 dark:text-gray-400">
+                                                            {s.reason}
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </details>
+                                    )}
+                                </section>
+                            )}
+
+                            {tips.length > 0 && (
+                                <div className="mb-3">
+                                    <PlanTips
+                                        tips={tips}
+                                        onMoveMissed={() =>
+                                            persist(
+                                                rescheduleMissed(
+                                                    items,
+                                                    events,
+                                                    range,
+                                                    now
+                                                )
+                                            )
+                                        }
+                                        onPlace={(tip) =>
+                                            addTask(tip.task, tip.start)
+                                        }
+                                    />
+                                </div>
+                            )}
+
                             {mode === 'timeline' ? (
                                 <DayTimeline
+                                    aiReasons={aiDraft?.reasons}
                                     items={items}
                                     events={events}
                                     range={range}
@@ -695,6 +984,7 @@ const PlanMyDay: React.FC = () => {
                                 />
                             ) : (
                                 <PlanList
+                                    aiReasons={aiDraft?.reasons}
                                     items={items}
                                     onDurationChange={(uid, duration) => {
                                         const item = plannedMap.get(uid);

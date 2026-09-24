@@ -139,6 +139,7 @@ async function serializePlan(plan, userId, timezone) {
         uid: plan.uid,
         date: plan.plan_date,
         started_at: plan.started_at,
+        ai_wrap_up: plan.ai_wrap_up || null,
         items: items
             .filter((item) => byId.has(item.task_id))
             .map((item) => ({
@@ -201,6 +202,31 @@ async function startPlan(user, date) {
     return getPlan(user, planDate);
 }
 
+// Appends tasks to a day's plan without a time, skipping ones already on
+// it. Used to move unfinished work to tomorrow.
+async function carryOver(user, date, taskUids) {
+    if (
+        !Array.isArray(taskUids) ||
+        taskUids.some((uid) => typeof uid !== 'string' || !uid)
+    ) {
+        throw new ValidationError('task_uids must be a list of task uids');
+    }
+    const timezone = getSafeTimezone(user.timezone);
+    const planDate = resolvePlanDate(date, timezone);
+    const { plan } = await getPlan(user, planDate);
+    const current = (plan?.items || []).map((item) => ({
+        task_uid: item.task_uid,
+        start_minute: item.start_minute,
+        duration_minutes: item.duration_minutes,
+    }));
+    const already = new Set(current.map((item) => item.task_uid));
+    const added = [...new Set(taskUids)]
+        .filter((uid) => !already.has(uid))
+        .map((uid) => ({ task_uid: uid, start_minute: null }));
+    if (added.length === 0) return getPlan(user, planDate);
+    return replaceItems(user, planDate, [...current, ...added]);
+}
+
 async function clearPlan(user, date) {
     const timezone = getSafeTimezone(user.timezone);
     const planDate = resolvePlanDate(date, timezone);
@@ -254,5 +280,6 @@ module.exports = {
     replaceItems,
     startPlan,
     clearPlan,
+    carryOver,
     getCandidates,
 };

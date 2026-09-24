@@ -36,7 +36,11 @@ jest.mock('../../Task/TaskRow', () => ({
 }));
 
 jest.mock('../../../store/useStore', () => ({
-    useStore: (selector: any) => selector({ projectsStore: { projects: [] } }),
+    useStore: (selector: any) =>
+        selector({
+            projectsStore: { projects: [] },
+            userSettingsStore: { aiAssistantEnabled: false },
+        }),
 }));
 
 jest.mock('../../Shared/ToastContext', () => ({

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import {
@@ -21,6 +21,7 @@ interface DayTimelineProps {
     now: number | null;
     onResize: (taskUid: string, duration: number) => void;
     onRemove: (taskUid: string) => void;
+    aiReasons?: Record<string, string>;
 }
 
 interface BlockProps {
@@ -29,6 +30,7 @@ interface BlockProps {
     maxDuration: number;
     onResize: (duration: number) => void;
     onRemove: () => void;
+    aiReason?: string;
 }
 
 const TimelineBlock: React.FC<BlockProps> = ({
@@ -37,6 +39,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
     maxDuration,
     onResize,
     onRemove,
+    aiReason,
 }) => {
     const { t } = useTranslation();
     const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -96,6 +99,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
                     : undefined,
             }}
             data-testid={`block-${item.task_uid}`}
+            title={aiReason || undefined}
         >
             <div
                 className={`flex h-full cursor-grab items-start gap-2 overflow-hidden px-2.5 active:cursor-grabbing ${
@@ -110,8 +114,17 @@ const TimelineBlock: React.FC<BlockProps> = ({
                 <div
                     className={`flex min-w-0 flex-1 ${compact ? 'items-center gap-2' : 'flex-col gap-0.5'}`}
                 >
-                    <span className="truncate text-[13px] font-medium">
-                        {item.task.name}
+                    <span className="flex min-w-0 items-center gap-1 truncate text-[13px] font-medium">
+                        {aiReason !== undefined && (
+                            <SparklesIcon
+                                className="h-3.5 w-3.5 shrink-0 text-violet-600 dark:text-violet-300"
+                                aria-label={t(
+                                    'dailyPlan.ai.suggested',
+                                    'Suggested by AI'
+                                )}
+                            />
+                        )}
+                        <span className="truncate">{item.task.name}</span>
                     </span>
                     <span className="shrink-0 text-xs text-blue-900 dark:text-blue-200">
                         {formatMinute(item.start_minute as number)} ·{' '}
@@ -149,6 +162,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
     now,
     onResize,
     onRemove,
+    aiReasons,
 }) => {
     const { t } = useTranslation();
     const { setNodeRef, isOver } = useDroppable({ id: 'timeline' });
@@ -294,6 +308,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                                     onResize(item.task_uid, duration)
                                 }
                                 onRemove={() => onRemove(item.task_uid)}
+                                aiReason={aiReasons?.[item.task_uid]}
                             />
                         );
                     })}
