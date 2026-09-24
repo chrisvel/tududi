@@ -1,7 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PlusCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+    CheckIcon,
+    ChevronDownIcon,
+    PlusCircleIcon,
+    XMarkIcon,
+} from '@heroicons/react/24/outline';
 import { TaskRelation, TaskRelationType } from '../../../entities/Task';
 import {
     createTaskRelation,
@@ -45,6 +50,19 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
     const [type, setType] = useState<TaskRelationType>('blocked_by');
     const [query, setQuery] = useState('');
     const [hits, setHits] = useState<SearchHit[]>([]);
+    const [typeOpen, setTypeOpen] = useState(false);
+    const typeMenuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!typeOpen) return;
+        const onMouseDown = (e: MouseEvent) => {
+            if (!typeMenuRef.current?.contains(e.target as Node)) {
+                setTypeOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', onMouseDown);
+        return () => document.removeEventListener('mousedown', onMouseDown);
+    }, [typeOpen]);
 
     const typeLabel = (relationType: TaskRelationType): string =>
         ({
@@ -105,6 +123,7 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
     }, [query, adding, relations, taskUid]);
 
     const closeAdd = () => {
+        setTypeOpen(false);
         setAdding(false);
         setQuery('');
         setHits([]);
@@ -200,22 +219,58 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
             ))}
 
             {adding ? (
-                <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 p-3 space-y-2">
-                    <div className="flex items-center gap-2">
-                        <select
-                            value={type}
-                            onChange={(e) =>
-                                setType(e.target.value as TaskRelationType)
-                            }
-                            className="text-sm rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 py-1 px-2"
-                            data-testid="task-relation-type"
-                        >
-                            {RELATION_TYPES.map((relationType) => (
-                                <option key={relationType} value={relationType}>
-                                    {typeLabel(relationType)}
-                                </option>
-                            ))}
-                        </select>
+                <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900">
+                    <div className="flex items-center gap-3 px-3 py-2">
+                        <div ref={typeMenuRef} className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setTypeOpen((open) => !open)}
+                                aria-haspopup="listbox"
+                                aria-expanded={typeOpen}
+                                data-testid="task-relation-type"
+                                className="inline-flex items-center gap-1.5 rounded-md bg-gray-100 dark:bg-gray-800 px-2.5 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                            >
+                                <span className="whitespace-nowrap">
+                                    {typeLabel(type)}
+                                </span>
+                                <ChevronDownIcon
+                                    className={`h-4 w-4 text-gray-500 dark:text-gray-400 transition-transform ${
+                                        typeOpen ? 'rotate-180' : ''
+                                    }`}
+                                />
+                            </button>
+                            {typeOpen && (
+                                <ul
+                                    role="listbox"
+                                    className="absolute left-0 top-full z-20 mt-1 min-w-[10rem] rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black/5 dark:ring-white/10"
+                                >
+                                    {RELATION_TYPES.map((relationType) => (
+                                        <li key={relationType}>
+                                            <button
+                                                type="button"
+                                                role="option"
+                                                aria-selected={
+                                                    relationType === type
+                                                }
+                                                data-testid={`task-relation-type-${relationType}`}
+                                                onClick={() => {
+                                                    setType(relationType);
+                                                    setTypeOpen(false);
+                                                }}
+                                                className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            >
+                                                <span>
+                                                    {typeLabel(relationType)}
+                                                </span>
+                                                {relationType === type && (
+                                                    <CheckIcon className="h-4 w-4 text-blue-600 dark:text-blue-300" />
+                                                )}
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
                         <input
                             autoFocus
                             type="text"
@@ -228,7 +283,7 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
                                 'relations.searchPlaceholder',
                                 'Search for a task...'
                             )}
-                            className="flex-1 text-sm bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none"
+                            className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0"
                             data-testid="task-relation-search"
                         />
                         <button
@@ -240,13 +295,13 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
                         </button>
                     </div>
                     {hits.length > 0 && (
-                        <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+                        <ul className="space-y-0.5 rounded-b-lg bg-gray-50 dark:bg-gray-800/50 px-2 py-2">
                             {hits.map((hit) => (
                                 <li key={hit.uid}>
                                     <button
                                         type="button"
                                         onClick={() => void handleAdd(hit.uid)}
-                                        className="w-full text-left text-sm py-2 px-1 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                        className="block w-full truncate rounded-md px-3 py-2 text-left text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     >
                                         {hit.name}
                                     </button>

@@ -103,9 +103,8 @@ describe('TaskRelationsCard', () => {
 
         await screen.findByText('Buy paint');
         fireEvent.click(screen.getByTestId('task-relation-add'));
-        fireEvent.change(screen.getByTestId('task-relation-type'), {
-            target: { value: 'blocks' },
-        });
+        fireEvent.click(screen.getByTestId('task-relation-type'));
+        fireEvent.click(screen.getByTestId('task-relation-type-blocks'));
         fireEvent.change(screen.getByTestId('task-relation-search'), {
             target: { value: 'shelves' },
         });
