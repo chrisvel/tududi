@@ -340,7 +340,7 @@ const TodayPage: React.FC = () => {
                             {dateLabel}
                         </span>
                         <span
-                            className="self-center rounded-full border border-blue-300 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                            className="self-center rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
                             title={t(
                                 'dailyPlan.betaHint',
                                 'The planned Today page is new. The classic page is still at the bottom of this page.'
@@ -372,7 +372,7 @@ const TodayPage: React.FC = () => {
                             </span>
                             <Link
                                 to="/today/plan"
-                                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
+                                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg bg-gray-100 px-4 text-sm text-gray-900 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
                             >
                                 <ArrowPathIcon className="h-4 w-4" />
                                 {t('dailyPlan.replan', 'Replan')}

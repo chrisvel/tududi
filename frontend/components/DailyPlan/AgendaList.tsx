@@ -90,7 +90,7 @@ const AgendaList: React.FC<AgendaListProps> = ({
                                 {formatMinute(event.start_minute ?? 0)}–
                                 {formatMinute(event.end_minute ?? 0)}
                             </span>
-                            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-dashed border-gray-200 px-3 py-2 dark:border-gray-800">
+                            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-lg bg-gray-100/70 px-3 py-2 dark:bg-gray-800/40">
                                 <CalendarIcon
                                     className="h-5 w-5 shrink-0 text-gray-500"
                                     aria-label={t(
@@ -142,15 +142,7 @@ const AgendaList: React.FC<AgendaListProps> = ({
                                 />
                             )}
                         </span>
-                        <div
-                            className={`min-w-0 flex-1 rounded-lg ${
-                                isCurrent
-                                    ? 'ring-2 ring-blue-500/60'
-                                    : late
-                                      ? 'ring-1 ring-amber-500/50'
-                                      : ''
-                            }`}
-                        >
+                        <div className="min-w-0 flex-1">
                             <TaskRow
                                 task={item.task}
                                 projects={projects}

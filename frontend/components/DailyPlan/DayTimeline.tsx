@@ -88,7 +88,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
     return (
         <div
             ref={setNodeRef}
-            className={`group absolute left-1 right-1 rounded-md border border-blue-500 bg-blue-100 text-blue-950 dark:border-blue-400 dark:bg-blue-900/60 dark:text-blue-50 ${
+            className={`group absolute left-1 right-1 rounded-md bg-blue-100 text-blue-950 dark:bg-blue-900/60 dark:text-blue-50 ${
                 isDragging ? 'z-20 opacity-80 shadow-lg' : 'z-10'
             }`}
             style={{
@@ -239,10 +239,10 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                         return (
                             <div
                                 key={`${event.feed_uid}-${event.uid}-${event.start}`}
-                                className={`absolute left-1 right-1 flex items-start gap-2 overflow-hidden rounded-md border px-2.5 text-[13px] ${
+                                className={`absolute left-1 right-1 flex items-start gap-2 overflow-hidden rounded-md px-2.5 text-[13px] ${
                                     event.busy
-                                        ? 'border-gray-200 bg-transparent text-gray-500 dark:border-gray-700 dark:text-gray-400'
-                                        : 'border-dashed border-gray-200 bg-transparent text-gray-400 dark:border-gray-700 dark:text-gray-500'
+                                        ? 'bg-gray-100/80 text-gray-500 dark:bg-gray-800/50 dark:text-gray-400'
+                                        : 'bg-gray-50 text-gray-400 dark:bg-gray-800/20 dark:text-gray-500'
                                 } ${blockHeight < 40 ? 'items-center' : 'py-1.5'}`}
                                 style={{ top: top + 1, height: blockHeight }}
                             >
@@ -313,7 +313,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                     })}
 
                     {scheduled.length === 0 && (
-                        <div className="pointer-events-none absolute inset-x-6 top-1/3 rounded-lg border-2 border-dashed border-blue-300 px-4 py-6 text-center text-sm text-blue-800 dark:border-blue-800 dark:text-blue-300">
+                        <div className="pointer-events-none absolute inset-x-6 top-1/3 rounded-lg bg-blue-50 px-4 py-6 dark:bg-blue-900/20 text-center text-sm text-blue-800 dark:text-blue-300">
                             {t(
                                 'dailyPlan.timelineEmpty',
                                 'Drag tasks here, or press + to drop them into the next free slot'
@@ -345,7 +345,7 @@ const TrayItem: React.FC<{ item: DailyPlanItem; onRemove: () => void }> = ({
     return (
         <div
             ref={setNodeRef}
-            className={`flex items-center gap-2 rounded-md border border-blue-300 bg-white px-2.5 py-1.5 text-[13px] dark:border-blue-800 dark:bg-gray-900 ${
+            className={`flex items-center gap-2 rounded-md bg-blue-50 px-2.5 py-1.5 text-[13px] dark:bg-blue-900/30 ${
                 isDragging ? 'opacity-40' : ''
             }`}
         >
@@ -377,7 +377,7 @@ const UnscheduledTray: React.FC<{
 }> = ({ items, onRemove }) => {
     const { t } = useTranslation();
     return (
-        <div className="ml-14 flex flex-col gap-2 rounded-lg border border-dashed border-gray-300 p-3 dark:border-gray-700">
+        <div className="ml-14 flex flex-col gap-2 rounded-lg bg-gray-50 p-3 dark:bg-gray-800/40">
             <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 {t('dailyPlan.noTimeYet', 'Today, no time yet')}
             </p>

@@ -768,7 +768,7 @@ const PlanMyDay: React.FC = () => {
                                     : t('dailyPlan.ai.draft', 'Draft with AI')}
                             </button>
                             {draftChoiceOpen && (
-                                <div className="absolute right-0 z-40 mt-1 flex w-56 flex-col rounded-lg border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                                <div className="absolute right-0 z-40 mt-1 flex w-56 flex-col rounded-lg bg-white p-1 shadow-lg ring-0 dark:bg-gray-800 dark:bg-gray-900">
                                     <button
                                         type="button"
                                         onClick={() => void runDraft('fill')}
@@ -828,7 +828,7 @@ const PlanMyDay: React.FC = () => {
                                 <EllipsisHorizontalIcon className="h-5 w-5" />
                             </button>
                             {moreOpen && (
-                                <div className="absolute right-0 z-40 mt-1 flex w-48 flex-col rounded-lg border border-gray-200 bg-white p-1 text-sm shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                                <div className="absolute right-0 z-40 mt-1 flex w-48 flex-col rounded-lg bg-white p-1 text-sm shadow-lg dark:bg-gray-800 dark:bg-gray-900">
                                     {!narrow && (
                                         <button
                                             type="button"
@@ -887,7 +887,7 @@ const PlanMyDay: React.FC = () => {
                     </p>
                 ) : (
                     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto md:flex-row md:overflow-hidden">
-                        <aside className="shrink-0 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-5 md:max-h-full md:w-[400px] md:self-start md:overflow-y-auto dark:border-gray-800 dark:bg-gray-900">
+                        <aside className="shrink-0 rounded-xl bg-white px-4 py-5 sm:px-5 md:max-h-full md:w-[400px] md:self-start md:overflow-y-auto dark:bg-gray-900">
                             <CandidateList
                                 candidates={candidates}
                                 planned={plannedMap}
@@ -909,10 +909,10 @@ const PlanMyDay: React.FC = () => {
                                 today={date ?? ''}
                             />
                         </aside>
-                        <section className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-6 md:overflow-y-auto dark:border-gray-800 dark:bg-gray-900">
+                        <section className="min-w-0 flex-1 rounded-xl bg-white px-4 py-5 sm:px-6 md:overflow-y-auto dark:bg-gray-900">
                             {aiDraft && (
                                 <section
-                                    className="mb-3 flex flex-col gap-2.5 rounded-xl border border-violet-200 bg-violet-50/70 px-4 py-3 dark:border-violet-900/60 dark:bg-violet-900/15"
+                                    className="mb-3 flex flex-col gap-2.5 rounded-xl bg-violet-50/70 px-4 py-3 dark:bg-violet-900/15"
                                     data-testid="ai-draft-banner"
                                 >
                                     <div className="flex items-center gap-2">
@@ -981,7 +981,7 @@ const PlanMyDay: React.FC = () => {
                             )}
 
                             {tips.length > 0 && (
-                                <div className="sticky top-0 z-40 -mx-1 mb-3 bg-white px-1 pb-1 dark:bg-gray-900">
+                                <div className="sticky -top-5 z-40 -mx-1 -mt-5 mb-3 bg-white px-1 pb-1 pt-5 dark:bg-gray-900">
                                     <PlanTips
                                         tips={tips}
                                         onMoveMissed={() =>
@@ -1043,7 +1043,7 @@ const PlanMyDay: React.FC = () => {
 
             <DragOverlay dropAnimation={null}>
                 {dragLabel ? (
-                    <div className="pointer-events-none max-w-xs truncate rounded-md border border-blue-500 bg-blue-100 px-3 py-2 text-[13px] font-medium text-blue-950 shadow-lg dark:bg-blue-900 dark:text-blue-50">
+                    <div className="pointer-events-none max-w-xs truncate rounded-md bg-blue-100 px-3 py-2 text-[13px] font-medium text-blue-950 shadow-lg dark:bg-blue-900 dark:text-blue-50">
                         {dragLabel}
                     </div>
                 ) : null}

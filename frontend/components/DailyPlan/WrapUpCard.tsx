@@ -78,7 +78,7 @@ const WrapUpCard: React.FC<WrapUpCardProps> = ({
     if (!wrapUp) {
         return (
             <section
-                className="flex flex-wrap items-center gap-3 rounded-2xl border border-violet-200 bg-violet-50 px-5 py-4 dark:border-violet-900/60 dark:bg-violet-900/20"
+                className="flex flex-wrap items-center gap-3 rounded-2xl bg-violet-50 px-5 py-4 dark:bg-violet-900/20"
                 data-testid="wrap-up-card"
             >
                 <MoonIcon className="h-6 w-6 text-violet-700 dark:text-violet-300" />
@@ -113,7 +113,7 @@ const WrapUpCard: React.FC<WrapUpCardProps> = ({
 
     return (
         <section
-            className="flex flex-col gap-3 rounded-2xl border border-violet-200 bg-violet-50 px-5 py-4 dark:border-violet-900/60 dark:bg-violet-900/20"
+            className="flex flex-col gap-3 rounded-2xl bg-violet-50 px-5 py-4 dark:bg-violet-900/20"
             data-testid="wrap-up-card"
         >
             <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-violet-800 dark:text-violet-300">
@@ -136,7 +136,7 @@ const WrapUpCard: React.FC<WrapUpCardProps> = ({
                 </p>
             )}
             {wrapUp.carry_over.length > 0 && (
-                <div className="flex flex-col gap-2 border-t border-violet-200 pt-3 dark:border-violet-900/60">
+                <div className="flex flex-col gap-2 pt-2">
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
                         {t('dailyPlan.ai.carryTitle', 'Carry over to tomorrow')}
                     </p>

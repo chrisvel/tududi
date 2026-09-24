@@ -27,7 +27,7 @@ const NowCard: React.FC<NowCardProps> = ({
 
     if (!current) {
         return (
-            <section className="flex items-center gap-4 rounded-2xl border border-green-200 bg-green-50 px-6 py-5 dark:border-green-900/50 dark:bg-green-900/20">
+            <section className="flex items-center gap-4 rounded-2xl bg-green-50 px-6 py-5 dark:bg-green-900/20">
                 <CheckCircleIcon className="h-8 w-8 text-green-700 dark:text-green-400" />
                 <div className="flex flex-col gap-1">
                     <span className="text-lg text-gray-900 dark:text-gray-100">
@@ -84,7 +84,7 @@ const NowCard: React.FC<NowCardProps> = ({
 
     return (
         <section
-            className="flex flex-col gap-4 rounded-2xl border-[1.5px] border-blue-500 bg-white px-6 py-5 sm:flex-row sm:items-center dark:bg-gray-900"
+            className="flex flex-col gap-4 rounded-2xl bg-blue-50 px-6 py-5 sm:flex-row sm:items-center dark:bg-blue-900/20"
             data-testid="now-card"
         >
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -106,7 +106,7 @@ const NowCard: React.FC<NowCardProps> = ({
                     type="button"
                     onClick={() => onPushLater(item)}
                     disabled={isBusy}
-                    className="min-h-[44px] rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+                    className="min-h-[44px] rounded-lg bg-white/80 px-4 text-sm text-gray-700 hover:bg-white disabled:opacity-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
                 >
                     {t('dailyPlan.pushLater', 'Push to later')}
                 </button>

@@ -59,7 +59,7 @@ const PlanRow: React.FC<{
                 transform: CSS.Transform.toString(transform),
                 transition,
             }}
-            className={`flex flex-col gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 sm:flex-row sm:items-center dark:border-gray-800 dark:bg-gray-900 ${
+            className={`flex flex-col gap-2 rounded-xl bg-gray-50 px-3 py-2.5 sm:flex-row sm:items-center dark:bg-gray-800/50 ${
                 isDragging ? 'z-10 opacity-70 shadow-lg' : ''
             }`}
             data-testid={`plan-row-${item.task_uid}`}
@@ -111,7 +111,7 @@ const PlanRow: React.FC<{
                         onChange={(e) =>
                             onTimeChange(parseTime(e.target.value))
                         }
-                        className="h-8 rounded-md border border-gray-300 bg-white px-1.5 text-xs text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        className="h-8 rounded-md border-0 bg-gray-100 px-1.5 text-xs text-gray-900 dark:bg-gray-700 dark:text-gray-100"
                     />
                 </label>
                 <DurationChips
@@ -152,7 +152,7 @@ const PlanList: React.FC<PlanListProps> = ({
             }`}
         >
             {items.length === 0 ? (
-                <div className="rounded-lg border-2 border-dashed border-blue-300 px-4 py-8 text-center text-sm text-blue-800 dark:border-blue-800 dark:text-blue-300">
+                <div className="rounded-lg bg-blue-50 px-4 py-8 text-center text-sm text-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
                     {t(
                         'dailyPlan.listEmpty',
                         'Add tasks with + or drag them here. Order them the way you want to do them.'

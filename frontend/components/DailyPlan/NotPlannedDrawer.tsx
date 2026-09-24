@@ -63,7 +63,7 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
                 type="button"
                 onClick={() => setOpen((value) => !value)}
                 aria-expanded={open}
-                className="flex min-h-[48px] items-center gap-3 rounded-xl border border-dashed border-gray-300 px-5 text-left hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-700 dark:hover:bg-gray-900"
+                className="flex min-h-[48px] items-center gap-3 rounded-xl bg-gray-100/70 px-5 text-left hover:bg-gray-100 dark:bg-gray-800/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-gray-900"
                 data-testid="not-planned-toggle"
             >
                 <ChevronRightIcon

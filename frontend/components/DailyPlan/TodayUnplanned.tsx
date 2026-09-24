@@ -46,7 +46,7 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
 
     return (
         <section
-            className="mx-auto mt-6 sm:mt-10 w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 sm:p-10 flex flex-col gap-7 dark:border-gray-800 dark:bg-gray-900"
+            className="mx-auto mt-6 sm:mt-10 w-full max-w-2xl rounded-2xl bg-white p-6 sm:p-10 flex flex-col gap-7 dark:bg-gray-900"
             data-testid="today-unplanned"
         >
             <div className="flex flex-col gap-2">
