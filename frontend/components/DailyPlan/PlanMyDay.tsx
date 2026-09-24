@@ -871,7 +871,7 @@ const PlanMyDay: React.FC = () => {
                             type="button"
                             onClick={() => leave(true)}
                             disabled={leaving || !date}
-                            className="min-h-[44px] rounded-lg bg-blue-600 px-5 text-[15px] font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                            className="min-h-[36px] rounded-lg bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
                             data-testid="start-my-day"
                         >
                             {started
