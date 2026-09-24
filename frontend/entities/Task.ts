@@ -4,6 +4,15 @@ import { Area } from './Area';
 import { Attachment } from './Attachment';
 import { Person } from './Person';
 
+export type TaskRelationType =
+    'blocks' | 'blocked_by' | 'related_to' | 'duplicates' | 'duplicated_by';
+
+export interface TaskRelation {
+    uid: string;
+    type: TaskRelationType;
+    task: { uid: string; name: string; status: StatusType | number };
+}
+
 export interface Task {
     id?: number;
     uid?: string;
@@ -46,6 +55,8 @@ export interface Task {
     parent_child_logic_executed?: boolean;
     attachments?: Attachment[];
     comments_count?: number;
+    is_blocked?: boolean;
+    blocked_by_count?: number;
     habit_mode?: boolean;
     habit_target_count?: number;
     habit_frequency_period?: 'daily' | 'weekly' | 'monthly';

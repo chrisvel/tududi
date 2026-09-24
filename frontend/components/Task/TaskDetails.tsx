@@ -30,6 +30,7 @@ import {
     TaskAreaCard,
     TaskTagsCard,
     TaskSubtasksCard,
+    TaskRelationsCard,
     TaskRecurrenceCard,
     TaskDueDateCard,
     TaskDeferUntilCard,
@@ -806,6 +807,27 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleRelationsChange = async () => {
+        if (!uid) return;
+        try {
+            const updatedTask = await fetchTaskByUid(uid);
+            const existingIndex = tasksStore.tasks.findIndex(
+                (t: Task) => t.uid === uid
+            );
+            if (existingIndex >= 0) {
+                const updatedTasks = [...tasksStore.tasks];
+                updatedTasks[existingIndex] = updatedTask;
+                tasksStore.setTasks(updatedTasks);
+            }
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error(
+                'Error refreshing task after relation change:',
+                error
+            );
+        }
+    };
+
     const handleQuickAddSubtask = (name: string) => {
         if (!task?.id) return;
         const newSubtask = {
@@ -1486,6 +1508,10 @@ const TaskDetails: React.FC = () => {
                                     onSubtaskUpdate={handleSubtaskUpdate}
                                     onSubtaskDelete={handleSubtaskDelete}
                                     onQuickAdd={handleQuickAddSubtask}
+                                />
+                                <TaskRelationsCard
+                                    taskUid={task.uid}
+                                    onRelationsChange={handleRelationsChange}
                                 />
                                 <TaskRecurrenceCard
                                     task={task}

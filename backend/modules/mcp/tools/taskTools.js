@@ -21,6 +21,7 @@ const {
     processDeferUntilForStorage,
 } = require('../../../utils/timezone-utils');
 const permissionsService = require('../../../services/permissionsService');
+const relationsService = require('../../tasks/relations/service');
 
 const RECURRENCE_TYPES = [
     'none',
@@ -155,6 +156,11 @@ function registerTaskTools(server, context, tools) {
                     type: 'number',
                     description: 'Filter by project ID',
                 },
+                blocked: {
+                    type: 'boolean',
+                    description:
+                        'true: only tasks with an open blocker. false: only tasks without one. Omit for all tasks.',
+                },
                 limit: {
                     type: 'number',
                     description: 'Maximum number of tasks to return',
@@ -187,6 +193,15 @@ function registerTaskTools(server, context, tools) {
 
             if (params.project_id) {
                 whereClause.project_id = params.project_id;
+            }
+
+            if (typeof params.blocked === 'boolean') {
+                whereClause[Op.and] = [
+                    ...(Array.isArray(whereClause[Op.and])
+                        ? whereClause[Op.and]
+                        : []),
+                    relationsService.blockedCondition(params.blocked),
+                ];
             }
 
             if (params.type === 'completed') {
@@ -736,6 +751,14 @@ function registerTaskTools(server, context, tools) {
             }
 
             const newStatus = task.status === 2 ? 0 : 2;
+            // Completing a blocked task is allowed; the caller is told.
+            const openBlockers =
+                newStatus === 2
+                    ? await relationsService.getOpenBlockers(
+                          task,
+                          context.userId
+                      )
+                    : [];
             const updates = {
                 status: newStatus,
                 completed_at: newStatus === 2 ? new Date() : null,
@@ -765,6 +788,12 @@ function registerTaskTools(server, context, tools) {
                                     newStatus === 2
                                         ? 'Task completed'
                                         : 'Task reopened',
+                                ...(openBlockers.length > 0
+                                    ? {
+                                          warning: `Completed while blocked by ${openBlockers.length} open task(s)`,
+                                          open_blockers: openBlockers,
+                                      }
+                                    : {}),
                                 task: serialized,
                             },
                             null,
@@ -917,6 +946,150 @@ function registerTaskTools(server, context, tools) {
                     },
                 ],
             };
+        },
+    });
+
+    // 7b. Task relations (blocks, related_to, duplicates)
+    const loadWritableTask = async (identifier, label) => {
+        const found = await findTaskByIdentifier(identifier);
+        if (!found) {
+            throw new Error(`${label} not found: ${identifier}`);
+        }
+        const access = await permissionsService.getAccess(
+            context.userId,
+            'task',
+            found.uid
+        );
+        const canWrite =
+            found.user_id === context.userId ||
+            access === permissionsService.ACCESS.RW ||
+            access === permissionsService.ACCESS.ADMIN;
+        if (!canWrite) {
+            throw new Error('Access denied');
+        }
+        return found;
+    };
+
+    const jsonResult = (payload) => ({
+        content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+    });
+
+    tools.push({
+        name: 'create_task_relation',
+        description:
+            'Link two tasks. type is from the point of view of the task in id: "blocks" (id blocks target), "blocked_by" (id is blocked by target), "related_to", "duplicates", or "duplicated_by". Circular blocking chains are refused.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                id: {
+                    type: ['number', 'string'],
+                    description: 'Task ID or UID to add the relation to',
+                },
+                target_id: {
+                    type: ['number', 'string'],
+                    description: 'Task ID or UID of the other task',
+                },
+                type: {
+                    type: 'string',
+                    enum: relationsService.INPUT_TYPES,
+                },
+            },
+            required: ['id', 'target_id', 'type'],
+        },
+        handler: async (params) => {
+            const task = await loadWritableTask(params.id, 'Task');
+            const target = await findTaskByIdentifier(params.target_id);
+            if (!target) {
+                throw new Error(`Task not found: ${params.target_id}`);
+            }
+            try {
+                const relation = await relationsService.createRelation({
+                    task,
+                    targetUid: target.uid,
+                    type: params.type,
+                    userId: context.userId,
+                });
+                return jsonResult({
+                    message: 'Relation created',
+                    relation,
+                });
+            } catch (error) {
+                if (error instanceof relationsService.RelationError) {
+                    throw new Error(error.message);
+                }
+                throw error;
+            }
+        },
+    });
+
+    tools.push({
+        name: 'list_task_relations',
+        description:
+            'List the tasks linked to a task (blocks, blocked_by, related_to, duplicates, duplicated_by)',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                id: {
+                    type: ['number', 'string'],
+                    description: 'Task ID or UID',
+                },
+            },
+            required: ['id'],
+        },
+        handler: async (params) => {
+            const task = await findTaskByIdentifier(params.id);
+            if (!task) {
+                throw new Error(`Task not found: ${params.id}`);
+            }
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'task',
+                task.uid
+            );
+            if (task.user_id !== context.userId && access === 'none') {
+                throw new Error('Access denied');
+            }
+            const relations = await relationsService.listRelations(
+                task,
+                context.userId
+            );
+            return jsonResult({ count: relations.length, relations });
+        },
+    });
+
+    tools.push({
+        name: 'remove_task_relation',
+        description:
+            'Remove a relation from a task, using the relation uid from list_task_relations',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                id: {
+                    type: ['number', 'string'],
+                    description: 'Task ID or UID',
+                },
+                relation_uid: {
+                    type: 'string',
+                    description: 'Relation UID',
+                },
+            },
+            required: ['id', 'relation_uid'],
+        },
+        handler: async (params) => {
+            const task = await loadWritableTask(params.id, 'Task');
+            try {
+                await relationsService.deleteRelation({
+                    task,
+                    relationUid: params.relation_uid,
+                    userId: context.userId,
+                });
+            } catch (error) {
+                if (error instanceof relationsService.RelationError) {
+                    throw new Error(error.message);
+                }
+                throw error;
+            }
+            return jsonResult({ message: 'Relation removed' });
         },
     });
 
