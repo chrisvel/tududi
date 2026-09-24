@@ -31,11 +31,12 @@ The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics
 
 ## Planner (`/today/plan`)
 
-- **Left column:** candidates grouped as Overdue, Due today, In progress, Suggested and Inbox, with a filter pill per group. Each card has 15m / 30m / 1h / 2h chips. Overdue cards also offer **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task).
+- **Left column:** a short list, "What could you do today?": five candidates at a time in order of importance (overdue, due today, in progress, suggested), each shown as its name and one grey line. **Show 5 more** adds five, and **Browse** opens the per-group filters and the inbox. Tasks already planned leave the list. Hovering or focusing a row (always on touch screens) shows its 15m / 30m / 1h / 2h chips and, for overdue tasks, **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task).
 - **Adding:** **+** places the task in the first free slot after now that fits its length, avoiding planned tasks and busy meetings. If nothing fits it is added without a time. Dragging a card onto the timeline places it where it is dropped. The chosen length is saved as the task's estimate.
 - **Timeline:** 08:00 to 18:00, widened to whole hours around anything planned or on the calendar outside that range, in 15-minute steps. Blocks can be dragged and resized; overlapping tasks are refused. Meetings are grey, events marked "free" are dashed, and gaps of 30 minutes or more are labelled.
 - **List mode:** an ordered list without a timeline, reorderable by drag or keyboard, with an optional start time per row. Screens narrower than 768px always use list mode.
-- **Capacity:** "Xh planned of Yh free", where free time is the visible range minus busy meetings. The bar turns red when overbooked.
+- **Capacity:** "Xh planned of Yh free" as plain text, where free time is the visible range minus busy meetings. It turns red, with a bar, only when overbooked.
+- **Calm by default:** only **Draft with AI** and **Done** are buttons; the timeline/list switch and leaving without starting live in the ⋯ menu. Meetings are faint outlines, the timeline opens scrolled to now, and tips show one at a time.
 - Every change saves itself half a second after the last edit. **Start my day** saves, marks the plan started and returns to Today. **Cancel** keeps the plan as a draft.
 - Inbox items can be turned into tasks and added in one click.
 
@@ -65,6 +66,7 @@ Profile → **Calendars** connects read-only iCal feeds, such as Google Calendar
 |-------|---------|
 | `daily_plans` | One row per user per local date (`plan_date`), with `started_at` set by **Start my day** |
 | `daily_plan_items` | The tasks in a plan: `position`, `start_minute` (minutes after local midnight, null for untimed) and `duration_minutes` |
+| `daily_plans.ai_wrap_up` | The stored AI wrap-up for that day (JSON, optional) |
 | `calendar_feeds` | Name, color, encrypted URL, host, last fetch time and last error |
 
 Plans and feeds are not included in backups: plans are short-lived, and feed addresses are encrypted with this server's key.
@@ -79,11 +81,36 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | GET | `/api/daily-plan/candidates` | `{ overdue, due_today, in_progress, suggested, inbox, inbox_count }`, each task in one group only |
 | PUT | `/api/daily-plan/:date` | Replaces all items: `{ items: [{ task_uid, start_minute, duration_minutes }] }`, in order. Rejects overlaps, slots past midnight, duplicates and tasks the user cannot see |
 | POST | `/api/daily-plan/:date/start` | Marks the day started |
+| POST | `/api/daily-plan/:date/carry-over` | Appends `{ task_uids }` to that day's plan without a time, skipping tasks already there |
 | DELETE | `/api/daily-plan/:date` | Clears the plan. `:date` may be `today` |
 | GET/POST/PATCH/DELETE | `/api/calendar-feeds[/:uid]` | Manage feeds. POST fetches the feed once and refuses it if it cannot be read |
 | GET | `/api/calendar-feeds/events?date=` | `{ date, events, errors }` for that day |
 
 ---
+
+## AI help
+
+Everything in this section appears only while the **AI assistant** is switched on for the user (Profile → Features), the same switch as the Daily Brief. With it off the planner and Today look exactly as described above, and the AI endpoints return `403`.
+
+- **Planning tips** (planner and Today): worked out locally, no model call, at most three at a time.
+  - Missed blocks: offers **Move to next free slots**.
+  - Overbooking: "Planned 3h 30m, only 1h 25m free: 2h 5m over".
+  - A free gap that fits an unplanned task: offers **Place it**.
+  - No break for three hours or more.
+  - Today shows only the missed-block and gap tips.
+- **Draft with AI** (planner header):
+  - On an empty plan it drafts straight away; otherwise it offers **Fill free time** (keeps what is planned) or **Start over**.
+  - The server gives the model the candidates (up to 60), busy meetings, free gaps, the current time and the user's "About you".
+  - The server then cleans up the answer (`sanitizeDraft` in `backend/modules/daily-plan/ai.js`): only known tasks, 15-minute grid, never in the past or on top of a meeting or another block. A clash moves to the next free slot, or loses its time.
+  - The draft is applied locally, so it autosaves like any edit. **Undo** restores the previous plan. Drafted blocks show a sparkle, with the AI's reason as a tooltip.
+- **Length guesses:** when the planner opens, one request estimates up to 40 candidates without an estimate. The guess is pre-selected on the card's chips (marked with a dot) and saved as the task's estimate only when the task is added. Guesses are cached per server process for 24 hours.
+- **Day wrap-up** (Today):
+  - Offered once the last timed block has ended, or when everything is done.
+  - Returns a short summary, wins, a pattern and the unfinished tasks worth carrying over.
+  - **Add to tomorrow** appends the selected ones, untimed, to the next day's plan (`POST /api/daily-plan/:date/carry-over`).
+  - Stored in `daily_plans.ai_wrap_up`, so it is not regenerated on every visit.
+
+Each draft, estimate batch or wrap-up counts as one AI request, and one AI credit in hosted mode. See [AI Assistant](13-ai-assistant.md).
 
 ## Known limitations
 

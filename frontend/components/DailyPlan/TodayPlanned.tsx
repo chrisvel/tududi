@@ -7,6 +7,10 @@ import { CalendarEvent } from '../../utils/calendarFeedsService';
 import NowCard from './NowCard';
 import AgendaList from './AgendaList';
 import NotPlannedDrawer from './NotPlannedDrawer';
+import PlanTips from './PlanTips';
+import WrapUpCard from './WrapUpCard';
+import { PlanTip } from './tips';
+import { AiWrapUp } from '../../utils/dailyPlanService';
 
 interface TodayPlannedProps {
     items: DailyPlanItem[];
@@ -22,6 +26,15 @@ interface TodayPlannedProps {
     onPlannedTaskDelete: (taskUid: string) => Promise<void>;
     onCandidateUpdate: (task: Task) => Promise<void>;
     onCandidateDelete: (taskUid: string) => Promise<void>;
+    tips: PlanTip[];
+    onMoveMissed: () => void;
+    onPlaceTip: (tip: Extract<PlanTip, { kind: 'gapFit' }>) => void;
+    wrapUp: {
+        show: boolean;
+        date: string;
+        value: AiWrapUp | null;
+        onGenerated: (wrapUp: AiWrapUp) => void;
+    };
 }
 
 const TodayPlanned: React.FC<TodayPlannedProps> = ({
@@ -38,6 +51,10 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
     onPlannedTaskDelete,
     onCandidateUpdate,
     onCandidateDelete,
+    tips,
+    onMoveMissed,
+    onPlaceTip,
+    wrapUp,
 }) => {
     const { t } = useTranslation();
     const allDay = events.filter((e) => e.all_day);
@@ -51,6 +68,14 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
                 </p>
             )}
 
+            {wrapUp.show && (
+                <WrapUpCard
+                    date={wrapUp.date}
+                    wrapUp={wrapUp.value}
+                    onGenerated={wrapUp.onGenerated}
+                />
+            )}
+
             <NowCard
                 items={items}
                 events={events}
@@ -59,6 +84,15 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
                 onPushLater={onPushLater}
                 busyUid={busyUid}
             />
+
+            {tips.length > 0 && (
+                <PlanTips
+                    tips={tips}
+                    onMoveMissed={onMoveMissed}
+                    onPlace={onPlaceTip}
+                    compact
+                />
+            )}
 
             <AgendaList
                 items={items}

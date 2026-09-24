@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import {
+    AiWrapUp,
     DailyPlanItem,
     DailyPlanResponse,
     PlanCandidates,
@@ -24,14 +25,17 @@ import { useDailyPlanProgress } from '../../store/dailyPlanStore';
 import { useStore } from '../../store/useStore';
 import TodayUnplanned from './TodayUnplanned';
 import TodayPlanned from './TodayPlanned';
+import { buildTips, rescheduleMissed } from './tips';
 import { useDailyQuote } from './useDailyQuote';
 import {
     DEFAULT_DURATION,
     busyMinutes,
     dayRange,
     formatDuration,
+    itemEnd,
     isItemDone,
     minuteOfDay,
+    intlLocale,
 } from './planUtils';
 
 const TodayPage: React.FC = () => {
@@ -251,14 +255,14 @@ const TodayPage: React.FC = () => {
     );
 
     const handleAdd = useCallback(
-        (task: Task) => {
+        (task: Task, startMinute: number | null = null) => {
             if (!task.uid) return;
             replaceItems([
                 ...items,
                 {
                     task_uid: task.uid,
                     position: items.length,
-                    start_minute: null,
+                    start_minute: startMinute,
                     duration_minutes:
                         task.estimated_minutes ?? DEFAULT_DURATION,
                     task,
@@ -276,12 +280,49 @@ const TodayPage: React.FC = () => {
         ? Math.round((doneCount / items.length) * 100)
         : 0;
     const range = dayRange(items, events);
+    const aiEnabled = useStore(
+        (state) => state.userSettingsStore.aiAssistantEnabled
+    );
+    const tips =
+        aiEnabled && started
+            ? buildTips({
+                  items,
+                  events,
+                  candidates: candidates
+                      ? [
+                            ...candidates.overdue,
+                            ...candidates.due_today,
+                            ...candidates.in_progress,
+                            ...candidates.suggested,
+                        ]
+                      : [],
+                  range,
+                  now,
+                  durationFor: (task) =>
+                      task.estimated_minutes || DEFAULT_DURATION,
+                  include: ['missed', 'gapFit'],
+              })
+            : [];
+    // The wrap-up is offered once the last timed block is over, or when
+    // everything is done.
+    const lastEnd = items
+        .filter((item) => item.start_minute !== null)
+        .reduce((max, item) => Math.max(max, itemEnd(item)), 0);
+    const dayIsOver =
+        items.length > 0 &&
+        (items.every(isItemDone) || (lastEnd > 0 && now >= lastEnd));
+    const setWrapUp = (wrapUp: AiWrapUp) =>
+        setPlanResponse((current) =>
+            current?.plan
+                ? { ...current, plan: { ...current.plan, ai_wrap_up: wrapUp } }
+                : current
+        );
     const freeMinutes = Math.max(
         0,
         range.end - range.start - busyMinutes(events, range)
     );
     const dateLabel = planResponse
-        ? new Intl.DateTimeFormat(i18n.language, {
+        ? new Intl.DateTimeFormat(intlLocale(i18n.language), {
               weekday: 'long',
               month: 'long',
               day: 'numeric',
@@ -300,7 +341,7 @@ const TodayPage: React.FC = () => {
                             {dateLabel}
                         </span>
                         <span
-                            className="self-center rounded-full border border-blue-300 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                            className="self-center rounded-full border border-blue-300/50 bg-blue-50 px-2 py-0.5 dark:border-blue-500/30 text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
                             title={t(
                                 'dailyPlan.betaHint',
                                 'The planned Today page is new. The classic page is still at the bottom of this page.'
@@ -332,7 +373,7 @@ const TodayPage: React.FC = () => {
                             </span>
                             <Link
                                 to="/today/plan"
-                                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
+                                className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
                             >
                                 <ArrowPathIcon className="h-4 w-4" />
                                 {t('dailyPlan.replan', 'Replan')}
@@ -400,6 +441,20 @@ const TodayPage: React.FC = () => {
                             replaceCandidate(task.uid, task)
                         }
                         onCandidateDelete={handleDeleteTask}
+                        tips={tips}
+                        onMoveMissed={() =>
+                            replaceItems(
+                                rescheduleMissed(items, events, range, now)
+                            )
+                        }
+                        onPlaceTip={(tip) => handleAdd(tip.task, tip.start)}
+                        wrapUp={{
+                            show:
+                                aiEnabled && (dayIsOver || !!plan?.ai_wrap_up),
+                            date: planResponse.date,
+                            value: plan?.ai_wrap_up ?? null,
+                            onGenerated: setWrapUp,
+                        }}
                     />
                 )}
 

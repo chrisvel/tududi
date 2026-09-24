@@ -33,6 +33,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            ai_wrap_up: {
+                type: DataTypes.JSON,
+                allowNull: true,
+            },
         },
         {
             tableName: 'daily_plans',

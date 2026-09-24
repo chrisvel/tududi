@@ -5,6 +5,7 @@ import { ClockIcon } from '@heroicons/react/24/outline';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import { PlanCandidates } from '../../utils/dailyPlanService';
 import { formatDuration, formatMinute } from './planUtils';
+import CalendarBadge from './CalendarBadge';
 
 interface TodayUnplannedProps {
     candidates: PlanCandidates | null;
@@ -46,7 +47,7 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
 
     return (
         <section
-            className="mx-auto mt-6 sm:mt-10 w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 sm:p-10 flex flex-col gap-7 dark:border-gray-800 dark:bg-gray-900"
+            className="mx-auto mt-6 sm:mt-10 w-full max-w-2xl rounded-2xl bg-white p-6 sm:p-10 flex flex-col gap-7 dark:bg-gray-900"
             data-testid="today-unplanned"
         >
             <div className="flex flex-col gap-2">
@@ -118,15 +119,19 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
                     {timedEvents.map((event) => (
                         <div
                             key={`${event.feed_uid}-${event.uid}-${event.start}`}
-                            className="flex gap-3 text-sm"
+                            className="flex items-center gap-3 text-sm"
                         >
                             <span className="w-28 shrink-0 text-gray-500 dark:text-gray-400">
                                 {formatMinute(event.start_minute ?? 0)}–
                                 {formatMinute(event.end_minute ?? 0)}
                             </span>
-                            <span className="text-gray-800 dark:text-gray-200">
+                            <span className="min-w-0 truncate text-gray-800 dark:text-gray-200">
                                 {event.title}
                             </span>
+                            <CalendarBadge
+                                name={event.feed_name}
+                                color={event.color}
+                            />
                         </div>
                     ))}
                 </div>
@@ -148,7 +153,7 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
             <div className="flex flex-wrap items-center gap-5">
                 <Link
                     to="/today/plan"
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-blue-600 px-5 text-[15px] font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     data-testid="plan-your-day"
                 >
                     <ClockIcon className="h-5 w-5" />

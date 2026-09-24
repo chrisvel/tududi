@@ -14,10 +14,20 @@ import {
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (_key: string, fallback: string, values?: Record<string, unknown>) =>
-            fallback.replace(/{{(\w+)}}/g, (_m, name) =>
-                String(values?.[name] ?? '')
-            ),
+        t: (
+            _key: string,
+            fallback: string | Record<string, unknown>,
+            values?: Record<string, unknown>
+        ) => {
+            const options = typeof fallback === 'object' ? fallback : values;
+            const text =
+                typeof fallback === 'string'
+                    ? fallback
+                    : String(fallback?.defaultValue ?? _key);
+            return text.replace(/{{(\w+)}}/g, (_m, name) =>
+                String(options?.[name] ?? '')
+            );
+        },
         i18n: { language: 'en' },
     }),
 }));
@@ -36,7 +46,11 @@ jest.mock('../../Task/TaskRow', () => ({
 }));
 
 jest.mock('../../../store/useStore', () => ({
-    useStore: (selector: any) => selector({ projectsStore: { projects: [] } }),
+    useStore: (selector: any) =>
+        selector({
+            projectsStore: { projects: [] },
+            userSettingsStore: { aiAssistantEnabled: false },
+        }),
 }));
 
 jest.mock('../../Shared/ToastContext', () => ({

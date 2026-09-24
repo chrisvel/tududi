@@ -967,6 +967,16 @@ Rules:
 module.exports = {
     resolveAIConfig,
     isAIConfigured,
+    // Shared with other AI features (daily plan) so they call the provider
+    // the same way: same client, fallbacks, JSON handling and accounting.
+    getOpenAIClient,
+    getAIModel,
+    getMaxTokens,
+    getExtraBodyParams,
+    callWithFallback,
+    buildResponseFormat,
+    extractMessageContent,
+    extractJSON,
     generateDailyBrief,
     getCachedBrief,
     generateTaskInsights,

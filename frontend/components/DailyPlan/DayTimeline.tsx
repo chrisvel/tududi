@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import {
@@ -10,6 +10,7 @@ import {
     formatMinute,
     freeGaps,
 } from './planUtils';
+import CalendarBadge from './CalendarBadge';
 
 export const PX_PER_HOUR = 64;
 export const PX_PER_MINUTE = PX_PER_HOUR / 60;
@@ -21,6 +22,7 @@ interface DayTimelineProps {
     now: number | null;
     onResize: (taskUid: string, duration: number) => void;
     onRemove: (taskUid: string) => void;
+    aiReasons?: Record<string, string>;
 }
 
 interface BlockProps {
@@ -29,6 +31,7 @@ interface BlockProps {
     maxDuration: number;
     onResize: (duration: number) => void;
     onRemove: () => void;
+    aiReason?: string;
 }
 
 const TimelineBlock: React.FC<BlockProps> = ({
@@ -37,6 +40,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
     maxDuration,
     onResize,
     onRemove,
+    aiReason,
 }) => {
     const { t } = useTranslation();
     const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -85,7 +89,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
     return (
         <div
             ref={setNodeRef}
-            className={`group absolute left-1 right-1 rounded-md border border-blue-500 bg-blue-100 text-blue-950 dark:border-blue-400 dark:bg-blue-900/60 dark:text-blue-50 ${
+            className={`group absolute left-1 right-1 rounded-md bg-blue-100 text-blue-950 dark:bg-blue-900/60 dark:text-blue-50 ${
                 isDragging ? 'z-20 opacity-80 shadow-lg' : 'z-10'
             }`}
             style={{
@@ -96,6 +100,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
                     : undefined,
             }}
             data-testid={`block-${item.task_uid}`}
+            title={aiReason || undefined}
         >
             <div
                 className={`flex h-full cursor-grab items-start gap-2 overflow-hidden px-2.5 active:cursor-grabbing ${
@@ -110,8 +115,17 @@ const TimelineBlock: React.FC<BlockProps> = ({
                 <div
                     className={`flex min-w-0 flex-1 ${compact ? 'items-center gap-2' : 'flex-col gap-0.5'}`}
                 >
-                    <span className="truncate text-[13px] font-medium">
-                        {item.task.name}
+                    <span className="flex min-w-0 items-center gap-1 truncate text-[13px] font-medium">
+                        {aiReason !== undefined && (
+                            <SparklesIcon
+                                className="h-3.5 w-3.5 shrink-0 text-violet-600 dark:text-violet-300"
+                                aria-label={t(
+                                    'dailyPlan.ai.suggested',
+                                    'Suggested by AI'
+                                )}
+                            />
+                        )}
+                        <span className="truncate">{item.task.name}</span>
                     </span>
                     <span className="shrink-0 text-xs text-blue-900 dark:text-blue-200">
                         {formatMinute(item.start_minute as number)} ·{' '}
@@ -149,9 +163,18 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
     now,
     onResize,
     onRemove,
+    aiReasons,
 }) => {
     const { t } = useTranslation();
     const { setNodeRef, isOver } = useDroppable({ id: 'timeline' });
+    // Open on the part of the day that matters: scroll "now" into view once.
+    const nowRef = useRef<HTMLDivElement | null>(null);
+    const scrolledToNow = useRef(false);
+    useEffect(() => {
+        if (scrolledToNow.current || !nowRef.current) return;
+        scrolledToNow.current = true;
+        nowRef.current.scrollIntoView?.({ block: 'center' });
+    });
     const height = (range.end - range.start) * PX_PER_MINUTE;
     const hours: number[] = [];
     for (let m = range.start; m <= range.end; m += 60) hours.push(m);
@@ -168,22 +191,12 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
 
     return (
         <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap items-center gap-4 text-[13px] text-gray-600 dark:text-gray-400">
-                <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-3 rounded-sm border border-blue-500 bg-blue-100 dark:bg-blue-900/60" />
-                    {t('dailyPlan.legendTask', 'Task')}
-                </span>
-                <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-3 rounded-sm border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800" />
-                    {t('dailyPlan.legendCalendar', 'Calendar')}
-                </span>
-                {allDay.length > 0 && (
-                    <span>
-                        {t('dailyPlan.allDay', 'All day')}:{' '}
-                        {allDay.map((e) => e.title).join(', ')}
-                    </span>
-                )}
-            </div>
+            {allDay.length > 0 && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {t('dailyPlan.allDay', 'All day')}:{' '}
+                    {allDay.map((e) => e.title).join(', ')}
+                </p>
+            )}
 
             <div className="relative ml-14" style={{ height }}>
                 <div
@@ -197,13 +210,13 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                         return (
                             <React.Fragment key={minute}>
                                 <div
-                                    className="absolute -left-14 text-xs text-gray-500 dark:text-gray-400"
+                                    className="absolute -left-14 text-xs text-gray-400 dark:text-gray-500"
                                     style={{ top: top - 8 }}
                                 >
                                     {formatMinute(minute)}
                                 </div>
                                 <div
-                                    className="absolute left-0 right-0 border-t border-gray-200 dark:border-gray-800"
+                                    className="absolute left-0 right-0 border-t border-gray-100 dark:border-gray-800/70"
                                     style={{ top }}
                                 />
                             </React.Fragment>
@@ -227,17 +240,23 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                         return (
                             <div
                                 key={`${event.feed_uid}-${event.uid}-${event.start}`}
-                                className={`absolute left-1 right-1 flex items-start gap-2 overflow-hidden rounded-md border px-2.5 text-[13px] ${
+                                className={`absolute left-1 right-1 flex items-start gap-2 overflow-hidden rounded-md px-2.5 text-[13px] ${
                                     event.busy
-                                        ? 'border-gray-300 bg-gray-100 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300'
-                                        : 'border-dashed border-gray-300 bg-white text-gray-600 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-400'
+                                        ? 'bg-gray-100/80 text-gray-600 dark:bg-gray-800/50 dark:text-gray-400'
+                                        : 'bg-gray-50 text-gray-400 dark:bg-gray-800/20 dark:text-gray-500'
                                 } ${blockHeight < 40 ? 'items-center' : 'py-1.5'}`}
                                 style={{ top: top + 1, height: blockHeight }}
                             >
-                                <span className="shrink-0 text-gray-500 dark:text-gray-400">
+                                <span className="shrink-0 text-gray-400 dark:text-gray-500">
                                     {formatMinute(event.start_minute as number)}
                                 </span>
-                                <span className="truncate">{event.title}</span>
+                                <span className="min-w-0 flex-1 truncate">
+                                    {event.title}
+                                </span>
+                                <CalendarBadge
+                                    name={event.feed_name}
+                                    color={event.color}
+                                />
                             </div>
                         );
                     })}
@@ -246,7 +265,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                         freeGaps(items, events, range).map((gap) => (
                             <div
                                 key={`gap-${gap.start}`}
-                                className="pointer-events-none absolute left-1 right-1 flex items-center justify-center rounded-md border border-dashed border-blue-200 text-xs text-blue-800 dark:border-blue-900 dark:text-blue-300"
+                                className="pointer-events-none absolute left-1 right-1 flex items-center justify-center text-[11px] text-gray-400 dark:text-gray-500"
                                 style={{
                                     top:
                                         (gap.start - range.start) *
@@ -268,6 +287,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
 
                     {now !== null && now >= range.start && now <= range.end && (
                         <div
+                            ref={nowRef}
                             className="pointer-events-none absolute left-0 right-0 z-30 border-t-2 border-red-500"
                             style={{ top: (now - range.start) * PX_PER_MINUTE }}
                             aria-hidden="true"
@@ -294,12 +314,13 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                                     onResize(item.task_uid, duration)
                                 }
                                 onRemove={() => onRemove(item.task_uid)}
+                                aiReason={aiReasons?.[item.task_uid]}
                             />
                         );
                     })}
 
                     {scheduled.length === 0 && (
-                        <div className="pointer-events-none absolute inset-x-6 top-1/3 rounded-lg border-2 border-dashed border-blue-300 px-4 py-6 text-center text-sm text-blue-800 dark:border-blue-800 dark:text-blue-300">
+                        <div className="pointer-events-none absolute inset-x-6 top-1/3 rounded-lg bg-blue-50 px-4 py-6 dark:bg-blue-900/20 text-center text-sm text-blue-800 dark:text-blue-300">
                             {t(
                                 'dailyPlan.timelineEmpty',
                                 'Drag tasks here, or press + to drop them into the next free slot'
@@ -331,7 +352,7 @@ const TrayItem: React.FC<{ item: DailyPlanItem; onRemove: () => void }> = ({
     return (
         <div
             ref={setNodeRef}
-            className={`flex items-center gap-2 rounded-md border border-blue-300 bg-white px-2.5 py-1.5 text-[13px] dark:border-blue-800 dark:bg-gray-900 ${
+            className={`flex items-center gap-2 rounded-md bg-blue-50 px-2.5 py-1.5 text-[13px] dark:bg-blue-900/30 ${
                 isDragging ? 'opacity-40' : ''
             }`}
         >
@@ -363,7 +384,7 @@ const UnscheduledTray: React.FC<{
 }> = ({ items, onRemove }) => {
     const { t } = useTranslation();
     return (
-        <div className="ml-14 flex flex-col gap-2 rounded-lg border border-dashed border-gray-300 p-3 dark:border-gray-700">
+        <div className="ml-14 flex flex-col gap-2 rounded-lg bg-gray-50 p-3 dark:bg-gray-800/40">
             <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 {t('dailyPlan.noTimeYet', 'Today, no time yet')}
             </p>
