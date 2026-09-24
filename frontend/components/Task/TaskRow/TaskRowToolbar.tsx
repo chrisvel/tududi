@@ -12,6 +12,7 @@ import {
     ListBulletIcon,
     DocumentTextIcon,
     PaperClipIcon,
+    LinkIcon,
     ChatBubbleLeftIcon,
     ArrowTopRightOnSquareIcon,
     TrashIcon,
@@ -37,6 +38,7 @@ export type TaskRowSection =
     | 'recurrence'
     | 'subtasks'
     | 'attachments'
+    | 'relations'
     | 'comments';
 
 interface TaskRowToolbarProps {
@@ -47,6 +49,7 @@ interface TaskRowToolbarProps {
     onDelete: (e: React.MouseEvent) => void;
     fullPagePath: string;
     commentCount?: number;
+    relationCount?: number;
 }
 
 const normalizePriorityLabel = (
@@ -82,6 +85,7 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
     onDelete,
     fullPagePath,
     commentCount = 0,
+    relationCount = 0,
 }) => {
     const { t } = useTranslation();
 
@@ -259,6 +263,16 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
                         : undefined
                 }
                 icon={<PaperClipIcon className="h-4 w-4" />}
+            />
+
+            {/* Relations */}
+            <ToolbarButton
+                onClick={() => onToggleSection('relations')}
+                open={openSection === 'relations'}
+                active={relationCount > 0 || !!task.is_blocked}
+                label={t('relations.title', 'Relations')}
+                badge={relationCount > 0 ? String(relationCount) : undefined}
+                icon={<LinkIcon className="h-4 w-4" />}
             />
 
             {/* Comments */}

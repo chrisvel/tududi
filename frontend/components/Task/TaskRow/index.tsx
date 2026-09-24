@@ -38,13 +38,13 @@ const getPriorityBorderClassName = (
     }
     switch (p) {
         case 'high':
-            return 'border-l-4 border-l-red-500';
+            return 'border-l-[3px] border-l-red-500';
         case 'medium':
-            return 'border-l-4 border-l-yellow-400';
+            return 'border-l-[3px] border-l-yellow-400';
         case 'low':
-            return 'border-l-4 border-l-blue-400';
+            return 'border-l-[3px] border-l-blue-400';
         default:
-            return 'border-l-4 border-l-transparent';
+            return 'border-l-[3px] border-l-transparent';
     }
 };
 
@@ -331,7 +331,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
 
     const priorityBorderClass =
         isInCompletedSection || isTaskCompleted(task.status)
-            ? 'border-l-4 border-l-green-500'
+            ? 'border-l-[3px] border-l-green-500'
             : getPriorityBorderClassName(task.priority);
 
     const hasInitialSubtasks = !!(task.subtasks && task.subtasks.length > 0);

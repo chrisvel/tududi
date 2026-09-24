@@ -1,4 +1,5 @@
 import React, {
+    useCallback,
     useEffect,
     useLayoutEffect,
     useMemo,
@@ -13,6 +14,11 @@ import { useReducedMotion } from '../../../hooks/useReducedMotion';
 import { useStore } from '../../../store/useStore';
 import TagInput from '../../Tag/TagInput';
 import TaskAttachmentsCard from '../TaskDetails/TaskAttachmentsCard';
+import TaskRelationsCard from '../TaskDetails/TaskRelationsCard';
+import {
+    fetchTaskByUid,
+    fetchTaskRelations,
+} from '../../../utils/tasksService';
 import TaskComments from '../TaskComments';
 import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import { TaskRowSetters } from './useTaskRowSave';
@@ -75,6 +81,7 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
     const { t } = useTranslation();
     const reducedMotion = useReducedMotion();
     const tagsStore = useStore((s) => s.tagsStore);
+    const tasksStore = useStore((s) => s.tasksStore);
 
     const wrapperRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -88,6 +95,39 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
     const [recurrenceForm, setRecurrenceForm] = useState<RecurrenceFormState>(
         () => recurrenceFormFromTask(task)
     );
+
+    const [relationCount, setRelationCount] = useState(0);
+
+    const loadRelationCount = useCallback(async () => {
+        if (!task.uid) return;
+        try {
+            setRelationCount((await fetchTaskRelations(task.uid)).length);
+        } catch {
+            setRelationCount(0);
+        }
+    }, [task.uid]);
+
+    useEffect(() => {
+        void loadRelationCount();
+    }, [loadRelationCount]);
+
+    const handleRelationsChange = async () => {
+        await loadRelationCount();
+        if (!task.uid) return;
+        try {
+            const updated = await fetchTaskByUid(task.uid);
+            tasksStore.setTasks(
+                tasksStore.tasks.map((existing: Task) =>
+                    existing.uid === task.uid ? updated : existing
+                )
+            );
+        } catch (error) {
+            console.error(
+                'Error refreshing task after relation change:',
+                error
+            );
+        }
+    };
 
     useEffect(() => {
         setNote(task.note || '');
@@ -269,6 +309,7 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                     onDelete={onDelete}
                     fullPagePath={fullPagePath}
                     commentCount={commentCount}
+                    relationCount={relationCount}
                 />
 
                 {openSection === 'note' && (
@@ -425,6 +466,17 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                 {openSection === 'attachments' && task.uid && (
                     <div className="mt-2">
                         <TaskAttachmentsCard taskUid={task.uid} />
+                    </div>
+                )}
+
+                {openSection === 'relations' && task.uid && (
+                    <div className="mt-3 rounded-md border border-gray-200 dark:border-gray-700 p-3">
+                        <TaskRelationsCard
+                            taskUid={task.uid}
+                            onRelationsChange={() =>
+                                void handleRelationsChange()
+                            }
+                        />
                     </div>
                 )}
 
