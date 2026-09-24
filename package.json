@@ -207,6 +207,7 @@
     "fast-uri": "^3.1.7",
     "@hono/node-server": "^2.0.5",
     "body-parser": "^1.20.6",
+    "lodash-es": "^4.18.1",
     "eslint": {
       "js-yaml": "^4.3.2",
       "@eslint/eslintrc": {
