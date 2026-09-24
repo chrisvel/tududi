@@ -55,22 +55,24 @@ const AgendaList: React.FC<AgendaListProps> = ({
                     return (
                         <div
                             key={`event-${event.feed_uid}-${event.uid}-${event.start}`}
-                            className="flex items-center gap-3 rounded-lg border border-dashed border-gray-200 px-3 py-2 dark:border-gray-800"
+                            className="flex items-center gap-3"
                         >
-                            <span className="w-32 shrink-0 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="w-32 shrink-0 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 {formatMinute(event.start_minute ?? 0)}–
                                 {formatMinute(event.end_minute ?? 0)}
                             </span>
-                            <CalendarIcon
-                                className="h-5 w-5 shrink-0 text-gray-500"
-                                aria-label={t(
-                                    'dailyPlan.calendarEvent',
-                                    'Calendar event'
-                                )}
-                            />
-                            <span className="truncate text-sm text-gray-600 dark:text-gray-400">
-                                {event.title}
-                            </span>
+                            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-dashed border-gray-200 px-3 py-2 dark:border-gray-800">
+                                <CalendarIcon
+                                    className="h-5 w-5 shrink-0 text-gray-500"
+                                    aria-label={t(
+                                        'dailyPlan.calendarEvent',
+                                        'Calendar event'
+                                    )}
+                                />
+                                <span className="truncate text-sm text-gray-600 dark:text-gray-400">
+                                    {event.title}
+                                </span>
+                            </div>
                         </div>
                     );
                 }
