@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronRightIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
+import { Project } from '../../entities/Project';
 import { PlanCandidates } from '../../utils/dailyPlanService';
+import TaskRow from '../Task/TaskRow';
 
 interface NotPlannedDrawerProps {
     candidates: PlanCandidates | null;
     plannedUids: Set<string>;
     onAdd: (task: Task) => void;
+    projects: Project[];
+    onTaskUpdate: (task: Task) => Promise<void>;
+    onTaskDelete: (taskUid: string) => Promise<void>;
 }
 
 const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
     candidates,
     plannedUids,
     onAdd,
+    projects,
+    onTaskUpdate,
+    onTaskDelete,
 }) => {
     const { t } = useTranslation();
     const [open, setOpen] = useState(false);
@@ -75,7 +82,7 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
             </button>
 
             {open && (
-                <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+                <div className="flex flex-col gap-4">
                     {groups.length === 0 && (
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                             {t(
@@ -85,25 +92,33 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
                         </p>
                     )}
                     {groups.map((group) => (
-                        <div key={group.key} className="flex flex-col gap-1">
+                        <div key={group.key} className="flex flex-col gap-2">
                             <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                 {group.label}
                             </p>
                             {group.tasks.map((task) => (
                                 <div
                                     key={task.uid}
-                                    className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    className="flex items-start gap-2"
                                 >
-                                    <Link
-                                        to={`/task/${task.uid}`}
-                                        className="min-w-0 flex-1 truncate text-sm text-gray-800 hover:underline dark:text-gray-200"
-                                    >
-                                        {task.name}
-                                    </Link>
+                                    <div className="min-w-0 flex-1">
+                                        <TaskRow
+                                            task={task}
+                                            projects={projects}
+                                            onTaskUpdate={onTaskUpdate}
+                                            onTaskCompletionToggle={(
+                                                updated
+                                            ) => {
+                                                void onTaskUpdate(updated);
+                                            }}
+                                            onTaskDelete={onTaskDelete}
+                                            compact
+                                        />
+                                    </div>
                                     <button
                                         type="button"
                                         onClick={() => onAdd(task)}
-                                        className="inline-flex min-h-[36px] items-center gap-1 rounded-md px-2 text-xs font-medium text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                        className="mt-1.5 inline-flex min-h-[36px] shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
                                     >
                                         <PlusIcon className="h-4 w-4" />
                                         {t(
@@ -115,15 +130,6 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
                             ))}
                         </div>
                     ))}
-                    <Link
-                        to="/today_legacy"
-                        className="self-start text-sm text-gray-600 underline-offset-2 hover:underline dark:text-gray-400"
-                    >
-                        {t(
-                            'dailyPlan.classicToday',
-                            'Open the classic Today page'
-                        )}
-                    </Link>
                 </div>
             )}
         </div>

@@ -17,10 +17,11 @@ import {
     fetchCalendarEvents,
     fetchCalendarFeeds,
 } from '../../utils/calendarFeedsService';
-import { toggleTaskCompletion } from '../../utils/tasksService';
+import { deleteTask, toggleTaskCompletion } from '../../utils/tasksService';
 import { getUserTimezone } from '../../utils/dateUtils';
 import { useToast } from '../Shared/ToastContext';
 import { useDailyPlanProgress } from '../../store/dailyPlanStore';
+import { useStore } from '../../store/useStore';
 import TodayUnplanned from './TodayUnplanned';
 import TodayPlanned from './TodayPlanned';
 import { useDailyQuote } from './useDailyQuote';
@@ -38,6 +39,7 @@ const TodayPage: React.FC = () => {
     const { showErrorToast } = useToast();
     const setProgress = useDailyPlanProgress((s) => s.setProgress);
     const quote = useDailyQuote(i18n.language);
+    const projects = useStore((state) => state.projectsStore.projects);
 
     const [planResponse, setPlanResponse] = useState<DailyPlanResponse | null>(
         null
@@ -175,6 +177,69 @@ const TodayPage: React.FC = () => {
             }
         },
         [showErrorToast, t]
+    );
+
+    // The expandable rows save their own edits; these keep the plan's copy
+    // of each task in step.
+    const syncPlannedTask = useCallback(async (updated: Task) => {
+        setPlanResponse((current) =>
+            current?.plan
+                ? {
+                      ...current,
+                      plan: {
+                          ...current.plan,
+                          items: current.plan.items.map((i) =>
+                              i.task_uid === updated.uid
+                                  ? { ...i, task: { ...i.task, ...updated } }
+                                  : i
+                          ),
+                      },
+                  }
+                : current
+        );
+    }, []);
+
+    const replaceCandidate = useCallback(
+        (uid: string | undefined, updated: Task | null) =>
+            setCandidates((current) => {
+                if (!current || !uid) return current;
+                const apply = (tasks: Task[]) =>
+                    updated
+                        ? tasks.map((task) =>
+                              task.uid === uid ? { ...task, ...updated } : task
+                          )
+                        : tasks.filter((task) => task.uid !== uid);
+                return {
+                    ...current,
+                    overdue: apply(current.overdue),
+                    due_today: apply(current.due_today),
+                    in_progress: apply(current.in_progress),
+                    suggested: apply(current.suggested),
+                };
+            }),
+        []
+    );
+
+    const handleDeleteTask = useCallback(
+        async (taskUid: string) => {
+            await deleteTask(taskUid);
+            // The server drops the plan item along with the task.
+            setPlanResponse((current) =>
+                current?.plan
+                    ? {
+                          ...current,
+                          plan: {
+                              ...current.plan,
+                              items: current.plan.items.filter(
+                                  (i) => i.task_uid !== taskUid
+                              ),
+                          },
+                      }
+                    : current
+            );
+            replaceCandidate(taskUid, null);
+        },
+        [replaceCandidate]
     );
 
     const handlePushLater = useCallback(
@@ -318,6 +383,13 @@ const TodayPage: React.FC = () => {
                         onToggleDone={handleToggleDone}
                         onPushLater={handlePushLater}
                         onAdd={handleAdd}
+                        projects={projects}
+                        onPlannedTaskUpdate={syncPlannedTask}
+                        onPlannedTaskDelete={handleDeleteTask}
+                        onCandidateUpdate={async (task) =>
+                            replaceCandidate(task.uid, task)
+                        }
+                        onCandidateDelete={handleDeleteTask}
                     />
                 )}
 

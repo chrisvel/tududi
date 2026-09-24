@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Task } from '../../entities/Task';
+import { Project } from '../../entities/Project';
 import { DailyPlanItem, PlanCandidates } from '../../utils/dailyPlanService';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import NowCard from './NowCard';
@@ -16,6 +17,11 @@ interface TodayPlannedProps {
     onToggleDone: (item: DailyPlanItem) => void;
     onPushLater: (item: DailyPlanItem) => void;
     onAdd: (task: Task) => void;
+    projects: Project[];
+    onPlannedTaskUpdate: (task: Task) => Promise<void>;
+    onPlannedTaskDelete: (taskUid: string) => Promise<void>;
+    onCandidateUpdate: (task: Task) => Promise<void>;
+    onCandidateDelete: (taskUid: string) => Promise<void>;
 }
 
 const TodayPlanned: React.FC<TodayPlannedProps> = ({
@@ -27,6 +33,11 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
     onToggleDone,
     onPushLater,
     onAdd,
+    projects,
+    onPlannedTaskUpdate,
+    onPlannedTaskDelete,
+    onCandidateUpdate,
+    onCandidateDelete,
 }) => {
     const { t } = useTranslation();
     const allDay = events.filter((e) => e.all_day);
@@ -53,13 +64,18 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
                 items={items}
                 events={events}
                 now={now}
-                onToggleDone={onToggleDone}
+                projects={projects}
+                onTaskUpdate={onPlannedTaskUpdate}
+                onTaskDelete={onPlannedTaskDelete}
             />
 
             <NotPlannedDrawer
                 candidates={candidates}
                 plannedUids={new Set(items.map((item) => item.task_uid))}
                 onAdd={onAdd}
+                projects={projects}
+                onTaskUpdate={onCandidateUpdate}
+                onTaskDelete={onCandidateDelete}
             />
         </div>
     );

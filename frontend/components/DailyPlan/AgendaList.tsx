@@ -1,19 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CalendarIcon,
-    CheckCircleIcon,
-    ClockIcon,
+    ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
-import { CheckCircleIcon as CheckCircleSolid } from '@heroicons/react/24/solid';
+import { Task } from '../../entities/Task';
+import { Project } from '../../entities/Project';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
+import TaskRow from '../Task/TaskRow';
 import {
     buildAgenda,
     formatDuration,
     formatMinute,
     isItemDone,
+    itemEnd,
     pickCurrentItem,
 } from './planUtils';
 
@@ -21,14 +22,22 @@ interface AgendaListProps {
     items: DailyPlanItem[];
     events: CalendarEvent[];
     now: number;
-    onToggleDone: (item: DailyPlanItem) => void;
+    projects: Project[];
+    onTaskUpdate: (task: Task) => Promise<void>;
+    onTaskDelete: (taskUid: string) => Promise<void>;
 }
+
+// A timed block whose end has passed while the task is still open.
+export const isItemLate = (item: DailyPlanItem, now: number): boolean =>
+    item.start_minute !== null && itemEnd(item) <= now && !isItemDone(item);
 
 const AgendaList: React.FC<AgendaListProps> = ({
     items,
     events,
     now,
-    onToggleDone,
+    projects,
+    onTaskUpdate,
+    onTaskDelete,
 }) => {
     const { t } = useTranslation();
     const agenda = buildAgenda(items, events);
@@ -39,24 +48,16 @@ const AgendaList: React.FC<AgendaListProps> = ({
     if (agenda.length === 0) return null;
 
     return (
-        <section
-            className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
-            data-testid="agenda-list"
-        >
-            {agenda.map((entry, index) => {
-                const divider =
-                    index < agenda.length - 1
-                        ? 'border-b border-gray-100 dark:border-gray-800'
-                        : '';
-
+        <section className="flex flex-col gap-2" data-testid="agenda-list">
+            {agenda.map((entry) => {
                 if (entry.kind === 'event') {
                     const { event } = entry;
                     return (
                         <div
                             key={`event-${event.feed_uid}-${event.uid}-${event.start}`}
-                            className={`flex items-center gap-4 px-5 py-3 ${divider}`}
+                            className="flex items-center gap-3 rounded-lg border border-dashed border-gray-200 px-3 py-2 dark:border-gray-800"
                         >
-                            <span className="w-28 shrink-0 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="w-32 shrink-0 text-sm text-gray-500 dark:text-gray-400">
                                 {formatMinute(event.start_minute ?? 0)}–
                                 {formatMinute(event.end_minute ?? 0)}
                             </span>
@@ -75,8 +76,8 @@ const AgendaList: React.FC<AgendaListProps> = ({
                 }
 
                 const { item } = entry;
-                const done = isItemDone(item);
                 const isCurrent = item.task_uid === currentUid;
+                const late = isItemLate(item, now);
                 const when =
                     item.start_minute !== null
                         ? `${formatMinute(item.start_minute)} · ${formatDuration(item.duration_minutes)}`
@@ -85,57 +86,50 @@ const AgendaList: React.FC<AgendaListProps> = ({
                 return (
                     <div
                         key={`task-${item.task_uid}`}
-                        className={`flex items-center gap-4 px-5 py-3 ${divider} ${
-                            isCurrent ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-                        }`}
+                        className="flex items-start gap-3"
+                        data-testid={`agenda-task-${item.task_uid}`}
                     >
                         <span
-                            className={`w-28 shrink-0 text-sm ${
-                                isCurrent
-                                    ? 'font-medium text-blue-700 dark:text-blue-400'
-                                    : 'text-gray-600 dark:text-gray-400'
+                            className={`flex w-32 shrink-0 items-center gap-1.5 whitespace-nowrap pt-3 text-sm ${
+                                late
+                                    ? 'font-medium text-amber-700 dark:text-amber-400'
+                                    : isCurrent
+                                      ? 'font-medium text-blue-700 dark:text-blue-400'
+                                      : 'text-gray-600 dark:text-gray-400'
                             }`}
                         >
                             {when}
-                        </span>
-                        <button
-                            type="button"
-                            onClick={() => onToggleDone(item)}
-                            aria-label={
-                                done
-                                    ? t(
-                                          'dailyPlan.markNotDone',
-                                          'Mark as not done'
-                                      )
-                                    : t('dailyPlan.markDone', 'Mark done')
-                            }
-                            className="shrink-0 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                        >
-                            {done ? (
-                                <CheckCircleSolid className="h-5 w-5 text-green-600" />
-                            ) : isCurrent ? (
-                                <ClockIcon className="h-5 w-5 text-blue-600" />
-                            ) : (
-                                <CheckCircleIcon className="h-5 w-5 text-gray-400 hover:text-green-600" />
+                            {late && (
+                                <ExclamationTriangleIcon
+                                    className="h-4 w-4 shrink-0"
+                                    aria-label={t(
+                                        'dailyPlan.lateWarning',
+                                        'Time passed and not done yet'
+                                    )}
+                                    data-testid={`late-${item.task_uid}`}
+                                />
                             )}
-                        </button>
-                        <Link
-                            to={`/task/${item.task_uid}`}
-                            className={`min-w-0 flex-1 truncate text-sm hover:underline ${
-                                done
-                                    ? 'text-gray-500 line-through dark:text-gray-500'
-                                    : isCurrent
-                                      ? 'font-medium text-blue-900 dark:text-blue-200'
-                                      : 'text-gray-900 dark:text-gray-100'
+                        </span>
+                        <div
+                            className={`min-w-0 flex-1 rounded-lg ${
+                                isCurrent
+                                    ? 'ring-2 ring-blue-500/60'
+                                    : late
+                                      ? 'ring-1 ring-amber-500/50'
+                                      : ''
                             }`}
                         >
-                            {item.task.name}
-                        </Link>
-                        {item.task.Project?.name && (
-                            <span className="hidden truncate text-xs text-gray-500 sm:inline dark:text-gray-400">
-                                {item.task.Project.name}
-                            </span>
-                        )}
+                            <TaskRow
+                                task={item.task}
+                                projects={projects}
+                                onTaskUpdate={onTaskUpdate}
+                                onTaskCompletionToggle={(task) => {
+                                    void onTaskUpdate(task);
+                                }}
+                                onTaskDelete={onTaskDelete}
+                                compact
+                            />
+                        </div>
                     </div>
                 );
             })}

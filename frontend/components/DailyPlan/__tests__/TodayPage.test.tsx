@@ -14,11 +14,7 @@ import {
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (
-            _key: string,
-            fallback: string,
-            values?: Record<string, unknown>
-        ) =>
+        t: (_key: string, fallback: string, values?: Record<string, unknown>) =>
             fallback.replace(/{{(\w+)}}/g, (_m, name) =>
                 String(values?.[name] ?? '')
             ),
@@ -34,8 +30,20 @@ jest.mock('react-router-dom', () => ({
     ),
 }));
 
+jest.mock('../../Task/TaskRow', () => ({
+    __esModule: true,
+    default: ({ task }: any) => <div data-testid="task-row">{task.name}</div>,
+}));
+
+jest.mock('../../../store/useStore', () => ({
+    useStore: (selector: any) => selector({ projectsStore: { projects: [] } }),
+}));
+
 jest.mock('../../Shared/ToastContext', () => ({
-    useToast: () => ({ showErrorToast: jest.fn(), showSuccessToast: jest.fn() }),
+    useToast: () => ({
+        showErrorToast: jest.fn(),
+        showSuccessToast: jest.fn(),
+    }),
 }));
 
 jest.mock('../../../utils/dateUtils', () => ({
@@ -96,9 +104,7 @@ describe('TodayPage', () => {
         expect(
             screen.getByText('Skip and show everything').closest('a')
         ).toHaveAttribute('href', '/today_legacy');
-        await waitFor(() =>
-            expect(screen.getByText('4')).toBeInTheDocument()
-        );
+        await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
     });
 
     it('offers to continue a draft plan', async () => {
@@ -125,6 +131,49 @@ describe('TodayPage', () => {
         expect(
             await screen.findByText('Continue planning')
         ).toBeInTheDocument();
+    });
+
+    it('warns about a timed task whose slot has passed', async () => {
+        jest.useFakeTimers({ doNotFake: ['setTimeout', 'setInterval'] });
+        jest.setSystemTime(new Date('2026-09-24T12:00:00Z'));
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: {
+                uid: 'p',
+                date: '2026-09-24',
+                started_at: '2026-09-24T06:00:00Z',
+                items: [
+                    {
+                        task_uid: 'late',
+                        position: 0,
+                        start_minute: 480,
+                        duration_minutes: 30,
+                        task: { uid: 'late', name: 'Missed it', status: 0 },
+                    },
+                    {
+                        task_uid: 'done',
+                        position: 1,
+                        start_minute: 540,
+                        duration_minutes: 30,
+                        task: { uid: 'done', name: 'Did it', status: 2 },
+                    },
+                    {
+                        task_uid: 'later',
+                        position: 2,
+                        start_minute: 900,
+                        duration_minutes: 30,
+                        task: { uid: 'later', name: 'Not yet', status: 0 },
+                    },
+                ],
+            },
+        });
+
+        render(<TodayPage />);
+
+        expect(await screen.findByTestId('late-late')).toBeInTheDocument();
+        expect(screen.queryByTestId('late-done')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('late-later')).not.toBeInTheDocument();
+        jest.useRealTimers();
     });
 
     it('shows only the plan once the day is started', async () => {
@@ -160,9 +209,9 @@ describe('TodayPage', () => {
         );
         expect(screen.getByText('1 of 2 done · 1h left')).toBeInTheDocument();
         expect(screen.queryByTestId('today-unplanned')).not.toBeInTheDocument();
-        expect(await screen.findByTestId('not-planned-toggle')).toHaveTextContent(
-            'Not planned (1)'
-        );
+        expect(
+            await screen.findByTestId('not-planned-toggle')
+        ).toHaveTextContent('Not planned (1)');
     });
 });
 

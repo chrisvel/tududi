@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
@@ -93,12 +92,9 @@ const NowCard: React.FC<NowCardProps> = ({
                     {label}
                     {when ? ` · ${when}` : ''}
                 </span>
-                <Link
-                    to={`/task/${item.task_uid}`}
-                    className="truncate text-xl text-gray-900 hover:underline dark:text-gray-100"
-                >
+                <span className="truncate text-xl text-gray-900 dark:text-gray-100">
                     {item.task.name}
-                </Link>
+                </span>
                 {details.length > 0 && (
                     <span className="text-sm text-gray-600 dark:text-gray-400">
                         {details.join(' · ')}

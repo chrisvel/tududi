@@ -45,7 +45,7 @@ test.describe('Plan my day', () => {
         await expect(agenda).toContainText(name);
         await expect(page.getByTestId('now-card')).toContainText(name);
 
-        await agenda.getByRole('button', { name: 'Mark done' }).first().click();
+        await page.getByTestId('now-card-done').click();
         await expect(
             page.getByText('Everything you planned is done')
         ).toBeVisible();
