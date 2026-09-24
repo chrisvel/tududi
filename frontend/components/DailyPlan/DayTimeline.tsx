@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -166,6 +166,14 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
 }) => {
     const { t } = useTranslation();
     const { setNodeRef, isOver } = useDroppable({ id: 'timeline' });
+    // Open on the part of the day that matters: scroll "now" into view once.
+    const nowRef = useRef<HTMLDivElement | null>(null);
+    const scrolledToNow = useRef(false);
+    useEffect(() => {
+        if (scrolledToNow.current || !nowRef.current) return;
+        scrolledToNow.current = true;
+        nowRef.current.scrollIntoView?.({ block: 'center' });
+    });
     const height = (range.end - range.start) * PX_PER_MINUTE;
     const hours: number[] = [];
     for (let m = range.start; m <= range.end; m += 60) hours.push(m);
@@ -182,22 +190,12 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
 
     return (
         <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap items-center gap-4 text-[13px] text-gray-600 dark:text-gray-400">
-                <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-3 rounded-sm border border-blue-500 bg-blue-100 dark:bg-blue-900/60" />
-                    {t('dailyPlan.legendTask', 'Task')}
-                </span>
-                <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-3 rounded-sm border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800" />
-                    {t('dailyPlan.legendCalendar', 'Calendar')}
-                </span>
-                {allDay.length > 0 && (
-                    <span>
-                        {t('dailyPlan.allDay', 'All day')}:{' '}
-                        {allDay.map((e) => e.title).join(', ')}
-                    </span>
-                )}
-            </div>
+            {allDay.length > 0 && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {t('dailyPlan.allDay', 'All day')}:{' '}
+                    {allDay.map((e) => e.title).join(', ')}
+                </p>
+            )}
 
             <div className="relative ml-14" style={{ height }}>
                 <div
@@ -211,13 +209,13 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                         return (
                             <React.Fragment key={minute}>
                                 <div
-                                    className="absolute -left-14 text-xs text-gray-500 dark:text-gray-400"
+                                    className="absolute -left-14 text-xs text-gray-400 dark:text-gray-500"
                                     style={{ top: top - 8 }}
                                 >
                                     {formatMinute(minute)}
                                 </div>
                                 <div
-                                    className="absolute left-0 right-0 border-t border-gray-200 dark:border-gray-800"
+                                    className="absolute left-0 right-0 border-t border-gray-100 dark:border-gray-800/70"
                                     style={{ top }}
                                 />
                             </React.Fragment>
@@ -243,12 +241,12 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                                 key={`${event.feed_uid}-${event.uid}-${event.start}`}
                                 className={`absolute left-1 right-1 flex items-start gap-2 overflow-hidden rounded-md border px-2.5 text-[13px] ${
                                     event.busy
-                                        ? 'border-gray-300 bg-gray-100 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300'
-                                        : 'border-dashed border-gray-300 bg-white text-gray-600 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-400'
+                                        ? 'border-gray-200 bg-transparent text-gray-500 dark:border-gray-700 dark:text-gray-400'
+                                        : 'border-dashed border-gray-200 bg-transparent text-gray-400 dark:border-gray-700 dark:text-gray-500'
                                 } ${blockHeight < 40 ? 'items-center' : 'py-1.5'}`}
                                 style={{ top: top + 1, height: blockHeight }}
                             >
-                                <span className="shrink-0 text-gray-500 dark:text-gray-400">
+                                <span className="shrink-0 text-gray-400 dark:text-gray-500">
                                     {formatMinute(event.start_minute as number)}
                                 </span>
                                 <span className="truncate">{event.title}</span>
@@ -260,7 +258,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                         freeGaps(items, events, range).map((gap) => (
                             <div
                                 key={`gap-${gap.start}`}
-                                className="pointer-events-none absolute left-1 right-1 flex items-center justify-center rounded-md border border-dashed border-blue-200 text-xs text-blue-800 dark:border-blue-900 dark:text-blue-300"
+                                className="pointer-events-none absolute left-1 right-1 flex items-center justify-center text-[11px] text-gray-400 dark:text-gray-500"
                                 style={{
                                     top:
                                         (gap.start - range.start) *
@@ -282,6 +280,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
 
                     {now !== null && now >= range.start && now <= range.end && (
                         <div
+                            ref={nowRef}
                             className="pointer-events-none absolute left-0 right-0 z-30 border-t-2 border-red-500"
                             style={{ top: (now - range.start) * PX_PER_MINUTE }}
                             aria-hidden="true"

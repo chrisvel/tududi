@@ -44,7 +44,10 @@ import { getUserTimezone } from '../../utils/dateUtils';
 import { TASK_STATUS } from '../../constants/taskStatus';
 import { useToast } from '../Shared/ToastContext';
 import { useStore } from '../../store/useStore';
-import { SparklesIcon } from '@heroicons/react/24/outline';
+import {
+    EllipsisHorizontalIcon,
+    SparklesIcon,
+} from '@heroicons/react/24/outline';
 import PlanTips from './PlanTips';
 import { buildTips, rescheduleMissed } from './tips';
 import CandidateList, { CandidateFilter } from './CandidateList';
@@ -149,6 +152,7 @@ const PlanMyDay: React.FC = () => {
     } | null>(null);
     const [drafting, setDrafting] = useState(false);
     const [draftChoiceOpen, setDraftChoiceOpen] = useState(false);
+    const [moreOpen, setMoreOpen] = useState(false);
 
     const mode: Mode = narrow ? 'list' : preferredMode;
     const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -661,8 +665,6 @@ const PlanMyDay: React.FC = () => {
               day: 'numeric',
           }).format(new Date(`${date}T12:00:00`))
         : '';
-    const capacity =
-        freeMinutes > 0 ? Math.min(100, (planned / freeMinutes) * 100) : 0;
     const overBooked = planned > freeMinutes;
 
     if (error) {
@@ -683,54 +685,40 @@ const PlanMyDay: React.FC = () => {
         >
             <div className="flex h-full w-full flex-col gap-4 px-4 pb-4 pt-4 sm:px-6 lg:px-8">
                 <header className="flex shrink-0 flex-wrap items-center gap-x-6 gap-y-3">
-                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <h2 className="text-2xl font-light">
-                            {t('dailyPlan.planTitle', 'Plan {{date}}', {
-                                date: dateLabel,
-                            })}
-                        </h2>
-                        <span className="text-[13px] text-gray-600 dark:text-gray-400">
-                            {mode === 'timeline'
-                                ? t(
-                                      'dailyPlan.planHintTimeline',
-                                      'Add tasks from the left, drag them into free time on the right'
-                                  )
-                                : t(
-                                      'dailyPlan.planHintList',
-                                      'Add tasks from the left and put them in the order you will do them'
-                                  )}
-                        </span>
-                    </div>
+                    <h2 className="min-w-0 flex-1 text-2xl font-light">
+                        {t('dailyPlan.planTitle', 'Plan {{date}}', {
+                            date: dateLabel,
+                        })}
+                    </h2>
 
-                    <div
-                        className="flex w-56 flex-col gap-1.5"
-                        data-testid="capacity"
-                    >
-                        <div className="flex justify-between text-[13px]">
+                    {candidates && (
+                        <div
+                            className="flex flex-col items-end gap-1 text-[13px]"
+                            data-testid="capacity"
+                        >
                             <span
                                 className={
                                     overBooked
                                         ? 'font-medium text-red-700 dark:text-red-400'
-                                        : 'text-gray-700 dark:text-gray-300'
+                                        : 'text-gray-600 dark:text-gray-400'
                                 }
                             >
                                 {t('dailyPlan.planned', '{{time}} planned', {
                                     time: formatDuration(planned),
-                                })}
+                                })}{' '}
+                                <span className="text-gray-400 dark:text-gray-500">
+                                    {t('dailyPlan.ofFree', 'of {{time}} free', {
+                                        time: formatDuration(freeMinutes),
+                                    })}
+                                </span>
                             </span>
-                            <span className="text-gray-500 dark:text-gray-400">
-                                {t('dailyPlan.ofFree', 'of {{time}} free', {
-                                    time: formatDuration(freeMinutes),
-                                })}
-                            </span>
+                            {overBooked && (
+                                <div className="h-1 w-40 rounded-full bg-red-100 dark:bg-red-900/40">
+                                    <div className="h-1 w-full rounded-full bg-red-500" />
+                                </div>
+                            )}
                         </div>
-                        <div className="h-1.5 rounded-full bg-gray-200 dark:bg-gray-700">
-                            <div
-                                className={`h-1.5 rounded-full ${overBooked ? 'bg-red-600' : 'bg-blue-600'}`}
-                                style={{ width: `${capacity}%` }}
-                            />
-                        </div>
-                    </div>
+                    )}
 
                     {aiEnabled && (
                         <div className="relative">
@@ -738,7 +726,7 @@ const PlanMyDay: React.FC = () => {
                                 type="button"
                                 onClick={startDraft}
                                 disabled={drafting || !date}
-                                className="inline-flex min-h-[38px] items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 text-[13px] font-medium text-blue-800 hover:bg-blue-100 disabled:opacity-60 dark:border-blue-900 dark:bg-blue-900/30 dark:text-blue-200"
+                                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium text-violet-700 hover:bg-violet-50 disabled:opacity-60 dark:text-violet-300 dark:hover:bg-violet-900/30"
                                 data-testid="ai-draft-button"
                             >
                                 <SparklesIcon
@@ -791,46 +779,63 @@ const PlanMyDay: React.FC = () => {
                         </div>
                     )}
 
-                    {!narrow && (
-                        <div
-                            className="flex rounded-lg bg-gray-100 p-0.5 dark:bg-gray-800"
-                            role="group"
-                            aria-label={t('dailyPlan.viewMode', 'View')}
-                        >
-                            {(['timeline', 'list'] as Mode[]).map((option) => (
-                                <button
-                                    key={option}
-                                    type="button"
-                                    aria-pressed={mode === option}
-                                    onClick={() => setMode(option)}
-                                    className={`min-h-[34px] rounded-md px-3.5 text-[13px] ${
-                                        mode === option
-                                            ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-gray-100'
-                                            : 'text-gray-600 dark:text-gray-400'
-                                    }`}
-                                >
-                                    {option === 'timeline'
-                                        ? t('dailyPlan.timeline', 'Timeline')
-                                        : t('dailyPlan.list', 'List')}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                         {saveState === 'saving' && (
                             <span className="text-xs text-gray-500">
                                 {t('dailyPlan.saving', 'Saving…')}
                             </span>
                         )}
-                        <button
-                            type="button"
-                            onClick={() => leave(false)}
-                            disabled={leaving}
-                            className="text-sm text-gray-600 underline-offset-2 hover:underline disabled:opacity-50 dark:text-gray-400"
-                        >
-                            {t('common.cancel', 'Cancel')}
-                        </button>
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setMoreOpen((open) => !open)}
+                                aria-expanded={moreOpen}
+                                aria-label={t('dailyPlan.more', 'More options')}
+                                className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                                data-testid="plan-more"
+                            >
+                                <EllipsisHorizontalIcon className="h-5 w-5" />
+                            </button>
+                            {moreOpen && (
+                                <div className="absolute right-0 z-40 mt-1 flex w-48 flex-col rounded-lg border border-gray-200 bg-white p-1 text-sm shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                                    {!narrow && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setMode(
+                                                    mode === 'timeline'
+                                                        ? 'list'
+                                                        : 'timeline'
+                                                );
+                                                setMoreOpen(false);
+                                            }}
+                                            className="rounded-md px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            {mode === 'timeline'
+                                                ? t(
+                                                      'dailyPlan.switchToList',
+                                                      'Switch to list'
+                                                  )
+                                                : t(
+                                                      'dailyPlan.switchToTimeline',
+                                                      'Switch to timeline'
+                                                  )}
+                                        </button>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => leave(false)}
+                                        disabled={leaving}
+                                        className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+                                    >
+                                        {t(
+                                            'dailyPlan.leaveWithoutStarting',
+                                            'Back to Today'
+                                        )}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                         <button
                             type="button"
                             onClick={() => leave(true)}
@@ -851,7 +856,7 @@ const PlanMyDay: React.FC = () => {
                     </p>
                 ) : (
                     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto md:flex-row md:overflow-hidden">
-                        <aside className="shrink-0 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-5 md:w-[420px] md:overflow-y-auto dark:border-gray-800 dark:bg-gray-900">
+                        <aside className="shrink-0 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-5 md:max-h-full md:w-[400px] md:self-start md:overflow-y-auto dark:border-gray-800 dark:bg-gray-900">
                             <CandidateList
                                 candidates={candidates}
                                 planned={plannedMap}
@@ -945,7 +950,7 @@ const PlanMyDay: React.FC = () => {
                             )}
 
                             {tips.length > 0 && (
-                                <div className="mb-3">
+                                <div className="sticky top-0 z-40 -mx-1 mb-3 bg-white px-1 pb-1 dark:bg-gray-900">
                                     <PlanTips
                                         tips={tips}
                                         onMoveMissed={() =>

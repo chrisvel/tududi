@@ -31,11 +31,12 @@ The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics
 
 ## Planner (`/today/plan`)
 
-- **Left column:** candidates grouped as Overdue, Due today, In progress, Suggested and Inbox, with a filter pill per group. Each card has 15m / 30m / 1h / 2h chips. Overdue cards also offer **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task).
+- **Left column:** a short list, "What could you do today?": five candidates at a time in order of importance (overdue, due today, in progress, suggested), each shown as its name and one grey line. **Show 5 more** adds five, and **Browse** opens the per-group filters and the inbox. Tasks already planned leave the list. Hovering or focusing a row (always on touch screens) shows its 15m / 30m / 1h / 2h chips and, for overdue tasks, **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task).
 - **Adding:** **+** places the task in the first free slot after now that fits its length, avoiding planned tasks and busy meetings. If nothing fits it is added without a time. Dragging a card onto the timeline places it where it is dropped. The chosen length is saved as the task's estimate.
 - **Timeline:** 08:00 to 18:00, widened to whole hours around anything planned or on the calendar outside that range, in 15-minute steps. Blocks can be dragged and resized; overlapping tasks are refused. Meetings are grey, events marked "free" are dashed, and gaps of 30 minutes or more are labelled.
 - **List mode:** an ordered list without a timeline, reorderable by drag or keyboard, with an optional start time per row. Screens narrower than 768px always use list mode.
-- **Capacity:** "Xh planned of Yh free", where free time is the visible range minus busy meetings. The bar turns red when overbooked.
+- **Capacity:** "Xh planned of Yh free" as plain text, where free time is the visible range minus busy meetings. It turns red, with a bar, only when overbooked.
+- **Calm by default:** only **Draft with AI** and **Done** are buttons; the timeline/list switch and leaving without starting live in the ⋯ menu. Meetings are faint outlines, the timeline opens scrolled to now, and tips show one at a time.
 - Every change saves itself half a second after the last edit. **Start my day** saves, marks the plan started and returns to Today. **Cancel** keeps the plan as a draft.
 - Inbox items can be turned into tasks and added in one click.
 

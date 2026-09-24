@@ -2268,8 +2268,17 @@
       "overbooked": "Planned {{planned}}, only {{free}} free: {{over}} over",
       "gapFit": "{{gap}} free at {{time}} fits {{name}} ({{duration}})",
       "place": "Place it",
-      "noBreak": "No break between {{start}} and {{end}}"
-    }
+      "noBreak": "No break between {{start}} and {{end}}",
+      "next": "Next tip"
+    },
+    "more": "More options",
+    "switchToList": "Switch to list",
+    "switchToTimeline": "Switch to timeline",
+    "leaveWithoutStarting": "Back to Today",
+    "overdueDays": "Overdue {{count}}d",
+    "whatNext": "What could you do today?",
+    "browse": "Browse",
+    "showMore": "Show {{count}} more"
   },
   "relations": {
     "title": "Relations",

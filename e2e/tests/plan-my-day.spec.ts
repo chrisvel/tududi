@@ -35,7 +35,8 @@ test.describe('Plan my day', () => {
 
         // It takes the next free slot, or the untimed tray late in the day,
         // with the task's 1h estimate either way.
-        await expect(card).toContainText('Planned');
+        // Planned tasks leave the shortlist; they live on the timeline now.
+        await expect(card).toHaveCount(0);
         await expect(page.getByTestId('capacity')).toContainText('1h planned');
 
         await page.getByTestId('start-my-day').click();
