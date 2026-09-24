@@ -213,9 +213,40 @@ async function assertSafeUrl(urlLike) {
     return parsed;
 }
 
+// A socket `lookup` that refuses private addresses at connect time. The
+// check in assertSafeUrl resolves DNS once; without this the HTTP client
+// resolves again and a rebinding host can answer with a private address.
+function publicOnlyLookup(hostname, options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = {};
+    } else if (typeof options === 'number') {
+        options = { family: options };
+    }
+
+    dns.lookup(hostname, { ...options, all: true }, (error, addresses) => {
+        if (error) return callback(error);
+
+        const unsafe = addresses.find(({ address }) =>
+            isPrivateOrReservedIp(address)
+        );
+        if (unsafe) {
+            return callback(
+                new UnsafeUrlError(
+                    `Refusing to connect to private/reserved address: ${unsafe.address}`
+                )
+            );
+        }
+
+        if (options.all) return callback(null, addresses);
+        return callback(null, addresses[0].address, addresses[0].family);
+    });
+}
+
 module.exports = {
     UnsafeUrlError,
     assertSafeUrl,
     assertPublicHostname,
     isPrivateOrReservedIp,
+    publicOnlyLookup,
 };

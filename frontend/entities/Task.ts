@@ -23,6 +23,7 @@ export interface Task {
     due_date?: string;
     defer_until?: string;
     reminder_at?: string;
+    estimated_minutes?: number | null;
     note?: string;
     tags?: Tag[];
     project_id?: number;

@@ -1,6 +1,10 @@
 const moment = require('moment-timezone');
 const { Task } = require('../../../models');
-const { parsePriority, parseStatus } = require('./parsers');
+const {
+    parsePriority,
+    parseStatus,
+    parseEstimatedMinutes,
+} = require('./parsers');
 const {
     processDueDateForStorage,
     processDeferUntilForStorage,
@@ -181,6 +185,10 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         attrs.user_id = userId;
     }
 
+    if (body.estimated_minutes !== undefined) {
+        attrs.estimated_minutes = parseEstimatedMinutes(body.estimated_minutes);
+    }
+
     if (body.assigned_to !== undefined) {
         attrs.assigned_to = body.assigned_to || null;
     }
@@ -281,6 +289,10 @@ function buildUpdateAttributes(body, task, timezone) {
             body.defer_until,
             timezone
         );
+    }
+
+    if (body.estimated_minutes !== undefined) {
+        attrs.estimated_minutes = parseEstimatedMinutes(body.estimated_minutes);
     }
 
     if (body.assigned_to !== undefined) {

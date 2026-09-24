@@ -1,0 +1,92 @@
+# Daily Plan - Behavior Rules
+
+This document explains how the Today page, the "Plan my day" planner and calendar feeds work. For technical details see `/backend/modules/daily-plan/`, `/backend/modules/calendar-feeds/` and `/frontend/components/DailyPlan/`.
+
+---
+
+## Overview
+
+Today has two modes:
+
+1. **Planning** (`/today/plan`): a full-screen planner. Pick tasks, give each a rough length and place them in free time around your meetings.
+2. **Doing** (`/today`): only what you committed to, in order, with the current block on top.
+
+The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics and the AI brief) is still available at `/today_legacy`. Its rules are in [Today Page Sections](02-today-page-sections.md).
+
+---
+
+## Today (`/today`)
+
+| State | What you see |
+|-------|--------------|
+| No plan, or a plan that was never started | A card with overdue, due today and inbox counts, free hours, today's meetings, **Plan your day** (or **Continue planning** for a draft) and a link to the classic page |
+| Plan started | The header shows done/total and time left, then the **Now** card, the agenda (tasks and meetings in time order) and a collapsed **Not planned** list |
+
+- **Now card:** the block running right now; otherwise the next planned block; otherwise the first unfinished task without a time. **Mark done** completes the task. **Push to later** removes the time slot and moves the task to the end of the list.
+- **Not planned:** the tasks the classic page would show (overdue, due today, in progress, suggested) that are not in the plan. **Add to today** appends one without a time.
+- **Replan** reopens the planner. Starting the day again keeps the first start time.
+- The sidebar shows `done/total` next to Today once the day is started.
+
+---
+
+## Planner (`/today/plan`)
+
+- **Left column:** candidates grouped as Overdue, Due today, In progress, Suggested and Inbox, with a filter pill per group. Each card has 15m / 30m / 1h / 2h chips. Overdue cards also offer **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task).
+- **Adding:** **+** places the task in the first free slot after now that fits its length, avoiding planned tasks and busy meetings. If nothing fits it is added without a time. Dragging a card onto the timeline places it where it is dropped. The chosen length is saved as the task's estimate.
+- **Timeline:** 08:00 to 18:00, widened to whole hours around anything planned or on the calendar outside that range, in 15-minute steps. Blocks can be dragged and resized; overlapping tasks are refused. Meetings are grey, events marked "free" are dashed, and gaps of 30 minutes or more are labelled.
+- **List mode:** an ordered list without a timeline, reorderable by drag or keyboard, with an optional start time per row. Screens narrower than 768px always use list mode.
+- **Capacity:** "Xh planned of Yh free", where free time is the visible range minus busy meetings. The bar turns red when overbooked.
+- Every change saves itself half a second after the last edit. **Start my day** saves, marks the plan started and returns to Today. **Cancel** keeps the plan as a draft.
+- Inbox items can be turned into tasks and added in one click.
+
+---
+
+## Task estimates
+
+Tasks have an optional `estimated_minutes` (5 to 720), set from the **Estimate** card on the task page or when a task is added to a plan. It is the default block length; each day's block can differ from it.
+
+---
+
+## Calendar feeds
+
+Profile → **Calendars** connects read-only iCal feeds, such as Google Calendar's "Secret address in iCal format". Apple Calendar, Outlook and Fastmail links work too, and `webcal://` links are accepted.
+
+- Tududi never writes to these calendars.
+- The address is a secret: it is stored encrypted (needs `TUDUDI_SESSION_SECRET` or `TUDUDI_OIDC_SECRET_ENCRYPTION_KEY`) and the API only returns its host.
+- The server fetches the feed through the SSRF guard (public hosts only, every redirect checked), with a 10 second timeout and a 5 MB limit, and caches it for 15 minutes per process.
+- Recurring events (RRULE, RDATE, EXDATE, moved instances), time zones, all-day events and events crossing midnight are expanded in the user's timezone. Cancelled events are dropped.
+- If a feed stops working, Today keeps the last good copy when one is cached, and the error shows on the Calendars tab.
+
+---
+
+## Data model
+
+| Table | Purpose |
+|-------|---------|
+| `daily_plans` | One row per user per local date (`plan_date`), with `started_at` set by **Start my day** |
+| `daily_plan_items` | The tasks in a plan: `position`, `start_minute` (minutes after local midnight, null for untimed) and `duration_minutes` |
+| `calendar_feeds` | Name, color, encrypted URL, host, last fetch time and last error |
+
+Plans and feeds are not included in backups: plans are short-lived, and feed addresses are encrypted with this server's key.
+
+---
+
+## API
+
+| Method | Path | Notes |
+|--------|------|-------|
+| GET | `/api/daily-plan?date=` | The plan, or `null`. The date defaults to today in the user's timezone |
+| GET | `/api/daily-plan/candidates` | `{ overdue, due_today, in_progress, suggested, inbox, inbox_count }`, each task in one group only |
+| PUT | `/api/daily-plan/:date` | Replaces all items: `{ items: [{ task_uid, start_minute, duration_minutes }] }`, in order. Rejects overlaps, slots past midnight, duplicates and tasks the user cannot see |
+| POST | `/api/daily-plan/:date/start` | Marks the day started |
+| DELETE | `/api/daily-plan/:date` | Clears the plan. `:date` may be `today` |
+| GET/POST/PATCH/DELETE | `/api/calendar-feeds[/:uid]` | Manage feeds. POST fetches the feed once and refuses it if it cannot be read |
+| GET | `/api/calendar-feeds/events?date=` | `{ date, events, errors }` for that day |
+
+---
+
+## Known limitations
+
+- Two open planners for the same day overwrite each other; the last save wins.
+- Unfinished tasks are not carried over to the next day's plan.
+- There are no MCP tools for the plan yet.

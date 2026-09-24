@@ -34,6 +34,7 @@ import {
     TaskRecurrenceCard,
     TaskDueDateCard,
     TaskDeferUntilCard,
+    TaskEstimateCard,
     TaskAttachmentsCard,
     TaskAssignedToCard,
     TaskGoalCard,
@@ -1316,6 +1317,23 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleEstimateChange = async (minutes: number | null) => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { estimated_minutes: minutes });
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+        } catch (error) {
+            console.error('Error updating estimate:', error);
+            showErrorToast(
+                t('task.estimateError', 'Failed to update the estimate')
+            );
+        }
+    };
+
     const handleAssignPerson = async (personUid: string | null) => {
         if (!task?.uid) return;
         try {
@@ -1593,6 +1611,11 @@ const TaskDetails: React.FC = () => {
                                     onStartEdit={handleStartDeferUntilEdit}
                                     onSave={handleSaveDeferUntil}
                                     onCancel={handleCancelDeferUntilEdit}
+                                />
+
+                                <TaskEstimateCard
+                                    task={task}
+                                    onChange={handleEstimateChange}
                                 />
                             </div>
                         </div>

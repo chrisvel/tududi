@@ -45,6 +45,7 @@ const SubscriptionRequired = lazy(
 );
 import { User } from './entities/User';
 import TasksToday from './components/Task/TasksToday';
+import TodayPage from './components/DailyPlan/TodayPage';
 import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
@@ -71,6 +72,7 @@ import {
 const PublicNotePage = lazy(
     () => import('./components/PublicNote/PublicNotePage')
 );
+const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 // Declared at module scope: the users page switches tabs through the query
@@ -162,12 +164,10 @@ const App: React.FC = () => {
                     .userSettingsStore.setSidebarVisibleSections(
                         data.user.sidebar_settings?.visibleSections ?? {}
                     );
-                useStore
-                    .getState()
-                    .userSettingsStore.setSidebarOrder({
-                        linkOrder: data.user.sidebar_settings?.linkOrder,
-                        sectionOrder: data.user.sidebar_settings?.sectionOrder,
-                    });
+                useStore.getState().userSettingsStore.setSidebarOrder({
+                    linkOrder: data.user.sidebar_settings?.linkOrder,
+                    sectionOrder: data.user.sidebar_settings?.sectionOrder,
+                });
                 useStore
                     .getState()
                     .userSettingsStore.setSidebarWidthPercent(
@@ -366,7 +366,28 @@ const App: React.FC = () => {
                                 index
                                 element={<Navigate to="/today" replace />}
                             />
-                            <Route path="/today" element={<TasksToday />} />
+                            <Route path="/today" element={<TodayPage />} />
+                            <Route
+                                path="/today_legacy"
+                                element={<TasksToday />}
+                            />
+                            <Route
+                                path="/today/plan"
+                                element={
+                                    <Suspense
+                                        fallback={
+                                            <div className="p-4">
+                                                {i18n.t(
+                                                    'common.loading',
+                                                    'Loading...'
+                                                )}
+                                            </div>
+                                        }
+                                    >
+                                        <PlanMyDay />
+                                    </Suspense>
+                                }
+                            />
                             <Route
                                 path="/task/:uid"
                                 element={<TaskDetails />}

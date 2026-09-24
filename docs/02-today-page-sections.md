@@ -1,5 +1,7 @@
 # Today Page Sections - Behavior Rules
 
+> The default Today page is now the day plan (see [Daily Plan](20-daily-plan.md)). The sections below describe the classic page at `/today_legacy`, whose lists also feed the planner's candidates.
+
 This document explains how the four main sections of the Today page work in tududi. For technical implementation details, see `/backend/modules/tasks/queries/metrics-queries.js` and `/backend/modules/tasks/queries/metrics-computation.js`.
 
 ---

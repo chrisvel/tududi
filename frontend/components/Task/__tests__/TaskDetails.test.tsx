@@ -124,6 +124,7 @@ jest.mock('../TaskDetails/', () => ({
     TaskRecurrenceCard: () => null,
     TaskDueDateCard: () => null,
     TaskDeferUntilCard: () => null,
+    TaskEstimateCard: () => null,
     TaskAttachmentsCard: () => null,
     TaskAreaCard: () => null,
     TaskAssignedToCard: () => null,
