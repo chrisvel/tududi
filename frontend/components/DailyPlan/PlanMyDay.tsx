@@ -112,6 +112,29 @@ const pointerY = (event: Event | null): number | null => {
     return null;
 };
 
+// Closes a small menu on a click outside it or on Escape.
+const useDismiss = (open: boolean, close: () => void) => {
+    const ref = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+        if (!open) return;
+        const onPointer = (event: PointerEvent) => {
+            if (ref.current && !ref.current.contains(event.target as Node)) {
+                close();
+            }
+        };
+        const onKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') close();
+        };
+        document.addEventListener('pointerdown', onPointer);
+        document.addEventListener('keydown', onKey);
+        return () => {
+            document.removeEventListener('pointerdown', onPointer);
+            document.removeEventListener('keydown', onKey);
+        };
+    }, [open, close]);
+    return ref;
+};
+
 const collisionDetection: CollisionDetection = (args) => {
     const hits = pointerWithin(args);
     return hits.length > 0 ? hits : closestCenter(args);
@@ -153,6 +176,14 @@ const PlanMyDay: React.FC = () => {
     const [drafting, setDrafting] = useState(false);
     const [draftChoiceOpen, setDraftChoiceOpen] = useState(false);
     const [moreOpen, setMoreOpen] = useState(false);
+    const draftMenuRef = useDismiss(
+        draftChoiceOpen,
+        useCallback(() => setDraftChoiceOpen(false), [])
+    );
+    const moreMenuRef = useDismiss(
+        moreOpen,
+        useCallback(() => setMoreOpen(false), [])
+    );
 
     const mode: Mode = narrow ? 'list' : preferredMode;
     const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -721,7 +752,7 @@ const PlanMyDay: React.FC = () => {
                     )}
 
                     {aiEnabled && (
-                        <div className="relative">
+                        <div className="relative z-50" ref={draftMenuRef}>
                             <button
                                 type="button"
                                 onClick={startDraft}
@@ -785,7 +816,7 @@ const PlanMyDay: React.FC = () => {
                                 {t('dailyPlan.saving', 'Saving…')}
                             </span>
                         )}
-                        <div className="relative">
+                        <div className="relative z-50" ref={moreMenuRef}>
                             <button
                                 type="button"
                                 onClick={() => setMoreOpen((open) => !open)}
