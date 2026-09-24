@@ -996,6 +996,75 @@ describe('MCP Tools Integration', () => {
             });
         });
 
+        describe('task relations', () => {
+            it('creates, lists, filters, warns and removes', async () => {
+                const blocker = await Task.create({
+                    user_id: user.id,
+                    name: 'Blocker',
+                    status: 0,
+                });
+                const blocked = await Task.create({
+                    user_id: user.id,
+                    name: 'Blocked',
+                    status: 0,
+                });
+
+                const created = getToolContent(
+                    await callMcpTool(apiTokenValue, 'create_task_relation', {
+                        id: blocker.id,
+                        target_id: blocked.uid,
+                        type: 'blocks',
+                    })
+                );
+                expect(created.isError).toBe(false);
+                expect(created.content.relation.type).toBe('blocks');
+
+                const listed = getToolContent(
+                    await callMcpTool(apiTokenValue, 'list_task_relations', {
+                        id: blocked.uid,
+                    })
+                ).content;
+                expect(listed.relations[0]).toMatchObject({
+                    type: 'blocked_by',
+                    task: { uid: blocker.uid },
+                });
+
+                const onlyBlocked = getToolContent(
+                    await callMcpTool(apiTokenValue, 'list_tasks', {
+                        blocked: true,
+                    })
+                ).content;
+                expect(onlyBlocked.tasks.map((t) => t.name)).toEqual([
+                    'Blocked',
+                ]);
+
+                const completed = getToolContent(
+                    await callMcpTool(apiTokenValue, 'complete_task', {
+                        id: blocked.id,
+                    })
+                ).content;
+                expect(completed.message).toBe('Task completed');
+                expect(completed.warning).toMatch(/blocked by 1/);
+
+                const cycle = getToolContent(
+                    await callMcpTool(apiTokenValue, 'create_task_relation', {
+                        id: blocked.id,
+                        target_id: blocker.id,
+                        type: 'blocks',
+                    })
+                );
+                expect(cycle.isError).toBe(true);
+
+                const removed = getToolContent(
+                    await callMcpTool(apiTokenValue, 'remove_task_relation', {
+                        id: blocker.id,
+                        relation_uid: listed.relations[0].uid,
+                    })
+                );
+                expect(removed.content.message).toBe('Relation removed');
+            });
+        });
+
         describe('delete_task', () => {
             it('should delete a task', async () => {
                 const task = await Task.create({
@@ -2002,7 +2071,7 @@ describe('MCP Tools Integration', () => {
             expect(jsonRpc.result.tools.length).toBeGreaterThan(0);
 
             const toolNames = jsonRpc.result.tools.map((t) => t.name);
-            // Should have all 16 tools
+            // Should have all tools
             expect(toolNames).toContain('list_tasks');
             expect(toolNames).toContain('get_task');
             expect(toolNames).toContain('create_task');
@@ -2010,6 +2079,9 @@ describe('MCP Tools Integration', () => {
             expect(toolNames).toContain('complete_task');
             expect(toolNames).toContain('delete_task');
             expect(toolNames).toContain('add_subtask');
+            expect(toolNames).toContain('create_task_relation');
+            expect(toolNames).toContain('list_task_relations');
+            expect(toolNames).toContain('remove_task_relation');
             expect(toolNames).toContain('get_task_metrics');
             expect(toolNames).toContain('list_projects');
             expect(toolNames).toContain('get_project');

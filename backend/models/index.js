@@ -61,6 +61,7 @@ const Tag = require('./tag')(sequelize);
 const Note = require('./note')(sequelize);
 const InboxItem = require('./inbox_item')(sequelize);
 const TaskEvent = require('./task_event')(sequelize);
+const TaskRelation = require('./task_relation')(sequelize);
 const Comment = require('./comment')(sequelize);
 const CommentReaction = require('./comment_reaction')(sequelize);
 const Role = require('./role')(sequelize);
@@ -147,6 +148,25 @@ User.hasMany(Comment, { foreignKey: 'user_id', as: 'Comments' });
 Comment.belongsTo(User, { foreignKey: 'user_id', as: 'Author' });
 Task.hasMany(Comment, { foreignKey: 'task_id', as: 'Comments' });
 Comment.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+Task.hasMany(TaskRelation, {
+    foreignKey: 'source_task_id',
+    as: 'SourceRelations',
+    onDelete: 'CASCADE',
+});
+Task.hasMany(TaskRelation, {
+    foreignKey: 'target_task_id',
+    as: 'TargetRelations',
+    onDelete: 'CASCADE',
+});
+TaskRelation.belongsTo(Task, {
+    foreignKey: 'source_task_id',
+    as: 'SourceTask',
+});
+TaskRelation.belongsTo(Task, {
+    foreignKey: 'target_task_id',
+    as: 'TargetTask',
+});
+
 Comment.hasMany(Comment, { foreignKey: 'parent_comment_id', as: 'Replies' });
 Comment.belongsTo(Comment, {
     foreignKey: 'parent_comment_id',
@@ -516,6 +536,7 @@ module.exports = {
     Note,
     InboxItem,
     TaskEvent,
+    TaskRelation,
     Comment,
     CommentReaction,
     Role,

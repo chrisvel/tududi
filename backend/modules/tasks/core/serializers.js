@@ -10,6 +10,7 @@ const {
 const taskRepository = require('../repository');
 const { Task } = require('../../../models');
 const { Op } = require('sequelize');
+const { getBlockedCountMap } = require('../relations/service');
 
 // Sort tags alphabetically by name (case-insensitive)
 function sortTags(tags) {
@@ -25,7 +26,8 @@ async function serializeTask(
     options = {},
     moveCountMap = null,
     parentUidMap = null,
-    parentTaskMap = null
+    parentTaskMap = null,
+    blockedCountMap = null
 ) {
     if (!task) {
         throw new Error('Task is null or undefined');
@@ -39,6 +41,14 @@ async function serializeTask(
           : await getTaskTodayMoveCount(task.id);
 
     const safeTimezone = getSafeTimezone(userTimezone);
+
+    // Only a count is exposed here: the serializer has no viewer, so the
+    // names of blockers come from the access-checked relations endpoint.
+    const blockedByCount = taskJson.is_virtual_occurrence
+        ? 0
+        : blockedCountMap
+          ? blockedCountMap[task.id] || 0
+          : (await getBlockedCountMap([task.id]))[task.id] || 0;
 
     const { Subtasks, ...taskWithoutSubtasks } = taskJson;
 
@@ -156,6 +166,8 @@ async function serializeTask(
             : null,
         today_move_count: todayMoveCount,
         parent_task: parentTaskInfo,
+        blocked_by_count: blockedByCount,
+        is_blocked: blockedByCount > 0,
     };
 }
 
@@ -225,6 +237,8 @@ async function serializeTasks(
         });
     }
 
+    const blockedCountMap = await getBlockedCountMap(tasks.map((t) => t.id));
+
     return await Promise.all(
         tasks.map((task) =>
             serializeTask(
@@ -233,7 +247,8 @@ async function serializeTasks(
                 options,
                 moveCountMap,
                 parentUidMap,
-                parentTaskIds.length > 0 ? parentTaskMap : null
+                parentTaskIds.length > 0 ? parentTaskMap : null,
+                blockedCountMap
             )
         )
     );

@@ -151,6 +151,43 @@ This document explains how tasks work in tududi from a user behavior perspective
 
 ---
 
+## **Task Relations**
+
+### Linking Tasks
+
+Any task can be linked to another task, in a different project or none, from the **Relations** card on the task detail page (search for a task, pick a type, add).
+
+| You choose | The other task shows |
+|------------|----------------------|
+| Blocks | Blocked by |
+| Blocked by | Blocks |
+| Related to | Related to |
+| Duplicates | Duplicated by |
+| Duplicated by | Duplicates |
+
+- One row is stored per link and the other side is derived, so removing a link from either task removes it for both
+- A task cannot be linked to itself, the same link cannot be added twice, and a circular blocking chain (A blocks B blocks A) is refused
+- You need edit access to both tasks. Linked tasks you cannot read are not shown, and never reveal their name
+- Deleting a task removes its links. Link changes appear in the activity timeline of both tasks
+
+### Blocked Tasks
+
+- A task is **blocked** while any task that blocks it is still open (not done, archived or cancelled). This is derived on read: completing the blocker unblocks the task, with nothing to clear
+- Blocked tasks show a "Blocked" badge in lists
+- Completing a blocked task is allowed. The UI asks for confirmation first, and the MCP `complete_task` result carries a warning
+- Blocked state never hides a task: Today, Upcoming, Next and Inbox are unchanged
+- To list them, open `/tasks?type=all&blocked=true`, or `blocked=false` for tasks with no open blocker. The API (`GET /api/tasks?blocked=true`) and the MCP `list_tasks` tool accept the same filter
+
+### API
+
+- `GET /api/task/:uid/relations`
+- `POST /api/task/:uid/relations` with `{ "target_uid": "...", "type": "blocks" }`
+- `DELETE /api/task/:uid/relations/:relationUid`
+
+Task responses include `is_blocked` and `blocked_by_count`. Names of blockers come only from the relations endpoint, which checks the viewer's access.
+
+---
+
 ## **Attachments**
 
 ### File Uploads
