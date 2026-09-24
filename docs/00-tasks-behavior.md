@@ -161,11 +161,9 @@ This document explains how tasks work in tududi from a user behavior perspective
     - Stored in `/uploads/tasks/` directory
 
 23. **Allowed file types:**
-    - Images: jpg, jpeg, png, gif, webp
-    - Documents: pdf, doc, docx, xls, xlsx, ppt, pptx
-    - Text: txt, md, csv
-    - Archives: zip, tar, gz
-    - Other common formats
+    - Any file type can be attached
+    - Images (jpg, jpeg, png, gif, webp) and PDFs can be previewed inline, and text files are previewed as plain text
+    - Types other than jpg, jpeg, png, gif, webp, pdf, doc, docx, xls, xlsx, txt, md, csv and zip are stored with a neutral `.bin` extension and always served as downloads, so a browser never renders them (e.g. an uploaded `.html` or `.svg` can't run scripts). They keep their original name when downloaded.
 
 24. **Attachment metadata:**
     - Original filename is preserved in database

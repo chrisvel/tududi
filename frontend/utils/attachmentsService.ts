@@ -3,6 +3,13 @@ import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
 import { getServerConfig } from './configService';
 
+const INLINE_IMAGE_TYPES = [
+    'image/png',
+    'image/jpeg',
+    'image/gif',
+    'image/webp',
+];
+
 /**
  * Upload a file attachment to a task
  */
@@ -128,7 +135,10 @@ export function getAttachmentType(mimeType: string): AttachmentType {
  */
 export function canPreviewInline(mimeType: string): boolean {
     const type = getAttachmentType(mimeType);
-    return type === 'image' || type === 'pdf' || type === 'text';
+    // Images outside the known list are stored as generic .bin downloads, so
+    // the browser can't render them.
+    if (type === 'image') return INLINE_IMAGE_TYPES.includes(mimeType);
+    return type === 'pdf' || type === 'text';
 }
 
 /**
@@ -156,31 +166,6 @@ export async function validateFile(
         return {
             valid: false,
             error: `File size exceeds ${config.fileUploadLimitMB}MB limit`,
-        };
-    }
-
-    // Check file type
-    const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'text/plain',
-        'text/markdown',
-        'image/png',
-        'image/jpeg',
-        'image/gif',
-        'image/webp',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/csv',
-        'application/zip',
-        'application/x-zip-compressed',
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-        return {
-            valid: false,
-            error: 'File type not allowed',
         };
     }
 

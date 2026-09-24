@@ -9,7 +9,6 @@ const { TaskAttachment, Task } = require('../../models');
 const { uid } = require('../../utils/uid');
 const { logError } = require('../../services/logService');
 const {
-    validateFileType,
     getExtensionFromMimeType,
     deleteFileFromDisk,
     getFileUrl,
@@ -47,10 +46,10 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         const uniqueSuffix =
             Date.now() + '-' + crypto.randomBytes(12).toString('hex');
-        // Derive the stored extension from the whitelist-validated MIME type,
-        // never from the client-supplied original filename, so an attacker
-        // can't smuggle a dangerous extension (e.g. .svg, .html) past a
-        // spoofed Content-Type (GHSA-x24w-9w59-wqhq).
+        // Derive the stored extension from the known-types list, never from
+        // the client-supplied original filename, so an attacker can't smuggle
+        // a dangerous extension (e.g. .svg, .html) past a spoofed
+        // Content-Type (GHSA-x24w-9w59-wqhq). Unknown types get .bin.
         const ext = getExtensionFromMimeType(file.mimetype);
         cb(null, 'task-' + uniqueSuffix + ext);
     },
@@ -60,13 +59,6 @@ const upload = multer({
     storage: storage,
     limits: {
         fileSize: config.fileUploadLimitMB * 1024 * 1024,
-    },
-    fileFilter: function (req, file, cb) {
-        if (validateFileType(file.mimetype)) {
-            return cb(null, true);
-        } else {
-            cb(new Error('File type not allowed'));
-        }
     },
 });
 
