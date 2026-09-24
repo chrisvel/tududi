@@ -57,6 +57,8 @@ module.exports = (sequelize) => {
                             'recurrence_end_date_changed',
                             'recurring_occurrence_completed',
                             'comment_added',
+                            'relation_added',
+                            'relation_removed',
                         ],
                     ],
                 },

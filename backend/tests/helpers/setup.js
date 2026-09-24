@@ -31,6 +31,7 @@ const CLEANUP_TABLES = [
     'notes_tags',
     'projects_tags',
     'task_events',
+    'task_relations',
     'task_attachments',
     'daily_plan_items',
     'daily_plans',

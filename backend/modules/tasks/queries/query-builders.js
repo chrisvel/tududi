@@ -8,6 +8,7 @@ const {
 } = require('../../../models');
 const { Op, QueryTypes } = require('sequelize');
 const permissionsService = require('../../../services/permissionsService');
+const { blockedCondition } = require('../relations/service');
 const {
     getSafeTimezone,
     getUpcomingRangeInUTC,
@@ -395,6 +396,17 @@ async function filterTasksByParams(
             ...(whereClause.id || {}),
             [Op.in]: tagFilteredTaskIds,
         };
+    }
+
+    // Opt-in only: a task is blocked while any task that blocks it is still
+    // open. Default lists are unaffected.
+    if (params.blocked !== undefined && params.blocked !== '') {
+        const wantBlocked =
+            params.blocked === true || params.blocked === 'true';
+        whereClause[Op.and] = [
+            ...(Array.isArray(whereClause[Op.and]) ? whereClause[Op.and] : []),
+            blockedCondition(wantBlocked),
+        ];
     }
 
     if (params.project_uid) {

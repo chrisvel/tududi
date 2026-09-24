@@ -18,7 +18,7 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
     - [Stdio Mode (Local)](#stdio-mode-local)
     - [HTTP Mode (Remote)](#http-mode-remote)
 - [Available Tools](#available-tools)
-    - [Tasks Tools (8)](#tasks-tools-8)
+    - [Tasks Tools (11)](#tasks-tools-11)
     - [Projects Tools (5)](#projects-tools-5)
     - [Inbox Tools (6)](#inbox-tools-6)
     - [Views Tools (5)](#views-tools-5)
@@ -170,9 +170,9 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 59 MCP tools organized into 11 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 62 MCP tools organized into 11 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
-### Tasks Tools (8)
+### Tasks Tools (11)
 
 #### `list_tasks`
 
@@ -184,6 +184,7 @@ List tasks with optional filtering by type, status, or project.
 | `type` | string | No | — | Filter: `today`, `upcoming`, `completed`, `archived`, `all` |
 | `status` | string | No | — | Filter: `pending`, `in_progress`, `completed`, `archived` |
 | `project_id` | number | No | — | Filter by project ID |
+| `blocked` | boolean | No | — | `true`: only tasks with an open blocker. `false`: only tasks without one |
 | `limit` | number | No | 50 | Maximum tasks to return |
 
 **Example:**
@@ -361,6 +362,44 @@ Add a subtask to a parent task.
     "priority": "medium"
 }
 ```
+
+---
+
+#### `create_task_relation`
+
+Link two tasks. The type is from the point of view of the task in `id`. Circular blocking chains are refused, and you need edit access to both tasks.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID to add the relation to |
+| `target_id` | number/string | Yes | The other task's ID or UID |
+| `type` | string | Yes | `blocks`, `blocked_by`, `related_to`, `duplicates`, `duplicated_by` |
+
+---
+
+#### `list_task_relations`
+
+List the tasks linked to a task. Each entry has a relation `uid`, a `type` and the other task's `uid`, `name` and `status`. Linked tasks you cannot read are left out.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+
+---
+
+#### `remove_task_relation`
+
+Remove a relation using the `uid` from `list_task_relations`. Removing it from either task removes it for both.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+| `relation_uid` | string | Yes | Relation UID |
+
+`complete_task` still completes a blocked task, and adds a `warning` and `open_blockers` to its result when it does.
 
 ---
 

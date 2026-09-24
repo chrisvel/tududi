@@ -89,6 +89,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
 
     const [projectList, setProjectList] = useState<Project[]>(projects);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const [isBlockedConfirmOpen, setIsBlockedConfirmOpen] = useState(false);
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
     const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
 
@@ -230,8 +231,17 @@ const TaskRow: React.FC<TaskRowProps> = ({
         }
     };
 
+    // Completing a blocked task is allowed, but asked about first.
     const handleToggleCompletion = async () => {
         if (!task.id) return;
+        if (task.is_blocked && !isTaskCompleted(task.status)) {
+            setIsBlockedConfirmOpen(true);
+            return;
+        }
+        await performToggleCompletion();
+    };
+
+    const performToggleCompletion = async () => {
         try {
             const isCompletingTask =
                 task.status !== 'done' &&
@@ -504,6 +514,29 @@ const TaskRow: React.FC<TaskRowProps> = ({
                         )}
                     </div>
                 )}
+
+            {isBlockedConfirmOpen && (
+                <ConfirmDialog
+                    title={t(
+                        'relations.completeBlockedTitle',
+                        'Task is blocked'
+                    )}
+                    message={t(
+                        'relations.completeBlockedMessage',
+                        'This task is blocked by {{count}} open task(s). Complete it anyway?',
+                        { count: task.blocked_by_count || 1 }
+                    )}
+                    confirmButtonText={t(
+                        'relations.completeAnyway',
+                        'Complete anyway'
+                    )}
+                    onConfirm={() => {
+                        setIsBlockedConfirmOpen(false);
+                        void performToggleCompletion();
+                    }}
+                    onCancel={() => setIsBlockedConfirmOpen(false)}
+                />
+            )}
 
             {isConfirmDialogOpen && (
                 <ConfirmDialog

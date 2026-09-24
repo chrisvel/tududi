@@ -1,5 +1,5 @@
 import { Metrics } from '../entities/Metrics';
-import { Task } from '../entities/Task';
+import { Task, TaskRelation, TaskRelationType } from '../entities/Task';
 import {
     handleAuthResponse,
     getDefaultHeaders,
@@ -237,4 +237,57 @@ export const fetchTaskNextIterations = async (
     await handleAuthResponse(response, 'Failed to fetch task iterations.');
     const result = await response.json();
     return result.iterations || [];
+};
+
+export const fetchTaskRelations = async (
+    taskUid: string
+): Promise<TaskRelation[]> => {
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(taskUid)}/relations`),
+        {
+            credentials: 'include',
+            headers: getDefaultHeaders(),
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to fetch task relations.');
+    const data = await response.json();
+    return data.relations || [];
+};
+
+export const createTaskRelation = async (
+    taskUid: string,
+    targetUid: string,
+    type: TaskRelationType
+): Promise<TaskRelation> => {
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(taskUid)}/relations`),
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+            body: JSON.stringify({ target_uid: targetUid, type }),
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to add relation.');
+    return await response.json();
+};
+
+export const deleteTaskRelation = async (
+    taskUid: string,
+    relationUid: string
+): Promise<void> => {
+    const response = await fetch(
+        getApiPath(
+            `task/${encodeURIComponent(taskUid)}/relations/${encodeURIComponent(relationUid)}`
+        ),
+        {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to remove relation.');
 };

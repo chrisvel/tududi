@@ -10,6 +10,7 @@ import {
     ListBulletIcon,
     ChevronDownIcon,
     ChatBubbleLeftIcon,
+    NoSymbolIcon,
 } from '@heroicons/react/24/outline';
 import { FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { Task } from '../../../entities/Task';
@@ -229,6 +230,22 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                             }`}
                         >
                             {currentName}
+                        </span>
+                    )}
+                    {task.is_blocked && !isTaskCompleted(task.status) && (
+                        <span
+                            className="ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex-shrink-0"
+                            title={t(
+                                'relations.blockedTooltip',
+                                'Blocked by {{count}} open task(s)',
+                                { count: task.blocked_by_count || 1 }
+                            )}
+                            data-testid="task-blocked-badge"
+                        >
+                            <NoSymbolIcon className="h-3.5 w-3.5" />
+                            <span className="text-[11px] font-medium">
+                                {t('relations.blocked', 'Blocked')}
+                            </span>
                         </span>
                     )}
                     {!editable && commentCount > 0 && (
