@@ -2,6 +2,8 @@ const {
     parseCalendar,
     eventsForDate,
 } = require('../../../modules/calendar-feeds/icsEvents');
+const axios = require('axios');
+const dns = require('dns');
 const {
     fetchFeed,
     normalizeFeedUrl,
@@ -134,19 +136,33 @@ describe('normalizeFeedUrl', () => {
 });
 
 describe('fetchFeed', () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     it('refuses private and loopback addresses before connecting', async () => {
-        const originalFetch = global.fetch;
-        global.fetch = jest.fn();
-        try {
-            await expect(fetchFeed('http://127.0.0.1/cal.ics')).rejects.toThrow(
-                FeedFetchError
-            );
-            await expect(fetchFeed('http://10.0.0.5/cal.ics')).rejects.toThrow(
-                FeedFetchError
-            );
-            expect(global.fetch).not.toHaveBeenCalled();
-        } finally {
-            global.fetch = originalFetch;
-        }
+        const get = jest.spyOn(axios, 'get');
+        await expect(fetchFeed('http://127.0.0.1/cal.ics')).rejects.toThrow(
+            FeedFetchError
+        );
+        await expect(fetchFeed('http://10.0.0.5/cal.ics')).rejects.toThrow(
+            FeedFetchError
+        );
+        expect(get).not.toHaveBeenCalled();
+    });
+
+    it('refuses a host that resolves to a private address at connect time', async () => {
+        jest.spyOn(dns.promises, 'lookup').mockResolvedValue([
+            { address: '93.184.216.34', family: 4 },
+        ]);
+        jest.spyOn(dns, 'lookup').mockImplementation((host, opts, cb) =>
+            cb(null, [{ address: '127.0.0.1', family: 4 }])
+        );
+
+        await expect(
+            fetchFeed('http://rebind.example/cal.ics')
+        ).rejects.toThrow(
+            'That address points to a private or unsupported host'
+        );
     });
 });
