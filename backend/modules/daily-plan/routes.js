@@ -7,6 +7,8 @@ const { requireFeature } = require('../../middleware/entitlements');
 
 router.get('/daily-plan', dailyPlanController.get);
 router.get('/daily-plan/candidates', dailyPlanController.candidates);
+router.get('/daily-plan/ranking', dailyPlanController.getRanking);
+router.put('/daily-plan/ranking', dailyPlanController.saveRanking);
 router.post(
     '/daily-plan/ai/draft',
     requireFeature('ai'),

@@ -37,19 +37,13 @@ The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics
 
 ### Candidate order
 
-The order comes from `backend/modules/daily-plan/ranking.js` and is explained to users in **Profile > Planning**. Change both together.
+The order comes from `backend/modules/daily-plan/ranking.js` and each user sets it in **Profile > Planning**.
 
-1. Groups, in order: overdue (including started tasks past their due date), due today, in progress, everything else.
-2. Inside a group: higher priority first, then tasks in a project before tasks without one, then the earlier due date, then the older task.
-- **Adding:** **+** places the task in the first free slot after now that fits its length, avoiding planned tasks and busy meetings. If nothing fits it is added without a time. Dragging a card onto the timeline places it where it is dropped. The chosen length is saved as the task's estimate.
-- **Timeline:** 08:00 to 18:00, widened to whole hours around anything planned or on the calendar outside that range, in 15-minute steps. Blocks can be dragged and resized; overlapping tasks are refused. Meetings are grey, events marked "free" are dashed, and gaps of 30 minutes or more are labelled.
-- **List mode:** an ordered list without a timeline, reorderable by drag or keyboard, with an optional start time per row. Screens narrower than 768px always use list mode.
-- **Capacity:** "Xh planned of Yh free" as plain text, where free time is the visible range minus busy meetings. It turns red, with a bar, only when overbooked.
-- **Calm by default:** only **Draft with AI** and **Done** are buttons; the timeline/list switch and leaving without starting live in the ⋯ menu. Meetings are faint outlines, the timeline opens scrolled to now, and tips show one at a time.
-- Every change saves itself half a second after the last edit. **Start my day** saves, marks the plan started and returns to Today. **Cancel** keeps the plan as a draft.
-- Inbox items can be turned into tasks and added in one click.
+1. Every candidate falls in one of eight buckets: its group (overdue, including started tasks past their due date; due today; in progress; everything else) split into tasks in a project and tasks without one.
+2. Buckets follow the user's order (drag or the arrow buttons; saved at once). The default is each group in turn, project tasks first.
+3. Inside a bucket: higher priority first, then the earlier due date, then the older task.
 
----
+The order is stored in `users.ui_settings.planning.candidateOrder`. A saved order that is missing buckets or has unknown ones is repaired on read, and the profile form's own save keeps the stored order.
 
 ## Task estimates
 
@@ -87,7 +81,9 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | Method | Path | Notes |
 |--------|------|-------|
 | GET | `/api/daily-plan?date=` | The plan, or `null`. The date defaults to today in the user's timezone |
-| GET | `/api/daily-plan/candidates` | `{ overdue, due_today, in_progress, suggested, inbox, inbox_count }`, each task in one group only |
+| GET | `/api/daily-plan/candidates` | `{ overdue, due_today, in_progress, suggested, inbox, inbox_count, ranked }`, each task in one group only; `ranked` lists task uids in the user's order |
+| GET | `/api/daily-plan/ranking` | `{ order, default_order }`, the eight bucket keys such as `overdue:project` |
+| PUT | `/api/daily-plan/ranking` | Body `{ order }` with every bucket key once; 400 otherwise |
 | PUT | `/api/daily-plan/:date` | Replaces all items: `{ items: [{ task_uid, start_minute, duration_minutes }] }`, in order. Rejects overlaps, slots past midnight, duplicates and tasks the user cannot see |
 | POST | `/api/daily-plan/:date/start` | Marks the day started |
 | POST | `/api/daily-plan/:date/carry-over` | Appends `{ task_uids }` to that day's plan without a time, skipping tasks already there |

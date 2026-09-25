@@ -5,7 +5,13 @@ const repository = require('./repository');
 const permissionsService = require('../../services/permissionsService');
 const { serializeTasks } = require('../tasks/core/serializers');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
-const { GROUP_ORDER, rankCandidates } = require('./ranking');
+const {
+    GROUP_ORDER,
+    DEFAULT_ORDER,
+    normalizeOrder,
+    orderCandidates,
+    rankCandidates,
+} = require('./ranking');
 const {
     getSafeTimezone,
     getCurrentDateInTimezone,
@@ -258,15 +264,21 @@ async function getCandidates(user) {
     };
 
     const seen = new Set();
-    const result = {};
+    const unique = {};
     for (const key of GROUP_ORDER) {
-        const unique = (groupTasks[key] || []).filter((task) => {
+        unique[key] = rankCandidates(groupTasks[key]).filter((task) => {
             if (seen.has(task.id)) return false;
             seen.add(task.id);
             return true;
         });
-        result[key] = await serializeTasks(rankCandidates(unique), timezone);
     }
+
+    const result = {};
+    for (const key of GROUP_ORDER) {
+        result[key] = await serializeTasks(unique[key], timezone);
+    }
+    const { order } = await getRanking(user);
+    result.ranked = orderCandidates(unique, order).map(({ task }) => task.uid);
 
     const inbox = await repository.findOpenInboxItems(user.id, INBOX_LIMIT);
     result.inbox = inbox.items.map((item) => ({
@@ -280,6 +292,34 @@ async function getCandidates(user) {
     return result;
 }
 
+// The user's bucket order for the candidate list (Profile > Planning).
+async function getRanking(user) {
+    const settings = await repository.findUiSettings(user.id);
+    return {
+        order: normalizeOrder(settings.planning?.candidateOrder),
+        default_order: DEFAULT_ORDER,
+    };
+}
+
+async function saveRanking(user, order) {
+    if (
+        !Array.isArray(order) ||
+        order.length !== DEFAULT_ORDER.length ||
+        new Set(order).size !== order.length ||
+        order.some((key) => !DEFAULT_ORDER.includes(key))
+    ) {
+        throw new ValidationError(
+            `order must list each of ${DEFAULT_ORDER.join(', ')} once`
+        );
+    }
+    const settings = await repository.findUiSettings(user.id);
+    await repository.saveUiSettings(user.id, {
+        ...settings,
+        planning: { ...(settings.planning || {}), candidateOrder: order },
+    });
+    return getRanking(user);
+}
+
 module.exports = {
     resolvePlanDate,
     validateItems,
@@ -289,4 +329,6 @@ module.exports = {
     clearPlan,
     carryOver,
     getCandidates,
+    getRanking,
+    saveRanking,
 };

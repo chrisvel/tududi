@@ -220,19 +220,29 @@ const CandidateList: React.FC<CandidateListProps> = ({
     // Dropping a planned block back here takes it off the plan.
     const { setNodeRef, isOver } = useDroppable({ id: 'candidates' });
 
-    // One ordered list; planned tasks are on the timeline, not here.
-    const seen = new Set<string>();
-    const entries: { task: Task; group: TaskGroupKey }[] = [];
+    // One ordered list, in the user's ranking when the server sends it;
+    // planned tasks are on the timeline, not here.
+    const byUid = new Map<string, { task: Task; group: TaskGroupKey }>();
     for (const group of GROUP_ORDER) {
-        if (filter !== 'all' && filter !== group) continue;
         for (const task of candidates[group]) {
-            if (!task.uid || seen.has(task.uid) || planned.has(task.uid)) {
-                continue;
+            if (task.uid && !byUid.has(task.uid)) {
+                byUid.set(task.uid, { task, group });
             }
-            seen.add(task.uid);
-            entries.push({ task, group });
         }
     }
+    const ranked = candidates.ranked ?? [];
+    const order = [
+        ...ranked,
+        ...[...byUid.keys()].filter((uid) => !ranked.includes(uid)),
+    ];
+    const entries = order
+        .map((uid) => byUid.get(uid))
+        .filter(
+            (entry): entry is { task: Task; group: TaskGroupKey } =>
+                !!entry &&
+                (filter === 'all' || filter === entry.group) &&
+                !planned.has(entry.task.uid as string)
+        );
     const shown = entries.slice(0, visible);
 
     const counts: { key: CandidateFilter; label: string; count: number }[] = [

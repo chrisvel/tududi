@@ -240,7 +240,22 @@ class UsersService {
             allowedUpdates.task_summary_enabled = task_summary_enabled;
         if (task_summary_frequency !== undefined)
             allowedUpdates.task_summary_frequency = task_summary_frequency;
-        if (ui_settings !== undefined) allowedUpdates.ui_settings = ui_settings;
+        if (ui_settings !== undefined) {
+            // The planner order is saved by its own endpoint; a profile form
+            // loaded before that save must not put the old order back.
+            let current = user.ui_settings;
+            if (typeof current === 'string') {
+                try {
+                    current = JSON.parse(current);
+                } catch {
+                    current = null;
+                }
+            }
+            allowedUpdates.ui_settings =
+                ui_settings && current?.planning
+                    ? { ...ui_settings, planning: current.planning }
+                    : ui_settings;
+        }
         if (notification_preferences !== undefined)
             allowedUpdates.notification_preferences = notification_preferences;
         if (keyboard_shortcuts !== undefined)

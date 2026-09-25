@@ -193,7 +193,7 @@ describe('Daily plan routes', () => {
         expect(res.body.inbox[0].content).toBe('Call the plumber');
     });
 
-    it('ranks candidates: overdue first, then priority, then project tasks', async () => {
+    it('ranks candidates: overdue first, then project tasks, then priority', async () => {
         const project = await Project.create({
             name: 'Home',
             user_id: user.id,
@@ -225,12 +225,71 @@ describe('Daily plan routes', () => {
         expect(res.status).toBe(200);
         expect(res.body.overdue.map((t) => t.uid)).toEqual([startedLate.uid]);
         expect(res.body.in_progress).toEqual([]);
-        expect(res.body.suggested.map((t) => t.uid)).toEqual([
+        expect(res.body.ranked).toEqual([
+            startedLate.uid,
             projectHigh.uid,
-            looseHigh.uid,
             projectLow.uid,
+            looseHigh.uid,
             looseLow.uid,
         ]);
+    });
+
+    it('saves a custom ranking and uses it for candidates', async () => {
+        const project = await Project.create({
+            name: 'Work',
+            user_id: user.id,
+        });
+        const loose = await makeTask({ name: 'Loose', priority: 0 });
+        const inProject = await makeTask({
+            name: 'In project',
+            priority: 2,
+            project_id: project.id,
+        });
+        await makeTask({ name: 'Filler one' });
+
+        const initial = await agent.get('/api/daily-plan/ranking');
+        expect(initial.status).toBe(200);
+        expect(initial.body.order).toEqual(initial.body.default_order);
+
+        const order = [
+            'suggested:none',
+            ...initial.body.default_order.filter(
+                (key) => key !== 'suggested:none'
+            ),
+        ];
+        const saved = await agent
+            .put('/api/daily-plan/ranking')
+            .send({ order });
+        expect(saved.status).toBe(200);
+        expect(saved.body.order).toEqual(order);
+
+        const res = await agent.get('/api/daily-plan/candidates');
+        const ranked = res.body.ranked;
+        expect(ranked.indexOf(loose.uid)).toBeLessThan(
+            ranked.indexOf(inProject.uid)
+        );
+    });
+
+    it('keeps the saved ranking when the profile form saves ui_settings', async () => {
+        const initial = await agent.get('/api/daily-plan/ranking');
+        const order = [...initial.body.default_order].reverse();
+        await agent.put('/api/daily-plan/ranking').send({ order });
+
+        const res = await agent.patch('/api/profile').send({
+            ui_settings: { appearance: { theme: 'dark' } },
+        });
+        expect(res.status).toBe(200);
+
+        const after = await agent.get('/api/daily-plan/ranking');
+        expect(after.body.order).toEqual(order);
+    });
+
+    it('rejects a ranking that does not list every bucket once', async () => {
+        const res = await agent
+            .put('/api/daily-plan/ranking')
+            .send({ order: ['overdue:project', 'overdue:project'] });
+
+        expect(res.status).toBe(400);
     });
 });
 

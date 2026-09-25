@@ -65,6 +65,17 @@ export interface PlanCandidates {
     suggested: Task[];
     inbox: InboxCandidate[];
     inbox_count: number;
+    // Task uids in the user's ranking order (Profile > Planning).
+    ranked?: string[];
+}
+
+export type RankingGroup =
+    'overdue' | 'due_today' | 'in_progress' | 'suggested';
+export type RankingBucket = `${RankingGroup}:${'project' | 'none'}`;
+
+export interface PlanRanking {
+    order: RankingBucket[];
+    default_order: RankingBucket[];
 }
 
 export interface PlanItemInput {
@@ -91,6 +102,28 @@ export const fetchPlanCandidates = async (): Promise<PlanCandidates> => {
         headers: getDefaultHeaders(),
     });
     await handleAuthResponse(response, 'Failed to load tasks to plan.');
+    return response.json();
+};
+
+export const fetchPlanRanking = async (): Promise<PlanRanking> => {
+    const response = await fetch(getApiPath('daily-plan/ranking'), {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+    await handleAuthResponse(response, 'Failed to load the planning order.');
+    return response.json();
+};
+
+export const savePlanRanking = async (
+    order: RankingBucket[]
+): Promise<PlanRanking> => {
+    const response = await fetch(getApiPath('daily-plan/ranking'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({ order }),
+    });
+    await handleAuthResponse(response, 'Failed to save the planning order.');
     return response.json();
 };
 

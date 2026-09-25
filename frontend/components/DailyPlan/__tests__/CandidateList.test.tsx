@@ -36,11 +36,11 @@ const candidates: PlanCandidates = {
     inbox_count: 0,
 };
 
-const renderList = () =>
+const renderList = (list: PlanCandidates = candidates) =>
     render(
         <MemoryRouter initialEntries={['/today/plan']}>
             <CandidateList
-                candidates={candidates}
+                candidates={list}
                 planned={new Map()}
                 filter="all"
                 onFilterChange={jest.fn()}
@@ -67,6 +67,22 @@ describe('CandidateList', () => {
             'Pay rent',
             'Draft report',
             'Sort photos',
+        ]);
+    });
+
+    it('follows the ranking order from the server', () => {
+        renderList({
+            ...candidates,
+            ranked: ['t-idea', 't-late', 't-started', 't-today'],
+        });
+        const names = screen
+            .getAllByTestId(/^candidate-open-/)
+            .map((link) => link.textContent);
+        expect(names).toEqual([
+            'Sort photos',
+            'Renew insurance',
+            'Draft report',
+            'Pay rent',
         ]);
     });
 

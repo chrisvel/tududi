@@ -1,13 +1,19 @@
 'use strict';
 
-// How "What could you do today?" is ordered. Profile > Planning explains
-// these same rules to the user, so change both together.
+// How "What could you do today?" is ordered. Profile > Planning lets the
+// user reorder the buckets and explains the rest, so change both together.
 //
-// 1. Groups, in this order: overdue, due today, in progress, everything else.
-// 2. Inside a group: higher priority first.
-// 3. Then tasks in a project before tasks without one.
-// 4. Then the earlier due date, then the older task, so the order is stable.
+// 1. Every task falls in one bucket: its group (overdue, due today, in
+//    progress, everything else) split by whether it sits in a project.
+// 2. Buckets follow the user's order, or DEFAULT_ORDER.
+// 3. Inside a bucket: higher priority first, then the earlier due date, then
+//    the older task, so the order is stable.
 const GROUP_ORDER = ['overdue', 'due_today', 'in_progress', 'suggested'];
+
+const DEFAULT_ORDER = GROUP_ORDER.flatMap((group) => [
+    `${group}:project`,
+    `${group}:none`,
+]);
 
 const PRIORITY_RANK = { high: 3, medium: 2, low: 1 };
 
@@ -32,9 +38,6 @@ function compareCandidates(a, b) {
     const priority = priorityRank(b.priority) - priorityRank(a.priority);
     if (priority !== 0) return priority;
 
-    const inProject = (b.project_id ? 1 : 0) - (a.project_id ? 1 : 0);
-    if (inProject !== 0) return inProject;
-
     const due = timeOf(a.due_date) - timeOf(b.due_date);
     if (due !== 0 && !Number.isNaN(due)) return due;
 
@@ -48,8 +51,38 @@ function rankCandidates(tasks) {
     return [...(tasks || [])].sort(compareCandidates);
 }
 
+const bucketOf = (group, task) =>
+    `${group}:${task.project_id ? 'project' : 'none'}`;
+
+// Keeps known buckets once each, in the given order, and appends any the
+// saved order is missing, so an old or hand-edited setting still works.
+function normalizeOrder(order) {
+    if (!Array.isArray(order)) return [...DEFAULT_ORDER];
+    const known = order.filter(
+        (key, index) =>
+            DEFAULT_ORDER.includes(key) && order.indexOf(key) === index
+    );
+    return [...known, ...DEFAULT_ORDER.filter((key) => !known.includes(key))];
+}
+
+// Returns [{ group, task }] for every task in `groups`, in bucket order.
+function orderCandidates(groups, order = DEFAULT_ORDER) {
+    const buckets = new Map(normalizeOrder(order).map((key) => [key, []]));
+    for (const group of GROUP_ORDER) {
+        for (const task of groups[group] || []) {
+            buckets.get(bucketOf(group, task)).push({ group, task });
+        }
+    }
+    return [...buckets.values()].flatMap((entries) =>
+        entries.sort((a, b) => compareCandidates(a.task, b.task))
+    );
+}
+
 module.exports = {
     GROUP_ORDER,
+    DEFAULT_ORDER,
     compareCandidates,
     rankCandidates,
+    normalizeOrder,
+    orderCandidates,
 };

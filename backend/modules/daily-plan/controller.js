@@ -29,6 +29,24 @@ const dailyPlanController = {
         }
     },
 
+    async getRanking(req, res, next) {
+        try {
+            const user = requireUser(req);
+            res.json(await dailyPlanService.getRanking(user));
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async saveRanking(req, res, next) {
+        try {
+            const user = requireUser(req);
+            res.json(await dailyPlanService.saveRanking(user, req.body?.order));
+        } catch (err) {
+            next(err);
+        }
+    },
+
     async replace(req, res, next) {
         try {
             const user = requireUser(req);
