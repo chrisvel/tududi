@@ -1006,6 +1006,7 @@ const Tasks: React.FC = () => {
                                                                                 'common.due',
                                                                                 'Due'
                                                                             )}
+
                                                                             :{' '}
                                                                         </span>
                                                                         <span className="font-medium">
@@ -1027,6 +1028,7 @@ const Tasks: React.FC = () => {
                                         tasks={displayTasks}
                                         groupedTasks={null}
                                         groupBy={groupBy}
+                                        onReorder={handleReorder}
                                         onTaskCreate={handleTaskCreate}
                                         onTaskUpdate={handleTaskUpdate}
                                         onTaskCompletionToggle={
