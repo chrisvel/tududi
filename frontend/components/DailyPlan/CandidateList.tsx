@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router-dom';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
@@ -62,7 +63,8 @@ interface CandidateCardProps {
 }
 
 // Calm by default: the name and one grey line. Lengths and the overdue
-// actions show on hover or keyboard focus (always on touch screens).
+// actions open after a short hover or on keyboard focus (always on touch
+// screens). The delay keeps rows still while the mouse passes over them.
 const CandidateCard: React.FC<CandidateCardProps> = ({
     task,
     group,
@@ -75,6 +77,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
     onDrop,
 }) => {
     const { t } = useTranslation();
+    const location = useLocation();
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: `candidate:${task.uid}`,
         data: { type: 'candidate', task, duration },
@@ -106,7 +109,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
     return (
         <div
             ref={setNodeRef}
-            className={`group flex flex-col gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 focus-within:bg-gray-50 dark:hover:bg-gray-800/60 dark:focus-within:bg-gray-800/60 ${
+            className={`group flex flex-col rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 focus-within:bg-gray-50 dark:hover:bg-gray-800/60 dark:focus-within:bg-gray-800/60 ${
                 isDragging ? 'opacity-40' : ''
             }`}
             data-testid={`candidate-${task.uid}`}
@@ -122,9 +125,15 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
                         { name: task.name }
                     )}
                 >
-                    <span className="truncate text-sm text-gray-900 dark:text-gray-100">
+                    <Link
+                        to={`/task/${task.uid}`}
+                        state={{ from: location.pathname }}
+                        draggable={false}
+                        className="self-start max-w-full truncate text-sm text-gray-900 hover:underline underline-offset-2 dark:text-gray-100"
+                        data-testid={`candidate-open-${task.uid}`}
+                    >
                         {task.name}
-                    </span>
+                    </Link>
                     <span className="flex items-center gap-1.5 truncate text-xs text-gray-500 dark:text-gray-400">
                         {group === 'overdue' && (
                             <span
@@ -151,37 +160,41 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
                     <PlusIcon className="h-4 w-4" />
                 </button>
             </div>
-            <div className="hidden flex-wrap items-center gap-2 group-focus-within:flex group-hover:flex [@media(hover:none)]:flex">
-                <DurationChips
-                    value={duration}
-                    onChange={onDurationChange}
-                    suggested={suggested}
-                />
-                {group === 'overdue' && (
-                    <div className="ml-auto flex gap-3">
-                        <button
-                            type="button"
-                            onClick={() => onReschedule('tomorrow')}
-                            className={quietAction}
-                        >
-                            {t('dailyPlan.tomorrow', 'Tomorrow')}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => onReschedule('next_week')}
-                            className={quietAction}
-                        >
-                            {t('dailyPlan.nextWeek', 'Next week')}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onDrop}
-                            className={quietAction}
-                        >
-                            {t('dailyPlan.drop', 'Drop')}
-                        </button>
+            <div className="grid grid-rows-[0fr] transition-[grid-template-rows] delay-100 duration-200 ease-out group-focus-within:grid-rows-[1fr] group-focus-within:delay-0 group-hover:grid-rows-[1fr] group-hover:delay-300 [@media(hover:none)]:grid-rows-[1fr]">
+                <div className="min-h-0 overflow-hidden">
+                    <div className="flex flex-wrap items-center gap-2 pt-2">
+                        <DurationChips
+                            value={duration}
+                            onChange={onDurationChange}
+                            suggested={suggested}
+                        />
+                        {group === 'overdue' && (
+                            <div className="ml-auto flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => onReschedule('tomorrow')}
+                                    className={quietAction}
+                                >
+                                    {t('dailyPlan.tomorrow', 'Tomorrow')}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => onReschedule('next_week')}
+                                    className={quietAction}
+                                >
+                                    {t('dailyPlan.nextWeek', 'Next week')}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={onDrop}
+                                    className={quietAction}
+                                >
+                                    {t('dailyPlan.drop', 'Drop')}
+                                </button>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );
@@ -207,19 +220,29 @@ const CandidateList: React.FC<CandidateListProps> = ({
     // Dropping a planned block back here takes it off the plan.
     const { setNodeRef, isOver } = useDroppable({ id: 'candidates' });
 
-    // One ordered list; planned tasks are on the timeline, not here.
-    const seen = new Set<string>();
-    const entries: { task: Task; group: TaskGroupKey }[] = [];
+    // One ordered list, in the user's ranking when the server sends it;
+    // planned tasks are on the timeline, not here.
+    const byUid = new Map<string, { task: Task; group: TaskGroupKey }>();
     for (const group of GROUP_ORDER) {
-        if (filter !== 'all' && filter !== group) continue;
         for (const task of candidates[group]) {
-            if (!task.uid || seen.has(task.uid) || planned.has(task.uid)) {
-                continue;
+            if (task.uid && !byUid.has(task.uid)) {
+                byUid.set(task.uid, { task, group });
             }
-            seen.add(task.uid);
-            entries.push({ task, group });
         }
     }
+    const ranked = candidates.ranked ?? [];
+    const order = [
+        ...ranked,
+        ...[...byUid.keys()].filter((uid) => !ranked.includes(uid)),
+    ];
+    const entries = order
+        .map((uid) => byUid.get(uid))
+        .filter(
+            (entry): entry is { task: Task; group: TaskGroupKey } =>
+                !!entry &&
+                (filter === 'all' || filter === entry.group) &&
+                !planned.has(entry.task.uid as string)
+        );
     const shown = entries.slice(0, visible);
 
     const counts: { key: CandidateFilter; label: string; count: number }[] = [

@@ -376,7 +376,8 @@
       "notifications": "Tùy Chọn Thông Báo",
       "oidc": "OIDC/SSO",
       "caldav": "Đồng bộ CalDAV",
-      "calendars": "Lịch"
+      "calendars": "Lịch",
+      "planning": "Lập kế hoạch"
     },
     "security": "Cài đặt bảo mật",
     "deleteAccount": "Xóa tài khoản",
@@ -603,6 +604,31 @@
       "removeMessage": "Ngừng hiển thị \"{{name}}\" trong Hôm nay? Bản thân lịch không bị thay đổi.",
       "removeConfirm": "Xóa",
       "missingFields": "Thêm tên và địa chỉ lịch"
+    },
+    "planning": {
+      "title": "Lập kế hoạch",
+      "description": "Cách \"Hôm nay bạn có thể làm gì?\" sắp xếp công việc của bạn khi bạn lên kế hoạch cho ngày. Kéo các hàng theo thứ tự bạn muốn; cùng các công việc luôn hiện theo cùng một thứ tự.",
+      "orderTitle": "Thứ tự (kéo để thay đổi)",
+      "reset": "Đặt lại mặc định",
+      "overdue": "Quá hạn",
+      "overdueDetail": "Đã quá hạn, kể cả công việc bạn đã bắt đầu.",
+      "dueToday": "Đến hạn hôm nay",
+      "dueTodayDetail": "Công việc đến hạn trước khi hết ngày.",
+      "inProgress": "Đang làm",
+      "inProgressDetail": "Việc bạn đã bắt đầu nhưng chưa xong.",
+      "everythingElse": "Mọi thứ khác",
+      "everythingElseDetail": "Công việc đang mở mà bạn có thể làm. Công việc bị hoãn, công việc \"lúc nào đó\" và công việc đến hạn sau hơn 3 ngày sẽ bị bỏ qua.",
+      "inProject": "thuộc dự án",
+      "noProject": "không có dự án",
+      "withinTitle": "Trong mỗi nhóm",
+      "rulePriority": "Ưu tiên cao hơn trước.",
+      "ruleDue": "Hạn sớm hơn trước, sau đó là công việc cũ hơn.",
+      "dragRow": "Kéo {{name}}",
+      "moveUp": "Di chuyển {{name}} lên",
+      "moveDown": "Di chuyển {{name}} xuống",
+      "loadError": "Không thể tải thứ tự lập kế hoạch",
+      "saveError": "Không thể lưu thứ tự lập kế hoạch",
+      "open": "Lên kế hoạch cho ngày"
     }
   },
   "productivity": {

@@ -6,8 +6,16 @@ const permissionsService = require('../../services/permissionsService');
 const { serializeTasks } = require('../tasks/core/serializers');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
 const {
+    GROUP_ORDER,
+    DEFAULT_ORDER,
+    normalizeOrder,
+    orderCandidates,
+    rankCandidates,
+} = require('./ranking');
+const {
     getSafeTimezone,
     getCurrentDateInTimezone,
+    getTodayBoundsInUTC,
 } = require('../../utils/timezone-utils');
 const { ValidationError, NotFoundError } = require('../../shared/errors');
 
@@ -235,31 +243,42 @@ async function clearPlan(user, date) {
 }
 
 // The planner's left column: the same lists the classic Today page shows,
-// deduplicated so a task appears in the first group it belongs to.
+// deduplicated so a task appears in the first group it belongs to, and
+// ranked by the rules in ranking.js.
 async function getCandidates(user) {
     const timezone = getSafeTimezone(user.timezone);
     const metrics = await computeTaskMetrics(user.id, timezone);
 
-    const groups = [
-        [
-            'in_progress',
-            [...metrics.tasks_in_progress, ...metrics.today_plan_tasks],
-        ],
-        ['overdue', metrics.tasks_overdue],
-        ['due_today', metrics.tasks_due_today],
-        ['suggested', metrics.suggested_tasks],
-    ];
+    // Started tasks that are past due count as overdue here, so late work
+    // is never ranked below fresh work.
+    const todayStart = new Date(getTodayBoundsInUTC(timezone).start).getTime();
+    const started = [...metrics.tasks_in_progress, ...metrics.today_plan_tasks];
+    const isLate = (task) =>
+        task.due_date && new Date(task.due_date).getTime() < todayStart;
+
+    const groupTasks = {
+        overdue: [...metrics.tasks_overdue, ...started.filter(isLate)],
+        due_today: metrics.tasks_due_today,
+        in_progress: started,
+        suggested: metrics.suggested_tasks,
+    };
 
     const seen = new Set();
-    const result = {};
-    for (const [key, tasks] of groups) {
-        const unique = (tasks || []).filter((task) => {
+    const unique = {};
+    for (const key of GROUP_ORDER) {
+        unique[key] = rankCandidates(groupTasks[key]).filter((task) => {
             if (seen.has(task.id)) return false;
             seen.add(task.id);
             return true;
         });
-        result[key] = await serializeTasks(unique, timezone);
     }
+
+    const result = {};
+    for (const key of GROUP_ORDER) {
+        result[key] = await serializeTasks(unique[key], timezone);
+    }
+    const { order } = await getRanking(user);
+    result.ranked = orderCandidates(unique, order).map(({ task }) => task.uid);
 
     const inbox = await repository.findOpenInboxItems(user.id, INBOX_LIMIT);
     result.inbox = inbox.items.map((item) => ({
@@ -273,6 +292,34 @@ async function getCandidates(user) {
     return result;
 }
 
+// The user's bucket order for the candidate list (Profile > Planning).
+async function getRanking(user) {
+    const settings = await repository.findUiSettings(user.id);
+    return {
+        order: normalizeOrder(settings.planning?.candidateOrder),
+        default_order: DEFAULT_ORDER,
+    };
+}
+
+async function saveRanking(user, order) {
+    if (
+        !Array.isArray(order) ||
+        order.length !== DEFAULT_ORDER.length ||
+        new Set(order).size !== order.length ||
+        order.some((key) => !DEFAULT_ORDER.includes(key))
+    ) {
+        throw new ValidationError(
+            `order must list each of ${DEFAULT_ORDER.join(', ')} once`
+        );
+    }
+    const settings = await repository.findUiSettings(user.id);
+    await repository.saveUiSettings(user.id, {
+        ...settings,
+        planning: { ...(settings.planning || {}), candidateOrder: order },
+    });
+    return getRanking(user);
+}
+
 module.exports = {
     resolvePlanDate,
     validateItems,
@@ -282,4 +329,6 @@ module.exports = {
     clearPlan,
     carryOver,
     getCandidates,
+    getRanking,
+    saveRanking,
 };

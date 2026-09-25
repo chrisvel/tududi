@@ -6,6 +6,7 @@ const {
     DailyPlanItem,
     Task,
     InboxItem,
+    User,
     sequelize,
 } = require('../../models');
 const { TASK_INCLUDES } = require('../tasks/utils/constants');
@@ -110,6 +111,29 @@ class DailyPlanRepository {
         ]);
         return { items, count };
     }
+
+    async findUiSettings(userId) {
+        const user = await User.findByPk(userId, {
+            attributes: ['id', 'ui_settings'],
+        });
+        return parseSettings(user?.ui_settings);
+    }
+
+    async saveUiSettings(userId, settings) {
+        await User.update({ ui_settings: settings }, { where: { id: userId } });
+    }
+}
+
+function parseSettings(value) {
+    if (!value) return {};
+    if (typeof value === 'string') {
+        try {
+            return JSON.parse(value) || {};
+        } catch {
+            return {};
+        }
+    }
+    return value;
 }
 
 module.exports = new DailyPlanRepository();

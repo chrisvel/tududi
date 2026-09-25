@@ -383,7 +383,8 @@
       "notifications": "Notifikationsinställningar",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV-synkronisering",
-      "calendars": "Kalendrar"
+      "calendars": "Kalendrar",
+      "planning": "Planering"
     },
     "security": "Säkerhetsinställningar",
     "deleteAccount": "Ta bort konto",
@@ -603,6 +604,31 @@
       "removeMessage": "Sluta visa ”{{name}}” i Idag? Själva kalendern påverkas inte.",
       "removeConfirm": "Ta bort",
       "missingFields": "Ange ett namn och kalenderadressen"
+    },
+    "planning": {
+      "title": "Planering",
+      "description": "Så ordnar \"Vad skulle du kunna göra idag?\" dina uppgifter när du planerar din dag. Dra raderna i den ordning du vill; samma uppgifter kommer alltid i samma ordning.",
+      "orderTitle": "Ordning (dra för att ändra)",
+      "reset": "Återställ standard",
+      "overdue": "Försenade",
+      "overdueDetail": "Förfallna, även uppgifter du redan har påbörjat.",
+      "dueToday": "Förfaller idag",
+      "dueTodayDetail": "Uppgifter som förfaller innan dagen är slut.",
+      "inProgress": "Pågår",
+      "inProgressDetail": "Arbete du har påbörjat och inte avslutat.",
+      "everythingElse": "Allt annat",
+      "everythingElseDetail": "Öppna uppgifter du skulle kunna ta dig an. Uppskjutna uppgifter, någon gång-uppgifter och uppgifter som förfaller om mer än 3 dagar utelämnas.",
+      "inProject": "i ett projekt",
+      "noProject": "utan projekt",
+      "withinTitle": "Inom varje grupp",
+      "rulePriority": "Högre prioritet först.",
+      "ruleDue": "Det tidigaste förfallodatumet först, sedan den äldsta uppgiften.",
+      "dragRow": "Dra {{name}}",
+      "moveUp": "Flytta upp {{name}}",
+      "moveDown": "Flytta ned {{name}}",
+      "loadError": "Kunde inte läsa in planeringsordningen",
+      "saveError": "Kunde inte spara planeringsordningen",
+      "open": "Planera min dag"
     }
   },
   "productivity": {

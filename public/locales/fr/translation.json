@@ -376,7 +376,8 @@
       "notifications": "Préférences de Notification",
       "oidc": "OIDC/SSO",
       "caldav": "Synchronisation CalDAV",
-      "calendars": "Calendriers"
+      "calendars": "Calendriers",
+      "planning": "Planification"
     },
     "security": "Paramètres de sécurité",
     "deleteAccount": "Supprimer le compte",
@@ -603,6 +604,31 @@
       "removeMessage": "Ne plus afficher « {{name}} » dans Aujourd'hui ? Le calendrier lui-même n'est pas modifié.",
       "removeConfirm": "Supprimer",
       "missingFields": "Ajoutez un nom et l'adresse du calendrier"
+    },
+    "planning": {
+      "title": "Planification",
+      "description": "Comment « Que pourriez-vous faire aujourd'hui ? » ordonne vos tâches quand vous planifiez votre journée. Faites glisser les lignes dans l’ordre voulu ; les mêmes tâches apparaissent toujours dans le même ordre.",
+      "orderTitle": "Ordre (glisser pour modifier)",
+      "reset": "Rétablir par défaut",
+      "overdue": "En retard",
+      "overdueDetail": "Échéance dépassée, y compris les tâches déjà commencées.",
+      "dueToday": "À faire aujourd'hui",
+      "dueTodayDetail": "Tâches à échéance avant la fin de la journée.",
+      "inProgress": "En cours",
+      "inProgressDetail": "Travail commencé mais pas encore terminé.",
+      "everythingElse": "Tout le reste",
+      "everythingElseDetail": "Tâches ouvertes que vous pourriez reprendre. Les tâches reportées, « un jour » et celles dont l’échéance est à plus de 3 jours sont exclues.",
+      "inProject": "dans un projet",
+      "noProject": "sans projet",
+      "withinTitle": "Dans chaque groupe",
+      "rulePriority": "Priorité la plus haute d’abord.",
+      "ruleDue": "L’échéance la plus proche d’abord, puis la tâche la plus ancienne.",
+      "dragRow": "Déplacer {{name}}",
+      "moveUp": "Monter {{name}}",
+      "moveDown": "Descendre {{name}}",
+      "loadError": "Impossible de charger l’ordre de planification",
+      "saveError": "Impossible d’enregistrer l’ordre de planification",
+      "open": "Planifier ma journée"
     }
   },
   "productivity": {

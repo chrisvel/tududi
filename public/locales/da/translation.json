@@ -383,7 +383,8 @@
       "notifications": "Notifikationsindstillinger",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Synkronisering",
-      "calendars": "Kalendere"
+      "calendars": "Kalendere",
+      "planning": "Planlægning"
     },
     "security": "Sikkerhedsindstillinger",
     "deleteAccount": "Slet konto",
@@ -603,6 +604,31 @@
       "removeMessage": "Stop med at vise \"{{name}}\" i I dag? Selve kalenderen ændres ikke.",
       "removeConfirm": "Fjern",
       "missingFields": "Tilføj et navn og kalenderens adresse"
+    },
+    "planning": {
+      "title": "Planlægning",
+      "description": "Sådan ordner \"Hvad kunne du gøre i dag?\" dine opgaver, når du planlægger din dag. Træk rækkerne i den rækkefølge, du vil have; de samme opgaver kommer altid i samme rækkefølge.",
+      "orderTitle": "Rækkefølge (træk for at ændre)",
+      "reset": "Nulstil til standard",
+      "overdue": "Forfaldne",
+      "overdueDetail": "Over forfaldsdatoen, også opgaver du allerede er gået i gang med.",
+      "dueToday": "Forfalder i dag",
+      "dueTodayDetail": "Opgaver der forfalder, inden dagen er omme.",
+      "inProgress": "I gang",
+      "inProgressDetail": "Arbejde du er gået i gang med og ikke har gjort færdigt.",
+      "everythingElse": "Alt andet",
+      "everythingElseDetail": "Åbne opgaver du kunne tage fat på. Udsatte opgaver, en-dag-opgaver og opgaver der forfalder om mere end 3 dage er udeladt.",
+      "inProject": "i et projekt",
+      "noProject": "uden projekt",
+      "withinTitle": "Inden for hver gruppe",
+      "rulePriority": "Højere prioritet først.",
+      "ruleDue": "Den tidligste forfaldsdato først, derefter den ældste opgave.",
+      "dragRow": "Træk {{name}}",
+      "moveUp": "Flyt {{name}} op",
+      "moveDown": "Flyt {{name}} ned",
+      "loadError": "Kunne ikke indlæse planlægningsrækkefølgen",
+      "saveError": "Kunne ikke gemme planlægningsrækkefølgen",
+      "open": "Planlæg min dag"
     }
   },
   "productivity": {

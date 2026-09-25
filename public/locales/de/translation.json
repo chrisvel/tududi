@@ -633,7 +633,8 @@
       "notifications": "Benachrichtigungseinstellungen",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV-Synchronisierung",
-      "calendars": "Kalender"
+      "calendars": "Kalender",
+      "planning": "Planung"
     },
     "security": "Sicherheitseinstellungen",
     "changePassword": "Passwort ändern",
@@ -918,6 +919,31 @@
       "removeMessage": "„{{name}}“ nicht mehr in Heute anzeigen? Der Kalender selbst bleibt unverändert.",
       "removeConfirm": "Entfernen",
       "missingFields": "Gib einen Namen und die Kalenderadresse ein"
+    },
+    "planning": {
+      "title": "Planung",
+      "description": "So ordnet „Was könntest du heute tun?“ deine Aufgaben, wenn du deinen Tag planst. Zieh die Zeilen in die gewünschte Reihenfolge; dieselben Aufgaben erscheinen immer in derselben Reihenfolge.",
+      "orderTitle": "Reihenfolge (zum Ändern ziehen)",
+      "reset": "Auf Standard zurücksetzen",
+      "overdue": "Überfällig",
+      "overdueDetail": "Fälligkeitsdatum überschritten, auch Aufgaben, die du schon begonnen hast.",
+      "dueToday": "Heute fällig",
+      "dueTodayDetail": "Aufgaben, die vor Tagesende fällig sind.",
+      "inProgress": "In Arbeit",
+      "inProgressDetail": "Arbeit, die du begonnen und noch nicht beendet hast.",
+      "everythingElse": "Alles andere",
+      "everythingElseDetail": "Offene Aufgaben, die du angehen könntest. Zurückgestellte Aufgaben, Irgendwann-Aufgaben und Aufgaben, die erst in mehr als 3 Tagen fällig sind, werden ausgelassen.",
+      "inProject": "in einem Projekt",
+      "noProject": "ohne Projekt",
+      "withinTitle": "Innerhalb jeder Gruppe",
+      "rulePriority": "Höhere Priorität zuerst.",
+      "ruleDue": "Das frühere Fälligkeitsdatum zuerst, dann die ältere Aufgabe.",
+      "dragRow": "{{name}} ziehen",
+      "moveUp": "{{name}} nach oben",
+      "moveDown": "{{name}} nach unten",
+      "loadError": "Die Planungsreihenfolge konnte nicht geladen werden",
+      "saveError": "Die Planungsreihenfolge konnte nicht gespeichert werden",
+      "open": "Meinen Tag planen"
     }
   },
   "nextTask": {

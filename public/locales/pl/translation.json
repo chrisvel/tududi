@@ -383,7 +383,8 @@
       "notifications": "Preferencje powiadomień",
       "oidc": "OIDC/SSO",
       "caldav": "Synchronizacja CalDAV",
-      "calendars": "Kalendarze"
+      "calendars": "Kalendarze",
+      "planning": "Planowanie"
     },
     "security": "Ustawienia Bezpieczeństwa",
     "deleteAccount": "Usuń konto",
@@ -603,6 +604,31 @@
       "removeMessage": "Przestać pokazywać „{{name}}” w widoku Dziś? Sam kalendarz pozostanie bez zmian.",
       "removeConfirm": "Usuń",
       "missingFields": "Dodaj nazwę i adres kalendarza"
+    },
+    "planning": {
+      "title": "Planowanie",
+      "description": "Jak „Co możesz dziś zrobić?” porządkuje twoje zadania, gdy planujesz dzień. Przeciągnij wiersze w wybranej kolejności; te same zadania zawsze pojawiają się w tej samej kolejności.",
+      "orderTitle": "Kolejność (przeciągnij, aby zmienić)",
+      "reset": "Przywróć domyślne",
+      "overdue": "Zaległe",
+      "overdueDetail": "Po terminie, w tym zadania, które już zacząłeś.",
+      "dueToday": "Na dziś",
+      "dueTodayDetail": "Zadania z terminem przed końcem dnia.",
+      "inProgress": "W toku",
+      "inProgressDetail": "Praca, którą zacząłeś i jeszcze nie skończyłeś.",
+      "everythingElse": "Cała reszta",
+      "everythingElseDetail": "Otwarte zadania, którymi możesz się zająć. Pominięte są zadania odłożone, zadania „kiedyś” i zadania z terminem za więcej niż 3 dni.",
+      "inProject": "w projekcie",
+      "noProject": "bez projektu",
+      "withinTitle": "W każdej grupie",
+      "rulePriority": "Najpierw wyższy priorytet.",
+      "ruleDue": "Najpierw wcześniejszy termin, potem starsze zadanie.",
+      "dragRow": "Przeciągnij {{name}}",
+      "moveUp": "Przesuń {{name}} w górę",
+      "moveDown": "Przesuń {{name}} w dół",
+      "loadError": "Nie udało się wczytać kolejności planowania",
+      "saveError": "Nie udało się zapisać kolejności planowania",
+      "open": "Zaplanuj mój dzień"
     }
   },
   "productivity": {

@@ -376,7 +376,8 @@
       "notifications": "Preferințe de Notificare",
       "oidc": "OIDC/SSO",
       "caldav": "Sincronizare CalDAV",
-      "calendars": "Calendare"
+      "calendars": "Calendare",
+      "planning": "Planificare"
     },
     "security": "Setări de Securitate",
     "deleteAccount": "Șterge contul",
@@ -603,6 +604,31 @@
       "removeMessage": "Nu mai afișezi „{{name}}” în Astăzi? Calendarul în sine nu se modifică.",
       "removeConfirm": "Elimină",
       "missingFields": "Adaugă un nume și adresa calendarului"
+    },
+    "planning": {
+      "title": "Planificare",
+      "description": "Cum ordonează „Ce ai putea face azi?” sarcinile tale când îți planifici ziua. Trage rândurile în ordinea dorită; aceleași sarcini apar mereu în aceeași ordine.",
+      "orderTitle": "Ordine (trage pentru a schimba)",
+      "reset": "Revino la implicit",
+      "overdue": "Întârziate",
+      "overdueDetail": "Cu termenul depășit, inclusiv sarcinile pe care le-ai început deja.",
+      "dueToday": "Scadente azi",
+      "dueTodayDetail": "Sarcini cu termen înainte de sfârșitul zilei.",
+      "inProgress": "În lucru",
+      "inProgressDetail": "Lucru pe care l-ai început și nu l-ai terminat.",
+      "everythingElse": "Tot restul",
+      "everythingElseDetail": "Sarcini deschise pe care le-ai putea prelua. Sunt excluse sarcinile amânate, cele „cândva” și cele cu termen peste mai mult de 3 zile.",
+      "inProject": "într-un proiect",
+      "noProject": "fără proiect",
+      "withinTitle": "În fiecare grup",
+      "rulePriority": "Mai întâi prioritatea mai mare.",
+      "ruleDue": "Mai întâi termenul mai apropiat, apoi sarcina mai veche.",
+      "dragRow": "Trage {{name}}",
+      "moveUp": "Mută {{name}} în sus",
+      "moveDown": "Mută {{name}} în jos",
+      "loadError": "Ordinea de planificare nu a putut fi încărcată",
+      "saveError": "Ordinea de planificare nu a putut fi salvată",
+      "open": "Planifică-mi ziua"
     }
   },
   "productivity": {

@@ -443,7 +443,8 @@
       "notifications": "Notification Preferences",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Sync",
-      "calendars": "Calendars"
+      "calendars": "Calendars",
+      "planning": "Planning"
     },
     "caldav": {
       "title": "CalDAV Synchronization",
@@ -630,6 +631,31 @@
       "removeMessage": "Stop showing \"{{name}}\" on Today? The calendar itself is not touched.",
       "removeConfirm": "Remove",
       "missingFields": "Add a name and the calendar address"
+    },
+    "planning": {
+      "title": "Planning",
+      "description": "How \"What could you do today?\" orders your tasks when you plan your day. Drag the rows into the order you want; the same tasks always come out in the same order.",
+      "orderTitle": "Order (drag to change)",
+      "reset": "Reset to default",
+      "overdue": "Overdue",
+      "overdueDetail": "Past their due date, including tasks you already started.",
+      "dueToday": "Due today",
+      "dueTodayDetail": "Tasks due before the day ends.",
+      "inProgress": "In progress",
+      "inProgressDetail": "Work you started and have not finished.",
+      "everythingElse": "Everything else",
+      "everythingElseDetail": "Open tasks you could pick up. Deferred tasks, someday tasks and tasks due more than 3 days out are left out.",
+      "inProject": "in a project",
+      "noProject": "no project",
+      "withinTitle": "Inside each group",
+      "rulePriority": "Higher priority first.",
+      "ruleDue": "The earlier due date first, then the older task.",
+      "dragRow": "Drag {{name}}",
+      "moveUp": "Move {{name}} up",
+      "moveDown": "Move {{name}} down",
+      "loadError": "Could not load the planning order",
+      "saveError": "Could not save the planning order",
+      "open": "Plan my day"
     }
   },
   "productivity": {

@@ -384,7 +384,8 @@
       "notifications": "Varslingsinnstillinger",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV-synkronisering",
-      "calendars": "Kalendere"
+      "calendars": "Kalendere",
+      "planning": "Planlegging"
     },
     "security": "Sikkerhetsinnstillinger",
     "deleteAccount": "Slett konto",
@@ -604,6 +605,31 @@
       "removeMessage": "Slutte å vise «{{name}}» i I dag? Selve kalenderen endres ikke.",
       "removeConfirm": "Fjern",
       "missingFields": "Legg til et navn og kalenderadressen"
+    },
+    "planning": {
+      "title": "Planlegging",
+      "description": "Slik ordner \"Hva kunne du gjort i dag?\" oppgavene dine når du planlegger dagen. Dra radene i den rekkefølgen du vil; de samme oppgavene kommer alltid i samme rekkefølge.",
+      "orderTitle": "Rekkefølge (dra for å endre)",
+      "reset": "Tilbakestill til standard",
+      "overdue": "Forfalt",
+      "overdueDetail": "Over forfallsdatoen, også oppgaver du allerede har startet på.",
+      "dueToday": "Forfaller i dag",
+      "dueTodayDetail": "Oppgaver som forfaller før dagen er omme.",
+      "inProgress": "Pågår",
+      "inProgressDetail": "Arbeid du har startet på og ikke fullført.",
+      "everythingElse": "Alt annet",
+      "everythingElseDetail": "Åpne oppgaver du kunne tatt fatt på. Utsatte oppgaver, en-gang-oppgaver og oppgaver som forfaller om mer enn 3 dager er utelatt.",
+      "inProject": "i et prosjekt",
+      "noProject": "uten prosjekt",
+      "withinTitle": "Innenfor hver gruppe",
+      "rulePriority": "Høyere prioritet først.",
+      "ruleDue": "Den tidligste forfallsdatoen først, deretter den eldste oppgaven.",
+      "dragRow": "Dra {{name}}",
+      "moveUp": "Flytt {{name}} opp",
+      "moveDown": "Flytt {{name}} ned",
+      "loadError": "Kunne ikke laste planleggingsrekkefølgen",
+      "saveError": "Kunne ikke lagre planleggingsrekkefølgen",
+      "open": "Planlegg dagen min"
     }
   },
   "productivity": {

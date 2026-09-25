@@ -365,7 +365,8 @@
       "notifications": "Preferenze di Notifica",
       "oidc": "OIDC/SSO",
       "caldav": "Sincronizzazione CalDAV",
-      "calendars": "Calendari"
+      "calendars": "Calendari",
+      "planning": "Pianificazione"
     },
     "security": "Impostazioni Sicurezza",
     "deleteAccount": "Elimina account",
@@ -603,6 +604,31 @@
       "removeMessage": "Smettere di mostrare «{{name}}» in Oggi? Il calendario non viene modificato.",
       "removeConfirm": "Rimuovi",
       "missingFields": "Aggiungi un nome e l'indirizzo del calendario"
+    },
+    "planning": {
+      "title": "Pianificazione",
+      "description": "Come «Cosa potresti fare oggi?» ordina le tue attività quando pianifichi la giornata. Trascina le righe nell’ordine che preferisci; le stesse attività escono sempre nello stesso ordine.",
+      "orderTitle": "Ordine (trascina per cambiarlo)",
+      "reset": "Ripristina predefinito",
+      "overdue": "In ritardo",
+      "overdueDetail": "Scadute, comprese le attività che hai già iniziato.",
+      "dueToday": "In scadenza oggi",
+      "dueTodayDetail": "Attività in scadenza entro fine giornata.",
+      "inProgress": "In corso",
+      "inProgressDetail": "Lavoro che hai iniziato e non hai ancora finito.",
+      "everythingElse": "Tutto il resto",
+      "everythingElseDetail": "Attività aperte che potresti riprendere. Sono escluse le attività rinviate, quelle «prima o poi» e quelle in scadenza tra più di 3 giorni.",
+      "inProject": "in un progetto",
+      "noProject": "senza progetto",
+      "withinTitle": "All’interno di ogni gruppo",
+      "rulePriority": "Prima la priorità più alta.",
+      "ruleDue": "Prima la scadenza più vicina, poi l’attività più vecchia.",
+      "dragRow": "Trascina {{name}}",
+      "moveUp": "Sposta su {{name}}",
+      "moveDown": "Sposta giù {{name}}",
+      "loadError": "Impossibile caricare l’ordine di pianificazione",
+      "saveError": "Impossibile salvare l’ordine di pianificazione",
+      "open": "Pianifica la mia giornata"
     }
   },
   "productivity": {

@@ -376,7 +376,8 @@
       "notifications": "Bildirim Tercihleri",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Senkronizasyonu",
-      "calendars": "Takvimler"
+      "calendars": "Takvimler",
+      "planning": "Planlama"
     },
     "security": "Güvenlik Ayarları",
     "deleteAccount": "Hesabı sil",
@@ -603,6 +604,31 @@
       "removeMessage": "\"{{name}}\" Bugün sayfasında artık gösterilmesin mi? Takvimin kendisi değişmez.",
       "removeConfirm": "Kaldır",
       "missingFields": "Bir ad ve takvim adresi ekle"
+    },
+    "planning": {
+      "title": "Planlama",
+      "description": "\"Bugün ne yapabilirsin?\" gününü planlarken görevlerini nasıl sıralar. Satırları istediğin sıraya sürükle; aynı görevler her zaman aynı sırada çıkar.",
+      "orderTitle": "Sıra (değiştirmek için sürükle)",
+      "reset": "Varsayılana sıfırla",
+      "overdue": "Gecikmiş",
+      "overdueDetail": "Son tarihi geçmiş, başladığın görevler dahil.",
+      "dueToday": "Bugün son gün",
+      "dueTodayDetail": "Gün bitmeden son tarihi gelen görevler.",
+      "inProgress": "Devam ediyor",
+      "inProgressDetail": "Başladığın ve henüz bitirmediğin işler.",
+      "everythingElse": "Diğer her şey",
+      "everythingElseDetail": "Ele alabileceğin açık görevler. Ertelenmiş görevler, bir gün görevleri ve son tarihi 3 günden uzak olanlar dışarıda bırakılır.",
+      "inProject": "bir projede",
+      "noProject": "projesiz",
+      "withinTitle": "Her grubun içinde",
+      "rulePriority": "Önce yüksek öncelik.",
+      "ruleDue": "Önce daha yakın son tarih, sonra daha eski görev.",
+      "dragRow": "{{name}} öğesini sürükle",
+      "moveUp": "{{name}} öğesini yukarı taşı",
+      "moveDown": "{{name}} öğesini aşağı taşı",
+      "loadError": "Planlama sırası yüklenemedi",
+      "saveError": "Planlama sırası kaydedilemedi",
+      "open": "Günümü planla"
     }
   },
   "productivity": {

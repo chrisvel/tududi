@@ -220,7 +220,8 @@
       "notifications": "Preferencias de Notificación",
       "oidc": "OIDC/SSO",
       "caldav": "Sincronización CalDAV",
-      "calendars": "Calendarios"
+      "calendars": "Calendarios",
+      "planning": "Planificación"
     },
     "security": "Configuración de Seguridad",
     "deleteAccount": "Eliminar cuenta",
@@ -515,6 +516,31 @@
       "removeMessage": "¿Dejar de mostrar «{{name}}» en Hoy? El calendario en sí no se modifica.",
       "removeConfirm": "Quitar",
       "missingFields": "Añade un nombre y la dirección del calendario"
+    },
+    "planning": {
+      "title": "Planificación",
+      "description": "Cómo «¿Qué podrías hacer hoy?» ordena tus tareas cuando planificas tu día. Arrastra las filas al orden que quieras; las mismas tareas siempre salen en el mismo orden.",
+      "orderTitle": "Orden (arrastra para cambiarlo)",
+      "reset": "Restablecer predeterminado",
+      "overdue": "Atrasadas",
+      "overdueDetail": "Con la fecha límite vencida, incluidas las tareas que ya empezaste.",
+      "dueToday": "Vencen hoy",
+      "dueTodayDetail": "Tareas que vencen antes de que acabe el día.",
+      "inProgress": "En curso",
+      "inProgressDetail": "Trabajo que empezaste y aún no terminaste.",
+      "everythingElse": "Todo lo demás",
+      "everythingElseDetail": "Tareas abiertas que podrías retomar. Se excluyen las tareas aplazadas, las de algún día y las que vencen en más de 3 días.",
+      "inProject": "en un proyecto",
+      "noProject": "sin proyecto",
+      "withinTitle": "Dentro de cada grupo",
+      "rulePriority": "Primero la prioridad más alta.",
+      "ruleDue": "Primero la fecha límite más cercana, luego la tarea más antigua.",
+      "dragRow": "Arrastrar {{name}}",
+      "moveUp": "Subir {{name}}",
+      "moveDown": "Bajar {{name}}",
+      "loadError": "No se pudo cargar el orden de planificación",
+      "saveError": "No se pudo guardar el orden de planificación",
+      "open": "Planificar mi día"
     }
   },
   "errors": {

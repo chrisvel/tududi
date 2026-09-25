@@ -376,7 +376,8 @@
       "notifications": "Preferensi Notifikasi",
       "oidc": "OIDC/SSO",
       "caldav": "Sinkronisasi CalDAV",
-      "calendars": "Kalender"
+      "calendars": "Kalender",
+      "planning": "Perencanaan"
     },
     "security": "Pengaturan Keamanan",
     "deleteAccount": "Hapus akun",
@@ -603,6 +604,31 @@
       "removeMessage": "Berhenti menampilkan \"{{name}}\" di Hari Ini? Kalendernya sendiri tidak diubah.",
       "removeConfirm": "Hapus",
       "missingFields": "Tambahkan nama dan alamat kalender"
+    },
+    "planning": {
+      "title": "Perencanaan",
+      "description": "Cara \"Apa yang bisa kamu kerjakan hari ini?\" mengurutkan tugasmu saat kamu merencanakan hari. Seret baris ke urutan yang kamu mau; tugas yang sama selalu muncul dalam urutan yang sama.",
+      "orderTitle": "Urutan (seret untuk mengubah)",
+      "reset": "Kembalikan ke bawaan",
+      "overdue": "Terlambat",
+      "overdueDetail": "Melewati tenggat, termasuk tugas yang sudah kamu mulai.",
+      "dueToday": "Jatuh tempo hari ini",
+      "dueTodayDetail": "Tugas yang jatuh tempo sebelum hari berakhir.",
+      "inProgress": "Sedang dikerjakan",
+      "inProgressDetail": "Pekerjaan yang sudah kamu mulai dan belum selesai.",
+      "everythingElse": "Lainnya",
+      "everythingElseDetail": "Tugas terbuka yang bisa kamu kerjakan. Tugas yang ditunda, tugas suatu saat, dan tugas yang jatuh tempo lebih dari 3 hari lagi tidak ditampilkan.",
+      "inProject": "dalam proyek",
+      "noProject": "tanpa proyek",
+      "withinTitle": "Di dalam setiap grup",
+      "rulePriority": "Prioritas lebih tinggi dulu.",
+      "ruleDue": "Tenggat lebih awal dulu, lalu tugas yang lebih lama.",
+      "dragRow": "Seret {{name}}",
+      "moveUp": "Pindahkan {{name}} ke atas",
+      "moveDown": "Pindahkan {{name}} ke bawah",
+      "loadError": "Tidak dapat memuat urutan perencanaan",
+      "saveError": "Tidak dapat menyimpan urutan perencanaan",
+      "open": "Rencanakan hariku"
     }
   },
   "productivity": {

@@ -290,7 +290,8 @@
       "notifications": "通知設定",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV同期",
-      "calendars": "カレンダー"
+      "calendars": "カレンダー",
+      "planning": "プランニング"
     },
     "security": "セキュリティ設定",
     "deleteAccount": "アカウントを削除",
@@ -603,6 +604,31 @@
       "removeMessage": "「{{name}}」を今日のページに表示しないようにしますか?カレンダー自体は変更されません。",
       "removeConfirm": "削除",
       "missingFields": "名前とカレンダーのアドレスを入力してください"
+    },
+    "planning": {
+      "title": "プランニング",
+      "description": "一日を計画するとき、「今日は何ができそうですか?」がタスクを並べる順番です。行をドラッグして好きな順番にできます。同じタスクはいつも同じ順番で表示されます。",
+      "orderTitle": "順番(ドラッグで変更)",
+      "reset": "デフォルトに戻す",
+      "overdue": "期限切れ",
+      "overdueDetail": "期限切れ。すでに着手したタスクも含みます。",
+      "dueToday": "今日が期限",
+      "dueTodayDetail": "今日中が期限のタスク。",
+      "inProgress": "進行中",
+      "inProgressDetail": "着手していてまだ終わっていない作業。",
+      "everythingElse": "その他",
+      "everythingElseDetail": "取りかかれる未完了のタスク。延期中のタスク、いつかやるタスク、期限が3日より先のタスクは除きます。",
+      "inProject": "プロジェクトあり",
+      "noProject": "プロジェクトなし",
+      "withinTitle": "各グループ内",
+      "rulePriority": "優先度の高いものから。",
+      "ruleDue": "期限の早いものから、次に古いタスクから。",
+      "dragRow": "{{name}}をドラッグ",
+      "moveUp": "{{name}}を上へ",
+      "moveDown": "{{name}}を下へ",
+      "loadError": "計画の順番を読み込めませんでした",
+      "saveError": "計画の順番を保存できませんでした",
+      "open": "今日を計画する"
     }
   },
   "nextTask": {

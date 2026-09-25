@@ -376,7 +376,8 @@
       "notifications": "通知偏好设置",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV 同步",
-      "calendars": "日历"
+      "calendars": "日历",
+      "planning": "计划"
     },
     "security": "安全设置",
     "deleteAccount": "删除账户",
@@ -603,6 +604,31 @@
       "removeMessage": "不再在今日页面显示「{{name}}」?日历本身不会改变。",
       "removeConfirm": "移除",
       "missingFields": "请填写名称和日历地址"
+    },
+    "planning": {
+      "title": "计划",
+      "description": "规划一天时,\"今天可以做些什么?\"如何排列你的任务。拖动各行调整为你想要的顺序;相同的任务总是以相同的顺序出现。",
+      "orderTitle": "顺序(拖动以更改)",
+      "reset": "恢复默认",
+      "overdue": "已逾期",
+      "overdueDetail": "已过截止日期,包括你已经开始的任务。",
+      "dueToday": "今天到期",
+      "dueTodayDetail": "今天结束前到期的任务。",
+      "inProgress": "进行中",
+      "inProgressDetail": "已经开始但尚未完成的工作。",
+      "everythingElse": "其他所有任务",
+      "everythingElseDetail": "你可以着手的未完成任务。已推迟的任务、\"将来某天\"的任务以及 3 天后才到期的任务不在其中。",
+      "inProject": "属于项目",
+      "noProject": "无项目",
+      "withinTitle": "每个分组内",
+      "rulePriority": "优先级高的在前。",
+      "ruleDue": "截止日期早的在前,然后是较早创建的任务。",
+      "dragRow": "拖动 {{name}}",
+      "moveUp": "上移 {{name}}",
+      "moveDown": "下移 {{name}}",
+      "loadError": "无法加载计划顺序",
+      "saveError": "无法保存计划顺序",
+      "open": "规划我的一天"
     }
   },
   "productivity": {
