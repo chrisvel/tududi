@@ -4,6 +4,10 @@ const ICAL = require('ical.js');
 const moment = require('moment-timezone');
 
 const MAX_ITERATIONS = 20000;
+// For ranges, occurrences before the window get their own, larger budget so an
+// old series (a daily event since 2024) still reaches the requested month.
+const MAX_SKIPPED_OCCURRENCES = 50000;
+const MAX_OCCURRENCES_IN_RANGE = 1000;
 
 function parseCalendar(text) {
     const root = new ICAL.Component(ICAL.parse(text));
@@ -199,4 +203,133 @@ function eventsForDate(events, date, userTimezone) {
     });
 }
 
-module.exports = { parseCalendar, eventsForDate };
+function dtstartTzid(event) {
+    return event.component.getFirstProperty('dtstart')?.getParameter('tzid');
+}
+
+function buildRangeOccurrence(
+    event,
+    start,
+    end,
+    rangeStart,
+    rangeEnd,
+    userTimezone,
+    tzid
+) {
+    if (isCancelled(event)) return null;
+
+    if (start.isDate) {
+        // DTEND is exclusive for all-day events, as in eventsForDate.
+        const first = dateOnly(start);
+        const last = end ? dateOnly(end) : null;
+        const firstAt = moment.tz(first, 'YYYY-MM-DD', userTimezone);
+        const endAt =
+            last && last > first
+                ? moment.tz(last, 'YYYY-MM-DD', userTimezone)
+                : firstAt.clone().add(1, 'day');
+        if (!firstAt.isBefore(rangeEnd) || !endAt.isAfter(rangeStart)) {
+            return null;
+        }
+        return {
+            uid: event.uid,
+            title: event.summary || '',
+            all_day: true,
+            busy: false,
+            start: first,
+            end: last || first,
+            start_minute: null,
+            end_minute: null,
+        };
+    }
+
+    const startAt = toMoment(start, tzid, userTimezone);
+    const endAt = end
+        ? toMoment(end, end.zone === start.zone ? tzid : null, userTimezone)
+        : startAt.clone();
+    const touchesRange =
+        startAt.isBefore(rangeEnd) &&
+        (endAt.isAfter(rangeStart) ||
+            (endAt.isSame(startAt) && !startAt.isBefore(rangeStart)));
+    if (!touchesRange) return null;
+
+    return {
+        uid: event.uid,
+        title: event.summary || '',
+        all_day: false,
+        busy: isBusy(event),
+        start: startAt.toISOString(),
+        end: endAt.toISOString(),
+        start_minute: null,
+        end_minute: null,
+    };
+}
+
+// Every event touching the days from `fromDate` to `toDate` (inclusive,
+// YYYY-MM-DD) in the user's timezone, with recurring events expanded.
+function eventsBetween(events, fromDate, toDate, userTimezone) {
+    const rangeStart = moment.tz(fromDate, 'YYYY-MM-DD', userTimezone);
+    const rangeEnd = moment
+        .tz(toDate, 'YYYY-MM-DD', userTimezone)
+        .add(1, 'day');
+    const windowStart = rangeStart.clone().subtract(1, 'day');
+    const windowEnd = rangeEnd.clone().add(1, 'day');
+    const results = [];
+
+    for (const event of events) {
+        const tzid = dtstartTzid(event);
+
+        if (!event.isRecurring()) {
+            const occurrence = buildRangeOccurrence(
+                event,
+                event.startDate,
+                event.endDate,
+                rangeStart,
+                rangeEnd,
+                userTimezone,
+                tzid
+            );
+            if (occurrence) results.push(occurrence);
+            continue;
+        }
+
+        const iterator = event.iterator();
+        let skipped = 0;
+        let inRange = 0;
+        let next;
+        while ((next = iterator.next())) {
+            const at = next.isDate
+                ? moment.tz(dateOnly(next), 'YYYY-MM-DD', userTimezone)
+                : toMoment(next, tzid, userTimezone);
+            if (at.isAfter(windowEnd)) break;
+
+            const details = event.getOccurrenceDetails(next);
+            const endAt = details.endDate.isDate
+                ? moment.tz(
+                      dateOnly(details.endDate),
+                      'YYYY-MM-DD',
+                      userTimezone
+                  )
+                : toMoment(details.endDate, tzid, userTimezone);
+            if (endAt.isBefore(windowStart)) {
+                if (++skipped > MAX_SKIPPED_OCCURRENCES) break;
+                continue;
+            }
+            if (++inRange > MAX_OCCURRENCES_IN_RANGE) break;
+
+            const occurrence = buildRangeOccurrence(
+                details.item,
+                details.startDate,
+                details.endDate,
+                rangeStart,
+                rangeEnd,
+                userTimezone,
+                details.item === event ? tzid : dtstartTzid(details.item)
+            );
+            if (occurrence) results.push(occurrence);
+        }
+    }
+
+    return results.sort((a, b) => a.start.localeCompare(b.start));
+}
+
+module.exports = { parseCalendar, eventsForDate, eventsBetween };

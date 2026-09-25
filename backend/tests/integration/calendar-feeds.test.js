@@ -126,6 +126,36 @@ describe('Calendar feed routes', () => {
         });
     });
 
+    it('returns the events of a date range', async () => {
+        await agent
+            .post('/api/calendar-feeds')
+            .send({ name: 'Google', url: SECRET_URL });
+
+        const res = await agent.get(
+            `/api/calendar-feeds/events?from=${today}&to=${today}`
+        );
+
+        expect(res.status).toBe(200);
+        expect(res.body.errors).toEqual([]);
+        expect(res.body.events).toHaveLength(1);
+        expect(res.body.events[0]).toMatchObject({
+            title: 'Dentist',
+            feed_name: 'Google',
+        });
+    });
+
+    it('refuses a range that is too long or backwards', async () => {
+        const tooLong = await agent.get(
+            '/api/calendar-feeds/events?from=2026-01-01&to=2026-06-01'
+        );
+        const backwards = await agent.get(
+            '/api/calendar-feeds/events?from=2026-09-10&to=2026-09-01'
+        );
+
+        expect(tooLong.status).toBe(400);
+        expect(backwards.status).toBe(400);
+    });
+
     it('reports a feed that stopped working instead of failing the day', async () => {
         await agent
             .post('/api/calendar-feeds')

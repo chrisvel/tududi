@@ -101,3 +101,24 @@ export const fetchCalendarEvents = async (
     await handleAuthResponse(response, 'Failed to load calendar events.');
     return response.json();
 };
+
+export interface CalendarRangeResponse {
+    from: string;
+    to: string;
+    events: CalendarEvent[];
+    errors: { feed_uid: string; message: string }[];
+}
+
+// Inclusive YYYY-MM-DD range, capped at 62 days by the server.
+export const fetchCalendarEventsBetween = async (
+    from: string,
+    to: string
+): Promise<CalendarRangeResponse> => {
+    const query = `?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+    const response = await fetch(getApiPath(`calendar-feeds/events${query}`), {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+    await handleAuthResponse(response, 'Failed to load calendar events.');
+    return response.json();
+};

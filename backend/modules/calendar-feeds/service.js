@@ -8,11 +8,12 @@ const {
     getCurrentDateInTimezone,
 } = require('../../utils/timezone-utils');
 const { fetchFeed, normalizeFeedUrl, FeedFetchError } = require('./fetcher');
-const { parseCalendar, eventsForDate } = require('./icsEvents');
+const { parseCalendar, eventsForDate, eventsBetween } = require('./icsEvents');
 const moment = require('moment-timezone');
 
 const CACHE_TTL_MS = 15 * 60 * 1000;
 const MAX_FEEDS_PER_USER = 10;
+const MAX_RANGE_DAYS = 62;
 const COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
 
 // Parsed feeds per process, keyed by feed uid. A feed changes rarely and
@@ -157,18 +158,11 @@ async function loadFeedEvents(feed) {
     }
 }
 
-async function eventsForDay(user, date) {
-    const timezone = getSafeTimezone(user.timezone);
-    const day =
-        date && moment(date, 'YYYY-MM-DD', true).isValid()
-            ? date
-            : getCurrentDateInTimezone(timezone);
-    if (date && date !== day) {
-        throw new ValidationError('date must be a YYYY-MM-DD date');
-    }
-
+// Runs `select` over every feed of the user. A feed that fails ends up in
+// `errors` instead of failing the whole request.
+async function collectEvents(userId, select) {
     const feeds = await CalendarFeed.findAll({
-        where: { user_id: user.id },
+        where: { user_id: userId },
         order: [['created_at', 'ASC']],
     });
 
@@ -178,7 +172,7 @@ async function eventsForDay(user, date) {
         feeds.map(async (feed) => {
             try {
                 const parsed = await loadFeedEvents(feed);
-                for (const event of eventsForDate(parsed, day, timezone)) {
+                for (const event of select(parsed)) {
                     events.push({
                         ...event,
                         feed_uid: feed.uid,
@@ -192,6 +186,23 @@ async function eventsForDay(user, date) {
         })
     );
 
+    return { events, errors };
+}
+
+async function eventsForDay(user, date) {
+    const timezone = getSafeTimezone(user.timezone);
+    const day =
+        date && moment(date, 'YYYY-MM-DD', true).isValid()
+            ? date
+            : getCurrentDateInTimezone(timezone);
+    if (date && date !== day) {
+        throw new ValidationError('date must be a YYYY-MM-DD date');
+    }
+
+    const { events, errors } = await collectEvents(user.id, (parsed) =>
+        eventsForDate(parsed, day, timezone)
+    );
+
     events.sort((a, b) => {
         if (a.all_day !== b.all_day) return a.all_day ? -1 : 1;
         return (a.start_minute ?? 0) - (b.start_minute ?? 0);
@@ -200,8 +211,41 @@ async function eventsForDay(user, date) {
     return { date: day, events, errors };
 }
 
+// The Calendar page asks for a whole month (plus the days around it).
+async function eventsForRange(user, from, to) {
+    const timezone = getSafeTimezone(user.timezone);
+    const fromDay = moment(from, 'YYYY-MM-DD', true);
+    const toDay = moment(to, 'YYYY-MM-DD', true);
+    if (!fromDay.isValid() || !toDay.isValid()) {
+        throw new ValidationError('from and to must be YYYY-MM-DD dates');
+    }
+    if (toDay.isBefore(fromDay)) {
+        throw new ValidationError('to must not be before from');
+    }
+    if (toDay.diff(fromDay, 'days') > MAX_RANGE_DAYS) {
+        throw new ValidationError(
+            `A range can cover at most ${MAX_RANGE_DAYS} days`
+        );
+    }
+
+    const { events, errors } = await collectEvents(user.id, (parsed) =>
+        eventsBetween(parsed, from, to, timezone)
+    );
+    events.sort((a, b) => a.start.localeCompare(b.start));
+
+    return { from, to, events, errors };
+}
+
 function clearCache() {
     cache.clear();
 }
 
-module.exports = { list, create, update, remove, eventsForDay, clearCache };
+module.exports = {
+    list,
+    create,
+    update,
+    remove,
+    eventsForDay,
+    eventsForRange,
+    clearCache,
+};

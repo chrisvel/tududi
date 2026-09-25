@@ -1,6 +1,7 @@
 const {
     parseCalendar,
     eventsForDate,
+    eventsBetween,
 } = require('../../../modules/calendar-feeds/icsEvents');
 const axios = require('axios');
 const dns = require('dns');
@@ -119,6 +120,51 @@ describe('eventsForDate', () => {
         expect(day.map((e) => e.title)).not.toContain('Cancelled');
         expect(day.find((e) => e.uid === 'free').busy).toBe(false);
         expect(day.find((e) => e.uid === 'call').busy).toBe(true);
+    });
+});
+
+describe('eventsBetween', () => {
+    const events = parseCalendar(ICS);
+    const between = (from, to, tz = 'Europe/Athens') =>
+        eventsBetween(events, from, to, tz);
+
+    it('expands a recurring event over the whole range', () => {
+        const school = between('2026-09-21', '2026-09-27').filter(
+            (e) => e.uid === 'school'
+        );
+        // Mon-Fri, minus the excluded Friday.
+        expect(school).toHaveLength(4);
+        expect(school.map((e) => e.title)).toContain(
+            'School drop-off (late start)'
+        );
+    });
+
+    it('drops cancelled events and keeps all-day ones', () => {
+        const titles = between('2026-09-24', '2026-09-24').map((e) => e.title);
+        expect(titles).not.toContain('Cancelled');
+        expect(titles).toContain('Name day');
+    });
+
+    it('still finds an old daily series in a later month', () => {
+        const old = parseCalendar(
+            [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'BEGIN:VEVENT',
+                'UID:standup',
+                'DTSTART:20240101T090000Z',
+                'DTEND:20240101T091500Z',
+                'RRULE:FREQ=DAILY',
+                'SUMMARY:Standup',
+                'END:VEVENT',
+                'END:VCALENDAR',
+            ].join('\r\n')
+        );
+
+        const september = eventsBetween(old, '2026-09-01', '2026-09-30', 'UTC');
+
+        expect(september).toHaveLength(30);
+        expect(september[0].start).toBe('2026-09-01T09:00:00.000Z');
     });
 });
 
