@@ -3,7 +3,7 @@ import { login } from '../helpers/testHelpers';
 
 test.describe('Inbox Task project assignment', () => {
     for (const projectName of ['Personal', 'Home Projects', null]) {
-        test(`Save as Task preserves ${projectName || 'no project'}`, async ({
+        test(`Add to Task preserves ${projectName || 'no project'}`, async ({
             page,
             baseURL,
         }) => {
@@ -48,9 +48,8 @@ test.describe('Inbox Task project assignment', () => {
                         response.url().endsWith('/api/task') &&
                         response.request().method() === 'POST'
                 );
-                await page
-                    .getByRole('button', { name: 'Task', exact: true })
-                    .click();
+                await page.getByRole('radio', { name: 'Task' }).click();
+                await page.getByTestId('capture-add').click();
                 expect((await creation).status()).toBe(201);
                 await expect(input).toHaveValue('');
 

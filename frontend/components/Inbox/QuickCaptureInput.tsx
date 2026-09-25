@@ -14,10 +14,25 @@ import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import {
     createInboxItemWithStore,
+    deleteInboxItemWithStore,
     analyzeInboxText,
     applyAnalysisToTask,
     InboxAnalysis,
 } from '../../utils/inboxService';
+import { createNote, deleteNote } from '../../utils/notesService';
+import {
+    CaptureTarget,
+    CapturedItem,
+    nonEmptyLines,
+    splitCaptureText,
+    splitFirstLine,
+} from '../../utils/captureText';
+import {
+    isTouchDevice,
+    updateCaptureSettings,
+    useCaptureSettings,
+} from '../../utils/captureSettings';
+import CaptureDestinations from '../Capture/CaptureDestinations';
 import {
     fetchWorkspaceAssignablePeople,
     fetchAssignablePeopleForProject,
@@ -25,17 +40,19 @@ import {
 import { Person } from '../../entities/Person';
 import { isAuthError, OfflineQueuedError } from '../../utils/authUtils';
 import { createTag } from '../../utils/tagsService';
-import { createProject } from '../../utils/projectsService';
 import {
-    LinkIcon,
-    XMarkIcon,
-} from '@heroicons/react/24/outline';
+    createProject,
+    deleteProject,
+    fetchProjects,
+} from '../../utils/projectsService';
+import { LinkIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { isUrl, extractUrlTitle } from '../../utils/urlService';
 import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
 export interface QuickCaptureInputHandle {
     submit: (forceInbox?: boolean) => Promise<void>;
+    focus: () => void;
 }
 
 export interface InboxComposerFooterContext {
@@ -65,6 +82,21 @@ interface QuickCaptureInputProps {
     openNoteModal?: (note: Note | null, inboxItemUid?: string) => void;
     cardClassName?: string;
     multiline?: boolean;
+    // One box for everything: an explicit "Add to Inbox | Task | Note |
+    // Project" choice decides what the text becomes, and every target reads
+    // dates, #tags, +projects and @people the same way.
+    unified?: boolean;
+    defaultTarget?: CaptureTarget;
+    // Changing this puts the box back on defaultTarget (a new open)
+    resetKey?: number;
+    compact?: boolean;
+    onClose?: () => void;
+    onCaptured?: (items: CapturedItem[]) => void;
+}
+
+interface CaptureStatus {
+    text: string;
+    items?: CapturedItem[];
 }
 
 interface UrlPreviewState {
@@ -131,11 +163,24 @@ const QuickCaptureInput = React.forwardRef<
             openNoteModal,
             cardClassName,
             multiline = true,
+            unified = false,
+            defaultTarget = 'inbox',
+            resetKey,
+            compact = false,
+            onClose,
+            onCaptured,
         },
         ref
     ) => {
         const { t } = useTranslation();
         const [inputText, setInputText] = useState<string>(initialValue);
+        const captureSettings = useCaptureSettings();
+        const [target, setTarget] = useState<CaptureTarget>(defaultTarget);
+        const [status, setStatus] = useState<CaptureStatus | null>(null);
+        const enterSaves =
+            (isTouchDevice()
+                ? captureSettings.enterTouch
+                : captureSettings.enterKeyboard) === 'save';
         const [isSaving, setIsSaving] = useState(false);
         const { showSuccessToast, showErrorToast } = useToast();
         const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
@@ -192,6 +237,10 @@ const QuickCaptureInput = React.forwardRef<
         const isEditMode = mode === 'edit';
 
         useEffect(() => {
+            setTarget(defaultTarget);
+        }, [resetKey, defaultTarget]);
+
+        useEffect(() => {
             if (isEditMode) {
                 setInputText(initialValue || '');
             }
@@ -210,7 +259,7 @@ const QuickCaptureInput = React.forwardRef<
         }, [autoFocus]);
 
         useEffect(() => {
-            if (isEditMode) return;
+            if (isEditMode || unified) return;
             const id = setInterval(() => {
                 setPlaceholderFading(true);
                 setTimeout(() => {
@@ -219,7 +268,7 @@ const QuickCaptureInput = React.forwardRef<
                 }, 300);
             }, 4000);
             return () => clearInterval(id);
-        }, [isEditMode]);
+        }, [isEditMode, unified]);
 
         useEffect(() => {
             if (!multiline) return;
@@ -231,6 +280,12 @@ const QuickCaptureInput = React.forwardRef<
             (el as HTMLElement).style.overflowY =
                 el.scrollHeight > maxHeight ? 'auto' : 'hidden';
         }, [inputText, multiline]);
+
+        // Dates and @people are read on the first line only, so a date
+        // mentioned further down a long note never becomes its due date.
+        const analysisSource = unified
+            ? splitFirstLine(inputText).first
+            : inputText;
 
         const clearComposerText = useCallback(() => {
             setInputText('');
@@ -522,7 +577,9 @@ const QuickCaptureInput = React.forwardRef<
             text: string,
             position: number
         ): string | null => {
-            const match = text.substring(0, position).match(PERSON_QUERY_PATTERN);
+            const match = text
+                .substring(0, position)
+                .match(PERSON_QUERY_PATTERN);
             if (!match) return null;
             return match[2] ?? match[3] ?? '';
         };
@@ -738,6 +795,9 @@ const QuickCaptureInput = React.forwardRef<
             const newText = e.target.value;
             const newCursorPosition = e.target.selectionStart || 0;
 
+            if (status) {
+                setStatus(null);
+            }
             setInputText(newText);
             setCursorPosition(newCursorPosition);
 
@@ -1010,7 +1070,7 @@ const QuickCaptureInput = React.forwardRef<
             const requestId = analysisRequestIdRef.current + 1;
             analysisRequestIdRef.current = requestId;
 
-            const textForAnalysis = inputText;
+            const textForAnalysis = analysisSource;
 
             analysisTimeoutRef.current = setTimeout(() => {
                 analyzeText(textForAnalysis, requestId);
@@ -1021,7 +1081,7 @@ const QuickCaptureInput = React.forwardRef<
                     clearTimeout(analysisTimeoutRef.current);
                 }
             };
-        }, [inputText, analyzeText]);
+        }, [analysisSource, analyzeText]);
 
         const handleTagSelect = (tagName: string) => {
             const beforeCursor = inputText.substring(0, cursorPosition);
@@ -1030,10 +1090,8 @@ const QuickCaptureInput = React.forwardRef<
 
             if (hashtagMatch) {
                 const newText =
-                    beforeCursor.replace(
-                        /#([a-zA-Z0-9_]*)$/,
-                        `#${tagName} `
-                    ) + afterCursor;
+                    beforeCursor.replace(/#([a-zA-Z0-9_]*)$/, `#${tagName} `) +
+                    afterCursor;
                 setInputText(newText);
                 setShowTagSuggestions(false);
                 setFilteredTags([]);
@@ -1413,12 +1471,312 @@ const QuickCaptureInput = React.forwardRef<
             ]
         );
 
+        const short = (text: string, max = 36) =>
+            text.length > max ? `${text.slice(0, max)}...` : text;
+
+        const refreshProjectsStore = async () => {
+            try {
+                const list = await fetchProjects();
+                useStore.getState().projectsStore.setProjects(list);
+            } catch (error) {
+                console.error('Failed to refresh projects:', error);
+            }
+        };
+
+        const resolveOrCreateProject = async (
+            name: string | undefined
+        ): Promise<string | undefined> => {
+            if (!name) {
+                return undefined;
+            }
+            const existing = projects.find(
+                (project) => project.name.toLowerCase() === name.toLowerCase()
+            );
+            if (existing) {
+                return existing.uid;
+            }
+            const created = await createProject({ name, status: 'planned' });
+            await refreshProjectsStore();
+            return created.uid;
+        };
+
+        const cleanFirstLine = (
+            line: string,
+            analysis: InboxAnalysis | null
+        ): string => {
+            const cleaned = (
+                analysis?.cleaned_content ??
+                line
+                    .replace(/#[a-zA-Z0-9_-]+/g, '')
+                    .replace(/\+(?:"[^"]+"|\S+)/g, '')
+            ).trim();
+            return cleaned || line.trim();
+        };
+
+        // Create one item of the chosen kind from one raw text. The first
+        // line is the title (dates, @people, #tags and +projects are read
+        // from it) and the other lines are its notes or body.
+        const captureOne = async (
+            destination: CaptureTarget,
+            itemText: string
+        ): Promise<CapturedItem> => {
+            const { first, rest } = splitFirstLine(itemText);
+
+            if (destination === 'inbox') {
+                await createMissingTags(itemText);
+                await createMissingProjects(itemText);
+                const item = await createInboxItemWithStore(itemText);
+                return { target: destination, uid: item.uid, title: first };
+            }
+
+            // Only tasks and projects have dates (and tasks an assignee), so
+            // a note keeps its whole title apart from #tags and +project.
+            let analysis: InboxAnalysis | null = null;
+            if (destination === 'task' || destination === 'project') {
+                try {
+                    analysis = await analyzeInboxText(first, {
+                        parseDates: !(
+                            dismissedDateText &&
+                            first.includes(dismissedDateText)
+                        ),
+                    });
+                } catch (error) {
+                    console.error('Error analyzing text:', error);
+                }
+            }
+
+            const title = cleanFirstLine(first, analysis);
+            const tagNames = Array.from(
+                new Map(
+                    [
+                        ...(analysis?.parsed_tags ?? []),
+                        ...parseHashtags(itemText),
+                    ].map((name) => [name.toLowerCase(), name])
+                ).values()
+            );
+            await createMissingTags(itemText);
+            const tagObjects = buildTagObjects(tagNames);
+
+            if (destination === 'project') {
+                const created = await createProject({
+                    name: title,
+                    description: rest,
+                    status: 'planned',
+                    tags: tagObjects,
+                    due_date_at: analysis?.parsed_due_date ?? undefined,
+                });
+                await refreshProjectsStore();
+                return { target: destination, uid: created.uid, title };
+            }
+
+            const projectUid = await resolveOrCreateProject(
+                analysis?.parsed_projects?.[0] ?? parseProjectRefs(itemText)[0]
+            );
+
+            if (destination === 'task') {
+                const task = applyAnalysisToTask(
+                    {
+                        name: title,
+                        note: rest || undefined,
+                        status: 'not_started',
+                        tags: tagObjects,
+                        project_uid: projectUid,
+                        completed_at: null,
+                    },
+                    analysis
+                );
+                const created = await useStore
+                    .getState()
+                    .tasksStore.createTask(task);
+                return { target: destination, uid: created.uid, title };
+            }
+
+            const isUrlContent =
+                isUrl(first.trim()) ||
+                analysis?.suggested_reason === 'url_detected';
+            const hasBookmark = tagNames.some(
+                (name) => name.toLowerCase() === 'bookmark'
+            );
+            const created = await createNote({
+                title,
+                content: rest || itemText,
+                tags:
+                    isUrlContent && !hasBookmark
+                        ? [...tagObjects, { name: 'bookmark' }]
+                        : tagObjects,
+                project_uid: projectUid,
+            });
+            return { target: destination, uid: created.uid, title };
+        };
+
+        const describeCaptured = (
+            destination: CaptureTarget,
+            items: CapturedItem[]
+        ): string => {
+            const title = short(items[0].title);
+            const total = items.length;
+            switch (destination) {
+                case 'inbox':
+                    return total === 1
+                        ? t(
+                              'capture.savedInbox',
+                              'Saved "{{title}}" to Inbox.',
+                              { title }
+                          )
+                        : t(
+                              'capture.savedInboxMany',
+                              'Saved {{total}} items to Inbox.',
+                              { total }
+                          );
+                case 'task':
+                    return total === 1
+                        ? t(
+                              'capture.createdTask',
+                              'Created task "{{title}}".',
+                              { title }
+                          )
+                        : t(
+                              'capture.createdTasks',
+                              'Created {{total}} tasks.',
+                              { total }
+                          );
+                case 'note':
+                    return total === 1
+                        ? t(
+                              'capture.createdNote',
+                              'Created note "{{title}}".',
+                              { title }
+                          )
+                        : t(
+                              'capture.createdNotes',
+                              'Created {{total}} notes.',
+                              { total }
+                          );
+                default:
+                    return total === 1
+                        ? t(
+                              'capture.createdProject',
+                              'Created project "{{title}}".',
+                              { title }
+                          )
+                        : t(
+                              'capture.createdProjects',
+                              'Created {{total}} projects.',
+                              { total }
+                          );
+            }
+        };
+
+        const undoCaptured = async (items: CapturedItem[]) => {
+            try {
+                for (const item of [...items].reverse()) {
+                    if (!item.uid) continue;
+                    if (item.target === 'inbox') {
+                        await deleteInboxItemWithStore(item.uid);
+                    } else if (item.target === 'task') {
+                        await useStore
+                            .getState()
+                            .tasksStore.deleteTask(item.uid);
+                    } else if (item.target === 'note') {
+                        await deleteNote(item.uid);
+                    } else {
+                        await deleteProject(item.uid);
+                        await refreshProjectsStore();
+                    }
+                }
+                setStatus({
+                    text: t('capture.removed', 'Removed. Nothing was saved.'),
+                });
+            } catch (error) {
+                console.error('Failed to undo capture:', error);
+                showErrorToast(
+                    t(
+                        'capture.undoError',
+                        'Could not remove it. Find it in its list and delete it there.'
+                    )
+                );
+            }
+        };
+
+        const handleUnifiedSubmit = async () => {
+            const raw = inputText.trim();
+            if (!raw || isSaving) return;
+
+            const texts = splitCaptureText(raw, captureSettings.oneItemPerLine);
+            const captured: CapturedItem[] = [];
+            const destination = target;
+
+            const finish = (items: CapturedItem[], remaining: string[]) => {
+                setInputText(remaining.join('\n'));
+                setAnalysisResult(null);
+                setUrlPreview(null);
+                dismissedPreviewUrlRef.current = null;
+                if (items.length > 0) {
+                    setStatus({
+                        text: describeCaptured(destination, items),
+                        items,
+                    });
+                    onCaptured?.(items);
+                }
+                inputRef.current?.focus();
+            };
+
+            setIsSaving(true);
+            setStatus(null);
+            try {
+                for (const itemText of texts) {
+                    captured.push(await captureOne(destination, itemText));
+                }
+                finish(captured, []);
+            } catch (error) {
+                if (error instanceof OfflineQueuedError) {
+                    finish([], []);
+                    setStatus({
+                        text: t(
+                            'inbox.itemQueuedOffline',
+                            "Saved offline. It'll sync automatically once you're back online."
+                        ),
+                    });
+                } else if (!isAuthError(error)) {
+                    console.error('Failed to capture:', error);
+                    // Keep the lines that were not saved so a retry does not
+                    // duplicate the ones that were
+                    finish(captured, texts.slice(captured.length));
+                    showErrorToast(
+                        t(
+                            'capture.saveError',
+                            'Could not save. Your text is still here.'
+                        )
+                    );
+                }
+            } finally {
+                setIsSaving(false);
+            }
+        };
+
+        const insertLineBreak = () => {
+            const el = inputRef.current;
+            if (!el) return;
+            const start = el.selectionStart ?? inputText.length;
+            const end = el.selectionEnd ?? start;
+            setInputText(
+                `${inputText.slice(0, start)}\n${inputText.slice(end)}`
+            );
+            setStatus(null);
+            requestAnimationFrame(() => {
+                el.focus();
+                el.setSelectionRange(start + 1, start + 1);
+            });
+        };
+
         useImperativeHandle(
             ref,
             () => ({
-                submit: (forceInbox = false) => handleSubmit(forceInbox),
+                submit: (forceInbox = false) =>
+                    unified ? handleUnifiedSubmit() : handleSubmit(forceInbox),
+                focus: () => inputRef.current?.focus(),
             }),
-            [handleSubmit]
+            [handleSubmit, handleUnifiedSubmit, unified]
         );
 
         const closeSuggestions = () => {
@@ -1517,6 +1875,25 @@ const QuickCaptureInput = React.forwardRef<
                 e.preventDefault();
                 if (isEditMode && !isSaving) {
                     handleSubmit();
+                } else if (unified) {
+                    onClose?.();
+                }
+                return;
+            }
+
+            if (unified && e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                if (activeSuggestions) {
+                    return;
+                }
+                if (isSaving) {
+                    e.preventDefault();
+                    return;
+                }
+                // Ctrl or Cmd + Enter always saves. Plain Enter saves or
+                // starts a new line, as chosen for this kind of device.
+                if (e.ctrlKey || e.metaKey || (enterSaves && !e.shiftKey)) {
+                    e.preventDefault();
+                    void handleUnifiedSubmit();
                 }
                 return;
             }
@@ -1532,11 +1909,11 @@ const QuickCaptureInput = React.forwardRef<
 
         const currentAnalysis =
             analysisResult &&
-            lastAnalyzedTextRef.current.trim() === inputText.trim()
+            lastAnalyzedTextRef.current.trim() === analysisSource.trim()
                 ? analysisResult
                 : null;
         const dateIsDismissed =
-            !!dismissedDateText && inputText.includes(dismissedDateText);
+            !!dismissedDateText && analysisSource.includes(dismissedDateText);
         const dateChip =
             currentAnalysis?.parsed_due_date && !dateIsDismissed
                 ? {
@@ -1699,11 +2076,186 @@ const QuickCaptureInput = React.forwardRef<
                 </div>
             ) : null;
 
-        const footerActions =
-            renderFooterActions?.(composerFooterContext) ||
-            defaultFooterActions;
+        const lineTotal = unified ? nonEmptyLines(inputText).length : 0;
+        const itemTotal = unified
+            ? splitCaptureText(inputText, captureSettings.oneItemPerLine).length
+            : 0;
+        const touch = isTouchDevice();
+        const enterHint = touch
+            ? enterSaves
+                ? t('capture.hintTouchSave', 'Return saves.')
+                : t('capture.hintTouchNewline', 'Return starts a new line.')
+            : enterSaves
+              ? t(
+                    'capture.hintSave',
+                    'Enter saves. Shift+Enter starts a new line.'
+                )
+              : t(
+                    'capture.hintNewline',
+                    'Enter starts a new line. Ctrl+Enter saves.'
+                );
 
-        const shouldShowPrimaryButton = !hidePrimaryButton && !isEditMode;
+        // What this text will become, in words, for text with several lines
+        const multilineNotice = (() => {
+            if (lineTotal < 2) return null;
+            const words = {
+                inbox: {
+                    one: t('capture.nounInbox', 'Inbox item'),
+                    many: t('capture.nounInboxMany', 'Inbox items'),
+                    first: '',
+                    rest: '',
+                },
+                task: {
+                    one: t('capture.nounTask', 'task'),
+                    many: t('capture.nounTaskMany', 'tasks'),
+                    first: t('capture.wordTitle', 'title'),
+                    rest: t('capture.wordNotes', 'notes'),
+                },
+                note: {
+                    one: t('capture.nounNote', 'note'),
+                    many: t('capture.nounNoteMany', 'notes'),
+                    first: t('capture.wordTitle', 'title'),
+                    rest: t('capture.wordBody', 'body'),
+                },
+                project: {
+                    one: t('capture.nounProject', 'project'),
+                    many: t('capture.nounProjectMany', 'projects'),
+                    first: t('capture.wordName', 'name'),
+                    rest: t('capture.wordDescription', 'description'),
+                },
+            }[target];
+            if (captureSettings.oneItemPerLine) {
+                return {
+                    text: t(
+                        'capture.multiPerLine',
+                        'This will be {{total}} {{name}}, one per line.',
+                        { total: itemTotal, name: words.many }
+                    ),
+                    link: t('capture.makeOne', 'Make 1 {{name}} instead', {
+                        name: words.one,
+                    }),
+                };
+            }
+            return {
+                text:
+                    target === 'inbox'
+                        ? t(
+                              'capture.multiInbox',
+                              'This will be 1 Inbox item. All {{lines}} lines are kept as typed.',
+                              { lines: lineTotal }
+                          )
+                        : t(
+                              'capture.multiOne',
+                              'This will be 1 {{name}}. The first line is the {{first}} and the other {{others}} lines are its {{rest}}.',
+                              {
+                                  name: words.one,
+                                  first: words.first,
+                                  others: lineTotal - 1,
+                                  rest: words.rest,
+                              }
+                          ),
+                link: t('capture.makeMany', 'Make {{lines}} {{name}} instead', {
+                    lines: lineTotal,
+                    name: words.many,
+                }),
+            };
+        })();
+
+        const linkButtonClass =
+            'underline underline-offset-2 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm';
+
+        const unifiedFooter = unified ? (
+            <div className="mt-3 flex flex-col gap-2">
+                {multilineNotice && (
+                    <div
+                        data-testid="capture-multiline"
+                        className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 px-3 py-2 text-xs text-gray-800 dark:text-gray-200"
+                    >
+                        <span>{multilineNotice.text}</span>
+                        <button
+                            type="button"
+                            data-testid="capture-multiline-toggle"
+                            onClick={() =>
+                                updateCaptureSettings({
+                                    oneItemPerLine:
+                                        !captureSettings.oneItemPerLine,
+                                })
+                            }
+                            className={`font-semibold text-blue-600 dark:text-blue-400 ${linkButtonClass}`}
+                        >
+                            {multilineNotice.link}
+                        </button>
+                    </div>
+                )}
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <CaptureDestinations value={target} onChange={setTarget} />
+                    <button
+                        type="button"
+                        data-testid="capture-add"
+                        onClick={() => void handleUnifiedSubmit()}
+                        disabled={!inputText.trim() || isSaving}
+                        className="ml-auto rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    >
+                        {itemTotal > 1
+                            ? t('capture.addN', 'Add {{total}}', {
+                                  total: itemTotal,
+                              })
+                            : t('capture.add', 'Add')}
+                    </button>
+                </div>
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 min-h-[20px] text-xs text-gray-500 dark:text-gray-400">
+                    <span
+                        role="status"
+                        aria-live="polite"
+                        data-testid="capture-status"
+                    >
+                        {status ? status.text : enterHint}
+                        {status?.items && (
+                            <button
+                                type="button"
+                                data-testid="capture-undo"
+                                onClick={() =>
+                                    void undoCaptured(status.items ?? [])
+                                }
+                                className={`ml-2 ${linkButtonClass}`}
+                            >
+                                {t('capture.undo', 'Undo')}
+                            </button>
+                        )}
+                    </span>
+                    <span className="flex gap-3">
+                        {touch && enterSaves && (
+                            <button
+                                type="button"
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={insertLineBreak}
+                                className={linkButtonClass}
+                            >
+                                {t('capture.lineBreak', 'Line break')}
+                            </button>
+                        )}
+                        {onClose && (
+                            <button
+                                type="button"
+                                data-testid="capture-close"
+                                onClick={onClose}
+                                className={linkButtonClass}
+                            >
+                                {t('capture.close', 'Close')}
+                            </button>
+                        )}
+                    </span>
+                </div>
+            </div>
+        ) : null;
+
+        const footerActions = unified
+            ? unifiedFooter
+            : renderFooterActions?.(composerFooterContext) ||
+              defaultFooterActions;
+
+        const shouldShowPrimaryButton =
+            !hidePrimaryButton && !isEditMode && !unified;
 
         const cardClasses = cardClassName ?? 'mb-6';
 
@@ -1711,7 +2263,7 @@ const QuickCaptureInput = React.forwardRef<
             <div
                 className={`relative w-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden ${cardClasses}`}
             >
-                {!isEditMode && (
+                {!isEditMode && !compact && (
                     <svg
                         width="110"
                         height="110"
@@ -1727,7 +2279,7 @@ const QuickCaptureInput = React.forwardRef<
                         <path d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M2.25 13.5V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.5M2.25 13.5V9.75A2.25 2.25 0 014.5 7.5h15a2.25 2.25 0 012.25 2.25v3.75" />
                     </svg>
                 )}
-                <div className="p-[30px]">
+                <div className={compact ? 'p-4' : 'p-[30px]'}>
                     <div className="flex flex-row gap-3 items-start">
                         <div className="relative flex-1">
                             {!inputText && !isEditMode && (
@@ -1739,10 +2291,17 @@ const QuickCaptureInput = React.forwardRef<
                                     }`}
                                     aria-hidden="true"
                                 >
-                                    {t(
-                                        placeholderData[placeholderIdx].key,
-                                        placeholderData[placeholderIdx].fallback
-                                    )}
+                                    {unified
+                                        ? t(
+                                              'capture.placeholder',
+                                              'Type the title'
+                                          )
+                                        : t(
+                                              placeholderData[placeholderIdx]
+                                                  .key,
+                                              placeholderData[placeholderIdx]
+                                                  .fallback
+                                          )}
                                 </div>
                             )}
                             <div className="relative z-10 flex items-start">
@@ -1753,12 +2312,12 @@ const QuickCaptureInput = React.forwardRef<
                                         }}
                                         data-testid="quick-capture-input"
                                         value={inputText}
-                                        rows={3}
+                                        rows={compact ? 2 : 3}
                                         onChange={handleChange}
                                         onSelect={handleCaretEvent}
                                         onKeyUp={handleCaretEvent}
                                         onClick={handleCaretEvent}
-                                        className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden"
+                                        className={`w-full ${compact ? 'text-base' : 'text-[18px]'} leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
                                         placeholder=""
                                         onKeyDown={handleKeyDown}
                                     ></textarea>
@@ -1976,51 +2535,54 @@ const QuickCaptureInput = React.forwardRef<
                                 </div>
                             )}
 
-                            {(() => {
-                                const suggestion = getSuggestion();
-                                return suggestion.type && suggestion.message ? (
-                                    <div className="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex items-start flex-1">
-                                                <div className="text-purple-600 dark:text-purple-400 mr-2 mt-0.5">
-                                                    <svg
-                                                        className="h-3 w-3"
-                                                        fill="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path d="M12 2l2.09 6.26L20 10.27l-5.91 2.01L12 18.54l-2.09-6.26L4 10.27l5.91-2.01L12 2z" />
-                                                        <path d="M8 1l1.18 3.52L12 5.64l-2.82.96L8 10.12l-1.18-3.52L4 5.64l2.82-.96L8 1z" />
-                                                        <path d="M20 14l.79 2.37L23 17.45l-2.21.75L20 20.57l-.79-2.37L17 17.45l2.21-.75L20 14z" />
-                                                    </svg>
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="text-xs text-purple-700 dark:text-purple-300 mb-1">
-                                                        {suggestion.message}
-                                                    </p>
-                                                    <div className="flex items-center gap-2 text-xs">
-                                                        <span className="text-gray-600 dark:text-gray-400">
-                                                            or
-                                                        </span>
-                                                        <button
-                                                            onClick={() => {
-                                                                handleSubmit(
-                                                                    true
-                                                                );
-                                                            }}
-                                                            className="text-purple-600 dark:text-purple-400 hover:underline"
+                            {!unified &&
+                                (() => {
+                                    const suggestion = getSuggestion();
+                                    return suggestion.type &&
+                                        suggestion.message ? (
+                                        <div className="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-start flex-1">
+                                                    <div className="text-purple-600 dark:text-purple-400 mr-2 mt-0.5">
+                                                        <svg
+                                                            className="h-3 w-3"
+                                                            fill="currentColor"
+                                                            viewBox="0 0 24 24"
                                                         >
-                                                            save as inbox item
-                                                        </button>
+                                                            <path d="M12 2l2.09 6.26L20 10.27l-5.91 2.01L12 18.54l-2.09-6.26L4 10.27l5.91-2.01L12 2z" />
+                                                            <path d="M8 1l1.18 3.52L12 5.64l-2.82.96L8 10.12l-1.18-3.52L4 5.64l2.82-.96L8 1z" />
+                                                            <path d="M20 14l.79 2.37L23 17.45l-2.21.75L20 20.57l-.79-2.37L17 17.45l2.21-.75L20 14z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="text-xs text-purple-700 dark:text-purple-300 mb-1">
+                                                            {suggestion.message}
+                                                        </p>
+                                                        <div className="flex items-center gap-2 text-xs">
+                                                            <span className="text-gray-600 dark:text-gray-400">
+                                                                or
+                                                            </span>
+                                                            <button
+                                                                onClick={() => {
+                                                                    handleSubmit(
+                                                                        true
+                                                                    );
+                                                                }}
+                                                                className="text-purple-600 dark:text-purple-400 hover:underline"
+                                                            >
+                                                                save as inbox
+                                                                item
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                {isAnalyzing && (
+                                                    <div className="ml-2 h-3 w-3 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                                                )}
                                             </div>
-                                            {isAnalyzing && (
-                                                <div className="ml-2 h-3 w-3 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
-                                            )}
                                         </div>
-                                    </div>
-                                ) : null;
-                            })()}
+                                    ) : null;
+                                })()}
                         </div>
                         {shouldShowPrimaryButton && (
                             <button

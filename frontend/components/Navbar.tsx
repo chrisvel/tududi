@@ -1,14 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-    UserIcon,
-    Bars3Icon,
-    BoltIcon,
-    InboxIcon,
-} from '@heroicons/react/24/solid';
+import { UserIcon, Bars3Icon } from '@heroicons/react/24/solid';
 import {
     EnvelopeIcon,
     MagnifyingGlassIcon,
+    PlusIcon,
     Cog6ToothIcon,
     ShieldCheckIcon,
     CircleStackIcon,
@@ -28,6 +24,7 @@ import {
     invalidateProfileCache,
 } from '../utils/profileService';
 import { notifySwClearCache } from '../utils/swUtils';
+import { toggleCapture, useCaptureUi } from '../utils/captureUi';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -62,6 +59,7 @@ const Navbar: React.FC<NavbarProps> = ({
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const { open: captureOpen } = useCaptureUi();
     // Dispatch event when mobile search state changes
     useEffect(() => {
         window.dispatchEvent(
@@ -226,13 +224,19 @@ const Navbar: React.FC<NavbarProps> = ({
                     </button>
 
                     <button
-                        onClick={() => navigate('/inbox')}
-                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
-                        aria-label={t('navigation.quickInboxCapture')}
-                        title={t('navigation.quickInboxCapture')}
+                        type="button"
+                        onClick={() => toggleCapture('inbox')}
+                        aria-haspopup="dialog"
+                        aria-expanded={captureOpen}
+                        data-testid="capture-navbar-button"
+                        title={t(
+                            'capture.addTitle',
+                            'Add to Inbox, Task, Note or Project'
+                        )}
+                        className="hidden lg:flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-colors duration-200 px-3.5 py-2 text-sm font-semibold"
                     >
-                        <BoltIcon className="h-4 w-4 text-white" />
-                        <InboxIcon className="hidden md:inline-block ml-1.5 h-4 w-4 text-blue-200" />
+                        <PlusIcon className="h-4 w-4" aria-hidden="true" />
+                        {t('capture.add', 'Add')}
                     </button>
                     {pomodoroEnabled && <PomodoroTimer />}
 

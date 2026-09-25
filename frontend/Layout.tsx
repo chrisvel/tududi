@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useToast } from './components/Shared/ToastContext';
 import UpgradeModal from './components/Billing/UpgradeModal';
 import { SidebarProvider } from './contexts/SidebarContext';
 import Navbar from './components/Navbar';
+import CaptureHost from './components/Capture/CaptureHost';
+import { openCapture } from './utils/captureUi';
 import Sidebar from './components/Sidebar';
 import './styles/tailwind.css';
 import ProjectModal from './components/Project/ProjectModal';
@@ -46,7 +47,6 @@ const Layout: React.FC<LayoutProps> = ({
     children,
 }) => {
     const { t } = useTranslation();
-    const { showErrorToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
     const isUpcomingView = location.pathname === '/upcoming';
@@ -100,7 +100,6 @@ const Layout: React.FC<LayoutProps> = ({
             isLoading: isTasksLoading,
             isError: isTasksError,
             hasLoaded: hasTasksLoaded,
-            createTask: createTaskInStore,
         },
         projectsStore: {
             projects,
@@ -117,35 +116,10 @@ const Layout: React.FC<LayoutProps> = ({
         },
     } = useStore();
 
-    const createAndOpenTaskDetails = async () => {
-        try {
-            const newTask = await createTaskInStore({
-                name: t('task.newTaskPlaceholder', 'New Task'),
-                status: 'not_started',
-                completed_at: null,
-            });
-
-            if (newTask?.uid) {
-                if (window.innerWidth < 1024) {
-                    setIsSidebarOpen(false);
-                }
-                navigate(`/task/${newTask.uid}`, {
-                    state: {
-                        isNew: true,
-                        from: location.pathname + location.search,
-                    },
-                });
-            } else {
-                throw new Error('New task missing UID');
-            }
-        } catch (error) {
-            console.error('Error creating task from Layout:', error);
-            showErrorToast(t('task.createError', 'Failed to create task.'));
-        }
-    };
-
+    // Task shortcuts and the sidebar's New > Task open the shared capture
+    // box on Task. The navbar and phone buttons open it on Inbox.
     const openTaskModal = () => {
-        void createAndOpenTaskDetails();
+        openCapture('task');
     };
 
     useEffect(() => {
@@ -581,6 +555,8 @@ const Layout: React.FC<LayoutProps> = ({
                         onClose={closePersonModal}
                     />
                 )}
+
+                <CaptureHost />
             </div>
         </SidebarProvider>
     );

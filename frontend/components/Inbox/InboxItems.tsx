@@ -594,10 +594,6 @@ const InboxItems: React.FC = () => {
         setIsNoteModalOpen(true);
     };
 
-    const handleSaveTask = async (task: Task) => {
-        await createTaskAndHandleConversion(task);
-    };
-
     const handleSaveProject = async (project: Project) => {
         try {
             await createProject(project);
@@ -739,15 +735,18 @@ const InboxItems: React.FC = () => {
 
                 {/* ── Quick capture ────────────────────────────────────────── */}
                 <QuickCaptureInput
-                    onTaskCreate={handleSaveTask}
-                    onNoteCreate={handleSaveNote}
+                    unified
                     projects={projects}
                     initialValue={sharedDraft}
                     autoFocus={true}
-                    openTaskModal={handleOpenTaskModal}
-                    openProjectModal={handleOpenProjectModal}
-                    openNoteModal={handleOpenNoteModal}
                     cardClassName="mb-5"
+                    onCaptured={(items) => {
+                        if (items.some((item) => item.target === 'project')) {
+                            fetchProjects()
+                                .then(setProjects)
+                                .catch(() => {});
+                        }
+                    }}
                 />
 
                 {/* ── Item list ────────────────────────────────────────────── */}
