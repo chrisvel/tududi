@@ -753,7 +753,7 @@ const PlanMyDay: React.FC = () => {
                     )}
 
                     {aiEnabled && (
-                        <div className="relative z-50" ref={draftMenuRef}>
+                        <div className="relative" ref={draftMenuRef}>
                             <button
                                 type="button"
                                 onClick={startDraft}
@@ -769,7 +769,7 @@ const PlanMyDay: React.FC = () => {
                                     : t('dailyPlan.ai.draft', 'Draft with AI')}
                             </button>
                             {draftChoiceOpen && (
-                                <div className="absolute right-0 z-40 mt-1 flex w-56 flex-col rounded-lg bg-white p-1 shadow-lg ring-0 dark:bg-gray-800 dark:bg-gray-900">
+                                <div className="absolute right-0 z-[45] mt-1 flex w-56 flex-col rounded-lg bg-white p-1 shadow-lg ring-0 dark:bg-gray-800 dark:bg-gray-900">
                                     <button
                                         type="button"
                                         onClick={() => void runDraft('fill')}
@@ -817,7 +817,7 @@ const PlanMyDay: React.FC = () => {
                                 {t('dailyPlan.saving', 'Saving…')}
                             </span>
                         )}
-                        <div className="relative z-50" ref={moreMenuRef}>
+                        <div className="relative" ref={moreMenuRef}>
                             <button
                                 type="button"
                                 onClick={() => setMoreOpen((open) => !open)}
@@ -829,7 +829,7 @@ const PlanMyDay: React.FC = () => {
                                 <EllipsisHorizontalIcon className="h-5 w-5" />
                             </button>
                             {moreOpen && (
-                                <div className="absolute right-0 z-40 mt-1 flex w-48 flex-col rounded-lg bg-white p-1 text-sm shadow-lg dark:bg-gray-800 dark:bg-gray-900">
+                                <div className="absolute right-0 z-[45] mt-1 flex w-48 flex-col rounded-lg bg-white p-1 text-sm shadow-lg dark:bg-gray-800 dark:bg-gray-900">
                                     {!narrow && (
                                         <button
                                             type="button"
