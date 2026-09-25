@@ -12,7 +12,17 @@ import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
-import { createInboxItemWithStore } from '../../utils/inboxService';
+import {
+    createInboxItemWithStore,
+    analyzeInboxText,
+    applyAnalysisToTask,
+    InboxAnalysis,
+} from '../../utils/inboxService';
+import {
+    fetchWorkspaceAssignablePeople,
+    fetchAssignablePeopleForProject,
+} from '../../utils/peopleService';
+import { Person } from '../../entities/Person';
 import { isAuthError, OfflineQueuedError } from '../../utils/authUtils';
 import { createTag } from '../../utils/tagsService';
 import { createProject } from '../../utils/projectsService';
@@ -22,8 +32,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { isUrl, extractUrlTitle } from '../../utils/urlService';
-import { getApiPath } from '../../config/paths';
-import { getCsrfToken } from '../../utils/csrfService';
 import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
 export interface QuickCaptureInputHandle {
@@ -35,6 +43,7 @@ export interface InboxComposerFooterContext {
     cleanedText: string;
     hashtags: string[];
     projectRefs: string[];
+    analysis: InboxAnalysis | null;
     clearText: () => void;
 }
 
@@ -158,13 +167,17 @@ const QuickCaptureInput = React.forwardRef<
         const [placeholderIdx, setPlaceholderIdx] = useState(0);
         const [placeholderFading, setPlaceholderFading] = useState(false);
 
-        const [analysisResult, setAnalysisResult] = useState<{
-            parsed_tags: string[];
-            parsed_projects: string[];
-            cleaned_content: string;
-            suggested_type: 'task' | 'note' | null;
-            suggested_reason: string | null;
-        } | null>(null);
+        const [analysisResult, setAnalysisResult] =
+            useState<InboxAnalysis | null>(null);
+        const [showPersonSuggestions, setShowPersonSuggestions] =
+            useState(false);
+        const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
+        const peopleCacheRef = useRef<Record<string, Person[]>>({});
+        const personQueryRequestRef = useRef(0);
+        // A date phrase the user chose to keep as plain text
+        const [dismissedDateText, setDismissedDateText] = useState<
+            string | null
+        >(null);
         const [isAnalyzing, setIsAnalyzing] = useState(false);
         const analysisTimeoutRef = useRef<NodeJS.Timeout>();
         const analysisRequestIdRef = useRef(0);
@@ -399,7 +412,10 @@ const QuickCaptureInput = React.forwardRef<
             while (i < text.length) {
                 const char = text[i];
 
-                if (char === '"' && (i === 0 || text[i - 1] === '+')) {
+                if (
+                    char === '"' &&
+                    (i === 0 || text[i - 1] === '+' || text[i - 1] === '@')
+                ) {
                     inQuotes = true;
                     currentToken += char;
                 } else if (char === '"' && inQuotes) {
@@ -499,6 +515,84 @@ const QuickCaptureInput = React.forwardRef<
             return '';
         };
 
+        // @name or @"Full Name" ending at the caret; null when not in one.
+        const PERSON_QUERY_PATTERN = /(^|\s)@(?:"([^"]*)|([^\s"@]*))$/u;
+
+        const getCurrentPersonQuery = (
+            text: string,
+            position: number
+        ): string | null => {
+            const match = text.substring(0, position).match(PERSON_QUERY_PATTERN);
+            if (!match) return null;
+            return match[2] ?? match[3] ?? '';
+        };
+
+        const loadAssignablePeople = async (
+            projectUid?: string
+        ): Promise<Person[]> => {
+            const key = projectUid || '';
+            const cached = peopleCacheRef.current[key];
+            if (cached) return cached;
+            let people: Person[];
+            try {
+                people = projectUid
+                    ? await fetchAssignablePeopleForProject(projectUid)
+                    : await fetchWorkspaceAssignablePeople();
+            } catch {
+                people = projectUid ? await loadAssignablePeople() : [];
+            }
+            peopleCacheRef.current[key] = people;
+            return people;
+        };
+
+        const showPeopleFor = async (
+            query: string,
+            text: string,
+            input: HTMLInputElement | HTMLTextAreaElement,
+            position: number
+        ) => {
+            const requestId = ++personQueryRequestRef.current;
+            const people = await loadAssignablePeople(
+                resolveProjectUid(parseProjectRefs(text))
+            );
+            if (personQueryRequestRef.current !== requestId) return;
+
+            const wanted = query.toLowerCase();
+            const filtered = people
+                .filter((person) => person.name.toLowerCase().includes(wanted))
+                .slice(0, 5);
+            setDropdownPosition(calculateDropdownPosition(input, position));
+            setFilteredPeople(filtered);
+            setShowPersonSuggestions(true);
+            setSelectedSuggestionIndex(-1);
+        };
+
+        const handlePersonSelect = (personName: string) => {
+            const beforeCursor = inputText.substring(0, cursorPosition);
+            const afterCursor = inputText.substring(cursorPosition);
+            if (!PERSON_QUERY_PATTERN.test(beforeCursor)) return;
+
+            const formatted = /\s/.test(personName)
+                ? `"${personName}"`
+                : personName;
+            const newBefore = beforeCursor.replace(
+                PERSON_QUERY_PATTERN,
+                (_, lead) => `${lead}@${formatted} `
+            );
+            setInputText(newBefore + afterCursor.replace(/^"/, ''));
+            closeSuggestions();
+
+            setTimeout(() => {
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                    inputRef.current.setSelectionRange(
+                        newBefore.length,
+                        newBefore.length
+                    );
+                }
+            }, 0);
+        };
+
         const escapeRegExp = (value: string) =>
             value.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 
@@ -542,6 +636,21 @@ const QuickCaptureInput = React.forwardRef<
             if (inputRef.current) {
                 inputRef.current.focus();
             }
+        };
+
+        const removePersonFromText = (personName: string) => {
+            const escaped = escapeRegExp(personName);
+            const pattern = new RegExp(
+                `(^|\\s)@(?:"${escaped}"|${escaped})(?=$|[\\s.,;:!?)])`,
+                'gi'
+            );
+            setInputText(
+                cleanInputSpacing(
+                    inputText.replace(pattern, (_, prefix) => prefix ?? '')
+                )
+            );
+            setAnalysisResult(null);
+            inputRef.current?.focus();
         };
 
         const getCaretViewportCoords = (
@@ -603,6 +712,12 @@ const QuickCaptureInput = React.forwardRef<
             const beforeCursor = inputText.substring(0, cursorPos);
             const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
             const projectMatch = beforeCursor.match(/\+[a-zA-Z0-9_\s]*$/);
+            const personMatch = beforeCursor.match(PERSON_QUERY_PATTERN);
+
+            if (personMatch) {
+                const triggerPos = beforeCursor.lastIndexOf('@');
+                return getCaretViewportCoords(input, triggerPos);
+            }
 
             if (hashtagMatch) {
                 const triggerPos = beforeCursor.lastIndexOf('#');
@@ -637,6 +752,27 @@ const QuickCaptureInput = React.forwardRef<
                 newCursorPosition
             );
             setCurrentProjectQuery(projectQuery);
+
+            const personQuery = getCurrentPersonQuery(
+                newText,
+                newCursorPosition
+            );
+            if (personQuery !== null) {
+                setShowTagSuggestions(false);
+                setFilteredTags([]);
+                setShowProjectSuggestions(false);
+                setFilteredProjects([]);
+                void showPeopleFor(
+                    personQuery,
+                    newText,
+                    e.target,
+                    newCursorPosition
+                );
+                return;
+            }
+            personQueryRequestRef.current += 1;
+            setShowPersonSuggestions(false);
+            setFilteredPeople([]);
 
             if (
                 (newText.charAt(newCursorPosition - 1) === '#' ||
@@ -831,36 +967,19 @@ const QuickCaptureInput = React.forwardRef<
                     if (analysisRequestIdRef.current === requestId) {
                         setIsAnalyzing(true);
                     }
-                    const token = await getCsrfToken();
-                    const response = await fetch(
-                        getApiPath('inbox/analyze-text'),
-                        {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-csrf-token': token,
-                            },
-                            credentials: 'include',
-                            body: JSON.stringify({ content: text }),
-                        }
-                    );
+                    const result = await analyzeInboxText(text, {
+                        parseDates: !(
+                            dismissedDateText &&
+                            text.includes(dismissedDateText)
+                        ),
+                    });
 
                     if (analysisRequestIdRef.current !== requestId) {
                         return;
                     }
 
-                    if (response.ok) {
-                        const result = await response.json();
-                        setAnalysisResult(result);
-                        lastAnalyzedTextRef.current = text;
-                    } else {
-                        console.error(
-                            'Failed to analyze text:',
-                            response.statusText
-                        );
-                        setAnalysisResult(null);
-                        lastAnalyzedTextRef.current = '';
-                    }
+                    setAnalysisResult(result);
+                    lastAnalyzedTextRef.current = text;
                 } catch (error) {
                     if (analysisRequestIdRef.current !== requestId) {
                         return;
@@ -874,8 +993,14 @@ const QuickCaptureInput = React.forwardRef<
                     }
                 }
             },
-            []
+            [dismissedDateText]
         );
+
+        useEffect(() => {
+            if (!inputText.trim()) {
+                setDismissedDateText(null);
+            }
+        }, [inputText]);
 
         useEffect(() => {
             if (analysisTimeoutRef.current) {
@@ -1078,14 +1203,17 @@ const QuickCaptureInput = React.forwardRef<
                             }
                         }
 
-                        const newTask: Task = {
-                            name: cleanedText,
-                            status: 'not_started',
-                            priority: 'low',
-                            tags: taskTags,
-                            project_uid: projectUid,
-                            completed_at: null,
-                        };
+                        const newTask: Task = applyAnalysisToTask(
+                            {
+                                name: cleanedText,
+                                status: 'not_started',
+                                priority: 'low',
+                                tags: taskTags,
+                                project_uid: projectUid,
+                                completed_at: null,
+                            },
+                            analysisResult
+                        );
 
                         try {
                             await onTaskCreate(newTask);
@@ -1293,12 +1421,154 @@ const QuickCaptureInput = React.forwardRef<
             [handleSubmit]
         );
 
+        const closeSuggestions = () => {
+            setShowTagSuggestions(false);
+            setFilteredTags([]);
+            setShowProjectSuggestions(false);
+            setFilteredProjects([]);
+            personQueryRequestRef.current += 1;
+            setShowPersonSuggestions(false);
+            setFilteredPeople([]);
+            setSelectedSuggestionIndex(-1);
+        };
+
+        // The open suggestion list, if any, as a count and a picker
+        const activeSuggestions: {
+            count: number;
+            select: (index: number) => void;
+        } | null =
+            showTagSuggestions && filteredTags.length > 0
+                ? {
+                      count: filteredTags.length,
+                      select: (index) =>
+                          handleTagSelect(filteredTags[index].name),
+                  }
+                : showProjectSuggestions && filteredProjects.length > 0
+                  ? {
+                        count: filteredProjects.length,
+                        select: (index) =>
+                            handleProjectSelect(filteredProjects[index].name),
+                    }
+                  : showPersonSuggestions && filteredPeople.length > 0
+                    ? {
+                          count: filteredPeople.length,
+                          select: (index) =>
+                              handlePersonSelect(filteredPeople[index].name),
+                      }
+                    : null;
+
+        const handleCaretEvent = (
+            e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>
+        ) => {
+            const pos = e.currentTarget.selectionStart || 0;
+            setCursorPosition(pos);
+            if (
+                showTagSuggestions ||
+                showProjectSuggestions ||
+                showPersonSuggestions
+            ) {
+                setDropdownPosition(
+                    calculateDropdownPosition(e.currentTarget, pos)
+                );
+            }
+        };
+
+        const handleKeyDown = (
+            e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+        ) => {
+            if (activeSuggestions) {
+                const { count, select } = activeSuggestions;
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setSelectedSuggestionIndex((prev) =>
+                        prev < count - 1 ? prev + 1 : 0
+                    );
+                    return;
+                }
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setSelectedSuggestionIndex((prev) =>
+                        prev > 0 ? prev - 1 : count - 1
+                    );
+                    return;
+                }
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    select(
+                        selectedSuggestionIndex >= 0
+                            ? selectedSuggestionIndex
+                            : 0
+                    );
+                    return;
+                }
+                if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+                    e.preventDefault();
+                    select(selectedSuggestionIndex);
+                    return;
+                }
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeSuggestions();
+                    return;
+                }
+            }
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                if (isEditMode && !isSaving) {
+                    handleSubmit();
+                }
+                return;
+            }
+
+            if (e.key === 'Enter' && !e.shiftKey && !isSaving) {
+                if (activeSuggestions) {
+                    return;
+                }
+                e.preventDefault();
+                handleSubmit();
+            }
+        };
+
+        const currentAnalysis =
+            analysisResult &&
+            lastAnalyzedTextRef.current.trim() === inputText.trim()
+                ? analysisResult
+                : null;
+        const dateIsDismissed =
+            !!dismissedDateText && inputText.includes(dismissedDateText);
+        const dateChip =
+            currentAnalysis?.parsed_due_date && !dateIsDismissed
+                ? {
+                      date: currentAnalysis.parsed_due_date,
+                      phrase: currentAnalysis.parsed_date_text,
+                      recurring: !!currentAnalysis.parsed_recurrence,
+                  }
+                : null;
+        const assigneeChip = currentAnalysis?.parsed_assignee
+            ? {
+                  name: currentAnalysis.parsed_assignee.name,
+                  color: Object.values(peopleCacheRef.current)
+                      .flat()
+                      .find(
+                          (person) =>
+                              person.uid ===
+                              currentAnalysis.parsed_assignee?.uid
+                      )?.color,
+              }
+            : null;
+
         const composerFooterContext = useMemo<InboxComposerFooterContext>(
             () => ({
                 text: inputText,
                 cleanedText: getCleanedContent(inputText.trim()),
                 hashtags: getAllTags(inputText),
                 projectRefs: getAllProjects(inputText),
+                analysis:
+                    analysisResult &&
+                    lastAnalyzedTextRef.current.trim() === inputText.trim()
+                        ? analysisResult
+                        : null,
                 clearText: clearComposerText,
                 updateText: (value: string) => setInputText(value),
             }),
@@ -1335,14 +1605,18 @@ const QuickCaptureInput = React.forwardRef<
                                         if (!cleaned) {
                                             return;
                                         }
-                                        const newTask: Task = {
-                                            name: cleaned,
-                                            status: 'not_started',
-                                            priority: null,
-                                            tags: taskTags,
-                                            project_uid: projectUid,
-                                            completed_at: null,
-                                        };
+                                        const newTask: Task =
+                                            applyAnalysisToTask(
+                                                {
+                                                    name: cleaned,
+                                                    status: 'not_started',
+                                                    priority: null,
+                                                    tags: taskTags,
+                                                    project_uid: projectUid,
+                                                    completed_at: null,
+                                                },
+                                                composerFooterContext.analysis
+                                            );
                                         void openTaskModal(newTask);
                                         composerFooterContext.clearText();
                                     }}
@@ -1481,216 +1755,12 @@ const QuickCaptureInput = React.forwardRef<
                                         value={inputText}
                                         rows={3}
                                         onChange={handleChange}
-                                        onSelect={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        onKeyUp={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        onClick={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
+                                        onSelect={handleCaretEvent}
+                                        onKeyUp={handleCaretEvent}
+                                        onClick={handleCaretEvent}
                                         className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden"
                                         placeholder=""
-                                        onKeyDown={(e) => {
-                                            const hasTagSuggestions =
-                                                showTagSuggestions &&
-                                                filteredTags.length > 0;
-                                            const hasProjectSuggestions =
-                                                showProjectSuggestions &&
-                                                filteredProjects.length > 0;
-
-                                            if (hasTagSuggestions) {
-                                                if (e.key === 'ArrowDown') {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev <
-                                                            filteredTags.length -
-                                                                1
-                                                                ? prev + 1
-                                                                : 0
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'ArrowUp'
-                                                ) {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev > 0
-                                                                ? prev - 1
-                                                                : filteredTags.length -
-                                                                  1
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Tab') {
-                                                    e.preventDefault();
-                                                    const selectedTag =
-                                                        selectedSuggestionIndex >=
-                                                        0
-                                                            ? filteredTags[
-                                                                  selectedSuggestionIndex
-                                                              ]
-                                                            : filteredTags[0];
-                                                    handleTagSelect(
-                                                        selectedTag.name
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'Enter' &&
-                                                    selectedSuggestionIndex >= 0
-                                                ) {
-                                                    e.preventDefault();
-                                                    handleTagSelect(
-                                                        filteredTags[
-                                                            selectedSuggestionIndex
-                                                        ].name
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Escape') {
-                                                    e.preventDefault();
-                                                    setShowTagSuggestions(
-                                                        false
-                                                    );
-                                                    setFilteredTags([]);
-                                                    setSelectedSuggestionIndex(
-                                                        -1
-                                                    );
-                                                    return;
-                                                }
-                                            }
-
-                                            if (hasProjectSuggestions) {
-                                                if (e.key === 'ArrowDown') {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev <
-                                                            filteredProjects.length -
-                                                                1
-                                                                ? prev + 1
-                                                                : 0
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'ArrowUp'
-                                                ) {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev > 0
-                                                                ? prev - 1
-                                                                : filteredProjects.length -
-                                                                  1
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Tab') {
-                                                    e.preventDefault();
-                                                    const selectedProject =
-                                                        selectedSuggestionIndex >=
-                                                        0
-                                                            ? filteredProjects[
-                                                                  selectedSuggestionIndex
-                                                              ]
-                                                            : filteredProjects[0];
-                                                    handleProjectSelect(
-                                                        selectedProject.name
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'Enter' &&
-                                                    selectedSuggestionIndex >= 0
-                                                ) {
-                                                    e.preventDefault();
-                                                    handleProjectSelect(
-                                                        filteredProjects[
-                                                            selectedSuggestionIndex
-                                                        ].name
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Escape') {
-                                                    e.preventDefault();
-                                                    setShowProjectSuggestions(
-                                                        false
-                                                    );
-                                                    setFilteredProjects([]);
-                                                    setSelectedSuggestionIndex(
-                                                        -1
-                                                    );
-                                                    return;
-                                                }
-                                            }
-
-                                            if (
-                                                e.key === 'Escape' &&
-                                                !hasTagSuggestions &&
-                                                !hasProjectSuggestions
-                                            ) {
-                                                e.preventDefault();
-                                                if (isEditMode && !isSaving) {
-                                                    handleSubmit();
-                                                }
-                                                return;
-                                            }
-
-                                            if (
-                                                e.key === 'Enter' &&
-                                                !e.shiftKey &&
-                                                !isSaving
-                                            ) {
-                                                if (
-                                                    hasTagSuggestions ||
-                                                    hasProjectSuggestions
-                                                ) {
-                                                    return;
-                                                }
-                                                e.preventDefault();
-                                                handleSubmit();
-                                            }
-                                        }}
+                                        onKeyDown={handleKeyDown}
                                     ></textarea>
                                 ) : (
                                     <input
@@ -1701,216 +1771,12 @@ const QuickCaptureInput = React.forwardRef<
                                         data-testid="quick-capture-input"
                                         value={inputText}
                                         onChange={handleChange}
-                                        onSelect={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        onKeyUp={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        onClick={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
+                                        onSelect={handleCaretEvent}
+                                        onKeyUp={handleCaretEvent}
+                                        onClick={handleCaretEvent}
                                         className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5"
                                         placeholder=""
-                                        onKeyDown={(e) => {
-                                            const hasTagSuggestions =
-                                                showTagSuggestions &&
-                                                filteredTags.length > 0;
-                                            const hasProjectSuggestions =
-                                                showProjectSuggestions &&
-                                                filteredProjects.length > 0;
-
-                                            if (hasTagSuggestions) {
-                                                if (e.key === 'ArrowDown') {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev <
-                                                            filteredTags.length -
-                                                                1
-                                                                ? prev + 1
-                                                                : 0
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'ArrowUp'
-                                                ) {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev > 0
-                                                                ? prev - 1
-                                                                : filteredTags.length -
-                                                                  1
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Tab') {
-                                                    e.preventDefault();
-                                                    const selectedTag =
-                                                        selectedSuggestionIndex >=
-                                                        0
-                                                            ? filteredTags[
-                                                                  selectedSuggestionIndex
-                                                              ]
-                                                            : filteredTags[0];
-                                                    handleTagSelect(
-                                                        selectedTag.name
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'Enter' &&
-                                                    selectedSuggestionIndex >= 0
-                                                ) {
-                                                    e.preventDefault();
-                                                    handleTagSelect(
-                                                        filteredTags[
-                                                            selectedSuggestionIndex
-                                                        ].name
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Escape') {
-                                                    e.preventDefault();
-                                                    setShowTagSuggestions(
-                                                        false
-                                                    );
-                                                    setFilteredTags([]);
-                                                    setSelectedSuggestionIndex(
-                                                        -1
-                                                    );
-                                                    return;
-                                                }
-                                            }
-
-                                            if (hasProjectSuggestions) {
-                                                if (e.key === 'ArrowDown') {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev <
-                                                            filteredProjects.length -
-                                                                1
-                                                                ? prev + 1
-                                                                : 0
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'ArrowUp'
-                                                ) {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev > 0
-                                                                ? prev - 1
-                                                                : filteredProjects.length -
-                                                                  1
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Tab') {
-                                                    e.preventDefault();
-                                                    const selectedProject =
-                                                        selectedSuggestionIndex >=
-                                                        0
-                                                            ? filteredProjects[
-                                                                  selectedSuggestionIndex
-                                                              ]
-                                                            : filteredProjects[0];
-                                                    handleProjectSelect(
-                                                        selectedProject.name
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'Enter' &&
-                                                    selectedSuggestionIndex >= 0
-                                                ) {
-                                                    e.preventDefault();
-                                                    handleProjectSelect(
-                                                        filteredProjects[
-                                                            selectedSuggestionIndex
-                                                        ].name
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Escape') {
-                                                    e.preventDefault();
-                                                    setShowProjectSuggestions(
-                                                        false
-                                                    );
-                                                    setFilteredProjects([]);
-                                                    setSelectedSuggestionIndex(
-                                                        -1
-                                                    );
-                                                    return;
-                                                }
-                                            }
-
-                                            if (
-                                                e.key === 'Escape' &&
-                                                !hasTagSuggestions &&
-                                                !hasProjectSuggestions
-                                            ) {
-                                                e.preventDefault();
-                                                if (isEditMode && !isSaving) {
-                                                    handleSubmit();
-                                                }
-                                                return;
-                                            }
-
-                                            if (
-                                                e.key === 'Enter' &&
-                                                !e.shiftKey &&
-                                                !isSaving
-                                            ) {
-                                                if (
-                                                    hasTagSuggestions ||
-                                                    hasProjectSuggestions
-                                                ) {
-                                                    return;
-                                                }
-                                                e.preventDefault();
-                                                handleSubmit();
-                                            }
-                                        }}
+                                        onKeyDown={handleKeyDown}
                                     />
                                 )}
                             </div>
@@ -1922,6 +1788,35 @@ const QuickCaptureInput = React.forwardRef<
                                 projects={projects}
                                 onRemoveTag={removeTagFromText}
                                 onRemoveProject={removeProjectFromText}
+                                dueDate={dateChip}
+                                assignee={assigneeChip}
+                                onDismissDate={() =>
+                                    setDismissedDateText(
+                                        currentAnalysis?.parsed_date_text ??
+                                            null
+                                    )
+                                }
+                                onRemovePerson={() => {
+                                    if (currentAnalysis?.parsed_person) {
+                                        removePersonFromText(
+                                            currentAnalysis.parsed_person
+                                        );
+                                    }
+                                }}
+                            />
+
+                            <SuggestionsDropdown
+                                isVisible={
+                                    showPersonSuggestions &&
+                                    filteredPeople.length > 0
+                                }
+                                items={filteredPeople}
+                                position={dropdownPosition}
+                                selectedIndex={selectedSuggestionIndex}
+                                onSelect={(person) =>
+                                    handlePersonSelect(person.name)
+                                }
+                                renderLabel={(person) => <>@{person.name}</>}
                             />
 
                             <SuggestionsDropdown

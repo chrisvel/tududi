@@ -1,6 +1,7 @@
 'use strict';
 
 const inboxService = require('./service');
+const { validateReferenceDate } = require('./validation');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 
@@ -85,8 +86,13 @@ const inboxController = {
 
     async analyzeText(req, res, next) {
         try {
-            const { content } = req.body;
-            const result = inboxService.analyzeText(content);
+            const userId = requireUserId(req);
+            const { content, reference_date, parse_dates } = req.body;
+            const result = await inboxService.analyzeText(userId, content, {
+                referenceDate: validateReferenceDate(reference_date),
+                timezone: req.currentUser?.timezone || 'UTC',
+                parseDates: parse_dates !== false,
+            });
             res.json(result);
         } catch (error) {
             next(error);

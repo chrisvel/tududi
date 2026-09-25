@@ -979,7 +979,10 @@
       "delegate": "Delegate"
     },
     "somedayCreated": "Added to Someday",
-    "reClarifyLink": "Re-clarify"
+    "reClarifyLink": "Re-clarify",
+    "recurringFrom": "{{phrase}}, from {{date}}",
+    "keepDateAsText": "Keep as text",
+    "removeAssignee": "Remove assignee"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

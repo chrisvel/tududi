@@ -1,8 +1,70 @@
 import { InboxItem } from '../entities/InboxItem';
+import { Task, RecurrenceType } from '../entities/Task';
 import { useStore } from '../store/useStore';
 import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
+
+export interface InboxRecurrence {
+    recurrence_type: RecurrenceType;
+    recurrence_interval?: number;
+    recurrence_weekday?: number;
+    recurrence_weekdays?: number[];
+    recurrence_month_day?: number;
+    recurrence_week_of_month?: number;
+}
+
+export interface InboxAnalysis {
+    parsed_tags: string[];
+    parsed_projects: string[];
+    cleaned_content: string;
+    parsed_due_date: string | null;
+    parsed_date_text: string | null;
+    parsed_recurrence: InboxRecurrence | null;
+    parsed_person: string | null;
+    parsed_assignee: { uid: string; name: string } | null;
+    suggested_type: 'task' | 'note' | null;
+    suggested_reason: string | null;
+}
+
+// Relative dates in an older inbox item ("tomorrow") resolve against
+// referenceDate, so pass the item's created_at when converting it.
+export const analyzeInboxText = async (
+    content: string,
+    options: { referenceDate?: string; parseDates?: boolean } = {}
+): Promise<InboxAnalysis> => {
+    const response = await fetch(getApiPath('inbox/analyze-text'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({
+            content,
+            reference_date: options.referenceDate,
+            parse_dates: options.parseDates,
+        }),
+    });
+    await handleAuthResponse(response, 'Failed to analyze text.');
+    return response.json();
+};
+
+// Copy the parsed due date, recurrence and assignee onto a task draft.
+export const applyAnalysisToTask = (
+    task: Task,
+    analysis: InboxAnalysis | null | undefined
+): Task => {
+    if (!analysis) return task;
+    const next: Task = { ...task };
+    if (analysis.parsed_due_date) {
+        next.due_date = analysis.parsed_due_date;
+    }
+    if (analysis.parsed_recurrence) {
+        Object.assign(next, analysis.parsed_recurrence);
+    }
+    if (analysis.parsed_assignee) {
+        next.assigned_to = analysis.parsed_assignee.uid;
+    }
+    return next;
+};
 
 // API functions
 export const fetchInboxItems = async (

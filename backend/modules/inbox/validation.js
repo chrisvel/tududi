@@ -61,8 +61,23 @@ function validateSource(source) {
     return source.trim();
 }
 
+// Relative dates ("tomorrow") in an older inbox item resolve against when it
+// was captured. Missing means now; a future date is capped at now.
+function validateReferenceDate(value) {
+    if (value === undefined || value === null || value === '') {
+        return new Date();
+    }
+    const date = new Date(value);
+    if (typeof value !== 'string' || Number.isNaN(date.getTime())) {
+        throw new ValidationError('Invalid reference_date');
+    }
+    const now = new Date();
+    return date > now ? now : date;
+}
+
 module.exports = {
     validateContent,
+    validateReferenceDate,
     validateUid,
     buildTitleFromContent,
     validateSource,

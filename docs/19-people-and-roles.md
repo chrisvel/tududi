@@ -55,6 +55,8 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 9. **Assigning a task to a contact is only a label.** A contact has no account, so nobody is notified and nothing is shared.
 
+9a. **You can assign while capturing.** Typing `@name` or `@"Full Name"` in the Inbox composer picks from the same assignee list, scoped to the project when the text has a `+project`. See [Inbox](04-inbox-page.md).
+
 10. **A member who cannot sign in is managed by the people who share their tasks.** Tasks assigned to them stay editable by whoever owns or shares the task or project.
 
 ### Members without an email

@@ -11,7 +11,10 @@ import {
     updateInboxItemWithStore,
     trashInboxItemWithStore,
     restoreAllTrashedWithStore,
+    analyzeInboxText,
+    applyAnalysisToTask,
 } from '../../utils/inboxService';
+import { InboxItem } from '../../entities/InboxItem';
 import InboxItemDetail from './InboxItemDetail';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
@@ -297,6 +300,45 @@ const InboxItems: React.FC = () => {
         });
     };
 
+    // Turn a clarified item into a task draft: tags, project, due date,
+    // recurrence and assignee come from its text, with relative dates read
+    // against when it was captured. Falls back to the raw text on failure.
+    const buildClarifiedTask = async (
+        item: InboxItem | undefined,
+        base: Task,
+        { parseDates = true }: { parseDates?: boolean } = {}
+    ): Promise<Task> => {
+        const text = item?.content?.trim() || item?.title?.trim() || '';
+        if (!text) return base;
+        try {
+            const analysis = await analyzeInboxText(text, {
+                referenceDate: item?.created_at,
+                parseDates,
+            });
+            const projectName = analysis.parsed_projects[0];
+            const project = projectName
+                ? projects.find(
+                      (p) => p.name.toLowerCase() === projectName.toLowerCase()
+                  )
+                : undefined;
+            return applyAnalysisToTask(
+                {
+                    ...base,
+                    name: analysis.cleaned_content || base.name,
+                    tags: [
+                        ...analysis.parsed_tags.map((name) => ({ name })),
+                        ...(base.tags || []),
+                    ],
+                    project_uid: project?.uid ?? base.project_uid,
+                },
+                analysis
+            );
+        } catch (error) {
+            console.error('Failed to analyze inbox item:', error);
+            return base;
+        }
+    };
+
     const fileClarifyOutcome = async (outcome: ClarifyOutcome) => {
         const uid = clarify.itemUids[clarify.currentIndex];
         if (!uid) return;
@@ -316,13 +358,19 @@ const InboxItems: React.FC = () => {
 
         if (outcome === 'someday') {
             try {
-                await createTask({
-                    name: itemName,
-                    status: 'not_started',
-                    priority: null,
-                    completed_at: null,
-                    tags: [{ name: 'someday' }],
-                });
+                await createTask(
+                    await buildClarifiedTask(
+                        item,
+                        {
+                            name: itemName,
+                            status: 'not_started',
+                            priority: null,
+                            completed_at: null,
+                            tags: [{ name: 'someday' }],
+                        },
+                        { parseDates: false }
+                    )
+                );
                 await processInboxItemWithStore(uid);
                 showSuccessToast(t('inbox.somedayCreated', 'Added to Someday'));
             } catch {
@@ -335,7 +383,14 @@ const InboxItems: React.FC = () => {
 
         if (outcome === 'task') {
             try {
-                await createTask({ name: itemName, status: 'not_started', priority: null, completed_at: null });
+                await createTask(
+                    await buildClarifiedTask(item, {
+                        name: itemName,
+                        status: 'not_started',
+                        priority: null,
+                        completed_at: null,
+                    })
+                );
                 await processInboxItemWithStore(uid);
                 showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
             } catch {
@@ -348,7 +403,15 @@ const InboxItems: React.FC = () => {
 
         if (outcome === 'waiting') {
             try {
-                await createTask({ name: itemName, status: 'waiting', priority: null, completed_at: null, tags: [{ name: 'waiting-for' }] });
+                await createTask(
+                    await buildClarifiedTask(item, {
+                        name: itemName,
+                        status: 'waiting',
+                        priority: null,
+                        completed_at: null,
+                        tags: [{ name: 'waiting-for' }],
+                    })
+                );
                 await processInboxItemWithStore(uid);
                 showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
             } catch {

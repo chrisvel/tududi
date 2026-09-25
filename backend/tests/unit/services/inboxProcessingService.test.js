@@ -9,7 +9,7 @@ describe('inboxProcessingService', () => {
             const content = 'https://example.com/page #tag1 #tag2';
             const result = processInboxItem(content);
 
-            expect(result).toEqual({
+            expect(result).toMatchObject({
                 parsed_tags: ['tag1', 'tag2'],
                 parsed_projects: [],
                 cleaned_content: 'https://example.com/page',
@@ -22,7 +22,7 @@ describe('inboxProcessingService', () => {
             const content = 'https://example.com/page +Project #tag1';
             const result = processInboxItem(content);
 
-            expect(result).toEqual({
+            expect(result).toMatchObject({
                 parsed_tags: ['tag1'],
                 parsed_projects: ['Project'],
                 cleaned_content: 'https://example.com/page',
@@ -35,7 +35,7 @@ describe('inboxProcessingService', () => {
             const content = 'https://example.com/test-page';
             const result = processInboxItem(content);
 
-            expect(result).toEqual({
+            expect(result).toMatchObject({
                 parsed_tags: [],
                 parsed_projects: [],
                 cleaned_content: 'https://example.com/test-page',
@@ -48,7 +48,7 @@ describe('inboxProcessingService', () => {
             const content = 'Just some regular text #tag1';
             const result = processInboxItem(content);
 
-            expect(result).toEqual({
+            expect(result).toMatchObject({
                 parsed_tags: ['tag1'],
                 parsed_projects: [],
                 cleaned_content: 'Just some regular text',
