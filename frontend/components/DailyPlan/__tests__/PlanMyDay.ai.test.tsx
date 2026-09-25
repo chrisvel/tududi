@@ -33,6 +33,12 @@ jest.mock('react-i18next', () => {
 
 jest.mock('react-router-dom', () => ({
     useNavigate: () => jest.fn(),
+    useLocation: () => ({ pathname: '/today/plan' }),
+    Link: ({ to, children, className }: any) => (
+        <a href={to} className={className}>
+            {children}
+        </a>
+    ),
 }));
 
 jest.mock('../../../store/useStore', () => ({

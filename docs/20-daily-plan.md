@@ -32,7 +32,15 @@ The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics
 
 ## Planner (`/today/plan`)
 
-- **Left column:** a short list, "What could you do today?": five candidates at a time in order of importance (overdue, due today, in progress, suggested), each shown as its name and one grey line. **Show 5 more** adds five, and **Browse** opens the per-group filters and the inbox. Tasks already planned leave the list. Hovering or focusing a row (always on touch screens) shows its 15m / 30m / 1h / 2h chips and, for overdue tasks, **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task).
+- **Left column:** a short list, "What could you do today?": five candidates at a time in a fixed order (see **Candidate order** below), each shown as its name and one grey line. The name opens the task. **Show 5 more** adds five, and **Browse** opens the per-group filters and the inbox. Tasks already planned leave the list. Resting the pointer on a row for a moment, or focusing it (always on touch screens), opens its 15m / 30m / 1h / 2h chips and, for overdue tasks, **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task). The short delay keeps rows from opening and closing while the mouse passes over them.
+- Task names on the timeline and in the list view also open the task.
+
+### Candidate order
+
+The order comes from `backend/modules/daily-plan/ranking.js` and is explained to users in **Profile > Planning**. Change both together.
+
+1. Groups, in order: overdue (including started tasks past their due date), due today, in progress, everything else.
+2. Inside a group: higher priority first, then tasks in a project before tasks without one, then the earlier due date, then the older task.
 - **Adding:** **+** places the task in the first free slot after now that fits its length, avoiding planned tasks and busy meetings. If nothing fits it is added without a time. Dragging a card onto the timeline places it where it is dropped. The chosen length is saved as the task's estimate.
 - **Timeline:** 08:00 to 18:00, widened to whole hours around anything planned or on the calendar outside that range, in 15-minute steps. Blocks can be dragged and resized; overlapping tasks are refused. Meetings are grey, events marked "free" are dashed, and gaps of 30 minutes or more are labelled.
 - **List mode:** an ordered list without a timeline, reorderable by drag or keyboard, with an optional start time per row. Screens narrower than 768px always use list mode.

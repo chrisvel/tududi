@@ -1,7 +1,13 @@
 const request = require('supertest');
 const moment = require('moment-timezone');
 const app = require('../../app');
-const { Task, InboxItem, DailyPlan, DailyPlanItem } = require('../../models');
+const {
+    Task,
+    Project,
+    InboxItem,
+    DailyPlan,
+    DailyPlanItem,
+} = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Daily plan routes', () => {
@@ -185,6 +191,46 @@ describe('Daily plan routes', () => {
         expect(new Set(allUids).size).toBe(allUids.length);
         expect(res.body.inbox_count).toBe(1);
         expect(res.body.inbox[0].content).toBe('Call the plumber');
+    });
+
+    it('ranks candidates: overdue first, then priority, then project tasks', async () => {
+        const project = await Project.create({
+            name: 'Home',
+            user_id: user.id,
+        });
+        const lastWeek = moment
+            .tz('Europe/Athens')
+            .subtract(7, 'days')
+            .format('YYYY-MM-DD');
+        const startedLate = await makeTask({
+            name: 'Started but late',
+            status: Task.STATUS.IN_PROGRESS,
+            due_date: lastWeek,
+        });
+        const looseLow = await makeTask({ name: 'Loose low', priority: 0 });
+        const looseHigh = await makeTask({ name: 'Loose high', priority: 2 });
+        const projectLow = await makeTask({
+            name: 'Project low',
+            priority: 0,
+            project_id: project.id,
+        });
+        const projectHigh = await makeTask({
+            name: 'Project high',
+            priority: 2,
+            project_id: project.id,
+        });
+
+        const res = await agent.get('/api/daily-plan/candidates');
+
+        expect(res.status).toBe(200);
+        expect(res.body.overdue.map((t) => t.uid)).toEqual([startedLate.uid]);
+        expect(res.body.in_progress).toEqual([]);
+        expect(res.body.suggested.map((t) => t.uid)).toEqual([
+            projectHigh.uid,
+            looseHigh.uid,
+            projectLow.uid,
+            looseLow.uid,
+        ]);
     });
 });
 

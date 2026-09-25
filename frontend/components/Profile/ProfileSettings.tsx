@@ -25,6 +25,7 @@ import {
     SwatchIcon,
     CreditCardIcon,
     ViewColumnsIcon,
+    QueueListIcon,
 } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
@@ -65,6 +66,7 @@ import CalDAVTab from './tabs/CalDAVTab';
 import CalendarFeedsTab from './tabs/CalendarFeedsTab';
 import AIAssistantTab from './tabs/AIAssistantTab';
 import BillingTab from './tabs/BillingTab';
+import PlanningTab from './tabs/PlanningTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import { PASSWORD_MIN_LENGTH } from '../../utils/passwordPolicy';
 import { getFeatureFlags, type FeatureFlags } from '../../utils/featureFlags';
@@ -116,6 +118,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'keyboard-shortcuts',
             'caldav',
             'calendars',
+            'planning',
             'mcp',
             'ai-assistant',
             'features',
@@ -1461,6 +1464,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <CalendarDaysIcon className="w-5 h-5" />,
         },
         {
+            id: 'planning',
+            name: t('profile.tabs.planning', 'Planning'),
+            icon: <QueueListIcon className="w-5 h-5" />,
+        },
+        {
             id: 'caldav',
             name: t('profile.tabs.caldav', 'CalDAV Sync'),
             icon: <CalendarIcon className="w-5 h-5" />,
@@ -1911,6 +1919,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                                 <CalendarFeedsTab
                                     isActive={activeTab === 'calendars'}
+                                />
+
+                                <PlanningTab
+                                    isActive={activeTab === 'planning'}
                                 />
 
                                 <BillingTab

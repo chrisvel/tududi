@@ -443,7 +443,8 @@
       "notifications": "Notification Preferences",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Sync",
-      "calendars": "Calendars"
+      "calendars": "Calendars",
+      "planning": "Planning"
     },
     "caldav": {
       "title": "CalDAV Synchronization",
@@ -630,6 +631,24 @@
       "removeMessage": "Stop showing \"{{name}}\" on Today? The calendar itself is not touched.",
       "removeConfirm": "Remove",
       "missingFields": "Add a name and the calendar address"
+    },
+    "planning": {
+      "title": "Planning",
+      "description": "How \"What could you do today?\" orders your tasks when you plan your day. The rules are fixed, so the same tasks always come out in the same order.",
+      "groupsTitle": "Groups, in this order",
+      "overdue": "Overdue",
+      "overdueDetail": "Past their due date, including tasks you already started.",
+      "dueToday": "Due today",
+      "dueTodayDetail": "Tasks due before the day ends.",
+      "inProgress": "In progress",
+      "inProgressDetail": "Work you started and have not finished.",
+      "everythingElse": "Everything else",
+      "everythingElseDetail": "Open tasks you could pick up. Deferred tasks, someday tasks and tasks due more than 3 days out are left out.",
+      "withinTitle": "Inside each group",
+      "rulePriority": "Higher priority first.",
+      "ruleProject": "Tasks in a project before tasks without one.",
+      "ruleDue": "The earlier due date first, then the older task.",
+      "open": "Plan my day"
     }
   },
   "productivity": {

@@ -5,9 +5,11 @@ const repository = require('./repository');
 const permissionsService = require('../../services/permissionsService');
 const { serializeTasks } = require('../tasks/core/serializers');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
+const { GROUP_ORDER, rankCandidates } = require('./ranking');
 const {
     getSafeTimezone,
     getCurrentDateInTimezone,
+    getTodayBoundsInUTC,
 } = require('../../utils/timezone-utils');
 const { ValidationError, NotFoundError } = require('../../shared/errors');
 
@@ -235,30 +237,35 @@ async function clearPlan(user, date) {
 }
 
 // The planner's left column: the same lists the classic Today page shows,
-// deduplicated so a task appears in the first group it belongs to.
+// deduplicated so a task appears in the first group it belongs to, and
+// ranked by the rules in ranking.js.
 async function getCandidates(user) {
     const timezone = getSafeTimezone(user.timezone);
     const metrics = await computeTaskMetrics(user.id, timezone);
 
-    const groups = [
-        [
-            'in_progress',
-            [...metrics.tasks_in_progress, ...metrics.today_plan_tasks],
-        ],
-        ['overdue', metrics.tasks_overdue],
-        ['due_today', metrics.tasks_due_today],
-        ['suggested', metrics.suggested_tasks],
-    ];
+    // Started tasks that are past due count as overdue here, so late work
+    // is never ranked below fresh work.
+    const todayStart = new Date(getTodayBoundsInUTC(timezone).start).getTime();
+    const started = [...metrics.tasks_in_progress, ...metrics.today_plan_tasks];
+    const isLate = (task) =>
+        task.due_date && new Date(task.due_date).getTime() < todayStart;
+
+    const groupTasks = {
+        overdue: [...metrics.tasks_overdue, ...started.filter(isLate)],
+        due_today: metrics.tasks_due_today,
+        in_progress: started,
+        suggested: metrics.suggested_tasks,
+    };
 
     const seen = new Set();
     const result = {};
-    for (const [key, tasks] of groups) {
-        const unique = (tasks || []).filter((task) => {
+    for (const key of GROUP_ORDER) {
+        const unique = (groupTasks[key] || []).filter((task) => {
             if (seen.has(task.id)) return false;
             seen.add(task.id);
             return true;
         });
-        result[key] = await serializeTasks(unique, timezone);
+        result[key] = await serializeTasks(rankCandidates(unique), timezone);
     }
 
     const inbox = await repository.findOpenInboxItems(user.id, INBOX_LIMIT);

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router-dom';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
@@ -43,6 +44,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
     aiReason,
 }) => {
     const { t } = useTranslation();
+    const location = useLocation();
     const { attributes, listeners, setNodeRef, transform, isDragging } =
         useDraggable({
             id: `item:${item.task_uid}`,
@@ -125,7 +127,14 @@ const TimelineBlock: React.FC<BlockProps> = ({
                                 )}
                             />
                         )}
-                        <span className="truncate">{item.task.name}</span>
+                        <Link
+                            to={`/task/${item.task_uid}`}
+                            state={{ from: location.pathname }}
+                            draggable={false}
+                            className="truncate underline-offset-2 hover:underline"
+                        >
+                            {item.task.name}
+                        </Link>
                     </span>
                     <span className="shrink-0 text-xs text-blue-900 dark:text-blue-200">
                         {formatMinute(item.start_minute as number)} ·{' '}
