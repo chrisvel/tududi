@@ -21,6 +21,7 @@ const {
 const { Project } = require('../../models');
 
 const PROJECT_STATUSES = Project.rawAttributes.status.values;
+const MAX_REORDER_PROJECTS = 5000;
 
 /**
  * Update project tags.
@@ -165,6 +166,8 @@ class ProjectsService {
         // Load per-user area overrides (covers shared projects assigned to user's areas)
         const areaOverrides =
             await projectsRepository.getUserProjectAreaOverrides(userId);
+        const positions =
+            await projectsRepository.getUserProjectPositions(userId);
 
         const enhancedProjects = projects
             .map((project) => {
@@ -203,6 +206,7 @@ class ProjectsService {
                     share_count: shareCount,
                     is_shared: shareCount > 0,
                     is_stalled: isStalled,
+                    sort_position: positions[project.id] ?? null,
                 };
             })
             .filter((project) => {
@@ -223,6 +227,44 @@ class ProjectsService {
         }
 
         return { projects: enhancedProjects };
+    }
+
+    /**
+     * Save the user's custom order of the Projects page.
+     */
+    async reorder(userId, projectUids) {
+        if (
+            !Array.isArray(projectUids) ||
+            projectUids.some((uid) => typeof uid !== 'string' || !uid)
+        ) {
+            throw new ValidationError('project_uids must be a list of UIDs.');
+        }
+        if (projectUids.length > MAX_REORDER_PROJECTS) {
+            throw new ValidationError(
+                `Cannot order more than ${MAX_REORDER_PROJECTS} projects.`
+            );
+        }
+        if (new Set(projectUids).size !== projectUids.length) {
+            throw new ValidationError('project_uids contains duplicates.');
+        }
+
+        const whereClause = await permissionsService.ownershipOrPermissionWhere(
+            'project',
+            userId
+        );
+        const projects = projectUids.length
+            ? await projectsRepository.findIdsByUids(whereClause, projectUids)
+            : [];
+        if (projects.length !== projectUids.length) {
+            throw new NotFoundError('One or more projects not found.');
+        }
+
+        const idByUid = new Map(projects.map((p) => [p.uid, p.id]));
+        await projectsRepository.replaceUserProjectOrder(
+            userId,
+            projectUids.map((uid) => idByUid.get(uid))
+        );
+        return { project_uids: projectUids };
     }
 
     /**

@@ -7,7 +7,8 @@ import NewTask from './Task/NewTask';
 import { Task } from '../entities/Task';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
-import { createTask, GroupedTasks } from '../utils/tasksService';
+import { createTask, GroupedTasks, saveTaskOrder } from '../utils/tasksService';
+import { mergeVisibleOrder } from './Shared/sortableList';
 import { useStore } from '../store/useStore';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
@@ -41,9 +42,10 @@ const getSearchPlaceholder = (language: string): string => {
 
 const Tasks: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { showSuccessToast } = useToast();
+    const { showSuccessToast, showErrorToast } = useToast();
 
     const [tasks, setTasks] = useState<Task[]>([]);
+    const latestFetchId = useRef(0);
     const projects = useStore((state: any) => state.projectsStore.projects);
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks | null>(null);
     const [upcomingProjects, setUpcomingProjects] = useState<any[]>([]);
@@ -181,6 +183,9 @@ const Tasks: React.FC = () => {
             disablePagination?: boolean;
         }
     ) => {
+        // The first render fetches before order_by is in the URL; a slower
+        // earlier response must not overwrite a newer one.
+        const fetchId = ++latestFetchId.current;
         setLoading(resetPagination);
         setError(null);
         try {
@@ -224,6 +229,7 @@ const Tasks: React.FC = () => {
 
             if (tasksResponse.ok) {
                 const tasksData = await tasksResponse.json();
+                if (fetchId !== latestFetchId.current) return;
 
                 if (resetPagination) {
                     setTasks(tasksData.tasks || []);
@@ -245,7 +251,10 @@ const Tasks: React.FC = () => {
                         });
                     }
                     if (tasksData.projects) {
-                        setUpcomingProjects((prev) => [...prev, ...(tasksData.projects || [])]);
+                        setUpcomingProjects((prev) => [
+                            ...prev,
+                            ...(tasksData.projects || []),
+                        ]);
                     }
                     if (!options?.disablePagination) {
                         const limitToUse = options?.limitOverride ?? limit;
@@ -271,8 +280,10 @@ const Tasks: React.FC = () => {
         } catch (error) {
             setError((error as Error).message);
         } finally {
-            setLoading(false);
-            setIsLoadingMore(false);
+            if (fetchId === latestFetchId.current) {
+                setLoading(false);
+                setIsLoadingMore(false);
+            }
         }
     };
 
@@ -498,12 +509,41 @@ const Tasks: React.FC = () => {
         setDropdownOpen(false);
     };
 
+    // Dragging a task saves a manual order and switches the list to it; a
+    // drag under another sort starts from that sort (see saveTaskOrder).
+    const handleReorder = async (orderedUids: string[]) => {
+        const isCustom = orderBy.startsWith('custom:');
+        const prevTasks = tasks;
+        const byUid = new Map(tasks.map((task) => [task.uid, task]));
+        const keys = tasks.map((task) => task.uid ?? `id:${task.id}`);
+        setTasks(
+            mergeVisibleOrder(keys, orderedUids).map(
+                (key, index) => byUid.get(key) ?? tasks[index]
+            )
+        );
+        try {
+            await saveTaskOrder(
+                { scope: 'all' },
+                orderedUids,
+                isCustom ? undefined : orderBy
+            );
+            if (!isCustom) handleSortChange('custom:asc');
+        } catch (error) {
+            console.error('Error saving task order:', error);
+            setTasks(prevTasks);
+            showErrorToast(
+                t('tasks.reorderError', 'Failed to save task order')
+            );
+        }
+    };
+
     const sortOptions: SortOption[] = [
         { value: 'due_date:asc', label: t('sort.due_date', 'Due Date') },
         { value: 'name:asc', label: t('sort.name', 'Name') },
         { value: 'priority:desc', label: t('sort.priority', 'Priority') },
         { value: 'status:desc', label: t('sort.status', 'Status') },
         { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+        { value: 'custom:asc', label: t('sort.custom', 'Custom') },
         ...(status === 'done'
             ? [
                   {
@@ -522,12 +562,8 @@ const Tasks: React.FC = () => {
     };
 
     return (
-        <div
-            className="w-full pt-4 pb-8 px-4 sm:px-6 lg:px-8"
-        >
-            <div
-                className="w-full max-w-7xl mx-auto"
-            >
+        <div className="w-full pt-4 pb-8 px-4 sm:px-6 lg:px-8">
+            <div className="w-full max-w-7xl mx-auto">
                 {/* Title row with info button and filters dropdown on the right */}
                 <div
                     className={`flex items-center justify-between gap-2 min-w-0 ${
@@ -623,34 +659,40 @@ const Tasks: React.FC = () => {
                                                 {t('tasks.groupBy', 'Group by')}
                                             </div>
                                             <div className="py-1">
-                                                {(['none', 'project'] as const).map(
-                                                    (val) => (
-                                                        <button
-                                                            key={val}
-                                                            onClick={() => {
-                                                                setGroupBy(val);
-                                                                localStorage.setItem(
-                                                                    'tasks_group_by',
-                                                                    val
-                                                                );
-                                                            }}
-                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
-                                                                groupBy === val
-                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                            }`}
-                                                        >
-                                                            <span>
-                                                                {val === 'project'
-                                                                    ? t('tasks.groupByProject', 'Project')
-                                                                    : t('tasks.grouping.none', 'None')}
-                                                            </span>
-                                                            {groupBy === val && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    )
-                                                )}
+                                                {(
+                                                    ['none', 'project'] as const
+                                                ).map((val) => (
+                                                    <button
+                                                        key={val}
+                                                        onClick={() => {
+                                                            setGroupBy(val);
+                                                            localStorage.setItem(
+                                                                'tasks_group_by',
+                                                                val
+                                                            );
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            groupBy === val
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <span>
+                                                            {val === 'project'
+                                                                ? t(
+                                                                      'tasks.groupByProject',
+                                                                      'Project'
+                                                                  )
+                                                                : t(
+                                                                      'tasks.grouping.none',
+                                                                      'None'
+                                                                  )}
+                                                        </span>
+                                                        {groupBy === val && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
                                     )}
@@ -926,30 +968,57 @@ const Tasks: React.FC = () => {
                                         {upcomingProjects.length > 0 && (
                                             <div className="mt-8">
                                                 <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                                                    {t('projects.upcomingProjects', 'Upcoming Projects')}
+                                                    {t(
+                                                        'projects.upcomingProjects',
+                                                        'Upcoming Projects'
+                                                    )}
                                                 </h3>
                                                 <div className="space-y-2">
-                                                    {upcomingProjects.map((project) => (
-                                                        <div
-                                                            key={project.uid}
-                                                            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
-                                                        >
-                                                            <div className="flex items-center justify-between">
-                                                                <a
-                                                                    href={`/project/${project.uid}-${project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
-                                                                    className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-                                                                >
-                                                                    {project.name}
-                                                                </a>
-                                                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                                                    <span>{t('common.due', 'Due')}: </span>
-                                                                    <span className="font-medium">
-                                                                        {new Date(project.due_date_at).toLocaleDateString()}
-                                                                    </span>
+                                                    {upcomingProjects.map(
+                                                        (project) => (
+                                                            <div
+                                                                key={
+                                                                    project.uid
+                                                                }
+                                                                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
+                                                            >
+                                                                <div className="flex items-center justify-between">
+                                                                    <a
+                                                                        href={`/project/${project.uid}-${project.name
+                                                                            .toLowerCase()
+                                                                            .replace(
+                                                                                /[^a-z0-9]+/g,
+                                                                                '-'
+                                                                            )
+                                                                            .replace(
+                                                                                /^-|-$/g,
+                                                                                ''
+                                                                            )}`}
+                                                                        className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                                                                    >
+                                                                        {
+                                                                            project.name
+                                                                        }
+                                                                    </a>
+                                                                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                                                        <span>
+                                                                            {t(
+                                                                                'common.due',
+                                                                                'Due'
+                                                                            )}
+
+                                                                            :{' '}
+                                                                        </span>
+                                                                        <span className="font-medium">
+                                                                            {new Date(
+                                                                                project.due_date_at
+                                                                            ).toLocaleDateString()}
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    ))}
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
                                         )}
@@ -959,6 +1028,7 @@ const Tasks: React.FC = () => {
                                         tasks={displayTasks}
                                         groupedTasks={null}
                                         groupBy={groupBy}
+                                        onReorder={handleReorder}
                                         onTaskCreate={handleTaskCreate}
                                         onTaskUpdate={handleTaskUpdate}
                                         onTaskCompletionToggle={
@@ -983,6 +1053,11 @@ const Tasks: React.FC = () => {
                                         projects={projects}
                                         onToggleToday={undefined}
                                         showCompletedTasks={showCompleted}
+                                        onReorder={
+                                            isUpcomingView
+                                                ? undefined
+                                                : handleReorder
+                                        }
                                     />
                                 )}
                                 {/* Load more button - hide in upcoming view */}

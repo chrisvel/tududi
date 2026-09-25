@@ -9,6 +9,7 @@ const {
 const { Op, QueryTypes } = require('sequelize');
 const permissionsService = require('../../../services/permissionsService');
 const { blockedCondition } = require('../relations/service');
+const { customOrderClause } = require('../order/service');
 const {
     getSafeTimezone,
     getUpcomingRangeInUTC,
@@ -349,6 +350,7 @@ async function filterTasksByParams(
         const [orderColumn, orderDirection = 'asc'] =
             params.order_by.split(':');
         const allowedColumns = [
+            'custom',
             'created_at',
             'updated_at',
             'name',
@@ -362,7 +364,9 @@ async function filterTasksByParams(
             throw new Error('Invalid order column specified.');
         }
 
-        if (orderColumn === 'due_date') {
+        if (orderColumn === 'custom') {
+            orderClause = customOrderClause(userId);
+        } else if (orderColumn === 'due_date') {
             // Undated tasks always sort after dated ones, whichever direction
             orderClause = [
                 ['due_date', `${orderDirection.toUpperCase()} NULLS LAST`],

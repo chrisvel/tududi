@@ -5,6 +5,7 @@ const router = express.Router();
 const attachmentsRouter = require('./attachments');
 const eventsRouter = require('./events');
 const relationsRouter = require('./relations/routes');
+const orderRouter = require('./order/routes');
 
 const {
     Task,
@@ -1041,6 +1042,11 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                 { replacements: [taskId, taskId] }
             );
 
+            await sequelize.query(
+                'DELETE FROM user_task_orders WHERE task_id = ?',
+                { replacements: [taskId] }
+            );
+
             await taskRepository.clearRecurringParent(taskId);
 
             // Unlink attachment files from disk before destroying rows, so a
@@ -1133,5 +1139,6 @@ router.get('/task/:uid/next-iterations', async (req, res) => {
 router.use(attachmentsRouter);
 router.use(eventsRouter);
 router.use(relationsRouter);
+router.use(orderRouter);
 
 module.exports = router;

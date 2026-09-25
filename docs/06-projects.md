@@ -338,6 +338,15 @@ No Area
   └── Random Ideas
 ```
 
+### Custom Order
+
+**On Projects page:**
+- Pick **Custom** in the sort menu, then drag a card or row to move it (cards and list view both work; on touch, press and hold first)
+- The order is personal: each user keeps their own, stored in `user_project_orders` (one row per user and project), so a shared project can sit in a different place for each member
+- Projects that have not been placed yet (new ones) show at the top, newest first; any drag saves a position for every project
+- With filters or search active, only the visible projects move; hidden projects keep their slots
+- API: `PUT /api/projects/order` with `{ "project_uids": [...] }` replaces the whole order; `GET /api/projects` returns `sort_position` (or `null`) on each project
+
 ---
 
 ## Tasks and Notes in Projects

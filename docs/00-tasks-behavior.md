@@ -456,6 +456,17 @@ Task responses include `is_blocked` and `blocked_by_count`. Names of blockers co
     - Created date
     - Updated date
     - Manual order (drag-and-drop, for subtasks)
+    - Custom (drag-and-drop, see below)
+
+54. **Custom order (drag and drop):**
+    - Drag a task row to move it on **All Tasks** (`/tasks`), inside a **project**, and among the **Anytime** tasks on **Today**
+    - Dragging under any other sort switches the list to **Custom**, starting from the order that was on screen
+    - Each list keeps its own order, per user: moving a task on All Tasks does not move it inside its project, and a shared project can be ordered differently by each member
+    - Tasks that were never placed (new ones) show first, newest first
+    - With filters, search or paging, only the shown tasks move; the rest keep their places
+    - On Today, timed tasks follow the clock; only **Anytime** tasks are dragged, and their order is the day plan's own item order
+    - Storage: `user_task_orders` (`user_id`, `task_id`, `scope`, `position`), scope `all` or `project:<project id>`
+    - API: `GET /api/tasks/order?scope=all|project&project_uid=...` returns the saved uids; `PUT /api/tasks/order` with `{ scope, project_uid?, task_uids, base_order_by? }` saves a drag; `GET /api/tasks?order_by=custom:asc` sorts All Tasks by it
 
 53. **Grouping options:**
     - By project
