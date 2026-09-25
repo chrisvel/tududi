@@ -136,12 +136,54 @@ The system automatically analyzes your input and extracts metadata:
 - If you don't, system adds it automatically for URLs
 - Applies to both explicit tags and when converting to note
 
-### 4. Cleaned Content
+### 4. Due Dates
+
+Write a date in plain English and it becomes the task's due date:
+
+- `Call plumber tomorrow`, `Submit form today`
+- `Book table next fri`, `Pay invoice on monday`
+- `Follow up in 3 days`, `Renew passport Oct 12`
+
+**Rules:**
+- Dates are worked out in your timezone. For an item that sat in the inbox, relative dates count from when it was captured: "tomorrow" in an item added on Monday means Tuesday, even if you convert it on Wednesday.
+- Only one date is used. With more than one, the last one wins.
+- The date words are removed from the task name. A phrase with a time (`tomorrow at 3pm`) still sets the date but stays in the name, because due dates have no time.
+- Bare words that are usually just words are ignored: `may`, `march`, `sun`, `sat`, `wed`, and numbers on their own. Nothing inside a `#tag`, `+project`, `@person` or URL is read as a date.
+- A calendar chip under the input shows the date. Its × keeps the words as plain text and nothing is parsed from that phrase.
+
+### 5. Recurrence
+
+`every ...` phrases make a recurring task, starting at the first matching day:
+
+| You write | Repeats |
+|-----------|---------|
+| `every day`, `daily` (at the end) | Every day |
+| `every 3 days`, `every other week`, `every 2 months` | That interval |
+| `every week`, `weekly` (at the end) | Every week |
+| `every weekday` | Monday to Friday |
+| `every mon, wed and fri` | Those weekdays |
+| `every month`, `monthly` (at the end) | Every month |
+| `every month on the 15th`, `every 15th` | That day of the month |
+| `every first monday`, `every last friday` | That weekday of the month |
+| `every last day of the month` | The last day of each month |
+
+`daily`, `weekly` and `monthly` only count as the last word, so `Write weekly report` stays a plain name.
+
+### 6. People (@person)
+
+**Syntax:** `@name` or `@"Full Name"`
+
+- Type `@` to pick from the people the task can be assigned to. Names with spaces are inserted in quotes.
+- The list is the same as the assignee list (see [People, Members & Roles](19-people-and-roles.md)): the project's list when the text has a `+project`, otherwise your contacts and your workspace.
+- A full name matches first. A first name matches only when one person has it.
+- A matched person is removed from the name and the task is assigned to them (members are notified as usual). An `@word` that matches nobody stays in the text, so email addresses and handles are safe.
+
+### 7. Cleaned Content
 
 After parsing, the system creates "cleaned content":
-- Original: `Review contract +ClientWork #urgent #review`
+- Original: `Review contract tomorrow @Maria +ClientWork #urgent`
 - Cleaned: `Review contract`
-- Tags and projects are stripped for display/conversion
+- Tags, projects, the date or recurrence phrase and a matched person are stripped
 - Cleaned version is used as task name, note title, or project name
 
 ---
@@ -153,9 +195,11 @@ The system analyzes your content and suggests what type of item to create:
 ### Suggestion Logic
 
 **1. Suggests TASK when:**
-- Content starts with an action verb (detected using NLP)
-- Has a project reference
+- Content has a due date, a recurrence or a matched `@person` (and no URL), or
+- Content starts with an action verb (detected using NLP) and has a project reference
 - Examples:
+  - ✅ `Call plumber tomorrow` → Suggests Task (date)
+  - ✅ `Ask @Maria about rent` → Suggests Task (person)
   - ✅ `Call John +Work` → Suggests Task (verb "Call")
   - ✅ `Review proposal +ClientProject` → Suggests Task (verb "Review")
   - ✅ `Fix the bug +Development` → Suggests Task (verb "Fix")
@@ -170,7 +214,7 @@ The system analyzes your content and suggests what type of item to create:
   - ✅ `Important info +Work` → Suggests Note (no verb)
 
 **3. No suggestion when:**
-- No project reference
+- No project reference, date or person
 - Just plain text or tags without context
 - Examples:
   - ⚪ `Random thought #idea` → No suggestion
@@ -182,7 +226,7 @@ The system analyzes your content and suggests what type of item to create:
 **Suggestion badges:**
 - Blue "Task" badge appears if suggested as task
 - Purple "Note" badge appears if suggested as note
-- Reason shown in tooltip: "verb detected", "bookmark tag", "URL detected"
+- Reason shown in tooltip: "verb detected", "date detected", "person detected", "bookmark tag", "URL detected"
 
 **Icons:**
 - 🌐 Globe icon: Bookmark/URL content
@@ -741,6 +785,21 @@ While editing, you see action buttons:
 
 ---
 
+## Analyze API
+
+`POST /api/inbox/analyze-text` parses text without saving anything. The composer calls it as you type; Telegram, MCP or API clients can call it too.
+
+**Body:**
+- `content` (required)
+- `reference_date` (optional, ISO 8601): what "today" means for relative dates. Defaults to now; a future value is capped at now.
+- `parse_dates` (optional): `false` skips dates and recurrence.
+
+**Response fields:** `parsed_tags`, `parsed_projects`, `cleaned_content`, `parsed_due_date` (`YYYY-MM-DD`, also the first occurrence of a recurrence), `parsed_date_text` (the matched phrase), `parsed_recurrence` (`recurrence_type` plus the matching `recurrence_*` fields, or `null`), `parsed_person` (the name as typed), `parsed_assignee` (`{ uid, name }` or `null`), `suggested_type`, `suggested_reason`.
+
+To create the task, send `parsed_due_date` as `due_date`, the `parsed_recurrence` fields as they are, and `parsed_assignee.uid` as `assigned_to`.
+
+---
+
 ## Related Documentation
 
 - [Today Page Sections](02-today-page-sections.md) - How tasks flow from inbox to Today
@@ -750,6 +809,7 @@ While editing, you see action buttons:
 
 **Technical Implementation Files:**
 - Inbox processing service: `/backend/modules/inbox/inboxProcessingService.js`
+- Date, recurrence and @person parsing: `/backend/modules/inbox/nlpParsers.js`
 - Inbox model: `/backend/models/inbox_item.js`
 - Inbox API routes: `/backend/modules/inbox/routes.js`
 - Inbox controller: `/backend/modules/inbox/controller.js`
@@ -761,5 +821,5 @@ While editing, you see action buttons:
 ---
 
 **Document Version:** 1.0.0
-**Last Updated:** 2026-03-14
+**Last Updated:** 2026-09-25
 **Audience:** Developers, AI assistants, and end users

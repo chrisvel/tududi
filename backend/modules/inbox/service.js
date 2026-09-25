@@ -11,6 +11,7 @@ const {
 } = require('./validation');
 const { NotFoundError } = require('../../shared/errors');
 const { processInboxItem } = require('./inboxProcessingService');
+const peopleService = require('../people/service');
 
 class InboxService {
     async getAll(userId, { limit, offset } = {}) {
@@ -145,9 +146,62 @@ class InboxService {
         return { message: 'All trashed items restored' };
     }
 
-    analyzeText(content) {
+    async analyzeText(
+        userId,
+        content,
+        { referenceDate, timezone, parseDates = true } = {}
+    ) {
         validateContent(content);
-        return processInboxItem(content);
+        const options = { referenceDate, timezone, parseDates };
+        const result = processInboxItem(content, options);
+
+        const assignee = result.parsed_person
+            ? await this.resolveAssignee(
+                  userId,
+                  result.parsed_person,
+                  result.parsed_projects[0]
+              )
+            : null;
+        if (!assignee) {
+            return { ...result, parsed_assignee: null };
+        }
+
+        return {
+            ...processInboxItem(content, { ...options, personResolved: true }),
+            parsed_assignee: assignee,
+        };
+    }
+
+    // Match an @name against the people the task could be assigned to: the
+    // project's list when a +project resolves, the workspace list otherwise.
+    // A full name wins; a first name only counts when it is unambiguous.
+    async resolveAssignee(userId, name, projectName) {
+        const projectUid = projectName
+            ? await inboxRepository.findAccessibleProjectUidByName(
+                  userId,
+                  projectName
+              )
+            : null;
+        const people = projectUid
+            ? await peopleService.getAssignableForProject(userId, projectUid)
+            : await peopleService.getAssignable(userId);
+
+        const wanted = name.toLowerCase();
+        const exact = people.filter(
+            (person) => person.name?.trim().toLowerCase() === wanted
+        );
+        const byFirstName = people.filter(
+            (person) =>
+                person.name?.trim().split(/\s+/)[0].toLowerCase() === wanted
+        );
+        const match =
+            exact.length === 1
+                ? exact[0]
+                : byFirstName.length === 1
+                  ? byFirstName[0]
+                  : null;
+
+        return match ? { uid: match.uid, name: match.name } : null;
     }
 }
 

@@ -150,6 +150,7 @@
     "@playwright/test": "^1.57.0",
     "axios": "^1.16.0",
     "bcrypt": "~6.0.0",
+    "chrono-node": "^2.10.1",
     "compression": "~1.8.0",
     "compromise": "^14.14.4",
     "connect-session-sequelize": "~7.1.7",

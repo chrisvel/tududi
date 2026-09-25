@@ -7,6 +7,7 @@ import { getApiPath } from '../../../config/paths';
 import { Task } from '../../../entities/Task';
 
 jest.mock('react-i18next', () => ({
+    initReactI18next: { type: '3rdParty', init: jest.fn() },
     useTranslation: () => ({
         t: (key: string, fallback?: string) => fallback || key,
     }),
@@ -19,15 +20,18 @@ jest.mock('../../Shared/ToastContext', () => ({
     }),
 }));
 
-jest.mock('../../../store/useStore', () => ({
-    useStore: () => ({
+jest.mock('../../../store/useStore', () => {
+    const state = {
         tagsStore: {
             getTags: () => [{ id: 1, name: 'errands' }],
             setTags: jest.fn(),
-            refreshTags: jest.fn(),
+            refreshTags: jest.fn().mockResolvedValue(undefined),
         },
-    }),
-}));
+    };
+    return {
+        useStore: Object.assign(() => state, { getState: () => state }),
+    };
+});
 
 jest.mock('../../../utils/csrfService', () => ({
     getCsrfToken: jest.fn().mockResolvedValue('test-token'),
