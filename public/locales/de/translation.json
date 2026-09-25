@@ -633,7 +633,8 @@
       "notifications": "Benachrichtigungseinstellungen",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV-Synchronisierung",
-      "calendars": "Kalender"
+      "calendars": "Kalender",
+      "planning": "Planung"
     },
     "security": "Sicherheitseinstellungen",
     "changePassword": "Passwort ändern",
@@ -918,6 +919,24 @@
       "removeMessage": "„{{name}}“ nicht mehr in Heute anzeigen? Der Kalender selbst bleibt unverändert.",
       "removeConfirm": "Entfernen",
       "missingFields": "Gib einen Namen und die Kalenderadresse ein"
+    },
+    "planning": {
+      "title": "Planung",
+      "description": "So ordnet „Was könntest du heute tun?“ deine Aufgaben, wenn du deinen Tag planst. Die Regeln sind fest, daher erscheinen dieselben Aufgaben immer in derselben Reihenfolge.",
+      "groupsTitle": "Gruppen, in dieser Reihenfolge",
+      "overdue": "Überfällig",
+      "overdueDetail": "Fälligkeitsdatum überschritten, auch Aufgaben, die du schon begonnen hast.",
+      "dueToday": "Heute fällig",
+      "dueTodayDetail": "Aufgaben, die vor Tagesende fällig sind.",
+      "inProgress": "In Arbeit",
+      "inProgressDetail": "Arbeit, die du begonnen und noch nicht beendet hast.",
+      "everythingElse": "Alles andere",
+      "everythingElseDetail": "Offene Aufgaben, die du angehen könntest. Zurückgestellte Aufgaben, Irgendwann-Aufgaben und Aufgaben, die erst in mehr als 3 Tagen fällig sind, werden ausgelassen.",
+      "withinTitle": "Innerhalb jeder Gruppe",
+      "rulePriority": "Höhere Priorität zuerst.",
+      "ruleProject": "Aufgaben in einem Projekt vor Aufgaben ohne Projekt.",
+      "ruleDue": "Das frühere Fälligkeitsdatum zuerst, dann die ältere Aufgabe.",
+      "open": "Meinen Tag planen"
     }
   },
   "nextTask": {

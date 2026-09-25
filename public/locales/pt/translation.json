@@ -376,7 +376,8 @@
       "notifications": "Preferências de Notificação",
       "oidc": "OIDC/SSO",
       "caldav": "Sincronização CalDAV",
-      "calendars": "Calendários"
+      "calendars": "Calendários",
+      "planning": "Planeamento"
     },
     "security": "Configurações de Segurança",
     "deleteAccount": "Eliminar conta",
@@ -603,6 +604,24 @@
       "removeMessage": "Deixar de mostrar «{{name}}» em Hoje? O calendário em si não é alterado.",
       "removeConfirm": "Remover",
       "missingFields": "Adicione um nome e o endereço do calendário"
+    },
+    "planning": {
+      "title": "Planeamento",
+      "description": "Como \"O que poderia fazer hoje?\" ordena as suas tarefas quando planeia o seu dia. As regras são fixas, por isso as mesmas tarefas aparecem sempre pela mesma ordem.",
+      "groupsTitle": "Grupos, por esta ordem",
+      "overdue": "Em atraso",
+      "overdueDetail": "Com o prazo ultrapassado, incluindo tarefas que já começou.",
+      "dueToday": "Para hoje",
+      "dueTodayDetail": "Tarefas com prazo antes do fim do dia.",
+      "inProgress": "Em curso",
+      "inProgressDetail": "Trabalho que começou e ainda não terminou.",
+      "everythingElse": "Tudo o resto",
+      "everythingElseDetail": "Tarefas abertas que poderia pegar. Ficam de fora tarefas adiadas, tarefas \"algum dia\" e tarefas com prazo para daqui a mais de 3 dias.",
+      "withinTitle": "Dentro de cada grupo",
+      "rulePriority": "Prioridade mais alta primeiro.",
+      "ruleProject": "Tarefas num projeto antes das tarefas sem projeto.",
+      "ruleDue": "O prazo mais próximo primeiro, depois a tarefa mais antiga.",
+      "open": "Planear o meu dia"
     }
   },
   "productivity": {

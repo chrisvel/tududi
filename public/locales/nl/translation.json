@@ -376,7 +376,8 @@
       "notifications": "Meldingsvoorkeuren",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Synchronisatie",
-      "calendars": "Agenda's"
+      "calendars": "Agenda's",
+      "planning": "Planning"
     },
     "security": "Beveiligingsinstellingen",
     "deleteAccount": "Account verwijderen",
@@ -603,6 +604,24 @@
       "removeMessage": "'{{name}}' niet meer tonen in Vandaag? De agenda zelf wordt niet aangepast.",
       "removeConfirm": "Verwijderen",
       "missingFields": "Voeg een naam en het agenda-adres toe"
+    },
+    "planning": {
+      "title": "Planning",
+      "description": "Hoe \"Wat zou je vandaag kunnen doen?\" je taken ordent wanneer je je dag plant. De regels liggen vast, dus dezelfde taken komen altijd in dezelfde volgorde.",
+      "groupsTitle": "Groepen, in deze volgorde",
+      "overdue": "Achterstallig",
+      "overdueDetail": "Over de vervaldatum, inclusief taken waar je al aan begonnen bent.",
+      "dueToday": "Vandaag gepland",
+      "dueTodayDetail": "Taken die vóór het einde van de dag vervallen.",
+      "inProgress": "Bezig",
+      "inProgressDetail": "Werk waar je aan begonnen bent en dat nog niet af is.",
+      "everythingElse": "Al het andere",
+      "everythingElseDetail": "Open taken die je zou kunnen oppakken. Uitgestelde taken, ooit-taken en taken die over meer dan 3 dagen vervallen, vallen weg.",
+      "withinTitle": "Binnen elke groep",
+      "rulePriority": "Hogere prioriteit eerst.",
+      "ruleProject": "Taken in een project vóór taken zonder project.",
+      "ruleDue": "De eerdere vervaldatum eerst, daarna de oudere taak.",
+      "open": "Plan mijn dag"
     }
   },
   "productivity": {

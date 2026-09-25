@@ -383,7 +383,8 @@
       "notifications": "Ilmoitusasetukset",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Synkronointi",
-      "calendars": "Kalenterit"
+      "calendars": "Kalenterit",
+      "planning": "Suunnittelu"
     },
     "security": "Turvallisuusasetukset",
     "deleteAccount": "Poista tili",
@@ -603,6 +604,24 @@
       "removeMessage": "Lopetetaanko kalenterin ”{{name}}” näyttäminen Tänään-näkymässä? Itse kalenteriin ei kosketa.",
       "removeConfirm": "Poista",
       "missingFields": "Lisää nimi ja kalenterin osoite"
+    },
+    "planning": {
+      "title": "Suunnittelu",
+      "description": "Näin \"Mitä voisit tehdä tänään?\" järjestää tehtäväsi, kun suunnittelet päivääsi. Säännöt ovat kiinteät, joten samat tehtävät tulevat aina samassa järjestyksessä.",
+      "groupsTitle": "Ryhmät tässä järjestyksessä",
+      "overdue": "Myöhässä",
+      "overdueDetail": "Eräpäivä ohitettu, myös tehtävät, jotka olet jo aloittanut.",
+      "dueToday": "Erääntyy tänään",
+      "dueTodayDetail": "Tehtävät, jotka erääntyvät ennen päivän loppua.",
+      "inProgress": "Käynnissä",
+      "inProgressDetail": "Työ, jonka olet aloittanut etkä ole vielä saanut valmiiksi.",
+      "everythingElse": "Kaikki muu",
+      "everythingElseDetail": "Avoimet tehtävät, joihin voisit tarttua. Lykätyt tehtävät, joskus-tehtävät ja yli 3 päivän päästä erääntyvät tehtävät jätetään pois.",
+      "withinTitle": "Kunkin ryhmän sisällä",
+      "rulePriority": "Korkeampi prioriteetti ensin.",
+      "ruleProject": "Projektin tehtävät ennen tehtäviä ilman projektia.",
+      "ruleDue": "Aikaisempi eräpäivä ensin, sitten vanhempi tehtävä.",
+      "open": "Suunnittele päiväni"
     }
   },
   "productivity": {

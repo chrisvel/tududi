@@ -376,7 +376,8 @@
       "notifications": "Tùy Chọn Thông Báo",
       "oidc": "OIDC/SSO",
       "caldav": "Đồng bộ CalDAV",
-      "calendars": "Lịch"
+      "calendars": "Lịch",
+      "planning": "Lập kế hoạch"
     },
     "security": "Cài đặt bảo mật",
     "deleteAccount": "Xóa tài khoản",
@@ -603,6 +604,24 @@
       "removeMessage": "Ngừng hiển thị \"{{name}}\" trong Hôm nay? Bản thân lịch không bị thay đổi.",
       "removeConfirm": "Xóa",
       "missingFields": "Thêm tên và địa chỉ lịch"
+    },
+    "planning": {
+      "title": "Lập kế hoạch",
+      "description": "Cách \"Hôm nay bạn có thể làm gì?\" sắp xếp công việc của bạn khi bạn lên kế hoạch cho ngày. Quy tắc cố định, nên cùng các công việc luôn hiện theo cùng một thứ tự.",
+      "groupsTitle": "Các nhóm, theo thứ tự này",
+      "overdue": "Quá hạn",
+      "overdueDetail": "Đã quá hạn, kể cả công việc bạn đã bắt đầu.",
+      "dueToday": "Đến hạn hôm nay",
+      "dueTodayDetail": "Công việc đến hạn trước khi hết ngày.",
+      "inProgress": "Đang làm",
+      "inProgressDetail": "Việc bạn đã bắt đầu nhưng chưa xong.",
+      "everythingElse": "Mọi thứ khác",
+      "everythingElseDetail": "Công việc đang mở mà bạn có thể làm. Công việc bị hoãn, công việc \"lúc nào đó\" và công việc đến hạn sau hơn 3 ngày sẽ bị bỏ qua.",
+      "withinTitle": "Trong mỗi nhóm",
+      "rulePriority": "Ưu tiên cao hơn trước.",
+      "ruleProject": "Công việc thuộc dự án trước công việc không có dự án.",
+      "ruleDue": "Hạn sớm hơn trước, sau đó là công việc cũ hơn.",
+      "open": "Lên kế hoạch cho ngày"
     }
   },
   "productivity": {

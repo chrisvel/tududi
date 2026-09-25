@@ -376,7 +376,8 @@
       "notifications": "Bildirim Tercihleri",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Senkronizasyonu",
-      "calendars": "Takvimler"
+      "calendars": "Takvimler",
+      "planning": "Planlama"
     },
     "security": "Güvenlik Ayarları",
     "deleteAccount": "Hesabı sil",
@@ -603,6 +604,24 @@
       "removeMessage": "\"{{name}}\" Bugün sayfasında artık gösterilmesin mi? Takvimin kendisi değişmez.",
       "removeConfirm": "Kaldır",
       "missingFields": "Bir ad ve takvim adresi ekle"
+    },
+    "planning": {
+      "title": "Planlama",
+      "description": "\"Bugün ne yapabilirsin?\" gününü planlarken görevlerini nasıl sıralar. Kurallar sabittir, bu yüzden aynı görevler her zaman aynı sırada çıkar.",
+      "groupsTitle": "Gruplar, bu sırayla",
+      "overdue": "Gecikmiş",
+      "overdueDetail": "Son tarihi geçmiş, başladığın görevler dahil.",
+      "dueToday": "Bugün son gün",
+      "dueTodayDetail": "Gün bitmeden son tarihi gelen görevler.",
+      "inProgress": "Devam ediyor",
+      "inProgressDetail": "Başladığın ve henüz bitirmediğin işler.",
+      "everythingElse": "Diğer her şey",
+      "everythingElseDetail": "Ele alabileceğin açık görevler. Ertelenmiş görevler, bir gün görevleri ve son tarihi 3 günden uzak olanlar dışarıda bırakılır.",
+      "withinTitle": "Her grubun içinde",
+      "rulePriority": "Önce yüksek öncelik.",
+      "ruleProject": "Bir projedeki görevler, projesiz görevlerden önce.",
+      "ruleDue": "Önce daha yakın son tarih, sonra daha eski görev.",
+      "open": "Günümü planla"
     }
   },
   "productivity": {

@@ -376,7 +376,8 @@
       "notifications": "알림 설정",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV 동기화",
-      "calendars": "캘린더"
+      "calendars": "캘린더",
+      "planning": "계획"
     },
     "security": "보안 설정",
     "deleteAccount": "계정 삭제",
@@ -603,6 +604,24 @@
       "removeMessage": "'{{name}}'을(를) 오늘 페이지에서 더 이상 표시하지 않을까요? 캘린더 자체는 변경되지 않습니다.",
       "removeConfirm": "삭제",
       "missingFields": "이름과 캘린더 주소를 입력하세요"
+    },
+    "planning": {
+      "title": "계획",
+      "description": "하루를 계획할 때 \"오늘 무엇을 할 수 있을까요?\"가 작업을 정렬하는 방식입니다. 규칙이 고정되어 있어 같은 작업은 항상 같은 순서로 표시됩니다.",
+      "groupsTitle": "그룹 (이 순서대로)",
+      "overdue": "기한 지남",
+      "overdueDetail": "기한이 지난 작업. 이미 시작한 작업도 포함합니다.",
+      "dueToday": "오늘 마감",
+      "dueTodayDetail": "오늘 안에 기한인 작업.",
+      "inProgress": "진행 중",
+      "inProgressDetail": "시작했지만 아직 끝내지 않은 작업.",
+      "everythingElse": "그 밖의 모든 작업",
+      "everythingElseDetail": "시작할 수 있는 열린 작업. 연기된 작업, 언젠가 작업, 기한이 3일보다 많이 남은 작업은 제외됩니다.",
+      "withinTitle": "각 그룹 안에서",
+      "rulePriority": "우선순위가 높은 작업부터.",
+      "ruleProject": "프로젝트에 속한 작업을 프로젝트 없는 작업보다 먼저.",
+      "ruleDue": "기한이 빠른 작업부터, 그다음 오래된 작업부터.",
+      "open": "하루 계획하기"
     }
   },
   "productivity": {

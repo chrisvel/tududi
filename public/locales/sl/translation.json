@@ -383,7 +383,8 @@
       "notifications": "Nastavitve obvestil",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Sinhronizacija",
-      "calendars": "Koledarji"
+      "calendars": "Koledarji",
+      "planning": "Načrtovanje"
     },
     "security": "Nastavitve varnosti",
     "deleteAccount": "Izbriši račun",
@@ -603,6 +604,24 @@
       "removeMessage": "Ne prikazuj več »{{name}}« v pogledu Danes? Sam koledar se ne spremeni.",
       "removeConfirm": "Odstrani",
       "missingFields": "Dodaj ime in naslov koledarja"
+    },
+    "planning": {
+      "title": "Načrtovanje",
+      "description": "Kako »Kaj bi lahko naredil danes?« razvrsti tvoja opravila, ko načrtuješ dan. Pravila so stalna, zato se ista opravila vedno pojavijo v enakem vrstnem redu.",
+      "groupsTitle": "Skupine, v tem vrstnem redu",
+      "overdue": "Zamujeno",
+      "overdueDetail": "Po roku, vključno z opravili, ki si jih že začel.",
+      "dueToday": "Rok danes",
+      "dueTodayDetail": "Opravila z rokom pred koncem dneva.",
+      "inProgress": "V teku",
+      "inProgressDetail": "Delo, ki si ga začel in še nisi končal.",
+      "everythingElse": "Vse ostalo",
+      "everythingElseDetail": "Odprta opravila, ki bi se jih lahko lotil. Odložena opravila, opravila »nekoč« in opravila z rokom čez več kot 3 dni so izpuščena.",
+      "withinTitle": "Znotraj vsake skupine",
+      "rulePriority": "Najprej višja prioriteta.",
+      "ruleProject": "Opravila v projektu pred opravili brez projekta.",
+      "ruleDue": "Najprej zgodnejši rok, nato starejše opravilo.",
+      "open": "Načrtuj moj dan"
     }
   },
   "productivity": {
