@@ -236,6 +236,52 @@ describe('TodayPage', () => {
             await screen.findByTestId('not-planned-toggle')
         ).toHaveTextContent('Not planned (1)');
     });
+
+    it('lets you drag the Anytime tasks but not the timed ones', async () => {
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: {
+                uid: 'p',
+                date: '2026-09-24',
+                started_at: '2026-09-24T06:00:00Z',
+                items: [
+                    {
+                        task_uid: 'timed',
+                        position: 0,
+                        start_minute: 600,
+                        duration_minutes: 30,
+                        task: { uid: 'timed', name: 'Standup', status: 0 },
+                    },
+                    {
+                        task_uid: 'a1',
+                        position: 1,
+                        start_minute: null,
+                        duration_minutes: 30,
+                        task: { uid: 'a1', name: 'Write spec', status: 0 },
+                    },
+                    {
+                        task_uid: 'a2',
+                        position: 2,
+                        start_minute: null,
+                        duration_minutes: 30,
+                        task: { uid: 'a2', name: 'Pay invoice', status: 0 },
+                    },
+                ],
+            },
+        });
+
+        render(<TodayPage />);
+
+        expect(
+            await screen.findByTestId('sortable-agenda-task-a1')
+        ).toHaveAttribute('aria-roledescription', 'sortable task');
+        expect(
+            screen.getByTestId('sortable-agenda-task-a2')
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByTestId('sortable-agenda-task-timed')
+        ).not.toBeInTheDocument();
+    });
 });
 
 describe('DurationChips', () => {

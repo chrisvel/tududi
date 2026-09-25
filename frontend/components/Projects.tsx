@@ -10,12 +10,20 @@ import Tooltip from './Shared/Tooltip';
 import ProjectModal from './Project/ProjectModal';
 import SortFilter from './Shared/SortFilter';
 import FilterDropdown, { FilterOption } from './Shared/FilterDropdown';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    rectSortingStrategy,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { useStore } from '../store/useStore';
 import {
     fetchProjects,
     createProject,
     updateProject,
     deleteProject,
+    reorderProjects,
 } from '../utils/projectsService';
 import { fetchAreas } from '../utils/areasService';
 import { useTranslation } from 'react-i18next';
@@ -25,9 +33,63 @@ import { Project, ProjectStatus } from '../entities/Project';
 import { useSearchParams, Link } from 'react-router-dom';
 import { RectangleStackIcon } from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
+import SortableItem from './Shared/SortableItem';
+import {
+    mergeVisibleOrder,
+    resetSortableCursor,
+    sortableCursorHandlers,
+    swallowNextClick,
+    useSortableSensors,
+} from './Shared/sortableList';
 import ProjectShareModal from './Project/ProjectShareModal';
 import { useToast } from './Shared/ToastContext';
 import { saveProjectAsTemplate } from '../utils/templatesService';
+
+// Custom order: projects without a position (new ones) come first, newest
+// first, then the rest by the position the user dragged them to.
+const compareCustomOrder = (a: Project, b: Project) => {
+    const posA = a.sort_position ?? null;
+    const posB = b.sort_position ?? null;
+    if (posA === null || posB === null) {
+        if (posA !== posB) return posA === null ? -1 : 1;
+        const createdA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const createdB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return createdB - createdA;
+    }
+    return posA - posB;
+};
+
+const compareProjects = (a: Project, b: Project, orderBy: string) => {
+    const [field, direction] = orderBy.split(':');
+    if (field === 'custom') return compareCustomOrder(a, b);
+    const isAsc = direction === 'asc';
+
+    let valueA, valueB;
+
+    switch (field) {
+        case 'name':
+            valueA = a.name?.toLowerCase() || '';
+            valueB = b.name?.toLowerCase() || '';
+            break;
+        case 'due_date_at':
+            valueA = a.due_date_at ? new Date(a.due_date_at).getTime() : 0;
+            valueB = b.due_date_at ? new Date(b.due_date_at).getTime() : 0;
+            break;
+        case 'updated_at':
+            valueA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+            valueB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+            break;
+        case 'created_at':
+        default:
+            valueA = a.created_at ? new Date(a.created_at).getTime() : 0;
+            valueB = b.created_at ? new Date(b.created_at).getTime() : 0;
+            break;
+    }
+
+    if (valueA < valueB) return isAsc ? -1 : 1;
+    if (valueA > valueB) return isAsc ? 1 : -1;
+    return 0;
+};
 
 const Projects: React.FC = () => {
     const { t } = useTranslation();
@@ -43,7 +105,9 @@ const Projects: React.FC = () => {
         setError: setProjectsError,
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
-    const templatesEnabled = useStore((state) => state.userSettingsStore.templatesEnabled);
+    const templatesEnabled = useStore(
+        (state) => state.userSettingsStore.templatesEnabled
+    );
 
     // Try using a ref to avoid React state conflicts
     const modalStateRef = useRef({
@@ -135,7 +199,11 @@ const Projects: React.FC = () => {
         { value: 'name:asc', label: t('sort.name', 'Name') },
         { value: 'due_date_at:asc', label: t('sort.due_date', 'Due Date') },
         { value: 'updated_at:desc', label: t('common.updated', 'Updated') },
+        { value: 'custom:asc', label: t('sort.custom', 'Custom') },
     ];
+    const isCustomOrder = orderBy.startsWith('custom:');
+
+    const sensors = useSortableSensors();
 
     // Filter options for dropdowns
     const statusOptions: FilterOption[] = [
@@ -272,10 +340,21 @@ const Projects: React.FC = () => {
     const handleConfirmSaveAsTemplate = async () => {
         if (!projectToSaveAsTemplate?.uid) return;
         try {
-            await saveProjectAsTemplate(projectToSaveAsTemplate.uid, { name: projectToSaveAsTemplate.name });
-            showSuccessToast(t('projects.savedAsTemplate', '"{{name}}" saved as template.', { name: projectToSaveAsTemplate.name }));
+            await saveProjectAsTemplate(projectToSaveAsTemplate.uid, {
+                name: projectToSaveAsTemplate.name,
+            });
+            showSuccessToast(
+                t('projects.savedAsTemplate', '"{{name}}" saved as template.', {
+                    name: projectToSaveAsTemplate.name,
+                })
+            );
         } catch {
-            showErrorToast(t('projects.saveAsTemplateError', 'Failed to save project as template.'));
+            showErrorToast(
+                t(
+                    'projects.saveAsTemplateError',
+                    'Failed to save project as template.'
+                )
+            );
         } finally {
             setIsTemplateConfirmOpen(false);
             setProjectToSaveAsTemplate(null);
@@ -310,16 +389,28 @@ const Projects: React.FC = () => {
         }
     };
 
-    const handleStatusChange = async (project: Project, newStatus: ProjectStatus) => {
+    const handleStatusChange = async (
+        project: Project,
+        newStatus: ProjectStatus
+    ) => {
         if (!project.uid) return;
         const prevProjects = projects;
-        setProjects(projects.map((p) => (p.uid === project.uid ? { ...p, status: newStatus } : p)));
+        setProjects(
+            projects.map((p) =>
+                p.uid === project.uid ? { ...p, status: newStatus } : p
+            )
+        );
         try {
             await updateProject(project.uid, { status: newStatus });
         } catch (error) {
             console.error('Error updating project status:', error);
             setProjects(prevProjects);
-            showErrorToast(t('errors.projectStatusUpdateFailed', 'Failed to update project status'));
+            showErrorToast(
+                t(
+                    'errors.projectStatusUpdateFailed',
+                    'Failed to update project status'
+                )
+            );
         }
     };
 
@@ -418,51 +509,82 @@ const Projects: React.FC = () => {
         }
 
         // Apply sorting
-        filteredProjects.sort((a, b) => {
-            const [field, direction] = orderBy.split(':');
-            const isAsc = direction === 'asc';
-
-            let valueA, valueB;
-
-            switch (field) {
-                case 'name':
-                    valueA = a.name?.toLowerCase() || '';
-                    valueB = b.name?.toLowerCase() || '';
-                    break;
-                case 'due_date_at':
-                    valueA = a.due_date_at
-                        ? new Date(a.due_date_at).getTime()
-                        : 0;
-                    valueB = b.due_date_at
-                        ? new Date(b.due_date_at).getTime()
-                        : 0;
-                    break;
-                case 'updated_at':
-                    valueA = a.updated_at
-                        ? new Date(a.updated_at).getTime()
-                        : 0;
-                    valueB = b.updated_at
-                        ? new Date(b.updated_at).getTime()
-                        : 0;
-                    break;
-                case 'created_at':
-                default:
-                    valueA = a.created_at
-                        ? new Date(a.created_at).getTime()
-                        : 0;
-                    valueB = b.created_at
-                        ? new Date(b.created_at).getTime()
-                        : 0;
-                    break;
-            }
-
-            if (valueA < valueB) return isAsc ? -1 : 1;
-            if (valueA > valueB) return isAsc ? 1 : -1;
-            return 0;
-        });
+        filteredProjects.sort((a, b) => compareProjects(a, b, orderBy));
 
         return filteredProjects;
-    }, [projects, statusFilter, actualAreaFilter, somedayFilter, searchQuery, orderBy]);
+    }, [
+        projects,
+        statusFilter,
+        actualAreaFilter,
+        somedayFilter,
+        searchQuery,
+        orderBy,
+    ]);
+
+    const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+        resetSortableCursor();
+        if (!over || active.id === over.id) return;
+        swallowNextClick();
+
+        const visibleUids = displayProjects.map((p) => p.uid as string);
+        const from = visibleUids.indexOf(active.id as string);
+        const to = visibleUids.indexOf(over.id as string);
+        if (from === -1 || to === -1) return;
+        const movedVisible = arrayMove(visibleUids, from, to);
+
+        const fullOrder = projects
+            .filter((p) => p.uid)
+            .sort((a, b) => compareProjects(a, b, orderBy))
+            .map((p) => p.uid as string);
+        const newOrder = mergeVisibleOrder(fullOrder, movedVisible);
+
+        const positionByUid = new Map(newOrder.map((uid, i) => [uid, i]));
+        const prevProjects = projects;
+        setProjects(
+            projects.map((p) =>
+                p.uid && positionByUid.has(p.uid)
+                    ? { ...p, sort_position: positionByUid.get(p.uid) }
+                    : p
+            )
+        );
+        // Dragging under another sort starts a custom order from what is
+        // on screen.
+        const prevOrderBy = orderBy;
+        if (!isCustomOrder) setOrderBy('custom:asc');
+        try {
+            await reorderProjects(newOrder);
+        } catch (error) {
+            console.error('Error saving project order:', error);
+            setProjects(prevProjects);
+            setOrderBy(prevOrderBy);
+            showErrorToast(
+                t('projects.reorderError', 'Failed to save project order')
+            );
+        }
+    };
+
+    const renderProjectItem = (project: Project) => (
+        <ProjectItem
+            project={project}
+            viewMode={viewMode}
+            getCompletionPercentage={() => getCompletionPercentage(project)}
+            activeDropdown={activeDropdown}
+            setActiveDropdown={setActiveDropdown}
+            handleEditProject={handleEditProject}
+            setProjectToDelete={setProjectToDelete}
+            setIsConfirmDialogOpen={setIsConfirmDialogOpen}
+            onOpenShare={(p) => setShareModal({ isOpen: true, project: p })}
+            onStatusChange={handleStatusChange}
+            onSaveAsTemplate={
+                templatesEnabled ? handleSaveAsTemplate : undefined
+            }
+        />
+    );
+
+    const projectsContainerClass =
+        viewMode === 'cards'
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+            : 'flex flex-col space-y-1';
 
     if (isLoading) {
         return (
@@ -552,10 +674,16 @@ const Projects: React.FC = () => {
                                 content={
                                     <div className="w-44">
                                         <p className="font-bold mb-1">
-                                            {t('projects.filters.someday', 'Someday')}
+                                            {t(
+                                                'projects.filters.someday',
+                                                'Someday'
+                                            )}
                                         </p>
                                         <p className="font-normal opacity-80">
-                                            {t('projects.filters.somedayTooltip', 'Projects tagged "someday" are hidden by default. Click to reveal them.')}
+                                            {t(
+                                                'projects.filters.somedayTooltip',
+                                                'Projects tagged "someday" are hidden by default. Click to reveal them.'
+                                            )}
                                         </p>
                                     </div>
                                 }
@@ -563,7 +691,10 @@ const Projects: React.FC = () => {
                             >
                                 <button
                                     onClick={handleSomedayToggle}
-                                    aria-label={t('projects.filters.someday', 'Someday')}
+                                    aria-label={t(
+                                        'projects.filters.someday',
+                                        'Someday'
+                                    )}
                                     className={`p-2 rounded-md focus:outline-none transition-colors ${
                                         somedayFilter
                                             ? 'bg-blue-500 text-white'
@@ -627,40 +758,54 @@ const Projects: React.FC = () => {
                 </div>
 
                 {/* Projects Grid/List */}
-                <div
-                    className={`${
-                        viewMode === 'cards'
-                            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-                            : 'flex flex-col space-y-1'
-                    }`}
-                >
-                    {displayProjects.length === 0 ? (
+                {displayProjects.length === 0 ? (
+                    <div className={projectsContainerClass}>
                         <div className="text-gray-700 dark:text-gray-300">
                             {t('projects.noProjectsFound')}
                         </div>
-                    ) : (
-                        displayProjects.map((project) => (
-                            <ProjectItem
-                                key={project.id}
-                                project={project}
-                                viewMode={viewMode}
-                                getCompletionPercentage={() =>
-                                    getCompletionPercentage(project)
-                                }
-                                activeDropdown={activeDropdown}
-                                setActiveDropdown={setActiveDropdown}
-                                handleEditProject={handleEditProject}
-                                setProjectToDelete={setProjectToDelete}
-                                setIsConfirmDialogOpen={setIsConfirmDialogOpen}
-                                onOpenShare={(p) =>
-                                    setShareModal({ isOpen: true, project: p })
-                                }
-                                onStatusChange={handleStatusChange}
-                                onSaveAsTemplate={templatesEnabled ? handleSaveAsTemplate : undefined}
-                            />
-                        ))
-                    )}
-                </div>
+                    </div>
+                ) : displayProjects.every((p) => p.uid) ? (
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        {...sortableCursorHandlers}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <SortableContext
+                            items={displayProjects.map((p) => p.uid as string)}
+                            strategy={
+                                viewMode === 'cards'
+                                    ? rectSortingStrategy
+                                    : verticalListSortingStrategy
+                            }
+                        >
+                            <div className={projectsContainerClass}>
+                                {displayProjects.map((project) => (
+                                    <SortableItem
+                                        key={project.id}
+                                        id={project.uid as string}
+                                        label={project.name}
+                                        roleDescription={t(
+                                            'sortable.project',
+                                            'sortable project'
+                                        )}
+                                        testIdPrefix="sortable-project"
+                                    >
+                                        {renderProjectItem(project)}
+                                    </SortableItem>
+                                ))}
+                            </div>
+                        </SortableContext>
+                    </DndContext>
+                ) : (
+                    <div className={projectsContainerClass}>
+                        {displayProjects.map((project) => (
+                            <React.Fragment key={project.id}>
+                                {renderProjectItem(project)}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {modalState.isOpen && (
@@ -707,7 +852,11 @@ const Projects: React.FC = () => {
             {isTemplateConfirmOpen && (
                 <ConfirmDialog
                     title={t('modals.saveAsTemplate.title', 'Save as Template')}
-                    message={t('modals.saveAsTemplate.message', 'Save "{{name}}" as a template? This will create a reusable template based on this project.', { name: projectToSaveAsTemplate?.name })}
+                    message={t(
+                        'modals.saveAsTemplate.message',
+                        'Save "{{name}}" as a template? This will create a reusable template based on this project.',
+                        { name: projectToSaveAsTemplate?.name }
+                    )}
                     onConfirm={handleConfirmSaveAsTemplate}
                     onCancel={() => {
                         setIsTemplateConfirmOpen(false);

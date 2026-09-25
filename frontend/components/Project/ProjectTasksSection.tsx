@@ -20,6 +20,7 @@ interface ProjectTasksSectionProps {
     allProjects: Project[];
     showCompleted: boolean;
     taskSearchQuery: string;
+    onTaskReorder?: (orderedUids: string[]) => void;
     t: TFunction;
 }
 
@@ -37,6 +38,7 @@ const ProjectTasksSection: React.FC<ProjectTasksSectionProps> = ({
     allProjects,
     showCompleted,
     taskSearchQuery,
+    onTaskReorder,
     t,
 }) => {
     return (
@@ -70,6 +72,7 @@ const ProjectTasksSection: React.FC<ProjectTasksSectionProps> = ({
                             hideProjectName={true}
                             onToggleToday={onToggleToday}
                             showCompletedTasks={showCompleted}
+                            onReorder={onTaskReorder}
                         />
                     </div>
                 ) : (

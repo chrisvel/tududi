@@ -24,6 +24,7 @@ interface TodayPlannedProps {
     projects: Project[];
     onPlannedTaskUpdate: (task: Task) => Promise<void>;
     onPlannedTaskDelete: (taskUid: string) => Promise<void>;
+    onReorderUntimed: (orderedUids: string[]) => void;
     onCandidateUpdate: (task: Task) => Promise<void>;
     onCandidateDelete: (taskUid: string) => Promise<void>;
     tips: PlanTip[];
@@ -49,6 +50,7 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
     projects,
     onPlannedTaskUpdate,
     onPlannedTaskDelete,
+    onReorderUntimed,
     onCandidateUpdate,
     onCandidateDelete,
     tips,
@@ -101,6 +103,7 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
                 projects={projects}
                 onTaskUpdate={onPlannedTaskUpdate}
                 onTaskDelete={onPlannedTaskDelete}
+                onReorderUntimed={onReorderUntimed}
             />
 
             <NotPlannedDrawer

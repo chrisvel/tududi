@@ -25,6 +25,7 @@ import { useDailyPlanProgress } from '../../store/dailyPlanStore';
 import { useStore } from '../../store/useStore';
 import TodayUnplanned from './TodayUnplanned';
 import TodayPlanned from './TodayPlanned';
+import { mergeVisibleOrder } from '../Shared/sortableList';
 import { buildTips, rescheduleMissed } from './tips';
 import { useDailyQuote } from './useDailyQuote';
 import {
@@ -437,6 +438,17 @@ const TodayPage: React.FC = () => {
                         projects={projects}
                         onPlannedTaskUpdate={syncPlannedTask}
                         onPlannedTaskDelete={handleDeleteTask}
+                        onReorderUntimed={(orderedUids) => {
+                            const byUid = new Map(
+                                items.map((item) => [item.task_uid, item])
+                            );
+                            replaceItems(
+                                mergeVisibleOrder(
+                                    items.map((item) => item.task_uid),
+                                    orderedUids
+                                ).map((uid) => byUid.get(uid) as DailyPlanItem)
+                            );
+                        }}
                         onCandidateUpdate={async (task) =>
                             replaceCandidate(task.uid, task)
                         }

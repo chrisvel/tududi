@@ -102,6 +102,22 @@ export const updateProject = async (
     return updated;
 };
 
+export const reorderProjects = async (projectUids: string[]): Promise<void> => {
+    const token = await getCsrfToken();
+    const response = await fetch(getApiPath('projects/order'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'x-csrf-token': token,
+        },
+        body: JSON.stringify({ project_uids: projectUids }),
+    });
+
+    await handleAuthResponse(response, 'Failed to save project order.');
+};
+
 export const deleteProject = async (projectUid: string): Promise<void> => {
     if (!projectUid || projectUid === null || projectUid === undefined) {
         throw new Error('Cannot delete project: Invalid project UID');

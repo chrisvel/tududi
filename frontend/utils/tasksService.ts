@@ -159,6 +159,43 @@ export const toggleTaskCompletion = async (
     return result;
 };
 
+export type TaskOrderScope =
+    { scope: 'all' } | { scope: 'project'; project_uid: string };
+
+export const fetchTaskOrder = async (
+    scope: TaskOrderScope
+): Promise<string[]> => {
+    const params = new URLSearchParams(scope as Record<string, string>);
+    const response = await fetch(getApiPath(`tasks/order?${params}`), {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+    await handleAuthResponse(response, 'Failed to fetch task order.');
+    const data = await response.json();
+    return data.task_uids || [];
+};
+
+// Saves a drag: `taskUids` are the shown tasks in their new order.
+// `baseOrderBy` is the sort the list had when the drag was not made under
+// the custom order.
+export const saveTaskOrder = async (
+    scope: TaskOrderScope,
+    taskUids: string[],
+    baseOrderBy?: string
+): Promise<void> => {
+    const response = await fetch(getApiPath('tasks/order'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({
+            ...scope,
+            task_uids: taskUids,
+            ...(baseOrderBy ? { base_order_by: baseOrderBy } : {}),
+        }),
+    });
+    await handleAuthResponse(response, 'Failed to save task order.');
+};
+
 export const deleteTask = async (taskUid: string): Promise<void> => {
     const response = await fetch(
         getApiPath(`task/${encodeURIComponent(taskUid)}`),

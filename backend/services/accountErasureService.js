@@ -38,6 +38,8 @@ const {
     DailyPlanItem,
     Person,
     UserProjectArea,
+    UserProjectOrder,
+    UserTaskOrder,
     BillingAccount,
     UsageCounter,
 } = require('../models');
@@ -181,11 +183,13 @@ async function eraseUserAccount(userId) {
         await CalDAVCalendar.destroy(byUser);
         await CalendarToken.destroy(byUser);
 
+        await UserTaskOrder.destroy(byUser);
         await TaskEvent.destroy(byUser);
         await TaskAttachment.destroy(byUser);
         await Task.destroy(byUser);
         await Note.destroy(byUser);
         await UserProjectArea.destroy(byUser);
+        await UserProjectOrder.destroy(byUser);
         await Project.destroy(byUser);
         await Goal.destroy(byUser);
         await Area.destroy(byUser);

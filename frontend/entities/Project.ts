@@ -51,4 +51,5 @@ export interface Project {
     task_status?: ProjectTaskStatus;
     completion_percentage?: number;
     is_stalled?: boolean;
+    sort_position?: number | null;
 }

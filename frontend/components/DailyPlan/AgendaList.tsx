@@ -4,6 +4,12 @@ import {
     CalendarIcon,
     ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
@@ -18,6 +24,13 @@ import {
     pickCurrentItem,
 } from './planUtils';
 import CalendarBadge from './CalendarBadge';
+import SortableItem from '../Shared/SortableItem';
+import {
+    resetSortableCursor,
+    sortableCursorHandlers,
+    swallowNextClick,
+    useSortableSensors,
+} from '../Shared/sortableList';
 
 interface AgendaListProps {
     items: DailyPlanItem[];
@@ -26,6 +39,9 @@ interface AgendaListProps {
     projects: Project[];
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskDelete: (taskUid: string) => Promise<void>;
+    // Makes the "Anytime" tasks draggable; timed ones follow the clock.
+    // Called with their task uids in the new order.
+    onReorderUntimed?: (orderedUids: string[]) => void;
 }
 
 // A timed block whose end has passed while the task is still open.
@@ -39,8 +55,10 @@ const AgendaList: React.FC<AgendaListProps> = ({
     projects,
     onTaskUpdate,
     onTaskDelete,
+    onReorderUntimed,
 }) => {
     const { t } = useTranslation();
+    const sensors = useSortableSensors();
     const agenda = buildAgenda(items, events);
     const current = pickCurrentItem(items, now);
     const currentUid =
@@ -75,7 +93,11 @@ const AgendaList: React.FC<AgendaListProps> = ({
         </div>
     );
 
-    return (
+    const untimedUids = items
+        .filter((item) => item.start_minute === null)
+        .map((item) => item.task_uid);
+
+    const list = (
         <section className="flex flex-col gap-2" data-testid="agenda-list">
             {agenda.flatMap((entry, index) => {
                 const marker = index === nowIndex ? [nowMarker] : [];
@@ -119,8 +141,7 @@ const AgendaList: React.FC<AgendaListProps> = ({
                         ? `${formatMinute(item.start_minute)} · ${formatDuration(item.duration_minutes)}`
                         : `${t('dailyPlan.anytime', 'Anytime')} · ${formatDuration(item.duration_minutes)}`;
 
-                return [
-                    ...marker,
+                const row = (
                     <div
                         key={`task-${item.task_uid}`}
                         className="flex flex-col gap-1 sm:flex-row sm:items-start sm:gap-3"
@@ -159,11 +180,59 @@ const AgendaList: React.FC<AgendaListProps> = ({
                                 compact
                             />
                         </div>
-                    </div>,
+                    </div>
+                );
+
+                return [
+                    ...marker,
+                    onReorderUntimed && item.start_minute === null ? (
+                        <SortableItem
+                            key={`task-${item.task_uid}`}
+                            id={item.task_uid}
+                            label={item.task.name}
+                            roleDescription={t(
+                                'sortable.task',
+                                'sortable task'
+                            )}
+                            testIdPrefix="sortable-agenda-task"
+                        >
+                            {row}
+                        </SortableItem>
+                    ) : (
+                        row
+                    ),
                 ];
             })}
             {nowIndex === agenda.length && nowMarker}
         </section>
+    );
+
+    if (!onReorderUntimed || untimedUids.length < 2) return list;
+
+    const handleDragEnd = ({ active, over }: DragEndEvent) => {
+        resetSortableCursor();
+        if (!over || active.id === over.id) return;
+        swallowNextClick();
+        const from = untimedUids.indexOf(active.id as string);
+        const to = untimedUids.indexOf(over.id as string);
+        if (from === -1 || to === -1) return;
+        onReorderUntimed(arrayMove(untimedUids, from, to));
+    };
+
+    return (
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            {...sortableCursorHandlers}
+            onDragEnd={handleDragEnd}
+        >
+            <SortableContext
+                items={untimedUids}
+                strategy={verticalListSortingStrategy}
+            >
+                {list}
+            </SortableContext>
+        </DndContext>
     );
 };
 

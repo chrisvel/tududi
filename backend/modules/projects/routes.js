@@ -56,6 +56,9 @@ router.param('uidSlug', numericIdParam('project', Project));
 // List all projects
 router.get('/projects', projectsController.list);
 
+// Save the current user's custom order of projects
+router.put('/projects/order', projectsController.reorder);
+
 // Get a single project (requires read access)
 router.get(
     '/project/:uidSlug',

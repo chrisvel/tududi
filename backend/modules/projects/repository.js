@@ -11,6 +11,7 @@ const {
     User,
     TaskAttachment,
     UserProjectArea,
+    UserProjectOrder,
     sequelize,
 } = require('../../models');
 const permissionSources = require('../../services/permissionSources');
@@ -354,6 +355,11 @@ class ProjectsRepository extends BaseRepository {
             }
         }
 
+        await UserProjectOrder.destroy({
+            where: { project_id: project.id },
+            transaction,
+        });
+
         // Delete the project
         await project.destroy({ transaction });
     }
@@ -410,6 +416,46 @@ class ProjectsRepository extends BaseRepository {
             };
         });
         return map;
+    }
+
+    // Custom order positions of the Projects page for a user, by project_id.
+    async getUserProjectPositions(userId) {
+        const rows = await UserProjectOrder.findAll({
+            where: { user_id: userId },
+            attributes: ['project_id', 'position'],
+            raw: true,
+        });
+        const map = {};
+        rows.forEach((row) => {
+            map[row.project_id] = row.position;
+        });
+        return map;
+    }
+
+    async findIdsByUids(whereClause, uids) {
+        return this.model.findAll({
+            where: { [Op.and]: [whereClause, { uid: { [Op.in]: uids } }] },
+            attributes: ['id', 'uid'],
+            raw: true,
+        });
+    }
+
+    // Replaces the user's whole custom order with projectIds, in that order.
+    async replaceUserProjectOrder(userId, projectIds) {
+        await sequelize.transaction(async (transaction) => {
+            await UserProjectOrder.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
+            await UserProjectOrder.bulkCreate(
+                projectIds.map((projectId, index) => ({
+                    user_id: userId,
+                    project_id: projectId,
+                    position: index,
+                })),
+                { transaction }
+            );
+        });
     }
 }
 

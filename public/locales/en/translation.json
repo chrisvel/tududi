@@ -134,6 +134,7 @@
   },
   "tasks": {
     "title": "Tasks",
+    "reorderError": "Failed to save task order",
     "today": "Today",
     "total": "Total",
     "backlog": "Backlog",
@@ -824,7 +825,13 @@
     "name": "Name",
     "priority": "Priority",
     "status": "Status",
-    "created_at": "Created At"
+    "created_at": "Created At",
+    "custom": "Custom"
+  },
+  "sortable": {
+    "move": "Move",
+    "project": "sortable project",
+    "task": "sortable task"
   },
   "priority": {
     "none": "None",
@@ -1213,7 +1220,8 @@
       "systemTagCannotBeDeleted": "System tags cannot be deleted",
       "systemTagCannotBeRenamed": "System tags cannot be renamed"
     },
-    "noResults": "No projects"
+    "noResults": "No projects",
+    "reorderError": "Failed to save project order"
   },
   "projectStatus": {
     "not_started": "Not Started",
