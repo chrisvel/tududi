@@ -134,8 +134,39 @@ describe('CaptureHost', () => {
             expect(screen.getByTestId('quick-capture-input')).toHaveFocus()
         );
 
-        fireEvent.click(screen.getByTestId('capture-close'));
+        fireEvent.keyDown(screen.getByTestId('quick-capture-input'), {
+            key: 'Escape',
+        });
         expect(opener).toHaveFocus();
+    });
+
+    it('focuses the field every time it opens', async () => {
+        renderHost();
+        act(() => toggleCapture());
+        await waitFor(() =>
+            expect(screen.getByTestId('quick-capture-input')).toHaveFocus()
+        );
+
+        act(() => toggleCapture());
+        screen.getByTestId('opener').focus();
+        act(() => toggleCapture());
+        await waitFor(() =>
+            expect(screen.getByTestId('quick-capture-input')).toHaveFocus()
+        );
+    });
+
+    it('closes on a click outside the box', async () => {
+        renderHost();
+        act(() => toggleCapture());
+        await waitFor(() =>
+            expect(screen.getByTestId('capture-dialog')).toBeVisible()
+        );
+
+        fireEvent.pointerDown(screen.getByTestId('capture-dialog'));
+        expect(screen.getByTestId('capture-dialog')).toBeVisible();
+
+        fireEvent.pointerDown(document.body);
+        expect(screen.getByTestId('capture-dialog')).not.toBeVisible();
     });
 
     it.each(['/inbox', '/task/abc', '/note/xyz'])(

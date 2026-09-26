@@ -30,7 +30,7 @@ const CaptureDestinations: React.FC<CaptureDestinationsProps> = ({
             <div
                 role="radiogroup"
                 aria-label={t('capture.addTo', 'Add to')}
-                className="inline-flex rounded-lg bg-gray-100 dark:bg-gray-800 p-0.5 gap-0.5"
+                className="inline-flex rounded-lg bg-gray-100 dark:bg-black/30 p-0.5 gap-0.5"
             >
                 {CAPTURE_TARGETS.map((target) => {
                     const selected = target === value;

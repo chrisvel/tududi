@@ -142,6 +142,9 @@ const extractFirstUrlFromText = (text: string): string | null => {
     return null;
 };
 
+// Five suggestions at their row height, plus a little room.
+const SUGGESTIONS_HEIGHT = 200;
+
 const QuickCaptureInput = React.forwardRef<
     QuickCaptureInputHandle,
     QuickCaptureInputProps
@@ -184,6 +187,7 @@ const QuickCaptureInput = React.forwardRef<
         const [isSaving, setIsSaving] = useState(false);
         const { showSuccessToast, showErrorToast } = useToast();
         const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+        const fieldRef = useRef<HTMLDivElement>(null);
         const { tagsStore } = useStore();
         const { setTags, refreshTags } = tagsStore;
         const tags = tagsStore.getTags();
@@ -196,7 +200,11 @@ const QuickCaptureInput = React.forwardRef<
         const [cursorPosition, setCursorPosition] = useState(0);
         const [, setCurrentHashtagQuery] = useState('');
         const [, setCurrentProjectQuery] = useState('');
-        const [dropdownPosition, setDropdownPosition] = useState({
+        const [dropdownPosition, setDropdownPosition] = useState<{
+            left: number;
+            top: number;
+            bottom?: number;
+        }>({
             left: 0,
             top: 0,
         });
@@ -762,7 +770,7 @@ const QuickCaptureInput = React.forwardRef<
             };
         };
 
-        const calculateDropdownPosition = (
+        const caretDropdownPosition = (
             input: HTMLInputElement | HTMLTextAreaElement,
             cursorPos: number
         ) => {
@@ -787,6 +795,29 @@ const QuickCaptureInput = React.forwardRef<
             }
 
             return getCaretViewportCoords(input, cursorPos);
+        };
+
+        // In the compact box, suggestions open on whichever side of the field
+        // has room (below it on wide screens, above it in the phone sheet),
+        // lined up with the # + or @ that started them, so they never cover
+        // the text being typed.
+        const calculateDropdownPosition = (
+            input: HTMLInputElement | HTMLTextAreaElement,
+            cursorPos: number
+        ) => {
+            const caret = caretDropdownPosition(input, cursorPos);
+            const field = fieldRef.current;
+            if (!compact || !field) return caret;
+            const rect = field.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            if (spaceBelow >= SUGGESTIONS_HEIGHT || spaceBelow >= rect.top) {
+                return { left: caret.left, top: rect.bottom + 4 };
+            }
+            return {
+                left: caret.left,
+                top: 0,
+                bottom: window.innerHeight - rect.top + 4,
+            };
         };
 
         const handleChange = (
@@ -1774,7 +1805,14 @@ const QuickCaptureInput = React.forwardRef<
             () => ({
                 submit: (forceInbox = false) =>
                     unified ? handleUnifiedSubmit() : handleSubmit(forceInbox),
-                focus: () => inputRef.current?.focus(),
+                focus: () => {
+                    const el = inputRef.current;
+                    if (!el) return;
+                    el.focus();
+                    // A kept draft continues where it left off.
+                    const end = el.value.length;
+                    el.setSelectionRange(end, end);
+                },
             }),
             [handleSubmit, handleUnifiedSubmit, unified]
         );
@@ -2194,7 +2232,7 @@ const QuickCaptureInput = React.forwardRef<
                         data-testid="capture-add"
                         onClick={() => void handleUnifiedSubmit()}
                         disabled={!inputText.trim() || isSaving}
-                        className="ml-auto rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        className="ml-auto rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     >
                         {itemTotal > 1
                             ? t('capture.addN', 'Add {{total}}', {
@@ -2234,16 +2272,6 @@ const QuickCaptureInput = React.forwardRef<
                                 {t('capture.lineBreak', 'Line break')}
                             </button>
                         )}
-                        {onClose && (
-                            <button
-                                type="button"
-                                data-testid="capture-close"
-                                onClick={onClose}
-                                className={linkButtonClass}
-                            >
-                                {t('capture.close', 'Close')}
-                            </button>
-                        )}
                     </span>
                 </div>
             </div>
@@ -2256,6 +2284,30 @@ const QuickCaptureInput = React.forwardRef<
 
         const shouldShowPrimaryButton =
             !hidePrimaryButton && !isEditMode && !unified;
+
+        const selectedMetadata = (variant: 'chips' | 'line') => (
+            <InboxSelectedChips
+                variant={variant}
+                selectedTags={getAllTags(inputText)}
+                selectedProjects={getAllProjects(inputText)}
+                tags={tags}
+                projects={projects}
+                onRemoveTag={removeTagFromText}
+                onRemoveProject={removeProjectFromText}
+                dueDate={dateChip}
+                assignee={assigneeChip}
+                onDismissDate={() =>
+                    setDismissedDateText(
+                        currentAnalysis?.parsed_date_text ?? null
+                    )
+                }
+                onRemovePerson={() => {
+                    if (currentAnalysis?.parsed_person) {
+                        removePersonFromText(currentAnalysis.parsed_person);
+                    }
+                }}
+            />
+        );
 
         const cardClasses = cardClassName ?? 'mb-6';
 
@@ -2273,96 +2325,82 @@ const QuickCaptureInput = React.forwardRef<
                         strokeWidth="0.9"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="absolute right-6 bottom-5 pointer-events-none opacity-[0.09] dark:opacity-[0.08] text-gray-400 dark:text-[oklch(55%_0.006_95)]"
+                        className="absolute right-6 top-5 pointer-events-none opacity-[0.09] dark:opacity-[0.08] text-gray-400 dark:text-[oklch(55%_0.006_95)]"
                         aria-hidden="true"
                     >
                         <path d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M2.25 13.5V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.5M2.25 13.5V9.75A2.25 2.25 0 014.5 7.5h15a2.25 2.25 0 012.25 2.25v3.75" />
                     </svg>
                 )}
-                <div className={compact ? 'p-4' : 'p-[30px]'}>
+                <div className={compact ? 'p-5' : 'p-[30px]'}>
                     <div className="flex flex-row gap-3 items-start">
                         <div className="relative flex-1">
-                            {!inputText && !isEditMode && (
-                                <div
-                                    className={`absolute left-0 top-[5px] z-0 pointer-events-none select-none text-[18px] leading-relaxed font-normal text-gray-400 dark:text-gray-500 transition-opacity duration-300 ${
-                                        placeholderFading
-                                            ? 'opacity-0'
-                                            : 'opacity-100'
-                                    }`}
-                                    aria-hidden="true"
-                                >
-                                    {unified
-                                        ? t(
-                                              'capture.placeholder',
-                                              'Type the title'
-                                          )
-                                        : t(
-                                              placeholderData[placeholderIdx]
-                                                  .key,
-                                              placeholderData[placeholderIdx]
-                                                  .fallback
-                                          )}
-                                </div>
-                            )}
-                            <div className="relative z-10 flex items-start">
-                                {multiline ? (
-                                    <textarea
-                                        ref={(el) => {
-                                            inputRef.current = el;
-                                        }}
-                                        data-testid="quick-capture-input"
-                                        value={inputText}
-                                        rows={compact ? 2 : 3}
-                                        onChange={handleChange}
-                                        onSelect={handleCaretEvent}
-                                        onKeyUp={handleCaretEvent}
-                                        onClick={handleCaretEvent}
-                                        className={`w-full ${compact ? 'text-base' : 'text-[18px]'} leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
-                                        placeholder=""
-                                        onKeyDown={handleKeyDown}
-                                    ></textarea>
-                                ) : (
-                                    <input
-                                        ref={(el) => {
-                                            inputRef.current = el;
-                                        }}
-                                        type="text"
-                                        data-testid="quick-capture-input"
-                                        value={inputText}
-                                        onChange={handleChange}
-                                        onSelect={handleCaretEvent}
-                                        onKeyUp={handleCaretEvent}
-                                        onClick={handleCaretEvent}
-                                        className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5"
-                                        placeholder=""
-                                        onKeyDown={handleKeyDown}
-                                    />
+                            <div
+                                ref={fieldRef}
+                                className={`relative ${compact ? 'rounded-xl bg-gray-100 dark:bg-black/30 px-3.5 py-1 focus-within:ring-2 focus-within:ring-blue-500' : ''}`}
+                            >
+                                {!inputText && !isEditMode && (
+                                    <div
+                                        className={`absolute z-0 pointer-events-none select-none ${compact ? 'left-3.5 top-2.5 text-[17px]' : 'left-0 top-[5px] text-[18px]'} leading-relaxed font-normal text-gray-400 dark:text-gray-500 transition-opacity duration-300 ${
+                                            placeholderFading
+                                                ? 'opacity-0'
+                                                : 'opacity-100'
+                                        }`}
+                                        aria-hidden="true"
+                                    >
+                                        {unified
+                                            ? t(
+                                                  'capture.placeholder',
+                                                  'Type the title'
+                                              )
+                                            : t(
+                                                  placeholderData[
+                                                      placeholderIdx
+                                                  ].key,
+                                                  placeholderData[
+                                                      placeholderIdx
+                                                  ].fallback
+                                              )}
+                                    </div>
                                 )}
+                                <div className="relative z-10 flex items-start">
+                                    {multiline ? (
+                                        <textarea
+                                            ref={(el) => {
+                                                inputRef.current = el;
+                                            }}
+                                            data-testid="quick-capture-input"
+                                            value={inputText}
+                                            rows={3}
+                                            onChange={handleChange}
+                                            onSelect={handleCaretEvent}
+                                            onKeyUp={handleCaretEvent}
+                                            onClick={handleCaretEvent}
+                                            className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
+                                            placeholder=""
+                                            onKeyDown={handleKeyDown}
+                                        ></textarea>
+                                    ) : (
+                                        <input
+                                            ref={(el) => {
+                                                inputRef.current = el;
+                                            }}
+                                            type="text"
+                                            data-testid="quick-capture-input"
+                                            value={inputText}
+                                            onChange={handleChange}
+                                            onSelect={handleCaretEvent}
+                                            onKeyUp={handleCaretEvent}
+                                            onClick={handleCaretEvent}
+                                            className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5"
+                                            placeholder=""
+                                            onKeyDown={handleKeyDown}
+                                        />
+                                    )}
+                                </div>
+                                {compact && selectedMetadata('line')}
                             </div>
 
-                            <InboxSelectedChips
-                                selectedTags={getAllTags(inputText)}
-                                selectedProjects={getAllProjects(inputText)}
-                                tags={tags}
-                                projects={projects}
-                                onRemoveTag={removeTagFromText}
-                                onRemoveProject={removeProjectFromText}
-                                dueDate={dateChip}
-                                assignee={assigneeChip}
-                                onDismissDate={() =>
-                                    setDismissedDateText(
-                                        currentAnalysis?.parsed_date_text ??
-                                            null
-                                    )
-                                }
-                                onRemovePerson={() => {
-                                    if (currentAnalysis?.parsed_person) {
-                                        removePersonFromText(
-                                            currentAnalysis.parsed_person
-                                        );
-                                    }
-                                }}
-                            />
+                            {!compact && selectedMetadata('chips')}
 
                             <SuggestionsDropdown
                                 isVisible={

@@ -556,7 +556,7 @@ const Layout: React.FC<LayoutProps> = ({
                     />
                 )}
 
-                <CaptureHost />
+                <CaptureHost sidebarOpen={isSidebarOpen} />
             </div>
         </SidebarProvider>
     );

@@ -426,8 +426,6 @@ describe('QuickCaptureInput unified capture', () => {
         renderBox({ onClose });
         fireEvent.keyDown(textarea(), { key: 'Escape' });
         expect(onClose).toHaveBeenCalled();
-        fireEvent.click(screen.getByTestId('capture-close'));
-        expect(onClose).toHaveBeenCalledTimes(2);
     });
 
     it('tells the caller what was captured', async () => {

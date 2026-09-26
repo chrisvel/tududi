@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
-import NewTask from './Task/NewTask';
 import { Task } from '../entities/Task';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
@@ -556,11 +555,6 @@ const Tasks: React.FC = () => {
 
     const description = getDescription(query, projects, t, location.pathname);
 
-    const isNewTaskAllowed = () => {
-        const type = query.get('type');
-        return status !== 'done' && type !== 'upcoming';
-    };
-
     return (
         <div className="w-full pt-4 pb-8 px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-7xl mx-auto">
@@ -929,20 +923,6 @@ const Tasks: React.FC = () => {
                     <p className="text-red-500">{error}</p>
                 ) : (
                     <>
-                        {/* New Task Form */}
-                        {isNewTaskAllowed() && (
-                            <div className="mb-6">
-                                <NewTask
-                                    onTaskCreate={async (taskName: string) =>
-                                        await handleTaskCreate({
-                                            name: taskName,
-                                            status: 'not_started',
-                                        })
-                                    }
-                                />
-                            </div>
-                        )}
-
                         {displayTasks.length > 0 ||
                         (groupedTasks &&
                             Object.keys(groupedTasks).length > 0) ? (
