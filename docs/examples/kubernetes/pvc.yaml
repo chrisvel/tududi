@@ -1,0 +1,28 @@
+# The SQLite database. Use block storage here (local-path, Longhorn, a cloud
+# disk). SQLite over NFS or SMB can corrupt the file.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tududi-db
+  labels:
+    app.kubernetes.io/name: tududi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+# Task attachments, avatars and project images. Plain files, any storage works.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tududi-uploads
+  labels:
+    app.kubernetes.io/name: tududi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
