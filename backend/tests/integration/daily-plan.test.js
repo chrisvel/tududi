@@ -284,6 +284,44 @@ describe('Daily plan routes', () => {
         expect(after.body.order).toEqual(order);
     });
 
+    it('keeps the saved ranking when a UI toggle saves ui_settings', async () => {
+        const initial = await agent.get('/api/daily-plan/ranking');
+        const order = [...initial.body.default_order].reverse();
+        await agent.put('/api/daily-plan/ranking').send({ order });
+
+        const res = await agent
+            .put('/api/profile/ui-settings')
+            .send({ appearance: { theme: 'dark' } });
+        expect(res.status).toBe(200);
+
+        const after = await agent.get('/api/daily-plan/ranking');
+        expect(after.body.order).toEqual(order);
+    });
+
+    it('groups candidates by their own due date, not their project', async () => {
+        const lateProject = await Project.create({
+            name: 'Late project',
+            user_id: user.id,
+            due_date_at: moment().subtract(5, 'days').toDate(),
+        });
+        const undated = await makeTask({
+            name: 'No date',
+            project_id: lateProject.id,
+        });
+        const late = await makeTask({
+            name: 'Late itself',
+            project_id: lateProject.id,
+            due_date: moment().subtract(2, 'days').toDate(),
+        });
+
+        const res = await agent.get('/api/daily-plan/candidates');
+        const uids = (group) => res.body[group].map((task) => task.uid);
+
+        expect(uids('overdue')).toContain(late.uid);
+        expect(uids('overdue')).not.toContain(undated.uid);
+        expect(uids('suggested')).toContain(undated.uid);
+    });
+
     it('rejects a ranking that does not list every bucket once', async () => {
         const res = await agent
             .put('/api/daily-plan/ranking')

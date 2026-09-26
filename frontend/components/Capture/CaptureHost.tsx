@@ -5,7 +5,12 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import QuickCaptureInput, {
     QuickCaptureInputHandle,
 } from '../Inbox/QuickCaptureInput';
-import { closeCapture, openCapture, useCaptureUi } from '../../utils/captureUi';
+import {
+    closeCapture,
+    emitCaptureSaved,
+    openCapture,
+    useCaptureUi,
+} from '../../utils/captureUi';
 import { useStore } from '../../store/useStore';
 
 // The Inbox page has this same box inline, and the editors need the screen
@@ -26,7 +31,7 @@ interface CaptureHostProps {
 // It stays mounted once opened, so half-typed text survives closing it.
 const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
     const { t } = useTranslation();
-    const { open, target, openCount } = useCaptureUi();
+    const { open, target, scope, openCount } = useCaptureUi();
     const location = useLocation();
     const projects = useStore((state) => state.projectsStore.projects);
     const inputRef = useRef<QuickCaptureInputHandle>(null);
@@ -129,9 +134,25 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
                             unified
                             compact
                             defaultTarget={target}
+                            lockTarget={scope === 'today'}
+                            scopeLabel={
+                                scope === 'today'
+                                    ? t('capture.today', 'Today')
+                                    : undefined
+                            }
                             resetKey={openCount}
                             projects={projects}
                             onClose={closeCapture}
+                            onCaptured={(items) =>
+                                emitCaptureSaved({
+                                    scope,
+                                    items,
+                                    undone: false,
+                                })
+                            }
+                            onUndone={(items) =>
+                                emitCaptureSaved({ scope, items, undone: true })
+                            }
                             cardClassName="rounded-none shadow-none !bg-transparent"
                         />
                     </div>

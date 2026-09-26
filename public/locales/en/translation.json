@@ -2127,6 +2127,7 @@
     "ctaButton": "Sign up now"
   },
   "dailyPlan": {
+    "addTask": "Add task",
     "inProgress": "In progress",
     "overdue": "Overdue",
     "dueToday": "Due today",
@@ -2275,6 +2276,7 @@
   },
   "capture": {
     "addTo": "Add to",
+    "today": "Today",
     "inbox": "Inbox",
     "task": "Task",
     "note": "Note",

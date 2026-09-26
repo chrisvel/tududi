@@ -1,10 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { CAPTURE_TARGETS, CaptureTarget } from '../../utils/captureText';
 
 interface CaptureDestinationsProps {
     value: CaptureTarget;
     onChange: (target: CaptureTarget) => void;
+    // Shows only the chosen target, plus scopeLabel, with no way to switch
+    locked?: boolean;
+    scopeLabel?: string;
 }
 
 const LABELS: Record<CaptureTarget, { key: string; fallback: string }> = {
@@ -19,8 +23,39 @@ const LABELS: Record<CaptureTarget, { key: string; fallback: string }> = {
 const CaptureDestinations: React.FC<CaptureDestinationsProps> = ({
     value,
     onChange,
+    locked = false,
+    scopeLabel,
 }) => {
     const { t } = useTranslation();
+
+    if (locked) {
+        const chips = [
+            t(LABELS[value].key, LABELS[value].fallback),
+            ...(scopeLabel ? [scopeLabel] : []),
+        ];
+        return (
+            <div
+                className="flex items-center gap-2 min-w-0"
+                data-testid="capture-destinations-locked"
+            >
+                <span className="text-[13px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    {t('capture.addTo', 'Add to')}
+                </span>
+                {chips.map((label) => (
+                    <span
+                        key={label}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[13px] rounded-md bg-blue-100 dark:bg-blue-900/50 text-gray-900 dark:text-white font-semibold"
+                    >
+                        {label}
+                    </span>
+                ))}
+                <LockClosedIcon
+                    className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"
+                    aria-hidden="true"
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="flex items-center gap-2 min-w-0">
