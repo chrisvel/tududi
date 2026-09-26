@@ -171,11 +171,11 @@ describe('Recurring Task Display Fixes', () => {
     });
 
     describe('Past Missed Recurring Tasks Filtering', () => {
-        it('should hide recurring templates with past due dates', async () => {
+        it('should keep recurring templates with past due dates listed as overdue', async () => {
             const pastDate = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000); // 3 days ago
             const futureDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // 3 days from now
 
-            // Past recurring template (should be hidden)
+            // Past recurring template (missed, still open: stays listed)
             const pastRecurring = await Task.create({
                 name: 'Past Daily Task',
                 user_id: user.id,
@@ -215,8 +215,8 @@ describe('Recurring Task Display Fixes', () => {
             const taskIds = response.body.tasks.map((t) => t.id);
             const taskNames = response.body.tasks.map((t) => t.name);
 
-            // Past recurring template should be hidden
-            expect(taskIds).not.toContain(pastRecurring.id);
+            // Past recurring template stays listed until it is completed
+            expect(taskIds).toContain(pastRecurring.id);
 
             // Future recurring template should be shown as "Daily"
             expect(taskIds).toContain(futureRecurring.id);
