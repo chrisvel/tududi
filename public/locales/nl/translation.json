@@ -102,7 +102,6 @@
     "showMetrics": "Toon Statistieken",
     "showProductivity": "Toon Productiviteitsinzichten",
     "showIntelligence": "Toon Intelligentie Suggesties",
-    "showNextTaskSuggestion": "Volgende Taak Suggestie",
     "showSuggestions": "Toon Suggesties",
     "showDueToday": "Toon Taken Die Vandaag Vervallen",
     "showCompleted": "Toon Voltooide Taken"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "Kies hoe vaak u taak samenvattingen wilt ontvangen",
     "taskIntelligence": "Taakintelligentie",
-    "taskIntelligenceDescription": "Krijg nuttige suggesties om je taaknamen beschrijvender en actiegerichter te maken.",
     "enableTaskIntelligence": "Schakel Taakintelligentie Assistent in",
     "autoSuggestNextActions": "Automatisch Volgende Acties Voorstellen",
-    "autoSuggestNextActionsDescription": "Bij het aanmaken van een project automatisch vragen naar de volgende fysieke actie die moet worden ondernomen.",
     "enableAutoSuggestNextActions": "Schakel Volgende Actie Voorstellen in",
-    "productivityFeatures": "Productiviteitsfuncties",
     "pomodoroDescription": "Schakel de Pomodoro-timer in de navigatiebalk in voor gefocuste werk sessies.",
     "enablePomodoro": "Schakel Pomodoro-timer in",
     "productivityAssistant": "Productiviteitsassistent",
-    "productivityAssistantDescription": "Toon productiviteitsinzichten die helpen om stilgevallen projecten, vage taken en workflowverbeteringen op je Vandaag-pagina te identificeren.",
     "enableProductivityAssistant": "Schakel Productiviteitsinzichten in",
     "nextTaskSuggestion": "Volgende Taak Suggestie",
-    "nextTaskSuggestionDescription": "Stel automatisch de volgende beste taak voor om aan te werken wanneer je niets in uitvoering hebt, met prioriteit voor taken die vandaag vervallen, gevolgd door voorgestelde taken van je Vandaag-pagina.",
     "enableNextTaskSuggestion": "Schakel Volgende Taak Suggesties in",
-    "nextActionPrompt": "Wat is de volgende fysieke actie voor dit project?",
-    "nextActionPlaceholder": "bijv. Klant bellen om vergadering te plannen, Concurrenten online onderzoeken, Projectmap aanmaken...",
-    "addNextAction": "Voeg Volgende Actie Toe",
-    "skipNextAction": "Voorlopig overslaan",
-    "nextActionHint": "Denk aan de kleinste, meest concrete stap die je nu kunt nemen om dit project vooruit te helpen.",
     "tabs": {
       "general": "Algemeen",
       "security": "Beveiliging",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "U heeft geen wachtwoord ingesteld. Overweeg er een in te stellen voor een alternatieve inlogmethode."
     },
     "kanbanDescription": "Schakel het Kanban-bord in om de voortgang van taken over zwemlanen te volgen.",
-    "intelligenceSection": "Intelligentie",
-    "taskIntelligenceLabel": "Taak Intelligentie Assistent",
-    "autoSuggestNextActionsLabel": "Suggesties voor Volgende Acties",
-    "productivityAssistantLabel": "Productiviteit Inzichten",
-    "nextTaskSuggestionLabel": "Suggesties voor Volgende Taken",
     "featuresAddons": "Functies & Add-ons",
     "caldav": {
       "title": "CalDAV Synchronisatie",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Weet je zeker dat je \"{{name}}\" wilt verwijderen? Dit verwijdert de agenda en alle synchronisatie-instellingen."
     },
     "caldavWizard": {
-      "title": "CalDAV Installatiewizard",
-      "confirmClose": "Weet je zeker dat je wilt sluiten? Je voortgang gaat verloren.",
       "calendarName": "Agenda naam",
       "calendarNamePlaceholder": "bijv., Werk Taken",
       "calendarNameRequired": "Agenda naam is vereist",
@@ -518,9 +500,6 @@
       "authType": "Authenticatietype",
       "basicAuth": "Basisauthenticatie",
       "bearerAuth": "Bearer-token",
-      "testDescription": "Test de verbinding met uw CalDAV-server voordat u verdergaat.",
-      "server": "Server",
-      "path": "Pad",
       "testConnection": "Test Verbinding",
       "testing": "Bezig met testen...",
       "connectionSuccess": "Verbinding succesvol!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Laatste wijziging wint (automatisch)",
       "localWins": "Lokaal wint altijd",
       "remoteWins": "Afstandsbediening wint altijd",
-      "reviewDescription": "Controleer uw instellingen voordat u de kalender aanmaakt.",
       "calendarSettings": "Kalenderinstellingen",
       "serverSettings": "Serverinstellingen",
       "syncSettings": "Synchronisatie-instellingen",
@@ -648,16 +626,6 @@
     "suggestion": "Klik op een van de bovenstaande items om het te openen en verbeteringen aan te brengen.",
     "issuesFound_one": "1 productiviteitsprobleem heeft aandacht nodig",
     "issuesFound_other": "{{count}} productiviteitsproblemen hebben aandacht nodig"
-  },
-  "nextTask": {
-    "suggestion": "Aangezien er niets in uitvoering is, wat dacht je ervan om te beginnen met",
-    "suggestionTodayPlan": "Aangezien er niets in uitvoering is, wat dacht je ervan om te beginnen met deze taak uit je vandaag plan",
-    "suggestionDueToday": "Aangezien er niets in uitvoering is, wat dacht je ervan om te beginnen met deze taak die vandaag vervalt",
-    "suggestionSuggested": "Aangezien er niets in uitvoering is, wat dacht je ervan om te beginnen met deze voorgestelde taak",
-    "letsDoIt": "Ja, laten we het doen!",
-    "starting": "Bezig met starten...",
-    "startedSuccessfully": "Taak succesvol gestart!",
-    "giveMeSomethingElse": "Geef me iets anders"
   },
   "modals": {
     "confirmDelete": "Weet je zeker dat je wilt verwijderen?",
@@ -939,41 +907,7 @@
     "infoShort": "Inbox is waar ongecategoriseerde gedachten landen — schrijf dingen op, sorteer ze later.",
     "recentlyCaptured": "Onlangs vastgelegd",
     "line": "regel",
-    "lines": "regels",
-    "processN": "Verwerk {{count}}",
-    "allClarified": "Alle verduidelijkt",
-    "reClarify": "Herverduidelijken",
-    "trashedRestore": "{{count}} verwijderd · herstellen",
-    "restored": "Verwijderde items hersteld",
-    "restoreError": "Herstellen van items mislukt",
-    "trashError": "Verwijderen van item mislukt",
-    "clarifyProgress": "Verduidelijken · {{progress}}",
-    "clarifyDone": "Alle verduidelijkt. Inbox is rustig.",
-    "clarifyBackToList": "Terug naar lijst",
-    "clarifyExit": "Verlaat verduidelijking",
-    "clarifyBack": "← Terug",
-    "clarifyQ": {
-      "actionable": "Is dit uitvoerbaar?",
-      "notActionable": "Wat voor soort ding is het?",
-      "steps": "Eén stap, of meerdere?",
-      "twomin": "Kun je het in minder dan 2 minuten doen?",
-      "deferDelegate": "Later zelf, of doorgeven?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Ja, uitvoerbaar",
-      "notActionable": "Niet uitvoerbaar",
-      "trash": "Verwijderen",
-      "someday": "Ooit / Misschien",
-      "referenceNote": "Referentienotitie",
-      "oneStep": "Één stap",
-      "severalSteps": "Meerdere stappen (project)",
-      "doItNow": "Ja — doe het nu",
-      "no": "Nee",
-      "scheduleIt": "Plan het",
-      "delegate": "Delegeer"
-    },
-    "somedayCreated": "Toegevoegd aan Ooit",
-    "reClarifyLink": "Herbevestigen"
+    "lines": "regels"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Mislukt om taak bij te werken",
     "deleteSuccess": "Taak succesvol verwijderd",
     "deleteError": "Mislukt om taak te verwijderen",
-    "startedSuccessfully": "Taak succesvol gestart!",
     "created": "Taak",
     "createdSuccessfully": "succesvol aangemaakt!",
     "updated": "Taak",
@@ -1061,10 +994,6 @@
       "short": "Probeer specifieker te zijn over wat er gedaan moet worden",
       "noVerb": "Welke specifieke actie moet je ondernemen? Probeer te beginnen met een werkwoord.",
       "vague": "Probeer te beginnen met een actie werkwoord zoals \"Bel\", \"Schrijf\", \"Plan\" of \"Onderzoek\""
-    },
-    "nameHelper": {
-      "title": "Maak het beschrijvender!",
-      "suggestion": "Probeer meer details toe te voegen zoals \"Bel de tandarts om een afspraak voor een reiniging te plannen\" in plaats van alleen \"Bel de tandarts\""
     },
     "overdueAlert": "Deze taak stond gisteren in je planning en is niet voltooid.",
     "overdueYesterday": "Overweeg deze taak prioriteit te geven of deze in kleinere stappen op te splitsen.",

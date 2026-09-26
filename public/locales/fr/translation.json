@@ -102,7 +102,6 @@
     "showMetrics": "Afficher les métriques",
     "showProductivity": "Afficher les insights de productivité",
     "showIntelligence": "Afficher les suggestions d'intelligence",
-    "showNextTaskSuggestion": "Suggestion de prochaine tâche",
     "showSuggestions": "Afficher les suggestions",
     "showDueToday": "Afficher les tâches dues aujourd'hui",
     "showCompleted": "Afficher les tâches complétées"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "Choisissez la fréquence à laquelle vous souhaitez recevoir des résumés de tâches",
     "taskIntelligence": "Intelligence des Tâches",
-    "taskIntelligenceDescription": "Obtenez des suggestions utiles pour rendre vos noms de tâches plus descriptifs et actionnables.",
     "enableTaskIntelligence": "Activer l'Assistant d'Intelligence des Tâches",
     "autoSuggestNextActions": "Suggérer Automatiquement les Prochaines Actions",
-    "autoSuggestNextActionsDescription": "Lors de la création d'un projet, invitez automatiquement à la prochaine action physique à entreprendre.",
     "enableAutoSuggestNextActions": "Activer les Invitations à la Prochaine Action",
-    "productivityFeatures": "Fonctionnalités de Productivité",
     "pomodoroDescription": "Activez le minuteur Pomodoro dans la barre de navigation pour des sessions de travail concentrées.",
     "enablePomodoro": "Activer le Minuteur Pomodoro",
     "productivityAssistant": "Assistant de Productivité",
-    "productivityAssistantDescription": "Affichez des informations sur la productivité qui aident à identifier les projets bloqués, les tâches vagues et les améliorations de flux de travail sur votre page Aujourd'hui.",
     "enableProductivityAssistant": "Activer les Informations sur la Productivité",
     "nextTaskSuggestion": "Suggestion de Prochaine Tâche",
-    "nextTaskSuggestionDescription": "Suggérez automatiquement la meilleure prochaine tâche à réaliser lorsque vous n'avez rien en cours, en priorisant les tâches dues aujourd'hui, puis les tâches suggérées de votre page Aujourd'hui.",
     "enableNextTaskSuggestion": "Activer les Suggestions de Prochaine Tâche",
-    "nextActionPrompt": "Quelle est la toute prochaine action physique pour ce projet ?",
-    "nextActionPlaceholder": "ex. : Appeler le client pour planifier une réunion, Rechercher des concurrents en ligne, Créer un dossier de projet...",
-    "addNextAction": "Ajouter la Prochaine Action",
-    "skipNextAction": "Passer pour l'instant",
-    "nextActionHint": "Pensez au plus petit, au plus concret pas que vous pouvez faire maintenant pour faire avancer ce projet.",
     "tabs": {
       "general": "Général",
       "security": "Sécurité",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Vous n'avez pas de mot de passe défini. Envisagez d'en définir un pour avoir une méthode de connexion alternative."
     },
     "kanbanDescription": "Activez le tableau Kanban pour suivre l'avancement des tâches à travers les swimlanes.",
-    "intelligenceSection": "Intelligence",
-    "taskIntelligenceLabel": "Assistant d'Intelligence des Tâches",
-    "autoSuggestNextActionsLabel": "Suggestions d'Actions Suivantes",
-    "productivityAssistantLabel": "Aperçus de Productivité",
-    "nextTaskSuggestionLabel": "Suggestions de Prochaines Tâches",
     "featuresAddons": "Fonctionnalités & Add-ons",
     "caldav": {
       "title": "Synchronisation CalDAV",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer \"{{name}}\" ? Cela supprimera le calendrier et toutes les configurations de synchronisation."
     },
     "caldavWizard": {
-      "title": "Assistant de configuration CalDAV",
-      "confirmClose": "Êtes-vous sûr de vouloir fermer ? Votre progression sera perdue.",
       "calendarName": "Nom du calendrier",
       "calendarNamePlaceholder": "par ex., Tâches de travail",
       "calendarNameRequired": "Le nom du calendrier est requis",
@@ -518,9 +500,6 @@
       "authType": "Type d'authentification",
       "basicAuth": "Authentification de base",
       "bearerAuth": "Jeton d'accès",
-      "testDescription": "Testez la connexion à votre serveur CalDAV avant de continuer.",
-      "server": "Serveur",
-      "path": "Chemin",
       "testConnection": "Tester la connexion",
       "testing": "Test en cours...",
       "connectionSuccess": "Connexion réussie !",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Dernière modification l'emporte (automatique)",
       "localWins": "Local l'emporte toujours",
       "remoteWins": "Distant l'emporte toujours",
-      "reviewDescription": "Vérifiez vos paramètres avant de créer le calendrier.",
       "calendarSettings": "Paramètres du calendrier",
       "serverSettings": "Paramètres du serveur",
       "syncSettings": "Paramètres de synchronisation",
@@ -648,16 +626,6 @@
     "suggestion": "Cliquez sur n'importe quel élément ci-dessus pour l'ouvrir et apporter des améliorations.",
     "issuesFound_one": "1 problème de productivité nécessite une attention",
     "issuesFound_other": "{{count}} problèmes de productivité nécessitent une attention"
-  },
-  "nextTask": {
-    "suggestion": "Puisqu'il n'y a rien en cours, que diriez-vous de commencer par",
-    "suggestionTodayPlan": "Puisqu'il n'y a rien en cours, que diriez-vous de commencer par cette tâche de votre plan d'aujourd'hui",
-    "suggestionDueToday": "Puisqu'il n'y a rien en cours, que diriez-vous de commencer par cette tâche due aujourd'hui",
-    "suggestionSuggested": "Puisqu'il n'y a rien en cours, que diriez-vous de commencer par cette tâche suggérée",
-    "letsDoIt": "Oui, faisons-le !",
-    "starting": "Démarrage...",
-    "startedSuccessfully": "Tâche démarrée avec succès !",
-    "giveMeSomethingElse": "Donnez-moi autre chose"
   },
   "modals": {
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ?",
@@ -939,41 +907,7 @@
     "infoShort": "La boîte de réception est l'endroit où atterrissent les pensées non catégorisées — notez les choses, triez-les plus tard.",
     "recentlyCaptured": "Récemment capturé",
     "line": "ligne",
-    "lines": "lignes",
-    "processN": "Traiter {{count}}",
-    "allClarified": "Tout clarifié",
-    "reClarify": "Re-clairifier",
-    "trashedRestore": "{{count}} supprimés · restaurer",
-    "restored": "Éléments supprimés restaurés",
-    "restoreError": "Échec de la restauration des éléments",
-    "trashError": "Échec de la suppression de l'élément",
-    "clarifyProgress": "Clarifier · {{progress}}",
-    "clarifyDone": "Tout clarifié. La boîte de réception est calme.",
-    "clarifyBackToList": "Retour à la liste",
-    "clarifyExit": "Quitter la clarification",
-    "clarifyBack": "← Retour",
-    "clarifyQ": {
-      "actionable": "Est-ce actionnable ?",
-      "notActionable": "Quel type de chose est-ce ?",
-      "steps": "Une étape, ou plusieurs ?",
-      "twomin": "Pouvez-vous le faire en moins de 2 minutes ?",
-      "deferDelegate": "Plus tard vous-même, ou le déléguer ?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Oui, actionnable",
-      "notActionable": "Pas actionnable",
-      "trash": "Supprimer",
-      "someday": "Un jour / Peut-être",
-      "referenceNote": "Note de référence",
-      "oneStep": "Une étape",
-      "severalSteps": "Plusieurs étapes (projet)",
-      "doItNow": "Oui — fais-le maintenant",
-      "no": "Non",
-      "scheduleIt": "Planifie-le",
-      "delegate": "Déléguer"
-    },
-    "somedayCreated": "Ajouté à Un jour",
-    "reClarifyLink": "Re-préciser"
+    "lines": "lignes"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Échec de la mise à jour de la tâche",
     "deleteSuccess": "Tâche supprimée avec succès",
     "deleteError": "Échec de la suppression de la tâche",
-    "startedSuccessfully": "Tâche démarrée avec succès !",
     "created": "Tâche",
     "createdSuccessfully": "créée avec succès !",
     "updated": "Tâche",
@@ -1061,10 +994,6 @@
       "short": "Essayez d'être plus spécifique sur ce qui doit être fait",
       "noVerb": "Quelle action spécifique devez-vous entreprendre ? Essayez de commencer par un verbe.",
       "vague": "Essayez de commencer par un verbe d'action comme \"Appeler\", \"Écrire\", \"Planifier\" ou \"Rechercher\""
-    },
-    "nameHelper": {
-      "title": "Rendez-le plus descriptif !",
-      "suggestion": "Essayez d'ajouter plus de détails comme \"Appeler le dentiste pour prendre un rendez-vous de nettoyage\" au lieu de simplement \"Appeler le dentiste\""
     },
     "overdueAlert": "Cette tâche était dans votre plan hier et n'a pas été complétée.",
     "overdueYesterday": "Envisagez de prioriser cette tâche ou de la décomposer en étapes plus petites.",

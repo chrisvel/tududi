@@ -49,7 +49,6 @@ import {
     deleteNote as apiDeleteNote,
 } from '../../utils/notesService';
 import { createNote } from '../../utils/notesService';
-import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import IconSortDropdown from '../Shared/IconSortDropdown';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
@@ -93,9 +92,6 @@ const ProjectDetails: React.FC = () => {
         return (saved as 'all' | 'active' | 'completed') || 'active';
     });
     const [showMetrics, setShowMetrics] = useState(true);
-    const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
-    const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
-    const hasCheckedAutoSuggest = useRef(false);
     const [orderBy, setOrderBy] = useState<string>('status:inProgressFirst');
     // Task uids in the user's manual order for this project.
     const [taskOrder, setTaskOrder] = useState<string[]>([]);
@@ -131,13 +127,6 @@ const ProjectDetails: React.FC = () => {
             areasStore.loadAreas();
         }
     }, [areasStore]);
-
-    useEffect(() => {
-        if (!hasCheckedAutoSuggest.current) {
-            hasCheckedAutoSuggest.current = true;
-            getAutoSuggestNextActionsEnabled().then(setAutoSuggestEnabled);
-        }
-    }, []);
 
     useEffect(() => {
         // Load persisted UI options (local or remote)
@@ -285,20 +274,6 @@ const ProjectDetails: React.FC = () => {
         };
         loadProjectData();
     }, [uidSlug]);
-
-    useEffect(() => {
-        if (
-            project &&
-            tasks.length === 0 &&
-            !loading &&
-            taskStatusFilter === 'active' &&
-            autoSuggestEnabled
-        ) {
-            setShowAutoSuggestForm(true);
-        } else {
-            setShowAutoSuggestForm(false);
-        }
-    }, [project, tasks.length, loading, taskStatusFilter, autoSuggestEnabled]);
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) throw new Error('Cannot create task: Project is missing');
@@ -492,36 +467,6 @@ const ProjectDetails: React.FC = () => {
             t('success.bannerUpdated', 'Banner updated successfully!')
         );
     };
-
-    const handleCreateNextAction = async (
-        projectUid: string,
-        actionDescription: string
-    ) => {
-        const newTask = await createTask({
-            name: actionDescription,
-            status: 0,
-            project_uid: projectUid,
-            priority: 0,
-            completed_at: null,
-        });
-        setTasks([...tasks, newTask]);
-        setShowAutoSuggestForm(false);
-        const taskLink = (
-            <span>
-                {t('task.created', 'Task')}{' '}
-                <a
-                    href={`/task/${newTask.uid}`}
-                    className="text-green-200 underline hover:text-green-100"
-                >
-                    {newTask.name}
-                </a>{' '}
-                {t('task.createdSuccessfully', 'created successfully!')}
-            </span>
-        );
-        showSuccessToast(taskLink);
-    };
-
-    const handleSkipNextAction = () => setShowAutoSuggestForm(false);
 
     const handleTaskStatusFilterChange = (
         status: 'all' | 'active' | 'completed'
@@ -1164,17 +1109,7 @@ const ProjectDetails: React.FC = () => {
                                         }`}
                                     >
                                         <ProjectTasksSection
-                                            project={project}
                                             displayTasks={displayTasks}
-                                            showAutoSuggestForm={
-                                                showAutoSuggestForm
-                                            }
-                                            onAddNextAction={
-                                                handleCreateNextAction
-                                            }
-                                            onDismissNextAction={
-                                                handleSkipNextAction
-                                            }
                                             onTaskCreate={handleTaskCreate}
                                             onTaskUpdate={handleTaskUpdate}
                                             onTaskCompletionToggle={

@@ -22,16 +22,12 @@ interface TodaySettingsDropdownProps {
         showMetrics: boolean;
         showAreaBalance: boolean;
         showActiveProjects: boolean;
-        showNextTaskSuggestion: boolean;
         showSuggestions: boolean;
         showDueToday: boolean;
         showCompleted: boolean;
         showProgressBar: boolean;
         showDailyQuote: boolean;
         showTaggedToday: boolean;
-    };
-    profileSettings?: {
-        next_task_suggestion_enabled?: boolean;
     };
     onSettingsChange: (settings: any) => void;
 }
@@ -40,7 +36,6 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
     isOpen,
     onClose,
     settings,
-    profileSettings,
     onSettingsChange,
 }) => {
     const { t } = useTranslation();
@@ -141,19 +136,6 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
             label: t('settings.showActiveProjects', 'Show Active Projects'),
             icon: RocketLaunchIcon,
         },
-        // Only show next task suggestion option if enabled in profile
-        ...(profileSettings?.next_task_suggestion_enabled === true
-            ? [
-                  {
-                      key: 'showNextTaskSuggestion' as keyof typeof localSettings,
-                      label: t(
-                          'settings.showNextTaskSuggestion',
-                          'Next Task Suggestion'
-                      ),
-                      icon: SparklesIcon,
-                  },
-              ]
-            : []),
         {
             key: 'showTaggedToday',
             label: t('settings.showTaggedToday', 'Show Tagged Today'),

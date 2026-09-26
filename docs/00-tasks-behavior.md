@@ -529,13 +529,10 @@ Task responses include `is_blocked` and `blocked_by_count`. Names of blockers co
     - Overdue count shows in navbar and project metrics
     - No automatic status change occurs
 
-### Task Intelligence
+### Task Suggestions
 
-59. **Task intelligence features (optional, can be disabled):**
-    - Auto-suggest next actions based on task context
+59. **Suggested tasks:**
     - Smart suggestions for tasks to work on (Today page "Suggested" section)
-    - Productivity insights and patterns
-    - Next task recommendation based on priority, due date, and context
 
 60. **Suggestion algorithm considers:**
     - Due dates (tasks due soon ranked higher)

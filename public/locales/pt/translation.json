@@ -102,7 +102,6 @@
     "showMetrics": "Mostrar Métricas",
     "showProductivity": "Mostrar Insights de Produtividade",
     "showIntelligence": "Mostrar Sugestões de Inteligência",
-    "showNextTaskSuggestion": "Sugestão da Próxima Tarefa",
     "showSuggestions": "Mostrar Sugeridos",
     "showDueToday": "Mostrar Tarefas Vencendo Hoje",
     "showCompleted": "Mostrar Tarefas Concluídas"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "Escolha com que frequência deseja receber resumos de tarefas",
     "taskIntelligence": "Inteligência de Tarefas",
-    "taskIntelligenceDescription": "Receba sugestões úteis para tornar os nomes das suas tarefas mais descritivos e acionáveis.",
     "enableTaskIntelligence": "Ativar Assistente de Inteligência de Tarefas",
     "autoSuggestNextActions": "Sugestão Automática de Próximas Ações",
-    "autoSuggestNextActionsDescription": "Ao criar um projeto, solicite automaticamente a próxima ação física a ser realizada.",
     "enableAutoSuggestNextActions": "Ativar Sugestões de Próximas Ações",
-    "productivityFeatures": "Recursos de Produtividade",
     "pomodoroDescription": "Ative o cronômetro Pomodoro na barra de navegação para sessões de trabalho focadas.",
     "enablePomodoro": "Ativar Cronômetro Pomodoro",
     "productivityAssistant": "Assistente de Produtividade",
-    "productivityAssistantDescription": "Mostre insights de produtividade que ajudam a identificar projetos parados, tarefas vagas e melhorias no fluxo de trabalho na sua página Hoje.",
     "enableProductivityAssistant": "Ativar Insights de Produtividade",
     "nextTaskSuggestion": "Sugestão da Próxima Tarefa",
-    "nextTaskSuggestionDescription": "Sugira automaticamente a próxima melhor tarefa para trabalhar quando você não tiver nada em andamento, priorizando tarefas com prazo para hoje, seguidas de tarefas sugeridas na sua página Hoje.",
     "enableNextTaskSuggestion": "Ativar Sugestões de Próxima Tarefa",
-    "nextActionPrompt": "Qual é a próxima ação física para este projeto?",
-    "nextActionPlaceholder": "ex.: Ligar para o cliente para agendar reunião, Pesquisar concorrentes online, Criar pasta do projeto...",
-    "addNextAction": "Adicionar Próxima Ação",
-    "skipNextAction": "Pular por enquanto",
-    "nextActionHint": "Pense no menor e mais concreto passo que você pode dar agora para avançar este projeto.",
     "tabs": {
       "general": "Geral",
       "security": "Segurança",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Você não tem uma senha definida. Considere definir uma para ter um método de login alternativo."
     },
     "kanbanDescription": "Ative o Quadro Kanban para acompanhar o progresso das tarefas através das swimlanes.",
-    "intelligenceSection": "Inteligência",
-    "taskIntelligenceLabel": "Assistente de Inteligência de Tarefas",
-    "autoSuggestNextActionsLabel": "Sugestões de Próxima Ação",
-    "productivityAssistantLabel": "Insights de Produtividade",
-    "nextTaskSuggestionLabel": "Sugestões de Próxima Tarefa",
     "featuresAddons": "Recursos & Complementos",
     "caldav": {
       "title": "Sincronização CalDAV",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Você tem certeza de que deseja excluir \"{{name}}\"? Isso removerá o calendário e todas as configurações de sincronização."
     },
     "caldavWizard": {
-      "title": "Assistente de Configuração CalDAV",
-      "confirmClose": "Você tem certeza de que deseja fechar? Seu progresso será perdido.",
       "calendarName": "Nome do calendário",
       "calendarNamePlaceholder": "ex: Tarefas de Trabalho",
       "calendarNameRequired": "O nome do calendário é obrigatório",
@@ -518,9 +500,6 @@
       "authType": "Tipo de autenticação",
       "basicAuth": "Autenticação Básica",
       "bearerAuth": "Token Bearer",
-      "testDescription": "Teste a conexão com seu servidor CalDAV antes de prosseguir.",
-      "server": "Servidor",
-      "path": "Caminho",
       "testConnection": "Testar Conexão",
       "testing": "Testando...",
       "connectionSuccess": "Conexão bem-sucedida!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Última modificação vence (automático)",
       "localWins": "Local sempre vence",
       "remoteWins": "Remoto sempre vence",
-      "reviewDescription": "Revise suas configurações antes de criar o calendário.",
       "calendarSettings": "Configurações do Calendário",
       "serverSettings": "Configurações do Servidor",
       "syncSettings": "Configurações de Sincronização",
@@ -648,16 +626,6 @@
     "suggestion": "Clique em qualquer item acima para abri-lo e fazer melhorias.",
     "issuesFound_one": "1 problema de produtividade precisa de atenção",
     "issuesFound_other": "{{count}} problemas de produtividade precisam de atenção"
-  },
-  "nextTask": {
-    "suggestion": "Como não há nada em andamento, que tal começar com",
-    "suggestionTodayPlan": "Como não há nada em andamento, que tal começar com esta tarefa do seu plano de hoje",
-    "suggestionDueToday": "Como não há nada em andamento, que tal começar com esta tarefa com prazo para hoje",
-    "suggestionSuggested": "Como não há nada em andamento, que tal começar com esta tarefa sugerida",
-    "letsDoIt": "Sim, vamos fazer isso!",
-    "starting": "Iniciando...",
-    "startedSuccessfully": "Tarefa iniciada com sucesso!",
-    "giveMeSomethingElse": "Me dê outra coisa"
   },
   "modals": {
     "confirmDelete": "Você tem certeza de que deseja excluir?",
@@ -939,41 +907,7 @@
     "infoShort": "A caixa de entrada é onde pensamentos não categorizados aterrissam — anote as coisas e classifique-as depois.",
     "recentlyCaptured": "Capturado recentemente",
     "line": "linha",
-    "lines": "linhas",
-    "processN": "Processar {{count}}",
-    "allClarified": "Tudo esclarecido",
-    "reClarify": "Re-esclarecer",
-    "trashedRestore": "{{count}} excluídos · restaurar",
-    "restored": "Itens excluídos restaurados",
-    "restoreError": "Falha ao restaurar itens",
-    "trashError": "Falha ao excluir item",
-    "clarifyProgress": "Esclarecer · {{progress}}",
-    "clarifyDone": "Tudo esclarecido. A caixa de entrada está calma.",
-    "clarifyBackToList": "Voltar à lista",
-    "clarifyExit": "Sair do esclarecimento",
-    "clarifyBack": "← Voltar",
-    "clarifyQ": {
-      "actionable": "Isso é acionável?",
-      "notActionable": "Que tipo de coisa é?",
-      "steps": "Um passo ou vários?",
-      "twomin": "Você pode fazer isso em menos de 2 minutos?",
-      "deferDelegate": "Depois você mesmo, ou passar para alguém?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Sim, acionável",
-      "notActionable": "Não acionável",
-      "trash": "Excluir",
-      "someday": "Algum dia / Talvez",
-      "referenceNote": "Nota de referência",
-      "oneStep": "Um passo",
-      "severalSteps": "Vários passos (projeto)",
-      "doItNow": "Sim — faça agora",
-      "no": "Não",
-      "scheduleIt": "Agendar",
-      "delegate": "Delegar"
-    },
-    "somedayCreated": "Adicionado ao Algum Dia",
-    "reClarifyLink": "Reesclarecer"
+    "lines": "linhas"
   },
   "dateFormats": {
     "long": "EEEE, d 'de' MMMM 'de' yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Falha ao atualizar tarefa",
     "deleteSuccess": "Tarefa excluída com sucesso",
     "deleteError": "Falha ao excluir tarefa",
-    "startedSuccessfully": "Tarefa iniciada com sucesso!",
     "created": "Tarefa",
     "createdSuccessfully": "criada com sucesso!",
     "updated": "Tarefa",
@@ -1061,10 +994,6 @@
       "short": "Tente ser mais específico sobre o que precisa ser feito",
       "noVerb": "Qual ação específica você precisa realizar? Tente começar com um verbo.",
       "vague": "Tente começar com um verbo de ação como \"Ligar\", \"Escrever\", \"Agendar\" ou \"Pesquisar\""
-    },
-    "nameHelper": {
-      "title": "Torne-o mais descritivo!",
-      "suggestion": "Tente adicionar mais detalhes como \"Ligar para o dentista para agendar a limpeza\" em vez de apenas \"Ligar para o dentista\""
     },
     "overdueAlert": "Esta tarefa estava no seu plano ontem e não foi concluída.",
     "overdueYesterday": "Considere priorizar esta tarefa ou dividi-la em etapas menores.",

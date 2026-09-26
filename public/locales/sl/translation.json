@@ -102,7 +102,6 @@
     "showMetrics": "Prikaži metrike",
     "showProductivity": "Prikaži vpoglede v produktivnost",
     "showIntelligence": "Prikaži predloge inteligence",
-    "showNextTaskSuggestion": "Predlog naslednje naloge",
     "showSuggestions": "Prikaži predlagano",
     "showDueToday": "Prikaži naloge, ki zapadejo danes",
     "showCompleted": "Prikaži dokončane naloge"
@@ -354,25 +353,15 @@
     },
     "frequencyHelp": "Izberite, kako pogosto želite prejemati povzetke nalog",
     "taskIntelligence": "Inteligenca nalog",
-    "taskIntelligenceDescription": "Prejmite koristne predloge, da bodo vaša imena nalog bolj opisna in izvedljiva.",
     "enableTaskIntelligence": "Omogoči pomočnika za inteligenco nalog",
     "autoSuggestNextActions": "Samodejno predlagaj naslednje akcije",
-    "autoSuggestNextActionsDescription": "Pri ustvarjanju projekta samodejno predlagajte naslednjo fizično akcijo, ki jo je treba izvesti.",
     "enableAutoSuggestNextActions": "Omogoči predloge naslednjih akcij",
-    "productivityFeatures": "Funkcije produktivnosti",
     "pomodoroDescription": "Omogočite Pomodoro časomer v navigacijski vrstici za osredotočene delovne seje.",
     "enablePomodoro": "Omogoči Pomodoro časomer",
     "productivityAssistant": "Pomočnik za produktivnost",
-    "productivityAssistantDescription": "Prikažite vpoglede v produktivnost, ki pomagajo prepoznati zastale projekte, nejasne naloge in izboljšave delovnega toka na vaši strani Danes.",
     "enableProductivityAssistant": "Omogoči vpoglede v produktivnost",
     "nextTaskSuggestion": "Predlog naslednje naloge",
-    "nextTaskSuggestionDescription": "Samodejno predlagajte naslednjo najboljšo nalogo, na kateri bi delali, ko nimate ničesar v teku, pri čemer prioritizirajte naloge, ki so zapadle danes, nato pa predlagane naloge s strani Danes.",
     "enableNextTaskSuggestion": "Omogoči predloge naslednjih nalog",
-    "nextActionPrompt": "Kakšna je naslednja fizična akcija za ta projekt?",
-    "nextActionPlaceholder": "npr., Pokliči stranko za načrtovanje sestanka, Raziskuj konkurente na spletu, Ustvari mapo projekta...",
-    "addNextAction": "Dodaj naslednjo akcijo",
-    "skipNextAction": "Preskoči za zdaj",
-    "nextActionHint": "Pomislite na najmanjši, najbolj konkreten korak, ki ga lahko naredite zdaj, da napredujete s tem projektom.",
     "tabs": {
       "general": "Splošno",
       "security": "Varnost",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Nimate nastavljenega gesla. Razmislite o nastavitvi, da boste imeli alternativno metodo prijave."
     },
     "kanbanDescription": "Omogočite Kanban ploščo za sledenje napredku nalog skozi plavajoče pasove.",
-    "intelligenceSection": "Inteligenca",
-    "taskIntelligenceLabel": "Asistent za naloge",
-    "autoSuggestNextActionsLabel": "Predlogi za naslednje akcije",
-    "productivityAssistantLabel": "Vpogledi v produktivnost",
-    "nextTaskSuggestionLabel": "Predlogi za naslednje naloge",
     "featuresAddons": "Funkcije in dodatki",
     "caldav": {
       "title": "CalDAV Sinhronizacija",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Ali ste prepričani, da želite izbrisati \"{{name}}\"? To bo odstranilo koledar in vse nastavitve sinhronizacije."
     },
     "caldavWizard": {
-      "title": "Čarovnik za nastavitev CalDAV",
-      "confirmClose": "Ali ste prepričani, da želite zapreti? Vaš napredek bo izgubljen.",
       "calendarName": "Ime koledarja",
       "calendarNamePlaceholder": "npr., Delovne naloge",
       "calendarNameRequired": "Ime koledarja je obvezno",
@@ -518,9 +500,6 @@
       "authType": "Vrsta avtentikacije",
       "basicAuth": "Osnovna avtentikacija",
       "bearerAuth": "Nosilec žetona",
-      "testDescription": "Preizkusite povezavo s svojim CalDAV strežnikom, preden nadaljujete.",
-      "server": "Strežnik",
-      "path": "Pot",
       "testConnection": "Preizkusite povezavo",
       "testing": "Preizkušam...",
       "connectionSuccess": "Povezava uspešna!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Zadnja sprememba zmaga (samodejno)",
       "localWins": "Lokalno vedno zmaga",
       "remoteWins": "Oddaljeno vedno zmaga",
-      "reviewDescription": "Preverite svoje nastavitve pred ustvarjanjem koledarja.",
       "calendarSettings": "Nastavitve koledarja",
       "serverSettings": "Nastavitve strežnika",
       "syncSettings": "Nastavitve sinhronizacije",
@@ -648,16 +626,6 @@
     "suggestion": "Kliknite na katerikoli element zgoraj, da ga odprete in izboljšate.",
     "issuesFound_one": "1 težava s produktivnostjo potrebuje pozornost",
     "issuesFound_other": "{{count}} težav s produktivnostjo potrebuje pozornost"
-  },
-  "nextTask": {
-    "suggestion": "Ker ni nič v teku, kaj pa, če začnete s",
-    "suggestionTodayPlan": "Ker ni nič v teku, kaj pa, če začnete s to nalogo iz vašega današnjega načrta",
-    "suggestionDueToday": "Ker ni nič v teku, kaj pa, če začnete s to nalogo, ki je zapadla danes",
-    "suggestionSuggested": "Ker ni nič v teku, kaj pa, če začnete s to predlagano nalogo",
-    "letsDoIt": "Da, naredimo to!",
-    "starting": "Začinjamo...",
-    "startedSuccessfully": "Naloga je bila uspešno začeta!",
-    "giveMeSomethingElse": "Dajte mi nekaj drugega"
   },
   "modals": {
     "confirmDelete": "Ali ste prepričani, da želite izbrisati?",
@@ -939,41 +907,7 @@
     "infoShort": "Prejeto je mesto, kjer pristanejo nekategorizirane misli — zapišite stvari, razvrstite jih pozneje.",
     "recentlyCaptured": "Nedavno zajeto",
     "line": "vrsta",
-    "lines": "vrst",
-    "processN": "Obdelaj {{count}}",
-    "allClarified": "Vse pojasnjeno",
-    "reClarify": "Ponovno pojasni",
-    "trashedRestore": "{{count}} izbrisano · obnovi",
-    "restored": "Obnovljeni izbrisani predmeti",
-    "restoreError": "Obnova predmetov ni uspela",
-    "trashError": "Izbris predmeta ni uspelo",
-    "clarifyProgress": "Pojasni · {{progress}}",
-    "clarifyDone": "Vse pojasnjeno. Prejeto je mirno.",
-    "clarifyBackToList": "Nazaj na seznam",
-    "clarifyExit": "Izhod iz pojasnjevanja",
-    "clarifyBack": "← Nazaj",
-    "clarifyQ": {
-      "actionable": "Ali je to izvedljivo?",
-      "notActionable": "Kakšna stvar je to?",
-      "steps": "En korak ali več?",
-      "twomin": "Ali lahko to storiš v manj kot 2 minutah?",
-      "deferDelegate": "Kasneje sam, ali predati?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Da, izvedljivo",
-      "notActionable": "Ni izvedljivo",
-      "trash": "Izbriši",
-      "someday": "Nekega dne / Mogoče",
-      "referenceNote": "Referenčna opomba",
-      "oneStep": "En korak",
-      "severalSteps": "Več korakov (projekt)",
-      "doItNow": "Da — naredi to zdaj",
-      "no": "Ne",
-      "scheduleIt": "Načrtuj to",
-      "delegate": "Delegiraj"
-    },
-    "somedayCreated": "Dodano v Nekega dne",
-    "reClarifyLink": "Ponovno pojasni"
+    "lines": "vrst"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Posodobitev naloge ni uspela",
     "deleteSuccess": "Naloga je bila uspešno izbrisana",
     "deleteError": "Brisanje naloge ni uspelo",
-    "startedSuccessfully": "Naloga je bila uspešno začeta!",
     "created": "Naloga",
     "createdSuccessfully": "uspešno ustvarjena!",
     "updated": "Naloga",
@@ -1061,10 +994,6 @@
       "short": "Poskusite biti bolj specifični glede tega, kaj je treba narediti",
       "noVerb": "Katero specifično dejanje morate izvesti? Poskusite začeti z glagolom.",
       "vague": "Poskusite začeti z glagolom, kot je \"Pokliči\", \"Napiši\", \"Načrtuj\" ali \"Raziskuj\""
-    },
-    "nameHelper": {
-      "title": "Naredite ga bolj opisnega!",
-      "suggestion": "Poskusite dodati več podrobnosti, kot je \"Pokličite zobozdravnika, da se dogovorite za termin čiščenja\" namesto samo \"Pokličite zobozdravnika\""
     },
     "overdueAlert": "Ta naloga je bila v vašem načrtu včeraj in ni bila dokončana.",
     "overdueYesterday": "Razmislite o prioriteti te naloge ali jo razdelite na manjše korake.",

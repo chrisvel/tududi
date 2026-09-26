@@ -102,7 +102,6 @@
     "showMetrics": "Visa mätvärden",
     "showProductivity": "Visa produktivitetsinsikter",
     "showIntelligence": "Visa intelligensförslag",
-    "showNextTaskSuggestion": "Förslag på nästa uppgift",
     "showSuggestions": "Visa förslag",
     "showDueToday": "Visa uppgifter som förfaller idag",
     "showCompleted": "Visa slutförda uppgifter"
@@ -354,25 +353,15 @@
     },
     "frequencyHelp": "Välj hur ofta du vill ta emot uppgiftssammanfattningar",
     "taskIntelligence": "Uppgiftsintelligens",
-    "taskIntelligenceDescription": "Få hjälpsamma förslag för att göra dina uppgiftsnamn mer beskrivande och handlingskraftiga.",
     "enableTaskIntelligence": "Aktivera Uppgiftsintelligensassistent",
     "autoSuggestNextActions": "Automatiska förslag på nästa åtgärder",
-    "autoSuggestNextActionsDescription": "Vid skapande av ett projekt, föreslå automatiskt nästa fysiska åtgärd att vidta.",
     "enableAutoSuggestNextActions": "Aktivera förslag på nästa åtgärder",
-    "productivityFeatures": "Produktivitetsfunktioner",
     "pomodoroDescription": "Aktivera Pomodoro-timern i navigeringsfältet för fokuserade arbetspass.",
     "enablePomodoro": "Aktivera Pomodoro-timer",
     "productivityAssistant": "Produktivitetsassistent",
-    "productivityAssistantDescription": "Visa produktivitetinsikter som hjälper till att identifiera stillastående projekt, vaga uppgifter och förbättringar av arbetsflödet på din Idag-sida.",
     "enableProductivityAssistant": "Aktivera produktivitetinsikter",
     "nextTaskSuggestion": "Förslag på nästa uppgift",
-    "nextTaskSuggestionDescription": "Föreslå automatiskt den bästa nästa uppgift att arbeta med när du inte har något på gång, prioritera uppgifter som förfaller idag, sedan föreslagna uppgifter från din Idag-sida.",
     "enableNextTaskSuggestion": "Aktivera förslag på nästa uppgift",
-    "nextActionPrompt": "Vad är den allra nästa fysiska åtgärden för detta projekt?",
-    "nextActionPlaceholder": "t.ex., Ring klienten för att boka möte, Forska om konkurrenter online, Skapa projektmapp...",
-    "addNextAction": "Lägg till nästa åtgärd",
-    "skipNextAction": "Hoppa över tills vidare",
-    "nextActionHint": "Tänk på det minsta, mest konkreta steget du kan ta just nu för att driva detta projekt framåt.",
     "tabs": {
       "general": "Allmänt",
       "security": "Säkerhet",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Du har inget lösenord inställt. Överväg att ställa in ett för att ha en alternativ inloggningsmetod."
     },
     "kanbanDescription": "Aktivera Kanban-tavlan för att spåra uppgiftens framsteg över simlinjer.",
-    "intelligenceSection": "Intelligens",
-    "taskIntelligenceLabel": "Uppgiftsintelligensassistent",
-    "autoSuggestNextActionsLabel": "Förslag på nästa åtgärd",
-    "productivityAssistantLabel": "Produktivitetsinsikter",
-    "nextTaskSuggestionLabel": "Förslag på nästa uppgift",
     "featuresAddons": "Funktioner och tillägg",
     "caldav": {
       "title": "CalDAV-synkronisering",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Är du säker på att du vill radera \"{{name}}\"? Detta kommer att ta bort kalendern och alla synkroniseringskonfigurationer."
     },
     "caldavWizard": {
-      "title": "CalDAV-installationsguide",
-      "confirmClose": "Är du säker på att du vill stänga? Din framsteg kommer att gå förlorad.",
       "calendarName": "Kalendernamn",
       "calendarNamePlaceholder": "t.ex., Arbetsuppgifter",
       "calendarNameRequired": "Kalendernamn krävs",
@@ -518,9 +500,6 @@
       "authType": "Autentiseringstyp",
       "basicAuth": "Grundläggande autentisering",
       "bearerAuth": "Bearer-token",
-      "testDescription": "Testa anslutningen till din CalDAV-server innan du fortsätter.",
-      "server": "Server",
-      "path": "Sökväg",
       "testConnection": "Testa anslutning",
       "testing": "Testar...",
       "connectionSuccess": "Anslutning lyckades!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Senast ändrad vinner (automatisk)",
       "localWins": "Lokal vinner alltid",
       "remoteWins": "Fjärr vinner alltid",
-      "reviewDescription": "Granska dina inställningar innan du skapar kalendern.",
       "calendarSettings": "Kalenderinställningar",
       "serverSettings": "Serverinställningar",
       "syncSettings": "Synkroniseringsinställningar",
@@ -648,16 +626,6 @@
     "suggestion": "Klicka på ett objekt ovan för att öppna och förbättra det.",
     "issuesFound_one": "1 produktivitetsproblem behöver uppmärksammas",
     "issuesFound_other": "{{count}} produktivitetsproblem behöver uppmärksammas"
-  },
-  "nextTask": {
-    "suggestion": "Eftersom det inte finns något pågående, vad sägs om att börja med",
-    "suggestionTodayPlan": "Eftersom det inte finns något pågående, vad sägs om att börja med denna uppgift från din dagens plan",
-    "suggestionDueToday": "Eftersom det inte finns något pågående, vad sägs om att börja med denna uppgift som förfaller idag",
-    "suggestionSuggested": "Eftersom det inte finns något pågående, vad sägs om att börja med denna uppgift",
-    "letsDoIt": "Ja, den gör vi!",
-    "starting": "Startar...",
-    "startedSuccessfully": "Uppgift startad!",
-    "giveMeSomethingElse": "Ge mig en annan"
   },
   "modals": {
     "confirmDelete": "Är du säker på att du vill ta bort?",
@@ -939,41 +907,7 @@
     "infoShort": "Inkorgen är där okategoriserade tankar landar — skriv ner saker, sortera dem senare.",
     "recentlyCaptured": "Nyligen fångad",
     "line": "rad",
-    "lines": "rader",
-    "processN": "Bearbeta {{count}}",
-    "allClarified": "Alla klargjorda",
-    "reClarify": "Klargör igen",
-    "trashedRestore": "{{count}} raderade · återställ",
-    "restored": "Raderade objekt återställda",
-    "restoreError": "Misslyckades med att återställa objekt",
-    "trashError": "Misslyckades med att radera objekt",
-    "clarifyProgress": "Klargör · {{progress}}",
-    "clarifyDone": "Alla klargjorda. Inkorgen är lugn.",
-    "clarifyBackToList": "Tillbaka till listan",
-    "clarifyExit": "Avsluta klargörande",
-    "clarifyBack": "← Tillbaka",
-    "clarifyQ": {
-      "actionable": "Är detta genomförbart?",
-      "notActionable": "Vad är det för slags sak?",
-      "steps": "Ett steg, eller flera?",
-      "twomin": "Kan du göra det på under 2 minuter?",
-      "deferDelegate": "Senare själv, eller överlämna?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Ja, genomförbart",
-      "notActionable": "Inte genomförbart",
-      "trash": "Radera",
-      "someday": "Någon gång / Kanske",
-      "referenceNote": "Referensanteckning",
-      "oneStep": "Ett steg",
-      "severalSteps": "Flera steg (projekt)",
-      "doItNow": "Ja — gör det nu",
-      "no": "Nej",
-      "scheduleIt": "Schemalägg det",
-      "delegate": "Delegera"
-    },
-    "somedayCreated": "Tillagd till Någon gång",
-    "reClarifyLink": "Återklargöra"
+    "lines": "rader"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Kunde inte uppdatera uppgift",
     "deleteSuccess": "Uppgift borttagen",
     "deleteError": "Kunde inte ta bort uppgift",
-    "startedSuccessfully": "Uppgift påbörjad!",
     "created": "Uppgift",
     "createdSuccessfully": "skapad!",
     "updated": "Uppgift",
@@ -1061,10 +994,6 @@
       "short": "Försök att vara mer specifik om vad som behöver göras",
       "noVerb": "Vilken specifik åtgärd behöver du vidta? Försök börja med ett verb.",
       "vague": "Försök börja med ett handlingsverb som \"Ring\", \"Skriv\", \"Schemalägg\" eller \"Forska\""
-    },
-    "nameHelper": {
-      "title": "Gör den mer beskrivande!",
-      "suggestion": "Försök att lägga till mer information som \"Ring tandläkaren för att boka tid för undersökning\" istället för bara \"Ring tandläkaren\""
     },
     "overdueAlert": "Denna uppgift var i din plan igår och blev inte slutförd.",
     "overdueYesterday": "Överväg att prioritera denna uppgift eller dela upp den i mindre steg.",

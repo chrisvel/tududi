@@ -102,7 +102,6 @@
     "showMetrics": "Tampilkan Metrik",
     "showProductivity": "Tampilkan Wawasan Produktivitas",
     "showIntelligence": "Tampilkan Saran Kecerdasan",
-    "showNextTaskSuggestion": "Saran Tugas Berikutnya",
     "showSuggestions": "Tampilkan Saran",
     "showDueToday": "Tampilkan Tugas Jatuh Tempo Hari Ini",
     "showCompleted": "Tampilkan Tugas yang Selesai"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "Pilih seberapa sering Anda ingin menerima ringkasan tugas",
     "taskIntelligence": "Inteligensi Tugas",
-    "taskIntelligenceDescription": "Dapatkan saran yang berguna untuk membuat nama tugas Anda lebih deskriptif dan dapat ditindaklanjuti.",
     "enableTaskIntelligence": "Aktifkan Asisten Inteligensi Tugas",
     "autoSuggestNextActions": "Saran Tindakan Berikutnya Secara Otomatis",
-    "autoSuggestNextActionsDescription": "Saat membuat proyek, secara otomatis minta tindakan fisik berikutnya yang harus diambil.",
     "enableAutoSuggestNextActions": "Aktifkan Saran Tindakan Berikutnya",
-    "productivityFeatures": "Fitur Produktivitas",
     "pomodoroDescription": "Aktifkan timer Pomodoro di bilah navigasi untuk sesi kerja yang fokus.",
     "enablePomodoro": "Aktifkan Timer Pomodoro",
     "productivityAssistant": "Asisten Produktivitas",
-    "productivityAssistantDescription": "Tampilkan wawasan produktivitas yang membantu mengidentifikasi proyek yang terhenti, tugas yang samar, dan perbaikan alur kerja di halaman Hari Ini Anda.",
     "enableProductivityAssistant": "Aktifkan Wawasan Produktivitas",
     "nextTaskSuggestion": "Saran Tugas Berikutnya",
-    "nextTaskSuggestionDescription": "Secara otomatis sarankan tugas terbaik berikutnya untuk dikerjakan ketika Anda tidak memiliki yang sedang berlangsung, memprioritaskan tugas yang jatuh tempo hari ini, kemudian tugas yang disarankan dari halaman Hari Ini Anda.",
     "enableNextTaskSuggestion": "Aktifkan Saran Tugas Berikutnya",
-    "nextActionPrompt": "Apa tindakan fisik berikutnya untuk proyek ini?",
-    "nextActionPlaceholder": "misalnya, Hubungi klien untuk menjadwalkan pertemuan, Riset pesaing secara online, Buat folder proyek...",
-    "addNextAction": "Tambahkan Tindakan Berikutnya",
-    "skipNextAction": "Lewati untuk saat ini",
-    "nextActionHint": "Pikirkan langkah terkecil dan paling konkret yang dapat Anda ambil sekarang untuk memajukan proyek ini.",
     "tabs": {
       "general": "Umum",
       "security": "Keamanan",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Anda belum mengatur kata sandi. Pertimbangkan untuk mengatur satu untuk memiliki metode login alternatif."
     },
     "kanbanDescription": "Aktifkan Papan Kanban untuk melacak kemajuan tugas di seluruh jalur.",
-    "intelligenceSection": "Kecerdasan",
-    "taskIntelligenceLabel": "Asisten Kecerdasan Tugas",
-    "autoSuggestNextActionsLabel": "Prompt Tindakan Selanjutnya",
-    "productivityAssistantLabel": "Wawasan Produktivitas",
-    "nextTaskSuggestionLabel": "Saran Tugas Selanjutnya",
     "featuresAddons": "Fitur & Add-on",
     "caldav": {
       "title": "Sinkronisasi CalDAV",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Apakah Anda yakin ingin menghapus \"{{name}}\"? Ini akan menghapus kalender dan semua konfigurasi sinkronisasi."
     },
     "caldavWizard": {
-      "title": "Panduan Pengaturan CalDAV",
-      "confirmClose": "Apakah Anda yakin ingin menutup? Kemajuan Anda akan hilang.",
       "calendarName": "Nama kalender",
       "calendarNamePlaceholder": "misalnya, Tugas Kerja",
       "calendarNameRequired": "Nama kalender diperlukan",
@@ -518,9 +500,6 @@
       "authType": "Jenis autentikasi",
       "basicAuth": "Autentikasi Dasar",
       "bearerAuth": "Token Pembawa",
-      "testDescription": "Uji koneksi ke server CalDAV Anda sebelum melanjutkan.",
-      "server": "Server",
-      "path": "Jalur",
       "testConnection": "Uji Koneksi",
       "testing": "Mengujicoba...",
       "connectionSuccess": "Koneksi berhasil!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Modifikasi terakhir menang (otomatis)",
       "localWins": "Lokal selalu menang",
       "remoteWins": "Remote selalu menang",
-      "reviewDescription": "Tinjau pengaturan Anda sebelum membuat kalender.",
       "calendarSettings": "Pengaturan Kalender",
       "serverSettings": "Pengaturan Server",
       "syncSettings": "Pengaturan Sinkronisasi",
@@ -648,16 +626,6 @@
     "suggestion": "Klik pada item mana pun di atas untuk membukanya dan melakukan perbaikan.",
     "issuesFound_other": "{{count}} masalah produktivitas memerlukan perhatian",
     "issuesFound_one": "1 masalah produktivitas membutuhkan perhatian"
-  },
-  "nextTask": {
-    "suggestion": "Karena tidak ada yang sedang berlangsung, bagaimana jika mulai dengan",
-    "suggestionTodayPlan": "Karena tidak ada yang sedang berlangsung, bagaimana jika mulai dengan tugas ini dari rencana hari ini",
-    "suggestionDueToday": "Karena tidak ada yang sedang berlangsung, bagaimana jika mulai dengan tugas ini yang jatuh tempo hari ini",
-    "suggestionSuggested": "Karena tidak ada yang sedang berlangsung, bagaimana jika mulai dengan tugas yang disarankan ini",
-    "letsDoIt": "Ya, mari kita lakukan!",
-    "starting": "Memulai...",
-    "startedSuccessfully": "Tugas berhasil dimulai!",
-    "giveMeSomethingElse": "Berikan saya sesuatu yang lain"
   },
   "modals": {
     "confirmDelete": "Apakah Anda yakin ingin menghapus?",
@@ -939,41 +907,7 @@
     "infoShort": "Kotak masuk adalah tempat pikiran yang tidak terkategori mendarat — catat hal-hal, urutkan nanti.",
     "recentlyCaptured": "Baru saja ditangkap",
     "line": "garis",
-    "lines": "garis",
-    "processN": "Proses {{count}}",
-    "allClarified": "Semua telah dijelaskan",
-    "reClarify": "Jelaskan kembali",
-    "trashedRestore": "{{count}} terhapus · pulihkan",
-    "restored": "Item yang terhapus dipulihkan",
-    "restoreError": "Gagal memulihkan item",
-    "trashError": "Gagal menghapus item",
-    "clarifyProgress": "Jelaskan · {{progress}}",
-    "clarifyDone": "Semua telah dijelaskan. Kotak masuk tenang.",
-    "clarifyBackToList": "Kembali ke daftar",
-    "clarifyExit": "Keluar dari penjelasan",
-    "clarifyBack": "← Kembali",
-    "clarifyQ": {
-      "actionable": "Apakah ini dapat ditindaklanjuti?",
-      "notActionable": "Apa jenis hal ini?",
-      "steps": "Satu langkah, atau beberapa?",
-      "twomin": "Bisakah Anda melakukannya dalam waktu kurang dari 2 menit?",
-      "deferDelegate": "Nanti sendiri, atau serahkan?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Ya, dapat ditindaklanjuti",
-      "notActionable": "Tidak dapat ditindaklanjuti",
-      "trash": "Hapus",
-      "someday": "Suatu hari / Mungkin",
-      "referenceNote": "Catatan referensi",
-      "oneStep": "Satu langkah",
-      "severalSteps": "Beberapa langkah (proyek)",
-      "doItNow": "Ya — lakukan sekarang",
-      "no": "Tidak",
-      "scheduleIt": "Jadwalkan",
-      "delegate": "Delegasikan"
-    },
-    "somedayCreated": "Ditambahkan ke Suatu Hari",
-    "reClarifyLink": "Jelaskan ulang"
+    "lines": "garis"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Gagal memperbarui tugas",
     "deleteSuccess": "Tugas berhasil dihapus",
     "deleteError": "Gagal menghapus tugas",
-    "startedSuccessfully": "Tugas berhasil dimulai!",
     "created": "Tugas",
     "createdSuccessfully": "berhasil dibuat!",
     "updated": "Tugas",
@@ -1061,10 +994,6 @@
       "short": "Cobalah untuk lebih spesifik tentang apa yang perlu dilakukan",
       "noVerb": "Apa tindakan spesifik yang perlu Anda ambil? Cobalah mulai dengan kata kerja.",
       "vague": "Cobalah mulai dengan kata kerja aksi seperti \"Panggil\", \"Tulis\", \"Jadwalkan\", atau \"Riset\""
-    },
-    "nameHelper": {
-      "title": "Buat lebih deskriptif!",
-      "suggestion": "Cobalah menambahkan lebih banyak detail seperti \"Hubungi dokter gigi untuk menjadwalkan janji pembersihan\" alih-alih hanya \"Hubungi dokter gigi\""
     },
     "overdueAlert": "Tugas ini ada dalam rencana Anda kemarin dan belum diselesaikan.",
     "overdueYesterday": "Pertimbangkan untuk memprioritaskan tugas ini atau membaginya menjadi langkah-langkah yang lebih kecil.",

@@ -21,13 +21,12 @@ class InboxService {
             const parsedLimit = parseInt(limit, 10) || 20;
             const parsedOffset = parseInt(offset, 10) || 0;
 
-            const [items, totalCount, trashedCount] = await Promise.all([
+            const [items, totalCount] = await Promise.all([
                 inboxRepository.findAllActive(userId, {
                     limit: parsedLimit,
                     offset: parsedOffset,
                 }),
                 inboxRepository.countActive(userId),
-                inboxRepository.countTrashed(userId),
             ]);
 
             return {
@@ -38,7 +37,6 @@ class InboxService {
                     offset: parsedOffset,
                     hasMore: parsedOffset + items.length < totalCount,
                 },
-                trashedCount,
             };
         }
 
@@ -123,27 +121,6 @@ class InboxService {
         await inboxRepository.markProcessed(item);
 
         return _.pick(item, PUBLIC_ATTRIBUTES);
-    }
-
-    async trash(userId, uid) {
-        validateUid(uid);
-        const item = await inboxRepository.findByUid(userId, uid);
-        if (!item) throw new NotFoundError('Inbox item not found.');
-        await inboxRepository.markTrashed(item);
-        return _.pick(item, PUBLIC_ATTRIBUTES);
-    }
-
-    async restore(userId, uid) {
-        validateUid(uid);
-        const item = await inboxRepository.findByUid(userId, uid);
-        if (!item) throw new NotFoundError('Inbox item not found.');
-        await inboxRepository.markRestored(item);
-        return _.pick(item, PUBLIC_ATTRIBUTES);
-    }
-
-    async restoreAll(userId) {
-        await inboxRepository.restoreAllTrashed(userId);
-        return { message: 'All trashed items restored' };
     }
 
     async analyzeText(

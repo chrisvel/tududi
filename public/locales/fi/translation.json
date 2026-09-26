@@ -102,7 +102,6 @@
     "showMetrics": "Näytä mittarit",
     "showProductivity": "Näytä tuottavuusnäkymät",
     "showIntelligence": "Näytä älykkyyssuositukset",
-    "showNextTaskSuggestion": "Seuraava tehtäväehdotus",
     "showSuggestions": "Näytä ehdotukset",
     "showDueToday": "Näytä tänään erääntyvät tehtävät",
     "showCompleted": "Näytä valmiit tehtävät"
@@ -354,25 +353,15 @@
     },
     "frequencyHelp": "Valitse, kuinka usein haluat vastaanottaa tehtäväyhteenvedot",
     "taskIntelligence": "Tehtävääly",
-    "taskIntelligenceDescription": "Saat hyödyllisiä ehdotuksia, jotta tehtävänimistäsi tulee kuvaavampia ja toimivampia.",
     "enableTaskIntelligence": "Ota käyttöön Tehtäväälyavustaja",
     "autoSuggestNextActions": "Automaattiset ehdotukset seuraavista toimista",
-    "autoSuggestNextActionsDescription": "Kun luot projektia, pyydä automaattisesti seuraavaa fyysistä toimintoa.",
     "enableAutoSuggestNextActions": "Ota käyttöön seuraavan toiminnan ehdotukset",
-    "productivityFeatures": "Tuottavuusominaisuudet",
     "pomodoroDescription": "Ota käyttöön Pomodoro-ajastin navigointipalkissa keskittyneitä työskentelysessioita varten.",
     "enablePomodoro": "Ota käyttöön Pomodoro-ajastin",
     "productivityAssistant": "Tuottavuusavustaja",
-    "productivityAssistantDescription": "Näytä tuottavuusnäkemyksiä, jotka auttavat tunnistamaan pysähtyneitä projekteja, epämääräisiä tehtäviä ja työnkulun parannuksia Tänään-sivullasi.",
     "enableProductivityAssistant": "Ota käyttöön tuottavuusnäkemykset",
     "nextTaskSuggestion": "Seuraava tehtäväehdotus",
-    "nextTaskSuggestionDescription": "Ehdota automaattisesti seuraavaa parasta tehtävää, johon työskennellä, kun sinulla ei ole mitään kesken, priorisoiden tänään erääntyviä tehtäviä, sitten ehdotettuja tehtäviä Tänään-sivultasi.",
     "enableNextTaskSuggestion": "Ota käyttöön seuraavien tehtävien ehdotukset",
-    "nextActionPrompt": "Mikä on seuraava fyysinen toimenpide tälle projektille?",
-    "nextActionPlaceholder": "esim., Soita asiakkaalle aikatauluttaaksesi kokouksen, Tutki kilpailijoita verkossa, Luo projektikansio...",
-    "addNextAction": "Lisää seuraava toimenpide",
-    "skipNextAction": "Ohita nyt",
-    "nextActionHint": "Ajattele pienintä, konkreettisinta askelta, jonka voit ottaa nyt edistääksesi tätä projektia.",
     "tabs": {
       "general": "Yleinen",
       "security": "Turvallisuus",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Sinulla ei ole asetettua salasanaa. Harkitse salasanan asettamista vaihtoehtoista kirjautumistapaa varten."
     },
     "kanbanDescription": "Ota käyttöön Kanban-taulu tehtävien edistymisen seuraamiseksi eri uintiradoilla.",
-    "intelligenceSection": "Älykkyys",
-    "taskIntelligenceLabel": "Tehtävä Älykkyysavustaja",
-    "autoSuggestNextActionsLabel": "Seuraavat Toimintaehdotukset",
-    "productivityAssistantLabel": "Tuottavuusnäkymät",
-    "nextTaskSuggestionLabel": "Seuraavat Tehtäväehdotukset",
     "featuresAddons": "Ominaisuudet ja Lisäosat",
     "caldav": {
       "title": "CalDAV Synkronointi",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Oletko varma, että haluat poistaa \"{{name}}\"? Tämä poistaa kalenterin ja kaikki synkronointiasetukset."
     },
     "caldavWizard": {
-      "title": "CalDAV-asennusohjelma",
-      "confirmClose": "Oletko varma, että haluat sulkea? Edistymisesi menetetään.",
       "calendarName": "Kalenterin nimi",
       "calendarNamePlaceholder": "esim., Työtehtävät",
       "calendarNameRequired": "Kalenterin nimi on pakollinen",
@@ -518,9 +500,6 @@
       "authType": "Todennustyyppi",
       "basicAuth": "Perustodennus",
       "bearerAuth": "Bearer-token",
-      "testDescription": "Testaa yhteys CalDAV-palvelimeesi ennen jatkamista.",
-      "server": "Palvelin",
-      "path": "Polku",
       "testConnection": "Testaa yhteys",
       "testing": "Testataan...",
       "connectionSuccess": "Yhteys onnistui!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Viimeksi muokattu voittaa (automaattinen)",
       "localWins": "Paikallinen voittaa aina",
       "remoteWins": "Etäyhteys voittaa aina",
-      "reviewDescription": "Tarkista asetuksesi ennen kalenterin luomista.",
       "calendarSettings": "Kalenterin asetukset",
       "serverSettings": "Palvelimen asetukset",
       "syncSettings": "Synkronoinnin asetukset",
@@ -648,16 +626,6 @@
     "suggestion": "Napsauta mitä tahansa yllä olevaa kohdetta avatakseen sen ja tehdäkseen parannuksia.",
     "issuesFound_one": "1 tuottavuusongelma tarvitsee huomiota",
     "issuesFound_other": "{{count}} tuottavuusongelmaa tarvitsee huomiota"
-  },
-  "nextTask": {
-    "suggestion": "Koska mitään ei ole käynnissä, mitä jos aloittaisit",
-    "suggestionTodayPlan": "Koska mitään ei ole käynnissä, mitä jos aloittaisit tämän tehtävän tänään suunnitelmastasi",
-    "suggestionDueToday": "Koska mitään ei ole käynnissä, mitä jos aloittaisit tämän tänään erääntyvän tehtävän",
-    "suggestionSuggested": "Koska mitään ei ole käynnissä, mitä jos aloittaisit tämän ehdotetun tehtävän",
-    "letsDoIt": "Kyllä, tehdään se!",
-    "starting": "Aloitetaan...",
-    "startedSuccessfully": "Tehtävä aloitettiin onnistuneesti!",
-    "giveMeSomethingElse": "Anna minulle jotain muuta"
   },
   "modals": {
     "confirmDelete": "Oletko varma, että haluat poistaa?",
@@ -939,41 +907,7 @@
     "infoShort": "Saapuneet ovat paikka, johon luokittelemattomat ajatukset laskeutuvat — kirjoita asiat ylös, lajittele ne myöhemmin.",
     "recentlyCaptured": "Äskettäin tallennettu",
     "line": "rivi",
-    "lines": "riviä",
-    "processN": "Käsittele {{count}}",
-    "allClarified": "Kaikki selvennetty",
-    "reClarify": "Selvennä uudelleen",
-    "trashedRestore": "{{count}} roskassa · palauttaa",
-    "restored": "Roskiin heitetyt kohteet palautettu",
-    "restoreError": "Kohteiden palauttaminen epäonnistui",
-    "trashError": "Kohteen roskiin heittäminen epäonnistui",
-    "clarifyProgress": "Selvennä · {{progress}}",
-    "clarifyDone": "Kaikki selvennetty. Saapuneet viestit ovat rauhallisia.",
-    "clarifyBackToList": "Takaisin listaan",
-    "clarifyExit": "Poistu selvennyksestä",
-    "clarifyBack": "← Takaisin",
-    "clarifyQ": {
-      "actionable": "Onko tämä toteutettavissa?",
-      "notActionable": "Minkälainen asia tämä on?",
-      "steps": "Yksi askel vai useita?",
-      "twomin": "Voitko tehdä sen alle 2 minuutissa?",
-      "deferDelegate": "Myöhemmin itse, vai annetaanko eteenpäin?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Kyllä, toteutettavissa",
-      "notActionable": "Ei toteutettavissa",
-      "trash": "Roskakoriin",
-      "someday": "Jonain päivänä / Ehkä",
-      "referenceNote": "Viitehuomautus",
-      "oneStep": "Yksi askel",
-      "severalSteps": "Useita askeleita (projekti)",
-      "doItNow": "Kyllä — tee se nyt",
-      "no": "Ei",
-      "scheduleIt": "Aikatauluta se",
-      "delegate": "Delegoi"
-    },
-    "somedayCreated": "Lisätty Jonain päivänä",
-    "reClarifyLink": "Tarkista uudelleen"
+    "lines": "riviä"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Tehtävän päivittäminen epäonnistui",
     "deleteSuccess": "Tehtävä poistettiin onnistuneesti",
     "deleteError": "Tehtävän poistaminen epäonnistui",
-    "startedSuccessfully": "Tehtävä käynnistettiin onnistuneesti!",
     "created": "Tehtävä",
     "createdSuccessfully": "luotiin onnistuneesti!",
     "updated": "Tehtävä",
@@ -1061,10 +994,6 @@
       "short": "Yritä olla tarkempi siitä, mitä on tehtävä",
       "noVerb": "Mitä erityistä toimintoa sinun tarvitsee tehdä? Yritä aloittaa verbillä.",
       "vague": "Yritä aloittaa toimintaverbillä kuten \"Soita\", \"Kirjoita\", \"Aikatauluta\" tai \"Tutki\""
-    },
-    "nameHelper": {
-      "title": "Tee siitä kuvaavampi!",
-      "suggestion": "Yritä lisätä enemmän yksityiskohtia, kuten \"Soita hammaslääkärille aikatauluttaaksesi puhdistusajan\" sen sijaan, että sanoisit vain \"Soita hammaslääkärille\""
     },
     "overdueAlert": "Tämä tehtävä oli suunnitelmassasi eilen eikä sitä ole suoritettu.",
     "overdueYesterday": "Harkitse tämän tehtävän priorisoimista tai jakamista pienempiin vaiheisiin.",

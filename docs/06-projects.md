@@ -782,8 +782,7 @@ Displayed on project cards and detail page:
 7. **Notes Section**
    - Note cards (most recent first)
    - "Add Note" button
-8. **Insights Panel** (if productivity assistant enabled)
-   - Auto-suggested next actions
+8. **Insights Panel**
    - Stalled warning
    - Due date alerts
 
@@ -791,24 +790,7 @@ Displayed on project cards and detail page:
 
 ## Special Features
 
-### 1. Auto-Suggest Next Action
-
-**What it does:**
-- AI-powered suggestions for next steps
-- Analyzes project context, tasks, and notes
-- Suggests concrete actions to move project forward
-
-**Appears when:**
-- Project has description and some tasks
-- User has AI features enabled
-- Accessed via "Suggest Next Action" button
-
-**Example suggestions:**
-- "Schedule a meeting with the designer"
-- "Review the latest mockups"
-- "Get feedback from stakeholders"
-
-### 2. Banner Images
+### 1. Banner Images
 
 **Purpose:**
 - Visual identity for projects
@@ -826,7 +808,7 @@ Displayed on project cards and detail page:
 - High resolution (1200x400 or larger)
 - Landscape orientation
 
-### 3. Task Sorting Preferences
+### 2. Task Sorting Preferences
 
 **Per-project sorting:**
 - Each project can have its own task sort order
@@ -845,7 +827,7 @@ Displayed on project cards and detail page:
 - Research project: Sort by created date
 - Deadline-driven project: Sort by due date
 
-### 4. Keyboard Shortcuts
+### 3. Keyboard Shortcuts
 
 **On project page:**
 - `n`: Create new task

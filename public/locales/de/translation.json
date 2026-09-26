@@ -102,7 +102,6 @@
     "showMetrics": "Metriken anzeigen",
     "showProductivity": "Produktivitäts-Einblicke anzeigen",
     "showIntelligence": "Intelligente Vorschläge anzeigen",
-    "showNextTaskSuggestion": "Nächste Aufgabe Vorschlag",
     "showSuggestions": "Vorgeschlagene anzeigen",
     "showDueToday": "Heute fällige Aufgaben anzeigen",
     "showCompleted": "Erledigte Aufgaben anzeigen"
@@ -520,41 +519,7 @@
     "infoShort": "Der Posteingang ist der Ort, an dem nicht kategorisierte Gedanken landen – schreibe Dinge auf, sortiere sie später.",
     "recentlyCaptured": "Kürzlich erfasst",
     "line": "Zeile",
-    "lines": "Zeilen",
-    "processN": "Verarbeite {{count}}",
-    "allClarified": "Alle geklärt",
-    "reClarify": "Erneut klären",
-    "trashedRestore": "{{count}} gelöscht · wiederherstellen",
-    "restored": "Gelöschte Elemente wiederhergestellt",
-    "restoreError": "Wiederherstellung der Elemente fehlgeschlagen",
-    "trashError": "Löschen des Elements fehlgeschlagen",
-    "clarifyProgress": "Klären · {{progress}}",
-    "clarifyDone": "Alle geklärt. Posteingang ist ruhig.",
-    "clarifyBackToList": "Zurück zur Liste",
-    "clarifyExit": "Klären beenden",
-    "clarifyBack": "← Zurück",
-    "clarifyQ": {
-      "actionable": "Ist das umsetzbar?",
-      "notActionable": "Was für eine Art von Sache ist das?",
-      "steps": "Ein Schritt oder mehrere?",
-      "twomin": "Kannst du es in weniger als 2 Minuten erledigen?",
-      "deferDelegate": "Später selbst, oder abgeben?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Ja, umsetzbar",
-      "notActionable": "Nicht umsetzbar",
-      "trash": "Löschen",
-      "someday": "Irgendwann / Vielleicht",
-      "referenceNote": "Referenznotiz",
-      "oneStep": "Ein Schritt",
-      "severalSteps": "Mehrere Schritte (Projekt)",
-      "doItNow": "Ja — jetzt machen",
-      "no": "Nein",
-      "scheduleIt": "Planen",
-      "delegate": "Delegieren"
-    },
-    "somedayCreated": "Zu Irgendwann hinzugefügt",
-    "reClarifyLink": "Neu klären"
+    "lines": "Zeilen"
   },
   "project": {
     "projectImage": "Projektbild",
@@ -603,26 +568,16 @@
     "passwordChangeNote": "Passwort-Änderungen werden gespeichert, wenn Sie unten im Formular auf \"Änderungen speichern\" klicken.",
     "passwordChangeOptional": "Lassen Sie die Passwort-Felder leer, um andere Einstellungen zu aktualisieren, ohne Ihr Passwort zu ändern.",
     "taskIntelligence": "Aufgaben-Intelligenz",
-    "taskIntelligenceDescription": "Erhalten Sie hilfreiche Vorschläge, um Ihre Aufgabennamen beschreibender und umsetzbarer zu machen.",
     "enableTaskIntelligence": "Aufgaben-Intelligenz-Assistent aktivieren",
     "enableTaskSummary": "Aufgaben-Zusammenfassungen aktivieren",
     "autoSuggestNextActions": "Auto-Vorschlag für nächste Aktionen",
-    "autoSuggestNextActionsDescription": "Beim Erstellen eines Projekts automatisch nach der nächsten physischen Aktion fragen.",
     "enableAutoSuggestNextActions": "Nächste-Aktion-Aufforderungen aktivieren",
-    "productivityFeatures": "Produktivitätsfunktionen",
     "pomodoroDescription": "Aktivieren Sie den Pomodoro-Timer in der Navigationsleiste für fokussierte Arbeitssitzungen.",
     "enablePomodoro": "Pomodoro-Timer aktivieren",
     "productivityAssistant": "Produktivitätsassistent",
-    "productivityAssistantDescription": "Zeigen Sie Produktivitätseinblicke, die dabei helfen, stockende Projekte, vage Aufgaben und Workflow-Verbesserungen auf Ihrer Heute-Seite zu identifizieren.",
     "enableProductivityAssistant": "Produktivitätseinblicke aktivieren",
     "nextTaskSuggestion": "Nächste Aufgabenvorschlag",
-    "nextTaskSuggestionDescription": "Automatisch die beste nächste Aufgabe vorschlagen, an der gearbeitet werden soll, wenn nichts in Bearbeitung ist, wobei heute fällige Aufgaben, dann vorgeschlagene Aufgaben von Ihrer Heute-Seite priorisiert werden.",
     "enableNextTaskSuggestion": "Nächste Aufgabenvorschläge aktivieren",
-    "nextActionPrompt": "Was ist die nächste konkrete Aktion für dieses Projekt?",
-    "nextActionPlaceholder": "z.B., Kunden anrufen um Termin zu vereinbaren, Konkurrenten online recherchieren, Projektordner erstellen...",
-    "addNextAction": "Nächste Aktion hinzufügen",
-    "skipNextAction": "Vorerst überspringen",
-    "nextActionHint": "Denken Sie an den kleinsten, konkretesten Schritt, den Sie jetzt unternehmen können, um dieses Projekt voranzubringen.",
     "tabs": {
       "general": "Allgemein",
       "security": "Sicherheit",
@@ -772,11 +727,6 @@
       "noPasswordWarning": "Sie haben kein Passwort festgelegt. Erwägen Sie, eines festzulegen, um eine alternative Anmeldemethode zu haben."
     },
     "kanbanDescription": "Aktivieren Sie das Kanban-Board, um den Fortschritt von Aufgaben über Swimlanes hinweg zu verfolgen.",
-    "intelligenceSection": "Intelligenz",
-    "taskIntelligenceLabel": "Aufgabenintelligenz-Assistent",
-    "autoSuggestNextActionsLabel": "Vorschläge für die nächste Aktion",
-    "productivityAssistantLabel": "Produktivitätsanalysen",
-    "nextTaskSuggestionLabel": "Vorschläge für die nächste Aufgabe",
     "featuresAddons": "Funktionen & Add-ons",
     "caldav": {
       "title": "CalDAV-Synchronisation",
@@ -815,8 +765,6 @@
       "confirmDeleteMessage": "Sind Sie sicher, dass Sie \"{{name}}\" löschen möchten? Dadurch wird der Kalender und alle Synchronisierungs-Konfigurationen entfernt."
     },
     "caldavWizard": {
-      "title": "CalDAV Einrichtungsassistent",
-      "confirmClose": "Sind Sie sicher, dass Sie schließen möchten? Ihr Fortschritt geht verloren.",
       "calendarName": "Kalendername",
       "calendarNamePlaceholder": "z.B., Arbeitsaufgaben",
       "calendarNameRequired": "Kalendername ist erforderlich",
@@ -833,9 +781,6 @@
       "authType": "Authentifizierungstyp",
       "basicAuth": "Basis-Authentifizierung",
       "bearerAuth": "Träger-Token",
-      "testDescription": "Testen Sie die Verbindung zu Ihrem CalDAV-Server, bevor Sie fortfahren.",
-      "server": "Server",
-      "path": "Pfad",
       "testConnection": "Verbindung testen",
       "testing": "Teste...",
       "connectionSuccess": "Verbindung erfolgreich!",
@@ -852,7 +797,6 @@
       "lastWriteWins": "Letzte Änderung gewinnt (automatisch)",
       "localWins": "Lokal gewinnt immer",
       "remoteWins": "Remote gewinnt immer",
-      "reviewDescription": "Überprüfen Sie Ihre Einstellungen, bevor Sie den Kalender erstellen.",
       "calendarSettings": "Kalendereinstellungen",
       "serverSettings": "Servereinstellungen",
       "syncSettings": "Synchronisationseinstellungen",
@@ -946,25 +890,11 @@
       "open": "Meinen Tag planen"
     }
   },
-  "nextTask": {
-    "suggestion": "Da nichts in Bearbeitung ist, wie wäre es, mit diesem zu beginnen",
-    "suggestionTodayPlan": "Da nichts in Bearbeitung ist, wie wäre es, mit dieser Aufgabe aus deinem Tagesplan zu beginnen",
-    "suggestionDueToday": "Da nichts in Bearbeitung ist, wie wäre es, mit dieser heute fälligen Aufgabe zu beginnen",
-    "suggestionSuggested": "Da nichts in Bearbeitung ist, wie wäre es, mit dieser vorgeschlagenen Aufgabe zu beginnen",
-    "letsDoIt": "Ja, lass uns das machen!",
-    "starting": "Wird gestartet...",
-    "startedSuccessfully": "Aufgabe erfolgreich gestartet!",
-    "giveMeSomethingElse": "Gib mir etwas anderes"
-  },
   "task": {
     "suggestions": {
       "short": "Versuchen Sie, spezifischer zu beschreiben, was getan werden muss",
       "noVerb": "Welche spezifische Handlung müssen Sie durchführen? Versuchen Sie, mit einem Verb zu beginnen.",
       "vague": "Versuchen Sie, mit einem Aktionsverb wie \"Anrufen\", \"Schreiben\", \"Planen\" oder \"Recherchieren\" zu beginnen"
-    },
-    "nameHelper": {
-      "title": "Machen Sie es beschreibender!",
-      "suggestion": "Versuchen Sie, mehr Details hinzuzufügen wie \"Zahnarzt anrufen um Reinigungstermin zu vereinbaren\" anstatt nur \"Zahnarzt anrufen\""
     },
     "labels": {
       "tags": "Tags",
@@ -984,7 +914,6 @@
     "updateError": "Fehler bei der Aktualisierung der Aufgabe",
     "deleteSuccess": "Aufgabe erfolgreich gelöscht",
     "deleteError": "Fehler beim Löschen der Aufgabe",
-    "startedSuccessfully": "Aufgabe erfolgreich gestartet!",
     "created": "Aufgabe",
     "createdSuccessfully": "erfolgreich erstellt!",
     "updated": "Aufgabe",
