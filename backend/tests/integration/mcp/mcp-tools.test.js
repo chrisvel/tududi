@@ -1156,6 +1156,96 @@ describe('MCP Tools Integration', () => {
             });
         });
 
+        describe('skip_task_occurrence', () => {
+            it('should move a recurring task on and record a skipped occurrence', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Water bill',
+                    status: 0,
+                    recurrence_type: 'monthly',
+                    recurrence_interval: 1,
+                    recurrence_month_day: 15,
+                    due_date: new Date(Date.UTC(2026, 0, 15, 12)),
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'skip_task_occurrence',
+                    { id: task.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.message).toBe(
+                    'Occurrence skipped, next due 2026-02-15'
+                );
+                expect(content.next_due_date).toBe('2026-02-15');
+
+                await task.reload();
+                expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+                expect(task.completed_at).toBeNull();
+                expect(new Date(task.due_date).getUTCMonth()).toBe(1);
+
+                const completions = await RecurringCompletion.findAll({
+                    where: { task_id: task.id },
+                });
+                expect(completions).toHaveLength(1);
+                expect(completions[0].skipped).toBe(true);
+            });
+
+            it('should reject a non-recurring task', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'One-off',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'skip_task_occurrence',
+                    { id: task.id }
+                );
+
+                const { isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                await task.reload();
+                expect(task.status).toBe(0);
+            });
+
+            it('should reject a done or cancelled task without writing a row', async () => {
+                for (const status of [
+                    Task.STATUS.DONE,
+                    Task.STATUS.CANCELLED,
+                ]) {
+                    const task = await Task.create({
+                        user_id: user.id,
+                        name: 'Water bill',
+                        status,
+                        recurrence_type: 'monthly',
+                        recurrence_interval: 1,
+                        recurrence_month_day: 15,
+                        due_date: new Date(Date.UTC(2026, 0, 15, 12)),
+                    });
+
+                    const response = await callMcpTool(
+                        apiTokenValue,
+                        'skip_task_occurrence',
+                        { id: task.id }
+                    );
+
+                    const { isError } = getToolContent(response);
+                    expect(isError).toBe(true);
+                    await task.reload();
+                    expect(task.status).toBe(status);
+                    const completions = await RecurringCompletion.count({
+                        where: { task_id: task.id },
+                    });
+                    expect(completions).toBe(0);
+                }
+            });
+        });
+
         describe('task relations', () => {
             it('creates, lists, filters, warns and removes', async () => {
                 const blocker = await Task.create({
@@ -2237,6 +2327,7 @@ describe('MCP Tools Integration', () => {
             expect(toolNames).toContain('create_task');
             expect(toolNames).toContain('update_task');
             expect(toolNames).toContain('complete_task');
+            expect(toolNames).toContain('skip_task_occurrence');
             expect(toolNames).toContain('delete_task');
             expect(toolNames).toContain('add_subtask');
             expect(toolNames).toContain('create_task_relation');

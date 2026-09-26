@@ -130,12 +130,13 @@ describe('MCP Controller', () => {
             );
 
             expect(taskCategory).toBeDefined();
-            expect(taskCategory.count).toBe(8);
+            expect(taskCategory.count).toBe(9);
             expect(taskCategory.tools).toContain('list_tasks');
             expect(taskCategory.tools).toContain('get_task');
             expect(taskCategory.tools).toContain('create_task');
             expect(taskCategory.tools).toContain('update_task');
             expect(taskCategory.tools).toContain('complete_task');
+            expect(taskCategory.tools).toContain('skip_task_occurrence');
             expect(taskCategory.tools).toContain('delete_task');
             expect(taskCategory.tools).toContain('add_subtask');
             expect(taskCategory.tools).toContain('get_task_metrics');

@@ -12,6 +12,7 @@ const {
     planOccurrenceAdvance,
     recordOccurrence,
     completeOccurrence,
+    isSeriesFinished,
 } = require('../../tasks/operations/recurring');
 const { handleCompletionStatus } = require('../../tasks/operations/completion');
 const { Op } = require('sequelize');
@@ -839,6 +840,94 @@ function registerTaskTools(server, context, tools) {
                                           warning: `Completed while blocked by ${openBlockers.length} open task(s)`,
                                           open_blockers: openBlockers,
                                       }
+                                    : {}),
+                                task: serialized,
+                            },
+                            null,
+                            2
+                        ),
+                    },
+                ],
+            };
+        },
+    });
+
+    // 5b. skip_task_occurrence - Move a recurring task on without completing it
+    tools.push({
+        name: 'skip_task_occurrence',
+        description:
+            'Skip the current occurrence of a recurring task without completing it (e.g. a bill someone else paid). The task moves to its next due date and the occurrence is recorded as skipped.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                id: {
+                    type: ['number', 'string'],
+                    description: 'Task ID or UID',
+                },
+            },
+            required: ['id'],
+        },
+        handler: async (params) => {
+            const task = await findTaskByIdentifier(params.id);
+
+            if (!task) {
+                throw new Error(`Task not found: ${params.id}`);
+            }
+
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'task',
+                task.uid
+            );
+            const canWrite =
+                task.user_id === context.userId ||
+                access === permissionsService.ACCESS.RW ||
+                access === permissionsService.ACCESS.ADMIN;
+            if (!canWrite) {
+                throw new Error('Access denied');
+            }
+
+            if (isSeriesFinished(task)) {
+                throw new Error(
+                    'Task is already done or cancelled, nothing to skip'
+                );
+            }
+
+            const occurrence = await completeOccurrence(task, {
+                timezone: context.user.timezone,
+                userId: context.userId,
+                skipped: true,
+            });
+
+            if (!occurrence) {
+                throw new Error(
+                    'Only recurring tasks have occurrences to skip'
+                );
+            }
+
+            const reloadedTask = await taskRepository.findById(task.id, {
+                include: [
+                    { model: Project, as: 'Project' },
+                    { model: Tag, as: 'Tags' },
+                ],
+            });
+
+            const serialized = await serializeTask(
+                reloadedTask,
+                context.user.timezone
+            );
+
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify(
+                            {
+                                message: occurrence.hasNext
+                                    ? `Occurrence skipped, next due ${serialized.due_date}`
+                                    : 'Occurrence skipped, series ended',
+                                ...(occurrence.hasNext
+                                    ? { next_due_date: serialized.due_date }
                                     : {}),
                                 task: serialized,
                             },
