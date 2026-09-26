@@ -25,6 +25,8 @@ const MIN_DURATION = 5;
 const MAX_DURATION = 12 * 60;
 const DEFAULT_DURATION = 30;
 const INBOX_LIMIT = 20;
+// Same window as the Today page's suggestions: nothing due further out.
+const SUGGESTED_HORIZON_MS = 3 * 24 * 60 * 60 * 1000;
 
 function resolvePlanDate(date, timezone) {
     if (
@@ -249,18 +251,51 @@ async function getCandidates(user) {
     const timezone = getSafeTimezone(user.timezone);
     const metrics = await computeTaskMetrics(user.id, timezone);
 
-    // Started tasks that are past due count as overdue here, so late work
-    // is never ranked below fresh work.
-    const todayStart = new Date(getTodayBoundsInUTC(timezone).start).getTime();
-    const started = [...metrics.tasks_in_progress, ...metrics.today_plan_tasks];
+    // Groups follow the task's own due date, as Profile > Planning
+    // describes them. The Today page lists also count a late or due-today
+    // project, which put undated tasks under "Overdue". Started tasks that
+    // are past due count as overdue here, so late work is never ranked below
+    // fresh work.
+    const bounds = getTodayBoundsInUTC(timezone);
+    const todayStart = new Date(bounds.start).getTime();
+    const todayEnd = new Date(bounds.end).getTime();
+    const horizon = Date.now() + SUGGESTED_HORIZON_MS;
+    const dueTime = (task) =>
+        task.due_date ? new Date(task.due_date).getTime() : null;
     const isLate = (task) =>
-        task.due_date && new Date(task.due_date).getTime() < todayStart;
+        dueTime(task) !== null && dueTime(task) < todayStart;
+    const isDueToday = (task) =>
+        dueTime(task) !== null &&
+        dueTime(task) >= todayStart &&
+        dueTime(task) <= todayEnd;
+    const started = [...metrics.tasks_in_progress, ...metrics.today_plan_tasks];
+    const fromProjectDates = [
+        ...metrics.tasks_overdue,
+        ...metrics.tasks_due_today,
+    ].filter((task) => !isLate(task) && !isDueToday(task));
 
     const groupTasks = {
-        overdue: [...metrics.tasks_overdue, ...started.filter(isLate)],
-        due_today: metrics.tasks_due_today,
+        overdue: [
+            ...metrics.tasks_overdue.filter(isLate),
+            ...metrics.tasks_due_today.filter(isLate),
+            ...started.filter(isLate),
+        ],
+        due_today: [
+            ...metrics.tasks_overdue.filter(isDueToday),
+            ...metrics.tasks_due_today.filter(isDueToday),
+        ],
         in_progress: started,
-        suggested: metrics.suggested_tasks,
+        suggested: [
+            ...metrics.suggested_tasks,
+            ...fromProjectDates.filter(
+                (task) =>
+                    (dueTime(task) === null || dueTime(task) <= horizon) &&
+                    !(
+                        task.defer_until &&
+                        new Date(task.defer_until).getTime() > Date.now()
+                    )
+            ),
+        ],
     };
 
     const seen = new Set();
