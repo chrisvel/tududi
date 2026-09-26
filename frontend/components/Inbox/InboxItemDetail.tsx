@@ -409,56 +409,64 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     // ── Edit-mode footer ──────────────────────────────────────────────────────
 
     const renderComposerFooter = (context: InboxComposerFooterContext) => (
-        <div className="mt-2 flex items-center justify-between gap-2 flex-wrap h-5">
-            <div className="flex items-center gap-3.5">
-                {loading && (
-                    <div className="h-3.5 w-3.5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-                )}
-                <span className="text-[11px] text-gray-400 dark:text-gray-500">
-                    {t('inbox.saveAs', 'Save as')}
-                </span>
+        <>
+            {item.uid && item.attachments && (
+                <InboxItemAttachments
+                    itemUid={item.uid}
+                    attachments={item.attachments}
+                />
+            )}
+            <div className="mt-2 flex items-center justify-between gap-2 flex-wrap h-5">
+                <div className="flex items-center gap-3.5">
+                    {loading && (
+                        <div className="h-3.5 w-3.5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                    )}
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                        {t('inbox.saveAs', 'Save as')}
+                    </span>
+                    <button
+                        type="button"
+                        onClick={() => void handleConvertToTask(context)}
+                        className="text-[12px] text-blue-600 dark:text-blue-400 hover:underline transition-colors focus:outline-none"
+                    >
+                        {t('inbox.createTask', 'Task')}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => void handleConvertToNote(context)}
+                        className="text-[12px] text-purple-600 dark:text-purple-400 hover:underline transition-colors focus:outline-none"
+                    >
+                        {t('inbox.createNote', 'Note')}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleConvertToProject(context)}
+                        className="text-[12px] text-green-600 dark:text-green-400 hover:underline transition-colors focus:outline-none"
+                    >
+                        {t('inbox.createProject', 'Project')}
+                    </button>
+                    {onReClarify && item.uid && (
+                        <>
+                            <span className="text-[11px] text-gray-300 dark:text-gray-600 select-none">•</span>
+                            <button
+                                type="button"
+                                onClick={() => { setIsEditing(false); onReClarify(item.uid!); }}
+                                className="text-[12px] text-gray-400 dark:text-gray-500 hover:underline transition-colors focus:outline-none"
+                            >
+                                {t('inbox.reClarifyLink', 'Re-clarify')}
+                            </button>
+                        </>
+                    )}
+                </div>
                 <button
                     type="button"
-                    onClick={() => void handleConvertToTask(context)}
-                    className="text-[12px] text-blue-600 dark:text-blue-400 hover:underline transition-colors focus:outline-none"
+                    onClick={handleDelete}
+                    className="text-[12px] text-red-500 dark:text-red-400 hover:underline transition-colors focus:outline-none"
                 >
-                    {t('inbox.createTask', 'Task')}
+                    {t('common.delete', 'Delete')}
                 </button>
-                <button
-                    type="button"
-                    onClick={() => void handleConvertToNote(context)}
-                    className="text-[12px] text-purple-600 dark:text-purple-400 hover:underline transition-colors focus:outline-none"
-                >
-                    {t('inbox.createNote', 'Note')}
-                </button>
-                <button
-                    type="button"
-                    onClick={() => handleConvertToProject(context)}
-                    className="text-[12px] text-green-600 dark:text-green-400 hover:underline transition-colors focus:outline-none"
-                >
-                    {t('inbox.createProject', 'Project')}
-                </button>
-                {onReClarify && item.uid && (
-                    <>
-                        <span className="text-[11px] text-gray-300 dark:text-gray-600 select-none">•</span>
-                        <button
-                            type="button"
-                            onClick={() => { setIsEditing(false); onReClarify(item.uid!); }}
-                            className="text-[12px] text-gray-400 dark:text-gray-500 hover:underline transition-colors focus:outline-none"
-                        >
-                            {t('inbox.reClarifyLink', 'Re-clarify')}
-                        </button>
-                    </>
-                )}
             </div>
-            <button
-                type="button"
-                onClick={handleDelete}
-                className="text-[12px] text-red-500 dark:text-red-400 hover:underline transition-colors focus:outline-none"
-            >
-                {t('common.delete', 'Delete')}
-            </button>
-        </div>
+        </>
     );
 
     // ── Render ────────────────────────────────────────────────────────────────
