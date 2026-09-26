@@ -92,6 +92,11 @@ async function listMcpTools(req, res) {
             ],
         },
         {
+            category: 'Comments',
+            count: 2,
+            tools: ['list_task_comments', 'add_task_comment'],
+        },
+        {
             category: 'Projects',
             count: 5,
             tools: [
