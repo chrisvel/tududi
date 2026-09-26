@@ -8,11 +8,12 @@ const {
     getCurrentDateInTimezone,
 } = require('../../utils/timezone-utils');
 const { fetchFeed, normalizeFeedUrl, FeedFetchError } = require('./fetcher');
-const { parseCalendar, eventsForDate } = require('./icsEvents');
+const { parseCalendar, eventsForRange } = require('./icsEvents');
 const moment = require('moment-timezone');
 
 const CACHE_TTL_MS = 15 * 60 * 1000;
 const MAX_FEEDS_PER_USER = 10;
+const MAX_RANGE_DAYS = 62;
 const COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
 
 // Parsed feeds per process, keyed by feed uid. A feed changes rarely and
@@ -27,6 +28,7 @@ function serializeFeed(feed) {
         color: feed.color,
         last_fetched_at: feed.last_fetched_at,
         last_error: feed.last_error,
+        show_on_calendar: feed.show_on_calendar,
     };
 }
 
@@ -114,6 +116,12 @@ async function update(userId, uid, body = {}) {
     const updates = {};
     if (body.name !== undefined) updates.name = validateName(body.name);
     if (body.color !== undefined) updates.color = validateColor(body.color);
+    if (body.show_on_calendar !== undefined) {
+        if (typeof body.show_on_calendar !== 'boolean') {
+            throw new ValidationError('show_on_calendar must be true or false');
+        }
+        updates.show_on_calendar = body.show_on_calendar;
+    }
     if (body.url !== undefined && body.url !== '') {
         const url = normalizeFeedUrl(body.url);
         const events = await loadAndCheck(url);
@@ -157,15 +165,15 @@ async function loadFeedEvents(feed) {
     }
 }
 
-async function eventsForDay(user, date) {
-    const timezone = getSafeTimezone(user.timezone);
-    const day =
-        date && moment(date, 'YYYY-MM-DD', true).isValid()
-            ? date
-            : getCurrentDateInTimezone(timezone);
-    if (date && date !== day) {
-        throw new ValidationError('date must be a YYYY-MM-DD date');
+function validDay(value, name) {
+    if (!moment(value, 'YYYY-MM-DD', true).isValid()) {
+        throw new ValidationError(`${name} must be a YYYY-MM-DD date`);
     }
+    return value;
+}
+
+async function eventsBetween(user, startDate, endDate) {
+    const timezone = getSafeTimezone(user.timezone);
 
     const feeds = await CalendarFeed.findAll({
         where: { user_id: user.id },
@@ -178,7 +186,12 @@ async function eventsForDay(user, date) {
         feeds.map(async (feed) => {
             try {
                 const parsed = await loadFeedEvents(feed);
-                for (const event of eventsForDate(parsed, day, timezone)) {
+                for (const event of eventsForRange(
+                    parsed,
+                    startDate,
+                    endDate,
+                    timezone
+                )) {
                     events.push({
                         ...event,
                         feed_uid: feed.uid,
@@ -193,15 +206,54 @@ async function eventsForDay(user, date) {
     );
 
     events.sort((a, b) => {
+        if (a.date !== b.date) return a.date < b.date ? -1 : 1;
         if (a.all_day !== b.all_day) return a.all_day ? -1 : 1;
         return (a.start_minute ?? 0) - (b.start_minute ?? 0);
     });
 
-    return { date: day, events, errors };
+    return { events, errors };
+}
+
+async function eventsForDay(user, date) {
+    const day = date
+        ? validDay(date, 'date')
+        : getCurrentDateInTimezone(getSafeTimezone(user.timezone));
+    const { events, errors } = await eventsBetween(user, day, day);
+    return {
+        date: day,
+        events: events.map(({ date: _date, ...event }) => event),
+        errors,
+    };
+}
+
+// Feeds hidden from the Calendar page are still returned: the page filters
+// them client-side so a toggle is instant.
+async function eventsForRangeOfDays(user, start, end) {
+    validDay(start, 'start');
+    validDay(end, 'end');
+    const days = moment(end).diff(moment(start), 'days');
+    if (days < 0) {
+        throw new ValidationError('end must not be before start');
+    }
+    if (days >= MAX_RANGE_DAYS) {
+        throw new ValidationError(
+            `Ask for at most ${MAX_RANGE_DAYS} days at a time`
+        );
+    }
+    const result = await eventsBetween(user, start, end);
+    return { start, end, ...result };
 }
 
 function clearCache() {
     cache.clear();
 }
 
-module.exports = { list, create, update, remove, eventsForDay, clearCache };
+module.exports = {
+    list,
+    create,
+    update,
+    remove,
+    eventsForDay,
+    eventsForRangeOfDays,
+    clearCache,
+};

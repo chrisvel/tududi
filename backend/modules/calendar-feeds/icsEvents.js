@@ -130,15 +130,48 @@ function buildOccurrence(event, start, end, date, userTimezone, tzid) {
     };
 }
 
-// Every event touching `date` (YYYY-MM-DD) in the user's timezone, with
-// recurring events expanded (RRULE, RDATE, EXDATE and moved instances).
-function eventsForDate(events, date, userTimezone) {
-    const dayStart = moment.tz(date, 'YYYY-MM-DD', userTimezone);
+function eachDay(startDate, endDate, userTimezone) {
+    const days = [];
+    const last = moment.tz(endDate, 'YYYY-MM-DD', userTimezone);
+    for (
+        const day = moment.tz(startDate, 'YYYY-MM-DD', userTimezone);
+        !day.isAfter(last);
+        day.add(1, 'day')
+    ) {
+        days.push(day.format('YYYY-MM-DD'));
+    }
+    return days;
+}
+
+// Every event touching a day from `startDate` to `endDate` (YYYY-MM-DD) in
+// the user's timezone, with recurring events expanded (RRULE, RDATE, EXDATE
+// and moved instances). An event spanning several days appears once per day,
+// each tagged with that `date`.
+function eventsForRange(events, startDate, endDate, userTimezone) {
+    const days = eachDay(startDate, endDate, userTimezone);
     // Pad the window by a day each side: zone offsets can shift an
     // occurrence's local date either way.
-    const windowStart = dayStart.clone().subtract(1, 'day');
-    const windowEnd = dayStart.clone().add(2, 'day');
+    const windowStart = moment
+        .tz(startDate, 'YYYY-MM-DD', userTimezone)
+        .subtract(1, 'day');
+    const windowEnd = moment
+        .tz(endDate, 'YYYY-MM-DD', userTimezone)
+        .add(2, 'day');
     const results = [];
+
+    const collect = (event, start, end, tzid) => {
+        for (const day of days) {
+            const occurrence = buildOccurrence(
+                event,
+                start,
+                end,
+                day,
+                userTimezone,
+                tzid
+            );
+            if (occurrence) results.push({ ...occurrence, date: day });
+        }
+    };
 
     for (const event of events) {
         const tzid = event.component
@@ -146,15 +179,7 @@ function eventsForDate(events, date, userTimezone) {
             ?.getParameter('tzid');
 
         if (!event.isRecurring()) {
-            const occurrence = buildOccurrence(
-                event,
-                event.startDate,
-                event.endDate,
-                date,
-                userTimezone,
-                tzid
-            );
-            if (occurrence) results.push(occurrence);
+            collect(event, event.startDate, event.endDate, tzid);
             continue;
         }
 
@@ -177,26 +202,31 @@ function eventsForDate(events, date, userTimezone) {
                 : toMoment(details.endDate, tzid, userTimezone);
             if (endAt.isBefore(windowStart)) continue;
 
-            const occurrence = buildOccurrence(
+            collect(
                 details.item,
                 details.startDate,
                 details.endDate,
-                date,
-                userTimezone,
                 details.item === event
                     ? tzid
                     : details.item.component
                           .getFirstProperty('dtstart')
                           ?.getParameter('tzid')
             );
-            if (occurrence) results.push(occurrence);
         }
     }
 
     return results.sort((a, b) => {
+        if (a.date !== b.date) return a.date < b.date ? -1 : 1;
         if (a.all_day !== b.all_day) return a.all_day ? -1 : 1;
         return (a.start_minute ?? 0) - (b.start_minute ?? 0);
     });
 }
 
-module.exports = { parseCalendar, eventsForDate };
+// Every event touching `date` (YYYY-MM-DD), in start order.
+function eventsForDate(events, date, userTimezone) {
+    return eventsForRange(events, date, date, userTimezone).map(
+        ({ date: _date, ...occurrence }) => occurrence
+    );
+}
+
+module.exports = { parseCalendar, eventsForDate, eventsForRange };

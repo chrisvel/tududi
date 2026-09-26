@@ -126,6 +126,70 @@ describe('Calendar feed routes', () => {
         });
     });
 
+    it('shows feeds on the Calendar page by default and lets a feed be hidden', async () => {
+        const created = await agent
+            .post('/api/calendar-feeds')
+            .send({ name: 'Google', url: SECRET_URL });
+        expect(created.body.feed.show_on_calendar).toBe(true);
+
+        const hidden = await agent
+            .patch(`/api/calendar-feeds/${created.body.feed.uid}`)
+            .send({ show_on_calendar: false });
+        expect(hidden.status).toBe(200);
+        expect(hidden.body.feed.show_on_calendar).toBe(false);
+
+        const list = await agent.get('/api/calendar-feeds');
+        expect(list.body.feeds[0].show_on_calendar).toBe(false);
+
+        const bad = await agent
+            .patch(`/api/calendar-feeds/${created.body.feed.uid}`)
+            .send({ show_on_calendar: 'no' });
+        expect(bad.status).toBe(400);
+    });
+
+    it('keeps a hidden feed in the day events used by the planner', async () => {
+        const created = await agent
+            .post('/api/calendar-feeds')
+            .send({ name: 'Google', url: SECRET_URL });
+        await agent
+            .patch(`/api/calendar-feeds/${created.body.feed.uid}`)
+            .send({ show_on_calendar: false });
+
+        const res = await agent.get(`/api/calendar-feeds/events?date=${today}`);
+
+        expect(res.body.events).toHaveLength(1);
+    });
+
+    it('returns the events for a date range, tagged with their day', async () => {
+        await agent
+            .post('/api/calendar-feeds')
+            .send({ name: 'Google', url: SECRET_URL });
+        const start = moment(today).subtract(3, 'days').format('YYYY-MM-DD');
+        const end = moment(today).add(3, 'days').format('YYYY-MM-DD');
+
+        const res = await agent.get(
+            `/api/calendar-feeds/events?start=${start}&end=${end}`
+        );
+
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ start, end, errors: [] });
+        expect(res.body.events).toHaveLength(1);
+        expect(res.body.events[0]).toMatchObject({
+            date: today,
+            title: 'Dentist',
+            feed_name: 'Google',
+        });
+    });
+
+    it('rejects a range that is reversed, malformed or too long', async () => {
+        const get = (query) => agent.get(`/api/calendar-feeds/events?${query}`);
+
+        expect((await get('start=2026-09-10&end=2026-09-01')).status).toBe(400);
+        expect((await get('start=2026-09-10')).status).toBe(400);
+        expect((await get('start=nope&end=2026-09-01')).status).toBe(400);
+        expect((await get('start=2026-01-01&end=2026-12-31')).status).toBe(400);
+    });
+
     it('reports a feed that stopped working instead of failing the day', async () => {
         await agent
             .post('/api/calendar-feeds')

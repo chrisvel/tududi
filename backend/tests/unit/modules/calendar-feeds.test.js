@@ -1,6 +1,7 @@
 const {
     parseCalendar,
     eventsForDate,
+    eventsForRange,
 } = require('../../../modules/calendar-feeds/icsEvents');
 const axios = require('axios');
 const dns = require('dns');
@@ -119,6 +120,45 @@ describe('eventsForDate', () => {
         expect(day.map((e) => e.title)).not.toContain('Cancelled');
         expect(day.find((e) => e.uid === 'free').busy).toBe(false);
         expect(day.find((e) => e.uid === 'call').busy).toBe(true);
+    });
+});
+
+describe('eventsForRange', () => {
+    const events = parseCalendar(ICS);
+    const range = eventsForRange(
+        events,
+        '2026-09-23',
+        '2026-09-26',
+        'Europe/Athens'
+    );
+    const titlesOn = (date) =>
+        range.filter((e) => e.date === date).map((e) => e.title);
+
+    it('matches eventsForDate for every day in the range', () => {
+        for (const date of [
+            '2026-09-23',
+            '2026-09-24',
+            '2026-09-25',
+            '2026-09-26',
+        ]) {
+            const single = eventsForDate(events, date, 'Europe/Athens');
+            const fromRange = range
+                .filter((e) => e.date === date)
+                .map(({ date: _date, ...event }) => event);
+            expect(fromRange).toEqual(single);
+        }
+    });
+
+    it('tags each event with its day and keeps day order', () => {
+        expect(titlesOn('2026-09-25')).not.toContain('School drop-off');
+        expect(titlesOn('2026-09-24')).toContain('Name day');
+        const dates = range.map((e) => e.date);
+        expect(dates).toEqual([...dates].sort());
+    });
+
+    it('lists an event that crosses midnight on both days', () => {
+        expect(titlesOn('2026-09-24')).toContain('Late show');
+        expect(titlesOn('2026-09-25')).toContain('Late show');
     });
 });
 

@@ -56,6 +56,16 @@ const calendarFeedsController = {
     async events(req, res, next) {
         try {
             const user = requireUser(req);
+            if (req.query.start || req.query.end) {
+                res.json(
+                    await calendarFeedsService.eventsForRangeOfDays(
+                        user,
+                        req.query.start,
+                        req.query.end
+                    )
+                );
+                return;
+            }
             res.json(
                 await calendarFeedsService.eventsForDay(user, req.query.date)
             );

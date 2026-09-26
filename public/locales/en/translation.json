@@ -614,8 +614,11 @@
       "added": "Calendar connected",
       "addError": "Could not add that calendar",
       "deleteError": "Could not remove that calendar",
-      "title": "Calendars on Today",
-      "description": "Show your meetings next to your day plan. Tududi only reads these calendars; it never changes them.",
+      "title": "Calendars",
+      "description": "Show your meetings next to your day plan and on the Calendar page. Tududi only reads these calendars; it never changes them.",
+      "showOnCalendar": "Show {{name}} on the Calendar page",
+      "showOnCalendarShort": "Show on Calendar page",
+      "toggleError": "Could not update that calendar",
       "empty": "No calendars connected yet.",
       "lastSync": "updated {{time}}",
       "remove": "Remove {{name}}",
@@ -628,7 +631,7 @@
       "checking": "Checking the calendar…",
       "add": "Connect",
       "removeTitle": "Remove calendar",
-      "removeMessage": "Stop showing \"{{name}}\" on Today? The calendar itself is not touched.",
+      "removeMessage": "Stop showing \"{{name}}\" on Today and the Calendar page? The calendar itself is not touched.",
       "removeConfirm": "Remove",
       "missingFields": "Add a name and the calendar address"
     },
@@ -1471,7 +1474,12 @@
     "medium": "medium",
     "low": "low",
     "time": "Time",
-    "allDay": "All day"
+    "allDay": "All day",
+    "manageCalendars": "Calendars",
+    "manageDescription": "Connect read-only calendars and choose which ones appear here. Tududi never changes them.",
+    "hideCalendar": "Hide {{name}}",
+    "showCalendar": "Show {{name}}",
+    "feedError": "Could not load: {{names}}"
   },
   "pages": {
     "notFound": {
