@@ -66,21 +66,6 @@ describe('MCP Routing', () => {
     });
 
     describe('POST /api/mcp', () => {
-        let originalEnv;
-
-        beforeEach(() => {
-            originalEnv = process.env.FF_ENABLE_MCP;
-            process.env.FF_ENABLE_MCP = 'true';
-        });
-
-        afterEach(() => {
-            if (originalEnv === undefined) {
-                delete process.env.FF_ENABLE_MCP;
-            } else {
-                process.env.FF_ENABLE_MCP = originalEnv;
-            }
-        });
-
         it('should require Bearer token authentication', async () => {
             const response = await request(app)
                 .post('/api/mcp')

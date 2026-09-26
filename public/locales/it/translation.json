@@ -102,7 +102,6 @@
     "showMetrics": "Mostra Metriche",
     "showProductivity": "Mostra Insights di Produttività",
     "showIntelligence": "Mostra Suggerimenti Intelligenti",
-    "showNextTaskSuggestion": "Suggerimento Prossima Attività",
     "showSuggestions": "Mostra Suggeriti",
     "showDueToday": "Mostra Attività in Scadenza Oggi",
     "showCompleted": "Mostra Attività Completate"
@@ -336,25 +335,15 @@
     },
     "frequencyHelp": "Scegli quanto spesso vuoi ricevere i riassunti delle attività",
     "taskIntelligence": "Intelligenza Attività",
-    "taskIntelligenceDescription": "Ricevi suggerimenti utili per rendere i nomi delle tue attività più descrittivi e attuabili.",
     "enableTaskIntelligence": "Abilita Assistente Intelligenza Attività",
     "autoSuggestNextActions": "Suggerisci Automaticamente Prossime Azioni",
-    "autoSuggestNextActionsDescription": "Quando crei un progetto, suggerisci automaticamente la prossima azione fisica da intraprendere.",
     "enableAutoSuggestNextActions": "Abilita Suggerimenti Prossima Azione",
-    "productivityFeatures": "Funzioni di Produttività",
     "pomodoroDescription": "Abilita il timer Pomodoro nella barra di navigazione per sessioni di lavoro focalizzato.",
     "enablePomodoro": "Abilita Timer Pomodoro",
     "productivityAssistant": "Assistente di Produttività",
-    "productivityAssistantDescription": "Mostra insights di produttività che aiutano a identificare progetti bloccati, attività vaghe e miglioramenti del flusso di lavoro nella tua pagina Oggi.",
     "enableProductivityAssistant": "Abilita Insights di Produttività",
     "nextTaskSuggestion": "Suggerimento Prossima Attività",
-    "nextTaskSuggestionDescription": "Suggerisci automaticamente la prossima migliore attività su cui lavorare quando non hai nulla in corso, dando priorità alle attività in scadenza oggi, poi a quelle suggerite dalla tua pagina Oggi.",
     "enableNextTaskSuggestion": "Abilita Suggerimenti Prossima Attività",
-    "nextActionPrompt": "Qual è la prossima azione fisica per questo progetto?",
-    "nextActionPlaceholder": "es. Chiamare il cliente per programmare un incontro, Ricercare concorrenti online, Creare cartella progetto...",
-    "addNextAction": "Aggiungi Prossima Azione",
-    "skipNextAction": "Salta per ora",
-    "nextActionHint": "Pensa al passo più piccolo e concreto che puoi fare ora per far avanzare questo progetto.",
     "tabs": {
       "general": "Generale",
       "security": "Sicurezza",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Non hai impostato una password. Considera di impostarne una per avere un metodo di accesso alternativo."
     },
     "kanbanDescription": "Abilita la Bacheca Kanban per monitorare il progresso delle attività attraverso le corsie.",
-    "intelligenceSection": "Intelligenza",
-    "taskIntelligenceLabel": "Assistente di Intelligenza delle Attività",
-    "autoSuggestNextActionsLabel": "Suggerimenti per la Prossima Azione",
-    "productivityAssistantLabel": "Approfondimenti sulla Produttività",
-    "nextTaskSuggestionLabel": "Suggerimenti per la Prossima Attività",
     "featuresAddons": "Funzionalità e Componenti Aggiuntivi",
     "caldav": {
       "title": "Sincronizzazione CalDAV",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Sei sicuro di voler eliminare \"{{name}}\"? Questo rimuoverà il calendario e tutte le configurazioni di sincronizzazione."
     },
     "caldavWizard": {
-      "title": "Procedura guidata di configurazione CalDAV",
-      "confirmClose": "Sei sicuro di voler chiudere? I tuoi progressi andranno persi.",
       "calendarName": "Nome del calendario",
       "calendarNamePlaceholder": "es. Attività di lavoro",
       "calendarNameRequired": "Il nome del calendario è obbligatorio",
@@ -518,9 +500,6 @@
       "authType": "Tipo di autenticazione",
       "basicAuth": "Autenticazione di base",
       "bearerAuth": "Token Bearer",
-      "testDescription": "Testa la connessione al tuo server CalDAV prima di procedere.",
-      "server": "Server",
-      "path": "Percorso",
       "testConnection": "Testa connessione",
       "testing": "Testing...",
       "connectionSuccess": "Connessione riuscita!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Ultima modifica vince (automatico)",
       "localWins": "Locale vince sempre",
       "remoteWins": "Remoto vince sempre",
-      "reviewDescription": "Rivedi le tue impostazioni prima di creare il calendario.",
       "calendarSettings": "Impostazioni del Calendario",
       "serverSettings": "Impostazioni del Server",
       "syncSettings": "Impostazioni di Sincronizzazione",
@@ -648,16 +626,6 @@
     "suggestion": "Clicca su qualsiasi elemento sopra per aprirlo e apportare miglioramenti.",
     "issuesFound_one": "1 problema di produttività necessita attenzione",
     "issuesFound_other": "{{count}} problemi di produttività necessitano attenzione"
-  },
-  "nextTask": {
-    "suggestion": "Dato che non c'è nulla in corso, che ne dici di iniziare con",
-    "suggestionTodayPlan": "Dato che non c'è nulla in corso, che ne dici di iniziare con questa attività dal tuo piano di oggi",
-    "suggestionDueToday": "Dato che non c'è nulla in corso, che ne dici di iniziare con questa attività in scadenza oggi",
-    "suggestionSuggested": "Dato che non c'è nulla in corso, che ne dici di iniziare con questa attività suggerita",
-    "letsDoIt": "Sì, facciamolo!",
-    "starting": "Avvio...",
-    "startedSuccessfully": "Attività avviata con successo!",
-    "giveMeSomethingElse": "Dammi qualcos'altro"
   },
   "modals": {
     "confirmDelete": "Sei sicuro di voler eliminare?",
@@ -939,41 +907,7 @@
     "infoShort": "La Posta in arrivo è dove atterrano i pensieri non categorizzati — annota le cose, sistemale dopo.",
     "recentlyCaptured": "Catturato di recente",
     "line": "linea",
-    "lines": "linee",
-    "processN": "Elabora {{count}}",
-    "allClarified": "Tutto chiarito",
-    "reClarify": "Richiarire",
-    "trashedRestore": "{{count}} cestinati · ripristina",
-    "restored": "Elementi cestinati ripristinati",
-    "restoreError": "Impossibile ripristinare gli elementi",
-    "trashError": "Impossibile cestinare l'elemento",
-    "clarifyProgress": "Chiarire · {{progress}}",
-    "clarifyDone": "Tutto chiarito. La posta in arrivo è calma.",
-    "clarifyBackToList": "Torna all'elenco",
-    "clarifyExit": "Esci dalla chiarificazione",
-    "clarifyBack": "← Indietro",
-    "clarifyQ": {
-      "actionable": "È azionabile?",
-      "notActionable": "Che tipo di cosa è?",
-      "steps": "Un passo o diversi?",
-      "twomin": "Puoi farlo in meno di 2 minuti?",
-      "deferDelegate": "Più tardi tu stesso, o passarla a qualcun altro?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Sì, azionabile",
-      "notActionable": "Non azionabile",
-      "trash": "Cestina",
-      "someday": "Un giorno / Forse",
-      "referenceNote": "Nota di riferimento",
-      "oneStep": "Un passo",
-      "severalSteps": "Diversi passi (progetto)",
-      "doItNow": "Sì — fallo ora",
-      "no": "No",
-      "scheduleIt": "Pianificalo",
-      "delegate": "Delega"
-    },
-    "somedayCreated": "Aggiunto a Un giorno",
-    "reClarifyLink": "Riaffermare"
+    "lines": "linee"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Impossibile aggiornare l'attività",
     "deleteSuccess": "Attività eliminata con successo",
     "deleteError": "Impossibile eliminare l'attività",
-    "startedSuccessfully": "Attività avviata con successo!",
     "created": "Attività",
     "createdSuccessfully": "creata con successo!",
     "updated": "Attività",
@@ -1061,10 +994,6 @@
       "short": "Prova a essere più specifico su cosa deve essere fatto",
       "noVerb": "Quale azione specifica devi intraprendere? Prova a iniziare con un verbo.",
       "vague": "Prova a iniziare con un verbo d'azione come \"Chiama\", \"Scrivi\", \"Pianifica\" o \"Ricerca\""
-    },
-    "nameHelper": {
-      "title": "Rendila più descrittiva!",
-      "suggestion": "Prova ad aggiungere più dettagli come \"Chiamare il dentista per programmare l'appuntamento per la pulizia\" invece di solo \"Chiamare il dentista\""
     },
     "overdueAlert": "Questo compito era nel tuo piano ieri e non è stato completato.",
     "overdueYesterday": "Considera di dare priorità a questo compito o di suddividerlo in passaggi più piccoli.",

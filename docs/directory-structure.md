@@ -191,8 +191,7 @@ tududi/                      # Repository root
 │   ├── demo.js         # Demo sandbox guards
 │   ├── uploadsAccess.js # Access checks for uploaded files
 │   ├── rateLimiter.js, rateLimitStore.js  # Rate limiting
-│   ├── queryLogger.js  # Development query logging
-│   └── permissionCache.js
+│   └── queryLogger.js  # Development query logging
 │
 ├── services/            # Cross-cutting services
 │   ├── permissionsService.js      # Main permissions service
@@ -314,7 +313,7 @@ tududi/                      # Repository root
 │   │   ├── TaskDetails.tsx
 │   │   ├── TaskItem.tsx, TaskList.tsx, GroupedTaskList.tsx
 │   │   ├── TaskComments.tsx, CommentComposer.tsx
-│   │   ├── AreaBalanceBar.tsx, ActiveProjectsSection.tsx, BurndownChart.tsx
+│   │   ├── ActiveProjectsSection.tsx, BurndownChart.tsx
 │   │   ├── TaskDetails/         # Task detail sidebar cards
 │   │   │   ├── TaskProjectCard.tsx
 │   │   │   ├── TaskAreaCard.tsx
@@ -337,13 +336,11 @@ tududi/                      # Repository root
 │   │   └── AreaModal.tsx
 │   │
 │   ├── Goal/           # Goal components (standalone goals system)
-│   │   ├── GoalDetails.tsx  # Goal detail page (projects + tasks)
-│   │   └── GoalModal.tsx    # Create/edit modal
+│   │   └── GoalDetails.tsx  # Goal detail page (projects + tasks), also create/edit
 │   │
 │   ├── Goals.tsx       # Goals list page (grid, mirrors Areas.tsx)
 │   │
 │   ├── Note/           # Note components
-│   │   ├── NoteDetails.tsx
 │   │   ├── NoteModal.tsx
 │   │   ├── MarkdownEditor.tsx
 │   │   ├── PublicShareModal.tsx
@@ -406,15 +403,12 @@ tududi/                      # Repository root
 │                       # - inboxStore, habitsStore, userSettingsStore
 │
 ├── contexts/           # React contexts
-│   ├── ModalContext.tsx          # Modal state management
 │   ├── SidebarContext.tsx        # Sidebar state
 │   └── TelegramStatusContext.tsx # Telegram integration status
 │
 ├── hooks/              # Custom React hooks
 │   ├── useKeyboardShortcuts.ts   # Keyboard handling
-│   ├── useModalManager.ts        # Modal management
-│   ├── usePersistedModal.ts      # Modal persistence
-│   └── useTasksData.ts           # Task data fetching
+│   └── usePersistedModal.ts      # Modal persistence
 │
 ├── utils/              # Frontend utilities (30+ files)
 │   ├── API Services (API client utilities)
@@ -445,7 +439,6 @@ tududi/                      # Repository root
 │   │   ├── urlService.ts          # URL parsing
 │   │   ├── slugUtils.ts           # URL slug handling
 │   │   ├── userUtils.ts           # User utilities
-│   │   ├── fetcher.ts             # SWR fetcher configuration
 │   │   ├── featureFlags.ts        # Feature flag client
 │   │   └── swUtils.ts             # Service worker messaging (session/cache)
 │   │

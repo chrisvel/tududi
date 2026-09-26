@@ -17,7 +17,7 @@ The Today page is divided into **four main sections** that organize your tasks:
 
 Each section follows specific rules to show the right tasks without duplication.
 
-Around these sections the page can also show panels that do not own tasks: the AI Daily Brief, the daily quote, metrics, Area Balance, Active Projects, the Next Task suggestion and a **today** list of open tasks carrying the `today` system tag (see [Other Panels](#other-panels)).
+Around these sections the page can also show panels that do not own tasks: the AI Daily Brief, the daily quote, metrics, Area Balance, Active Projects and a **today** list of open tasks carrying the `today` system tag (see [Other Panels](#other-panels)).
 
 ---
 
@@ -298,7 +298,6 @@ You can customize what appears on your Today page:
 | Show Metrics | Off | Shows/hides task metrics widget |
 | Show Area Balance | On | Shows/hides the Area Balance panel |
 | Show Active Projects | On | Shows/hides the Active Projects panel |
-| Show Next Task Suggestion | Off | Only offered when Next Task Suggestion is enabled in Profile; shows the single suggested next task |
 | Show Tagged Today | On | Shows/hides the **today** list of tasks tagged `today` |
 | Show Suggested | Off | Shows/hides Suggested section |
 | Show Due Today Tasks | On | Shows/hides Overdue and Due Today tasks |

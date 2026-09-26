@@ -361,7 +361,7 @@ export interface Task {
 /frontend/components/Task/
 ├── TaskItem.tsx        # Single task display
 ├── TaskList.tsx        # List of tasks
-├── TaskForm/           # One component per form section (TaskPrioritySection.tsx, ...)
+├── TaskForm/           # One component per form section (TaskDueDateSection.tsx, ...)
 ├── TaskDetails/        # Task detail sidebar cards
 └── __tests__/          # Component tests
 ```

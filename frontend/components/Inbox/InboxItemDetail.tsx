@@ -29,7 +29,6 @@ interface InboxItemDetailProps {
     openNoteModal: (note: Note | null, inboxItemUid?: string) => void;
     projects: Project[];
     isNew?: boolean;
-    onReClarify?: (uid: string) => void;
 }
 
 const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
@@ -41,7 +40,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     openNoteModal,
     projects,
     isNew = false,
-    onReClarify,
 }) => {
     const { t } = useTranslation();
     const {
@@ -445,18 +443,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     >
                         {t('inbox.createProject', 'Project')}
                     </button>
-                    {onReClarify && item.uid && (
-                        <>
-                            <span className="text-[11px] text-gray-300 dark:text-gray-600 select-none">•</span>
-                            <button
-                                type="button"
-                                onClick={() => { setIsEditing(false); onReClarify(item.uid!); }}
-                                className="text-[12px] text-gray-400 dark:text-gray-500 hover:underline transition-colors focus:outline-none"
-                            >
-                                {t('inbox.reClarifyLink', 'Re-clarify')}
-                            </button>
-                        </>
-                    )}
                 </div>
                 <button
                     type="button"

@@ -102,7 +102,6 @@
     "showMetrics": "Afișează Metrici",
     "showProductivity": "Afișează Insight-uri de Productivitate",
     "showIntelligence": "Afișează Sugestii de Inteligență",
-    "showNextTaskSuggestion": "Sugestie pentru Următoarea Sarcină",
     "showSuggestions": "Afișează Sugestii",
     "showDueToday": "Afișează Sarcinile Care Sunt Terminate Azi",
     "showCompleted": "Afișează Sarcinile Finalizate"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "Alege cât de des dorești să primești rezumate ale sarcinilor",
     "taskIntelligence": "Inteligența Sarcinilor",
-    "taskIntelligenceDescription": "Obține sugestii utile pentru a face numele sarcinilor tale mai descriptive și acționabile.",
     "enableTaskIntelligence": "Activează Asistentul de Inteligență a Sarcinilor",
     "autoSuggestNextActions": "Sugestii Automate pentru Următoarele Acțiuni",
-    "autoSuggestNextActionsDescription": "Când creezi un proiect, solicită automat următoarea acțiune fizică de efectuat.",
     "enableAutoSuggestNextActions": "Activează Sugestiile pentru Următoarele Acțiuni",
-    "productivityFeatures": "Funcții de Productivitate",
     "pomodoroDescription": "Activează cronometru Pomodoro în bara de navigare pentru sesiuni de lucru concentrate.",
     "enablePomodoro": "Activează Cronometrul Pomodoro",
     "productivityAssistant": "Asistent de Productivitate",
-    "productivityAssistantDescription": "Afișează informații despre productivitate care ajută la identificarea proiectelor blocate, sarcinilor vagi și îmbunătățirilor fluxului de lucru pe pagina ta de Astăzi.",
     "enableProductivityAssistant": "Activează Informațiile despre Productivitate",
     "nextTaskSuggestion": "Sugestie pentru Următoarea Sarcină",
-    "nextTaskSuggestionDescription": "Sugerează automat următoarea cea mai bună sarcină de lucru atunci când nu ai nimic în desfășurare, prioritizând sarcinile cu termen de astăzi, apoi sarcinile sugerate de pe pagina ta de Astăzi.",
     "enableNextTaskSuggestion": "Activează Sugestiile pentru Următoarea Sarcină",
-    "nextActionPrompt": "Care este următoarea acțiune fizică pentru acest proiect?",
-    "nextActionPlaceholder": "de ex., Sună clientul pentru a programa o întâlnire, Cercetează concurenții online, Creează folderul proiectului...",
-    "addNextAction": "Adaugă Următoarea Acțiune",
-    "skipNextAction": "Sari pentru acum",
-    "nextActionHint": "Gândește-te la cel mai mic, cel mai concret pas pe care îl poți face acum pentru a avansa acest proiect.",
     "tabs": {
       "general": "General",
       "security": "Securitate",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Nu ai setată nicio parolă. Ia în considerare setarea uneia pentru a avea o metodă alternativă de conectare."
     },
     "kanbanDescription": "Activează tabloul Kanban pentru urmărirea progresului sarcinilor pe lanele de înot.",
-    "intelligenceSection": "Inteligență",
-    "taskIntelligenceLabel": "Asistent Inteligență Sarcini",
-    "autoSuggestNextActionsLabel": "Sugestii Acțiuni Următoare",
-    "productivityAssistantLabel": "Informații despre Productivitate",
-    "nextTaskSuggestionLabel": "Sugestii pentru Sarcina Următoare",
     "featuresAddons": "Funcții & Add-on-uri",
     "caldav": {
       "title": "Sincronizare CalDAV",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Ești sigur că vrei să ștergi \"{{name}}\"? Aceasta va elimina calendarul și toate configurațiile de sincronizare."
     },
     "caldavWizard": {
-      "title": "Asistent Configurare CalDAV",
-      "confirmClose": "Ești sigur că vrei să închizi? Progresul tău va fi pierdut.",
       "calendarName": "Numele calendarului",
       "calendarNamePlaceholder": "de exemplu, Sarcini de lucru",
       "calendarNameRequired": "Numele calendarului este obligatoriu",
@@ -518,9 +500,6 @@
       "authType": "Tip de autentificare",
       "basicAuth": "Autentificare de bază",
       "bearerAuth": "Token Bearer",
-      "testDescription": "Testați conexiunea la serverul dvs. CalDAV înainte de a continua.",
-      "server": "Server",
-      "path": "Cale",
       "testConnection": "Testează conexiunea",
       "testing": "Testare...",
       "connectionSuccess": "Conexiune reușită!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Ultima modificare câștigă (automatic)",
       "localWins": "Local întotdeauna câștigă",
       "remoteWins": "Remote întotdeauna câștigă",
-      "reviewDescription": "Revizuiește setările înainte de a crea calendarul.",
       "calendarSettings": "Setări Calendar",
       "serverSettings": "Setări Server",
       "syncSettings": "Setări Sincronizare",
@@ -648,16 +626,6 @@
     "suggestion": "Faceți clic pe orice element de mai sus pentru a-l deschide și a face îmbunătățiri.",
     "issuesFound_one": "1 problemă de productivitate necesită atenție",
     "issuesFound_other": "{{count}} probleme de productivitate necesită atenție"
-  },
-  "nextTask": {
-    "suggestion": "Deoarece nu există nimic în desfășurare, ce părere ai despre a începe cu",
-    "suggestionTodayPlan": "Deoarece nu există nimic în desfășurare, ce părere ai despre a începe cu această sarcină din planul tău de astăzi",
-    "suggestionDueToday": "Deoarece nu există nimic în desfășurare, ce părere ai despre a începe cu această sarcină care trebuie finalizată astăzi",
-    "suggestionSuggested": "Deoarece nu există nimic în desfășurare, ce părere ai despre a începe cu această sarcină sugerată",
-    "letsDoIt": "Da, hai să o facem!",
-    "starting": "Se începe...",
-    "startedSuccessfully": "Sarcina a fost începută cu succes!",
-    "giveMeSomethingElse": "Dă-mi altceva"
   },
   "modals": {
     "confirmDelete": "Ești sigur că vrei să ștergi?",
@@ -939,41 +907,7 @@
     "infoShort": "Inbox-ul este locul unde ajung gândurile neclasificate — notează lucruri, sortează-le mai târziu.",
     "recentlyCaptured": "Capturat recent",
     "line": "linie",
-    "lines": "linii",
-    "processN": "Procesează {{count}}",
-    "allClarified": "Toate clarificate",
-    "reClarify": "Reclarifică",
-    "trashedRestore": "{{count}} aruncate · restaurează",
-    "restored": "Elemente aruncate restaurate",
-    "restoreError": "Restaurarea elementelor a eșuat",
-    "trashError": "Aruncarea elementului a eșuat",
-    "clarifyProgress": "Clarifică · {{progress}}",
-    "clarifyDone": "Toate clarificate. Inbox-ul este calm.",
-    "clarifyBackToList": "Înapoi la listă",
-    "clarifyExit": "Ieși din clarificare",
-    "clarifyBack": "← Înapoi",
-    "clarifyQ": {
-      "actionable": "Este acest lucru acționabil?",
-      "notActionable": "Ce fel de lucru este?",
-      "steps": "Un pas sau mai multe?",
-      "twomin": "Poți să-l faci în mai puțin de 2 minute?",
-      "deferDelegate": "Mai târziu tu, sau să-l predai?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Da, acționabil",
-      "notActionable": "Nu este acționabil",
-      "trash": "Aruncă",
-      "someday": "Cândva / Poate",
-      "referenceNote": "Notă de referință",
-      "oneStep": "Un pas",
-      "severalSteps": "Mai mulți pași (proiect)",
-      "doItNow": "Da — fă-o acum",
-      "no": "Nu",
-      "scheduleIt": "Programează-l",
-      "delegate": "Deleagă"
-    },
-    "somedayCreated": "Adăugat la Cândva",
-    "reClarifyLink": "Reclarifică"
+    "lines": "linii"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Actualizarea sarcinii a eșuat",
     "deleteSuccess": "Sarcina a fost ștearsă cu succes",
     "deleteError": "Ștergerea sarcinii a eșuat",
-    "startedSuccessfully": "Sarcina a fost începută cu succes!",
     "created": "Sarcină",
     "createdSuccessfully": "creată cu succes!",
     "updated": "Sarcină",
@@ -1061,10 +994,6 @@
       "short": "Încercați să fiți mai specific cu privire la ceea ce trebuie făcut",
       "noVerb": "Ce acțiune specifică trebuie să întreprindeți? Încercați să începeți cu un verb.",
       "vague": "Începeți cu un verb de acțiune, cum ar fi \"Sună\", \"Scrie\", \"Programează\" sau \"Cercetează\""
-    },
-    "nameHelper": {
-      "title": "Faceți-l mai descriptiv!",
-      "suggestion": "Încercați să adăugați mai multe detalii, cum ar fi \"Sunați dentistul pentru a programa o întâlnire pentru curățare\" în loc de doar \"Sunați dentistul\""
     },
     "overdueAlert": "Această sarcină a fost în planul tău ieri și nu a fost finalizată.",
     "overdueYesterday": "Ia în considerare prioritizarea acestei sarcini sau împărțirea ei în pași mai mici.",

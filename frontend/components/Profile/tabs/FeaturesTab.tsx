@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ProfileFormData, Features } from '../types';
 
 interface FeaturesTabProps {
     isActive: boolean;
@@ -16,8 +15,6 @@ interface FeaturesTabProps {
     onToggleTemplates: () => void;
     pomodoroEnabled: boolean;
     onTogglePomodoro: () => void;
-    formData: ProfileFormData;
-    onToggleAi: (field: keyof Features) => void;
 }
 
 interface ToggleRowProps {
@@ -77,8 +74,6 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
     onToggleTemplates,
     pomodoroEnabled,
     onTogglePomodoro,
-    formData,
-    onToggleAi,
 }) => {
     const { t } = useTranslation();
 
@@ -145,69 +140,6 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
                     value={pomodoroEnabled}
                     onToggle={onTogglePomodoro}
                 />
-            </div>
-
-            <div className="mt-8">
-                <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-2">
-                    {t('profile.intelligenceSection', 'Intelligence')}
-                </h4>
-                <div className="space-y-0">
-                    <ToggleRow
-                        label={t(
-                            'profile.taskIntelligenceLabel',
-                            'Task Intelligence Assistant'
-                        )}
-                        description={t(
-                            'profile.taskIntelligenceDescription',
-                            'Show popup alerts while typing task names that suggest improvements like "Make it more descriptive!", "Be more specific!", or "Add an action verb!". Disable this if you prefer typing in your own shorthand without suggestions.'
-                        )}
-                        value={Boolean(formData.features?.task_intelligence_enabled)}
-                        onToggle={() => onToggleAi('task_intelligence_enabled')}
-                    />
-                    <ToggleRow
-                        label={t(
-                            'profile.autoSuggestNextActionsLabel',
-                            'Next Action Prompts'
-                        )}
-                        description={t(
-                            'profile.autoSuggestNextActionsDescription',
-                            'When creating a project, automatically prompt for the very next physical action to take.'
-                        )}
-                        value={Boolean(formData.features?.auto_suggest_next_actions_enabled)}
-                        onToggle={() =>
-                            onToggleAi('auto_suggest_next_actions_enabled')
-                        }
-                    />
-                    <ToggleRow
-                        label={t(
-                            'profile.productivityAssistantLabel',
-                            'Productivity Insights'
-                        )}
-                        description={t(
-                            'profile.productivityAssistantDescription',
-                            'Show productivity insights that help identify stalled projects, vague tasks, and workflow improvements on your Today page.'
-                        )}
-                        value={Boolean(formData.features?.productivity_assistant_enabled)}
-                        onToggle={() =>
-                            onToggleAi('productivity_assistant_enabled')
-                        }
-                    />
-                    <ToggleRow
-                        label={t(
-                            'profile.nextTaskSuggestionLabel',
-                            'Next Task Suggestions'
-                        )}
-                        description={t(
-                            'profile.nextTaskSuggestionDescription',
-                            'Automatically suggest the next best task to work on when you have nothing in progress, prioritizing due today tasks, then suggested tasks, then next actions.'
-                        )}
-                        value={Boolean(formData.features?.next_task_suggestion_enabled)}
-                        onToggle={() =>
-                            onToggleAi('next_task_suggestion_enabled')
-                        }
-                        last
-                    />
-                </div>
             </div>
         </div>
     );

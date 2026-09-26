@@ -57,7 +57,7 @@ Dates and `@person` are read from the first line only, so a date mentioned furth
 
 **Files.** Paste, drop, or pick files with the paperclip button and they are saved with whatever the text becomes. An Inbox item, task or project keeps them as attachments. A note gets them in its text, after what was typed: images show inline and other files become links. A pasted screenshot on its own is enough: its file name becomes the title. Pasted images are renamed from the browser's generic `image.png` to `Pasted image <date time>.png`. When a copy carries both text and a picture (spreadsheet cells, for example), the text is pasted and the picture is ignored. With One item per line, the files go on the first item. Each file must be under the server's upload limit, and one item holds up to 20. If a file fails to upload, the item is still saved and the failed file names are shown.
 
-When an Inbox item with files becomes a task, project or note, its files move there (for a note, into its text). Deleting an Inbox item deletes its files; trashing keeps them so the item can be restored. Inbox files are visible only to their owner.
+When an Inbox item with files becomes a task, project or note, its files move there (for a note, into its text). Deleting an Inbox item deletes its files. Inbox files are visible only to their owner.
 
 **Enter.** On a computer keyboard Enter adds and Shift+Enter starts a new line. On a touch device Return starts a new line and the Add button adds, with a Line break button available if Return is set to add. Ctrl or Cmd + Enter always adds. Both defaults can be changed under Profile > Keyboard Shortcuts > Adding items, along with One item per line. These settings are kept on the device.
 

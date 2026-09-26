@@ -37,7 +37,6 @@ import { useStore } from '../../store/useStore';
 import TaskList from './TaskList';
 import TodayPlan from './TodayPlan';
 import { Metrics } from '../../entities/Metrics';
-import NextTaskSuggestion from './NextTaskSuggestion';
 import TodaySettingsDropdown from './TodaySettingsDropdown';
 import BurndownChart from './BurndownChart';
 import LifeBalance from './LifeBalance';
@@ -97,7 +96,6 @@ const TasksToday: React.FC = () => {
         showMetrics: true,
         showAreaBalance: true,
         showActiveProjects: true,
-        showNextTaskSuggestion: false,
         showSuggestions: true,
         showDueToday: true,
         showCompleted: true,
@@ -106,12 +104,6 @@ const TasksToday: React.FC = () => {
         showTaggedToday: true,
     });
     const [hasBriefMounted, setHasBriefMounted] = useState(false);
-    const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] =
-        useState(true);
-    const [profileSettings, setProfileSettings] = useState({
-        next_task_suggestion_enabled: false,
-    });
-    const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(true);
     const [isSuggestedCollapsed, setIsSuggestedCollapsed] = useState(() => {
         const stored = localStorage.getItem('suggestedTasksCollapsed');
         return stored === 'true';
@@ -277,11 +269,6 @@ const TasksToday: React.FC = () => {
 
     // Track mounting state to prevent state updates after unmount
     const isMounted = React.useRef(false);
-
-    // Function to handle next task suggestion dismissal
-    const handleCloseNextTaskSuggestion = () => {
-        setShowNextTaskSuggestion(false);
-    };
 
     // Toggle functions for collapsible sections
     const toggleSuggestedCollapsed = () => {
@@ -567,15 +554,6 @@ const TasksToday: React.FC = () => {
                 if (response.ok) {
                     const userData = await response.json();
                     if (isMounted.current) {
-                        const userFeatures = userData.features || {};
-
-                        // Set next task suggestion setting
-                        setNextTaskSuggestionEnabled(
-                            userFeatures.next_task_suggestion_enabled !== undefined
-                                ? userFeatures.next_task_suggestion_enabled
-                                : true
-                        );
-
                         // Parse today_settings if it's a string, or use the object directly
                         let settings;
                         if (userData.today_settings) {
@@ -602,7 +580,6 @@ const TasksToday: React.FC = () => {
                             showMetrics: true,
                             showAreaBalance: true,
                             showActiveProjects: true,
-                            showNextTaskSuggestion: false,
                             showSuggestions: true,
                             showDueToday: true,
                             showCompleted: true,
@@ -617,17 +594,6 @@ const TasksToday: React.FC = () => {
 
                         if (settings.showDailyBrief) setHasBriefMounted(true);
 
-                        // Store profile settings
-                        setProfileSettings({
-                            next_task_suggestion_enabled:
-                                userFeatures.next_task_suggestion_enabled === true,
-                        });
-
-                        // Sync with profile features
-                        if (userFeatures.next_task_suggestion_enabled !== undefined) {
-                            settings.showNextTaskSuggestion =
-                                userFeatures.next_task_suggestion_enabled;
-                        }
                         // Ensure progress bar is always enabled
                         settings.showProgressBar = true;
 
@@ -641,7 +607,6 @@ const TasksToday: React.FC = () => {
                 console.error('Failed to load profile settings:', error);
                 // Set defaults on error
                 if (isMounted.current) {
-                    setNextTaskSuggestionEnabled(true);
                     setIsSettingsLoaded(true);
                 }
             }
@@ -1326,7 +1291,6 @@ const TasksToday: React.FC = () => {
                                             setIsSettingsEnabled(false)
                                         }
                                         settings={todaySettings}
-                                        profileSettings={profileSettings}
                                         onSettingsChange={handleSettingsChange}
                                     />
                                 </div>
@@ -1484,34 +1448,6 @@ const TasksToday: React.FC = () => {
                 {isSettingsLoaded && todaySettings.showActiveProjects && (
                     <ActiveProjectsSection projects={localProjects} />
                 )}
-
-                {/* Next Task Suggestion - At top of tasks section */}
-                {!isSettingsLoaded ? (
-                    // Invisible placeholder for next task suggestion
-                    <div
-                        className="mb-4 opacity-0 pointer-events-none"
-                        aria-hidden="true"
-                    >
-                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-20"></div>
-                    </div>
-                ) : todaySettings.showNextTaskSuggestion &&
-                  nextTaskSuggestionEnabled &&
-                  showNextTaskSuggestion &&
-                  profileSettings.next_task_suggestion_enabled === true ? (
-                    <div className="mb-4">
-                        <NextTaskSuggestion
-                            metrics={{
-                                tasks_due_today: sortedDueTodayTasks,
-                                suggested_tasks: sortedSuggestedTasks,
-                                tasks_in_progress: metrics.tasks_in_progress,
-                                today_plan_tasks: plannedTasks,
-                            }}
-                            projects={localProjects}
-                            onTaskUpdate={handleTaskUpdate}
-                            onClose={handleCloseNextTaskSuggestion}
-                        />
-                    </div>
-                ) : null}
 
                 {/* Tagged #today Tasks */}
                 {isSettingsLoaded && todaySettings.showTaggedToday && taggedTodayTasks.length > 0 && (

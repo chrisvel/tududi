@@ -79,7 +79,6 @@ export const fetchInboxItems = async (
         offset: number;
         hasMore: boolean;
     };
-    trashedCount?: number;
 }> => {
     const params = new URLSearchParams({
         limit: limit.toString(),
@@ -186,32 +185,6 @@ export const deleteInboxItem = async (itemUid: string): Promise<void> => {
     await handleAuthResponse(response, 'Failed to delete inbox item.');
 };
 
-export const trashInboxItem = async (itemUid: string): Promise<InboxItem> => {
-    const response = await fetch(getApiPath(`inbox/${itemUid}/trash`), {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-            Accept: 'application/json',
-            'x-csrf-token': await getCsrfToken(),
-        },
-    });
-    await handleAuthResponse(response, 'Failed to trash inbox item.');
-    return await response.json();
-};
-
-export const restoreInboxItems = async (itemUid: string): Promise<InboxItem> => {
-    const response = await fetch(getApiPath(`inbox/${itemUid}/restore`), {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-            Accept: 'application/json',
-            'x-csrf-token': await getCsrfToken(),
-        },
-    });
-    await handleAuthResponse(response, 'Failed to restore inbox item.');
-    return await response.json();
-};
-
 // Track last check time to detect new items
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const lastCheckTimestamp = Date.now();
@@ -277,9 +250,6 @@ export const loadInboxItemsToStore = async (
         inboxStore.setInboxItems(items);
         inboxStore.setPagination(pagination);
         inboxStore.setError(false);
-        if (typeof result.trashedCount === 'number') {
-            inboxStore.setTrashedCount(result.trashedCount);
-        }
     } catch (error) {
         console.error('Failed to load inbox items:', error);
         inboxStore.setError(true);
@@ -375,50 +345,6 @@ export const deleteInboxItemWithStore = async (
         inboxStore.removeInboxItemByUid(itemUid);
     } catch (error) {
         console.error('Failed to delete inbox item:', error);
-        throw error;
-    }
-};
-
-export const trashInboxItemWithStore = async (itemUid: string): Promise<void> => {
-    const inboxStore = useStore.getState().inboxStore;
-    try {
-        await trashInboxItem(itemUid);
-        inboxStore.removeInboxItemByUid(itemUid);
-        inboxStore.setTrashedCount(inboxStore.trashedCount + 1);
-    } catch (error) {
-        console.error('Failed to trash inbox item:', error);
-        throw error;
-    }
-};
-
-export const restoreInboxItemWithStore = async (itemUid: string): Promise<void> => {
-    const inboxStore = useStore.getState().inboxStore;
-    try {
-        const restored = await restoreInboxItems(itemUid);
-        inboxStore.addInboxItem(restored);
-        inboxStore.setTrashedCount(Math.max(0, inboxStore.trashedCount - 1));
-    } catch (error) {
-        console.error('Failed to restore inbox item:', error);
-        throw error;
-    }
-};
-
-export const restoreAllTrashedWithStore = async (): Promise<void> => {
-    const inboxStore = useStore.getState().inboxStore;
-    try {
-        const response = await fetch(getApiPath('inbox/restore-all'), {
-            method: 'PATCH',
-            credentials: 'include',
-            headers: {
-                Accept: 'application/json',
-                'x-csrf-token': await getCsrfToken(),
-            },
-        });
-        await handleAuthResponse(response, 'Failed to restore items.');
-        inboxStore.setTrashedCount(0);
-        await loadInboxItemsToStore(true);
-    } catch (error) {
-        console.error('Failed to restore all trashed items:', error);
         throw error;
     }
 };

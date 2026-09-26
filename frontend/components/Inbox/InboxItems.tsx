@@ -9,13 +9,8 @@ import {
     processInboxItemWithStore,
     deleteInboxItemWithStore,
     updateInboxItemWithStore,
-    trashInboxItemWithStore,
-    restoreAllTrashedWithStore,
-    analyzeInboxText,
-    applyAnalysisToTask,
     ProcessedInto,
 } from '../../utils/inboxService';
-import { InboxItem } from '../../entities/InboxItem';
 import InboxItemDetail from './InboxItemDetail';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
@@ -37,29 +32,6 @@ import {
     updateUiSettings,
 } from '../../utils/profileService';
 import { useStore } from '../../store/useStore';
-import ClarifyOverlay, { ClarifyStep, ClarifyOutcome } from './ClarifyOverlay';
-import { ENABLE_INBOX_CLARIFY } from '../../config/featureFlags';
-
-interface ClarifyState {
-    active: boolean;
-    itemUids: string[];
-    currentIndex: number;
-    step: ClarifyStep;
-    history: Array<{ step: ClarifyStep }>;
-    singleMode: boolean;
-    pendingModalUid: string | null;
-}
-
-const CLARIFY_INITIAL: ClarifyState = {
-    active: false,
-    itemUids: [],
-    currentIndex: 0,
-    step: 'actionable',
-    history: [],
-    singleMode: false,
-    pendingModalUid: null,
-};
-
 const InboxItems: React.FC = () => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
@@ -74,7 +46,7 @@ const InboxItems: React.FC = () => {
     // user can still edit it or pick task/note/project
     const [sharedDraft] = useState<string>(() => takeSharedText() || '');
 
-    const { inboxItems, isLoading, pagination, trashedCount } = useStore(
+    const { inboxItems, isLoading, pagination } = useStore(
         (state) => state.inboxStore
     );
     const {
@@ -102,8 +74,6 @@ const InboxItems: React.FC = () => {
     const [currentConversionItemUid, setCurrentConversionItemUid] = useState<
         string | null
     >(null);
-
-    const [clarify, setClarify] = useState<ClarifyState>(CLARIFY_INITIAL);
 
     useEffect(() => {
         const urlPageSize = searchParams.get('loaded');
@@ -242,201 +212,6 @@ const InboxItems: React.FC = () => {
         prevInboxLengthRef.current = curr;
     }, [inboxItems, hasInitialized]);
 
-    // ── Clarify lifecycle ─────────────────────────────────────────────────────
-
-    const startClarify = () => {
-        const uids = inboxItems.map((i) => i.uid).filter((uid): uid is string => Boolean(uid));
-        if (uids.length === 0) return;
-        setInboxListExpanded(true);
-        setClarify({
-            active: true,
-            itemUids: uids,
-            currentIndex: 0,
-            step: 'actionable',
-            history: [],
-            singleMode: false,
-            pendingModalUid: null,
-        });
-    };
-
-    const startSingleClarify = (uid: string) => {
-        setInboxListExpanded(true);
-        setClarify({
-            active: true,
-            itemUids: [uid],
-            currentIndex: 0,
-            step: 'actionable',
-            history: [],
-            singleMode: true,
-            pendingModalUid: null,
-        });
-    };
-
-    const exitClarify = () => setClarify(CLARIFY_INITIAL);
-
-    const advanceClarify = () => {
-        setClarify((prev) => ({
-            ...prev,
-            currentIndex: prev.currentIndex + 1,
-            step: 'actionable',
-            history: [],
-            pendingModalUid: null,
-        }));
-    };
-
-    const stepClarifyTo = (step: ClarifyStep) => {
-        setClarify((prev) => ({
-            ...prev,
-            step,
-            history: [...prev.history, { step: prev.step }],
-        }));
-    };
-
-    const goBackClarify = () => {
-        setClarify((prev) => {
-            const history = [...prev.history];
-            const last = history.pop();
-            if (!last) return prev;
-            return { ...prev, step: last.step, history };
-        });
-    };
-
-    // Turn a clarified item into a task draft: tags, project, due date,
-    // recurrence and assignee come from its text, with relative dates read
-    // against when it was captured. Falls back to the raw text on failure.
-    const buildClarifiedTask = async (
-        item: InboxItem | undefined,
-        base: Task,
-        { parseDates = true }: { parseDates?: boolean } = {}
-    ): Promise<Task> => {
-        const text = item?.content?.trim() || item?.title?.trim() || '';
-        if (!text) return base;
-        try {
-            const analysis = await analyzeInboxText(text, {
-                referenceDate: item?.created_at,
-                parseDates,
-            });
-            const projectName = analysis.parsed_projects[0];
-            const project = projectName
-                ? projects.find(
-                      (p) => p.name.toLowerCase() === projectName.toLowerCase()
-                  )
-                : undefined;
-            return applyAnalysisToTask(
-                {
-                    ...base,
-                    name: analysis.cleaned_content || base.name,
-                    tags: [
-                        ...analysis.parsed_tags.map((name) => ({ name })),
-                        ...(base.tags || []),
-                    ],
-                    project_uid: project?.uid ?? base.project_uid,
-                },
-                analysis
-            );
-        } catch (error) {
-            console.error('Failed to analyze inbox item:', error);
-            return base;
-        }
-    };
-
-    const into = (task: Task): ProcessedInto | undefined =>
-        task.uid ? { task_uid: task.uid } : undefined;
-
-    const fileClarifyOutcome = async (outcome: ClarifyOutcome) => {
-        const uid = clarify.itemUids[clarify.currentIndex];
-        if (!uid) return;
-        const item = inboxItems.find((i) => i.uid === uid);
-        const itemName = item?.title?.trim() || item?.content?.trim() || '';
-
-        if (outcome === 'trash' || outcome === 'done') {
-            try {
-                await trashInboxItemWithStore(uid);
-            } catch {
-                showErrorToast(t('inbox.trashError', 'Failed to trash item'));
-                return;
-            }
-            advanceClarify();
-            return;
-        }
-
-        if (outcome === 'someday') {
-            try {
-                const created = await createTask(
-                    await buildClarifiedTask(
-                        item,
-                        {
-                            name: itemName,
-                            status: 'not_started',
-                            priority: null,
-                            completed_at: null,
-                            tags: [{ name: 'someday' }],
-                        },
-                        { parseDates: false }
-                    )
-                );
-                await processInboxItemWithStore(uid, into(created));
-                showSuccessToast(t('inbox.somedayCreated', 'Added to Someday'));
-            } catch {
-                showErrorToast(t('task.createError'));
-                return;
-            }
-            advanceClarify();
-            return;
-        }
-
-        if (outcome === 'task') {
-            try {
-                const created = await createTask(
-                    await buildClarifiedTask(item, {
-                        name: itemName,
-                        status: 'not_started',
-                        priority: null,
-                        completed_at: null,
-                    })
-                );
-                await processInboxItemWithStore(uid, into(created));
-                showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
-            } catch {
-                showErrorToast(t('task.createError'));
-                return;
-            }
-            advanceClarify();
-            return;
-        }
-
-        if (outcome === 'waiting') {
-            try {
-                const created = await createTask(
-                    await buildClarifiedTask(item, {
-                        name: itemName,
-                        status: 'waiting',
-                        priority: null,
-                        completed_at: null,
-                        tags: [{ name: 'waiting-for' }],
-                    })
-                );
-                await processInboxItemWithStore(uid, into(created));
-                showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
-            } catch {
-                showErrorToast(t('task.createError'));
-                return;
-            }
-            advanceClarify();
-            return;
-        }
-
-        // Modal-based outcomes: open the modal; advance happens in modal's onSave
-        setClarify((prev) => ({ ...prev, pendingModalUid: uid }));
-
-        if (outcome === 'note') {
-            const noteContent = item?.content || '';
-            await handleOpenNoteModal({ title: itemName, content: noteContent }, uid);
-        } else if (outcome === 'project') {
-            handleOpenProjectModal({ name: itemName, description: '', status: 'planned' as const }, uid);
-        }
-    };
-
     // ── Item handlers ─────────────────────────────────────────────────────────
 
     const handleProcessItem = async (
@@ -526,9 +301,6 @@ const InboxItems: React.FC = () => {
         } finally {
             if (options.inboxItemUid) {
                 setCurrentConversionItemUid(null);
-                if (clarify.pendingModalUid) {
-                    advanceClarify();
-                }
             }
         }
     };
@@ -622,9 +394,6 @@ const InboxItems: React.FC = () => {
                         : undefined
                 );
                 setCurrentConversionItemUid(null);
-                if (clarify.pendingModalUid) {
-                    advanceClarify();
-                }
             }
         } catch (error) {
             if (error instanceof OfflineQueuedError) {
@@ -666,9 +435,6 @@ const InboxItems: React.FC = () => {
                     createdNote?.uid ? { note_uid: createdNote.uid } : undefined
                 );
                 setCurrentConversionItemUid(null);
-                if (clarify.pendingModalUid) {
-                    advanceClarify();
-                }
             }
 
             setIsNoteModalOpen(false);
@@ -791,42 +557,6 @@ const InboxItems: React.FC = () => {
                                 {inboxItems.length}
                             </span>
 
-                            {/* Process N button */}
-                            {ENABLE_INBOX_CLARIFY && inboxItems.length > 0 && !clarify.active && (
-                                <span
-                                    role="button"
-                                    tabIndex={0}
-                                    onClick={(e) => { e.stopPropagation(); startClarify(); }}
-                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); startClarify(); } }}
-                                    className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:opacity-75 transition-opacity cursor-pointer"
-                                >
-                                    {t('inbox.processN', 'Process {{count}}', { count: inboxItems.length })}
-                                </span>
-                            )}
-
-                            {/* Trashed affordance */}
-                            {ENABLE_INBOX_CLARIFY && trashedCount > 0 && (
-                                <span
-                                    role="button"
-                                    tabIndex={0}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        void (async () => {
-                                            try {
-                                                await restoreAllTrashedWithStore();
-                                                showSuccessToast(t('inbox.restored', 'Trashed items restored'));
-                                            } catch {
-                                                showErrorToast(t('inbox.restoreError', 'Failed to restore'));
-                                            }
-                                        })();
-                                    }}
-                                    onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}
-                                    className="text-[10.5px] text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
-                                >
-                                    {t('inbox.trashedRestore', '{{count}} trashed · restore', { count: trashedCount })}
-                                </span>
-                            )}
-
                             <span className="flex-1" />
 
                             <svg
@@ -844,28 +574,8 @@ const InboxItems: React.FC = () => {
 
                         {inboxListExpanded && (
                             <div className="flex flex-col">
-                                {/* Clarify overlay — shown instead of the list when active */}
-                                {ENABLE_INBOX_CLARIFY && clarify.active && !clarify.pendingModalUid && (() => {
-                                    const uid = clarify.itemUids[clarify.currentIndex];
-                                    const currentItem = inboxItems.find((i) => i.uid === uid);
-                                    const isDone = clarify.currentIndex >= clarify.itemUids.length;
-                                    return (
-                                        <ClarifyOverlay
-                                            itemText={currentItem?.title?.trim() || currentItem?.content?.trim() || ''}
-                                            step={clarify.step}
-                                            progress={`${Math.min(clarify.currentIndex + 1, clarify.itemUids.length)} of ${clarify.itemUids.length}`}
-                                            canGoBack={clarify.history.length > 0}
-                                            isDone={isDone}
-                                            onStepTo={stepClarifyTo}
-                                            onFile={(outcome) => void fileClarifyOutcome(outcome)}
-                                            onBack={goBackClarify}
-                                            onExit={exitClarify}
-                                        />
-                                    );
-                                })()}
-
                                 {/* Normal item list */}
-                                {(!ENABLE_INBOX_CLARIFY || !clarify.active) && inboxItems.map((item) => (
+                                {inboxItems.map((item) => (
                                     <InboxItemDetail
                                         key={item.uid || item.id}
                                         item={item}
@@ -876,12 +586,11 @@ const InboxItems: React.FC = () => {
                                         openNoteModal={handleOpenNoteModal}
                                         projects={projects}
                                         isNew={item.uid === lastAddedUid}
-                                        onReClarify={ENABLE_INBOX_CLARIFY ? startSingleClarify : undefined}
                                     />
                                 ))}
 
                                 {/* Load more */}
-                                {(!ENABLE_INBOX_CLARIFY || !clarify.active) && pagination.hasMore && (
+                                {pagination.hasMore && (
                                     <div className="flex justify-center pt-5">
                                         <button
                                             onClick={handleLoadMore}
@@ -907,15 +616,13 @@ const InboxItems: React.FC = () => {
                                 )}
 
                                 {/* Item count */}
-                                {(!ENABLE_INBOX_CLARIFY || !clarify.active) && (
-                                    <div className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4 pb-2">
-                                        {t(
-                                            'inbox.showingItems',
-                                            'Showing {{current}} of {{total}} items',
-                                            { current: inboxItems.length, total: pagination.total }
-                                        )}
-                                    </div>
-                                )}
+                                <div className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4 pb-2">
+                                    {t(
+                                        'inbox.showingItems',
+                                        'Showing {{current}} of {{total}} items',
+                                        { current: inboxItems.length, total: pagination.total }
+                                    )}
+                                </div>
                             </div>
                         )}
                     </>
@@ -932,9 +639,6 @@ const InboxItems: React.FC = () => {
                                         onClose={() => {
                                             setIsProjectModalOpen(false);
                                             setProjectToEdit(null);
-                                            if (clarify.pendingModalUid) {
-                                                setClarify((prev) => ({ ...prev, pendingModalUid: null }));
-                                            }
                                         }}
                                         onSave={handleSaveProject}
                                         project={projectToEdit || undefined}
@@ -962,9 +666,6 @@ const InboxItems: React.FC = () => {
                                 onClose={() => {
                                     setIsNoteModalOpen(false);
                                     setNoteToEdit(null);
-                                    if (clarify.pendingModalUid) {
-                                        setClarify((prev) => ({ ...prev, pendingModalUid: null }));
-                                    }
                                 }}
                                 onSave={handleSaveNote}
                                 note={noteToEdit}

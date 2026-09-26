@@ -49,23 +49,6 @@ class InboxRepository extends BaseRepository {
         });
     }
 
-    async countTrashed(userId) {
-        return this.model.count({
-            where: { user_id: userId, status: 'trashed' },
-            raw: true,
-        });
-    }
-
-    async markTrashed(item) {
-        await item.update({ status: 'trashed' });
-        return item;
-    }
-
-    async markRestored(item) {
-        await item.update({ status: 'added' });
-        return item;
-    }
-
     async findByUid(userId, uid) {
         return this.model.findOne({
             where: {
@@ -97,13 +80,6 @@ class InboxRepository extends BaseRepository {
     async markProcessed(item) {
         await item.update({ status: 'processed' });
         return item;
-    }
-
-    async restoreAllTrashed(userId) {
-        await this.model.update(
-            { status: 'added' },
-            { where: { user_id: userId, status: 'trashed' } }
-        );
     }
 
     // A project the user owns or has been shared, matched by name the way

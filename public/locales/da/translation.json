@@ -102,7 +102,6 @@
     "showMetrics": "Vis målinger",
     "showProductivity": "Vis produktivitetsindsigt",
     "showIntelligence": "Vis intelligensforslag",
-    "showNextTaskSuggestion": "Næste opgaveforslag",
     "showSuggestions": "Vis foreslåede",
     "showDueToday": "Vis opgaver der forfalder i dag",
     "showCompleted": "Vis fuldførte opgaver"
@@ -354,25 +353,15 @@
     },
     "frequencyHelp": "Vælg hvor ofte du vil modtage opgavesammenfatninger",
     "taskIntelligence": "Opgaveintelligens",
-    "taskIntelligenceDescription": "Få nyttige forslag til at gøre dine opgavenavne mere beskrivende og handlingsorienterede.",
     "enableTaskIntelligence": "Aktiver Opgaveintelligensassistent",
     "autoSuggestNextActions": "Auto-Foreslå Næste Handlinger",
-    "autoSuggestNextActionsDescription": "Når du opretter et projekt, bed automatisk om den næste fysiske handling, der skal tages.",
     "enableAutoSuggestNextActions": "Aktiver Forespørgsler om Næste Handling",
-    "productivityFeatures": "Produktivitetsfunktioner",
     "pomodoroDescription": "Aktiver Pomodoro-timeren i navigationslinjen for fokuserede arbejdsperioder.",
     "enablePomodoro": "Aktiver Pomodoro-timer",
     "productivityAssistant": "Produktivitetsassistent",
-    "productivityAssistantDescription": "Vis produktivitetsindsigt, der hjælper med at identificere stillestående projekter, vage opgaver og forbedringer af arbejdsgange på din I dag-side.",
     "enableProductivityAssistant": "Aktiver Produktivitetsindsigt",
     "nextTaskSuggestion": "Næste Opgaveforslag",
-    "nextTaskSuggestionDescription": "Foreslå automatisk den næste bedste opgave at arbejde på, når du ikke har noget i gang, og prioritere opgaver, der skal være færdige i dag, derefter foreslåede opgaver fra din i dag-side.",
     "enableNextTaskSuggestion": "Aktivér forslag til næste opgave",
-    "nextActionPrompt": "Hvad er den næste fysiske handling for dette projekt?",
-    "nextActionPlaceholder": "f.eks. Ring til klienten for at planlægge møde, Undersøg konkurrenter online, Opret projektmappe...",
-    "addNextAction": "Tilføj næste handling",
-    "skipNextAction": "Spring over for nu",
-    "nextActionHint": "Tænk på det mindste, mest konkrete skridt, du kan tage lige nu for at fremme dette projekt.",
     "tabs": {
       "general": "Generelt",
       "security": "Sikkerhed",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Du har ikke indstillet en adgangskode. Overvej at indstille en for at have en alternativ loginmetode."
     },
     "kanbanDescription": "Aktivér Kanban-tavlen for at følge opgaverne fremdrift på tværs af svømmerækker.",
-    "intelligenceSection": "Intelligens",
-    "taskIntelligenceLabel": "Opgaveintelligensassistent",
-    "autoSuggestNextActionsLabel": "Næste handlingsforslag",
-    "productivityAssistantLabel": "Produktivitetindsigt",
-    "nextTaskSuggestionLabel": "Forslag til næste opgave",
     "featuresAddons": "Funktioner & Tilføjelser",
     "caldav": {
       "title": "CalDAV Synkronisering",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Er du sikker på, at du vil slette \"{{name}}\"? Dette vil fjerne kalenderen og alle synkroniseringskonfigurationer."
     },
     "caldavWizard": {
-      "title": "CalDAV Opsætningsguide",
-      "confirmClose": "Er du sikker på, at du vil lukke? Din fremgang vil gå tabt.",
       "calendarName": "Kalendernavn",
       "calendarNamePlaceholder": "f.eks. Arbejdsopgaver",
       "calendarNameRequired": "Kalendernavn er påkrævet",
@@ -518,9 +500,6 @@
       "authType": "Godkendelsestype",
       "basicAuth": "Basic Auth",
       "bearerAuth": "Bearer Token",
-      "testDescription": "Test forbindelsen til din CalDAV-server, før du fortsætter.",
-      "server": "Server",
-      "path": "Sti",
       "testConnection": "Test forbindelse",
       "testing": "Tester...",
       "connectionSuccess": "Forbindelse lykkedes!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Sidst ændret vinder (automatisk)",
       "localWins": "Lokal vinder altid",
       "remoteWins": "Fjernvinder altid",
-      "reviewDescription": "Gennemgå dine indstillinger før du opretter kalenderen.",
       "calendarSettings": "Kalenderindstillinger",
       "serverSettings": "Serverindstillinger",
       "syncSettings": "Synkroniseringsindstillinger",
@@ -648,16 +626,6 @@
     "suggestion": "Klik på ethvert element ovenfor for at åbne det og lave forbedringer.",
     "issuesFound_one": "1 produktivitetsproblem kræver opmærksomhed",
     "issuesFound_other": "{{count}} produktivitetsproblemer kræver opmærksomhed"
-  },
-  "nextTask": {
-    "suggestion": "Da der ikke er noget i gang, hvad med at starte med",
-    "suggestionTodayPlan": "Da der ikke er noget i gang, hvad med at starte med denne opgave fra din dagsplan",
-    "suggestionDueToday": "Da der ikke er noget i gang, hvad med at starte med denne opgave der forfalder i dag",
-    "suggestionSuggested": "Da der ikke er noget i gang, hvad med at starte med denne foreslåede opgave",
-    "letsDoIt": "Ja, lad os gøre det!",
-    "starting": "Starter...",
-    "startedSuccessfully": "Opgaven er startet med succes!",
-    "giveMeSomethingElse": "Giv mig noget andet"
   },
   "modals": {
     "confirmDelete": "Er du sikker på, at du vil slette?",
@@ -939,41 +907,7 @@
     "infoShort": "Indbakken er, hvor ukategoriserede tanker lander — skriv ting ned, sorter dem senere.",
     "recentlyCaptured": "Nyligt fanget",
     "line": "linje",
-    "lines": "linjer",
-    "processN": "Behandl {{count}}",
-    "allClarified": "Alle afklaret",
-    "reClarify": "Genafklar",
-    "trashedRestore": "{{count}} smidt væk · gendan",
-    "restored": "Gendannede smidte genstande",
-    "restoreError": "Fejl ved gendannelse af genstande",
-    "trashError": "Fejl ved at smide genstanden væk",
-    "clarifyProgress": "Afklar · {{progress}}",
-    "clarifyDone": "Alle afklaret. Indbakken er rolig.",
-    "clarifyBackToList": "Tilbage til listen",
-    "clarifyExit": "Forlad afklaring",
-    "clarifyBack": "← Tilbage",
-    "clarifyQ": {
-      "actionable": "Er dette handlingsorienteret?",
-      "notActionable": "Hvad slags ting er det?",
-      "steps": "Én skridt, eller flere?",
-      "twomin": "Kan du gøre det på under 2 minutter?",
-      "deferDelegate": "Senere selv, eller overdrag det?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Ja, handlingsorienteret",
-      "notActionable": "Ikke handlingsorienteret",
-      "trash": "Smid væk",
-      "someday": "En dag / Måske",
-      "referenceNote": "Reference note",
-      "oneStep": "Ét skridt",
-      "severalSteps": "Flere skridt (projekt)",
-      "doItNow": "Ja — gør det nu",
-      "no": "Nej",
-      "scheduleIt": "Planlæg det",
-      "delegate": "Delegér"
-    },
-    "somedayCreated": "Tilføjet til En dag",
-    "reClarifyLink": "Genafklar"
+    "lines": "linjer"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Fejl ved opdatering af opgave",
     "deleteSuccess": "Opgave slettet med succes",
     "deleteError": "Fejl ved sletning af opgave",
-    "startedSuccessfully": "Opgaven blev startet med succes!",
     "created": "Opgave",
     "createdSuccessfully": "oprettet med succes!",
     "updated": "Opgave",
@@ -1061,10 +994,6 @@
       "short": "Prøv at være mere specifik omkring, hvad der skal gøres",
       "noVerb": "Hvilken specifik handling skal du udføre? Prøv at starte med et verbum.",
       "vague": "Prøv at starte med et handlingsverb som \"Ring\", \"Skriv\", \"Planlæg\" eller \"Undersøg\""
-    },
-    "nameHelper": {
-      "title": "Gør det mere beskrivende!",
-      "suggestion": "Prøv at tilføje flere detaljer som \"Ring til tandlægen for at planlægge rengøringsaftale\" i stedet for bare \"Ring til tandlægen\""
     },
     "overdueAlert": "Denne opgave var i din plan i går og blev ikke fuldført.",
     "overdueYesterday": "Overvej at prioritere denne opgave eller opdele den i mindre trin.",

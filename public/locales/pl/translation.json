@@ -102,7 +102,6 @@
     "showMetrics": "Pokaż metryki",
     "showProductivity": "Pokaż wgląd w produktywność",
     "showIntelligence": "Pokaż sugestie inteligencji",
-    "showNextTaskSuggestion": "Sugestia następnego zadania",
     "showSuggestions": "Pokaż sugestie",
     "showDueToday": "Pokaż zadania do wykonania dzisiaj",
     "showCompleted": "Pokaż ukończone zadania"
@@ -354,25 +353,15 @@
     },
     "frequencyHelp": "Wybierz, jak często chcesz otrzymywać podsumowania zadań",
     "taskIntelligence": "Inteligencja Zadań",
-    "taskIntelligenceDescription": "Uzyskaj pomocne sugestie, aby nadać nazwom zadań bardziej opisowy i praktyczny charakter.",
     "enableTaskIntelligence": "Włącz Asystenta Inteligencji Zadań",
     "autoSuggestNextActions": "Automatyczne Sugestie Następnych Działań",
-    "autoSuggestNextActionsDescription": "Podczas tworzenia projektu automatycznie sugeruj następne fizyczne działanie do podjęcia.",
     "enableAutoSuggestNextActions": "Włącz Sugestie Następnych Działań",
-    "productivityFeatures": "Funkcje Produktywności",
     "pomodoroDescription": "Włącz timer Pomodoro w pasku nawigacyjnym dla skoncentrowanych sesji pracy.",
     "enablePomodoro": "Włącz Timer Pomodoro",
     "productivityAssistant": "Asystent Produktywności",
-    "productivityAssistantDescription": "Wyświetl informacje o produktywności, które pomagają zidentyfikować zastoje w projektach, niejasne zadania i możliwości poprawy przepływu pracy na stronie Dzisiaj.",
     "enableProductivityAssistant": "Włącz Informacje o Produktywności",
     "nextTaskSuggestion": "Sugestia Następnego Zadania",
-    "nextTaskSuggestionDescription": "Automatycznie sugeruj następną najlepszą zadanie do wykonania, gdy nie masz nic w toku, priorytetowo traktując zadania do wykonania dzisiaj, a następnie sugerowane zadania z Twojej strony Dzisiaj.",
     "enableNextTaskSuggestion": "Włącz sugestie następnych zadań",
-    "nextActionPrompt": "Jaka jest następna fizyczna akcja dla tego projektu?",
-    "nextActionPlaceholder": "np. Zadzwoń do klienta, aby umówić spotkanie, Zbadaj konkurencję online, Utwórz folder projektu...",
-    "addNextAction": "Dodaj Następną Akcję",
-    "skipNextAction": "Pomiń na razie",
-    "nextActionHint": "Pomyśl o najmniejszym, najbardziej konkretnym kroku, który możesz podjąć teraz, aby posunąć ten projekt do przodu.",
     "tabs": {
       "general": "Ogólne",
       "security": "Bezpieczeństwo",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Nie masz ustawionego hasła. Rozważ ustawienie go, aby mieć alternatywną metodę logowania."
     },
     "kanbanDescription": "Włącz tablicę Kanban do śledzenia postępu zadań w ramach swimlanes.",
-    "intelligenceSection": "Inteligencja",
-    "taskIntelligenceLabel": "Asystent Inteligencji Zadań",
-    "autoSuggestNextActionsLabel": "Sugestie Następnych Działań",
-    "productivityAssistantLabel": "Wnioski dotyczące Produktywności",
-    "nextTaskSuggestionLabel": "Sugestie Następnych Zadań",
     "featuresAddons": "Funkcje i Dodatki",
     "caldav": {
       "title": "Synchronizacja CalDAV",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Czy na pewno chcesz usunąć \"{{name}}\"? To spowoduje usunięcie kalendarza i wszystkich konfiguracji synchronizacji."
     },
     "caldavWizard": {
-      "title": "Kreator konfiguracji CalDAV",
-      "confirmClose": "Czy na pewno chcesz zamknąć? Twój postęp zostanie utracony.",
       "calendarName": "Nazwa kalendarza",
       "calendarNamePlaceholder": "np. Zadania w pracy",
       "calendarNameRequired": "Nazwa kalendarza jest wymagana",
@@ -518,9 +500,6 @@
       "authType": "Typ uwierzytelnienia",
       "basicAuth": "Podstawowe uwierzytelnienie",
       "bearerAuth": "Token dostępu",
-      "testDescription": "Przetestuj połączenie z serwerem CalDAV przed kontynuowaniem.",
-      "server": "Serwer",
-      "path": "Ścieżka",
       "testConnection": "Testuj połączenie",
       "testing": "Testowanie...",
       "connectionSuccess": "Połączenie udane!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Ostatnia modyfikacja wygrywa (automatyczne)",
       "localWins": "Lokalny zawsze wygrywa",
       "remoteWins": "Zdalny zawsze wygrywa",
-      "reviewDescription": "Sprawdź swoje ustawienia przed utworzeniem kalendarza.",
       "calendarSettings": "Ustawienia kalendarza",
       "serverSettings": "Ustawienia serwera",
       "syncSettings": "Ustawienia synchronizacji",
@@ -648,16 +626,6 @@
     "suggestion": "Kliknij na dowolny element powyżej, aby go otworzyć i wprowadzić poprawki.",
     "issuesFound_one": "1 problem z produktywnością wymaga uwagi",
     "issuesFound_other": "{{count}} problemów z produktywnością wymaga uwagi"
-  },
-  "nextTask": {
-    "suggestion": "Ponieważ nic nie jest w toku, co powiesz na rozpoczęcie od",
-    "suggestionTodayPlan": "Ponieważ nic nie jest w toku, co powiesz na rozpoczęcie od tego zadania z twojego dzisiejszego planu",
-    "suggestionDueToday": "Ponieważ nic nie jest w toku, co powiesz na rozpoczęcie od tego zadania, które jest terminowe dzisiaj",
-    "suggestionSuggested": "Ponieważ nic nie jest w toku, co powiesz na rozpoczęcie od tego sugerowanego zadania",
-    "letsDoIt": "Tak, zróbmy to!",
-    "starting": "Rozpoczynanie...",
-    "startedSuccessfully": "Zadanie rozpoczęte pomyślnie!",
-    "giveMeSomethingElse": "Daj mi coś innego"
   },
   "modals": {
     "confirmDelete": "Czy na pewno chcesz usunąć?",
@@ -939,41 +907,7 @@
     "infoShort": "Skrzynka odbiorcza to miejsce, gdzie lądują niekategoryzowane myśli — zapisz je, posortuj później.",
     "recentlyCaptured": "Ostatnio zebrane",
     "line": "linia",
-    "lines": "linie",
-    "processN": "Przetwórz {{count}}",
-    "allClarified": "Wszystko wyjaśnione",
-    "reClarify": "Ponownie wyjaśnij",
-    "trashedRestore": "{{count}} usuniętych · przywróć",
-    "restored": "Przywrócone usunięte elementy",
-    "restoreError": "Nie udało się przywrócić elementów",
-    "trashError": "Nie udało się usunąć elementu",
-    "clarifyProgress": "Wyjaśnij · {{progress}}",
-    "clarifyDone": "Wszystko wyjaśnione. Skrzynka odbiorcza jest spokojna.",
-    "clarifyBackToList": "Powrót do listy",
-    "clarifyExit": "Wyjdź z wyjaśnienia",
-    "clarifyBack": "← Powrót",
-    "clarifyQ": {
-      "actionable": "Czy to wykonalne?",
-      "notActionable": "Jakiego rodzaju to rzecz?",
-      "steps": "Jeden krok, czy kilka?",
-      "twomin": "Czy możesz to zrobić w mniej niż 2 minuty?",
-      "deferDelegate": "Później sam, czy przekazać?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Tak, wykonalne",
-      "notActionable": "Nie wykonalne",
-      "trash": "Usuń",
-      "someday": "Kiedyś / Może",
-      "referenceNote": "Notatka referencyjna",
-      "oneStep": "Jeden krok",
-      "severalSteps": "Kilka kroków (projekt)",
-      "doItNow": "Tak — zrób to teraz",
-      "no": "Nie",
-      "scheduleIt": "Zaplanuj to",
-      "delegate": "Deleguj"
-    },
-    "somedayCreated": "Dodano do Kiedyś",
-    "reClarifyLink": "Ponownie wyjaśnij"
+    "lines": "linie"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Nie udało się zaktualizować zadania",
     "deleteSuccess": "Zadanie zostało pomyślnie usunięte",
     "deleteError": "Nie udało się usunąć zadania",
-    "startedSuccessfully": "Zadanie rozpoczęte pomyślnie!",
     "created": "Zadanie",
     "createdSuccessfully": "utworzone pomyślnie!",
     "updated": "Zadanie",
@@ -1061,10 +994,6 @@
       "short": "Spróbuj być bardziej szczegółowy w tym, co należy zrobić",
       "noVerb": "Jaką konkretną akcję musisz podjąć? Spróbuj zacząć od czasownika.",
       "vague": "Spróbuj zacząć od czasownika akcji, takiego jak \"Zadzwoń\", \"Napisz\", \"Zaplanuj\" lub \"Zbadaj\""
-    },
-    "nameHelper": {
-      "title": "Uczyń to bardziej opisowym!",
-      "suggestion": "Spróbuj dodać więcej szczegółów, takich jak \"Zadzwoń do dentysty, aby umówić się na wizytę na czyszczenie\" zamiast po prostu \"Zadzwoń do dentysty\""
     },
     "overdueAlert": "To zadanie było w Twoim planie wczoraj i nie zostało ukończone.",
     "overdueYesterday": "Rozważ nadanie priorytetu temu zadaniu lub podzielenie go na mniejsze kroki.",

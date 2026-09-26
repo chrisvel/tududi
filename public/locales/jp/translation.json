@@ -102,7 +102,6 @@
     "showMetrics": "メトリクスを表示",
     "showProductivity": "生産性の洞察を表示",
     "showIntelligence": "インテリジェンス提案を表示",
-    "showNextTaskSuggestion": "次のタスク提案",
     "showSuggestions": "推奨されたものを表示",
     "showDueToday": "今日期限のタスクを表示",
     "showCompleted": "完了したタスクを表示"
@@ -260,26 +259,16 @@
   },
   "profile": {
     "taskIntelligence": "タスクインテリジェンス",
-    "taskIntelligenceDescription": "タスク名をより説明的で実行可能にするための役立つ提案を受け取ります。",
     "enableTaskIntelligence": "タスクインテリジェンスアシスタントを有効にする",
     "enableTaskSummary": "タスクサマリーを有効にする",
     "autoSuggestNextActions": "次のアクション自動提案",
-    "autoSuggestNextActionsDescription": "プロジェクト作成時に、次に行うべき具体的なアクションを自動的に促します。",
     "enableAutoSuggestNextActions": "次のアクション促進を有効にする",
-    "productivityFeatures": "生産性機能",
     "pomodoroDescription": "集中した作業セッションのためにナビゲーションバーでPomodoroタイマーを有効にします。",
     "enablePomodoro": "Pomodoroタイマーを有効にする",
     "productivityAssistant": "生産性アシスタント",
-    "productivityAssistantDescription": "停滞したプロジェクト、曖昧なタスク、ワークフローの改善を特定するのに役立つ生産性インサイトを今日ページに表示します。",
     "enableProductivityAssistant": "生産性インサイトを有効にする",
     "nextTaskSuggestion": "次のタスクの提案",
-    "nextTaskSuggestionDescription": "進行中のものがないときに、今日期限のタスク、次に今日ページからの推奨タスクを優先して、次に取り組むべき最適なタスクを自動的に提案します。",
     "enableNextTaskSuggestion": "次のタスク提案を有効にする",
-    "nextActionPrompt": "このプロジェクトの次の具体的なアクションは何ですか？",
-    "nextActionPlaceholder": "例：クライアントに電話してミーティングをスケジュール、競合他社をオンラインで調査、プロジェクトフォルダを作成...",
-    "addNextAction": "次のアクションを追加",
-    "skipNextAction": "今はスキップ",
-    "nextActionHint": "このプロジェクトを前進させるために、今すぐ取ることができる最も小さく具体的なステップを考えてみてください。",
     "tabs": {
       "general": "一般",
       "security": "セキュリティ",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "パスワードが設定されていません。代替のログイン方法を持つために設定を検討してください。"
     },
     "kanbanDescription": "スイムレーンを跨いでタスクの進捗を追跡するためにカンバンボードを有効にします。",
-    "intelligenceSection": "インテリジェンス",
-    "taskIntelligenceLabel": "タスクインテリジェンスアシスタント",
-    "autoSuggestNextActionsLabel": "次のアクションの提案",
-    "productivityAssistantLabel": "生産性インサイト",
-    "nextTaskSuggestionLabel": "次のタスクの提案",
     "featuresAddons": "機能とアドオン",
     "caldav": {
       "title": "CalDAV同期",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "\"{{name}}\"を削除してもよろしいですか？これによりカレンダーとすべての同期設定が削除されます。"
     },
     "caldavWizard": {
-      "title": "CalDAVセットアップウィザード",
-      "confirmClose": "本当に閉じてもよろしいですか？進行状況が失われます。",
       "calendarName": "カレンダー名",
       "calendarNamePlaceholder": "例：仕事のタスク",
       "calendarNameRequired": "カレンダー名は必須です",
@@ -518,9 +500,6 @@
       "authType": "認証タイプ",
       "basicAuth": "基本認証",
       "bearerAuth": "ベアラートークン",
-      "testDescription": "続行する前にCalDAVサーバーへの接続をテストしてください。",
-      "server": "サーバー",
-      "path": "パス",
       "testConnection": "接続テスト",
       "testing": "テスト中...",
       "connectionSuccess": "接続成功！",
@@ -537,7 +516,6 @@
       "lastWriteWins": "最終更新が勝つ（自動）",
       "localWins": "ローカルが常に勝ちます",
       "remoteWins": "リモートが常に勝ちます",
-      "reviewDescription": "カレンダーを作成する前に設定を確認してください。",
       "calendarSettings": "カレンダー設定",
       "serverSettings": "サーバー設定",
       "syncSettings": "同期設定",
@@ -630,16 +608,6 @@
       "saveError": "計画の順番を保存できませんでした",
       "open": "今日を計画する"
     }
-  },
-  "nextTask": {
-    "suggestion": "進行中のものがないので、こちらから始めてみませんか",
-    "suggestionTodayPlan": "進行中のものがないので、今日の予定からこのタスクを始めてみませんか",
-    "suggestionDueToday": "進行中のものがないので、今日期限のこのタスクから始めてみませんか",
-    "suggestionSuggested": "進行中のものがないので、この推奨タスクから始めてみませんか",
-    "letsDoIt": "はい、やりましょう！",
-    "starting": "開始中...",
-    "startedSuccessfully": "タスクが正常に開始されました！",
-    "giveMeSomethingElse": "他のものをください"
   },
   "modals": {
     "confirmDelete": "本当に削除してよろしいですか？",
@@ -1121,41 +1089,7 @@
     "infoShort": "受信トレイは、カテゴライズされていない考えが集まる場所です — メモを取り、後で整理しましょう。",
     "recentlyCaptured": "最近キャプチャされた",
     "line": "行",
-    "lines": "行",
-    "processN": "処理 {{count}}",
-    "allClarified": "すべて明確化済み",
-    "reClarify": "再明確化",
-    "trashedRestore": "{{count}} 件をゴミ箱から復元",
-    "restored": "ゴミ箱のアイテムが復元されました",
-    "restoreError": "アイテムの復元に失敗しました",
-    "trashError": "アイテムのゴミ箱への移動に失敗しました",
-    "clarifyProgress": "明確化 · {{progress}}",
-    "clarifyDone": "すべて明確化されました。受信トレイは落ち着いています。",
-    "clarifyBackToList": "リストに戻る",
-    "clarifyExit": "明確化を終了",
-    "clarifyBack": "← 戻る",
-    "clarifyQ": {
-      "actionable": "これは実行可能ですか？",
-      "notActionable": "どのようなものですか？",
-      "steps": "一つのステップ、それとも複数のステップ？",
-      "twomin": "2分以内にできますか？",
-      "deferDelegate": "後で自分でやる、それとも他の人に任せる？"
-    },
-    "clarifyChoice": {
-      "yesActionable": "はい、実行可能",
-      "notActionable": "実行不可能",
-      "trash": "ゴミ箱に入れる",
-      "someday": "いつか / もしかしたら",
-      "referenceNote": "参照ノート",
-      "oneStep": "1ステップ",
-      "severalSteps": "複数のステップ（プロジェクト）",
-      "doItNow": "はい — 今すぐ実行",
-      "no": "いいえ",
-      "scheduleIt": "スケジュールする",
-      "delegate": "委任する"
-    },
-    "somedayCreated": "いつかに追加されました",
-    "reClarifyLink": "再確認"
+    "lines": "行"
   },
   "project": {
     "projectImage": "プロジェクト画像",
@@ -1180,10 +1114,6 @@
       "noVerb": "どの具体的なアクションを取る必要がありますか？動詞から始めてみてください。",
       "vague": "「電話する」、「書く」、「スケジュールする」、または「調査する」といった動作動詞から始めてみてください"
     },
-    "nameHelper": {
-      "title": "もっと詳しく記述しましょう！",
-      "suggestion": "「歯医者に電話」ではなく「歯医者に電話してクリーニングの予約をする」のように詳細を追加してみてください"
-    },
     "labels": {
       "tags": "タグ",
       "project": "プロジェクト",
@@ -1202,7 +1132,6 @@
     "updateError": "タスクの更新に失敗しました",
     "deleteSuccess": "タスクが正常に削除されました",
     "deleteError": "タスクの削除に失敗しました",
-    "startedSuccessfully": "タスクが正常に開始されました！",
     "created": "タスク",
     "createdSuccessfully": "が正常に作成されました！",
     "updated": "タスク",

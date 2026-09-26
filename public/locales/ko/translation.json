@@ -102,7 +102,6 @@
     "showMetrics": "지표 표시",
     "showProductivity": "생산성 통찰력 표시",
     "showIntelligence": "지능 제안 표시",
-    "showNextTaskSuggestion": "다음 작업 제안",
     "showSuggestions": "제안된 항목 표시",
     "showDueToday": "오늘 마감 작업 표시",
     "showCompleted": "완료된 작업 표시"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "작업 요약을 얼마나 자주 받을지 선택하세요.",
     "taskIntelligence": "작업 인텔리전스",
-    "taskIntelligenceDescription": "작업 이름을 더 설명적이고 실행 가능하게 만들기 위한 유용한 제안을 받으세요.",
     "enableTaskIntelligence": "작업 인텔리전스 도우미 활성화",
     "autoSuggestNextActions": "다음 작업 자동 제안",
-    "autoSuggestNextActionsDescription": "프로젝트를 생성할 때, 다음에 취해야 할 물리적 작업을 자동으로 제안합니다.",
     "enableAutoSuggestNextActions": "다음 작업 제안 활성화",
-    "productivityFeatures": "생산성 기능",
     "pomodoroDescription": "집중 작업 세션을 위해 내비게이션 바에 포모도로 타이머를 활성화하세요.",
     "enablePomodoro": "포모도로 타이머 활성화",
     "productivityAssistant": "생산성 도우미",
-    "productivityAssistantDescription": "오늘 페이지에서 정체된 프로젝트, 모호한 작업 및 워크플로우 개선 사항을 식별하는 데 도움이 되는 생산성 통찰력을 보여줍니다.",
     "enableProductivityAssistant": "생산성 통찰력 활성화",
     "nextTaskSuggestion": "다음 작업 제안",
-    "nextTaskSuggestionDescription": "진행 중인 작업이 없을 때, 오늘 마감인 작업을 우선으로 하여 다음에 작업할 최적의 작업을 자동으로 제안합니다.",
     "enableNextTaskSuggestion": "다음 작업 제안 활성화",
-    "nextActionPrompt": "이 프로젝트에 대한 다음 물리적 작업은 무엇인가요?",
-    "nextActionPlaceholder": "예: 클라이언트에게 전화하여 회의 일정 잡기, 온라인에서 경쟁사 조사하기, 프로젝트 폴더 만들기...",
-    "addNextAction": "다음 작업 추가",
-    "skipNextAction": "지금은 건너뛰기",
-    "nextActionHint": "이 프로젝트를 진행하기 위해 지금 바로 취할 수 있는 가장 작고 구체적인 단계를 생각해 보세요.",
     "tabs": {
       "general": "일반",
       "security": "보안",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "설정된 비밀번호가 없습니다. 대체 로그인 방법을 위해 비밀번호 설정을 고려하세요."
     },
     "kanbanDescription": "스윔레인에서 작업 진행 상황을 추적하기 위해 칸반 보드를 활성화합니다.",
-    "intelligenceSection": "인텔리전스",
-    "taskIntelligenceLabel": "작업 인텔리전스 어시스턴트",
-    "autoSuggestNextActionsLabel": "다음 작업 제안",
-    "productivityAssistantLabel": "생산성 통찰",
-    "nextTaskSuggestionLabel": "다음 작업 제안",
     "featuresAddons": "기능 및 추가 기능",
     "caldav": {
       "title": "CalDAV 동기화",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "\"{{name}}\"을(를) 정말 삭제하시겠습니까? 이 작업은 캘린더와 모든 동기화 설정을 제거합니다."
     },
     "caldavWizard": {
-      "title": "CalDAV 설정 마법사",
-      "confirmClose": "정말 닫으시겠습니까? 진행 상황이 손실됩니다.",
       "calendarName": "캘린더 이름",
       "calendarNamePlaceholder": "예: 업무 작업",
       "calendarNameRequired": "캘린더 이름은 필수입니다",
@@ -518,9 +500,6 @@
       "authType": "인증 유형",
       "basicAuth": "기본 인증",
       "bearerAuth": "베어러 토큰",
-      "testDescription": "진행하기 전에 CalDAV 서버에 대한 연결을 테스트하십시오.",
-      "server": "서버",
-      "path": "경로",
       "testConnection": "연결 테스트",
       "testing": "테스트 중...",
       "connectionSuccess": "연결 성공!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "마지막 수정이 우선 (자동)",
       "localWins": "로컬이 항상 우선합니다",
       "remoteWins": "원격이 항상 우선합니다",
-      "reviewDescription": "일정을 만들기 전에 설정을 검토하세요.",
       "calendarSettings": "일정 설정",
       "serverSettings": "서버 설정",
       "syncSettings": "동기화 설정",
@@ -648,16 +626,6 @@
     "suggestion": "위의 항목을 클릭하여 열고 개선하세요.",
     "issuesFound_other": "{{count}}개의 생산성 문제에 주의가 필요합니다",
     "issuesFound_one": "1개의 생산성 문제가 필요합니다"
-  },
-  "nextTask": {
-    "suggestion": "진행 중인 작업이 없으니, 다음 작업으로 시작하는 것은 어떨까요?",
-    "suggestionTodayPlan": "진행 중인 작업이 없으니, 오늘 계획에서 이 작업으로 시작하는 것은 어떨까요?",
-    "suggestionDueToday": "진행 중인 작업이 없으니, 오늘 마감인 이 작업으로 시작하는 것은 어떨까요?",
-    "suggestionSuggested": "진행 중인 작업이 없으니, 이 추천 작업으로 시작하는 것은 어떨까요?",
-    "letsDoIt": "네, 시작해봅시다!",
-    "starting": "시작 중...",
-    "startedSuccessfully": "작업이 성공적으로 시작되었습니다!",
-    "giveMeSomethingElse": "다른 작업을 주세요"
   },
   "modals": {
     "confirmDelete": "정말 삭제하시겠습니까?",
@@ -939,41 +907,7 @@
     "infoShort": "받은 편지함은 분류되지 않은 생각이 모이는 곳입니다 — 메모를 적고 나중에 정리하세요.",
     "recentlyCaptured": "최근 캡처됨",
     "line": "줄",
-    "lines": "줄들",
-    "processN": "처리 {{count}}",
-    "allClarified": "모두 명확해짐",
-    "reClarify": "다시 명확히 하기",
-    "trashedRestore": "{{count}} 휴지통에서 복원 · 복원",
-    "restored": "휴지통 항목이 복원되었습니다",
-    "restoreError": "항목 복원에 실패했습니다",
-    "trashError": "항목을 휴지통에 버리는 데 실패했습니다",
-    "clarifyProgress": "명확히 하기 · {{progress}}",
-    "clarifyDone": "모두 명확해졌습니다. 받은 편지함이 안정적입니다.",
-    "clarifyBackToList": "목록으로 돌아가기",
-    "clarifyExit": "명확히 하기 종료",
-    "clarifyBack": "← 뒤로",
-    "clarifyQ": {
-      "actionable": "이것은 실행 가능한가요?",
-      "notActionable": "어떤 종류의 일인가요?",
-      "steps": "한 단계인가요, 아니면 여러 단계인가요?",
-      "twomin": "2분 이내에 할 수 있나요?",
-      "deferDelegate": "나중에 스스로 할 건가요, 아니면 넘길 건가요?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "네, 실행 가능",
-      "notActionable": "실행 불가능",
-      "trash": "휴지통에 버리기",
-      "someday": "언젠가 / 아마도",
-      "referenceNote": "참고 노트",
-      "oneStep": "한 단계",
-      "severalSteps": "여러 단계 (프로젝트)",
-      "doItNow": "네 — 지금 실행하기",
-      "no": "아니요",
-      "scheduleIt": "일정 잡기",
-      "delegate": "위임하기"
-    },
-    "somedayCreated": "언젠가에 추가됨",
-    "reClarifyLink": "다시 명확히 하기"
+    "lines": "줄들"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "작업 업데이트에 실패했습니다",
     "deleteSuccess": "작업이 성공적으로 삭제되었습니다",
     "deleteError": "작업 삭제에 실패했습니다",
-    "startedSuccessfully": "작업이 성공적으로 시작되었습니다!",
     "created": "작업",
     "createdSuccessfully": "성공적으로 생성되었습니다!",
     "updated": "작업",
@@ -1061,10 +994,6 @@
       "short": "무엇을 해야 하는지 더 구체적으로 작성해 보세요",
       "noVerb": "어떤 특정한 행동을 취해야 하나요? 동사로 시작해 보세요.",
       "vague": "\"전화하기\", \"작성하기\", \"일정 잡기\" 또는 \"조사하기\"와 같은 동사로 시작해 보세요"
-    },
-    "nameHelper": {
-      "title": "더 설명적으로 만들어 보세요!",
-      "suggestion": "\"치과에 전화하여 청소 예약하기\"와 같은 더 많은 세부정보를 추가해 보세요. 단순히 \"치과에 전화하기\" 대신에요."
     },
     "overdueAlert": "이 작업은 어제 귀하의 계획에 있었으나 완료되지 않았습니다.",
     "overdueYesterday": "이 작업의 우선 순위를 정하거나 더 작은 단계로 나누는 것을 고려해 보세요.",

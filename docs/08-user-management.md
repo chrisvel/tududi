@@ -167,12 +167,9 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     - **Timezone:** User's timezone for date/time display
     - **First day of week:** 0 (Sunday) to 6 (Saturday)
 
-18. **Feature toggles:**
-    - Task intelligence enabled/disabled
-    - Auto-suggest next actions enabled/disabled
-    - Pomodoro timer enabled/disabled
-    - Productivity assistant enabled/disabled
-    - Next task suggestion enabled/disabled
+18. **Feature toggles (Profile > Features & Add-ons):**
+    - Habits, Eisenhower Matrix, Kanban Board, Calendar and Templates
+    - Pomodoro timer
 
 19. **Telegram integration settings:**
     - Bot token for personal Telegram bot
@@ -397,8 +394,6 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 35. **Today page is highly customizable:**
     - Show/hide metrics panel
-    - Show/hide productivity assistant
-    - Show/hide next task suggestion
     - Show/hide AI suggestions section
     - Show/hide tasks due today
     - Show/hide completed tasks

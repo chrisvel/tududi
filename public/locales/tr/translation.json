@@ -102,7 +102,6 @@
     "showMetrics": "Metrikleri Göster",
     "showProductivity": "Verimlilik İçgörülerini Göster",
     "showIntelligence": "Zeka Önerilerini Göster",
-    "showNextTaskSuggestion": "Sonraki Görev Önerisi",
     "showSuggestions": "Önerilenleri Göster",
     "showDueToday": "Bugün Vadesi Gelen Görevleri Göster",
     "showCompleted": "Tamamlanan Görevleri Göster"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "Görev özetlerini ne sıklıkla almak istediğinizi seçin",
     "taskIntelligence": "Görev Zekası",
-    "taskIntelligenceDescription": "Görev adlarınızı daha açıklayıcı ve eyleme geçirilebilir hale getirmek için yardımcı öneriler alın.",
     "enableTaskIntelligence": "Görev Zekası Asistanını Etkinleştir",
     "autoSuggestNextActions": "Sonraki Eylemleri Otomatik Öner",
-    "autoSuggestNextActionsDescription": "Bir proje oluştururken, atılacak bir sonraki fiziksel eylemi otomatik olarak önerin.",
     "enableAutoSuggestNextActions": "Sonraki Eylem Önerilerini Etkinleştir",
-    "productivityFeatures": "Verimlilik Özellikleri",
     "pomodoroDescription": "Odaklanmış çalışma oturumları için navigasyon çubuğunda Pomodoro zamanlayıcısını etkinleştirin.",
     "enablePomodoro": "Pomodoro Zamanlayıcısını Etkinleştir",
     "productivityAssistant": "Verimlilik Asistanı",
-    "productivityAssistantDescription": "Bugün sayfanızda duraklayan projeleri, belirsiz görevleri ve iş akışı iyileştirmelerini tanımlamaya yardımcı olan verimlilik içgörülerini gösterin.",
     "enableProductivityAssistant": "Verimlilik İçgörülerini Etkinleştir",
     "nextTaskSuggestion": "Sonraki Görev Önerisi",
-    "nextTaskSuggestionDescription": "Devam eden bir işiniz yoksa, öncelikle bugün vadesi gelen görevleri, ardından Bugün sayfanızdan önerilen görevleri dikkate alarak çalışılacak en iyi sonraki görevi otomatik olarak önerin.",
     "enableNextTaskSuggestion": "Sonraki Görev Önerilerini Etkinleştir",
-    "nextActionPrompt": "Bu proje için bir sonraki fiziksel eylem nedir?",
-    "nextActionPlaceholder": "örneğin, toplantı planlamak için müşteriyi arayın, rakipleri çevrimiçi araştırın, proje klasörü oluşturun...",
-    "addNextAction": "Sonraki Eylemi Ekle",
-    "skipNextAction": "Şimdilik atla",
-    "nextActionHint": "Bu projeyi ilerletmek için şu anda atabileceğiniz en küçük, en somut adımı düşünün.",
     "tabs": {
       "general": "Genel",
       "security": "Güvenlik",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Hiç şifreniz yok. Alternatif bir oturum açma yöntemi için bir şifre belirlemeyi düşünün."
     },
     "kanbanDescription": "Görev ilerlemesini takip etmek için Kanban Panosunu etkinleştirin.",
-    "intelligenceSection": "Zeka",
-    "taskIntelligenceLabel": "Görev Zeka Asistanı",
-    "autoSuggestNextActionsLabel": "Sonraki Eylem Önerileri",
-    "productivityAssistantLabel": "Verimlilik İçgörüleri",
-    "nextTaskSuggestionLabel": "Sonraki Görev Önerileri",
     "featuresAddons": "Özellikler ve Eklentiler",
     "caldav": {
       "title": "CalDAV Senkronizasyonu",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "\"{{name}}\" silmek istediğinizden emin misiniz? Bu, takvimi ve tüm senkronizasyon yapılandırmalarını kaldıracaktır."
     },
     "caldavWizard": {
-      "title": "CalDAV Kurulum Sihirbazı",
-      "confirmClose": "Kapatmak istediğinizden emin misiniz? İlerlemeniz kaybolacaktır.",
       "calendarName": "Takvim adı",
       "calendarNamePlaceholder": "örn. İş Görevleri",
       "calendarNameRequired": "Takvim adı gereklidir",
@@ -518,9 +500,6 @@
       "authType": "Kimlik doğrulama türü",
       "basicAuth": "Temel Kimlik Doğrulama",
       "bearerAuth": "Taşıyıcı Token",
-      "testDescription": "Devam etmeden önce CalDAV sunucunuza bağlantıyı test edin.",
-      "server": "Sunucu",
-      "path": "Yol",
       "testConnection": "Bağlantıyı Test Et",
       "testing": "Test ediliyor...",
       "connectionSuccess": "Bağlantı başarılı!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Son değiştirilen kazanır (otomatik)",
       "localWins": "Yerel her zaman kazanır",
       "remoteWins": "Uzaktan her zaman kazanır",
-      "reviewDescription": "Takvim oluşturmadan önce ayarlarınızı gözden geçirin.",
       "calendarSettings": "Takvim Ayarları",
       "serverSettings": "Sunucu Ayarları",
       "syncSettings": "Senkranizasyon Ayarları",
@@ -648,16 +626,6 @@
     "suggestion": "Geliştirmeler yapmak için yukarıdaki herhangi bir öğeye tıklayın.",
     "issuesFound_one": "1 verimlilik sorunu dikkat gerektiriyor",
     "issuesFound_other": "{{count}} verimlilik sorunu dikkat gerektiriyor"
-  },
-  "nextTask": {
-    "suggestion": "Şu anda devam eden bir şey olmadığı için, {{variable}} ile başlamayı düşünür müsün?",
-    "suggestionTodayPlan": "Şu anda devam eden bir şey olmadığı için, bugün planındaki bu görevle başlamayı düşünür müsün?",
-    "suggestionDueToday": "Şu anda devam eden bir şey olmadığı için, bugün son tarihi olan bu görevle başlamayı düşünür müsün?",
-    "suggestionSuggested": "Şu anda devam eden bir şey olmadığı için, bu önerilen görevle başlamayı düşünür müsün?",
-    "letsDoIt": "Evet, yapalım!",
-    "starting": "Başlatılıyor...",
-    "startedSuccessfully": "Görev başarıyla başlatıldı!",
-    "giveMeSomethingElse": "Bana başka bir şey ver"
   },
   "modals": {
     "confirmDelete": "Silmek istediğinize emin misiniz?",
@@ -939,41 +907,7 @@
     "infoShort": "Gelen kutusu, kategorize edilmemiş düşüncelerin toplandığı yerdir — not alın, sonra sıralayın.",
     "recentlyCaptured": "Son zamanlarda yakalanan",
     "line": "satır",
-    "lines": "satırlar",
-    "processN": "İşle {{count}}",
-    "allClarified": "Hepsi netleştirildi",
-    "reClarify": "Tekrar netleştir",
-    "trashedRestore": "{{count}} çöp · geri yükle",
-    "restored": "Çöp öğeleri geri yüklendi",
-    "restoreError": "Öğeleri geri yükleme başarısız oldu",
-    "trashError": "Öğeyi çöp kutusuna atma başarısız oldu",
-    "clarifyProgress": "Netleştir · {{progress}}",
-    "clarifyDone": "Hepsi netleştirildi. Gelen kutusu sakin.",
-    "clarifyBackToList": "Listeye geri dön",
-    "clarifyExit": "Netleştirmeden çık",
-    "clarifyBack": "← Geri",
-    "clarifyQ": {
-      "actionable": "Bu eyleme geçirilebilir mi?",
-      "notActionable": "Bu ne tür bir şey?",
-      "steps": "Bir adım mı, yoksa birkaç mı?",
-      "twomin": "Bunu 2 dakikadan kısa sürede yapabilir misin?",
-      "deferDelegate": "Sonra kendin mi, yoksa devredip mi?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Evet, eyleme geçirilebilir",
-      "notActionable": "Eyleme geçirilemez",
-      "trash": "Çöp",
-      "someday": "Bir gün / Belki",
-      "referenceNote": "Referans notu",
-      "oneStep": "Bir adım",
-      "severalSteps": "Birden fazla adım (proje)",
-      "doItNow": "Evet — şimdi yap",
-      "no": "Hayır",
-      "scheduleIt": "Planla",
-      "delegate": "Devret"
-    },
-    "somedayCreated": "Bir güne eklendi",
-    "reClarifyLink": "Yeniden netleştir"
+    "lines": "satırlar"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Görev güncellenemedi",
     "deleteSuccess": "Görev başarıyla silindi",
     "deleteError": "Görev silinemedi",
-    "startedSuccessfully": "Görev başarıyla başlatıldı!",
     "created": "Görev",
     "createdSuccessfully": "başarıyla oluşturuldu!",
     "updated": "Görev",
@@ -1061,10 +994,6 @@
       "short": "Ne yapılması gerektiği konusunda daha spesifik olmaya çalışın",
       "noVerb": "Hangi spesifik eylemi gerçekleştirmeniz gerekiyor? Bir fiil ile başlamayı deneyin.",
       "vague": "\"Ara\", \"Yaz\", \"Planla\" veya \"Araştır\" gibi bir eylem fiili ile başlamayı deneyin"
-    },
-    "nameHelper": {
-      "title": "Daha açıklayıcı hale getirin!",
-      "suggestion": "\"Temizlik randevusu ayarlamak için dişçiyi ara\" gibi daha fazla detay eklemeyi deneyin, sadece \"Dişçiyi ara\" demek yerine"
     },
     "overdueAlert": "Bu görev dün planınızdaydı ve tamamlanmadı.",
     "overdueYesterday": "Bu görevi önceliklendirmeyi veya daha küçük adımlara ayırmayı düşünün.",

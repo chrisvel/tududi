@@ -102,7 +102,6 @@
     "showMetrics": "显示指标",
     "showProductivity": "显示生产力洞察",
     "showIntelligence": "显示智能建议",
-    "showNextTaskSuggestion": "下一个任务建议",
     "showSuggestions": "显示建议",
     "showDueToday": "显示今天到期的任务",
     "showCompleted": "显示已完成的任务"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "选择您希望接收任务摘要的频率",
     "taskIntelligence": "任务智能",
-    "taskIntelligenceDescription": "获取有用的建议，使您的任务名称更具描述性和可操作性。",
     "enableTaskIntelligence": "启用任务智能助手",
     "autoSuggestNextActions": "自动建议下一步行动",
-    "autoSuggestNextActionsDescription": "在创建项目时，自动提示下一步需要采取的实际行动。",
     "enableAutoSuggestNextActions": "启用下一步行动提示",
-    "productivityFeatures": "生产力功能",
     "pomodoroDescription": "在导航栏中启用番茄钟计时器，以便进行专注的工作会话。",
     "enablePomodoro": "启用番茄钟计时器",
     "productivityAssistant": "生产力助手",
-    "productivityAssistantDescription": "在您的今日页面上显示生产力洞察，帮助识别停滞的项目、模糊的任务和工作流程改进。",
     "enableProductivityAssistant": "启用生产力洞察",
     "nextTaskSuggestion": "下一个任务建议",
-    "nextTaskSuggestionDescription": "当您没有进行中的任务时，自动建议下一个最佳任务，优先考虑今天到期的任务，然后是您今日页面上的建议任务。",
     "enableNextTaskSuggestion": "启用下一个任务建议",
-    "nextActionPrompt": "这个项目的下一步实际行动是什么？",
-    "nextActionPlaceholder": "例如：致电客户安排会议，在线研究竞争对手，创建项目文件夹...",
-    "addNextAction": "添加下一步行动",
-    "skipNextAction": "暂时跳过",
-    "nextActionHint": "想想您现在可以采取的最小、最具体的步骤，以推动这个项目向前发展。",
     "tabs": {
       "general": "常规",
       "security": "安全",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "您尚未设置密码。考虑设置一个以便拥有替代登录方式。"
     },
     "kanbanDescription": "启用看板以跟踪跨泳道的任务进度。",
-    "intelligenceSection": "智能",
-    "taskIntelligenceLabel": "任务智能助手",
-    "autoSuggestNextActionsLabel": "下一步行动提示",
-    "productivityAssistantLabel": "生产力洞察",
-    "nextTaskSuggestionLabel": "下一个任务建议",
     "featuresAddons": "功能与附加组件",
     "caldav": {
       "title": "CalDAV 同步",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "您确定要删除 \"{{name}}\" 吗？这将删除日历及所有同步配置。"
     },
     "caldavWizard": {
-      "title": "CalDAV 设置向导",
-      "confirmClose": "您确定要关闭吗？您的进度将会丢失。",
       "calendarName": "日历名称",
       "calendarNamePlaceholder": "例如，工作任务",
       "calendarNameRequired": "日历名称是必填项",
@@ -518,9 +500,6 @@
       "authType": "认证类型",
       "basicAuth": "基本认证",
       "bearerAuth": "持有者令牌",
-      "testDescription": "在继续之前测试与您的 CalDAV 服务器的连接。",
-      "server": "服务器",
-      "path": "路径",
       "testConnection": "测试连接",
       "testing": "测试中...",
       "connectionSuccess": "连接成功！",
@@ -537,7 +516,6 @@
       "lastWriteWins": "最后修改优先（自动）",
       "localWins": "本地始终优先",
       "remoteWins": "远程始终优先",
-      "reviewDescription": "在创建日历之前，请检查您的设置。",
       "calendarSettings": "日历设置",
       "serverSettings": "服务器设置",
       "syncSettings": "同步设置",
@@ -648,16 +626,6 @@
     "suggestion": "点击上面的任何项目以打开并进行改进。",
     "issuesFound_other": "{{count}}个生产力问题需要关注",
     "issuesFound_one": "1 个生产力问题需要关注"
-  },
-  "nextTask": {
-    "suggestion": "由于没有进行中的任务，您觉得从这个开始怎么样",
-    "suggestionTodayPlan": "由于没有进行中的任务，您觉得从今天计划中的这个任务开始怎么样",
-    "suggestionDueToday": "由于没有进行中的任务，您觉得从今天到期的这个任务开始怎么样",
-    "suggestionSuggested": "由于没有进行中的任务，您觉得从这个建议的任务开始怎么样",
-    "letsDoIt": "好的，我们开始吧！",
-    "starting": "开始中...",
-    "startedSuccessfully": "任务成功开始！",
-    "giveMeSomethingElse": "给我其他的任务"
   },
   "modals": {
     "confirmDelete": "您确定要删除吗？",
@@ -939,41 +907,7 @@
     "infoShort": "收件箱是未分类想法的归宿——记下内容，稍后整理。",
     "recentlyCaptured": "最近捕获",
     "line": "行",
-    "lines": "行",
-    "processN": "处理 {{count}}",
-    "allClarified": "全部已澄清",
-    "reClarify": "重新澄清",
-    "trashedRestore": "{{count}} 已删除 · 恢复",
-    "restored": "已恢复已删除项目",
-    "restoreError": "恢复项目失败",
-    "trashError": "删除项目失败",
-    "clarifyProgress": "澄清 · {{progress}}",
-    "clarifyDone": "全部已澄清。收件箱已平静。",
-    "clarifyBackToList": "返回列表",
-    "clarifyExit": "退出澄清",
-    "clarifyBack": "← 返回",
-    "clarifyQ": {
-      "actionable": "这是可操作的吗？",
-      "notActionable": "这是什么类型的事情？",
-      "steps": "一步，还是几步？",
-      "twomin": "你能在 2 分钟内完成吗？",
-      "deferDelegate": "自己稍后做，还是交给别人？"
-    },
-    "clarifyChoice": {
-      "yesActionable": "是的，可操作",
-      "notActionable": "不可操作",
-      "trash": "删除",
-      "someday": "某天 / 也许",
-      "referenceNote": "参考备注",
-      "oneStep": "一步",
-      "severalSteps": "多个步骤（项目）",
-      "doItNow": "是 — 现在就做",
-      "no": "不",
-      "scheduleIt": "安排它",
-      "delegate": "委派"
-    },
-    "somedayCreated": "已添加到某天",
-    "reClarifyLink": "重新澄清"
+    "lines": "行"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "更新任务失败",
     "deleteSuccess": "任务删除成功",
     "deleteError": "删除任务失败",
-    "startedSuccessfully": "任务成功开始！",
     "created": "任务",
     "createdSuccessfully": "成功创建！",
     "updated": "任务",
@@ -1061,10 +994,6 @@
       "short": "尽量更具体地说明需要完成的任务",
       "noVerb": "您需要采取什么具体行动？尝试以动词开头。",
       "vague": "尝试以动词开头，例如 \"拨打电话\"、\"写作\"、\"安排\" 或 \"研究\""
-    },
-    "nameHelper": {
-      "title": "让它更具描述性！",
-      "suggestion": "尝试添加更多细节，例如 \"打电话给牙医安排清洁预约\" 而不仅仅是 \"打电话给牙医\""
     },
     "overdueAlert": "此任务昨天在您的计划中，但未完成。",
     "overdueYesterday": "考虑优先处理此任务或将其拆分为更小的步骤。",

@@ -58,20 +58,6 @@ function getToolContent(response) {
 
 describe('MCP Tools Integration', () => {
     let user, apiTokenValue;
-    let originalEnv;
-
-    beforeAll(() => {
-        originalEnv = process.env.FF_ENABLE_MCP;
-        process.env.FF_ENABLE_MCP = 'true';
-    });
-
-    afterAll(() => {
-        if (originalEnv === undefined) {
-            delete process.env.FF_ENABLE_MCP;
-        } else {
-            process.env.FF_ENABLE_MCP = originalEnv;
-        }
-    });
 
     async function createApiToken(userId) {
         const { rawToken } = await createApiTokenFromService({

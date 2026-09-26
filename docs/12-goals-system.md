@@ -338,9 +338,8 @@ goal_id  INTEGER  → goals.id  SET NULL on delete
 | Frontend API client | `/frontend/utils/goalsService.ts` |
 | Goals Zustand store | `/frontend/store/useStore.ts` (`goalsStore` slice) |
 | Slug helper | `/frontend/utils/slugUtils.ts` (`createGoalUrl`) |
-| Goal modal (create/edit) | `/frontend/components/Goal/GoalModal.tsx` |
 | Goals list page | `/frontend/components/Goals.tsx` |
-| Goal detail page | `/frontend/components/Goal/GoalDetails.tsx` |
+| Goal detail page (also create and edit) | `/frontend/components/Goal/GoalDetails.tsx` |
 | Sidebar section | `/frontend/components/Sidebar/SidebarGoals.tsx` |
 | Task goal card | `/frontend/components/Task/TaskDetails/TaskGoalCard.tsx` |
 | Goal dropdown component | `/frontend/components/Shared/GoalDropdown.tsx` |
