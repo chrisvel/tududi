@@ -1011,7 +1011,8 @@
     "reClarifyLink": "Re-clarify",
     "recurringFrom": "{{phrase}}, from {{date}}",
     "keepDateAsText": "Keep as text",
-    "removeAssignee": "Remove assignee"
+    "removeAssignee": "Remove assignee",
+    "attachments": "Attachments"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -2398,6 +2399,17 @@
       "newline": "Starts a new line",
       "oneItemPerLine": "One item per line",
       "oneItemPerLineHelp": "Off: everything you type becomes one item, with the first line as its title and the other lines as its notes. On: each line becomes its own item."
-    }
+    },
+    "attach": "Attach files",
+    "attachHint": "Attach files. You can also paste or drop them here.",
+    "filesLabel": "Files to attach",
+    "removeFile": "Remove {{name}}",
+    "fileTooLarge": "{{name}} is larger than {{limit}} MB, so it was not added.",
+    "tooManyFiles": "Up to {{max}} files can be added at once.",
+    "switchedToTask": "Notes and projects cannot hold files, so this will be a task.",
+    "filesOnlyInboxTask": "Files can be added to an Inbox item or a task.",
+    "filesNotAttached": "Saved, but these files could not be attached: {{names}}",
+    "filesAttached_one": "1 file attached.",
+    "filesAttached_other": "{{count}} files attached."
   }
 }

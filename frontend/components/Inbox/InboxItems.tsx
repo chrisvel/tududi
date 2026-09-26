@@ -358,7 +358,7 @@ const InboxItems: React.FC = () => {
 
         if (outcome === 'someday') {
             try {
-                await createTask(
+                const created = await createTask(
                     await buildClarifiedTask(
                         item,
                         {
@@ -371,7 +371,7 @@ const InboxItems: React.FC = () => {
                         { parseDates: false }
                     )
                 );
-                await processInboxItemWithStore(uid);
+                await processInboxItemWithStore(uid, created.uid);
                 showSuccessToast(t('inbox.somedayCreated', 'Added to Someday'));
             } catch {
                 showErrorToast(t('task.createError'));
@@ -383,7 +383,7 @@ const InboxItems: React.FC = () => {
 
         if (outcome === 'task') {
             try {
-                await createTask(
+                const created = await createTask(
                     await buildClarifiedTask(item, {
                         name: itemName,
                         status: 'not_started',
@@ -391,7 +391,7 @@ const InboxItems: React.FC = () => {
                         completed_at: null,
                     })
                 );
-                await processInboxItemWithStore(uid);
+                await processInboxItemWithStore(uid, created.uid);
                 showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
             } catch {
                 showErrorToast(t('task.createError'));
@@ -403,7 +403,7 @@ const InboxItems: React.FC = () => {
 
         if (outcome === 'waiting') {
             try {
-                await createTask(
+                const created = await createTask(
                     await buildClarifiedTask(item, {
                         name: itemName,
                         status: 'waiting',
@@ -412,7 +412,7 @@ const InboxItems: React.FC = () => {
                         tags: [{ name: 'waiting-for' }],
                     })
                 );
-                await processInboxItemWithStore(uid);
+                await processInboxItemWithStore(uid, created.uid);
                 showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
             } catch {
                 showErrorToast(t('task.createError'));
@@ -437,10 +437,11 @@ const InboxItems: React.FC = () => {
 
     const handleProcessItem = async (
         uid: string,
-        showToast: boolean = true
+        showToast: boolean = true,
+        taskUid?: string
     ) => {
         try {
-            await processInboxItemWithStore(uid);
+            await processInboxItemWithStore(uid, taskUid);
             if (showToast) {
                 showSuccessToast(t('inbox.itemProcessed'));
             }
@@ -497,7 +498,7 @@ const InboxItems: React.FC = () => {
                 options.inboxItemUid ?? currentConversionItemUid ?? undefined;
 
             if (inboxUid) {
-                await handleProcessItem(inboxUid, false);
+                await handleProcessItem(inboxUid, false, createdTask.uid);
                 if (!options.inboxItemUid) {
                     setCurrentConversionItemUid(null);
                 }

@@ -11,6 +11,8 @@ const {
     RecurringCompletion,
     Role,
     TaskAttachment,
+    InboxItem,
+    InboxItemAttachment,
     User,
 } = require('../../models');
 const { getConfig } = require('../../config/config');
@@ -407,5 +409,49 @@ describe('Backup export and import round trip (format 2)', () => {
         const task = await Task.findOne({ where: { uid: 'legacy-task' } });
         expect(task.project_id).toBeNull();
         expect(task.parent_task_id).toBeNull();
+    });
+
+    it('carries inbox item files through export and import', async () => {
+        const inboxDir = path.join(config.uploadPath, 'inbox');
+        await fs.mkdir(inboxDir, { recursive: true });
+        await fs.writeFile(
+            path.join(inboxDir, 'inbox-roundtrip.png'),
+            'inbox bytes'
+        );
+        const item = await InboxItem.create({
+            content: 'Receipt',
+            title: 'Receipt',
+            source: 'web',
+            user_id: source.id,
+        });
+        await InboxItemAttachment.create({
+            inbox_item_id: item.id,
+            user_id: source.id,
+            original_filename: 'receipt.png',
+            stored_filename: 'inbox-roundtrip.png',
+            file_size: 11,
+            mime_type: 'image/png',
+            file_path: 'inbox/inbox-roundtrip.png',
+        });
+
+        const backup = await exportUserData(source.id);
+        const exported = backup.data.inbox_items.find(
+            (entry) => entry.uid === item.uid
+        );
+        expect(exported.attachments).toHaveLength(1);
+        expect(exported.Attachments).toBeUndefined();
+
+        await importUserData(target.id, backup);
+
+        const imported = await InboxItemAttachment.findOne({
+            where: { user_id: target.id },
+        });
+        expect(imported.original_filename).toBe('receipt.png');
+        expect(imported.file_path).toMatch(/^inbox\//);
+        const content = await fs.readFile(
+            path.join(config.uploadPath, imported.file_path),
+            'utf8'
+        );
+        expect(content).toBe('inbox bytes');
     });
 });

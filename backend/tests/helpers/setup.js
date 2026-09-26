@@ -34,6 +34,7 @@ const CLEANUP_TABLES = [
     'task_relations',
     'user_task_orders',
     'task_attachments',
+    'inbox_item_attachments',
     'daily_plan_items',
     'daily_plans',
     'calendar_feeds',

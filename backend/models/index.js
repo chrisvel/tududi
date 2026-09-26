@@ -78,6 +78,7 @@ const Setting = require('./setting')(sequelize);
 const Notification = require('./notification')(sequelize);
 const RecurringCompletion = require('./recurringCompletion')(sequelize);
 const TaskAttachment = require('./task_attachment')(sequelize);
+const InboxItemAttachment = require('./inbox_item_attachment')(sequelize);
 const Backup = require('./backup')(sequelize);
 const OIDCIdentity = require('./oidc_identity')(sequelize);
 const OIDCStateNonce = require('./oidc_state_nonce')(sequelize);
@@ -301,6 +302,15 @@ User.hasMany(TaskAttachment, { foreignKey: 'user_id' });
 TaskAttachment.belongsTo(User, { foreignKey: 'user_id' });
 Task.hasMany(TaskAttachment, { foreignKey: 'task_id', as: 'Attachments' });
 TaskAttachment.belongsTo(Task, { foreignKey: 'task_id' });
+
+// InboxItemAttachment associations
+User.hasMany(InboxItemAttachment, { foreignKey: 'user_id' });
+InboxItemAttachment.belongsTo(User, { foreignKey: 'user_id' });
+InboxItem.hasMany(InboxItemAttachment, {
+    foreignKey: 'inbox_item_id',
+    as: 'Attachments',
+});
+InboxItemAttachment.belongsTo(InboxItem, { foreignKey: 'inbox_item_id' });
 
 // Backup associations
 User.hasMany(Backup, { foreignKey: 'user_id', as: 'Backups' });
@@ -606,6 +616,7 @@ module.exports = {
     Notification,
     RecurringCompletion,
     TaskAttachment,
+    InboxItemAttachment,
     Backup,
     OIDCIdentity,
     OIDCStateNonce,

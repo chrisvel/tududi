@@ -28,6 +28,7 @@ const {
     Person,
     RecurringCompletion,
     TaskAttachment,
+    InboxItemAttachment,
     sequelize,
 } = require('../models');
 const { getConfig } = require('../config/config');
@@ -49,6 +50,21 @@ async function readAttachmentData(attachment) {
     } catch (_) {
         return null;
     }
+}
+
+async function exportAttachments(attachments = []) {
+    const exported = [];
+    for (const attachment of attachments) {
+        const a = plain(attachment);
+        exported.push({
+            uid: a.uid,
+            original_filename: a.original_filename,
+            file_size: a.file_size,
+            mime_type: a.mime_type,
+            data: await readAttachmentData(a),
+        });
+    }
+    return exported;
 }
 
 // Project cover images and user avatars are stored as files on disk and
@@ -143,7 +159,10 @@ async function exportUserData(userId) {
                 },
             ],
         }),
-        InboxItem.findAll({ where: { user_id: userId } }),
+        InboxItem.findAll({
+            where: { user_id: userId },
+            include: [{ model: InboxItemAttachment, as: 'Attachments' }],
+        }),
         TaskEvent.findAll({ where: { user_id: userId } }),
         View.findAll({ where: { user_id: userId } }),
         Person.findAll({ where: { user_id: userId } }),
@@ -184,21 +203,19 @@ async function exportUserData(userId) {
             original_due_date: c.original_due_date,
             skipped: c.skipped,
         }));
-        data.attachments = [];
-        for (const attachment of task.Attachments || []) {
-            const a = plain(attachment);
-            data.attachments.push({
-                uid: a.uid,
-                original_filename: a.original_filename,
-                file_size: a.file_size,
-                mime_type: a.mime_type,
-                data: await readAttachmentData(a),
-            });
-        }
+        data.attachments = await exportAttachments(task.Attachments);
         delete data.Tags;
         delete data.Completions;
         delete data.Attachments;
         exportedTasks.push(data);
+    }
+
+    const exportedInboxItems = [];
+    for (const item of inboxItems) {
+        const data = plain(item);
+        data.attachments = await exportAttachments(item.Attachments);
+        delete data.Attachments;
+        exportedInboxItems.push(data);
     }
 
     return {
@@ -247,7 +264,7 @@ async function exportUserData(userId) {
                 delete data.Tags;
                 return data;
             }),
-            inbox_items: inboxItems.map(plain),
+            inbox_items: exportedInboxItems,
             task_events: taskEvents.map(plain),
             views: views.map(plain),
             people: people.map((person) => ({
@@ -285,12 +302,12 @@ function makeResolver(userId, transaction) {
     };
 }
 
-async function writeAttachmentFile(attachment) {
+async function writeAttachmentFile(attachment, subdir = 'tasks') {
     if (!attachment.data) return null;
     const buffer = Buffer.from(attachment.data, 'base64');
     const ext = path.extname(attachment.original_filename || '') || '';
     const storedFilename = `${generateUid()}${ext}`;
-    const dir = path.join(getConfig().uploadPath, 'tasks');
+    const dir = path.join(getConfig().uploadPath, subdir);
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(path.join(dir, storedFilename), buffer);
     return { storedFilename, size: buffer.length };
@@ -714,11 +731,39 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         }
 
         for (const item of d.inbox_items || []) {
-            await upsertByUid(InboxItem, 'inbox_items', item.uid, async () => ({
-                name: item.name,
-                content: item.content,
-                status: item.status,
-            }));
+            const { row, created } = await upsertByUid(
+                InboxItem,
+                'inbox_items',
+                item.uid,
+                async () => ({
+                    content: item.content,
+                    title: item.title,
+                    status: item.status,
+                    source: item.source || 'manual',
+                })
+            );
+            if (!created) continue;
+            for (const attachment of item.attachments || []) {
+                const file = await writeAttachmentFile(attachment, 'inbox');
+                if (!file) continue;
+                writtenFiles.push({ dir: 'inbox', name: file.storedFilename });
+                await InboxItemAttachment.create(
+                    {
+                        uid: generateUid(),
+                        inbox_item_id: row.id,
+                        user_id: userId,
+                        original_filename:
+                            attachment.original_filename || file.storedFilename,
+                        stored_filename: file.storedFilename,
+                        file_size: file.size,
+                        mime_type:
+                            attachment.mime_type || 'application/octet-stream',
+                        file_path: `inbox/${file.storedFilename}`,
+                    },
+                    { transaction }
+                );
+                count('attachments', 'created');
+            }
         }
 
         for (const view of d.views || []) {

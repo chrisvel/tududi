@@ -213,6 +213,7 @@ Task responses include `is_blocked` and `blocked_by_count`. Names of blockers co
     - Can be downloaded by anyone with read access to the task
     - Deleting attachment removes file from disk
     - Deleting task removes all attachments and their files
+    - Files on an Inbox item move onto the task when the item is converted to a task
 
 ---
 

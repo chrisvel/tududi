@@ -8,6 +8,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import InboxItemAttachments from './InboxItemAttachments';
 import { useStore } from '../../store/useStore';
 import QuickCaptureInput, {
     InboxComposerFooterContext,
@@ -506,6 +507,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 </span>
                             )}
                         </p>
+                        {item.uid && item.attachments && (
+                            <InboxItemAttachments
+                                itemUid={item.uid}
+                                attachments={item.attachments}
+                            />
+                        )}
                     </div>
 
                     {/* Delete button – visible only on hover */}

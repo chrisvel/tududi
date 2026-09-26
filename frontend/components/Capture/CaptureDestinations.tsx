@@ -5,6 +5,10 @@ import { CAPTURE_TARGETS, CaptureTarget } from '../../utils/captureText';
 interface CaptureDestinationsProps {
     value: CaptureTarget;
     onChange: (target: CaptureTarget) => void;
+    // Destinations that cannot take what is in the box right now, with the
+    // reason shown on hover.
+    disabled?: CaptureTarget[];
+    disabledReason?: string;
 }
 
 const LABELS: Record<CaptureTarget, { key: string; fallback: string }> = {
@@ -19,6 +23,8 @@ const LABELS: Record<CaptureTarget, { key: string; fallback: string }> = {
 const CaptureDestinations: React.FC<CaptureDestinationsProps> = ({
     value,
     onChange,
+    disabled = [],
+    disabledReason,
 }) => {
     const { t } = useTranslation();
 
@@ -34,6 +40,7 @@ const CaptureDestinations: React.FC<CaptureDestinationsProps> = ({
             >
                 {CAPTURE_TARGETS.map((target) => {
                     const selected = target === value;
+                    const unavailable = disabled.includes(target);
                     return (
                         <button
                             key={target}
@@ -41,8 +48,10 @@ const CaptureDestinations: React.FC<CaptureDestinationsProps> = ({
                             role="radio"
                             aria-checked={selected}
                             data-testid={`capture-target-${target}`}
+                            disabled={unavailable}
+                            title={unavailable ? disabledReason : undefined}
                             onClick={() => onChange(target)}
-                            className={`px-2 sm:px-2.5 py-1 text-[13px] rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                            className={`px-2 sm:px-2.5 py-1 text-[13px] rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-40 disabled:cursor-not-allowed ${
                                 selected
                                     ? 'bg-blue-100 dark:bg-blue-900/50 text-gray-900 dark:text-white font-semibold'
                                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'

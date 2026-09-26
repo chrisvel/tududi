@@ -77,7 +77,9 @@ const inboxController = {
         try {
             const userId = requireUserId(req);
             const { uid } = req.params;
-            const item = await inboxService.process(userId, uid);
+            const item = await inboxService.process(userId, uid, {
+                taskUid: req.body?.task_uid,
+            });
             res.json(item);
         } catch (error) {
             next(error);

@@ -466,7 +466,7 @@ const PlanMyDay: React.FC = () => {
                 status: TASK_STATUS.NOT_STARTED,
                 completed_at: null,
             });
-            await processInboxItem(entry.uid);
+            await processInboxItem(entry.uid, task.uid);
             setCandidates((current) =>
                 current
                     ? {

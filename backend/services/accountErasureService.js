@@ -25,6 +25,7 @@ const {
     Notification,
     RecurringCompletion,
     TaskAttachment,
+    InboxItemAttachment,
     Backup,
     OIDCIdentity,
     AuthAuditLog,
@@ -98,13 +99,19 @@ async function eraseUserAccount(userId) {
         const tx = { transaction };
         const byUser = { where: { user_id: userId }, ...tx };
 
-        const attachments = await TaskAttachment.findAll({
+        const taskAttachments = await TaskAttachment.findAll({
             where: { user_id: userId },
             attributes: ['file_path'],
             raw: true,
             ...tx,
         });
-        for (const a of attachments) {
+        const inboxAttachments = await InboxItemAttachment.findAll({
+            where: { user_id: userId },
+            attributes: ['file_path'],
+            raw: true,
+            ...tx,
+        });
+        for (const a of [...taskAttachments, ...inboxAttachments]) {
             filesToDelete.push([config.uploadPath, a.file_path]);
         }
 
@@ -194,6 +201,7 @@ async function eraseUserAccount(userId) {
         await Goal.destroy(byUser);
         await Area.destroy(byUser);
         await Tag.destroy(byUser);
+        await InboxItemAttachment.destroy(byUser);
         await InboxItem.destroy(byUser);
         await View.destroy(byUser);
         await Notification.destroy(byUser);

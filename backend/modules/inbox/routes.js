@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const inboxController = require('./controller');
+const attachmentRoutes = require('./attachmentRoutes');
 
 // All routes require authentication (handled by app.js middleware)
 
@@ -16,5 +17,7 @@ router.delete('/inbox/:uid', inboxController.delete);
 router.patch('/inbox/:uid/process', inboxController.process);
 router.patch('/inbox/:uid/trash', inboxController.trash);
 router.patch('/inbox/:uid/restore', inboxController.restore);
+
+router.use(attachmentRoutes);
 
 module.exports = router;

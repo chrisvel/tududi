@@ -1,5 +1,11 @@
 const { Op } = require('sequelize');
-const { TaskAttachment, Task, Project, User } = require('../models');
+const {
+    TaskAttachment,
+    InboxItemAttachment,
+    Task,
+    Project,
+    User,
+} = require('../models');
 const permissionsService = require('../services/permissionsService');
 const permissionSources = require('../services/permissionSources');
 const { getAuthenticatedUserId } = require('../utils/request-utils');
@@ -22,6 +28,16 @@ const canAccessTaskFile = async (userId, filename) => {
     });
     if (!attachment) return false;
     return hasReadAccess(userId, 'task', attachment.Task.uid);
+};
+
+// Inbox items are never shared, so only the owner can read their files.
+const canAccessInboxFile = async (userId, filename) => {
+    const attachment = await InboxItemAttachment.findOne({
+        where: { stored_filename: filename },
+        attributes: ['user_id'],
+        raw: true,
+    });
+    return !!attachment && attachment.user_id === userId;
 };
 
 const canAccessProjectFile = async (userId, filename) => {
@@ -108,6 +124,8 @@ const uploadsAccessControl = async (req, res, next) => {
         const { category, filename } = target || {};
         if (category === 'tasks' && filename) {
             allowed = await canAccessTaskFile(userId, filename);
+        } else if (category === 'inbox' && filename) {
+            allowed = await canAccessInboxFile(userId, filename);
         } else if (category === 'projects' && filename) {
             allowed = await canAccessProjectFile(userId, filename);
         } else if (category === 'avatars' && filename) {
