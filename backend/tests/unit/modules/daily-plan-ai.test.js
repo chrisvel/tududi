@@ -50,6 +50,29 @@ describe('sanitizeDraft', () => {
         expect(item.start_minute).toBe(600);
     });
 
+    it('moves a clash to a free evening slot inside the day hours', () => {
+        const draft = (hours) =>
+            sanitizeDraft({
+                proposed: [
+                    {
+                        task_uid: 'a',
+                        start_minute: 20 * 60,
+                        duration_minutes: 60,
+                    },
+                ],
+                pool: poolOf(task('a')),
+                existing: [],
+                events: [meeting(20 * 60, 21 * 60)],
+                now: 19 * 60,
+                hours,
+            })[0];
+
+        expect(draft({ start: 17 * 60, end: 23 * 60 }).start_minute).toBe(
+            21 * 60
+        );
+        expect(draft(undefined).start_minute).toBeNull();
+    });
+
     it('never schedules in the past', () => {
         const [item] = sanitizeDraft({
             proposed: [

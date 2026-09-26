@@ -24,6 +24,7 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Task } from '../../entities/Task';
 import {
     DailyPlanItem,
+    DayHours,
     InboxCandidate,
     PlanCandidates,
     fetchDailyPlan,
@@ -154,6 +155,7 @@ const PlanMyDay: React.FC = () => {
     const narrow = useIsNarrow();
 
     const [date, setDate] = useState<string | null>(null);
+    const [dayHours, setDayHours] = useState<DayHours | undefined>();
     const [started, setStarted] = useState(false);
     const [items, setItems] = useState<DailyPlanItem[]>([]);
     const [candidates, setCandidates] = useState<PlanCandidates | null>(null);
@@ -214,6 +216,7 @@ const PlanMyDay: React.FC = () => {
                 ]);
                 if (cancelled) return;
                 setDate(planResponse.date);
+                setDayHours(planResponse.day_hours);
                 setStarted(!!planResponse.plan?.started_at);
                 setItems(planResponse.plan?.items ?? []);
                 setCandidates(candidateList);
@@ -306,7 +309,10 @@ const PlanMyDay: React.FC = () => {
         };
     }, [aiEnabled, candidates]);
 
-    const range = useMemo(() => dayRange(items, events), [items, events]);
+    const range = useMemo(
+        () => dayRange(items, events, dayHours),
+        [items, events, dayHours]
+    );
     const freeMinutes = Math.max(
         0,
         range.end - range.start - busyMinutes(events, range)

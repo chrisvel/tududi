@@ -5,9 +5,10 @@
 // would put it.
 
 const SLOT_MINUTES = 15;
-const DEFAULT_DAY_START = 8 * 60;
-const DEFAULT_DAY_END = 18 * 60;
 const MINUTES_PER_DAY = 24 * 60;
+// The user's day in minutes after local midnight, in their timezone.
+// Profile > Planning changes it.
+const DEFAULT_DAY_HOURS = { start: 8 * 60, end: 18 * 60 };
 
 const snapUp = (minute) => Math.ceil(minute / SLOT_MINUTES) * SLOT_MINUTES;
 const snap = (minute) => Math.round(minute / SLOT_MINUTES) * SLOT_MINUTES;
@@ -27,9 +28,8 @@ function blockedSpans(items, events) {
     ].sort((a, b) => a[0] - b[0]);
 }
 
-function dayRange(items, events) {
-    let start = DEFAULT_DAY_START;
-    let end = DEFAULT_DAY_END;
+function dayRange(items, events, hours = DEFAULT_DAY_HOURS) {
+    let { start, end } = hours;
     for (const item of items) {
         if (item.start_minute === null) continue;
         start = Math.min(start, item.start_minute);
@@ -78,6 +78,7 @@ function freeGaps(spans, range, from, minLength = 15) {
 module.exports = {
     SLOT_MINUTES,
     MINUTES_PER_DAY,
+    DEFAULT_DAY_HOURS,
     snap,
     snapUp,
     blockedSpans,

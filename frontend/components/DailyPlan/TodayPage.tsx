@@ -280,7 +280,7 @@ const TodayPage: React.FC = () => {
     const progress = items.length
         ? Math.round((doneCount / items.length) * 100)
         : 0;
-    const range = dayRange(items, events);
+    const range = dayRange(items, events, planResponse?.day_hours);
     const aiEnabled = useStore(
         (state) => state.userSettingsStore.aiAssistantEnabled
     );

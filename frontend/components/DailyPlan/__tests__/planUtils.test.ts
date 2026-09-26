@@ -54,6 +54,16 @@ describe('formatting', () => {
 });
 
 describe('dayRange', () => {
+    it('starts from the user day hours when given', () => {
+        expect(dayRange([], [], { start: 17 * 60, end: 23 * 60 })).toEqual({
+            start: 1020,
+            end: 1380,
+        });
+        expect(
+            dayRange([item('a', 16 * 60)], [], { start: 17 * 60, end: 1440 })
+        ).toEqual({ start: 960, end: 1440 });
+    });
+
     it('defaults to 08:00-18:00 and widens to whole hours', () => {
         expect(dayRange([], [])).toEqual({ start: 480, end: 1080 });
         expect(
@@ -95,11 +105,10 @@ describe('findFreeSlot', () => {
 
 describe('freeGaps', () => {
     it('lists gaps of at least 30 minutes', () => {
-        const gaps = freeGaps(
-            [item('a', 480, 60)],
-            [event('call', 660, 690)],
-            { start: 480, end: 720 }
-        );
+        const gaps = freeGaps([item('a', 480, 60)], [event('call', 660, 690)], {
+            start: 480,
+            end: 720,
+        });
         expect(gaps).toEqual([
             { start: 540, end: 660 },
             { start: 690, end: 720 },

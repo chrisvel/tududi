@@ -322,6 +322,42 @@ describe('Daily plan routes', () => {
         expect(uids('suggested')).toContain(undated.uid);
     });
 
+    it('saves the day hours and returns them with the plan', async () => {
+        const initial = await agent.get('/api/daily-plan');
+        expect(initial.body.day_hours).toEqual({ start: 480, end: 1080 });
+
+        const saved = await agent
+            .put('/api/daily-plan/hours')
+            .send({ start: 17 * 60, end: 24 * 60 });
+        expect(saved.status).toBe(200);
+        expect(saved.body).toEqual({ start: 1020, end: 1440 });
+
+        await agent
+            .put('/api/profile/ui-settings')
+            .send({ appearance: { theme: 'dark' } });
+        const order = [
+            ...(await agent.get('/api/daily-plan/ranking')).body.default_order,
+        ].reverse();
+        await agent.put('/api/daily-plan/ranking').send({ order });
+
+        const after = await agent.get('/api/daily-plan');
+        expect(after.body.day_hours).toEqual({ start: 1020, end: 1440 });
+        const hours = await agent.get('/api/daily-plan/hours');
+        expect(hours.body).toEqual({ start: 1020, end: 1440 });
+    });
+
+    it.each([
+        [{ start: 600, end: 600 }],
+        [{ start: 600, end: 500 }],
+        [{ start: 615, end: 1080 }],
+        [{ start: 0, end: 1500 }],
+        [{ start: '480', end: 1080 }],
+        [{}],
+    ])('rejects invalid day hours %j', async (body) => {
+        const res = await agent.put('/api/daily-plan/hours').send(body);
+        expect(res.status).toBe(400);
+    });
+
     it('rejects a ranking that does not list every bucket once', async () => {
         const res = await agent
             .put('/api/daily-plan/ranking')

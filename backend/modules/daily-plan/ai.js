@@ -127,10 +127,10 @@ const clampDuration = (value, fallback) => {
 // only known, not-yet-planned tasks; 15-minute grid; nothing in the past,
 // on top of a busy meeting or on top of another block. A clash moves to
 // the next free slot, or drops the time when the day is full.
-function sanitizeDraft({ proposed, pool, existing, events, now }) {
+function sanitizeDraft({ proposed, pool, existing, events, now, hours }) {
     const accepted = [];
     const seen = new Set(existing.map((item) => item.task_uid));
-    const range = slots.dayRange(existing, events);
+    const range = slots.dayRange(existing, events, hours);
     const earliest = Math.max(now, 0);
 
     for (const entry of Array.isArray(proposed) ? proposed : []) {
@@ -236,7 +236,7 @@ async function draftDay(userId, { date, mode = 'fill' } = {}) {
     const planDate = dailyPlanService.resolvePlanDate(date, timezone);
     const fullUser = { id: userId, timezone };
 
-    const [{ plan }, candidates, events] = await Promise.all([
+    const [{ plan, day_hours: hours }, candidates, events] = await Promise.all([
         dailyPlanService.getPlan(fullUser, planDate),
         dailyPlanService.getCandidates(fullUser),
         loadDayEvents(fullUser, planDate),
@@ -263,7 +263,7 @@ async function draftDay(userId, { date, mode = 'fill' } = {}) {
         return { date: planDate, mode, summary: '', items: [], skipped: [] };
     }
 
-    const range = slots.dayRange(existing, events);
+    const range = slots.dayRange(existing, events, hours);
     const spans = slots.blockedSpans(existing, events);
     const gaps = slots.freeGaps(spans, range, now);
 
@@ -325,6 +325,7 @@ Rules:
         existing,
         events,
         now,
+        hours,
     }).map((item) => ({ ...item, task: pool.get(item.task_uid) }));
 
     const skipped = (Array.isArray(parsed.skipped) ? parsed.skipped : [])
