@@ -107,11 +107,16 @@ interface QuickCaptureInputProps {
     // dates, #tags, +projects and @people the same way.
     unified?: boolean;
     defaultTarget?: CaptureTarget;
+    // Keeps the box on defaultTarget, with scopeLabel shown beside it as a
+    // fixed second choice (e.g. "Task", "Today" from Plan my day).
+    lockTarget?: boolean;
+    scopeLabel?: string;
     // Changing this puts the box back on defaultTarget (a new open)
     resetKey?: number;
     compact?: boolean;
     onClose?: () => void;
     onCaptured?: (items: CapturedItem[]) => void;
+    onUndone?: (items: CapturedItem[]) => void;
 }
 
 interface CaptureStatus {
@@ -188,10 +193,13 @@ const QuickCaptureInput = React.forwardRef<
             multiline = true,
             unified = false,
             defaultTarget = 'inbox',
+            lockTarget = false,
+            scopeLabel,
             resetKey,
             compact = false,
             onClose,
             onCaptured,
+            onUndone,
         },
         ref
     ) => {
@@ -1761,6 +1769,7 @@ const QuickCaptureInput = React.forwardRef<
                 setStatus({
                     text: t('capture.removed', 'Removed. Nothing was saved.'),
                 });
+                onUndone?.(items);
             } catch (error) {
                 console.error('Failed to undo capture:', error);
                 showErrorToast(
@@ -2394,7 +2403,12 @@ const QuickCaptureInput = React.forwardRef<
                     </div>
                 )}
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                    <CaptureDestinations value={target} onChange={setTarget} />
+                    <CaptureDestinations
+                        value={target}
+                        onChange={setTarget}
+                        locked={lockTarget}
+                        scopeLabel={scopeLabel}
+                    />
                     <input
                         ref={fileInputRef}
                         type="file"

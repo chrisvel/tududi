@@ -38,7 +38,12 @@ import {
     CalendarEvent,
     fetchCalendarEvents,
 } from '../../utils/calendarFeedsService';
-import { createTask, updateTask } from '../../utils/tasksService';
+import {
+    createTask,
+    fetchTaskByUid,
+    updateTask,
+} from '../../utils/tasksService';
+import { onCaptureSaved, openCapture } from '../../utils/captureUi';
 import { processInboxItem } from '../../utils/inboxService';
 import { getUserTimezone } from '../../utils/dateUtils';
 import { TASK_STATUS } from '../../constants/taskStatus';
@@ -46,6 +51,7 @@ import { useToast } from '../Shared/ToastContext';
 import { useStore } from '../../store/useStore';
 import {
     EllipsisHorizontalIcon,
+    PlusIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
 import PlanTips from './PlanTips';
@@ -326,58 +332,66 @@ const PlanMyDay: React.FC = () => {
         (task.uid && aiEstimates[task.uid]) ||
         DEFAULT_DURATION;
 
-    const addTask = useCallback(
-        (task: Task, startMinute?: number | null, index?: number) => {
-            if (!task.uid || plannedMap.has(task.uid)) return;
-            const duration = durationFor(task);
-            let start = startMinute ?? null;
-            if (startMinute === undefined && mode === 'timeline') {
-                start = findFreeSlot(
-                    items,
-                    events,
-                    duration,
-                    range,
-                    Math.max(now, range.start)
-                );
-                if (start === null) {
-                    showSuccessToast(
-                        t(
-                            'dailyPlan.noFreeSlot',
-                            'No free slot left today, so it was added without a time.'
-                        )
+    // Several at once (e.g. lines saved together in the Add box) each take
+    // the next free slot after the ones before them.
+    const addTasks = useCallback(
+        (tasks: Task[], startMinute?: number | null, index?: number) => {
+            const next = [...items];
+            let insertAt = index ?? next.length;
+            let noSlot = false;
+            for (const task of tasks) {
+                if (
+                    !task.uid ||
+                    next.some((item) => item.task_uid === task.uid)
+                ) {
+                    continue;
+                }
+                const duration = durationFor(task);
+                let start = startMinute ?? null;
+                if (startMinute === undefined && mode === 'timeline') {
+                    start = findFreeSlot(
+                        next,
+                        events,
+                        duration,
+                        range,
+                        Math.max(now, range.start)
+                    );
+                    if (start === null) noSlot = true;
+                }
+                next.splice(insertAt, 0, {
+                    task_uid: task.uid,
+                    position: next.length,
+                    start_minute: start,
+                    duration_minutes: duration,
+                    task,
+                });
+                insertAt += 1;
+
+                // The chosen length becomes the task's rough estimate.
+                if (task.estimated_minutes !== duration) {
+                    updateTask(task.uid, { estimated_minutes: duration }).catch(
+                        () => undefined
                     );
                 }
             }
-            const item: DailyPlanItem = {
-                task_uid: task.uid,
-                position: items.length,
-                start_minute: start,
-                duration_minutes: duration,
-                task,
-            };
-            const next = [...items];
-            next.splice(index ?? next.length, 0, item);
-            persist(next);
-
-            // The chosen length becomes the task's rough estimate.
-            if (task.estimated_minutes !== duration) {
-                updateTask(task.uid, { estimated_minutes: duration }).catch(
-                    () => undefined
+            if (next.length === items.length) return;
+            if (noSlot) {
+                showSuccessToast(
+                    t(
+                        'dailyPlan.noFreeSlot',
+                        'No free slot left today, so it was added without a time.'
+                    )
                 );
             }
+            persist(next);
         },
-        [
-            items,
-            events,
-            range,
-            now,
-            mode,
-            durations,
-            aiEstimates,
-            plannedMap,
-            persist,
-            t,
-        ]
+        [items, events, range, now, mode, durations, aiEstimates, persist, t]
+    );
+
+    const addTask = useCallback(
+        (task: Task, startMinute?: number | null, index?: number) =>
+            addTasks([task], startMinute, index),
+        [addTasks]
     );
 
     const removeItem = (taskUid: string) =>
@@ -491,6 +505,59 @@ const PlanMyDay: React.FC = () => {
             );
         }
     };
+
+    // Tasks saved from the Add box opened with "Add task" go straight onto
+    // today's plan, and Undo there takes them off again.
+    const captureHandlers = useRef({ addTasks, persist, items });
+    captureHandlers.current = { addTasks, persist, items };
+    useEffect(
+        () =>
+            onCaptureSaved(({ scope, items: captured, undone }) => {
+                if (scope !== 'today') return;
+                const uids = captured
+                    .filter((item) => item.target === 'task' && item.uid)
+                    .map((item) => item.uid as string);
+                if (uids.length === 0) return;
+                if (undone) {
+                    const { persist: save, items: current } =
+                        captureHandlers.current;
+                    save(
+                        current.filter((item) => !uids.includes(item.task_uid))
+                    );
+                    setCandidates((list) =>
+                        list
+                            ? {
+                                  ...list,
+                                  suggested: list.suggested.filter(
+                                      (task) => !uids.includes(task.uid ?? '')
+                                  ),
+                              }
+                            : list
+                    );
+                    return;
+                }
+                Promise.all(uids.map((uid) => fetchTaskByUid(uid)))
+                    .then((tasks) => {
+                        setCandidates((list) =>
+                            list
+                                ? {
+                                      ...list,
+                                      suggested: [...tasks, ...list.suggested],
+                                  }
+                                : list
+                        );
+                        captureHandlers.current.addTasks(tasks);
+                    })
+                    .catch((err) =>
+                        showErrorToast(
+                            err instanceof Error
+                                ? err.message
+                                : t('errors.generic', 'Something went wrong')
+                        )
+                    );
+            }),
+        [showErrorToast, t]
+    );
 
     const runDraft = async (draftMode: 'fill' | 'replace') => {
         if (!date) return;
@@ -754,6 +821,17 @@ const PlanMyDay: React.FC = () => {
                             )}
                         </div>
                     )}
+
+                    <button
+                        type="button"
+                        onClick={() => openCapture('task', 'today')}
+                        disabled={!date}
+                        className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium text-blue-700 hover:bg-blue-50 disabled:opacity-60 dark:text-blue-300 dark:hover:bg-blue-900/30"
+                        data-testid="plan-add-task"
+                    >
+                        <PlusIcon className="h-4 w-4" />
+                        {t('dailyPlan.addTask', 'Add task')}
+                    </button>
 
                     {aiEnabled && (
                         <div className="relative" ref={draftMenuRef}>
