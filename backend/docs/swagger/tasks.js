@@ -487,6 +487,44 @@
 
 /**
  * @swagger
+ * /api/task/{uid}/skip-occurrence:
+ *   post:
+ *     summary: Skip the current occurrence of a recurring task
+ *     description: |
+ *       Moves a recurring task to its next occurrence without completing it
+ *       (e.g. a bill someone else already paid). The occurrence is recorded
+ *       as skipped and does not count as a completion. Skipping the last
+ *       occurrence of a series that has an end date cancels the task.
+ *     tags: [Tasks]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Task UID
+ *     responses:
+ *       200:
+ *         description: Occurrence skipped; returns the updated task
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Task is not a recurring task
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Task not found
+ */
+
+/**
+ * @swagger
  * /api/tasks/generate-recurring:
  *   post:
  *     summary: Manually trigger recurring task generation

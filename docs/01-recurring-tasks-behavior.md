@@ -32,6 +32,13 @@ This document explains how recurring tasks work in tududi from a user behavior p
    - **Completion-based**: Next occurrence calculated from when you actually completed it
      - Example: Task due Monday, you complete it Wednesday → Next is 7 days from Wednesday
 
+**Skipping an occurrence:** when an occurrence doesn't need doing (a bill someone else paid), "Skip this occurrence" in the task's `...` menu, `POST /api/task/:uid/skip-occurrence` or the MCP `skip_task_occurrence` tool moves the task to its next due date like completing does, but:
+   - The occurrence is stored in `recurring_completions` with `skipped = true`, so it doesn't count toward completion stats or habit streaks
+   - `completed_at` is not set on the task
+   - Skipping the last occurrence of a series with an end date cancels the task instead of marking it done
+   - Only the recurring task itself can be skipped; non-recurring tasks and generated instances get a 400
+   - A task that is already done, cancelled or archived can't be skipped (400), and the `...` menu hides the action for it
+
 ---
 
 ## **Pattern Rules**
@@ -116,7 +123,7 @@ The original recurring task that acts as a template. It has `recurring_parent_id
 When you complete a recurring task, the same task record is reused with an updated due date, rather than creating a new task instance.
 
 ### Completion History
-All past completions are tracked in a separate table (`recurring_completions`) to preserve your completion record even though the task itself advances.
+All past completions are tracked in a separate table (`recurring_completions`) to preserve your completion record even though the task itself advances. Skipped occurrences are stored there too, flagged with `skipped = true`.
 
 ---
 

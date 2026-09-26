@@ -159,6 +159,20 @@ export const toggleTaskCompletion = async (
     return result;
 };
 
+export const skipTaskOccurrence = async (taskUid: string): Promise<Task> => {
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(taskUid)}/skip-occurrence`),
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to skip occurrence.');
+    return await response.json();
+};
+
 export type TaskOrderScope =
     { scope: 'all' } | { scope: 'project'; project_uid: string };
 

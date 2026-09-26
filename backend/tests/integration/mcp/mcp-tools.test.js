@@ -10,6 +10,7 @@ const {
     Tag,
     Note,
     InboxItem,
+    RecurringCompletion,
 } = require('../../../models');
 const { createTestUser } = require('../../helpers/testUtils');
 const {
@@ -979,6 +980,255 @@ describe('MCP Tools Integration', () => {
                 const { content } = getToolContent(response);
                 expect(content.message).toBe('Task reopened');
                 expect(content.task.status).toBe(0); // pending = 0
+            });
+
+            it('should advance a monthly recurring task to its next occurrence', async () => {
+                const dueDate = new Date(Date.UTC(2026, 0, 15, 12));
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Pay rent',
+                    status: 0,
+                    recurrence_type: 'monthly',
+                    recurrence_interval: 1,
+                    recurrence_month_day: 15,
+                    due_date: dueDate,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'complete_task',
+                    { id: task.id }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.message).toBe(
+                    'Occurrence completed, next due 2026-02-15'
+                );
+                expect(content.next_due_date).toBe('2026-02-15');
+                expect(content.task.status).toBe(Task.STATUS.NOT_STARTED);
+
+                await task.reload();
+                expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+                expect(task.completed_at).toBeNull();
+                const nextDue = new Date(task.due_date);
+                expect(nextDue.getUTCMonth()).toBe(1);
+                expect(nextDue.getUTCDate()).toBe(15);
+
+                const completions = await RecurringCompletion.findAll({
+                    where: { task_id: task.id },
+                });
+                expect(completions).toHaveLength(1);
+                expect(completions[0].skipped).toBe(false);
+                expect(
+                    new Date(completions[0].original_due_date).toISOString()
+                ).toBe(dueDate.toISOString());
+            });
+
+            it('should not write a recurring completion for a one-off task', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'One-off',
+                    status: 0,
+                });
+
+                await callMcpTool(apiTokenValue, 'complete_task', {
+                    id: task.id,
+                });
+
+                await task.reload();
+                expect(task.status).toBe(Task.STATUS.DONE);
+                expect(task.completed_at).not.toBeNull();
+                const completions = await RecurringCompletion.count({
+                    where: { task_id: task.id },
+                });
+                expect(completions).toBe(0);
+            });
+
+            it('should leave a generated instance done', async () => {
+                const parent = await Task.create({
+                    user_id: user.id,
+                    name: 'Pay rent',
+                    status: 0,
+                    recurrence_type: 'monthly',
+                    recurrence_interval: 1,
+                    recurrence_month_day: 15,
+                    due_date: new Date(Date.UTC(2026, 0, 15, 12)),
+                });
+                const instance = await Task.create({
+                    user_id: user.id,
+                    name: 'Pay rent',
+                    status: 0,
+                    recurrence_type: 'monthly',
+                    recurring_parent_id: parent.id,
+                    due_date: new Date(Date.UTC(2026, 1, 15, 12)),
+                });
+
+                await callMcpTool(apiTokenValue, 'complete_task', {
+                    id: instance.id,
+                });
+
+                await instance.reload();
+                expect(instance.status).toBe(Task.STATUS.DONE);
+                expect(instance.completed_at).not.toBeNull();
+                expect(new Date(instance.due_date).getUTCMonth()).toBe(1);
+                const completions = await RecurringCompletion.count({
+                    where: { task_id: instance.id },
+                });
+                expect(completions).toBe(0);
+            });
+
+            it('should stay done after the last occurrence of a series', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Pay rent',
+                    status: 0,
+                    recurrence_type: 'monthly',
+                    recurrence_interval: 1,
+                    recurrence_month_day: 15,
+                    recurrence_end_date: new Date(Date.UTC(2026, 0, 31)),
+                    due_date: new Date(Date.UTC(2026, 0, 15, 12)),
+                });
+
+                const { content } = getToolContent(
+                    await callMcpTool(apiTokenValue, 'complete_task', {
+                        id: task.id,
+                    })
+                );
+                expect(content.message).toBe('Task completed');
+                expect(content.next_due_date).toBeUndefined();
+
+                await task.reload();
+                expect(task.status).toBe(Task.STATUS.DONE);
+                expect(task.completed_at).not.toBeNull();
+                expect(new Date(task.due_date).getUTCMonth()).toBe(0);
+                const completions = await RecurringCompletion.count({
+                    where: { task_id: task.id },
+                });
+                expect(completions).toBe(1);
+            });
+
+            it('should advance a recurring task marked done via update_task', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Pay rent',
+                    status: 0,
+                    recurrence_type: 'monthly',
+                    recurrence_interval: 1,
+                    recurrence_month_day: 15,
+                    due_date: new Date(Date.UTC(2026, 0, 15, 12)),
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, status: 'done' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.message).toBe(
+                    'Occurrence completed, next due 2026-02-15'
+                );
+                expect(content.next_due_date).toBe('2026-02-15');
+                await task.reload();
+                expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+                expect(task.completed_at).toBeNull();
+                expect(new Date(task.due_date).getUTCMonth()).toBe(1);
+                const completions = await RecurringCompletion.count({
+                    where: { task_id: task.id },
+                });
+                expect(completions).toBe(1);
+            });
+        });
+
+        describe('skip_task_occurrence', () => {
+            it('should move a recurring task on and record a skipped occurrence', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Water bill',
+                    status: 0,
+                    recurrence_type: 'monthly',
+                    recurrence_interval: 1,
+                    recurrence_month_day: 15,
+                    due_date: new Date(Date.UTC(2026, 0, 15, 12)),
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'skip_task_occurrence',
+                    { id: task.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.message).toBe(
+                    'Occurrence skipped, next due 2026-02-15'
+                );
+                expect(content.next_due_date).toBe('2026-02-15');
+
+                await task.reload();
+                expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+                expect(task.completed_at).toBeNull();
+                expect(new Date(task.due_date).getUTCMonth()).toBe(1);
+
+                const completions = await RecurringCompletion.findAll({
+                    where: { task_id: task.id },
+                });
+                expect(completions).toHaveLength(1);
+                expect(completions[0].skipped).toBe(true);
+            });
+
+            it('should reject a non-recurring task', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'One-off',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'skip_task_occurrence',
+                    { id: task.id }
+                );
+
+                const { isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                await task.reload();
+                expect(task.status).toBe(0);
+            });
+
+            it('should reject a done or cancelled task without writing a row', async () => {
+                for (const status of [
+                    Task.STATUS.DONE,
+                    Task.STATUS.CANCELLED,
+                ]) {
+                    const task = await Task.create({
+                        user_id: user.id,
+                        name: 'Water bill',
+                        status,
+                        recurrence_type: 'monthly',
+                        recurrence_interval: 1,
+                        recurrence_month_day: 15,
+                        due_date: new Date(Date.UTC(2026, 0, 15, 12)),
+                    });
+
+                    const response = await callMcpTool(
+                        apiTokenValue,
+                        'skip_task_occurrence',
+                        { id: task.id }
+                    );
+
+                    const { isError } = getToolContent(response);
+                    expect(isError).toBe(true);
+                    await task.reload();
+                    expect(task.status).toBe(status);
+                    const completions = await RecurringCompletion.count({
+                        where: { task_id: task.id },
+                    });
+                    expect(completions).toBe(0);
+                }
             });
         });
 
@@ -2063,6 +2313,7 @@ describe('MCP Tools Integration', () => {
             expect(toolNames).toContain('create_task');
             expect(toolNames).toContain('update_task');
             expect(toolNames).toContain('complete_task');
+            expect(toolNames).toContain('skip_task_occurrence');
             expect(toolNames).toContain('delete_task');
             expect(toolNames).toContain('add_subtask');
             expect(toolNames).toContain('create_task_relation');

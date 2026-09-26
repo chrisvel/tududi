@@ -56,6 +56,7 @@ module.exports = (sequelize) => {
                             'completion_based_changed',
                             'recurrence_end_date_changed',
                             'recurring_occurrence_completed',
+                            'recurring_occurrence_skipped',
                             'comment_added',
                             'relation_added',
                             'relation_removed',
