@@ -10,8 +10,13 @@ const {
     Tag,
     Note,
     InboxItem,
+    Comment,
+    Permission,
+    Person,
+    Notification,
 } = require('../../../models');
 const { createTestUser } = require('../../helpers/testUtils');
+const peopleService = require('../../../modules/people/service');
 const {
     createApiToken: createApiTokenFromService,
 } = require('../../../modules/users/apiTokenService');
@@ -1172,6 +1177,341 @@ describe('MCP Tools Integration', () => {
         });
     });
 
+    describe('Comment Tools', () => {
+        describe('add_task_comment', () => {
+            it('should add a comment to an own task', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Discuss this',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_task_comment',
+                    { id: task.uid, body: '  Looks good  ' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.comment.uid).toBeDefined();
+                expect(content.comment.body).toBe('Looks good');
+                expect(content.comment.is_own).toBe(true);
+            });
+
+            it('should reply to a comment by numeric task ID', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Discuss this',
+                    status: 0,
+                });
+                const parent = getToolContent(
+                    await callMcpTool(apiTokenValue, 'add_task_comment', {
+                        id: task.uid,
+                        body: 'Question',
+                    })
+                ).content.comment;
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_task_comment',
+                    {
+                        id: task.id,
+                        body: 'Answer',
+                        parent_comment_uid: parent.uid,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { isError } = getToolContent(response);
+                expect(isError).toBe(false);
+
+                const list = getToolContent(
+                    await callMcpTool(apiTokenValue, 'list_task_comments', {
+                        id: task.uid,
+                    })
+                ).content;
+                expect(list.count).toBe(1);
+                expect(list.comments[0].body).toBe('Question');
+                expect(list.comments[0].replies.map((r) => r.body)).toEqual([
+                    'Answer',
+                ]);
+            });
+
+            it('should reject an empty comment', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Discuss this',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_task_comment',
+                    { id: task.uid, body: '   ' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                expect(content._rawError).toContain('Comment body is required');
+            });
+
+            it('should reject a reply to a reply', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Discuss this',
+                    status: 0,
+                });
+                const parent = getToolContent(
+                    await callMcpTool(apiTokenValue, 'add_task_comment', {
+                        id: task.uid,
+                        body: 'Question',
+                    })
+                ).content.comment;
+                const reply = getToolContent(
+                    await callMcpTool(apiTokenValue, 'add_task_comment', {
+                        id: task.uid,
+                        body: 'Answer',
+                        parent_comment_uid: parent.uid,
+                    })
+                ).content.comment;
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_task_comment',
+                    {
+                        id: task.uid,
+                        body: 'Nested',
+                        parent_comment_uid: reply.uid,
+                    }
+                );
+
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                expect(content._rawError).toContain('Cannot reply to a reply');
+            });
+
+            it('should notify a mentioned person', async () => {
+                const otherUser = await createTestUser({
+                    email: `mention_${Date.now()}@example.com`,
+                    name: 'Mentioned',
+                });
+                await peopleService.createSelfPerson(otherUser);
+                const otherSelf = await Person.findOne({
+                    where: {
+                        user_id: otherUser.id,
+                        linked_user_id: otherUser.id,
+                    },
+                });
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Discuss this',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_task_comment',
+                    {
+                        id: task.uid,
+                        body: 'Hey @Mentioned',
+                        mentioned_person_uids: [otherSelf.uid],
+                    }
+                );
+
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.comment.mentioned_people).toEqual([
+                    { uid: otherSelf.uid, name: 'Mentioned' },
+                ]);
+                const notifications = await Notification.findAll({
+                    where: { user_id: otherUser.id, type: 'mention' },
+                });
+                expect(notifications).toHaveLength(1);
+                expect(notifications[0].data.taskUid).toBe(task.uid);
+            });
+
+            it('should let a read-only collaborator comment on a shared task', async () => {
+                const owner = await createTestUser({
+                    email: `owner_${Date.now()}@example.com`,
+                });
+                const project = await Project.create({
+                    user_id: owner.id,
+                    name: 'Shared Project',
+                });
+                const task = await Task.create({
+                    user_id: owner.id,
+                    project_id: project.id,
+                    name: 'Shared task',
+                    status: 0,
+                });
+                await Permission.create({
+                    user_id: user.id,
+                    resource_type: 'project',
+                    resource_uid: project.uid,
+                    access_level: 'ro',
+                    propagation: 'direct',
+                    granted_by_user_id: owner.id,
+                    status: 'accepted',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_task_comment',
+                    { id: task.uid, body: 'From a collaborator' }
+                );
+
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.comment.body).toBe('From a collaborator');
+
+                const list = getToolContent(
+                    await callMcpTool(apiTokenValue, 'list_task_comments', {
+                        id: task.uid,
+                    })
+                ).content;
+                expect(list.count).toBe(1);
+                expect(list.comments[0].is_own).toBe(true);
+            });
+
+            it('should deny commenting on another user task', async () => {
+                const otherUser = await createTestUser({
+                    email: `other_${Date.now()}@example.com`,
+                });
+                const otherTask = await Task.create({
+                    user_id: otherUser.id,
+                    name: 'Secret Task',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_task_comment',
+                    { id: otherTask.uid, body: 'Sneaky' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                expect(content._rawError).toBe('Error: Task not found');
+                expect(
+                    await Comment.count({ where: { task_id: otherTask.id } })
+                ).toBe(0);
+            });
+
+            it('should give the same error for a missing task as for another user task', async () => {
+                const otherUser = await createTestUser({
+                    email: `other_${Date.now()}@example.com`,
+                });
+                const otherTask = await Task.create({
+                    user_id: otherUser.id,
+                    name: 'Secret Task',
+                    status: 0,
+                });
+
+                const missing = getToolContent(
+                    await callMcpTool(apiTokenValue, 'add_task_comment', {
+                        id: 999999,
+                        body: 'Nothing here',
+                    })
+                );
+                const notYours = getToolContent(
+                    await callMcpTool(apiTokenValue, 'add_task_comment', {
+                        id: otherTask.id,
+                        body: 'Sneaky',
+                    })
+                );
+
+                expect(missing.isError).toBe(true);
+                expect(notYours.isError).toBe(true);
+                expect(missing.content._rawError).toBe('Error: Task not found');
+                expect(notYours.content._rawError).toBe(
+                    missing.content._rawError
+                );
+            });
+        });
+
+        describe('list_task_comments', () => {
+            it('should return an empty list for a task without comments', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Quiet task',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_task_comments',
+                    { id: task.id }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.count).toBe(0);
+                expect(content.comments).toEqual([]);
+            });
+
+            it('should deny reading comments on another user task', async () => {
+                const otherUser = await createTestUser({
+                    email: `other_${Date.now()}@example.com`,
+                });
+                const otherTask = await Task.create({
+                    user_id: otherUser.id,
+                    name: 'Secret Task',
+                    status: 0,
+                });
+                await Comment.create({
+                    task_id: otherTask.id,
+                    user_id: otherUser.id,
+                    body: 'Private note',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_task_comments',
+                    { id: otherTask.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                expect(content._rawError).toBe('Error: Task not found');
+                expect(content._rawError).not.toContain('Private note');
+            });
+
+            it('should give the same error for a missing task as for another user task', async () => {
+                const otherUser = await createTestUser({
+                    email: `other_${Date.now()}@example.com`,
+                });
+                const otherTask = await Task.create({
+                    user_id: otherUser.id,
+                    name: 'Secret Task',
+                    status: 0,
+                });
+
+                const missing = getToolContent(
+                    await callMcpTool(apiTokenValue, 'list_task_comments', {
+                        id: 999999,
+                    })
+                );
+                const notYours = getToolContent(
+                    await callMcpTool(apiTokenValue, 'list_task_comments', {
+                        id: otherTask.id,
+                    })
+                );
+
+                expect(missing.isError).toBe(true);
+                expect(notYours.isError).toBe(true);
+                expect(missing.content._rawError).toBe('Error: Task not found');
+                expect(notYours.content._rawError).toBe(
+                    missing.content._rawError
+                );
+            });
+        });
+    });
+
     describe('Project Tools', () => {
         describe('list_projects', () => {
             it('should return empty list when no projects exist', async () => {
@@ -2083,6 +2423,8 @@ describe('MCP Tools Integration', () => {
             expect(toolNames).toContain('list_task_relations');
             expect(toolNames).toContain('remove_task_relation');
             expect(toolNames).toContain('get_task_metrics');
+            expect(toolNames).toContain('list_task_comments');
+            expect(toolNames).toContain('add_task_comment');
             expect(toolNames).toContain('list_projects');
             expect(toolNames).toContain('get_project');
             expect(toolNames).toContain('create_project');
