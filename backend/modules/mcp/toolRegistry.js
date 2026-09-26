@@ -1,6 +1,7 @@
 'use strict';
 
 const { registerTaskTools } = require('./tools/taskTools');
+const { registerCommentTools } = require('./tools/commentTools');
 const { registerProjectTools } = require('./tools/projectTools');
 const { registerInboxTools } = require('./tools/inboxTools');
 const { registerMiscTools } = require('./tools/miscTools');
@@ -14,6 +15,7 @@ const { registerGoalTools } = require('./tools/goalTools');
 
 function registerAllTools(server, context, tools) {
     registerTaskTools(server, context, tools);
+    registerCommentTools(server, context, tools);
     registerProjectTools(server, context, tools);
     registerInboxTools(server, context, tools);
     registerMiscTools(server, context, tools);

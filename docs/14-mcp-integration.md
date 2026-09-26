@@ -19,6 +19,7 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
     - [HTTP Mode (Remote)](#http-mode-remote)
 - [Available Tools](#available-tools)
     - [Tasks Tools (11)](#tasks-tools-11)
+    - [Comments Tools (2)](#comments-tools-2)
     - [Projects Tools (5)](#projects-tools-5)
     - [Inbox Tools (6)](#inbox-tools-6)
     - [Views Tools (5)](#views-tools-5)
@@ -44,7 +45,7 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 **Key Features:**
 
-- **59 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people
+- **64 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people, plus task comments
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
 - **Enabled by default:** No configuration needed to turn MCP on
@@ -170,7 +171,7 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 62 MCP tools organized into 11 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 64 MCP tools organized into 12 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
 ### Tasks Tools (11)
 
@@ -419,6 +420,42 @@ Get productivity metrics and task statistics.
     "in_progress_tasks": 5,
     "completed_today": 2,
     "completed_this_week": 11
+}
+```
+
+---
+
+### Comments Tools (2)
+
+#### `list_task_comments`
+
+List the comments on a task, oldest first. Replies are nested under the comment they answer in `replies`. You need read access to the task.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+
+---
+
+#### `add_task_comment`
+
+Add a comment to a task. Read access is enough, so a read-only collaborator can comment too. The task owner, the assignee and anyone mentioned get the usual comment notifications.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+| `body` | string | Yes | Comment text (max 10,000 characters) |
+| `parent_comment_uid` | string | No | Reply to this top-level comment |
+| `mentioned_person_uids` | string[] | No | Person UIDs to mention |
+
+**Example:**
+
+```json
+{
+    "id": "abc123",
+    "body": "Blocked on the vendor, following up Monday"
 }
 ```
 
