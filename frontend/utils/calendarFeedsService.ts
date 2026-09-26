@@ -12,6 +12,7 @@ export interface CalendarFeed {
     color: string | null;
     last_fetched_at: string | null;
     last_error: string | null;
+    show_on_calendar: boolean;
 }
 
 export interface CalendarEvent {
@@ -26,6 +27,17 @@ export interface CalendarEvent {
     feed_uid: string;
     feed_name: string;
     color: string | null;
+}
+
+export interface CalendarRangeEvent extends CalendarEvent {
+    date: string;
+}
+
+export interface CalendarRangeResponse {
+    start: string;
+    end: string;
+    events: CalendarRangeEvent[];
+    errors: { feed_uid: string; message: string }[];
 }
 
 export interface CalendarEventsResponse {
@@ -62,7 +74,12 @@ export const createCalendarFeed = async (data: {
 
 export const updateCalendarFeed = async (
     uid: string,
-    data: { name?: string; url?: string; color?: string | null }
+    data: {
+        name?: string;
+        url?: string;
+        color?: string | null;
+        show_on_calendar?: boolean;
+    }
 ): Promise<CalendarFeed> => {
     const response = await fetch(
         getApiPath(`calendar-feeds/${encodeURIComponent(uid)}`),
@@ -94,6 +111,19 @@ export const fetchCalendarEvents = async (
     date?: string
 ): Promise<CalendarEventsResponse> => {
     const query = date ? `?date=${encodeURIComponent(date)}` : '';
+    const response = await fetch(getApiPath(`calendar-feeds/events${query}`), {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+    await handleAuthResponse(response, 'Failed to load calendar events.');
+    return response.json();
+};
+
+export const fetchCalendarEventsRange = async (
+    start: string,
+    end: string
+): Promise<CalendarRangeResponse> => {
+    const query = `?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
     const response = await fetch(getApiPath(`calendar-feeds/events${query}`), {
         credentials: 'include',
         headers: getDefaultHeaders(),

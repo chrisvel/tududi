@@ -4,16 +4,33 @@ import { Task } from '../entities/Task';
 import { Project } from '../entities/Project';
 import { updateTask } from '../utils/tasksService';
 import {
+    CalendarFeed,
+    CalendarRangeEvent,
+    fetchCalendarEventsRange,
+    fetchCalendarFeeds,
+    updateCalendarFeed,
+} from '../utils/calendarFeedsService';
+import CalendarFeedsManager from './CalendarFeeds/CalendarFeedsManager';
+import { useToast } from './Shared/ToastContext';
+import {
     ChevronLeftIcon,
     ChevronRightIcon,
     XMarkIcon,
+    Cog6ToothIcon,
     ArrowTopRightOnSquareIcon,
     CalendarDaysIcon,
     ClockIcon,
     FolderIcon,
     TagIcon,
 } from '@heroicons/react/24/outline';
-import { format, addWeeks, addDays } from 'date-fns';
+import {
+    format,
+    addWeeks,
+    addDays,
+    startOfMonth,
+    endOfMonth,
+    subDays,
+} from 'date-fns';
 import { el, enUS, es, ja, uk, de } from 'date-fns/locale';
 import CalendarMonthView from './Calendar/CalendarMonthView';
 import CalendarWeekView from './Calendar/CalendarWeekView';
@@ -46,10 +63,33 @@ interface CalendarEvent {
     end: Date;
     type: 'task' | 'event';
     color?: string;
+    feedUid?: string;
 }
+
+const localDate = (day: string, minute = 0) => {
+    const [year, month, date] = day.split('-').map(Number);
+    return new Date(year, month - 1, date, 0, minute);
+};
+
+const feedEventToCalendarEvent = (event: CalendarRangeEvent): CalendarEvent => {
+    const start = localDate(event.date, event.start_minute ?? 0);
+    const end = event.all_day
+        ? localDate(event.date, 24 * 60)
+        : localDate(event.date, event.end_minute ?? event.start_minute ?? 0);
+    return {
+        id: `feed-${event.feed_uid}-${event.uid}-${event.date}-${event.start_minute ?? 'all-day'}`,
+        title: event.title || event.feed_name,
+        start,
+        end,
+        type: 'event',
+        color: event.color || '#6b7280',
+        feedUid: event.feed_uid,
+    };
+};
 
 const Calendar: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { showErrorToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -60,6 +100,11 @@ const Calendar: React.FC = () => {
     const [allTasks, setAllTasks] = useState<any[]>([]);
     const [, setProjects] = useState<Project[]>([]);
     const [isEventDetailModalOpen, setIsEventDetailModalOpen] = useState(false);
+    const [feeds, setFeeds] = useState<CalendarFeed[]>([]);
+    const [feedsLoading, setFeedsLoading] = useState(true);
+    const [feedEvents, setFeedEvents] = useState<CalendarRangeEvent[]>([]);
+    const [feedErrors, setFeedErrors] = useState<string[]>([]);
+    const [isManagerOpen, setIsManagerOpen] = useState(false);
 
     const locale = getLocale(i18n.language);
 
@@ -67,6 +112,87 @@ const Calendar: React.FC = () => {
         loadTasks();
         loadProjects();
     }, []);
+
+    useEffect(() => {
+        fetchCalendarFeeds()
+            .then(setFeeds)
+            .catch(() =>
+                showErrorToast(
+                    t('profile.calendars.loadError', 'Could not load calendars')
+                )
+            )
+            .finally(() => setFeedsLoading(false));
+    }, []);
+
+    // Month, week and day views all draw from one month-sized window (padded
+    // a week each side), so paging within a month never refetches.
+    const visibleMonth = format(currentDate, 'yyyy-MM');
+    const feedUidsKey = feeds.map((feed) => feed.uid).join(',');
+
+    useEffect(() => {
+        if (!feedUidsKey) {
+            setFeedEvents([]);
+            setFeedErrors([]);
+            return;
+        }
+        let cancelled = false;
+        const monthStart = startOfMonth(currentDate);
+        fetchCalendarEventsRange(
+            format(subDays(monthStart, 7), 'yyyy-MM-dd'),
+            format(addDays(endOfMonth(monthStart), 7), 'yyyy-MM-dd')
+        )
+            .then((data) => {
+                if (cancelled) return;
+                setFeedEvents(data.events);
+                setFeedErrors(data.errors.map((error) => error.feed_uid));
+            })
+            .catch(() => {
+                if (cancelled) return;
+                setFeedEvents([]);
+                setFeedErrors(feedUidsKey.split(','));
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [visibleMonth, feedUidsKey]);
+
+    const shownFeedUids = new Set(
+        feeds.filter((feed) => feed.show_on_calendar).map((feed) => feed.uid)
+    );
+    const calendarEvents = [
+        ...events,
+        ...feedEvents
+            .filter((event) => shownFeedUids.has(event.feed_uid))
+            .map(feedEventToCalendarEvent),
+    ];
+    const failedFeedNames = feeds
+        .filter(
+            (feed) =>
+                feed.show_on_calendar && feedErrors.includes(feed.uid)
+        )
+        .map((feed) => feed.name);
+
+    const toggleFeed = async (feed: CalendarFeed) => {
+        const apply = (value: boolean) =>
+            setFeeds((current) =>
+                current.map((f) =>
+                    f.uid === feed.uid ? { ...f, show_on_calendar: value } : f
+                )
+            );
+        const next = !feed.show_on_calendar;
+        apply(next);
+        try {
+            await updateCalendarFeed(feed.uid, { show_on_calendar: next });
+        } catch {
+            apply(!next);
+            showErrorToast(
+                t(
+                    'profile.calendars.toggleError',
+                    'Could not update that calendar'
+                )
+            );
+        }
+    };
 
     const loadTasks = async () => {
         setIsLoadingTasks(true);
@@ -304,6 +430,61 @@ const Calendar: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Calendars: show or hide each connected calendar */}
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                    {feeds.map((feed) => (
+                        <button
+                            key={feed.uid}
+                            type="button"
+                            role="switch"
+                            aria-checked={feed.show_on_calendar}
+                            onClick={() => void toggleFeed(feed)}
+                            title={
+                                feed.show_on_calendar
+                                    ? t('calendar.hideCalendar', 'Hide {{name}}', {
+                                          name: feed.name,
+                                      })
+                                    : t('calendar.showCalendar', 'Show {{name}}', {
+                                          name: feed.name,
+                                      })
+                            }
+                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm transition-colors ${
+                                feed.show_on_calendar
+                                    ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
+                                    : 'bg-transparent text-gray-400 line-through hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-gray-800'
+                            }`}
+                        >
+                            <span
+                                className="h-2.5 w-2.5 rounded-full"
+                                style={{
+                                    backgroundColor: feed.show_on_calendar
+                                        ? feed.color || '#6b7280'
+                                        : 'transparent',
+                                    boxShadow: `inset 0 0 0 2px ${feed.color || '#6b7280'}`,
+                                }}
+                            />
+                            {feed.name}
+                        </button>
+                    ))}
+                    <button
+                        type="button"
+                        onClick={() => setIsManagerOpen(true)}
+                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors"
+                    >
+                        <Cog6ToothIcon className="h-4 w-4" />
+                        {t('calendar.manageCalendars', 'Calendars')}
+                    </button>
+                    {failedFeedNames.length > 0 && (
+                        <span className="text-xs text-amber-600 dark:text-amber-400">
+                            {t(
+                                'calendar.feedError',
+                                'Could not load: {{names}}',
+                                { names: failedFeedNames.join(', ') }
+                            )}
+                        </span>
+                    )}
+                </div>
+
                 {/* Loading indicator */}
                 {isLoadingTasks && (
                     <div className="text-center py-3 px-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800 mb-3">
@@ -318,7 +499,7 @@ const Calendar: React.FC = () => {
                     {view === 'month' && (
                         <CalendarMonthView
                             currentDate={currentDate}
-                            events={events}
+                            events={calendarEvents}
                             onDateClick={handleDateClick}
                             onEventClick={handleEventClick}
                             onEventDrop={handleEventDrop}
@@ -327,7 +508,7 @@ const Calendar: React.FC = () => {
                     {view === 'week' && (
                         <CalendarWeekView
                             currentDate={currentDate}
-                            events={events}
+                            events={calendarEvents}
                             onDateClick={handleDateClick}
                             onEventClick={handleEventClick}
                             onTimeSlotClick={handleTimeSlotClick}
@@ -337,13 +518,22 @@ const Calendar: React.FC = () => {
                     {view === 'day' && (
                         <CalendarDayView
                             currentDate={currentDate}
-                            events={events}
+                            events={calendarEvents}
                             onEventClick={handleEventClick}
                             onTimeSlotClick={handleTimeSlotClick}
                             onEventDrop={handleEventDrop}
                         />
                     )}
                 </div>
+
+                {isManagerOpen && (
+                    <CalendarsModal
+                        feeds={feeds}
+                        loading={feedsLoading}
+                        onFeedsChange={(update) => setFeeds(update)}
+                        onClose={() => setIsManagerOpen(false)}
+                    />
+                )}
 
                 {selectedTask && (
                     <TaskEventModal
@@ -356,6 +546,74 @@ const Calendar: React.FC = () => {
                         onEditTask={handleEditTask}
                     />
                 )}
+            </div>
+        </div>
+    );
+};
+
+interface CalendarsModalProps {
+    feeds: CalendarFeed[];
+    loading: boolean;
+    onFeedsChange: (update: (feeds: CalendarFeed[]) => CalendarFeed[]) => void;
+    onClose: () => void;
+}
+
+const CalendarsModal: React.FC<CalendarsModalProps> = ({
+    feeds,
+    loading,
+    onFeedsChange,
+    onClose,
+}) => {
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+    }, [onClose]);
+
+    return (
+        <div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-40 p-4"
+            onClick={onClose}
+        >
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-label={t('calendar.manageCalendars', 'Calendars')}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+                onClick={(event) => event.stopPropagation()}
+            >
+                <div className="flex items-start justify-between p-5 pb-2">
+                    <div className="pr-3">
+                        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                            {t('calendar.manageCalendars', 'Calendars')}
+                        </h3>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            {t(
+                                'calendar.manageDescription',
+                                'Connect read-only calendars and choose which ones appear here. Tududi never changes them.'
+                            )}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        aria-label={t('calendar.close', 'Close')}
+                        className="shrink-0 p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                        <XMarkIcon className="w-4 h-4" />
+                    </button>
+                </div>
+                <div className="p-5 pt-3">
+                    <CalendarFeedsManager
+                        feeds={feeds}
+                        loading={loading}
+                        onFeedsChange={onFeedsChange}
+                    />
+                </div>
             </div>
         </div>
     );

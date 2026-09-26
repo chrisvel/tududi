@@ -53,7 +53,9 @@ Tasks have an optional `estimated_minutes` (5 to 720), set from the **Estimate**
 
 ## Calendar feeds
 
-Profile → **Calendars** connects read-only iCal feeds, such as Google Calendar's "Secret address in iCal format". Apple Calendar, Outlook and Fastmail links work too, and `webcal://` links are accepted.
+Profile → **Calendars**, or the **Calendars** button on the Calendar page, connects read-only iCal feeds, such as Google Calendar's "Secret address in iCal format". Apple Calendar, Outlook and Fastmail links work too, and `webcal://` links are accepted.
+
+- **Calendar page:** each connected calendar is a chip above the month, week and day views. Click a chip to show or hide that calendar's events; the choice is saved per calendar (`show_on_calendar`, on by default). Hiding a calendar only affects the Calendar page: its meetings still block time on Today and the planner.
 
 - Tududi never writes to these calendars.
 - The address is a secret: it is stored encrypted (needs `TUDUDI_SESSION_SECRET` or `TUDUDI_OIDC_SECRET_ENCRYPTION_KEY`) and the API only returns its host.
@@ -70,7 +72,7 @@ Profile → **Calendars** connects read-only iCal feeds, such as Google Calendar
 | `daily_plans` | One row per user per local date (`plan_date`), with `started_at` set by **Start my day** |
 | `daily_plan_items` | The tasks in a plan: `position`, `start_minute` (minutes after local midnight, null for untimed) and `duration_minutes` |
 | `daily_plans.ai_wrap_up` | The stored AI wrap-up for that day (JSON, optional) |
-| `calendar_feeds` | Name, color, encrypted URL, host, last fetch time and last error |
+| `calendar_feeds` | Name, color, encrypted URL, host, last fetch time and last error, and `show_on_calendar` |
 
 Plans and feeds are not included in backups: plans are short-lived, and feed addresses are encrypted with this server's key.
 
@@ -88,8 +90,9 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | POST | `/api/daily-plan/:date/start` | Marks the day started |
 | POST | `/api/daily-plan/:date/carry-over` | Appends `{ task_uids }` to that day's plan without a time, skipping tasks already there |
 | DELETE | `/api/daily-plan/:date` | Clears the plan. `:date` may be `today` |
-| GET/POST/PATCH/DELETE | `/api/calendar-feeds[/:uid]` | Manage feeds. POST fetches the feed once and refuses it if it cannot be read |
+| GET/POST/PATCH/DELETE | `/api/calendar-feeds[/:uid]` | Manage feeds. POST fetches the feed once and refuses it if it cannot be read. PATCH also takes `show_on_calendar` |
 | GET | `/api/calendar-feeds/events?date=` | `{ date, events, errors }` for that day |
+| GET | `/api/calendar-feeds/events?start=&end=` | `{ start, end, events, errors }` for up to 62 days; each event carries its `date`, and a multi-day event appears once per day. Hidden calendars are included, the Calendar page filters them |
 
 ---
 
