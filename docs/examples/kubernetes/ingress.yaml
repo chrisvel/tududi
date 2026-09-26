@@ -1,0 +1,27 @@
+# Change the host and the TLS secret, and set ingressClassName if your cluster
+# has more than one controller. The host must also be in TUDUDI_ALLOWED_ORIGINS.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tududi
+  labels:
+    app.kubernetes.io/name: tududi
+  annotations:
+    # ingress-nginx caps uploads at 1m by default. Match FILE_UPLOAD_LIMIT_MB.
+    nginx.ingress.kubernetes.io/proxy-body-size: 10m
+spec:
+  rules:
+    - host: tududi.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tududi
+                port:
+                  name: http
+  tls:
+    - hosts:
+        - tududi.example.com
+      secretName: tududi-tls
