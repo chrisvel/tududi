@@ -1,6 +1,11 @@
-const { Task } = require('../../../models');
+const { Task, RecurringCompletion } = require('../../../models');
 const taskRepository = require('../repository');
-const { calculateNextDueDate } = require('../recurringTaskService');
+const {
+    calculateNextDueDate,
+    shouldGenerateNextTask,
+} = require('../recurringTaskService');
+const { logEvent } = require('../taskEventService');
+const { logError } = require('../../../services/logService');
 const {
     processDueDateForResponse,
     getSafeTimezone,
@@ -366,7 +371,128 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
     return iterations;
 }
 
+const OCCURRENCE_RECURRENCE_FIELDS = [
+    'recurrence_interval',
+    'recurrence_end_date',
+    'recurrence_weekday',
+    'recurrence_weekdays',
+    'recurrence_month_day',
+    'recurrence_week_of_month',
+];
+
+// overrides are pending attribute changes (a PATCH body) that win over the
+// stored values. Returns null for non-recurring tasks and generated instances.
+function planOccurrenceAdvance(
+    task,
+    { overrides = {}, timezone = 'UTC', now = new Date() } = {}
+) {
+    const resolve = (field) =>
+        overrides[field] !== undefined ? overrides[field] : task[field];
+
+    const recurrenceType = resolve('recurrence_type');
+    if (
+        !recurrenceType ||
+        recurrenceType === 'none' ||
+        task.recurring_parent_id
+    ) {
+        return null;
+    }
+
+    const completionBased = resolve('completion_based');
+    const dueDate = resolve('due_date');
+    const hasOriginalDueDate =
+        dueDate !== undefined && dueDate !== null && dueDate !== '';
+    const originalDueDate = hasOriginalDueDate
+        ? new Date(dueDate)
+        : new Date(now);
+
+    const recurrenceContext = {
+        ...(typeof task.get === 'function' ? task.get({ plain: true }) : task),
+        recurrence_type: recurrenceType,
+        completion_based: completionBased,
+        due_date: originalDueDate,
+    };
+    for (const field of OCCURRENCE_RECURRENCE_FIELDS) {
+        recurrenceContext[field] = resolve(field);
+    }
+
+    const baseDate = completionBased ? now : new Date(originalDueDate);
+    const nextDueDate = calculateNextDueDate(
+        recurrenceContext,
+        baseDate,
+        getSafeTimezone(timezone)
+    );
+
+    return {
+        completedAt: now,
+        originalDueDate: new Date(originalDueDate),
+        nextDueDate,
+        hasNext: Boolean(
+            nextDueDate &&
+            shouldGenerateNextTask(recurrenceContext, nextDueDate)
+        ),
+        completionBased,
+    };
+}
+
+async function recordOccurrence(task, occurrence, userId) {
+    await RecurringCompletion.create({
+        task_id: task.id,
+        completed_at: occurrence.completedAt,
+        original_due_date: occurrence.originalDueDate,
+        skipped: false,
+    });
+
+    try {
+        await logEvent({
+            taskId: task.id,
+            userId,
+            eventType: 'recurring_occurrence_completed',
+            fieldName: 'recurrence',
+            oldValue: occurrence.originalDueDate,
+            newValue: occurrence.nextDueDate,
+            metadata: {
+                action: 'recurring_occurrence_completed',
+                original_due_date: occurrence.originalDueDate.toISOString(),
+                next_due_date: occurrence.nextDueDate?.toISOString?.() ?? null,
+                completion_based: occurrence.completionBased,
+            },
+        });
+    } catch (eventError) {
+        logError(
+            'Error logging recurring occurrence completion event:',
+            eventError
+        );
+    }
+}
+
+// Moves the task to its next due date and back to not started, or leaves it
+// done when the series has ended. Returns null for non-recurring tasks.
+async function completeOccurrence(task, { timezone = 'UTC', userId } = {}) {
+    const occurrence = planOccurrenceAdvance(task, { timezone });
+    if (!occurrence) return null;
+
+    await task.update(
+        occurrence.hasNext
+            ? {
+                  status: Task.STATUS.NOT_STARTED,
+                  completed_at: null,
+                  due_date: occurrence.nextDueDate,
+              }
+            : {
+                  status: Task.STATUS.DONE,
+                  completed_at: occurrence.completedAt,
+              }
+    );
+    await recordOccurrence(task, occurrence, userId);
+
+    return occurrence;
+}
+
 module.exports = {
     handleRecurrenceUpdate,
     calculateNextIterations,
+    planOccurrenceAdvance,
+    recordOccurrence,
+    completeOccurrence,
 };
