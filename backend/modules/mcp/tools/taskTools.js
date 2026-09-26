@@ -223,7 +223,8 @@ function registerTaskTools(server, context, tools) {
 
             const serializedTasks = await serializeTasks(
                 tasks,
-                context.user.timezone
+                context.user.timezone,
+                { preserveOriginalName: true }
             );
 
             return {
@@ -274,7 +275,11 @@ function registerTaskTools(server, context, tools) {
                 throw new Error(`Task not found: ${params.id}`);
             }
 
-            const serialized = await serializeTask(task, context.user.timezone);
+            const serialized = await serializeTask(
+                task,
+                context.user.timezone,
+                { preserveOriginalName: true }
+            );
 
             return {
                 content: [
@@ -429,7 +434,8 @@ function registerTaskTools(server, context, tools) {
 
             const serialized = await serializeTask(
                 reloadedTask,
-                context.user.timezone
+                context.user.timezone,
+                { preserveOriginalName: true }
             );
 
             return {
@@ -695,7 +701,8 @@ function registerTaskTools(server, context, tools) {
 
             const serialized = await serializeTask(
                 reloadedTask,
-                context.user.timezone
+                context.user.timezone,
+                { preserveOriginalName: true }
             );
 
             return {
@@ -775,7 +782,8 @@ function registerTaskTools(server, context, tools) {
 
             const serialized = await serializeTask(
                 reloadedTask,
-                context.user.timezone
+                context.user.timezone,
+                { preserveOriginalName: true }
             );
 
             return {
@@ -928,7 +936,8 @@ function registerTaskTools(server, context, tools) {
 
             const serialized = await serializeTask(
                 reloadedSubtask,
-                context.user.timezone
+                context.user.timezone,
+                { preserveOriginalName: true }
             );
 
             return {

@@ -139,6 +139,27 @@ describe('MCP Tools Integration', () => {
                 expect(content.count).toBeGreaterThanOrEqual(1);
             });
 
+            it('should return the real name of a recurring task', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Pay rent',
+                    status: 0,
+                    recurrence_type: 'monthly',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    {}
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                const names = content.tasks.map((t) => t.name);
+                expect(names).toContain('Pay rent');
+                expect(names).not.toContain('Monthly');
+            });
+
             it('should filter tasks by status', async () => {
                 await Task.create({
                     user_id: user.id,
@@ -460,6 +481,7 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
+                expect(content.task.name).toBe('Weekly Recurring Task');
                 expect(content.task.recurrence_type).toBe('weekly');
                 expect(content.task.recurrence_interval).toBe(2);
                 expect(content.task.recurrence_weekday).toBe(3);
@@ -553,6 +575,23 @@ describe('MCP Tools Integration', () => {
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
                 expect(content.name).toBe('Findable by UID');
+            });
+
+            it('should return the real name of a recurring task', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Water the plants',
+                    status: 0,
+                    recurrence_type: 'weekly',
+                });
+
+                const response = await callMcpTool(apiTokenValue, 'get_task', {
+                    id: task.uid,
+                });
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.name).toBe('Water the plants');
             });
 
             it('should throw error for non-existent task', async () => {
@@ -922,6 +961,7 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
+                expect(content.task.name).toBe('Recurrence Update Task');
                 expect(content.task.recurrence_type).toBe('monthly');
                 expect(content.task.recurrence_interval).toBe(3);
                 expect(content.task.recurrence_month_day).toBe(15);
@@ -1985,6 +2025,26 @@ describe('MCP Tools Integration', () => {
                         (t) => t.name === 'Searchable Task'
                     )
                 ).toBe(true);
+            });
+
+            it('should return the real name of a recurring task', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Searchable Chore',
+                    status: 0,
+                    recurrence_type: 'daily',
+                });
+
+                const response = await callMcpTool(apiTokenValue, 'search', {
+                    query: 'Searchable',
+                    type: 'task',
+                });
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.results.tasks.map((t) => t.name)).toContain(
+                    'Searchable Chore'
+                );
             });
 
             it('should search projects', async () => {
