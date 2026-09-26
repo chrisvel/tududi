@@ -28,6 +28,7 @@ import {
     invalidateProfileCache,
 } from '../utils/profileService';
 import { notifySwClearCache } from '../utils/swUtils';
+import { toggleCapture, useCaptureUi } from '../utils/captureUi';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -62,6 +63,7 @@ const Navbar: React.FC<NavbarProps> = ({
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const { open: captureOpen } = useCaptureUi();
     // Dispatch event when mobile search state changes
     useEffect(() => {
         window.dispatchEvent(
@@ -226,8 +228,12 @@ const Navbar: React.FC<NavbarProps> = ({
                     </button>
 
                     <button
-                        onClick={() => navigate('/inbox')}
-                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
+                        type="button"
+                        onClick={() => toggleCapture('inbox')}
+                        aria-haspopup="dialog"
+                        aria-expanded={captureOpen}
+                        data-testid="capture-navbar-button"
+                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
                         aria-label={t('navigation.quickInboxCapture')}
                         title={t('navigation.quickInboxCapture')}
                     >

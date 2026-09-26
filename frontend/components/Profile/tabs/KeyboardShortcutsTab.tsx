@@ -12,6 +12,7 @@ import {
     getDefaultConfig,
     shortcutToString,
 } from '../../../utils/keyboardShortcutsService';
+import CaptureSettingsCard from './CaptureSettingsCard';
 
 interface KeyboardShortcutsTabProps {
     isActive: boolean;
@@ -277,6 +278,10 @@ const KeyboardShortcutsTab: React.FC<KeyboardShortcutsTabProps> = ({
                         </div>
                     );
                 })}
+            </div>
+
+            <div className="mt-8">
+                <CaptureSettingsCard />
             </div>
 
             {/* Reset to Defaults */}

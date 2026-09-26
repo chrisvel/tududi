@@ -38,6 +38,27 @@ The **Inbox** is tududi's quick capture system - a temporary holding area where 
 
 ## How to Add Items to Inbox
 
+### The Add box (Inbox, Task, Note, Project)
+
+One box is used everywhere you add something. It is the input at the top of the Inbox page, a popover under the blue **Add** button in the navbar (wide screens), and a sheet opened by the round **Add** button at the bottom of the screen (phones and tablets, hidden on the Inbox page and while editing a task or note). `Alt+Shift+T` and the sidebar's New > Task open it on **Task**. Every other entry point opens it on **Inbox**.
+
+**Add to.** A row of choices next to the Add button decides what the text becomes: Inbox, Task, Note or Project. Nothing is guessed. The selected choice is what gets created, and the box always starts on Inbox when it opens.
+
+| Add to | First line | Other lines | Also read from the first line |
+|--------|-----------|-------------|-------------------------------|
+| Inbox | kept exactly as typed | kept exactly as typed | applied later, when the item is converted |
+| Task | title | notes | due date, recurrence, `@person`, `#tags`, `+Project` |
+| Note | title | body | `#tags`, `+Project` (a note has no due date, so date words stay in the title) |
+| Project | name | description | due date, `#tags` |
+
+Dates and `@person` are read from the first line only, so a date mentioned further down a long note never becomes its due date. `#tags` are read anywhere in the text. An unknown `#tag` or `+Project` is created when you add.
+
+**Several lines.** By default everything you type becomes one item. When the text has more than one line, the box says so in one sentence ("This will be 1 task. The first line is the title and the other 2 lines are its notes.") with a link to switch to **One item per line**, which makes one item per non-empty line and strips list markers such as `-`, `*` and `1.`. If one line fails to save, the lines that were not saved stay in the box.
+
+**Enter.** On a computer keyboard Enter adds and Shift+Enter starts a new line. On a touch device Return starts a new line and the Add button adds, with a Line break button available if Return is set to add. Ctrl or Cmd + Enter always adds. Both defaults can be changed under Profile > Keyboard Shortcuts > Adding items, along with One item per line. These settings are kept on the device.
+
+**Confirmation and Undo.** There is no toast. One quiet line under the box says what was saved ("Saved "Call Sam" to Inbox.") with an Undo link, and it stays until you type again. Undo deletes what was just created. Closing the popover or sheet keeps any half-typed text, and focus returns to where it was.
+
 ### Quick Capture Input
 
 Located at the top of the Inbox page:
@@ -189,6 +210,8 @@ After parsing, the system creates "cleaned content":
 ---
 
 ## Intelligent Suggestions
+
+In the Add box the destination is always chosen explicitly, so these suggestions no longer create anything automatically. The legacy suggestion logic below still describes how the backend classifies text (`suggested_type`), which the Inbox uses when converting items.
 
 The system analyzes your content and suggests what type of item to create:
 
@@ -486,7 +509,8 @@ While editing, you see action buttons:
 |----------|--------|
 | `r` | Refresh inbox items |
 | Focus in input | Type to add item |
-| `Enter` or `Tab` | Submit item (configurable in settings) |
+| `Enter` | Add (Shift+Enter for a new line; changeable in Profile > Keyboard Shortcuts) |
+| `Alt+Shift+T` | Open the Add box on Task (anywhere in the app) |
 
 ### In quick capture composer
 
