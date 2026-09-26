@@ -102,7 +102,6 @@
     "showMetrics": "Hiển thị Thống kê",
     "showProductivity": "Hiển thị Thông tin Năng suất",
     "showIntelligence": "Hiển thị Gợi ý Thông minh",
-    "showNextTaskSuggestion": "Gợi ý Nhiệm vụ Tiếp theo",
     "showSuggestions": "Hiển thị Gợi ý",
     "showDueToday": "Hiển thị Nhiệm vụ Đến hạn Hôm nay",
     "showCompleted": "Hiển thị Nhiệm vụ Đã hoàn thành"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "Chọn tần suất bạn muốn nhận tóm tắt nhiệm vụ",
     "taskIntelligence": "Trí tuệ Nhiệm vụ",
-    "taskIntelligenceDescription": "Nhận những gợi ý hữu ích để làm cho tên nhiệm vụ của bạn mô tả và có thể hành động hơn.",
     "enableTaskIntelligence": "Bật Trợ lý Trí tuệ Nhiệm vụ",
     "autoSuggestNextActions": "Gợi ý Tự động Hành động Tiếp theo",
-    "autoSuggestNextActionsDescription": "Khi tạo một dự án, tự động gợi ý hành động vật lý tiếp theo cần thực hiện.",
     "enableAutoSuggestNextActions": "Bật Gợi ý Hành động Tiếp theo",
-    "productivityFeatures": "Tính năng Năng suất",
     "pomodoroDescription": "Bật bộ đếm thời gian Pomodoro trong thanh điều hướng cho các phiên làm việc tập trung.",
     "enablePomodoro": "Bật Bộ đếm Thời gian Pomodoro",
     "productivityAssistant": "Trợ lý Năng suất",
-    "productivityAssistantDescription": "Hiển thị những thông tin về năng suất giúp xác định các dự án bị đình trệ, nhiệm vụ mơ hồ và cải tiến quy trình làm việc trên trang Hôm nay của bạn.",
     "enableProductivityAssistant": "Bật Thông tin Năng suất",
     "nextTaskSuggestion": "Gợi ý Nhiệm vụ Tiếp theo",
-    "nextTaskSuggestionDescription": "Tự động gợi ý nhiệm vụ tốt nhất tiếp theo để làm khi bạn không có gì đang tiến hành, ưu tiên các nhiệm vụ đến hạn hôm nay, sau đó là các nhiệm vụ được gợi ý từ trang Hôm nay của bạn.",
     "enableNextTaskSuggestion": "Bật Gợi ý Nhiệm vụ Tiếp theo",
-    "nextActionPrompt": "Hành động vật lý tiếp theo cho dự án này là gì?",
-    "nextActionPlaceholder": "ví dụ: Gọi khách hàng để lên lịch họp, Nghiên cứu đối thủ trực tuyến, Tạo thư mục dự án...",
-    "addNextAction": "Thêm Hành động Tiếp theo",
-    "skipNextAction": "Bỏ qua tạm thời",
-    "nextActionHint": "Hãy nghĩ đến bước nhỏ nhất, cụ thể nhất mà bạn có thể thực hiện ngay bây giờ để tiến triển dự án này.",
     "tabs": {
       "general": "Chung",
       "security": "Bảo mật",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "Bạn chưa đặt mật khẩu. Hãy cân nhắc đặt một cái để có phương thức đăng nhập thay thế."
     },
     "kanbanDescription": "Kích hoạt Bảng Kanban để theo dõi tiến độ công việc qua các swimlane.",
-    "intelligenceSection": "Trí tuệ",
-    "taskIntelligenceLabel": "Trợ lý Trí tuệ Công việc",
-    "autoSuggestNextActionsLabel": "Gợi ý Hành động Tiếp theo",
-    "productivityAssistantLabel": "Thông tin Năng suất",
-    "nextTaskSuggestionLabel": "Gợi ý Công việc Tiếp theo",
     "featuresAddons": "Tính năng & Tiện ích bổ sung",
     "caldav": {
       "title": "Đồng bộ hóa CalDAV",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "Bạn có chắc chắn muốn xóa \"{{name}}\" không? Điều này sẽ xóa lịch và tất cả cấu hình đồng bộ."
     },
     "caldavWizard": {
-      "title": "Trình hướng dẫn thiết lập CalDAV",
-      "confirmClose": "Bạn có chắc chắn muốn đóng không? Tiến trình của bạn sẽ bị mất.",
       "calendarName": "Tên lịch",
       "calendarNamePlaceholder": "ví dụ: Nhiệm vụ Công việc",
       "calendarNameRequired": "Tên lịch là bắt buộc",
@@ -518,9 +500,6 @@
       "authType": "Loại xác thực",
       "basicAuth": "Xác thực cơ bản",
       "bearerAuth": "Mã thông báo Bearer",
-      "testDescription": "Kiểm tra kết nối đến máy chủ CalDAV của bạn trước khi tiếp tục.",
-      "server": "Máy chủ",
-      "path": "Đường dẫn",
       "testConnection": "Kiểm tra kết nối",
       "testing": "Đang kiểm tra...",
       "connectionSuccess": "Kết nối thành công!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "Sửa đổi cuối cùng thắng (tự động)",
       "localWins": "Cục bộ luôn thắng",
       "remoteWins": "Từ xa luôn thắng",
-      "reviewDescription": "Xem lại cài đặt của bạn trước khi tạo lịch.",
       "calendarSettings": "Cài đặt Lịch",
       "serverSettings": "Cài đặt Máy chủ",
       "syncSettings": "Cài đặt Đồng bộ",
@@ -648,16 +626,6 @@
     "suggestion": "Nhấn vào bất kỳ mục nào ở trên để mở nó và thực hiện cải tiến.",
     "issuesFound_other": "{{count}} vấn đề năng suất cần được chú ý",
     "issuesFound_one": "1 vấn đề năng suất cần được chú ý"
-  },
-  "nextTask": {
-    "suggestion": "Vì không có gì đang tiến hành, bạn có muốn bắt đầu với",
-    "suggestionTodayPlan": "Vì không có gì đang tiến hành, bạn có muốn bắt đầu với nhiệm vụ này trong kế hoạch hôm nay của bạn",
-    "suggestionDueToday": "Vì không có gì đang tiến hành, bạn có muốn bắt đầu với nhiệm vụ này đến hạn hôm nay",
-    "suggestionSuggested": "Vì không có gì đang tiến hành, bạn có muốn bắt đầu với nhiệm vụ được gợi ý này",
-    "letsDoIt": "Vâng, hãy làm điều đó!",
-    "starting": "Đang bắt đầu...",
-    "startedSuccessfully": "Nhiệm vụ đã bắt đầu thành công!",
-    "giveMeSomethingElse": "Cho tôi cái gì khác"
   },
   "modals": {
     "confirmDelete": "Bạn có chắc chắn muốn xóa không?",
@@ -939,41 +907,7 @@
     "infoShort": "Hộp thư đến là nơi những suy nghĩ chưa được phân loại xuất hiện — ghi lại mọi thứ, sắp xếp chúng sau.",
     "recentlyCaptured": "Mới ghi lại",
     "line": "dòng",
-    "lines": "các dòng",
-    "processN": "Xử lý {{count}}",
-    "allClarified": "Tất cả đã được làm rõ",
-    "reClarify": "Làm rõ lại",
-    "trashedRestore": "{{count}} đã bị xóa · khôi phục",
-    "restored": "Các mục đã bị xóa được khôi phục",
-    "restoreError": "Khôi phục mục không thành công",
-    "trashError": "Xóa mục không thành công",
-    "clarifyProgress": "Làm rõ · {{progress}}",
-    "clarifyDone": "Tất cả đã được làm rõ. Hộp thư đến đã bình tĩnh.",
-    "clarifyBackToList": "Quay lại danh sách",
-    "clarifyExit": "Thoát làm rõ",
-    "clarifyBack": "← Quay lại",
-    "clarifyQ": {
-      "actionable": "Có thể thực hiện không?",
-      "notActionable": "Đây là loại gì?",
-      "steps": "Một bước hay nhiều bước?",
-      "twomin": "Bạn có thể làm điều này trong dưới 2 phút không?",
-      "deferDelegate": "Để sau cho bạn, hay chuyển giao?"
-    },
-    "clarifyChoice": {
-      "yesActionable": "Có, có thể thực hiện",
-      "notActionable": "Không thể thực hiện",
-      "trash": "Xóa",
-      "someday": "Một ngày nào đó / Có thể",
-      "referenceNote": "Ghi chú tham khảo",
-      "oneStep": "Một bước",
-      "severalSteps": "Nhiều bước (dự án)",
-      "doItNow": "Có — làm ngay bây giờ",
-      "no": "Không",
-      "scheduleIt": "Lên lịch",
-      "delegate": "Giao phó"
-    },
-    "somedayCreated": "Đã thêm vào Một ngày nào đó",
-    "reClarifyLink": "Làm rõ lại"
+    "lines": "các dòng"
   },
   "dateFormats": {
     "long": "EEEE, d tháng MMMM, yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "Cập nhật nhiệm vụ thất bại",
     "deleteSuccess": "Nhiệm vụ đã được xóa thành công",
     "deleteError": "Xóa nhiệm vụ thất bại",
-    "startedSuccessfully": "Nhiệm vụ đã bắt đầu thành công!",
     "created": "Nhiệm vụ",
     "createdSuccessfully": "đã được tạo thành công!",
     "updated": "Nhiệm vụ",
@@ -1061,10 +994,6 @@
       "short": "Cố gắng cụ thể hơn về những gì cần làm",
       "noVerb": "Bạn cần thực hiện hành động cụ thể nào? Hãy thử bắt đầu bằng một động từ.",
       "vague": "Hãy bắt đầu với một động từ hành động như \"Gọi\", \"Viết\", \"Lên lịch\", hoặc \"Nghiên cứu\""
-    },
-    "nameHelper": {
-      "title": "Hãy làm cho nó mô tả hơn!",
-      "suggestion": "Cố gắng thêm nhiều chi tiết như \"Gọi nha sĩ để đặt lịch hẹn làm sạch\" thay vì chỉ \"Gọi nha sĩ\""
     },
     "overdueAlert": "Nhiệm vụ này đã có trong kế hoạch của bạn hôm qua và chưa được hoàn thành.",
     "overdueYesterday": "Hãy xem xét ưu tiên nhiệm vụ này hoặc chia nhỏ nó thành các bước nhỏ hơn.",

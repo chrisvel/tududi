@@ -319,7 +319,7 @@ export interface Task {
 
 ### Step 8: Update Frontend Component
 
-Add a section under `/frontend/components/Task/TaskForm/` (for example `TaskEstimatedTimeSection.tsx`, modelled on `TaskPrioritySection.tsx`):
+Add a section under `/frontend/components/Task/TaskForm/` (for example `TaskEstimatedTimeSection.tsx`, modelled on `TaskDueDateSection.tsx`):
 
 ```typescript
 // Add input field

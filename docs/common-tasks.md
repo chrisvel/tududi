@@ -38,7 +38,7 @@ Quick reference for frequently performed development tasks with complete file li
    - `/frontend/entities/Task.ts` - Add to interface (if exists)
 
 8. **Update UI**
-   - `/frontend/components/Task/TaskForm/` - Add a section component (e.g. next to `TaskPrioritySection.tsx`)
+   - `/frontend/components/Task/TaskForm/` - Add a section component (e.g. next to `TaskDueDateSection.tsx`)
    - `/frontend/components/Task/TaskItem.tsx` - Display field (if needed)
 
 9. **Add tests**

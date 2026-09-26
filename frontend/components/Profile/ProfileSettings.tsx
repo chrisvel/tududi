@@ -151,10 +151,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         task_summary_enabled: false,
         task_summary_frequency: 'daily',
         features: {
-            task_intelligence_enabled: true,
-            auto_suggest_next_actions_enabled: true,
-            productivity_assistant_enabled: true,
-            next_task_suggestion_enabled: true,
             ai_assistant_enabled: false,
             pomodoro_enabled: true,
             eisenhower_enabled: false,
@@ -179,9 +175,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [loading, setLoading] = useState(true);
     const [updateKey, setUpdateKey] = useState(0);
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
-        backups: false,
-        caldav: false,
-        mcp: false,
         hosted: false,
         billing: false,
     });
@@ -563,27 +556,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     task_summary_frequency:
                         data.task_summary_frequency || 'daily',
                     features: {
-                        task_intelligence_enabled:
-                            data.features?.task_intelligence_enabled !==
-                            undefined
-                                ? data.features.task_intelligence_enabled
-                                : true,
-                        auto_suggest_next_actions_enabled:
-                            data.features?.auto_suggest_next_actions_enabled !==
-                            undefined
-                                ? data.features
-                                      .auto_suggest_next_actions_enabled
-                                : true,
-                        productivity_assistant_enabled:
-                            data.features?.productivity_assistant_enabled !==
-                            undefined
-                                ? data.features.productivity_assistant_enabled
-                                : true,
-                        next_task_suggestion_enabled:
-                            data.features?.next_task_suggestion_enabled !==
-                            undefined
-                                ? data.features.next_task_suggestion_enabled
-                                : true,
                         ai_assistant_enabled:
                             data.features?.ai_assistant_enabled !== undefined
                                 ? data.features.ai_assistant_enabled
@@ -1472,13 +1444,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             id: 'caldav',
             name: t('profile.tabs.caldav', 'CalDAV Sync'),
             icon: <CalendarIcon className="w-5 h-5" />,
-            featureFlag: 'caldav',
         },
         {
             id: 'mcp',
             name: t('profile.tabs.mcp', 'MCP Integration'),
             icon: <CpuChipIcon className="w-5 h-5" />,
-            featureFlag: 'mcp',
         },
         {
             id: 'ai-assistant',
@@ -1749,17 +1719,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 pomodoro_enabled:
                                                     !prev.features
                                                         ?.pomodoro_enabled,
-                                            },
-                                        }))
-                                    }
-                                    formData={formData}
-                                    onToggleAi={(field) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            features: {
-                                                ...prev.features,
-                                                [field]:
-                                                    !prev.features?.[field],
                                             },
                                         }))
                                     }

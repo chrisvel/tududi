@@ -8,23 +8,8 @@ const { assertSafeUrl } = require('./ssrfGuard');
 
 const MAX_REDIRECTS = 5;
 
-let nodeFetchInstance = null;
-try {
-    // eslint-disable-next-line global-require
-    nodeFetchInstance = require('node-fetch');
-} catch {
-    nodeFetchInstance = null;
-}
-
-const getFetchImplementation = () => {
-    if (typeof fetch === 'function') {
-        return fetch;
-    }
-    if (nodeFetchInstance) {
-        return nodeFetchInstance;
-    }
-    return null;
-};
+const getFetchImplementation = () =>
+    typeof fetch === 'function' ? fetch : null;
 
 const fetchWithTimeout = async (url, options = {}, timeoutMs = 7000) => {
     const fetchFn = getFetchImplementation();

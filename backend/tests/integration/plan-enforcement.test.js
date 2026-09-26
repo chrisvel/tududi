@@ -2,9 +2,6 @@ const request = require('supertest');
 const path = require('path');
 const fs = require('fs').promises;
 
-process.env.FF_ENABLE_MCP = 'true';
-process.env.FF_ENABLE_BACKUPS = 'true';
-
 const app = require('../../app');
 const { getConfig } = require('../../config/config');
 const plans = require('../../config/plans');

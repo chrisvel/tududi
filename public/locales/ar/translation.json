@@ -102,7 +102,6 @@
     "showMetrics": "عرض المقاييس",
     "showProductivity": "عرض رؤى الإنتاجية",
     "showIntelligence": "عرض اقتراحات الذكاء",
-    "showNextTaskSuggestion": "اقتراح المهمة التالية",
     "showSuggestions": "عرض الاقتراحات",
     "showDueToday": "عرض المهام المستحقة اليوم",
     "showCompleted": "عرض المهام المكتملة"
@@ -347,25 +346,15 @@
     },
     "frequencyHelp": "اختر مدى تكرار استلام ملخصات المهام",
     "taskIntelligence": "ذكاء المهام",
-    "taskIntelligenceDescription": "احصل على اقتراحات مفيدة لجعل أسماء مهامك أكثر وصفًا وقابلية للتنفيذ.",
     "enableTaskIntelligence": "تفعيل مساعد ذكاء المهام",
     "autoSuggestNextActions": "اقتراح الإجراءات التالية تلقائيًا",
-    "autoSuggestNextActionsDescription": "عند إنشاء مشروع، قم تلقائيًا بتحفيز الإجراء المادي التالي الذي يجب اتخاذه.",
     "enableAutoSuggestNextActions": "تفعيل اقتراحات الإجراءات التالية",
-    "productivityFeatures": "ميزات الإنتاجية",
     "pomodoroDescription": "تفعيل مؤقت بومودورو في شريط التنقل لجلسات العمل المركزة.",
     "enablePomodoro": "تفعيل مؤقت بومودورو",
     "productivityAssistant": "مساعد الإنتاجية",
-    "productivityAssistantDescription": "عرض رؤى الإنتاجية التي تساعد في تحديد المشاريع المتوقفة، والمهام الغامضة، وتحسين سير العمل في صفحة اليوم الخاصة بك.",
     "enableProductivityAssistant": "تفعيل رؤى الإنتاجية",
     "nextTaskSuggestion": "اقتراح المهمة التالية",
-    "nextTaskSuggestionDescription": "اقتراح تلقائي لأفضل مهمة تالية للعمل عليها عندما لا يكون لديك أي شيء قيد التقدم، مع إعطاء الأولوية للمهام المستحقة اليوم، ثم المهام المقترحة من صفحة اليوم الخاصة بك.",
     "enableNextTaskSuggestion": "تفعيل اقتراحات المهمة التالية",
-    "nextActionPrompt": "ما هو الإجراء المادي التالي تمامًا لهذا المشروع؟",
-    "nextActionPlaceholder": "مثل: اتصل بالعميل لتحديد موعد، ابحث عن المنافسين عبر الإنترنت، أنشئ مجلد المشروع...",
-    "addNextAction": "إضافة الإجراء التالي",
-    "skipNextAction": "تخطي الآن",
-    "nextActionHint": "فكر في أصغر خطوة ملموسة يمكنك اتخاذها الآن لتحريك هذا المشروع للأمام.",
     "tabs": {
       "general": "عام",
       "security": "الأمان",
@@ -457,11 +446,6 @@
       "noPasswordWarning": "لا توجد لديك كلمة مرور محددة. يُنصح بتعيين واحدة لتوفير طريقة تسجيل دخول بديلة."
     },
     "kanbanDescription": "قم بتمكين لوحة كانبان لتتبع تقدم المهام عبر مسارات السباحة.",
-    "intelligenceSection": "الذكاء",
-    "taskIntelligenceLabel": "مساعد ذكاء المهام",
-    "autoSuggestNextActionsLabel": "اقتراحات الإجراءات التالية",
-    "productivityAssistantLabel": "رؤى الإنتاجية",
-    "nextTaskSuggestionLabel": "اقتراحات المهام التالية",
     "featuresAddons": "الميزات والإضافات",
     "caldav": {
       "title": "مزامنة CalDAV",
@@ -500,8 +484,6 @@
       "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف \"{{name}}\"؟ سيؤدي ذلك إلى إزالة التقويم وجميع إعدادات المزامنة."
     },
     "caldavWizard": {
-      "title": "معالج إعداد CalDAV",
-      "confirmClose": "هل أنت متأكد أنك تريد الإغلاق؟ سيتم فقدان تقدمك.",
       "calendarName": "اسم التقويم",
       "calendarNamePlaceholder": "على سبيل المثال، مهام العمل",
       "calendarNameRequired": "اسم التقويم مطلوب",
@@ -518,9 +500,6 @@
       "authType": "نوع المصادقة",
       "basicAuth": "المصادقة الأساسية",
       "bearerAuth": "رمز الحامل",
-      "testDescription": "اختبر الاتصال بخادم CalDAV الخاص بك قبل المتابعة.",
-      "server": "الخادم",
-      "path": "المسار",
       "testConnection": "اختبار الاتصال",
       "testing": "جارٍ الاختبار...",
       "connectionSuccess": "تم الاتصال بنجاح!",
@@ -537,7 +516,6 @@
       "lastWriteWins": "آخر تعديل يفوز (تلقائي)",
       "localWins": "المحلي دائماً يفوز",
       "remoteWins": "البعيد دائماً يفوز",
-      "reviewDescription": "راجع إعداداتك قبل إنشاء التقويم.",
       "calendarSettings": "إعدادات التقويم",
       "serverSettings": "إعدادات الخادم",
       "syncSettings": "إعدادات المزامنة",
@@ -648,16 +626,6 @@
     "suggestion": "انقر على أي عنصر أعلاه لفتحه وإجراء تحسينات.",
     "issuesFound_other": "{{count}} مشكلة في الإنتاجية تحتاج إلى اهتمام",
     "issuesFound_one": "مشكلة إنتاجية واحدة تحتاج إلى اهتمام"
-  },
-  "nextTask": {
-    "suggestion": "نظرًا لعدم وجود أي شيء قيد التنفيذ، ماذا عن البدء بـ",
-    "suggestionTodayPlan": "نظرًا لعدم وجود أي شيء قيد التنفيذ، ماذا عن البدء بهذه المهمة من خطة اليوم الخاصة بك",
-    "suggestionDueToday": "نظرًا لعدم وجود أي شيء قيد التنفيذ، ماذا عن البدء بهذه المهمة المستحقة اليوم",
-    "suggestionSuggested": "نظرًا لعدم وجود أي شيء قيد التنفيذ، ماذا عن البدء بهذه المهمة المقترحة",
-    "letsDoIt": "نعم، دعنا نفعل ذلك!",
-    "starting": "يتم البدء...",
-    "startedSuccessfully": "تم بدء المهمة بنجاح!",
-    "giveMeSomethingElse": "أعطني شيئًا آخر"
   },
   "modals": {
     "confirmDelete": "هل أنت متأكد أنك تريد الحذف؟",
@@ -939,41 +907,7 @@
     "infoShort": "صندوق الوارد هو المكان الذي تهبط فيه الأفكار غير المصنفة - قم بتدوين الأشياء، ثم قم بفرزها لاحقًا.",
     "recentlyCaptured": "تم التقاطه مؤخرًا",
     "line": "سطر",
-    "lines": "أسطر",
-    "processN": "معالجة {{count}}",
-    "allClarified": "تم التوضيح بالكامل",
-    "reClarify": "إعادة التوضيح",
-    "trashedRestore": "{{count}} محذوفة · استعادة",
-    "restored": "تم استعادة العناصر المحذوفة",
-    "restoreError": "فشل في استعادة العناصر",
-    "trashError": "فشل في حذف العنصر",
-    "clarifyProgress": "توضيح · {{progress}}",
-    "clarifyDone": "تم التوضيح بالكامل. صندوق الوارد هادئ.",
-    "clarifyBackToList": "العودة إلى القائمة",
-    "clarifyExit": "خروج من التوضيح",
-    "clarifyBack": "← العودة",
-    "clarifyQ": {
-      "actionable": "هل يمكن اتخاذ إجراء بشأن هذا؟",
-      "notActionable": "ما نوع الشيء هذا؟",
-      "steps": "خطوة واحدة، أم عدة خطوات؟",
-      "twomin": "هل يمكنك القيام بذلك في أقل من دقيقتين؟",
-      "deferDelegate": "هل تؤجل ذلك لنفسك، أم تسلمه لشخص آخر؟"
-    },
-    "clarifyChoice": {
-      "yesActionable": "نعم، يمكن اتخاذ إجراء",
-      "notActionable": "لا يمكن اتخاذ إجراء",
-      "trash": "حذف",
-      "someday": "يومًا ما / ربما",
-      "referenceNote": "ملاحظة مرجعية",
-      "oneStep": "خطوة واحدة",
-      "severalSteps": "عدة خطوات (مشروع)",
-      "doItNow": "نعم — قم بذلك الآن",
-      "no": "لا",
-      "scheduleIt": "جدولها",
-      "delegate": "تفويض"
-    },
-    "somedayCreated": "تمت إضافته إلى يومًا ما",
-    "reClarifyLink": "إعادة التوضيح"
+    "lines": "أسطر"
   },
   "dateFormats": {
     "long": "EEEE، d MMMM، yyyy",
@@ -1050,7 +984,6 @@
     "updateError": "فشل في تحديث المهمة",
     "deleteSuccess": "تم حذف المهمة بنجاح",
     "deleteError": "فشل في حذف المهمة",
-    "startedSuccessfully": "تم بدء المهمة بنجاح!",
     "created": "مهمة",
     "createdSuccessfully": "تم إنشاؤها بنجاح!",
     "updated": "مهمة",
@@ -1061,10 +994,6 @@
       "short": "حاول أن تكون أكثر تحديدًا بشأن ما يجب القيام به",
       "noVerb": "ما الإجراء المحدد الذي تحتاج إلى اتخاذه؟ حاول البدء بفعل.",
       "vague": "حاول البدء بفعل عمل مثل \"اتصل\"، \"اكتب\"، \"جدول\"، أو \"ابحث\""
-    },
-    "nameHelper": {
-      "title": "اجعلها أكثر وصفًا!",
-      "suggestion": "حاول إضافة المزيد من التفاصيل مثل \"اتصل بطبيب الأسنان لتحديد موعد التنظيف\" بدلاً من \"اتصل بطبيب الأسنان\""
     },
     "overdueAlert": "كانت هذه المهمة في خطتك بالأمس ولم تكتمل.",
     "overdueYesterday": "فكر في إعطاء أولوية لهذه المهمة أو تقسيمها إلى خطوات أصغر.",

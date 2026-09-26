@@ -98,38 +98,6 @@ const inboxController = {
             next(error);
         }
     },
-
-    async trash(req, res, next) {
-        try {
-            const userId = requireUserId(req);
-            const { uid } = req.params;
-            const item = await inboxService.trash(userId, uid);
-            res.json(item);
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    async restore(req, res, next) {
-        try {
-            const userId = requireUserId(req);
-            const { uid } = req.params;
-            const item = await inboxService.restore(userId, uid);
-            res.json(item);
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    async restoreAll(req, res, next) {
-        try {
-            const userId = requireUserId(req);
-            const result = await inboxService.restoreAll(userId);
-            res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
 };
 
 module.exports = inboxController;

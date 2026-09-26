@@ -129,10 +129,6 @@ module.exports = (sequelize) => {
                 type: DataTypes.JSON,
                 allowNull: true,
                 defaultValue: {
-                    task_intelligence_enabled: true,
-                    auto_suggest_next_actions_enabled: false,
-                    productivity_assistant_enabled: true,
-                    next_task_suggestion_enabled: true,
                     ai_assistant_enabled: false,
                     pomodoro_enabled: true,
                     eisenhower_enabled: false,
@@ -146,8 +142,6 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: {
                     showMetrics: false,
-                    showProductivity: false,
-                    showNextTaskSuggestion: false,
                     showSuggestions: false,
                     showDueToday: true,
                     showCompleted: true,

@@ -34,19 +34,8 @@ function getToolResult(response) {
 }
 
 describe('MCP tools respect the account role', () => {
-    let originalEnv;
     let admin, member, guest;
     let memberToken, guestToken;
-
-    beforeAll(() => {
-        originalEnv = process.env.FF_ENABLE_MCP;
-        process.env.FF_ENABLE_MCP = 'true';
-    });
-
-    afterAll(() => {
-        if (originalEnv === undefined) delete process.env.FF_ENABLE_MCP;
-        else process.env.FF_ENABLE_MCP = originalEnv;
-    });
 
     const tokenFor = async (userId) =>
         (

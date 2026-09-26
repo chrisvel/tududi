@@ -1,10 +1,6 @@
 'use strict';
 
 const FEATURE_KEYS = [
-    'task_intelligence_enabled',
-    'auto_suggest_next_actions_enabled',
-    'productivity_assistant_enabled',
-    'next_task_suggestion_enabled',
     'ai_assistant_enabled',
     'pomodoro_enabled',
     'eisenhower_enabled',
@@ -605,8 +601,6 @@ class UsersService {
         const {
             showMetrics,
             projectShowMetrics,
-            showProductivity,
-            showNextTaskSuggestion,
             showDailyBrief,
             showAreaBalance,
             showActiveProjects,
@@ -633,14 +627,6 @@ class UsersService {
                 showActiveProjects !== undefined
                     ? showActiveProjects
                     : (user.today_settings?.showActiveProjects ?? true),
-            showProductivity:
-                showProductivity !== undefined
-                    ? showProductivity
-                    : user.today_settings?.showProductivity || false,
-            showNextTaskSuggestion:
-                showNextTaskSuggestion !== undefined
-                    ? showNextTaskSuggestion
-                    : user.today_settings?.showNextTaskSuggestion || false,
             showDailyBrief:
                 showDailyBrief !== undefined
                     ? showDailyBrief
@@ -664,35 +650,7 @@ class UsersService {
                     : user.today_settings?.showDailyQuote || true,
         };
 
-        const profileUpdates = { today_settings: todaySettings };
-        if (
-            showProductivity !== undefined ||
-            showNextTaskSuggestion !== undefined
-        ) {
-            let currentFeatures = user.features;
-            if (typeof currentFeatures === 'string') {
-                try {
-                    currentFeatures = JSON.parse(currentFeatures);
-                } catch {
-                    currentFeatures = {};
-                }
-            }
-            const featureUpdates = {};
-            if (showProductivity !== undefined) {
-                featureUpdates.productivity_assistant_enabled =
-                    showProductivity;
-            }
-            if (showNextTaskSuggestion !== undefined) {
-                featureUpdates.next_task_suggestion_enabled =
-                    showNextTaskSuggestion;
-            }
-            profileUpdates.features = {
-                ...sanitizeFeatures(currentFeatures),
-                ...featureUpdates,
-            };
-        }
-
-        await usersRepository.update(user, profileUpdates);
+        await usersRepository.update(user, { today_settings: todaySettings });
 
         return { success: true, today_settings: todaySettings };
     }

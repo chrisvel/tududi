@@ -413,7 +413,7 @@ Changes are reflected immediately in the view results.
 - Frontend views list: `/frontend/components/Views.tsx`
 - Frontend view detail: `/frontend/components/ViewDetail.tsx`
 - Sidebar views: `/frontend/components/Sidebar/SidebarViews.tsx`
-- Save view modal: `/frontend/components/UniversalSearch/SaveViewModal.tsx`
+- Save view: `/frontend/components/UniversalSearch/SearchMenu.tsx`
 
 ---
 

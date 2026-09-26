@@ -42,8 +42,6 @@
  *                   type: boolean
  *                 task_summary_frequency:
  *                   type: string
- *                 task_intelligence_enabled:
- *                   type: boolean
  *                 pomodoro_enabled:
  *                   type: boolean
  *       401:
@@ -96,9 +94,6 @@
  *               telegram_allowed_users:
  *                 type: string
  *                 description: Comma-separated list of allowed Telegram users
- *               task_intelligence_enabled:
- *                 type: boolean
- *                 description: Enable task intelligence features
  *               task_summary_enabled:
  *                 type: boolean
  *                 description: Enable task summary emails
