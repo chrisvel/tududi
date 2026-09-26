@@ -10,7 +10,7 @@ import { Task } from '../../entities/Task';
 import { Tag } from '../../entities/Tag';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
-import { InboxAttachment } from '../../entities/Attachment';
+import { FileAttachment, InboxAttachment } from '../../entities/Attachment';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,8 +21,12 @@ import {
     InboxAnalysis,
     uploadInboxAttachment,
 } from '../../utils/inboxService';
-import { uploadAttachment } from '../../utils/attachmentsService';
-import { createNote, deleteNote } from '../../utils/notesService';
+import {
+    ownerAttachmentsApi,
+    uploadAttachment,
+} from '../../utils/attachmentsService';
+import { noteLinksFor } from '../../utils/noteAttachmentLinks';
+import { createNote, deleteNote, updateNote } from '../../utils/notesService';
 import {
     CaptureTarget,
     CapturedItem,
@@ -40,7 +44,6 @@ import CaptureFiles from '../Capture/CaptureFiles';
 import {
     CaptureFile,
     CaptureFileError,
-    FILE_TARGETS,
     filesToAttachFromPaste,
     nameForPastedFile,
     titleFromFiles,
@@ -1667,16 +1670,17 @@ const QuickCaptureInput = React.forwardRef<
             const hasBookmark = tagNames.some(
                 (name) => name.toLowerCase() === 'bookmark'
             );
+            const body = rest || itemText;
             const created = await createNote({
                 title,
-                content: rest || itemText,
+                content: body,
                 tags:
                     isUrlContent && !hasBookmark
                         ? [...tagObjects, { name: 'bookmark' }]
                         : tagObjects,
                 project_uid: projectUid,
             });
-            return { target: destination, uid: created.uid, title };
+            return { target: destination, uid: created.uid, title, body };
         };
 
         const describeCaptured = (
@@ -1768,20 +1772,9 @@ const QuickCaptureInput = React.forwardRef<
             }
         };
 
-        // Files ride along with the text. Only an Inbox item or a task can
-        // hold them, so adding one while Note or Project is chosen moves the
-        // box to Task and says so.
+        // Files ride along with the text, whatever it becomes.
         const attachFiles = async (incoming: File[]) => {
-            const added = await addFiles(incoming);
-            if (added > 0 && !FILE_TARGETS.includes(target)) {
-                setTarget('task');
-                setStatus({
-                    text: t(
-                        'capture.switchedToTask',
-                        'Notes and projects cannot hold files, so this will be a task.'
-                    ),
-                });
-            }
+            await addFiles(incoming);
             inputRef.current?.focus();
         };
 
@@ -1825,19 +1818,33 @@ const QuickCaptureInput = React.forwardRef<
         ): Promise<number> => {
             if (!item.uid) return 0;
             const failed: string[] = [];
-            const uploaded: InboxAttachment[] = [];
+            const uploaded: FileAttachment[] = [];
+            const upload = (file: File): Promise<FileAttachment> => {
+                const uid = item.uid as string;
+                if (item.target === 'inbox') {
+                    return uploadInboxAttachment(uid, file);
+                }
+                if (item.target === 'task') return uploadAttachment(uid, file);
+                return ownerAttachmentsApi(item.target, uid).upload(file);
+            };
             for (const { file } of toUpload) {
                 try {
-                    if (item.target === 'inbox') {
-                        uploaded.push(
-                            await uploadInboxAttachment(item.uid, file)
-                        );
-                    } else {
-                        await uploadAttachment(item.uid, file);
-                    }
+                    uploaded.push(await upload(file));
                 } catch (error) {
                     console.error('Failed to attach file:', error);
                     failed.push(file.name);
+                }
+            }
+            // A note shows its files in its text: images inline, the rest
+            // as links, after what was typed.
+            if (item.target === 'note' && uploaded.length > 0) {
+                const links = noteLinksFor(item.uid, uploaded);
+                try {
+                    await updateNote(item.uid, {
+                        content: item.body ? `${item.body}\n\n${links}` : links,
+                    } as Note);
+                } catch (error) {
+                    console.error('Failed to link files in the note:', error);
                 }
             }
             if (item.target === 'inbox' && uploaded.length > 0) {
@@ -1850,7 +1857,7 @@ const QuickCaptureInput = React.forwardRef<
                         ...stored,
                         attachments: [
                             ...(stored.attachments ?? []),
-                            ...uploaded,
+                            ...(uploaded as InboxAttachment[]),
                         ],
                     });
                 }
@@ -1868,7 +1875,7 @@ const QuickCaptureInput = React.forwardRef<
         };
 
         const handleUnifiedSubmit = async () => {
-            const withFiles = files.length > 0 && FILE_TARGETS.includes(target);
+            const withFiles = files.length > 0;
             // A pasted screenshot on its own is enough; the file name
             // becomes the title.
             const raw =
@@ -2387,17 +2394,7 @@ const QuickCaptureInput = React.forwardRef<
                     </div>
                 )}
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                    <CaptureDestinations
-                        value={target}
-                        onChange={setTarget}
-                        disabled={
-                            files.length > 0 ? ['note', 'project'] : undefined
-                        }
-                        disabledReason={t(
-                            'capture.filesOnlyInboxTask',
-                            'Files can be added to an Inbox item or a task.'
-                        )}
-                    />
+                    <CaptureDestinations value={target} onChange={setTarget} />
                     <input
                         ref={fileInputRef}
                         type="file"

@@ -241,12 +241,21 @@ async function assertCanCreate(userId, resource, n = 1) {
 }
 
 async function storageBytesUsed(userId) {
-    const { TaskAttachment, InboxItemAttachment } = models();
-    const [taskBytes, inboxBytes] = await Promise.all([
-        TaskAttachment.sum('file_size', { where: { user_id: userId } }),
-        InboxItemAttachment.sum('file_size', { where: { user_id: userId } }),
-    ]);
-    return (Number(taskBytes) || 0) + (Number(inboxBytes) || 0);
+    const {
+        TaskAttachment,
+        InboxItemAttachment,
+        ProjectAttachment,
+        NoteAttachment,
+    } = models();
+    const totals = await Promise.all(
+        [
+            TaskAttachment,
+            InboxItemAttachment,
+            ProjectAttachment,
+            NoteAttachment,
+        ].map((Model) => Model.sum('file_size', { where: { user_id: userId } }))
+    );
+    return totals.reduce((sum, bytes) => sum + (Number(bytes) || 0), 0);
 }
 
 async function assertStorage(userId, additionalBytes) {

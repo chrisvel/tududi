@@ -147,21 +147,26 @@ export const updateInboxItem = async (
     return await response.json();
 };
 
-// Pass the task the item became, and the item's files move onto it.
+// What an item became when it was processed. The item's files move onto it.
+export type ProcessedInto =
+    | { task_uid: string }
+    | { project_uid: string }
+    | { note_uid: string };
+
 export const processInboxItem = async (
     itemUid: string,
-    taskUid?: string
+    into?: ProcessedInto
 ): Promise<InboxItem> => {
     const response = await fetch(getApiPath(`inbox/${itemUid}/process`), {
         method: 'PATCH',
         credentials: 'include',
-        headers: taskUid
+        headers: into
             ? await getPostHeadersWithCsrf()
             : {
                   Accept: 'application/json',
                   'x-csrf-token': await getCsrfToken(),
               },
-        body: taskUid ? JSON.stringify({ task_uid: taskUid }) : undefined,
+        body: into ? JSON.stringify(into) : undefined,
     });
 
     await handleAuthResponse(response, 'Failed to process inbox item.');
@@ -346,12 +351,12 @@ export const updateInboxItemWithStore = async (
 
 export const processInboxItemWithStore = async (
     itemUid: string,
-    taskUid?: string
+    into?: ProcessedInto
 ): Promise<InboxItem> => {
     const inboxStore = useStore.getState().inboxStore;
 
     try {
-        const processedItem = await processInboxItem(itemUid, taskUid);
+        const processedItem = await processInboxItem(itemUid, into);
         inboxStore.removeInboxItemByUid(itemUid);
         return processedItem;
     } catch (error) {

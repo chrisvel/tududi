@@ -1,29 +1,25 @@
-export interface Attachment {
-    id: number;
+// A stored file as every owner (task, inbox item, project, note) returns it.
+export interface FileAttachment {
     uid: string;
-    task_id: number;
-    user_id: number;
     original_filename: string;
     stored_filename: string;
     file_size: number;
     mime_type: string;
-    file_path: string;
     file_url?: string;
     created_at: string;
     updated_at: string;
 }
 
-// A file on an inbox item. Inbox items are private, so there is no task or
-// user id to carry.
-export interface InboxAttachment {
-    uid: string;
-    original_filename: string;
-    stored_filename: string;
-    file_size: number;
-    mime_type: string;
+export interface Attachment extends FileAttachment {
+    id: number;
+    task_id: number;
+    user_id: number;
+    file_path: string;
+}
+
+// Inbox items, projects and notes always send the file's URL.
+export interface InboxAttachment extends FileAttachment {
     file_url: string;
-    created_at: string;
-    updated_at: string;
 }
 
 export type AttachmentType =

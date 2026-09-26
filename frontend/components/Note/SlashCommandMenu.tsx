@@ -218,10 +218,13 @@ export const SLASH_COMMANDS: SlashCommand[] = [
     },
 ];
 
-function filterCommands(filter: string): SlashCommand[] {
-    if (!filter) return SLASH_COMMANDS;
+function filterCommands(
+    filter: string,
+    all: SlashCommand[] = SLASH_COMMANDS
+): SlashCommand[] {
+    if (!filter) return all;
     const q = filter.toLowerCase();
-    return SLASH_COMMANDS.filter(
+    return all.filter(
         (cmd) =>
             cmd.label.toLowerCase().includes(q) ||
             cmd.keywords.some((k) => k.includes(q))
@@ -236,6 +239,9 @@ interface SlashCommandMenuProps {
     slashTo: number;
     view: EditorView;
     onClose: () => void;
+    // Commands that depend on where the editor is used, such as adding a
+    // file to a saved note.
+    extraCommands?: SlashCommand[];
 }
 
 const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({
@@ -246,8 +252,12 @@ const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({
     slashTo,
     view,
     onClose,
+    extraCommands = [],
 }) => {
-    const commands = filterCommands(filter);
+    const commands = filterCommands(filter, [
+        ...SLASH_COMMANDS,
+        ...extraCommands,
+    ]);
     const [activeIndex, setActiveIndex] = useState(0);
     const listRef = useRef<HTMLDivElement>(null);
     const activeItemRef = useRef<HTMLButtonElement | null>(null);

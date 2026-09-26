@@ -79,6 +79,8 @@ const Notification = require('./notification')(sequelize);
 const RecurringCompletion = require('./recurringCompletion')(sequelize);
 const TaskAttachment = require('./task_attachment')(sequelize);
 const InboxItemAttachment = require('./inbox_item_attachment')(sequelize);
+const ProjectAttachment = require('./project_attachment')(sequelize);
+const NoteAttachment = require('./note_attachment')(sequelize);
 const Backup = require('./backup')(sequelize);
 const OIDCIdentity = require('./oidc_identity')(sequelize);
 const OIDCStateNonce = require('./oidc_state_nonce')(sequelize);
@@ -311,6 +313,19 @@ InboxItem.hasMany(InboxItemAttachment, {
     as: 'Attachments',
 });
 InboxItemAttachment.belongsTo(InboxItem, { foreignKey: 'inbox_item_id' });
+
+// ProjectAttachment and NoteAttachment associations
+User.hasMany(ProjectAttachment, { foreignKey: 'user_id' });
+ProjectAttachment.belongsTo(User, { foreignKey: 'user_id' });
+Project.hasMany(ProjectAttachment, {
+    foreignKey: 'project_id',
+    as: 'Attachments',
+});
+ProjectAttachment.belongsTo(Project, { foreignKey: 'project_id' });
+User.hasMany(NoteAttachment, { foreignKey: 'user_id' });
+NoteAttachment.belongsTo(User, { foreignKey: 'user_id' });
+Note.hasMany(NoteAttachment, { foreignKey: 'note_id', as: 'Attachments' });
+NoteAttachment.belongsTo(Note, { foreignKey: 'note_id' });
 
 // Backup associations
 User.hasMany(Backup, { foreignKey: 'user_id', as: 'Backups' });
@@ -617,6 +632,8 @@ module.exports = {
     RecurringCompletion,
     TaskAttachment,
     InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
     Backup,
     OIDCIdentity,
     OIDCStateNonce,

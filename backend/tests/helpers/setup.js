@@ -35,6 +35,8 @@ const CLEANUP_TABLES = [
     'user_task_orders',
     'task_attachments',
     'inbox_item_attachments',
+    'project_attachments',
+    'note_attachments',
     'daily_plan_items',
     'daily_plans',
     'calendar_feeds',

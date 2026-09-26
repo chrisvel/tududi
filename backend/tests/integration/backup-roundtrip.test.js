@@ -13,6 +13,8 @@ const {
     TaskAttachment,
     InboxItem,
     InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
     User,
 } = require('../../models');
 const { getConfig } = require('../../config/config');
@@ -453,5 +455,71 @@ describe('Backup export and import round trip (format 2)', () => {
             'utf8'
         );
         expect(content).toBe('inbox bytes');
+    });
+
+    it('carries project and note files through, relinking the note text', async () => {
+        for (const dir of ['project-files', 'note-files']) {
+            await fs.mkdir(path.join(config.uploadPath, dir), {
+                recursive: true,
+            });
+        }
+        await fs.writeFile(
+            path.join(config.uploadPath, 'project-files', 'project-rt.pdf'),
+            'project bytes'
+        );
+        await fs.writeFile(
+            path.join(config.uploadPath, 'note-files', 'note-rt.png'),
+            'note bytes'
+        );
+        const project = await Project.create({
+            name: 'Files project',
+            user_id: source.id,
+        });
+        await ProjectAttachment.create({
+            project_id: project.id,
+            user_id: source.id,
+            original_filename: 'brief.pdf',
+            stored_filename: 'project-rt.pdf',
+            file_size: 13,
+            mime_type: 'application/pdf',
+            file_path: 'project-files/project-rt.pdf',
+        });
+        const note = await Note.create({
+            title: 'Files note',
+            content: 'See ![shot](/api/uploads/note-files/note-rt.png)',
+            user_id: source.id,
+        });
+        await NoteAttachment.create({
+            note_id: note.id,
+            user_id: source.id,
+            original_filename: 'shot.png',
+            stored_filename: 'note-rt.png',
+            file_size: 10,
+            mime_type: 'image/png',
+            file_path: 'note-files/note-rt.png',
+        });
+
+        const backup = await exportUserData(source.id);
+        // Import next to the source, so every stored name must be new.
+        await importUserData(target.id, backup);
+
+        const projectFile = await ProjectAttachment.findOne({
+            where: { user_id: target.id },
+        });
+        expect(projectFile.original_filename).toBe('brief.pdf');
+        expect(projectFile.stored_filename).not.toBe('project-rt.pdf');
+
+        const noteFile = await NoteAttachment.findOne({
+            where: { user_id: target.id },
+        });
+        const importedNote = await Note.findByPk(noteFile.note_id);
+        expect(importedNote.content).toBe(
+            `See ![shot](/api/uploads/note-files/${noteFile.stored_filename})`
+        );
+        const content = await fs.readFile(
+            path.join(config.uploadPath, noteFile.file_path),
+            'utf8'
+        );
+        expect(content).toBe('note bytes');
     });
 });

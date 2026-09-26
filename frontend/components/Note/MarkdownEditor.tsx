@@ -21,7 +21,7 @@ import {
 } from '@codemirror/language';
 import { oneDark } from '@codemirror/theme-one-dark';
 import FormattingToolbar from './FormattingToolbar';
-import SlashCommandMenu from './SlashCommandMenu';
+import SlashCommandMenu, { SlashCommand } from './SlashCommandMenu';
 import WikilinkMenu, { NoteTitle } from './WikilinkMenu';
 import { useNavigate } from 'react-router-dom';
 import { livePreviewExtension } from './editor';
@@ -33,6 +33,14 @@ import {
     insertLink as insertLinkCmd,
 } from './editor/textCommands';
 import { useStore } from '../../store/useStore';
+import { useTranslation } from 'react-i18next';
+import { useToast } from '../Shared/ToastContext';
+import { ownerAttachmentsApi } from '../../utils/attachmentsService';
+import { noteLinkFor } from '../../utils/noteAttachmentLinks';
+import {
+    filesToAttachFromPaste,
+    nameForPastedFile,
+} from '../Capture/useCaptureFiles';
 
 interface MarkdownEditorProps {
     value: string;
@@ -43,6 +51,9 @@ interface MarkdownEditorProps {
     className?: string;
     minHeight?: string;
     onClick?: (e: React.MouseEvent) => void;
+    // The saved note being edited. With it, pasted, dropped or picked files
+    // are uploaded to the note and placed in the text.
+    noteUid?: string;
 }
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
@@ -185,8 +196,13 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     className = '',
     minHeight = '300px',
     onClick,
+    noteUid,
 }) => {
+    const { t } = useTranslation();
+    const { showErrorToast } = useToast();
     const containerRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const pickPositionRef = useRef<number | null>(null);
     const viewRef = useRef<EditorView | null>(null);
     const onChangeRef = useRef(onChange);
     onChangeRef.current = onChange;
@@ -239,6 +255,77 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     const closeSlash = useCallback(() => setSlashMenu(CLOSED_SLASH), []);
     const closeWikilink = useCallback(() => setWikilinkMenu(CLOSED_WIKI), []);
 
+    // Each file gets a placeholder where it will go, replaced by an inline
+    // image or a link once it is uploaded, or removed if it fails.
+    const uploadIntoEditor = async (
+        view: EditorView,
+        files: File[],
+        pos: number
+    ) => {
+        if (files.length === 0) return;
+        if (!noteUidRef.current) {
+            showErrorToast(
+                t(
+                    'notes.saveBeforeFiles',
+                    'Give the note a title or some text first, then add files.'
+                )
+            );
+            return;
+        }
+        const api = ownerAttachmentsApi('note', noteUidRef.current);
+        const doc = view.state.doc;
+        const needsBreak = pos > 0 && doc.sliceString(pos - 1, pos) !== '\n';
+        const markers = files.map(
+            (file, i) => `[Uploading ${file.name}… ${Date.now()}-${i}]`
+        );
+        view.dispatch({
+            changes: {
+                from: pos,
+                insert: `${needsBreak ? '\n' : ''}${markers.join('\n\n')}\n`,
+            },
+        });
+
+        const replaceMarker = (marker: string, text: string) => {
+            const current = view.state.doc.toString();
+            const at = current.indexOf(marker);
+            if (at < 0) return;
+            const end =
+                !text &&
+                current.slice(at + marker.length, at + marker.length + 1) ===
+                    '\n'
+                    ? at + marker.length + 1
+                    : at + marker.length;
+            view.dispatch({ changes: { from: at, to: end, insert: text } });
+        };
+
+        for (const [i, file] of files.entries()) {
+            try {
+                const attachment = await api.upload(file);
+                replaceMarker(
+                    markers[i],
+                    noteLinkFor(noteUidRef.current as string, attachment)
+                );
+            } catch (error) {
+                replaceMarker(markers[i], '');
+                showErrorToast(
+                    error instanceof Error
+                        ? `${file.name}: ${error.message}`
+                        : t(
+                              'notes.fileUploadError',
+                              'Could not upload {{name}}',
+                              {
+                                  name: file.name,
+                              }
+                          )
+                );
+            }
+        }
+    };
+    const uploadIntoEditorRef = useRef(uploadIntoEditor);
+    uploadIntoEditorRef.current = uploadIntoEditor;
+    const noteUidRef = useRef(noteUid);
+    noteUidRef.current = noteUid;
+
     useEffect(() => {
         if (!containerRef.current) return;
 
@@ -277,6 +364,36 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 baseEditorTheme,
                 themeCompartment.of(getThemeExtension()),
                 colorOverride,
+                EditorView.domEventHandlers({
+                    paste(event, view) {
+                        if (!event.clipboardData) return false;
+                        const files = filesToAttachFromPaste(
+                            event.clipboardData
+                        );
+                        if (files.length === 0) return false;
+                        event.preventDefault();
+                        void uploadIntoEditorRef.current(
+                            view,
+                            files.map((file) => nameForPastedFile(file)),
+                            view.state.selection.main.head
+                        );
+                        return true;
+                    },
+                    drop(event, view) {
+                        const files = Array.from(
+                            event.dataTransfer?.files ?? []
+                        );
+                        if (files.length === 0) return false;
+                        event.preventDefault();
+                        const pos =
+                            view.posAtCoords({
+                                x: event.clientX,
+                                y: event.clientY,
+                            }) ?? view.state.selection.main.head;
+                        void uploadIntoEditorRef.current(view, files, pos);
+                        return true;
+                    },
+                }),
                 livePreviewExtension({
                     onOpenWikilink: (title) => {
                         const target = noteTitlesRef.current.find(
@@ -412,6 +529,26 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         if (viewRef.current) setHeadingCmd(viewRef.current, level);
     }, []);
 
+    const fileCommands: SlashCommand[] = noteUid
+        ? [
+              {
+                  id: 'file',
+                  label: t('notes.slashFile', 'Image or File'),
+                  description: t(
+                      'notes.slashFileHint',
+                      'Upload and place it here'
+                  ),
+                  keywords: ['image', 'file', 'upload', 'attach', 'photo'],
+                  icon: '📎',
+                  insert: (view, from, to) => {
+                      view.dispatch({ changes: { from, to, insert: '' } });
+                      pickPositionRef.current = from;
+                      fileInputRef.current?.click();
+                  },
+              },
+          ]
+        : [];
+
     return (
         <div
             className={`relative cm-editor-wrapper ${className}`}
@@ -419,6 +556,26 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             onClick={onClick}
         >
             <div ref={containerRef} className="w-full" />
+            <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                hidden
+                data-testid="note-file-input"
+                onChange={(e) => {
+                    const picked = Array.from(e.target.files ?? []);
+                    e.target.value = '';
+                    const view = viewRef.current;
+                    if (!view || picked.length === 0) return;
+                    void uploadIntoEditor(
+                        view,
+                        picked,
+                        pickPositionRef.current ??
+                            view.state.selection.main.head
+                    );
+                    pickPositionRef.current = null;
+                }}
+            />
             <FormattingToolbar
                 visible={toolbarState.visible}
                 x={toolbarState.x}
@@ -439,6 +596,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                     slashTo={slashMenu.to}
                     view={viewRef.current}
                     onClose={closeSlash}
+                    extraCommands={fileCommands}
                 />
             )}
             {wikilinkMenu.open && viewRef.current && (

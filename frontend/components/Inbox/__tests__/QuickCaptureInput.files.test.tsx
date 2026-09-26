@@ -8,7 +8,12 @@ import {
     analyzeInboxText,
     uploadInboxAttachment,
 } from '../../../utils/inboxService';
-import { uploadAttachment } from '../../../utils/attachmentsService';
+import {
+    ownerAttachmentsApi,
+    uploadAttachment,
+} from '../../../utils/attachmentsService';
+import { createNote, updateNote } from '../../../utils/notesService';
+import { createProject } from '../../../utils/projectsService';
 
 jest.mock('react-i18next', () => ({
     initReactI18next: { type: '3rdParty', init: jest.fn() },
@@ -62,18 +67,24 @@ jest.mock('../../../utils/tagsService', () => ({
 jest.mock('../../../utils/notesService', () => ({
     createNote: jest.fn(),
     deleteNote: jest.fn(),
+    updateNote: jest.fn(),
 }));
 jest.mock('../../../utils/projectsService', () => ({
     createProject: jest.fn(),
     deleteProject: jest.fn(),
     fetchProjects: jest.fn().mockResolvedValue([]),
 }));
+
+const ownerUpload = jest.fn();
 jest.mock('../../../utils/configService', () => ({
     getServerConfig: jest.fn().mockResolvedValue({ fileUploadLimitMB: 1 }),
 }));
 jest.mock('../../../utils/attachmentsService', () => ({
     ...jest.requireActual('../../../utils/attachmentsService'),
     uploadAttachment: jest.fn(),
+    ownerAttachmentsApi: jest.fn(() => ({
+        upload: (file: File) => ownerUpload(file),
+    })),
 }));
 jest.mock('../../../utils/inboxService', () => ({
     ...jest.requireActual('../../../utils/inboxService'),
@@ -138,6 +149,24 @@ describe('QuickCaptureInput files', () => {
                 original_filename: file.name,
             }));
         (uploadAttachment as jest.Mock).mockReset().mockResolvedValue({});
+        (createNote as jest.Mock).mockReset().mockResolvedValue({
+            uid: 'note-1',
+        });
+        (updateNote as jest.Mock).mockReset().mockResolvedValue({});
+        (createProject as jest.Mock).mockReset().mockResolvedValue({
+            uid: 'project-1',
+        });
+        (ownerAttachmentsApi as jest.Mock).mockClear();
+        let n = 0;
+        ownerUpload.mockReset().mockImplementation(async (file: File) => {
+            n += 1;
+            return {
+                uid: `att-${n}`,
+                original_filename: file.name,
+                mime_type: file.type,
+                file_url: `/api/uploads/note-files/f-${n}`,
+            };
+        });
     });
 
     it('attaches a pasted screenshot and saves it to the Inbox on its own', async () => {
@@ -180,30 +209,62 @@ describe('QuickCaptureInput files', () => {
         expect(screen.queryByTestId('capture-file')).not.toBeInTheDocument();
     });
 
-    it('moves the box from Note to Task when a file is added', async () => {
+    it('saves files onto a note and places them in its text', async () => {
         renderBox();
         fireEvent.click(screen.getByTestId('capture-target-note'));
+        await paste([
+            screenshot(),
+            new File(['pdf'], 'invoice.pdf', { type: 'application/pdf' }),
+        ]);
+        type('Plumber\nCame on Monday');
 
+        await clickAdd();
+
+        expect(createNote).toHaveBeenCalledWith(
+            expect.objectContaining({
+                title: 'Plumber',
+                content: 'Came on Monday',
+            })
+        );
+        expect(ownerUpload).toHaveBeenCalledTimes(2);
+        expect(ownerAttachmentsApi).toHaveBeenCalledWith('note', 'note-1');
+        const [uid, update] = (updateNote as jest.Mock).mock.calls[0];
+        expect(uid).toBe('note-1');
+        expect(update.content).toMatch(
+            /^Came on Monday\n\n!\[Pasted image [^\]]+\]\(\/api\/uploads\/note-files\/f-1\)\n\n\[invoice\.pdf\]\(\/api\/note\/note-1\/attachments\/att-2\/download\)$/
+        );
+    });
+
+    it('saves files onto a project', async () => {
+        renderBox();
+        fireEvent.click(screen.getByTestId('capture-target-project'));
+        await paste([
+            new File(['pdf'], 'brief.pdf', { type: 'application/pdf' }),
+        ]);
+        type('Garden');
+
+        await clickAdd();
+
+        expect(createProject).toHaveBeenCalled();
+        expect(ownerAttachmentsApi).toHaveBeenCalledWith(
+            'project',
+            'project-1'
+        );
+        expect(ownerUpload).toHaveBeenCalledWith(
+            expect.objectContaining({ name: 'brief.pdf' })
+        );
+    });
+
+    it('saves files onto a task', async () => {
+        renderBox();
+        fireEvent.click(screen.getByTestId('capture-target-task'));
         await paste([
             new File(['pdf'], 'invoice.pdf', { type: 'application/pdf' }),
         ]);
-
-        expect(screen.getByTestId('capture-target-task')).toHaveAttribute(
-            'aria-checked',
-            'true'
-        );
-        expect(screen.getByTestId('capture-target-note')).toBeDisabled();
-        expect(screen.getByTestId('capture-target-project')).toBeDisabled();
-        expect(screen.getByTestId('capture-status')).toHaveTextContent(
-            'Notes and projects cannot hold files'
-        );
-
         type('Pay the invoice');
+
         await clickAdd();
 
-        expect(createTaskInStore).toHaveBeenCalledWith(
-            expect.objectContaining({ name: 'Pay the invoice' })
-        );
         expect(uploadAttachment).toHaveBeenCalledWith(
             'task-1',
             expect.objectContaining({ name: 'invoice.pdf' })

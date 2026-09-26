@@ -14,6 +14,7 @@ const {
     UserProjectOrder,
     sequelize,
 } = require('../../models');
+const { projectAttachments } = require('../../services/entityAttachments');
 const permissionSources = require('../../services/permissionSources');
 const { Op } = require('sequelize');
 const {
@@ -322,6 +323,8 @@ class ProjectsRepository extends BaseRepository {
                 }
             }
         }
+
+        await projectAttachments.removeAll(project.id, { transaction });
 
         // Delete tasks (including subtasks)
         await Task.destroy({

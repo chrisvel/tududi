@@ -26,6 +26,8 @@ const {
     RecurringCompletion,
     TaskAttachment,
     InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
     Backup,
     OIDCIdentity,
     AuthAuditLog,
@@ -105,13 +107,22 @@ async function eraseUserAccount(userId) {
             raw: true,
             ...tx,
         });
-        const inboxAttachments = await InboxItemAttachment.findAll({
-            where: { user_id: userId },
-            attributes: ['file_path'],
-            raw: true,
-            ...tx,
-        });
-        for (const a of [...taskAttachments, ...inboxAttachments]) {
+        const otherAttachments = [];
+        for (const Model of [
+            InboxItemAttachment,
+            ProjectAttachment,
+            NoteAttachment,
+        ]) {
+            otherAttachments.push(
+                ...(await Model.findAll({
+                    where: { user_id: userId },
+                    attributes: ['file_path'],
+                    raw: true,
+                    ...tx,
+                }))
+            );
+        }
+        for (const a of [...taskAttachments, ...otherAttachments]) {
             filesToDelete.push([config.uploadPath, a.file_path]);
         }
 
@@ -193,6 +204,8 @@ async function eraseUserAccount(userId) {
         await UserTaskOrder.destroy(byUser);
         await TaskEvent.destroy(byUser);
         await TaskAttachment.destroy(byUser);
+        await ProjectAttachment.destroy(byUser);
+        await NoteAttachment.destroy(byUser);
         await Task.destroy(byUser);
         await Note.destroy(byUser);
         await UserProjectArea.destroy(byUser);

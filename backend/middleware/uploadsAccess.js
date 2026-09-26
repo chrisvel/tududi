@@ -2,6 +2,9 @@ const { Op } = require('sequelize');
 const {
     TaskAttachment,
     InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
+    Note,
     Task,
     Project,
     User,
@@ -38,6 +41,25 @@ const canAccessInboxFile = async (userId, filename) => {
         raw: true,
     });
     return !!attachment && attachment.user_id === userId;
+};
+
+// Project and note files follow the project or note they belong to.
+const canAccessProjectAttachment = async (userId, filename) => {
+    const attachment = await ProjectAttachment.findOne({
+        where: { stored_filename: filename },
+        include: [{ model: Project, required: true, attributes: ['uid'] }],
+    });
+    if (!attachment) return false;
+    return hasReadAccess(userId, 'project', attachment.Project.uid);
+};
+
+const canAccessNoteAttachment = async (userId, filename) => {
+    const attachment = await NoteAttachment.findOne({
+        where: { stored_filename: filename },
+        include: [{ model: Note, required: true, attributes: ['uid'] }],
+    });
+    if (!attachment) return false;
+    return hasReadAccess(userId, 'note', attachment.Note.uid);
 };
 
 const canAccessProjectFile = async (userId, filename) => {
@@ -126,6 +148,10 @@ const uploadsAccessControl = async (req, res, next) => {
             allowed = await canAccessTaskFile(userId, filename);
         } else if (category === 'inbox' && filename) {
             allowed = await canAccessInboxFile(userId, filename);
+        } else if (category === 'project-files' && filename) {
+            allowed = await canAccessProjectAttachment(userId, filename);
+        } else if (category === 'note-files' && filename) {
+            allowed = await canAccessNoteAttachment(userId, filename);
         } else if (category === 'projects' && filename) {
             allowed = await canAccessProjectFile(userId, filename);
         } else if (category === 'avatars' && filename) {

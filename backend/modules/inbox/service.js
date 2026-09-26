@@ -130,8 +130,9 @@ class InboxService {
         return { message: 'Inbox item successfully deleted' };
     }
 
-    // With a task uid, the item became that task and its files move there.
-    async process(userId, uid, { taskUid } = {}) {
+    // With the uid of the task, project or note the item became, its files
+    // move there.
+    async process(userId, uid, { target } = {}) {
         validateUid(uid);
 
         const item = await inboxRepository.findByUid(userId, uid);
@@ -140,10 +141,14 @@ class InboxService {
             throw new NotFoundError('Inbox item not found.');
         }
 
-        if (taskUid) {
-            validateUid(taskUid);
-            const task = await attachments.findWritableTask(userId, taskUid);
-            await attachments.moveToTask(item, task);
+        if (target) {
+            validateUid(target.uid);
+            const row = await attachments.findWritableTarget(
+                userId,
+                target.kind,
+                target.uid
+            );
+            await attachments.moveToTarget(item, target.kind, row);
         }
 
         await inboxRepository.markProcessed(item);

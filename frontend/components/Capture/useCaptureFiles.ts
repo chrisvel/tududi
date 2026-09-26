@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getServerConfig } from '../../utils/configService';
-import { CaptureTarget } from '../../utils/captureText';
-
-// Only Inbox items and tasks can hold files.
-export const FILE_TARGETS: CaptureTarget[] = ['inbox', 'task'];
 
 // Same cap the server puts on one inbox item or task.
 export const MAX_CAPTURE_FILES = 20;

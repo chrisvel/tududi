@@ -13,6 +13,7 @@ import {
     restoreAllTrashedWithStore,
     analyzeInboxText,
     applyAnalysisToTask,
+    ProcessedInto,
 } from '../../utils/inboxService';
 import { InboxItem } from '../../entities/InboxItem';
 import InboxItemDetail from './InboxItemDetail';
@@ -339,6 +340,9 @@ const InboxItems: React.FC = () => {
         }
     };
 
+    const into = (task: Task): ProcessedInto | undefined =>
+        task.uid ? { task_uid: task.uid } : undefined;
+
     const fileClarifyOutcome = async (outcome: ClarifyOutcome) => {
         const uid = clarify.itemUids[clarify.currentIndex];
         if (!uid) return;
@@ -371,7 +375,7 @@ const InboxItems: React.FC = () => {
                         { parseDates: false }
                     )
                 );
-                await processInboxItemWithStore(uid, created.uid);
+                await processInboxItemWithStore(uid, into(created));
                 showSuccessToast(t('inbox.somedayCreated', 'Added to Someday'));
             } catch {
                 showErrorToast(t('task.createError'));
@@ -391,7 +395,7 @@ const InboxItems: React.FC = () => {
                         completed_at: null,
                     })
                 );
-                await processInboxItemWithStore(uid, created.uid);
+                await processInboxItemWithStore(uid, into(created));
                 showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
             } catch {
                 showErrorToast(t('task.createError'));
@@ -412,7 +416,7 @@ const InboxItems: React.FC = () => {
                         tags: [{ name: 'waiting-for' }],
                     })
                 );
-                await processInboxItemWithStore(uid, created.uid);
+                await processInboxItemWithStore(uid, into(created));
                 showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
             } catch {
                 showErrorToast(t('task.createError'));
@@ -438,10 +442,10 @@ const InboxItems: React.FC = () => {
     const handleProcessItem = async (
         uid: string,
         showToast: boolean = true,
-        taskUid?: string
+        processedInto?: ProcessedInto
     ) => {
         try {
-            await processInboxItemWithStore(uid, taskUid);
+            await processInboxItemWithStore(uid, processedInto);
             if (showToast) {
                 showSuccessToast(t('inbox.itemProcessed'));
             }
@@ -498,7 +502,11 @@ const InboxItems: React.FC = () => {
                 options.inboxItemUid ?? currentConversionItemUid ?? undefined;
 
             if (inboxUid) {
-                await handleProcessItem(inboxUid, false, createdTask.uid);
+                await handleProcessItem(
+                    inboxUid,
+                    false,
+                    createdTask.uid ? { task_uid: createdTask.uid } : undefined
+                );
                 if (!options.inboxItemUid) {
                     setCurrentConversionItemUid(null);
                 }
@@ -597,7 +605,7 @@ const InboxItems: React.FC = () => {
 
     const handleSaveProject = async (project: Project) => {
         try {
-            await createProject(project);
+            const createdProject = await createProject(project);
 
             const updatedProjects = await fetchProjects();
             setProjects(updatedProjects);
@@ -606,7 +614,13 @@ const InboxItems: React.FC = () => {
             setGlobalProjects(updatedProjects);
 
             if (currentConversionItemUid !== null) {
-                await handleProcessItem(currentConversionItemUid, false);
+                await handleProcessItem(
+                    currentConversionItemUid,
+                    false,
+                    createdProject?.uid
+                        ? { project_uid: createdProject.uid }
+                        : undefined
+                );
                 setCurrentConversionItemUid(null);
                 if (clarify.pendingModalUid) {
                     advanceClarify();
@@ -643,10 +657,14 @@ const InboxItems: React.FC = () => {
                 note.tags = [...note.tags, { name: 'bookmark' }];
             }
 
-            await createNote(note);
+            const createdNote = await createNote(note);
 
             if (currentConversionItemUid !== null) {
-                await handleProcessItem(currentConversionItemUid, false);
+                await handleProcessItem(
+                    currentConversionItemUid,
+                    false,
+                    createdNote?.uid ? { note_uid: createdNote.uid } : undefined
+                );
                 setCurrentConversionItemUid(null);
                 if (clarify.pendingModalUid) {
                     advanceClarify();

@@ -1,5 +1,8 @@
-export const isSafeLinkUrl = (url: string): boolean =>
-    /^(https?:\/\/|mailto:)/i.test(url.trim());
+// Web and mail links, and paths on this site such as a note's own files.
+export const isSafeLinkUrl = (url: string): boolean => {
+    const trimmed = url.trim();
+    return /^(https?:\/\/|mailto:)/i.test(trimmed) || /^\/(?!\/)/.test(trimmed);
+};
 
 export const isSafeImageUrl = (url: string): boolean => {
     const trimmed = url.trim();

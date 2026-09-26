@@ -29,6 +29,8 @@ const {
     RecurringCompletion,
     TaskAttachment,
     InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
     sequelize,
 } = require('../models');
 const { getConfig } = require('../config/config');
@@ -58,6 +60,7 @@ async function exportAttachments(attachments = []) {
         const a = plain(attachment);
         exported.push({
             uid: a.uid,
+            stored_filename: a.stored_filename,
             original_filename: a.original_filename,
             file_size: a.file_size,
             mime_type: a.mime_type,
@@ -134,6 +137,7 @@ async function exportUserData(userId) {
                     through: { attributes: [] },
                     attributes: ['uid', 'name'],
                 },
+                { model: ProjectAttachment, as: 'Attachments' },
             ],
         }),
         Task.findAll({
@@ -157,6 +161,7 @@ async function exportUserData(userId) {
                     through: { attributes: [] },
                     attributes: ['uid', 'name'],
                 },
+                { model: NoteAttachment, as: 'Attachments' },
             ],
         }),
         InboxItem.findAll({
@@ -185,7 +190,9 @@ async function exportUserData(userId) {
             project.image_url,
             'projects'
         );
+        data.attachments = await exportAttachments(project.Attachments);
         delete data.Tags;
+        delete data.Attachments;
         exportedProjects.push(data);
     }
 
@@ -208,6 +215,17 @@ async function exportUserData(userId) {
         delete data.Completions;
         delete data.Attachments;
         exportedTasks.push(data);
+    }
+
+    const exportedNotes = [];
+    for (const note of notes) {
+        const data = plain(note);
+        data.tag_uids = (note.Tags || []).map((t) => t.uid);
+        data.project_uid = projectUid[data.project_id] || null;
+        data.attachments = await exportAttachments(note.Attachments);
+        delete data.Tags;
+        delete data.Attachments;
+        exportedNotes.push(data);
     }
 
     const exportedInboxItems = [];
@@ -257,13 +275,7 @@ async function exportUserData(userId) {
             projects: exportedProjects,
             tasks: exportedTasks,
             tags: tags.map(plain),
-            notes: notes.map((n) => {
-                const data = plain(n);
-                data.tag_uids = (n.Tags || []).map((t) => t.uid);
-                data.project_uid = projectUid[data.project_id] || null;
-                delete data.Tags;
-                return data;
-            }),
+            notes: exportedNotes,
             inbox_items: exportedInboxItems,
             task_events: taskEvents.map(plain),
             views: views.map(plain),
@@ -311,6 +323,27 @@ async function writeAttachmentFile(attachment, subdir = 'tasks') {
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(path.join(dir, storedFilename), buffer);
     return { storedFilename, size: buffer.length };
+}
+
+// A note links its files by stored name, attachment uid and note uid, all of
+// which are new after an import.
+function relinkNoteContent(content, oldNoteUid, newNoteUid, renamed) {
+    if (!content) return content;
+    let result = content;
+    for (const { from, to } of renamed) {
+        if (from.stored) result = result.split(from.stored).join(to.stored);
+        if (from.uid) {
+            result = result
+                .split(`/attachments/${from.uid}/`)
+                .join(`/attachments/${to.uid}/`);
+        }
+    }
+    if (oldNoteUid && oldNoteUid !== newNoteUid) {
+        result = result
+            .split(`/api/note/${oldNoteUid}/attachments/`)
+            .join(`/api/note/${newNoteUid}/attachments/`);
+    }
+    return result;
 }
 
 const IMPORT_STAT_KEYS = [
@@ -427,6 +460,47 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         count(key, 'created');
         uidMaps[key][uid] = row.id;
         return { row, created: true };
+    };
+
+    // Writes a backup's files for one new row and returns, per file, the old
+    // and new stored name and uid, so links to them can be rewritten.
+    const importAttachments = async (
+        attachments,
+        Model,
+        ownerKey,
+        ownerId,
+        dir
+    ) => {
+        const renamed = [];
+        for (const attachment of attachments || []) {
+            const file = await writeAttachmentFile(attachment, dir);
+            if (!file) continue;
+            writtenFiles.push({ dir, name: file.storedFilename });
+            const row = await Model.create(
+                {
+                    uid: generateUid(),
+                    [ownerKey]: ownerId,
+                    user_id: userId,
+                    original_filename:
+                        attachment.original_filename || file.storedFilename,
+                    stored_filename: file.storedFilename,
+                    file_size: file.size,
+                    mime_type:
+                        attachment.mime_type || 'application/octet-stream',
+                    file_path: `${dir}/${file.storedFilename}`,
+                },
+                { transaction }
+            );
+            count('attachments', 'created');
+            renamed.push({
+                from: {
+                    stored: attachment.stored_filename,
+                    uid: attachment.uid,
+                },
+                to: { stored: row.stored_filename, uid: row.uid },
+            });
+        }
+        return renamed;
     };
 
     try {
@@ -571,6 +645,15 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                     };
                 }
             );
+            if (created) {
+                await importAttachments(
+                    project.attachments,
+                    ProjectAttachment,
+                    'project_id',
+                    row.id,
+                    'project-files'
+                );
+            }
             if (created && project.tag_uids?.length) {
                 const tagIds = project.tag_uids
                     .map((u) => uidMaps.tags[u])
@@ -722,6 +805,24 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                     ),
                 })
             );
+            if (created && note.attachments?.length) {
+                const renamed = await importAttachments(
+                    note.attachments,
+                    NoteAttachment,
+                    'note_id',
+                    row.id,
+                    'note-files'
+                );
+                const content = relinkNoteContent(
+                    row.content,
+                    note.uid,
+                    row.uid,
+                    renamed
+                );
+                if (content !== row.content) {
+                    await row.update({ content }, { transaction });
+                }
+            }
             if (created && note.tag_uids?.length) {
                 const tagIds = note.tag_uids
                     .map((u) => uidMaps.tags[u])
@@ -743,27 +844,13 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                 })
             );
             if (!created) continue;
-            for (const attachment of item.attachments || []) {
-                const file = await writeAttachmentFile(attachment, 'inbox');
-                if (!file) continue;
-                writtenFiles.push({ dir: 'inbox', name: file.storedFilename });
-                await InboxItemAttachment.create(
-                    {
-                        uid: generateUid(),
-                        inbox_item_id: row.id,
-                        user_id: userId,
-                        original_filename:
-                            attachment.original_filename || file.storedFilename,
-                        stored_filename: file.storedFilename,
-                        file_size: file.size,
-                        mime_type:
-                            attachment.mime_type || 'application/octet-stream',
-                        file_path: `inbox/${file.storedFilename}`,
-                    },
-                    { transaction }
-                );
-                count('attachments', 'created');
-            }
+            await importAttachments(
+                item.attachments,
+                InboxItemAttachment,
+                'inbox_item_id',
+                row.id,
+                'inbox'
+            );
         }
 
         for (const view of d.views || []) {

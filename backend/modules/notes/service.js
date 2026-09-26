@@ -14,6 +14,7 @@ const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
 const { sortTags } = require('../tasks/core/serializers');
 const { logError } = require('../../services/logService');
+const { noteAttachments } = require('../../services/entityAttachments');
 
 /**
  * Serialize a note with sorted tags.
@@ -322,6 +323,7 @@ class NotesService {
             throw new NotFoundError('Note not found.');
         }
 
+        await noteAttachments.removeAll(note.id);
         await notesRepository.destroy(note);
         return { message: 'Note deleted successfully.' };
     }

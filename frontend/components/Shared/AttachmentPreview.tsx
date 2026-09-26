@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Attachment } from '../../entities/Attachment';
+import { FileAttachment } from '../../entities/Attachment';
 import { getAttachmentType } from '../../utils/attachmentsService';
 
 interface AttachmentPreviewProps {
-    attachment: Attachment;
+    attachment: FileAttachment;
     maxHeight?: string;
     className?: string;
 }

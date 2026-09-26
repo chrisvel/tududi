@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const notesController = require('./controller');
 const { hasAccess } = require('../../middleware/authorize');
+const attachmentRoutes = require('./attachmentRoutes');
 
 // All routes require authentication (handled by app.js middleware)
 
@@ -73,5 +74,7 @@ router.delete(
     }),
     notesController.disablePublicShare
 );
+
+router.use(attachmentRoutes);
 
 module.exports = router;
