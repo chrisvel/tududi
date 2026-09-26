@@ -146,6 +146,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                                 }}
                             />
                             <MarkdownEditor
+                                noteUid={note.uid}
                                 value={note.content || ''}
                                 onChange={(val) => onNoteChange({ content: val })}
                                 placeholder={t('notes.contentPlaceholderFocus')}

@@ -9,6 +9,7 @@ import {
     processInboxItemWithStore,
     deleteInboxItemWithStore,
     updateInboxItemWithStore,
+    ProcessedInto,
 } from '../../utils/inboxService';
 import InboxItemDetail from './InboxItemDetail';
 import { useToast } from '../Shared/ToastContext';
@@ -215,10 +216,11 @@ const InboxItems: React.FC = () => {
 
     const handleProcessItem = async (
         uid: string,
-        showToast: boolean = true
+        showToast: boolean = true,
+        processedInto?: ProcessedInto
     ) => {
         try {
-            await processInboxItemWithStore(uid);
+            await processInboxItemWithStore(uid, processedInto);
             if (showToast) {
                 showSuccessToast(t('inbox.itemProcessed'));
             }
@@ -275,7 +277,11 @@ const InboxItems: React.FC = () => {
                 options.inboxItemUid ?? currentConversionItemUid ?? undefined;
 
             if (inboxUid) {
-                await handleProcessItem(inboxUid, false);
+                await handleProcessItem(
+                    inboxUid,
+                    false,
+                    createdTask.uid ? { task_uid: createdTask.uid } : undefined
+                );
                 if (!options.inboxItemUid) {
                     setCurrentConversionItemUid(null);
                 }
@@ -371,7 +377,7 @@ const InboxItems: React.FC = () => {
 
     const handleSaveProject = async (project: Project) => {
         try {
-            await createProject(project);
+            const createdProject = await createProject(project);
 
             const updatedProjects = await fetchProjects();
             setProjects(updatedProjects);
@@ -380,7 +386,13 @@ const InboxItems: React.FC = () => {
             setGlobalProjects(updatedProjects);
 
             if (currentConversionItemUid !== null) {
-                await handleProcessItem(currentConversionItemUid, false);
+                await handleProcessItem(
+                    currentConversionItemUid,
+                    false,
+                    createdProject?.uid
+                        ? { project_uid: createdProject.uid }
+                        : undefined
+                );
                 setCurrentConversionItemUid(null);
             }
         } catch (error) {
@@ -414,10 +426,14 @@ const InboxItems: React.FC = () => {
                 note.tags = [...note.tags, { name: 'bookmark' }];
             }
 
-            await createNote(note);
+            const createdNote = await createNote(note);
 
             if (currentConversionItemUid !== null) {
-                await handleProcessItem(currentConversionItemUid, false);
+                await handleProcessItem(
+                    currentConversionItemUid,
+                    false,
+                    createdNote?.uid ? { note_uid: createdNote.uid } : undefined
+                );
                 setCurrentConversionItemUid(null);
             }
 

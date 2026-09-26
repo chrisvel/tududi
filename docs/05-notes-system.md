@@ -161,6 +161,10 @@ Only `http(s)` and `mailto:` links are followed, and only `http(s)` or same-orig
 
 Formatting and block shortcuts are listed with the rest of the editor's keyboard shortcuts, below.
 
+### Images and Files
+
+Paste or drop an image or file into a saved note, or type `/` and pick **Image or File**. It is uploaded to the note and placed where the caret is: images as `![name](/api/uploads/note-files/...)`, which show inline, and other files as a link that downloads them under their own name. A placeholder shows while it uploads and is removed if the upload fails. A brand-new note needs a title or some text first, so it is saved and can hold files. Files follow the note's access: anyone who can read the note can open them. Deleting the note deletes its files; removing a link from the text does not delete the file. Images in a publicly shared note do not load for people without an account yet.
+
 ### Block Handle
 
 Hover the left edge of a paragraph, heading, list item, quote, code block or table (desktop with a mouse only - not on touch) to reveal two small controls:

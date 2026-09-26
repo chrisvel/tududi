@@ -1,4 +1,5 @@
 import { InboxItem } from '../entities/InboxItem';
+import { InboxAttachment } from '../entities/Attachment';
 import { Task, RecurrenceType } from '../entities/Task';
 import { useStore } from '../store/useStore';
 import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
@@ -145,14 +146,26 @@ export const updateInboxItem = async (
     return await response.json();
 };
 
-export const processInboxItem = async (itemUid: string): Promise<InboxItem> => {
+// What an item became when it was processed. The item's files move onto it.
+export type ProcessedInto =
+    | { task_uid: string }
+    | { project_uid: string }
+    | { note_uid: string };
+
+export const processInboxItem = async (
+    itemUid: string,
+    into?: ProcessedInto
+): Promise<InboxItem> => {
     const response = await fetch(getApiPath(`inbox/${itemUid}/process`), {
         method: 'PATCH',
         credentials: 'include',
-        headers: {
-            Accept: 'application/json',
-            'x-csrf-token': await getCsrfToken(),
-        },
+        headers: into
+            ? await getPostHeadersWithCsrf()
+            : {
+                  Accept: 'application/json',
+                  'x-csrf-token': await getCsrfToken(),
+              },
+        body: into ? JSON.stringify(into) : undefined,
     });
 
     await handleAuthResponse(response, 'Failed to process inbox item.');
@@ -307,12 +320,13 @@ export const updateInboxItemWithStore = async (
 };
 
 export const processInboxItemWithStore = async (
-    itemUid: string
+    itemUid: string,
+    into?: ProcessedInto
 ): Promise<InboxItem> => {
     const inboxStore = useStore.getState().inboxStore;
 
     try {
-        const processedItem = await processInboxItem(itemUid);
+        const processedItem = await processInboxItem(itemUid, into);
         inboxStore.removeInboxItemByUid(itemUid);
         return processedItem;
     } catch (error) {
@@ -335,3 +349,29 @@ export const deleteInboxItemWithStore = async (
     }
 };
 
+export const uploadInboxAttachment = async (
+    itemUid: string,
+    file: File
+): Promise<InboxAttachment> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(getApiPath(`inbox/${itemUid}/attachments`), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'x-csrf-token': await getCsrfToken() },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to upload attachment');
+    }
+    return await response.json();
+};
+
+export const getInboxAttachmentDownloadUrl = (
+    itemUid: string,
+    attachmentUid: string
+): string =>
+    getApiPath(`inbox/${itemUid}/attachments/${attachmentUid}/download`);

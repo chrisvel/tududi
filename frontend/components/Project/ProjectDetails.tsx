@@ -59,6 +59,8 @@ import BannerEditModal from './BannerEditModal';
 import ProjectShareModal from './ProjectShareModal';
 import ProjectTasksSection from './ProjectTasksSection';
 import ProjectNotesSection from './ProjectNotesSection';
+import AttachmentsPanel from '../Shared/AttachmentsPanel';
+import { ownerAttachmentsApi } from '../../utils/attachmentsService';
 import { useProjectMetrics } from './useProjectMetrics';
 import { saveProjectAsTemplate } from '../../utils/templatesService';
 
@@ -84,7 +86,32 @@ const ProjectDetails: React.FC = () => {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isBannerEditModalOpen, setIsBannerEditModalOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
+    const [activeTab, setActiveTab] = useState<
+        'tasks' | 'notes' | 'attachments'
+    >('tasks');
+    const [attachmentCount, setAttachmentCount] = useState(0);
+    const attachmentsApi = useMemo(
+        () =>
+            project?.uid ? ownerAttachmentsApi('project', project.uid) : null,
+        [project?.uid]
+    );
+
+    // The tab shows how many files there are before it is opened.
+    useEffect(() => {
+        if (!attachmentsApi) return;
+        let cancelled = false;
+        attachmentsApi
+            .list()
+            .then((list) => {
+                if (!cancelled) setAttachmentCount(list.length);
+            })
+            .catch(() => {
+                // The tab still works; the count just stays hidden.
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [attachmentsApi]);
     const [taskStatusFilter, setTaskStatusFilter] = useState<
         'all' | 'active' | 'completed'
     >(() => {
@@ -947,6 +974,27 @@ const ProjectDetails: React.FC = () => {
                                         </span>
                                     )}
                                 </button>
+                                <button
+                                    data-testid="project-attachments-tab"
+                                    onClick={() => setActiveTab('attachments')}
+                                    className={`flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium transition-colors ${
+                                        activeTab === 'attachments'
+                                            ? 'text-gray-900 dark:text-gray-100'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    }`}
+                                >
+                                    <span>
+                                        {t(
+                                            'project.attachments',
+                                            'Attachments'
+                                        )}
+                                    </span>
+                                    {attachmentCount > 0 && (
+                                        <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                            {attachmentCount}
+                                        </span>
+                                    )}
+                                </button>
                             </div>
 
                             {activeTab === 'tasks' && (
@@ -1162,6 +1210,14 @@ const ProjectDetails: React.FC = () => {
                                 </div>
                             </div>
                         </>
+                    )}
+
+                    {activeTab === 'attachments' && attachmentsApi && (
+                        <AttachmentsPanel
+                            api={attachmentsApi}
+                            showTitle={false}
+                            onAttachmentsCountChange={setAttachmentCount}
+                        />
                     )}
 
                     {activeTab === 'notes' && project && (

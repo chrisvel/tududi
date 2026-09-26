@@ -1,3 +1,5 @@
+import { InboxAttachment } from './Attachment';
+
 export interface InboxItem {
     id?: number;
     uid?: string;
@@ -7,4 +9,5 @@ export interface InboxItem {
     source?: string; // 'telegram'
     created_at?: string;
     updated_at?: string;
+    attachments?: InboxAttachment[];
 }

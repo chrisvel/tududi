@@ -58,16 +58,6 @@ class InboxRepository extends BaseRepository {
         });
     }
 
-    async findByUidPublic(userId, uid) {
-        return this.model.findOne({
-            where: {
-                uid,
-                user_id: userId,
-            },
-            attributes: PUBLIC_ATTRIBUTES,
-        });
-    }
-
     async createForUser(userId, { content, title, source }) {
         return this.model.create({
             content,

@@ -9,6 +9,7 @@ const { requireCapability } = require('../../middleware/roles');
 const config = getConfig();
 const router = express.Router();
 const projectsController = require('./controller');
+const attachmentRoutes = require('./attachmentRoutes');
 const { hasAccess } = require('../../middleware/authorize');
 const { requireAuth } = require('../../middleware/auth');
 const { numericIdParam } = require('../../middleware/numericIdParam');
@@ -102,5 +103,7 @@ router.delete(
     ),
     projectsController.delete
 );
+
+router.use(attachmentRoutes);
 
 module.exports = router;

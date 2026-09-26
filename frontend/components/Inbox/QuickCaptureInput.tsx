@@ -10,6 +10,7 @@ import { Task } from '../../entities/Task';
 import { Tag } from '../../entities/Tag';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
+import { FileAttachment, InboxAttachment } from '../../entities/Attachment';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,8 +19,14 @@ import {
     analyzeInboxText,
     applyAnalysisToTask,
     InboxAnalysis,
+    uploadInboxAttachment,
 } from '../../utils/inboxService';
-import { createNote, deleteNote } from '../../utils/notesService';
+import {
+    ownerAttachmentsApi,
+    uploadAttachment,
+} from '../../utils/attachmentsService';
+import { noteLinksFor } from '../../utils/noteAttachmentLinks';
+import { createNote, deleteNote, updateNote } from '../../utils/notesService';
 import {
     CaptureTarget,
     CapturedItem,
@@ -33,6 +40,15 @@ import {
     useCaptureSettings,
 } from '../../utils/captureSettings';
 import CaptureDestinations from '../Capture/CaptureDestinations';
+import CaptureFiles from '../Capture/CaptureFiles';
+import {
+    CaptureFile,
+    CaptureFileError,
+    filesToAttachFromPaste,
+    nameForPastedFile,
+    titleFromFiles,
+    useCaptureFiles,
+} from '../Capture/useCaptureFiles';
 import {
     fetchWorkspaceAssignablePeople,
     fetchAssignablePeopleForProject,
@@ -45,7 +61,11 @@ import {
     deleteProject,
     fetchProjects,
 } from '../../utils/projectsService';
-import { LinkIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+    LinkIcon,
+    PaperClipIcon,
+    XMarkIcon,
+} from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { isUrl, extractUrlTitle } from '../../utils/urlService';
 import InboxSelectedChips from './InboxSelectedChips';
@@ -188,6 +208,28 @@ const QuickCaptureInput = React.forwardRef<
         const { showSuccessToast, showErrorToast } = useToast();
         const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
         const fieldRef = useRef<HTMLDivElement>(null);
+        const fileInputRef = useRef<HTMLInputElement>(null);
+        const [draggingFiles, setDraggingFiles] = useState(false);
+        const handleFileError = useCallback(
+            (error: CaptureFileError) => {
+                showErrorToast(
+                    error.kind === 'tooLarge'
+                        ? t(
+                              'capture.fileTooLarge',
+                              '{{name}} is larger than {{limit}} MB, so it was not added.',
+                              { name: error.name, limit: error.limitMB }
+                          )
+                        : t(
+                              'capture.tooManyFiles',
+                              'Up to {{max}} files can be added at once.',
+                              { max: error.max }
+                          )
+                );
+            },
+            [showErrorToast, t]
+        );
+        const { files, addFiles, removeFile, clearFiles } =
+            useCaptureFiles(handleFileError);
         const { tagsStore } = useStore();
         const { setTags, refreshTags } = tagsStore;
         const tags = tagsStore.getTags();
@@ -1628,16 +1670,17 @@ const QuickCaptureInput = React.forwardRef<
             const hasBookmark = tagNames.some(
                 (name) => name.toLowerCase() === 'bookmark'
             );
+            const body = rest || itemText;
             const created = await createNote({
                 title,
-                content: rest || itemText,
+                content: body,
                 tags:
                     isUrlContent && !hasBookmark
                         ? [...tagObjects, { name: 'bookmark' }]
                         : tagObjects,
                 project_uid: projectUid,
             });
-            return { target: destination, uid: created.uid, title };
+            return { target: destination, uid: created.uid, title, body };
         };
 
         const describeCaptured = (
@@ -1729,22 +1772,140 @@ const QuickCaptureInput = React.forwardRef<
             }
         };
 
+        // Files ride along with the text, whatever it becomes.
+        const attachFiles = async (incoming: File[]) => {
+            await addFiles(incoming);
+            inputRef.current?.focus();
+        };
+
+        const handlePaste = (e: React.ClipboardEvent) => {
+            const pasted = filesToAttachFromPaste(e.clipboardData);
+            if (pasted.length === 0) return;
+            e.preventDefault();
+            void attachFiles(pasted.map((file) => nameForPastedFile(file)));
+        };
+
+        const hasDraggedFiles = (e: React.DragEvent) =>
+            Array.from(e.dataTransfer.types).includes('Files');
+
+        const fileDropHandlers = unified
+            ? {
+                  onDragOver: (e: React.DragEvent) => {
+                      if (!hasDraggedFiles(e)) return;
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'copy';
+                      setDraggingFiles(true);
+                  },
+                  onDragLeave: (e: React.DragEvent) => {
+                      if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                          setDraggingFiles(false);
+                      }
+                  },
+                  onDrop: (e: React.DragEvent) => {
+                      if (!hasDraggedFiles(e)) return;
+                      e.preventDefault();
+                      setDraggingFiles(false);
+                      void attachFiles(Array.from(e.dataTransfer.files));
+                  },
+              }
+            : {};
+
+        // Uploads after the item exists. A file that fails is named in one
+        // message; the item itself is already saved.
+        const uploadCaptureFiles = async (
+            item: CapturedItem,
+            toUpload: CaptureFile[]
+        ): Promise<number> => {
+            if (!item.uid) return 0;
+            const failed: string[] = [];
+            const uploaded: FileAttachment[] = [];
+            const upload = (file: File): Promise<FileAttachment> => {
+                const uid = item.uid as string;
+                if (item.target === 'inbox') {
+                    return uploadInboxAttachment(uid, file);
+                }
+                if (item.target === 'task') return uploadAttachment(uid, file);
+                return ownerAttachmentsApi(item.target, uid).upload(file);
+            };
+            for (const { file } of toUpload) {
+                try {
+                    uploaded.push(await upload(file));
+                } catch (error) {
+                    console.error('Failed to attach file:', error);
+                    failed.push(file.name);
+                }
+            }
+            // A note shows its files in its text: images inline, the rest
+            // as links, after what was typed.
+            if (item.target === 'note' && uploaded.length > 0) {
+                const links = noteLinksFor(item.uid, uploaded);
+                try {
+                    await updateNote(item.uid, {
+                        content: item.body ? `${item.body}\n\n${links}` : links,
+                    } as Note);
+                } catch (error) {
+                    console.error('Failed to link files in the note:', error);
+                }
+            }
+            if (item.target === 'inbox' && uploaded.length > 0) {
+                const inboxStore = useStore.getState().inboxStore;
+                const stored = inboxStore.inboxItems.find(
+                    (entry) => entry.uid === item.uid
+                );
+                if (stored) {
+                    inboxStore.updateInboxItem({
+                        ...stored,
+                        attachments: [
+                            ...(stored.attachments ?? []),
+                            ...(uploaded as InboxAttachment[]),
+                        ],
+                    });
+                }
+            }
+            if (failed.length > 0) {
+                showErrorToast(
+                    t(
+                        'capture.filesNotAttached',
+                        'Saved, but these files could not be attached: {{names}}',
+                        { names: failed.join(', ') }
+                    )
+                );
+            }
+            return toUpload.length - failed.length;
+        };
+
         const handleUnifiedSubmit = async () => {
-            const raw = inputText.trim();
+            const withFiles = files.length > 0;
+            // A pasted screenshot on its own is enough; the file name
+            // becomes the title.
+            const raw =
+                inputText.trim() || (withFiles ? titleFromFiles(files) : '');
             if (!raw || isSaving) return;
 
             const texts = splitCaptureText(raw, captureSettings.oneItemPerLine);
             const captured: CapturedItem[] = [];
             const destination = target;
 
-            const finish = (items: CapturedItem[], remaining: string[]) => {
+            const finish = (
+                items: CapturedItem[],
+                remaining: string[],
+                attached = 0
+            ) => {
                 setInputText(remaining.join('\n'));
                 setAnalysisResult(null);
                 setUrlPreview(null);
                 dismissedPreviewUrlRef.current = null;
                 if (items.length > 0) {
+                    const saved = describeCaptured(destination, items);
                     setStatus({
-                        text: describeCaptured(destination, items),
+                        text:
+                            attached > 0
+                                ? `${saved} ${t(
+                                      'capture.filesAttached',
+                                      '{{count}} files attached.',
+                                      { count: attached }
+                                  )}`
+                                : saved,
                         items,
                     });
                     onCaptured?.(items);
@@ -1758,7 +1919,14 @@ const QuickCaptureInput = React.forwardRef<
                 for (const itemText of texts) {
                     captured.push(await captureOne(destination, itemText));
                 }
-                finish(captured, []);
+                // With several items, the files go on the first one.
+                let attached = 0;
+                if (withFiles) {
+                    const toUpload = files;
+                    clearFiles();
+                    attached = await uploadCaptureFiles(captured[0], toUpload);
+                }
+                finish(captured, [], attached);
             } catch (error) {
                 if (error instanceof OfflineQueuedError) {
                     finish([], []);
@@ -2227,12 +2395,41 @@ const QuickCaptureInput = React.forwardRef<
                 )}
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <CaptureDestinations value={target} onChange={setTarget} />
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        hidden
+                        data-testid="capture-file-input"
+                        onChange={(e) => {
+                            const picked = Array.from(e.target.files ?? []);
+                            e.target.value = '';
+                            void attachFiles(picked);
+                        }}
+                    />
+                    <button
+                        type="button"
+                        data-testid="capture-attach"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isSaving}
+                        title={t(
+                            'capture.attachHint',
+                            'Attach files. You can also paste or drop them here.'
+                        )}
+                        aria-label={t('capture.attach', 'Attach files')}
+                        className="ml-auto rounded-lg p-2 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    >
+                        <PaperClipIcon className="h-5 w-5" aria-hidden="true" />
+                    </button>
                     <button
                         type="button"
                         data-testid="capture-add"
                         onClick={() => void handleUnifiedSubmit()}
-                        disabled={!inputText.trim() || isSaving}
-                        className="ml-auto rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        disabled={
+                            (!inputText.trim() && files.length === 0) ||
+                            isSaving
+                        }
+                        className="rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     >
                         {itemTotal > 1
                             ? t('capture.addN', 'Add {{total}}', {
@@ -2336,7 +2533,9 @@ const QuickCaptureInput = React.forwardRef<
                         <div className="relative flex-1">
                             <div
                                 ref={fieldRef}
-                                className={`relative ${compact ? 'rounded-xl bg-gray-100 dark:bg-black/30 px-3.5 py-1 focus-within:ring-2 focus-within:ring-blue-500' : ''}`}
+                                {...fileDropHandlers}
+                                data-testid="capture-field"
+                                className={`relative ${compact ? 'rounded-xl bg-gray-100 dark:bg-black/30 px-3.5 py-1 focus-within:ring-2 focus-within:ring-blue-500' : ''} ${draggingFiles ? '!bg-blue-50 dark:!bg-blue-900/30' : ''}`}
                             >
                                 {!inputText && !isEditMode && (
                                     <div
@@ -2378,6 +2577,11 @@ const QuickCaptureInput = React.forwardRef<
                                             className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
                                             placeholder=""
                                             onKeyDown={handleKeyDown}
+                                            onPaste={
+                                                unified
+                                                    ? handlePaste
+                                                    : undefined
+                                            }
                                         ></textarea>
                                     ) : (
                                         <input
@@ -2398,6 +2602,13 @@ const QuickCaptureInput = React.forwardRef<
                                     )}
                                 </div>
                                 {compact && selectedMetadata('line')}
+                                {unified && (
+                                    <CaptureFiles
+                                        files={files}
+                                        onRemove={removeFile}
+                                        disabled={isSaving}
+                                    />
+                                )}
                             </div>
 
                             {!compact && selectedMetadata('chips')}

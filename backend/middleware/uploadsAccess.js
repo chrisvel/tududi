@@ -1,5 +1,14 @@
 const { Op } = require('sequelize');
-const { TaskAttachment, Task, Project, User } = require('../models');
+const {
+    TaskAttachment,
+    InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
+    Note,
+    Task,
+    Project,
+    User,
+} = require('../models');
 const permissionsService = require('../services/permissionsService');
 const permissionSources = require('../services/permissionSources');
 const { getAuthenticatedUserId } = require('../utils/request-utils');
@@ -22,6 +31,35 @@ const canAccessTaskFile = async (userId, filename) => {
     });
     if (!attachment) return false;
     return hasReadAccess(userId, 'task', attachment.Task.uid);
+};
+
+// Inbox items are never shared, so only the owner can read their files.
+const canAccessInboxFile = async (userId, filename) => {
+    const attachment = await InboxItemAttachment.findOne({
+        where: { stored_filename: filename },
+        attributes: ['user_id'],
+        raw: true,
+    });
+    return !!attachment && attachment.user_id === userId;
+};
+
+// Project and note files follow the project or note they belong to.
+const canAccessProjectAttachment = async (userId, filename) => {
+    const attachment = await ProjectAttachment.findOne({
+        where: { stored_filename: filename },
+        include: [{ model: Project, required: true, attributes: ['uid'] }],
+    });
+    if (!attachment) return false;
+    return hasReadAccess(userId, 'project', attachment.Project.uid);
+};
+
+const canAccessNoteAttachment = async (userId, filename) => {
+    const attachment = await NoteAttachment.findOne({
+        where: { stored_filename: filename },
+        include: [{ model: Note, required: true, attributes: ['uid'] }],
+    });
+    if (!attachment) return false;
+    return hasReadAccess(userId, 'note', attachment.Note.uid);
 };
 
 const canAccessProjectFile = async (userId, filename) => {
@@ -108,6 +146,12 @@ const uploadsAccessControl = async (req, res, next) => {
         const { category, filename } = target || {};
         if (category === 'tasks' && filename) {
             allowed = await canAccessTaskFile(userId, filename);
+        } else if (category === 'inbox' && filename) {
+            allowed = await canAccessInboxFile(userId, filename);
+        } else if (category === 'project-files' && filename) {
+            allowed = await canAccessProjectAttachment(userId, filename);
+        } else if (category === 'note-files' && filename) {
+            allowed = await canAccessNoteAttachment(userId, filename);
         } else if (category === 'projects' && filename) {
             allowed = await canAccessProjectFile(userId, filename);
         } else if (category === 'avatars' && filename) {

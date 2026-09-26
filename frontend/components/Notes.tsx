@@ -901,6 +901,7 @@ const Notes: React.FC = () => {
 
                                 <div className="flex-1 overflow-y-auto px-6 md:px-8 py-4">
                                     <MarkdownEditor
+                                        noteUid={editingNote.uid}
                                         value={editingNote.content || ''}
                                         onChange={(val) =>
                                             handleNoteChange({ content: val })

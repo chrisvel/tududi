@@ -12,6 +12,16 @@ const {
 const { NotFoundError } = require('../../shared/errors');
 const { processInboxItem } = require('./inboxProcessingService');
 const peopleService = require('../people/service');
+const attachments = require('./operations/attachments');
+
+// Items go out as plain objects with their files under `attachments`.
+async function withAttachments(items) {
+    const byItem = await attachments.listForItems(items);
+    return items.map((item) => ({
+        ...item.toJSON(),
+        attachments: byItem.get(item.id) || [],
+    }));
+}
 
 class InboxService {
     async getAll(userId, { limit, offset } = {}) {
@@ -21,13 +31,14 @@ class InboxService {
             const parsedLimit = parseInt(limit, 10) || 20;
             const parsedOffset = parseInt(offset, 10) || 0;
 
-            const [items, totalCount] = await Promise.all([
+            const [rows, totalCount] = await Promise.all([
                 inboxRepository.findAllActive(userId, {
                     limit: parsedLimit,
                     offset: parsedOffset,
                 }),
                 inboxRepository.countActive(userId),
             ]);
+            const items = await withAttachments(rows);
 
             return {
                 items,
@@ -35,24 +46,27 @@ class InboxService {
                     total: totalCount,
                     limit: parsedLimit,
                     offset: parsedOffset,
-                    hasMore: parsedOffset + items.length < totalCount,
+                    hasMore: parsedOffset + rows.length < totalCount,
                 },
             };
         }
 
-        return inboxRepository.findAllActive(userId);
+        return withAttachments(await inboxRepository.findAllActive(userId));
     }
 
     async getByUid(userId, uid) {
         validateUid(uid);
 
-        const item = await inboxRepository.findByUidPublic(userId, uid);
+        const item = await inboxRepository.findByUid(userId, uid);
 
         if (!item) {
             throw new NotFoundError('Inbox item not found.');
         }
 
-        return item;
+        return {
+            ..._.pick(item, PUBLIC_ATTRIBUTES),
+            attachments: await attachments.listForItem(item),
+        };
     }
 
     async create(userId, { content, source }) {
@@ -66,7 +80,7 @@ class InboxService {
             source: validatedSource,
         });
 
-        return _.pick(item, PUBLIC_ATTRIBUTES);
+        return { ..._.pick(item, PUBLIC_ATTRIBUTES), attachments: [] };
     }
 
     async update(userId, uid, { content, status }) {
@@ -92,7 +106,10 @@ class InboxService {
 
         await inboxRepository.updateItem(item, updateData);
 
-        return _.pick(item, PUBLIC_ATTRIBUTES);
+        return {
+            ..._.pick(item, PUBLIC_ATTRIBUTES),
+            attachments: await attachments.listForItem(item),
+        };
     }
 
     async delete(userId, uid) {
@@ -104,18 +121,32 @@ class InboxService {
             throw new NotFoundError('Inbox item not found.');
         }
 
+        // A deleted item cannot come back, so its files go now.
+        await attachments.removeAllFromItem(item);
         await inboxRepository.softDelete(item);
 
         return { message: 'Inbox item successfully deleted' };
     }
 
-    async process(userId, uid) {
+    // With the uid of the task, project or note the item became, its files
+    // move there.
+    async process(userId, uid, { target } = {}) {
         validateUid(uid);
 
         const item = await inboxRepository.findByUid(userId, uid);
 
         if (!item) {
             throw new NotFoundError('Inbox item not found.');
+        }
+
+        if (target) {
+            validateUid(target.uid);
+            const row = await attachments.findWritableTarget(
+                userId,
+                target.kind,
+                target.uid
+            );
+            await attachments.moveToTarget(item, target.kind, row);
         }
 
         await inboxRepository.markProcessed(item);

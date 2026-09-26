@@ -1,4 +1,8 @@
-import { Attachment, AttachmentType } from '../entities/Attachment';
+import {
+    Attachment,
+    AttachmentType,
+    FileAttachment,
+} from '../entities/Attachment';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
 import { getServerConfig } from './configService';
@@ -171,3 +175,74 @@ export async function validateFile(
 
     return { valid: true };
 }
+
+// The four things an attachments panel needs, for whatever owns the files.
+export interface AttachmentsApi {
+    list: () => Promise<FileAttachment[]>;
+    upload: (file: File) => Promise<FileAttachment>;
+    remove: (attachmentUid: string) => Promise<void>;
+    downloadUrl: (attachmentUid: string) => string;
+}
+
+export const taskAttachmentsApi = (taskUid: string): AttachmentsApi => ({
+    list: () => fetchAttachments(taskUid),
+    upload: (file) => uploadAttachment(taskUid, file),
+    remove: (attachmentUid) => deleteAttachment(taskUid, attachmentUid),
+    downloadUrl: getDownloadUrl,
+});
+
+export type AttachmentOwnerKind = 'inbox' | 'project' | 'note';
+
+const readError = async (response: Response, fallback: string) => {
+    const data = await response.json().catch(() => ({}));
+    return new Error(data.error || fallback);
+};
+
+// Inbox items, projects and notes share one set of endpoints:
+// /api/<kind>/<uid>/attachments.
+export const ownerAttachmentsApi = (
+    kind: AttachmentOwnerKind,
+    ownerUid: string
+): AttachmentsApi => {
+    const base = `${kind}/${ownerUid}/attachments`;
+    return {
+        list: async () => {
+            const response = await fetch(getApiPath(base), {
+                credentials: 'include',
+            });
+            if (!response.ok) {
+                throw await readError(response, 'Failed to fetch attachments');
+            }
+            return response.json();
+        },
+        upload: async (file) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await fetch(getApiPath(base), {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'x-csrf-token': await getCsrfToken() },
+                body: formData,
+            });
+            if (!response.ok) {
+                throw await readError(response, 'Failed to upload attachment');
+            }
+            return response.json();
+        },
+        remove: async (attachmentUid) => {
+            const response = await fetch(
+                getApiPath(`${base}/${attachmentUid}`),
+                {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    headers: { 'x-csrf-token': await getCsrfToken() },
+                }
+            );
+            if (!response.ok) {
+                throw await readError(response, 'Failed to delete attachment');
+            }
+        },
+        downloadUrl: (attachmentUid) =>
+            getApiPath(`${base}/${attachmentUid}/download`),
+    };
+};

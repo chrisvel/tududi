@@ -11,6 +11,8 @@ export interface CapturedItem {
     target: CaptureTarget;
     uid?: string;
     title: string;
+    // A note's text as saved, so files can be added to the end of it.
+    body?: string;
 }
 
 const BULLET = /^\s*(?:[-*•]|\d+[.)]|\[[ xX]\])\s+/;

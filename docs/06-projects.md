@@ -383,6 +383,10 @@ No Area
 - Sorted by most recent first
 - Can be tagged independently
 
+### Project Attachments
+
+The project page has an **Attachments** tab next to Tasks and Notes. It holds files that belong to the project itself rather than to one task: briefs, plans, photos. It works like a task's attachments: click to upload, preview images and PDFs, download, delete. Anyone the project is shared with can see and download them; people with edit access can add and delete them. Up to 20 files per project, each under the server's upload limit. Files added in the Add box with **Project** chosen, or on an Inbox item that becomes a project, land here. Deleting the project deletes its files.
+
 ### Orphaned Tasks/Notes
 
 **What are orphaned items:**
