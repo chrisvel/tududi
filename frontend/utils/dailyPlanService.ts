@@ -46,8 +46,15 @@ export interface AiDraft {
     skipped: { task_uid: string; name: string; reason: string }[];
 }
 
+// Minutes after local midnight, in the user's timezone
+export interface DayHours {
+    start: number;
+    end: number;
+}
+
 export interface DailyPlanResponse {
     date: string;
+    day_hours?: DayHours;
     plan: DailyPlan | null;
 }
 
@@ -124,6 +131,26 @@ export const savePlanRanking = async (
         body: JSON.stringify({ order }),
     });
     await handleAuthResponse(response, 'Failed to save the planning order.');
+    return response.json();
+};
+
+export const fetchDayHours = async (): Promise<DayHours> => {
+    const response = await fetch(getApiPath('daily-plan/hours'), {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+    await handleAuthResponse(response, 'Failed to load your day hours.');
+    return response.json();
+};
+
+export const saveDayHours = async (hours: DayHours): Promise<DayHours> => {
+    const response = await fetch(getApiPath('daily-plan/hours'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify(hours),
+    });
+    await handleAuthResponse(response, 'Failed to save your day hours.');
     return response.json();
 };
 

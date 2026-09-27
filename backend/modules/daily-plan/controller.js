@@ -47,6 +47,24 @@ const dailyPlanController = {
         }
     },
 
+    async getDayHours(req, res, next) {
+        try {
+            const user = requireUser(req);
+            res.json(await dailyPlanService.getDayHours(user));
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async saveDayHours(req, res, next) {
+        try {
+            const user = requireUser(req);
+            res.json(await dailyPlanService.saveDayHours(user, req.body));
+        } catch (err) {
+            next(err);
+        }
+    },
+
     async replace(req, res, next) {
         try {
             const user = requireUser(req);

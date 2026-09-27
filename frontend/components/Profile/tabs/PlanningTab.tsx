@@ -18,11 +18,26 @@ import {
 import { useToast } from '../../Shared/ToastContext';
 import { useSortableSensors } from '../../Shared/sortableList';
 import {
+    DayHours,
     RankingBucket,
     RankingGroup,
+    fetchDayHours,
     fetchPlanRanking,
+    saveDayHours,
     savePlanRanking,
 } from '../../../utils/dailyPlanService';
+import { getUserTimezone } from '../../../utils/dateUtils';
+import {
+    DEFAULT_DAY_END,
+    DEFAULT_DAY_START,
+    formatMinute,
+} from '../../DailyPlan/planUtils';
+
+const HOURS_STEP = 30;
+const HOUR_OPTIONS = Array.from(
+    { length: (24 * 60) / HOURS_STEP + 1 },
+    (_, index) => index * HOURS_STEP
+);
 
 interface PlanningTabProps {
     isActive: boolean;
@@ -132,6 +147,21 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
     const [order, setOrder] = useState<RankingBucket[]>([]);
     const [defaultOrder, setDefaultOrder] = useState<RankingBucket[]>([]);
     const [loading, setLoading] = useState(false);
+    const [dayHours, setDayHours] = useState<DayHours | null>(null);
+
+    useEffect(() => {
+        if (!isActive) return;
+        fetchDayHours()
+            .then(setDayHours)
+            .catch(() =>
+                showErrorToast(
+                    t(
+                        'profile.planning.hoursLoadError',
+                        'Could not load your day hours'
+                    )
+                )
+            );
+    }, [isActive]);
 
     useEffect(() => {
         if (!isActive) return;
@@ -208,6 +238,21 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
                 t(
                     'profile.planning.saveError',
                     'Could not save the planning order'
+                )
+            );
+        });
+    };
+
+    const changeHours = (next: DayHours) => {
+        if (next.start >= next.end) return;
+        const previous = dayHours;
+        setDayHours(next);
+        saveDayHours(next).catch(() => {
+            setDayHours(previous);
+            showErrorToast(
+                t(
+                    'profile.planning.hoursSaveError',
+                    'Could not save your day hours'
                 )
             );
         });
@@ -305,6 +350,87 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
                     <li key={rule}>{rule}</li>
                 ))}
             </ol>
+
+            <h4 className="mb-2 text-sm font-medium text-gray-800 dark:text-gray-200">
+                {t('profile.planning.hoursTitle', 'Your day')}
+            </h4>
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
+                {t(
+                    'profile.planning.hoursDescription',
+                    'The hours the timeline shows on Today and when you plan your day. New tasks and AI drafts get a time inside them. Times are in your timezone ({{timezone}}).',
+                    { timezone: getUserTimezone() }
+                )}
+            </p>
+            {dayHours ? (
+                <div
+                    className="mb-8 flex flex-wrap items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
+                    data-testid="planning-day-hours"
+                >
+                    <label className="flex items-center gap-2">
+                        {t('profile.planning.hoursFrom', 'From')}
+                        <select
+                            value={dayHours.start}
+                            onChange={(e) =>
+                                changeHours({
+                                    ...dayHours,
+                                    start: Number(e.target.value),
+                                })
+                            }
+                            className="rounded-md bg-gray-50 px-2 py-1.5 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                            data-testid="planning-day-start"
+                        >
+                            {HOUR_OPTIONS.filter(
+                                (minute) => minute < dayHours.end
+                            ).map((minute) => (
+                                <option key={minute} value={minute}>
+                                    {formatMinute(minute)}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className="flex items-center gap-2">
+                        {t('profile.planning.hoursTo', 'to')}
+                        <select
+                            value={dayHours.end}
+                            onChange={(e) =>
+                                changeHours({
+                                    ...dayHours,
+                                    end: Number(e.target.value),
+                                })
+                            }
+                            className="rounded-md bg-gray-50 px-2 py-1.5 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                            data-testid="planning-day-end"
+                        >
+                            {HOUR_OPTIONS.filter(
+                                (minute) => minute > dayHours.start
+                            ).map((minute) => (
+                                <option key={minute} value={minute}>
+                                    {formatMinute(minute)}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                    {(dayHours.start !== DEFAULT_DAY_START ||
+                        dayHours.end !== DEFAULT_DAY_END) && (
+                        <button
+                            type="button"
+                            onClick={() =>
+                                changeHours({
+                                    start: DEFAULT_DAY_START,
+                                    end: DEFAULT_DAY_END,
+                                })
+                            }
+                            className="ml-2 text-xs text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline dark:text-gray-400 dark:hover:text-gray-200"
+                        >
+                            {t('profile.planning.reset', 'Reset to default')}
+                        </button>
+                    )}
+                </div>
+            ) : (
+                <p className="mb-8 text-sm text-gray-500 dark:text-gray-400">
+                    {t('common.loading', 'Loading...')}
+                </p>
+            )}
 
             <Link
                 to="/today/plan"

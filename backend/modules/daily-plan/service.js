@@ -2,6 +2,7 @@
 
 const moment = require('moment-timezone');
 const repository = require('./repository');
+const slots = require('./slots');
 const permissionsService = require('../../services/permissionsService');
 const { serializeTasks } = require('../tasks/core/serializers');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
@@ -25,6 +26,9 @@ const MIN_DURATION = 5;
 const MAX_DURATION = 12 * 60;
 const DEFAULT_DURATION = 30;
 const INBOX_LIMIT = 20;
+const DAY_HOURS_STEP = 30;
+// Same window as the Today page's suggestions: nothing due further out.
+const SUGGESTED_HORIZON_MS = 3 * 24 * 60 * 60 * 1000;
 
 function resolvePlanDate(date, timezone) {
     if (
@@ -163,9 +167,13 @@ async function serializePlan(plan, userId, timezone) {
 async function getPlan(user, date) {
     const timezone = getSafeTimezone(user.timezone);
     const planDate = resolvePlanDate(date, timezone);
-    const plan = await repository.findPlan(user.id, planDate);
+    const [plan, dayHours] = await Promise.all([
+        repository.findPlan(user.id, planDate),
+        getDayHours(user),
+    ]);
     return {
         date: planDate,
+        day_hours: dayHours,
         plan: await serializePlan(plan, user.id, timezone),
     };
 }
@@ -249,18 +257,51 @@ async function getCandidates(user) {
     const timezone = getSafeTimezone(user.timezone);
     const metrics = await computeTaskMetrics(user.id, timezone);
 
-    // Started tasks that are past due count as overdue here, so late work
-    // is never ranked below fresh work.
-    const todayStart = new Date(getTodayBoundsInUTC(timezone).start).getTime();
-    const started = [...metrics.tasks_in_progress, ...metrics.today_plan_tasks];
+    // Groups follow the task's own due date, as Profile > Planning
+    // describes them. The Today page lists also count a late or due-today
+    // project, which put undated tasks under "Overdue". Started tasks that
+    // are past due count as overdue here, so late work is never ranked below
+    // fresh work.
+    const bounds = getTodayBoundsInUTC(timezone);
+    const todayStart = new Date(bounds.start).getTime();
+    const todayEnd = new Date(bounds.end).getTime();
+    const horizon = Date.now() + SUGGESTED_HORIZON_MS;
+    const dueTime = (task) =>
+        task.due_date ? new Date(task.due_date).getTime() : null;
     const isLate = (task) =>
-        task.due_date && new Date(task.due_date).getTime() < todayStart;
+        dueTime(task) !== null && dueTime(task) < todayStart;
+    const isDueToday = (task) =>
+        dueTime(task) !== null &&
+        dueTime(task) >= todayStart &&
+        dueTime(task) <= todayEnd;
+    const started = [...metrics.tasks_in_progress, ...metrics.today_plan_tasks];
+    const fromProjectDates = [
+        ...metrics.tasks_overdue,
+        ...metrics.tasks_due_today,
+    ].filter((task) => !isLate(task) && !isDueToday(task));
 
     const groupTasks = {
-        overdue: [...metrics.tasks_overdue, ...started.filter(isLate)],
-        due_today: metrics.tasks_due_today,
+        overdue: [
+            ...metrics.tasks_overdue.filter(isLate),
+            ...metrics.tasks_due_today.filter(isLate),
+            ...started.filter(isLate),
+        ],
+        due_today: [
+            ...metrics.tasks_overdue.filter(isDueToday),
+            ...metrics.tasks_due_today.filter(isDueToday),
+        ],
         in_progress: started,
-        suggested: metrics.suggested_tasks,
+        suggested: [
+            ...metrics.suggested_tasks,
+            ...fromProjectDates.filter(
+                (task) =>
+                    (dueTime(task) === null || dueTime(task) <= horizon) &&
+                    !(
+                        task.defer_until &&
+                        new Date(task.defer_until).getTime() > Date.now()
+                    )
+            ),
+        ],
     };
 
     const seen = new Set();
@@ -320,7 +361,44 @@ async function saveRanking(user, order) {
     return getRanking(user);
 }
 
+// The hours the planner shows by default, as minutes after local midnight
+// in the user's timezone (Profile > Planning).
+const isValidDayHours = (hours) =>
+    !!hours &&
+    Number.isInteger(hours.start) &&
+    Number.isInteger(hours.end) &&
+    hours.start >= 0 &&
+    hours.end <= MINUTES_PER_DAY &&
+    hours.start < hours.end &&
+    hours.start % DAY_HOURS_STEP === 0 &&
+    hours.end % DAY_HOURS_STEP === 0;
+
+async function getDayHours(user) {
+    const settings = await repository.findUiSettings(user.id);
+    const saved = settings.planning?.dayHours;
+    return isValidDayHours(saved)
+        ? { start: saved.start, end: saved.end }
+        : { ...slots.DEFAULT_DAY_HOURS };
+}
+
+async function saveDayHours(user, hours) {
+    const next = { start: hours?.start, end: hours?.end };
+    if (!isValidDayHours(next)) {
+        throw new ValidationError(
+            `start and end must be minutes of the day in steps of ${DAY_HOURS_STEP}, with start before end`
+        );
+    }
+    const settings = await repository.findUiSettings(user.id);
+    await repository.saveUiSettings(user.id, {
+        ...settings,
+        planning: { ...(settings.planning || {}), dayHours: next },
+    });
+    return getDayHours(user);
+}
+
 module.exports = {
+    getDayHours,
+    saveDayHours,
     resolvePlanDate,
     validateItems,
     getPlan,

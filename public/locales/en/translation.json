@@ -614,6 +614,12 @@
       "missingFields": "Add a name and the calendar address"
     },
     "planning": {
+      "hoursTitle": "Your day",
+      "hoursDescription": "The hours the timeline shows on Today and when you plan your day. New tasks and AI drafts get a time inside them. Times are in your timezone ({{timezone}}).",
+      "hoursFrom": "From",
+      "hoursTo": "to",
+      "hoursLoadError": "Could not load your day hours",
+      "hoursSaveError": "Could not save your day hours",
       "title": "Planning",
       "description": "How \"What could you do today?\" orders your tasks when you plan your day. Drag the rows into the order you want; the same tasks always come out in the same order.",
       "orderTitle": "Order (drag to change)",
@@ -2127,6 +2133,7 @@
     "ctaButton": "Sign up now"
   },
   "dailyPlan": {
+    "addTask": "Add task",
     "inProgress": "In progress",
     "overdue": "Overdue",
     "dueToday": "Due today",
@@ -2275,6 +2282,7 @@
   },
   "capture": {
     "addTo": "Add to",
+    "today": "Today",
     "inbox": "Inbox",
     "task": "Task",
     "note": "Note",

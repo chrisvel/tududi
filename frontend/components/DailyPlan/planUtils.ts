@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { isTaskDone } from '../../constants/taskStatus';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
-import { DailyPlanItem } from '../../utils/dailyPlanService';
+import { DailyPlanItem, DayHours } from '../../utils/dailyPlanService';
 
 export const DURATION_OPTIONS = [15, 30, 60, 120];
 export const DEFAULT_DURATION = 30;
@@ -82,14 +82,15 @@ export const itemEnd = (item: DailyPlanItem): number =>
 export const isItemDone = (item: DailyPlanItem): boolean =>
     isTaskDone(item.task?.status);
 
-// The visible range of the timeline: 08:00-18:00, widened to whole hours
-// around anything planned or on the calendar outside it.
+// The visible range of the timeline: the user's day hours (08:00-18:00 by
+// default), widened to whole hours around anything planned or on the
+// calendar outside them.
 export const dayRange = (
     items: DailyPlanItem[],
-    events: CalendarEvent[]
+    events: CalendarEvent[],
+    hours: DayHours = { start: DEFAULT_DAY_START, end: DEFAULT_DAY_END }
 ): { start: number; end: number } => {
-    let start = DEFAULT_DAY_START;
-    let end = DEFAULT_DAY_END;
+    let { start, end } = hours;
     for (const item of items) {
         if (item.start_minute === null) continue;
         start = Math.min(start, item.start_minute);

@@ -9,7 +9,9 @@ import {
 } from '@testing-library/react';
 import CaptureHost from '../CaptureHost';
 import {
+    CaptureSavedEvent,
     closeCapture,
+    onCaptureSaved,
     openCapture,
     toggleCapture,
 } from '../../../utils/captureUi';
@@ -36,6 +38,11 @@ jest.mock('../../../store/useStore', () => {
             refreshTags: jest.fn().mockResolvedValue(undefined),
         },
         projectsStore: { projects: [], setProjects: jest.fn() },
+        tasksStore: {
+            createTask: jest
+                .fn()
+                .mockResolvedValue({ uid: 'task-1', name: 'Call the bank' }),
+        },
     };
     return {
         useStore: Object.assign(
@@ -167,6 +174,49 @@ describe('CaptureHost', () => {
 
         fireEvent.pointerDown(document.body);
         expect(screen.getByTestId('capture-dialog')).not.toBeVisible();
+    });
+
+    it('opens from Plan my day locked on Task and Today', () => {
+        renderHost();
+        act(() => openCapture('inbox', 'today'));
+
+        const locked = screen.getByTestId('capture-destinations-locked');
+        expect(locked).toHaveTextContent('Task');
+        expect(locked).toHaveTextContent('Today');
+        expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+
+        act(() => closeCapture());
+        act(() => openCapture('task'));
+        expect(
+            screen.queryByTestId('capture-destinations-locked')
+        ).not.toBeInTheDocument();
+        expect(screen.getByTestId('capture-target-task')).toHaveAttribute(
+            'aria-checked',
+            'true'
+        );
+    });
+
+    it('tells listeners about tasks saved from Plan my day', async () => {
+        const events: CaptureSavedEvent[] = [];
+        const stop = onCaptureSaved((event) => events.push(event));
+        renderHost();
+        act(() => openCapture('task', 'today'));
+
+        fireEvent.change(screen.getByTestId('quick-capture-input'), {
+            target: { value: 'Call the bank' },
+        });
+        fireEvent.keyDown(screen.getByTestId('quick-capture-input'), {
+            key: 'Enter',
+            ctrlKey: true,
+        });
+
+        await waitFor(() => expect(events).toHaveLength(1));
+        expect(events[0]).toMatchObject({
+            scope: 'today',
+            undone: false,
+            items: [{ target: 'task', uid: 'task-1' }],
+        });
+        stop();
     });
 
     it.each(['/inbox', '/task/abc', '/note/xyz'])(
