@@ -9,12 +9,13 @@ class HabitsRepository extends BaseRepository {
         super(Task);
     }
 
-    async findAllByUser(userId) {
+    // Archived (3) and cancelled (5) habits are listed separately.
+    async findAllByUser(userId, { archived = false } = {}) {
         return this.model.findAll({
             where: {
                 user_id: userId,
                 habit_mode: true,
-                status: { [Op.ne]: 3 },
+                status: archived ? { [Op.in]: [3, 5] } : { [Op.notIn]: [3, 5] },
             },
             order: [['created_at', 'DESC']],
         });
@@ -39,7 +40,6 @@ class HabitsRepository extends BaseRepository {
         return RecurringCompletion.findAll({
             where: {
                 task_id: taskId,
-                skipped: false,
                 completed_at: { [Op.between]: [startDate, endDate] },
             },
             order: [['completed_at', 'DESC']],

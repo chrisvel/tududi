@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Template, CloneTemplateOptions } from '../../entities/Template';
 import { Area } from '../../entities/Area';
+import { FORM } from '../../constants/formClasses';
 
 interface TemplateCloneModalProps {
     template: Template;
@@ -83,7 +84,7 @@ const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
                         <select
                             value={areaUid}
                             onChange={(e) => setAreaUid(e.target.value)}
-                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className={`${FORM.select} w-full`}
                         >
                             <option value="">{t('templates.noArea', 'No area')}</option>
                             {areas.map((area) => (

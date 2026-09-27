@@ -3,10 +3,13 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
+import ColorPicker from '../Shared/ColorPicker';
+import { PALETTE } from '../../constants/colorPalette';
 import {
     updateCalendar,
     type CalDAVCalendar,
 } from '../../utils/caldavService';
+import { FORM } from '../../constants/formClasses';
 
 interface EditCalendarModalProps {
     isOpen: boolean;
@@ -15,16 +18,7 @@ interface EditCalendarModalProps {
     onSaved: () => void;
 }
 
-const DEFAULT_COLORS = [
-    '#3b82f6',
-    '#ef4444',
-    '#10b981',
-    '#f59e0b',
-    '#8b5cf6',
-    '#ec4899',
-    '#06b6d4',
-    '#84cc16',
-];
+const DEFAULT_CALENDAR_COLOR = PALETTE.find((c) => c.key === 'blue')!.value;
 
 const EditCalendarModal: React.FC<EditCalendarModalProps> = ({
     isOpen,
@@ -38,7 +32,7 @@ const EditCalendarModal: React.FC<EditCalendarModalProps> = ({
     const [formData, setFormData] = useState({
         name: calendar.name,
         description: calendar.description || '',
-        color: calendar.color || DEFAULT_COLORS[0],
+        color: calendar.color || DEFAULT_CALENDAR_COLOR,
         enabled: calendar.enabled,
         sync_direction: calendar.sync_direction,
         sync_interval_minutes: calendar.sync_interval_minutes,
@@ -52,7 +46,7 @@ const EditCalendarModal: React.FC<EditCalendarModalProps> = ({
             setFormData({
                 name: calendar.name,
                 description: calendar.description || '',
-                color: calendar.color || DEFAULT_COLORS[0],
+                color: calendar.color || DEFAULT_CALENDAR_COLOR,
                 enabled: calendar.enabled,
                 sync_direction: calendar.sync_direction,
                 sync_interval_minutes: calendar.sync_interval_minutes,
@@ -175,24 +169,14 @@ const EditCalendarModal: React.FC<EditCalendarModalProps> = ({
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             {t('profile.caldavWizard.color', 'Color')}
                         </label>
-                        <div className="flex gap-2 flex-wrap">
-                            {DEFAULT_COLORS.map((color) => (
-                                <button
-                                    key={color}
-                                    type="button"
-                                    onClick={() =>
-                                        setFormData({ ...formData, color })
-                                    }
-                                    disabled={isSubmitting}
-                                    className={`w-10 h-10 rounded-full border-4 transition-all disabled:opacity-50 ${
-                                        formData.color === color
-                                            ? 'border-gray-400 dark:border-gray-500 scale-110'
-                                            : 'border-transparent hover:scale-105'
-                                    }`}
-                                    style={{ backgroundColor: color }}
-                                />
-                            ))}
-                        </div>
+                        <ColorPicker
+                            allowNone={false}
+                            disabled={isSubmitting}
+                            value={formData.color}
+                            onChange={(color) =>
+                                setFormData({ ...formData, color })
+                            }
+                        />
                     </div>
 
                     <div>
@@ -231,7 +215,7 @@ const EditCalendarModal: React.FC<EditCalendarModalProps> = ({
                                 })
                             }
                             disabled={isSubmitting}
-                            className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                            className={`${FORM.select} block w-full`}
                         >
                             <option value="bidirectional">
                                 {t(
@@ -303,7 +287,7 @@ const EditCalendarModal: React.FC<EditCalendarModalProps> = ({
                                 })
                             }
                             disabled={isSubmitting}
-                            className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                            className={`${FORM.select} block w-full`}
                         >
                             <option value="manual">
                                 {t(

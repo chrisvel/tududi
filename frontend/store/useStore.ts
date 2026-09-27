@@ -179,7 +179,13 @@ interface HabitsStore {
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
     loadHabits: () => Promise<void>;
-    logCompletion: (habitUid: string, completedAt?: Date) => Promise<void>;
+    logCompletion: (
+        habitUid: string,
+        completedAt?: Date,
+        options?: { value?: number; note?: string }
+    ) => Promise<void>;
+    skipDay: (habitUid: string, date?: Date) => Promise<void>;
+    updateHabitInList: (habit: Task) => void;
     removeTodayCompletion: (habitUid: string) => Promise<void>;
 }
 
@@ -661,9 +667,8 @@ export const useStore = create<StoreState>((set: any) => ({
             }
         },
         toggleTaskCompletion: async (taskUid) => {
-            const { toggleTaskCompletion } = await import(
-                '../utils/tasksService'
-            );
+            const { toggleTaskCompletion } =
+                await import('../utils/tasksService');
             try {
                 const updatedTask = await toggleTaskCompletion(taskUid);
                 set((state) => ({
@@ -939,12 +944,36 @@ export const useStore = create<StoreState>((set: any) => ({
                 }));
             }
         },
-        logCompletion: async (habitUid, completedAt) => {
-            const { logHabitCompletion } = await import(
-                '../utils/habitsService'
-            );
+        updateHabitInList: (habit) =>
+            set((state) => ({
+                habitsStore: {
+                    ...state.habitsStore,
+                    habits: state.habitsStore.habits.map((h) =>
+                        h.uid === habit.uid ? { ...h, ...habit } : h
+                    ),
+                },
+            })),
+        skipDay: async (habitUid, date) => {
+            const { skipHabitDay } = await import('../utils/habitsService');
+            const updated = await skipHabitDay(habitUid, date);
+            set((state) => ({
+                habitsStore: {
+                    ...state.habitsStore,
+                    habits: state.habitsStore.habits.map((h) =>
+                        h.uid === habitUid ? { ...h, ...updated.task } : h
+                    ),
+                },
+            }));
+        },
+        logCompletion: async (habitUid, completedAt, options) => {
+            const { logHabitCompletion } =
+                await import('../utils/habitsService');
             try {
-                const updated = await logHabitCompletion(habitUid, completedAt);
+                const updated = await logHabitCompletion(
+                    habitUid,
+                    completedAt,
+                    options
+                );
                 set((state) => ({
                     habitsStore: {
                         ...state.habitsStore,

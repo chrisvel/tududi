@@ -5,6 +5,12 @@ import {
     ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
+import {
+    ACCENT,
+    PALETTE,
+    accentVars,
+    hashColor,
+} from '../../constants/colorPalette';
 import { Template } from '../../entities/Template';
 
 interface TemplateCardProps {
@@ -15,22 +21,12 @@ interface TemplateCardProps {
     onPreview: (template: Template) => void;
 }
 
-const ACCENT_COLORS = [
-    { bar: 'bg-violet-500', badge: 'bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300' },
-    { bar: 'bg-blue-500',   badge: 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' },
-    { bar: 'bg-emerald-500', badge: 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300' },
-    { bar: 'bg-rose-500',  badge: 'bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300' },
-    { bar: 'bg-amber-500', badge: 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300' },
-    { bar: 'bg-cyan-500',  badge: 'bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300' },
-    { bar: 'bg-pink-500',  badge: 'bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300' },
-    { bar: 'bg-teal-500',  badge: 'bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300' },
-];
-
+// Category accents come from the shared palette so a category always gets
+// the same hue, the same one it would get anywhere else in tududi.
 function categoryAccent(category?: string | null) {
-    if (!category) return { bar: 'bg-indigo-500', badge: 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' };
-    let hash = 0;
-    for (let i = 0; i < category.length; i++) hash = (hash * 31 + category.charCodeAt(i)) & 0xffff;
-    return ACCENT_COLORS[hash % ACCENT_COLORS.length];
+    return category
+        ? hashColor(category)
+        : PALETTE.find((c) => c.key === 'indigo')!;
 }
 
 const TemplateCard: React.FC<TemplateCardProps> = ({
@@ -71,7 +67,9 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
             onClick={() => onPreview(template)}
             className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl flex flex-col group hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 cursor-pointer"
         >
-            <div className={`h-1.5 w-full flex-shrink-0 rounded-t-xl ${accent.bar}`} />
+            <div className={`h-1.5 w-full flex-shrink-0 rounded-t-xl ${ACCENT.bg}`}
+                style={accentVars(accent)}
+            />
 
             <div className="p-4 flex flex-col gap-2.5 flex-1 relative">
                 <div className="absolute top-2 right-2 z-10" ref={dropdownRef}>
@@ -123,7 +121,9 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
                 </h3>
 
                 {template.template_category && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full self-start font-medium ${accent.badge}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full self-start font-medium ${ACCENT.softBg} ${ACCENT.text}`}
+                        style={accentVars(accent)}
+                    >
                         {template.template_category}
                     </span>
                 )}

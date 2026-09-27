@@ -7,9 +7,11 @@ import {
     FolderIcon,
     FolderOpenIcon,
     ClockIcon,
+    FireIcon,
 } from '@heroicons/react/24/outline';
 import type { NotificationPreferences } from '../types';
 import { getCsrfToken } from '../../../utils/csrfService';
+import { FORM } from '../../../constants/formClasses';
 
 interface NotificationsTabProps {
     isActive: boolean;
@@ -29,6 +31,12 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
     },
     deferUntil: { inApp: true, email: false, push: false, telegram: false },
     taskAssigned: { inApp: true, email: false, push: false, telegram: false },
+    habitReminders: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+    },
 };
 
 interface NotificationTypeRowProps {
@@ -340,6 +348,22 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             telegramConfigured={telegramConfigured}
                         />
                         <NotificationTypeRow
+                            icon={FireIcon}
+                            label={t(
+                                'notifications.types.habitReminders',
+                                'Habit Reminders'
+                            )}
+                            description={t(
+                                'notifications.descriptions.habitReminders',
+                                'At the reminder time set on a habit, while it is still open'
+                            )}
+                            preferences={preferences.habitReminders}
+                            onToggle={(channel, value) =>
+                                handleToggle('habitReminders', channel, value)
+                            }
+                            telegramConfigured={telegramConfigured}
+                        />
+                        <NotificationTypeRow
                             icon={FolderIcon}
                             label={t(
                                 'notifications.types.dueProjects',
@@ -391,7 +415,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     <select
                         value={selectedTestType}
                         onChange={(e) => setSelectedTestType(e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm border border-purple-300 dark:border-purple-700 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className={`${FORM.select} flex-1`}
                     >
                         <option value="task_due_soon">
                             {t('notifications.types.dueTasks', 'Due Tasks')}

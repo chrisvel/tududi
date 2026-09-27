@@ -1,5 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+    ACCENT,
+    PALETTE,
+    accentVars,
+    hashColor,
+} from '../../constants/colorPalette';
 import { XMarkIcon, ArrowDownTrayIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Template } from '../../entities/Template';
 import { Task } from '../../entities/Task';
@@ -10,22 +16,12 @@ interface TemplatePreviewModalProps {
     onClone: () => void;
 }
 
-const ACCENT_COLORS = [
-    'bg-violet-500',
-    'bg-blue-500',
-    'bg-emerald-500',
-    'bg-rose-500',
-    'bg-amber-500',
-    'bg-cyan-500',
-    'bg-pink-500',
-    'bg-teal-500',
-];
-
-function categoryAccentBar(category?: string | null) {
-    if (!category) return 'bg-indigo-500';
-    let hash = 0;
-    for (let i = 0; i < category.length; i++) hash = (hash * 31 + category.charCodeAt(i)) & 0xffff;
-    return ACCENT_COLORS[hash % ACCENT_COLORS.length];
+// Category accents come from the shared palette so a category always gets
+// the same hue, the same one it would get anywhere else in tududi.
+function categoryAccent(category?: string | null) {
+    return category
+        ? hashColor(category)
+        : PALETTE.find((c) => c.key === 'indigo')!;
 }
 
 const TaskTree: React.FC<{ task: Task }> = ({ task }) => {
@@ -62,7 +58,7 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
 }) => {
     const { t } = useTranslation();
     const tasks = template.Tasks || [];
-    const accentBar = categoryAccentBar(template.template_category);
+    const accent = categoryAccent(template.template_category);
 
     return (
         <div
@@ -73,7 +69,9 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                 className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className={`h-1.5 w-full flex-shrink-0 ${accentBar}`} />
+                <div className={`h-1.5 w-full flex-shrink-0 ${ACCENT.bg}`}
+                    style={accentVars(accent)}
+                />
 
                 <div className="px-6 pt-5 pb-4 flex-shrink-0">
                     <div className="flex items-start justify-between gap-3">

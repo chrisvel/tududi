@@ -176,6 +176,12 @@ import clsx from 'clsx';
 
 ---
 
+### 4. Colors and Form Controls
+
+- **One palette.** Every user-chosen color (areas, projects, goals, tags, notes, people, calendars, habits) comes from `PALETTE` in `frontend/constants/colorPalette.ts`, through the shared `ColorPicker`. Automatic colors (comment avatars, template accents) use `hashColor(seed)` from the same palette. Do not add local color arrays.
+- Each palette color has a stored `value` (light-mode shade) and a lighter `dark` shade. To color a component with a user color, set `accentVars(resolveColor(value))` as its `style` and use the `ACCENT.*` classes (`ACCENT.bg`, `ACCENT.text`, `ACCENT.solid`, `ACCENT.surface`, ...), which switch shade in dark mode.
+- **Form controls** use the shared classes in `frontend/constants/formClasses.ts`: `FORM.select`, `FORM.input`, `FORM.textarea`, `FORM.label`, plus layout classes such as `w-full`. Base `select` styling (the arrow, dark native option lists) lives in `@layer base` in `frontend/styles/tailwind.css`, so utility classes always win over it.
+
 ## Naming Conventions
 
 | Type | Convention | Example |

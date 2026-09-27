@@ -41,6 +41,7 @@ import { COLORS } from './Shared/ColorPicker';
 import NoteFocusMode from './Note/NoteFocusMode';
 import MarkdownEditor from './Note/MarkdownEditor';
 import NoteCard from './Shared/NoteCard';
+import { FORM } from '../constants/formClasses';
 
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
@@ -855,7 +856,7 @@ const Notes: React.FC = () => {
                                                 });
                                                 setShowProjectDropdown(false);
                                             }}
-                                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            className={`${FORM.select} w-full`}
                                         >
                                             <option value="">No Project</option>
                                             {projects.map((project) => (

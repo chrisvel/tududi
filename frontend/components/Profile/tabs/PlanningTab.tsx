@@ -32,6 +32,7 @@ import {
     DEFAULT_DAY_START,
     formatMinute,
 } from '../../DailyPlan/planUtils';
+import { FORM } from '../../../constants/formClasses';
 
 const HOURS_STEP = 30;
 const HOUR_OPTIONS = Array.from(
@@ -376,7 +377,7 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
                                     start: Number(e.target.value),
                                 })
                             }
-                            className="rounded-md bg-gray-50 px-2 py-1.5 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                            className={`${FORM.select}`}
                             data-testid="planning-day-start"
                         >
                             {HOUR_OPTIONS.filter(
@@ -398,7 +399,7 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
                                     end: Number(e.target.value),
                                 })
                             }
-                            className="rounded-md bg-gray-50 px-2 py-1.5 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                            className={`${FORM.select}`}
                             data-testid="planning-day-end"
                         >
                             {HOUR_OPTIONS.filter(

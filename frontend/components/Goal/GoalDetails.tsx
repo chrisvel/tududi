@@ -24,6 +24,7 @@ import TaskList from '../Task/TaskList';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
 import ColorPicker from '../Shared/ColorPicker';
+import { FORM } from '../../constants/formClasses';
 
 const TASK_STATUS_DONE = [2, 3, 'done', 'archived'];
 
@@ -316,7 +317,7 @@ const GoalDetails: React.FC = () => {
                                         name="horizon"
                                         value={formData.horizon ?? 'season'}
                                         onChange={handleChange}
-                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                                        className={`${FORM.select} block w-full`}
                                     >
                                         <option value="season">
                                             {t(
@@ -337,7 +338,7 @@ const GoalDetails: React.FC = () => {
                                         name="status"
                                         value={formData.status ?? 'active'}
                                         onChange={handleChange}
-                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                                        className={`${FORM.select} block w-full`}
                                     >
                                         <option value="active">
                                             {t('goals.status.active', 'Active')}
@@ -398,7 +399,7 @@ const GoalDetails: React.FC = () => {
                                     name="area_id"
                                     value={formData.area_id ?? ''}
                                     onChange={handleChange}
-                                    className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                                    className={`${FORM.select} block w-full`}
                                 >
                                     <option value="">
                                         {t('forms.noArea', 'No area')}

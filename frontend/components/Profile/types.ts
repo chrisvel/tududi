@@ -100,6 +100,12 @@ export interface NotificationPreferences {
         push: boolean;
         telegram: boolean;
     };
+    habitReminders: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
 }
 
 export interface Profile {

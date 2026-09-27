@@ -15,6 +15,7 @@ import {
     AdminBillingAccount,
     AdminBillingSummaryRow,
 } from '../../utils/adminBillingService';
+import { FORM } from '../../constants/formClasses';
 
 const AdminBillingPage: React.FC = () => {
     const { t } = useTranslation();
@@ -387,7 +388,7 @@ const AdminBillingPage: React.FC = () => {
                                     onChange={(e) =>
                                         setOverridePlan(e.target.value)
                                     }
-                                    className="mt-1 w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                                    className={`${FORM.select} mt-1 w-full`}
                                 >
                                     <option value="pro">pro</option>
                                     <option value="free">free</option>

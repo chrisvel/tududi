@@ -1,27 +1,21 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
+import ColorPicker from '../Shared/ColorPicker';
+import { PALETTE } from '../../constants/colorPalette';
 import {
     createCalendar,
     createRemoteCalendar,
     testConnection,
 } from '../../utils/caldavService';
+import { FORM } from '../../constants/formClasses';
 
 interface CalendarFormProps {
     onComplete: () => void;
     onCancel: () => void;
 }
 
-const DEFAULT_COLORS = [
-    '#3b82f6',
-    '#ef4444',
-    '#10b981',
-    '#f59e0b',
-    '#8b5cf6',
-    '#ec4899',
-    '#06b6d4',
-    '#84cc16',
-];
+const DEFAULT_CALENDAR_COLOR = PALETTE.find((c) => c.key === 'blue')!.value;
 
 const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => {
     const { t } = useTranslation();
@@ -30,7 +24,7 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
     const [formData, setFormData] = useState({
         calendarName: '',
         calendarDescription: '',
-        calendarColor: DEFAULT_COLORS[0],
+        calendarColor: DEFAULT_CALENDAR_COLOR,
         serverUrl: '',
         calendarPath: '',
         username: '',
@@ -269,21 +263,13 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {t('profile.caldavWizard.color', 'Color')}
                     </label>
-                    <div className="flex gap-2 flex-wrap">
-                        {DEFAULT_COLORS.map((color) => (
-                            <button
-                                key={color}
-                                type="button"
-                                onClick={() => setFormData({ ...formData, calendarColor: color })}
-                                className={`w-10 h-10 rounded-full border-4 transition-all ${
-                                    formData.calendarColor === color
-                                        ? 'border-gray-400 dark:border-gray-500 scale-110'
-                                        : 'border-transparent hover:scale-105'
-                                }`}
-                                style={{ backgroundColor: color }}
-                            />
-                        ))}
-                    </div>
+                    <ColorPicker
+                        allowNone={false}
+                        value={formData.calendarColor}
+                        onChange={(color) =>
+                            setFormData({ ...formData, calendarColor: color })
+                        }
+                    />
                 </div>
 
                 <div className="lg:col-span-2 border-t border-gray-200 dark:border-gray-700 pt-6">
@@ -396,7 +382,7 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                                 authType: e.target.value as 'basic' | 'bearer',
                             })
                         }
-                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className={`${FORM.select} block w-full`}
                     >
                         <option value="basic">
                             {t('profile.caldavWizard.basicAuth', 'Basic Auth')}
@@ -466,7 +452,7 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                                 syncDirection: e.target.value as 'bidirectional' | 'pull_only' | 'push_only',
                             })
                         }
-                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className={`${FORM.select} block w-full`}
                     >
                         <option value="bidirectional">
                             {t('profile.caldavWizard.bidirectional', 'Bidirectional (sync both ways)')}
@@ -518,7 +504,7 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                                     | 'manual',
                             })
                         }
-                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className={`${FORM.select} block w-full`}
                     >
                         <option value="manual">
                             {t('profile.caldavWizard.manual', 'Ask me (manual resolution)')}

@@ -369,27 +369,23 @@ Task responses include `is_blocked` and `blocked_by_count`. Names of blockers co
     - Different from recurring tasks (habits focus on streak tracking)
     - Example: "Exercise 3 times per week"
 
-41. **Habit properties:**
-    - **Target count:** How many times per period (e.g., 3 times)
-    - **Frequency period:** daily, weekly, or monthly
-    - **Streak mode:**
-      - Calendar: Count consecutive days
-      - Scheduled: Count consecutive completions on scheduled days
-    - **Flexibility mode:**
-      - Strict: Must complete on exact schedule
-      - Flexible: Can complete within the period
+41. **Habit properties:** see [Habits](21-habits.md) for the full rules.
+    - **Type:** build (do it) or quit (avoid it, e.g. "no sugar")
+    - **Goal:** a count per period, or an amount with a unit ("20 pages a day")
+    - **Frequency:** daily (optionally on chosen weekdays), weekly, monthly, or every N days
+    - **Time of day** and an optional **reminder time**
 
 42. **Habit tracking:**
-    - `habit_current_streak`: Current consecutive completions
-    - `habit_best_streak`: Longest streak ever achieved
-    - `habit_total_completions`: Total times completed
-    - `habit_last_completion_at`: When last completed
+    - `habit_current_streak` / `habit_best_streak`: consecutive periods that met the goal
+    - `habit_strength`: 0-100 score that rises with repetition and dips slowly after a miss
+    - `habit_total_completions`: total check-ins (slips for quit habits)
+    - `habit_last_completion_at`: when last checked in
+    - These are caches, rebuilt from the check-in history in the user's timezone
 
 43. **Habit completion:**
-    - Completing a habit increments counters
-    - Streak breaks if missed according to mode rules
-    - Habit widgets show progress toward target count
-    - Visual indicators for streak status (on track, at risk, broken)
+    - Check-ins can carry an amount and a note; a day can be skipped without breaking the streak
+    - The current period never breaks a streak while it can still be met
+    - Archiving hides a habit and keeps its history
 
 ---
 

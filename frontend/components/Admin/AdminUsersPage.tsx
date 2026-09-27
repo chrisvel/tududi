@@ -33,6 +33,7 @@ import {
     RoleId,
     RolesOverview,
 } from '../../entities/Role';
+import { FORM } from '../../constants/formClasses';
 
 type AccountStatus = 'active' | 'invited' | 'no_sign_in';
 
@@ -400,7 +401,7 @@ const AddUserModal: React.FC<{
                             <select
                                 id="admin-user-contact"
                                 data-testid="admin-user-contact"
-                                className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm"
+                                className={`${FORM.select} w-full`}
                                 value={selectedPersonUid}
                                 onChange={(e) =>
                                     handlePersonSelect(e.target.value)

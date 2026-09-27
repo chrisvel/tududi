@@ -13,6 +13,26 @@ export interface TaskRelation {
     task: { uid: string; name: string; status: StatusType | number };
 }
 
+export type HabitPeriod = 'daily' | 'weekly' | 'monthly' | 'interval';
+export type HabitTimeOfDay = 'morning' | 'afternoon' | 'evening';
+
+// Progress in the habit's current period, computed by the server in the
+// user's timezone.
+export interface HabitProgress {
+    period_start: string;
+    period_end: string;
+    today: string;
+    first_day: string;
+    progress: number;
+    check_ins: number;
+    today_check_ins: number;
+    goal: number;
+    met: boolean;
+    skipped: boolean;
+    scheduled_today: boolean;
+    multiple_per_day: boolean;
+}
+
 export interface Task {
     id?: number;
     uid?: string;
@@ -60,13 +80,24 @@ export interface Task {
     blocked_by_count?: number;
     habit_mode?: boolean;
     habit_target_count?: number;
-    habit_frequency_period?: 'daily' | 'weekly' | 'monthly';
+    habit_frequency_period?: HabitPeriod;
     habit_streak_mode?: 'calendar' | 'scheduled';
     habit_flexibility_mode?: 'strict' | 'flexible';
     habit_current_streak?: number;
     habit_best_streak?: number;
     habit_total_completions?: number;
     habit_last_completion_at?: string;
+    habit_polarity?: 'build' | 'quit';
+    habit_unit?: string | null;
+    habit_target_value?: number | null;
+    habit_schedule_days?: number[] | null;
+    habit_interval_days?: number | null;
+    habit_time_of_day?: HabitTimeOfDay | null;
+    habit_reminder_time?: string | null;
+    habit_strength?: number;
+    habit_color?: string | null;
+    habit_progress?: HabitProgress;
+    habit_archived?: boolean;
     assigned_to?: string | null;
     AssignedTo?: Person | null;
     involves?: string[];

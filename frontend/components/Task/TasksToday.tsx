@@ -43,6 +43,12 @@ import LifeBalance from './LifeBalance';
 import AreaDonut from './AreaDonut';
 import ActiveProjectsSection from './ActiveProjectsSection';
 import DailyAssistant from '../AI/DailyAssistant';
+import {
+    formatAmount,
+    formatHabitTarget,
+    isMeasurableHabit,
+    isQuitHabit,
+} from '../../utils/habitUtils';
 
 const filterNonHabitTasks = (tasks: Task[] = []) =>
     tasks.filter((task) => !task.habit_mode);
@@ -308,6 +314,13 @@ const TasksToday: React.FC = () => {
     };
 
     const isHabitCompletedToday = useCallback((habit: Task) => {
+        const progress = habit.habit_progress;
+        if (progress) {
+            return (
+                progress.met ||
+                (!progress.multiple_per_day && progress.today_check_ins > 0)
+            );
+        }
         if (!habit.habit_last_completion_at) {
             return false;
         }
@@ -325,6 +338,9 @@ const TasksToday: React.FC = () => {
             todayHabits.filter(
                 (habit) =>
                     !isHabitArchived(habit.status) &&
+                    !isQuitHabit(habit) &&
+                    habit.habit_progress?.scheduled_today !== false &&
+                    !habit.habit_progress?.skipped &&
                     !isHabitCompletedToday(habit)
             ),
         [todayHabits, isHabitCompletedToday]
@@ -335,28 +351,20 @@ const TasksToday: React.FC = () => {
             todayHabits.filter(
                 (habit) =>
                     !isHabitArchived(habit.status) &&
+                    !isQuitHabit(habit) &&
                     isHabitCompletedToday(habit)
             ),
         [todayHabits, isHabitCompletedToday]
     );
 
-    const getHabitPeriodLabel = useCallback(
-        (period?: string) => {
-            switch (period) {
-                case 'weekly':
-                    return t('habits.week', 'Week').toLowerCase();
-                case 'monthly':
-                    return t('habits.month', 'Month').toLowerCase();
-                default:
-                    return t('habits.day', 'Day').toLowerCase();
-            }
-        },
-        [t]
-    );
-
     const handleHabitToggle = useCallback(
         async (habit: Task) => {
             if (!habit.uid || habitActionUid) return;
+            // An amount needs input, which lives on the habit page.
+            if (isMeasurableHabit(habit) && !isHabitCompletedToday(habit)) {
+                navigate(`/habit/${habit.uid}`);
+                return;
+            }
             setHabitActionUid(habit.uid);
             try {
                 if (isHabitCompletedToday(habit)) {
@@ -375,6 +383,7 @@ const TasksToday: React.FC = () => {
             isHabitCompletedToday,
             logHabitCompletion,
             removeHabitCompletion,
+            navigate,
         ]
     );
 
@@ -425,15 +434,10 @@ const TasksToday: React.FC = () => {
                                             {habit.name}
                                         </p>
                                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t(
-                                                'habits.targetFrequency',
-                                                'Target Frequency'
-                                            )}
-                                            : {habit.habit_target_count || 1}x{' '}
-                                            {t('common.per', 'per')}{' '}
-                                            {getHabitPeriodLabel(
-                                                habit.habit_frequency_period
-                                            )}
+                                            {formatHabitTarget(t, habit)}
+                                            {habit.habit_progress &&
+                                                habit.habit_progress.goal > 1 &&
+                                                ` · ${formatAmount(habit.habit_progress.progress)}/${formatAmount(habit.habit_progress.goal)}`}
                                         </p>
                                     </button>
                                     <div className="flex items-center gap-2 opacity-0 group hover:opacity-100 transition-opacity duration-200">
@@ -468,7 +472,6 @@ const TasksToday: React.FC = () => {
             );
         },
         [
-            getHabitPeriodLabel,
             habitActionUid,
             handleHabitDetails,
             handleHabitToggle,

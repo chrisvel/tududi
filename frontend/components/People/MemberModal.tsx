@@ -10,6 +10,7 @@ import {
 } from '../../utils/membersService';
 import { generatePassword } from '../../utils/passwordPolicy';
 import { roleName } from '../Admin/roleLabels';
+import { FORM } from '../../constants/formClasses';
 
 interface MemberModalProps {
     // A contact to turn into a member. It keeps its history, so tasks that
@@ -219,7 +220,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                             {t('members.role', 'Role')}
                         </label>
                         <select
-                            className={inputClass}
+                            className={`${FORM.select} w-full`}
                             value={role}
                             onChange={(e) => setRole(e.target.value as RoleId)}
                             data-testid="member-role"

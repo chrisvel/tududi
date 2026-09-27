@@ -47,6 +47,12 @@ describe('notificationPreferences utils', () => {
                     push: false,
                     telegram: false,
                 },
+                habitReminders: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
             });
         });
 
@@ -344,6 +350,12 @@ describe('notificationPreferences utils', () => {
                     email: true,
                     push: false,
                     telegram: false,
+                },
+                habitReminders: {
+                    inApp: false,
+                    email: false,
+                    push: false,
+                    telegram: true,
                 },
             };
 

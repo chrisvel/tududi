@@ -305,6 +305,12 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Read-only iCal calendar feeds (Google secret address), encrypted and SSRF-guarded
     - Daily plan API and schema
 
+30. **[Habits](docs/21-habits.md)**
+    - Build and quit habits, counts or measured amounts, schedules and intervals
+    - Several check-ins a day, notes, skipped days, full-history year grid
+    - Streak rules, the strength score, and archiving
+    - Habit reminders and the habits API
+
 ---
 
 ## Project Overview
