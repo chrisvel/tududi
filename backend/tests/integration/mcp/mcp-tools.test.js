@@ -10,6 +10,7 @@ const {
     Tag,
     Note,
     InboxItem,
+    Goal,
 } = require('../../../models');
 const { createTestUser } = require('../../helpers/testUtils');
 const {
@@ -1286,6 +1287,96 @@ describe('MCP Tools Integration', () => {
                 expect(response.status).toBe(200);
                 const jsonRpc = parseSseResponse(response.text);
                 expect(jsonRpc.result.isError).toBe(true);
+            });
+        });
+
+        describe('goal linking', () => {
+            it('should link a project to a goal on create by goal_uid', async () => {
+                const goal = await Goal.create({
+                    user_id: user.id,
+                    title: 'Run a marathon',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_project',
+                    { name: 'Training plan', goal_uid: goal.uid }
+                );
+
+                const { content } = getToolContent(response);
+                expect(content.project.goal).toEqual({
+                    id: goal.id,
+                    uid: goal.uid,
+                    title: 'Run a marathon',
+                });
+            });
+
+            it('should link by goal_id, re-link idempotently and unlink with null', async () => {
+                const goal = await Goal.create({
+                    user_id: user.id,
+                    title: 'Ship v2',
+                });
+                const project = await Project.create({
+                    user_id: user.id,
+                    name: 'Release work',
+                });
+
+                for (let i = 0; i < 2; i++) {
+                    const response = await callMcpTool(
+                        apiTokenValue,
+                        'update_project',
+                        { uid: project.uid, goal_id: goal.id }
+                    );
+                    const { content, isError } = getToolContent(response);
+                    expect(isError).toBe(false);
+                    expect(content.project.goal.id).toBe(goal.id);
+                }
+
+                const goalResponse = await callMcpTool(
+                    apiTokenValue,
+                    'get_goal',
+                    { uid: goal.uid }
+                );
+                expect(
+                    getToolContent(goalResponse).content.goal.projects.map(
+                        (p) => p.uid
+                    )
+                ).toEqual([project.uid]);
+
+                const unlinkResponse = await callMcpTool(
+                    apiTokenValue,
+                    'update_project',
+                    { uid: project.uid, goal_uid: null }
+                );
+                expect(
+                    getToolContent(unlinkResponse).content.project.goal
+                ).toBe(null);
+                await project.reload();
+                expect(project.goal_id).toBeNull();
+            });
+
+            it("should reject another user's goal", async () => {
+                const other = await createTestUser({
+                    email: `mcp_goal_other_${Date.now()}@example.com`,
+                });
+                const foreignGoal = await Goal.create({
+                    user_id: other.id,
+                    title: 'Not yours',
+                });
+                const project = await Project.create({
+                    user_id: user.id,
+                    name: 'Mine',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_project',
+                    { uid: project.uid, goal_uid: foreignGoal.uid }
+                );
+
+                expect(getToolContent(response).isError).toBe(true);
+                await project.reload();
+                expect(project.goal_id).toBeNull();
             });
         });
 

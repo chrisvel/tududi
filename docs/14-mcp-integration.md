@@ -464,6 +464,8 @@ Create a new project. Refused for an account whose role does not allow creating 
 | `area_id` | number | No | Parent area ID |
 | `due_date_at` | string | No | Due date (ISO 8601) |
 | `tags` | string[] | No | Array of tag names |
+| `goal_id` | number | No | Goal ID to link the project to (must be your own goal) |
+| `goal_uid` | string | No | Goal UID, as an alternative to `goal_id` |
 
 ---
 
@@ -481,6 +483,8 @@ Update an existing project.
 | `status` | string | No | New status |
 | `area_id` | number | No | New area ID |
 | `pinned` | boolean | No | Pin to sidebar |
+| `goal_id` | number | No | Link to a goal you own; `null` unlinks (owner only) |
+| `goal_uid` | string | No | Goal UID, as an alternative to `goal_id`; `null` or empty unlinks |
 
 ---
 
@@ -667,7 +671,7 @@ List goals with optional filtering by area or status.
 
 #### `get_goal`
 
-Get a single goal by UID.
+Get a single goal by UID, including the projects linked to it.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
