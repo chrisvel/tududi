@@ -416,7 +416,10 @@
     "subBody": "Occasional release notes. No marketing, unsubscribe any time.",
     "subSubmit": "Join",
     "rights": "All rights reserved.",
-    "linkLicence": "MIT licence"
+    "linkLicence": "MIT licence",
+    "linkTerms": "Terms",
+    "linkPrivacy": "Privacy",
+    "linkRefunds": "Refunds"
   },
   "js": {
     "showFewer": "Show fewer",

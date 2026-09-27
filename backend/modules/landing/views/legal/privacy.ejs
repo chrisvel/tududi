@@ -1,0 +1,60 @@
+<p>This policy explains what personal data tududi Cloud and this website collect, why, and what you can do about it. The controller of that data is <%= operator.name %>, <%= operator.location %>. Contact: <a href="mailto:<%= operator.email %>"><%= operator.email %></a>.</p>
+
+<p>If you run tududi on your own server, none of this applies to you: your data never reaches us.</p>
+
+<h2>1. What we collect</h2>
+<ul>
+    <li><strong>Account data:</strong> your email address, name, password (stored only as a one-way hash), language, timezone and profile settings.</li>
+    <li><strong>Your content:</strong> everything you put into tududi, such as tasks, notes, projects, areas, habits, comments and uploaded files, plus the people and groups you share with.</li>
+    <li><strong>Billing data:</strong> your subscription status, plan and renewal dates, and the customer and subscription identifiers from our payment provider. We never see or store your full card details.</li>
+    <li><strong>Technical data:</strong> IP address, browser user agent, and request logs, used for security, rate limiting and troubleshooting.</li>
+    <li><strong>Integrations you turn on:</strong> for example a Telegram chat id, calendar feed addresses (stored encrypted) or API tokens.</li>
+    <li><strong>Website:</strong> if you join the mailing list, your email address and the language you signed up in.</li>
+</ul>
+
+<h2>2. Why we use it (legal basis)</h2>
+<ul>
+    <li>To provide the service you signed up for: storing and showing your content, sign-in, sharing, email notifications you enable. <em>Basis: performance of our contract with you.</em></li>
+    <li>To take payment and keep billing records. <em>Basis: contract, and legal obligations for tax and accounting records.</em></li>
+    <li>To keep the service secure, prevent abuse and fix problems. <em>Basis: our legitimate interest in running a safe service.</em></li>
+    <li>To send release notes if you ask for them. <em>Basis: your consent, which you can withdraw with the unsubscribe link in any email.</em></li>
+    <li>To measure visits to this website with Google Analytics. <em>Basis: consent where required.</em> The tududi app itself contains no analytics or tracking.</li>
+</ul>
+<p>We do not sell your data, show you ads, or use your content to train AI models.</p>
+
+<h2>3. Who processes it for us</h2>
+<p>We use a small number of service providers, each only for the purpose listed:</p>
+<ul>
+    <li><strong><%= operator.host %></strong>: servers and storage where the service and its database run<%= operator.hostRegion ? ' (' + operator.hostRegion + ')' : '' %>.</li>
+    <li><strong>Lemon Squeezy</strong>: checkout, payments, invoices and tax, as merchant of record. See <a href="https://www.lemonsqueezy.com/privacy">their privacy policy</a>.</li>
+    <li><strong>Resend</strong>: sending account and notification email.</li>
+    <li><strong>Cloudflare Turnstile</strong>: bot protection on the sign-up and password reset forms.</li>
+    <li><strong><%= operator.aiProvider %></strong>: only when you use an AI feature, the text that feature works on is sent to this language model provider to generate a response.</li>
+    <li><strong>Google Analytics</strong>: visit statistics on this website (tududi.com), not inside the app.</li>
+</ul>
+<p>Some of these providers are based outside the European Economic Area. Where data is transferred there, it is covered by the European Commission's standard contractual clauses or an adequacy decision.</p>
+
+<h2>4. Cookies</h2>
+<p>The app uses a session cookie to keep you signed in and a few strictly necessary cookies for security. This website sets a cookie to remember your language, and Google Analytics sets its own cookies to count visits.</p>
+
+<h2>5. How long we keep it</h2>
+<ul>
+    <li>Your account and content: for as long as your account exists. When you delete your account, it is removed from the live database straight away.</li>
+    <li>Backups: database backups are kept for up to <%= operator.backupDays %> days, after which deleted data is gone from them too.</li>
+    <li>Request and security logs: only as long as needed to investigate problems, then rotated out.</li>
+    <li>Billing records: as long as tax law requires (Lemon Squeezy holds the invoices).</li>
+    <li>Mailing list: until you unsubscribe.</li>
+</ul>
+
+<h2>6. Your rights</h2>
+<p>Under the GDPR and similar laws you can ask to access, correct, delete or receive a copy of your personal data, object to or restrict how we use it, and withdraw consent at any time. Much of this you can do yourself in the app: edit your profile, export everything from Profile &rsaquo; Backup, or delete your account from Profile. For anything else, email <a href="mailto:<%= operator.email %>"><%= operator.email %></a> and we will answer within 30 days.</p>
+<p>You can also complain to your local data protection authority. In <%= operator.country %> that is the <a href="<%= operator.dpaUrl %>"><%= operator.dpaName %></a>.</p>
+
+<h2>7. Security</h2>
+<p>Connections are encrypted with TLS, passwords are hashed, calendar feed addresses are encrypted at rest, and access to production systems is limited to the operator. No system is perfectly secure; if a breach affects your data, we will tell you and the authorities as the law requires.</p>
+
+<h2>8. Children</h2>
+<p>tududi Cloud is not meant for children under 16, and we do not knowingly collect their data.</p>
+
+<h2>9. Changes</h2>
+<p>If we change this policy in a way that matters, we will email account holders before the change takes effect. The date at the top shows the latest version.</p>

@@ -341,7 +341,10 @@
     "subSubmit": "Đăng ký",
     "rights": "Bảo lưu mọi quyền.",
     "linkLicence": "Bản quyền MIT",
-    "tagline": "Một hệ thống mở để tổ chức cuộc sống và công việc. Được chúng tôi lưu trữ, hoặc trên máy chủ riêng của bạn."
+    "tagline": "Một hệ thống mở để tổ chức cuộc sống và công việc. Được chúng tôi lưu trữ, hoặc trên máy chủ riêng của bạn.",
+    "linkTerms": "Điều khoản",
+    "linkPrivacy": "Quyền riêng tư",
+    "linkRefunds": "Hoàn tiền"
   },
   "js": {
     "showFewer": "Thu gọn",

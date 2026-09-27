@@ -341,7 +341,10 @@
     "subSubmit": "Aanmelden",
     "rights": "Alle rechten voorbehouden.",
     "linkLicence": "MIT-licentie",
-    "tagline": "Een open systeem voor het organiseren van leven en werk. Door ons gehost, of op je eigen server."
+    "tagline": "Een open systeem voor het organiseren van leven en werk. Door ons gehost, of op je eigen server.",
+    "linkTerms": "Voorwaarden",
+    "linkPrivacy": "Privacy",
+    "linkRefunds": "Terugbetaling"
   },
   "js": {
     "showFewer": "Minder tonen",

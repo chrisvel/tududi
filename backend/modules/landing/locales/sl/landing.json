@@ -341,7 +341,10 @@
     "subSubmit": "Prijavi me",
     "rights": "Vse pravice pridržane.",
     "linkLicence": "Licenca MIT",
-    "tagline": "Odprt sistem za organiziranje življenja in dela. Gostovan pri nas, ali na vašem lastnem strežniku."
+    "tagline": "Odprt sistem za organiziranje življenja in dela. Gostovan pri nas, ali na vašem lastnem strežniku.",
+    "linkTerms": "Pogoji",
+    "linkPrivacy": "Zasebnost",
+    "linkRefunds": "Vračila"
   },
   "js": {
     "showFewer": "Pokaži manj",

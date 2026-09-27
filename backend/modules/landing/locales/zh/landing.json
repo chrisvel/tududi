@@ -341,7 +341,10 @@
     "subSubmit": "订阅",
     "rights": "保留所有权利。",
     "linkLicence": "MIT 许可证",
-    "tagline": "一个用于整理生活与工作的开放系统。由我们托管，或在您自己的服务器上运行。"
+    "tagline": "一个用于整理生活与工作的开放系统。由我们托管，或在您自己的服务器上运行。",
+    "linkTerms": "条款",
+    "linkPrivacy": "隐私",
+    "linkRefunds": "退款"
   },
   "js": {
     "showFewer": "收起",
