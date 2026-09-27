@@ -8,48 +8,107 @@ export interface HabitCompletion {
     completed_at: string;
     original_due_date: string;
     skipped: boolean;
-    created_at: string;
-    updated_at: string;
+    value?: number | null;
+    note?: string | null;
 }
 
-export async function fetchHabits(): Promise<Task[]> {
-    const response = await fetch(getApiPath('habits'), {
+export interface CheckInOptions {
+    value?: number;
+    note?: string;
+}
+
+async function errorMessage(response: Response, fallback: string) {
+    try {
+        const data = await response.json();
+        return data.error || data.message || fallback;
+    } catch {
+        return fallback;
+    }
+}
+
+async function send(path: string, method: string, body?: unknown) {
+    const response = await fetch(getApiPath(path), {
+        method,
         credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': await getCsrfToken(),
+        },
+        body: body === undefined ? undefined : JSON.stringify(body),
     });
+    if (!response.ok) {
+        throw new Error(
+            await errorMessage(response, `Failed: ${method} ${path}`)
+        );
+    }
+    return response.json();
+}
+
+export async function fetchHabits(archived = false): Promise<Task[]> {
+    const response = await fetch(
+        getApiPath(archived ? 'habits?archived=true' : 'habits'),
+        { credentials: 'include' }
+    );
     if (!response.ok) throw new Error('Failed to fetch habits');
     const data = await response.json();
     return data.habits;
 }
 
-export async function createHabit(habitData: Partial<Task>): Promise<Task> {
-    const response = await fetch(getApiPath('habits'), {
-        method: 'POST',
+export async function fetchHabit(habitUid: string): Promise<Task> {
+    const response = await fetch(getApiPath(`habits/${habitUid}`), {
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-csrf-token': await getCsrfToken(),
-        },
-        body: JSON.stringify(habitData),
     });
-    if (!response.ok) throw new Error('Failed to create habit');
+    if (!response.ok) throw new Error('Failed to fetch habit');
     const data = await response.json();
     return data.habit;
 }
 
-export async function logHabitCompletion(habitUid: string, completedAt?: Date) {
-    const response = await fetch(getApiPath(`habits/${habitUid}/complete`), {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-csrf-token': await getCsrfToken(),
-        },
-        body: JSON.stringify({
-            completed_at: completedAt?.toISOString(),
-        }),
+export async function skipHabitDay(
+    habitUid: string,
+    date?: Date
+): Promise<{ completion: HabitCompletion; task: Task }> {
+    return send(`habits/${habitUid}/skip`, 'POST', {
+        date: date?.toISOString(),
     });
-    if (!response.ok) throw new Error('Failed to log completion');
-    return response.json();
+}
+
+export async function updateHabitCompletion(
+    habitUid: string,
+    completionId: number,
+    updates: CheckInOptions
+): Promise<{ completion: HabitCompletion; task: Task }> {
+    return send(
+        `habits/${habitUid}/completions/${completionId}`,
+        'PATCH',
+        updates
+    );
+}
+
+export async function setHabitArchived(
+    habitUid: string,
+    archived: boolean
+): Promise<Task> {
+    const data = await send(
+        `habits/${habitUid}/${archived ? 'archive' : 'unarchive'}`,
+        'POST'
+    );
+    return data.habit;
+}
+
+export async function createHabit(habitData: Partial<Task>): Promise<Task> {
+    const data = await send('habits', 'POST', habitData);
+    return data.habit;
+}
+
+export async function logHabitCompletion(
+    habitUid: string,
+    completedAt?: Date,
+    options: CheckInOptions = {}
+): Promise<{ completion: HabitCompletion; task: Task }> {
+    return send(`habits/${habitUid}/complete`, 'POST', {
+        completed_at: completedAt?.toISOString(),
+        ...options,
+    });
 }
 
 export async function fetchHabitStats(
@@ -75,17 +134,7 @@ export async function updateHabit(
     habitUid: string,
     updates: Partial<Task>
 ): Promise<Task> {
-    const response = await fetch(getApiPath(`habits/${habitUid}`), {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-csrf-token': await getCsrfToken(),
-        },
-        body: JSON.stringify(updates),
-    });
-    if (!response.ok) throw new Error('Failed to update habit');
-    const data = await response.json();
+    const data = await send(`habits/${habitUid}`, 'PUT', updates);
     return data.habit;
 }
 

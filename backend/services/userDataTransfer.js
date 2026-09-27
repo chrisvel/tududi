@@ -209,6 +209,8 @@ async function exportUserData(userId) {
             completed_at: c.completed_at,
             original_due_date: c.original_due_date,
             skipped: c.skipped,
+            value: c.value,
+            note: c.note,
         }));
         data.attachments = await exportAttachments(task.Attachments);
         delete data.Tags;
@@ -696,6 +698,15 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                     habit_best_streak: task.habit_best_streak,
                     habit_total_completions: task.habit_total_completions,
                     habit_last_completion_at: task.habit_last_completion_at,
+                    habit_polarity: task.habit_polarity || 'build',
+                    habit_unit: task.habit_unit,
+                    habit_target_value: task.habit_target_value,
+                    habit_schedule_days: task.habit_schedule_days,
+                    habit_interval_days: task.habit_interval_days,
+                    habit_time_of_day: task.habit_time_of_day,
+                    habit_reminder_time: task.habit_reminder_time,
+                    habit_strength: task.habit_strength || 0,
+                    habit_color: task.habit_color,
                     assigned_to: mapPerson(task.assigned_to),
                     involves: Array.isArray(task.involves)
                         ? task.involves.map(mapPerson).filter(Boolean)
@@ -738,6 +749,8 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                             completion.completion_date,
                         original_due_date: completion.original_due_date || null,
                         skipped: !!completion.skipped,
+                        value: completion.value ?? null,
+                        note: completion.note ?? null,
                     },
                     { transaction }
                 );

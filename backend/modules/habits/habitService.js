@@ -1,29 +1,163 @@
 'use strict';
 
-const { RecurringCompletion } = require('../../models');
+const { RecurringCompletion, User } = require('../../models');
 const { Op } = require('sequelize');
+const moment = require('moment-timezone');
+const engine = require('./habitEngine');
+const { getSafeTimezone } = require('../../utils/timezone-utils');
+const { ValidationError } = require('../../shared/errors');
+
+const ARCHIVED_STATUS = 3;
+const CANCELLED_STATUS = 5;
+const DONE_STATUS = 2;
+
+function isInactive(task) {
+    return task.status === ARCHIVED_STATUS || task.status === CANCELLED_STATUS;
+}
+
+function cachedFields(evaluation) {
+    return {
+        habit_current_streak: evaluation.currentStreak,
+        habit_best_streak: evaluation.bestStreak,
+        habit_total_completions: evaluation.totalCompletions,
+        habit_last_completion_at: evaluation.lastCompletionAt,
+        habit_strength: evaluation.strength,
+    };
+}
+
+function sameValue(a, b) {
+    if (a instanceof Date || b instanceof Date) {
+        const ta = a ? new Date(a).getTime() : null;
+        const tb = b ? new Date(b).getTime() : null;
+        return ta === tb;
+    }
+    return a === b;
+}
 
 class HabitService {
-    async logCompletion(task, completedAt = new Date()) {
+    async getUserContext(userId) {
+        const user = await User.findByPk(userId, {
+            attributes: ['id', 'timezone', 'first_day_of_week'],
+        });
+        return {
+            timezone: getSafeTimezone(user?.timezone),
+            firstDayOfWeek: Number.isInteger(user?.first_day_of_week)
+                ? user.first_day_of_week
+                : 1,
+        };
+    }
+
+    async findEntries(taskIds) {
+        return RecurringCompletion.findAll({
+            where: { task_id: { [Op.in]: taskIds } },
+            order: [['completed_at', 'ASC']],
+        });
+    }
+
+    // Recomputes the cached counters, saves them when they changed and
+    // returns the evaluation (streaks, strength, current period progress).
+    async refresh(task, ctx, entries = null) {
+        const rows = entries || (await this.findEntries([task.id]));
+        const evaluation = engine.evaluate(task, rows, ctx);
+        const fields = cachedFields(evaluation);
+        const changed = Object.keys(fields).filter(
+            (key) => !sameValue(task[key], fields[key])
+        );
+        if (changed.length > 0) {
+            await task.update(fields);
+        }
+        return evaluation;
+    }
+
+    async refreshMany(tasks, ctx) {
+        if (tasks.length === 0) return new Map();
+        const rows = await this.findEntries(tasks.map((t) => t.id));
+        const byTask = new Map(tasks.map((t) => [t.id, []]));
+        for (const row of rows) byTask.get(row.task_id)?.push(row);
+
+        const results = new Map();
+        for (const task of tasks) {
+            results.set(
+                task.id,
+                await this.refresh(task, ctx, byTask.get(task.id))
+            );
+        }
+        return results;
+    }
+
+    dayBounds(date, ctx) {
+        const key = engine.toDayKey(date, ctx.timezone);
+        const start = moment.tz(key, ctx.timezone).startOf('day');
+        return {
+            key,
+            start: start.toDate(),
+            end: start.clone().endOf('day').toDate(),
+        };
+    }
+
+    async entriesOnDay(task, date, ctx) {
+        const { start, end } = this.dayBounds(date, ctx);
+        return RecurringCompletion.findAll({
+            where: {
+                task_id: task.id,
+                completed_at: { [Op.between]: [start, end] },
+            },
+        });
+    }
+
+    parseValue(value) {
+        if (value === undefined || value === null || value === '') return null;
+        const number = Number(value);
+        if (!Number.isFinite(number) || number <= 0) {
+            throw new ValidationError('Value must be a positive number');
+        }
+        return number;
+    }
+
+    parseNote(note) {
+        if (note === undefined || note === null) return null;
+        const text = String(note).trim();
+        return text ? text.slice(0, 2000) : null;
+    }
+
+    async logCompletion(task, ctx, options = {}) {
         if (!task.habit_mode) {
             throw new Error('Task is not a habit');
         }
+        const completedAt = options.completedAt
+            ? new Date(options.completedAt)
+            : new Date();
+        if (Number.isNaN(completedAt.getTime())) {
+            throw new ValidationError('Invalid completion date');
+        }
 
-        const dayStart = new Date(completedAt);
-        dayStart.setHours(0, 0, 0, 0);
-        const dayEnd = new Date(completedAt);
-        dayEnd.setHours(23, 59, 59, 999);
+        const cfg = engine.normalizeConfig(task, ctx);
+        const value = cfg.measurable ? this.parseValue(options.value) : null;
+        if (cfg.measurable && value === null) {
+            throw new ValidationError(
+                'This habit is measured, so a check-in needs a value'
+            );
+        }
 
-        const existingOnDay = await RecurringCompletion.findOne({
-            where: {
-                task_id: task.id,
-                skipped: false,
-                completed_at: { [Op.between]: [dayStart, dayEnd] },
-            },
-        });
+        const sameDay = await this.entriesOnDay(task, completedAt, ctx);
+        const checkIns = sameDay.filter((e) => !e.skipped);
 
-        if (existingOnDay) {
-            return { completion: existingOnDay, task };
+        if (!engine.allowsMultiplePerDay(cfg) && checkIns.length > 0) {
+            const evaluation = await this.refresh(task, ctx);
+            return { completion: checkIns[0], task, evaluation };
+        }
+        if (
+            !cfg.measurable &&
+            cfg.period === 'daily' &&
+            checkIns.length >= cfg.goal
+        ) {
+            const evaluation = await this.refresh(task, ctx);
+            return { completion: checkIns[0], task, evaluation };
+        }
+
+        // A check-in on a skipped day replaces the skip.
+        for (const skip of sameDay.filter((e) => e.skipped)) {
+            await skip.destroy();
         }
 
         const completion = await RecurringCompletion.create({
@@ -31,287 +165,101 @@ class HabitService {
             completed_at: completedAt,
             original_due_date: completedAt,
             skipped: false,
+            value,
+            note: this.parseNote(options.note),
         });
 
-        // Update cached counters and mark as done for the period
-        const updates = await this.calculateStreakUpdates(task, completedAt);
-        updates.status = 2; // Mark as done
-        updates.completed_at = completedAt;
-        await task.update(updates);
-
-        return { completion, task };
-    }
-
-    // Returns the start of the period (Monday for weekly, 1st for monthly, midnight for daily)
-    getPeriodStart(period, date) {
-        const d = new Date(date);
-        if (period === 'weekly') {
-            const day = d.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-            const diff = day === 0 ? -6 : 1 - day; // back to Monday
-            d.setDate(d.getDate() + diff);
-        } else if (period === 'monthly') {
-            d.setDate(1);
+        if (!isInactive(task) && task.status !== DONE_STATUS) {
+            await task.update({ status: DONE_STATUS });
         }
-        d.setHours(0, 0, 0, 0);
-        return d;
-    }
-
-    // Returns the start of the previous period
-    getPreviousPeriodStart(period, periodStart) {
-        const d = new Date(periodStart);
-        if (period === 'weekly') {
-            d.setDate(d.getDate() - 7);
-        } else if (period === 'monthly') {
-            d.setMonth(d.getMonth() - 1);
-        } else {
-            d.setDate(d.getDate() - 1);
+        if (cfg.polarity === 'build') {
+            await task.update({ completed_at: completedAt });
         }
-        return d;
+
+        const evaluation = await this.refresh(task, ctx);
+        return { completion, task, evaluation };
     }
 
-    // Returns the start of the next period (used for best-streak calculation)
-    getNextPeriodStart(period, periodStart) {
-        const d = new Date(periodStart);
-        if (period === 'weekly') {
-            d.setDate(d.getDate() + 7);
-        } else if (period === 'monthly') {
-            d.setMonth(d.getMonth() + 1);
-        } else {
-            d.setDate(d.getDate() + 1);
+    // A skipped day keeps the streak alive without counting as done.
+    async skipDay(task, ctx, options = {}) {
+        const cfg = engine.normalizeConfig(task, ctx);
+        if (cfg.polarity === 'quit') {
+            throw new ValidationError('Quit habits cannot skip a day');
         }
-        return d;
-    }
-
-    // Returns {start, end} bounding the entire period that contains asOfDate
-    getPeriodWindow(period, asOfDate) {
-        const start = this.getPeriodStart(period, asOfDate);
-        const end = new Date(start);
-        if (period === 'weekly') {
-            end.setDate(start.getDate() + 6);
-            end.setHours(23, 59, 59, 999);
-        } else if (period === 'monthly') {
-            end.setMonth(start.getMonth() + 1, 0); // last day of current month
-            end.setHours(23, 59, 59, 999);
-        } else {
-            end.setHours(23, 59, 59, 999);
+        const date = options.date ? new Date(options.date) : new Date();
+        if (Number.isNaN(date.getTime())) {
+            throw new ValidationError('Invalid date');
         }
-        return { start, end };
+
+        const sameDay = await this.entriesOnDay(task, date, ctx);
+        let completion = sameDay.find((e) => e.skipped);
+        if (!completion) {
+            const { start } = this.dayBounds(date, ctx);
+            const noon = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+            completion = await RecurringCompletion.create({
+                task_id: task.id,
+                completed_at: noon,
+                original_due_date: noon,
+                skipped: true,
+                note: this.parseNote(options.note),
+            });
+        }
+        const evaluation = await this.refresh(task, ctx);
+        return { completion, task, evaluation };
     }
 
-    // Current streak: consecutive periods (counting backward from asOfDate) each with ≥1 completion
-    calculatePeriodStreak(completions, asOfDate, period) {
-        if (!completions.length) return 0;
+    async updateEntry(completion, data) {
+        const updates = {};
+        if (data.note !== undefined) updates.note = this.parseNote(data.note);
+        if (data.value !== undefined && !completion.skipped) {
+            updates.value = this.parseValue(data.value);
+        }
+        if (Object.keys(updates).length > 0) {
+            await completion.update(updates);
+        }
+        return completion;
+    }
 
-        const completionPeriods = new Set(
-            completions.map((c) =>
-                this.getPeriodStart(period, new Date(c.completed_at)).getTime()
-            )
+    async getHabitStats(task, ctx, startDate, endDate) {
+        const entries = await this.findEntries([task.id]);
+        const evaluation = await this.refresh(task, ctx, entries);
+        const startKey = engine.toDayKey(startDate, ctx.timezone);
+        const endKey = engine.toDayKey(endDate, ctx.timezone);
+
+        const inRange = entries.filter((e) => {
+            const key = engine.toDayKey(e.completed_at, ctx.timezone);
+            return key >= startKey && key <= endKey;
+        });
+        const checkIns = inRange.filter((e) => !e.skipped);
+
+        const judged = evaluation.periods.filter(
+            (p) =>
+                p.start >= startKey &&
+                p.start <= endKey &&
+                (p.status === 'success' || p.status === 'fail')
         );
-
-        let streak = 0;
-        let current = this.getPeriodStart(period, asOfDate);
-
-        while (completionPeriods.has(current.getTime())) {
-            streak++;
-            current = this.getPreviousPeriodStart(period, current);
-        }
-
-        return streak;
-    }
-
-    async calculateStreakUpdates(task, completedAt) {
-        const updates = {
-            habit_total_completions: task.habit_total_completions + 1,
-            habit_last_completion_at: completedAt,
-        };
-
-        const newStreak = await this.calculateCurrentStreak(task, completedAt);
-        updates.habit_current_streak = newStreak;
-
-        if (newStreak > task.habit_best_streak) {
-            updates.habit_best_streak = newStreak;
-        }
-
-        return updates;
-    }
-
-    async recalculateStreaks(task) {
-        const completions = await RecurringCompletion.findAll({
-            where: {
-                task_id: task.id,
-                skipped: false,
-            },
-            order: [['completed_at', 'DESC']],
-        });
-
-        const period = task.habit_frequency_period || 'daily';
-
-        const updates = {
-            habit_total_completions: completions.length,
-            habit_last_completion_at:
-                completions.length > 0 ? completions[0].completed_at : null,
-        };
-
-        updates.habit_current_streak =
-            completions.length > 0
-                ? this.calculatePeriodStreak(completions, new Date(), period)
-                : 0;
-
-        updates.habit_best_streak = this.calculateBestStreak(
-            completions,
-            period
-        );
-
-        return updates;
-    }
-
-    // Best streak ever achieved: longest run of consecutive completed periods
-    calculateBestStreak(completions, period = 'daily') {
-        if (completions.length === 0) return 0;
-
-        // Normalize to period starts and deduplicate, sorted ascending
-        const periodStarts = [
-            ...new Set(
-                completions.map((c) =>
-                    this.getPeriodStart(
-                        period,
-                        new Date(c.completed_at)
-                    ).getTime()
-                )
-            ),
-        ].sort((a, b) => a - b);
-
-        let bestStreak = 0;
-        let currentStreak = 0;
-        let lastPeriodStart = null;
-
-        for (const ts of periodStarts) {
-            const current = new Date(ts);
-            if (!lastPeriodStart) {
-                currentStreak = 1;
-            } else {
-                const expectedNext = this.getNextPeriodStart(
-                    period,
-                    lastPeriodStart
-                );
-                if (current.getTime() === expectedNext.getTime()) {
-                    currentStreak++;
-                } else {
-                    bestStreak = Math.max(bestStreak, currentStreak);
-                    currentStreak = 1;
-                }
-            }
-            lastPeriodStart = current;
-        }
-
-        return Math.max(bestStreak, currentStreak);
-    }
-
-    async calculateCurrentStreak(task, asOfDate = new Date()) {
-        const completions = await RecurringCompletion.findAll({
-            where: {
-                task_id: task.id,
-                skipped: false,
-            },
-            order: [['completed_at', 'DESC']],
-        });
-
-        if (completions.length === 0) return 0;
-
-        const period = task.habit_frequency_period || 'daily';
-
-        if (task.habit_streak_mode === 'calendar') {
-            return this.calculatePeriodStreak(completions, asOfDate, period);
-        } else {
-            return this.calculateScheduledStreak(task, completions, asOfDate);
-        }
-    }
-
-    // Calendar streak delegates to period-aware implementation
-    calculateCalendarStreak(completions, asOfDate) {
-        return this.calculatePeriodStreak(completions, asOfDate, 'daily');
-    }
-
-    // Scheduled streak uses the task's frequency period
-    calculateScheduledStreak(task, completions, asOfDate) {
-        const period = task.habit_frequency_period || 'daily';
-        return this.calculatePeriodStreak(completions, asOfDate, period);
-    }
-
-    async getHabitStats(task, startDate, endDate) {
-        const completions = await RecurringCompletion.findAll({
-            where: {
-                task_id: task.id,
-                completed_at: {
-                    [Op.between]: [startDate, endDate],
-                },
-                skipped: false,
-            },
-            order: [['completed_at', 'ASC']],
-        });
-
-        const totalCompletions = completions.length;
-        const currentStreak = task.habit_current_streak;
-
-        let completionRate = null;
-        if (task.habit_target_count && task.habit_frequency_period) {
-            const target = this.calculatePeriodTarget(task, startDate, endDate);
-            completionRate = target > 0 ? (totalCompletions / target) * 100 : 0;
-        }
+        const successes = judged.filter((p) => p.status === 'success').length;
 
         return {
-            totalCompletions,
-            currentStreak,
-            bestStreak: task.habit_best_streak,
-            completionRate,
-            completions: completions.map((c) => ({
+            totalCompletions: checkIns.length,
+            totalValue: checkIns.reduce((sum, e) => sum + (e.value || 0), 0),
+            skippedDays: inRange.length - checkIns.length,
+            currentStreak: evaluation.currentStreak,
+            bestStreak: evaluation.bestStreak,
+            strength: evaluation.strength,
+            completionRate:
+                judged.length > 0 ? (successes / judged.length) * 100 : null,
+            progress: evaluation.progress,
+            completions: checkIns.map((c) => ({
                 completed_at: c.completed_at,
                 id: c.id,
+                value: c.value,
+                note: c.note,
             })),
         };
-    }
-
-    calculatePeriodTarget(task, startDate, endDate) {
-        if (!task.habit_target_count || !task.habit_frequency_period) {
-            return 0;
-        }
-
-        const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-
-        switch (task.habit_frequency_period) {
-            case 'daily':
-                return task.habit_target_count * days;
-            case 'weekly':
-                return task.habit_target_count * Math.ceil(days / 7);
-            case 'monthly':
-                return task.habit_target_count * Math.ceil(days / 30);
-            default:
-                return 0;
-        }
-    }
-
-    isDueToday(task, today = new Date()) {
-        if (task.habit_flexibility_mode === 'flexible') {
-            return true;
-        } else {
-            const {
-                calculateNextDueDate,
-            } = require('../tasks/recurringTaskService');
-            const nextDue = calculateNextDueDate(
-                task,
-                task.habit_last_completion_at || task.created_at
-            );
-
-            if (!nextDue) return false;
-
-            const todayStart = new Date(today);
-            todayStart.setHours(0, 0, 0, 0);
-            const todayEnd = new Date(today);
-            todayEnd.setHours(23, 59, 59, 999);
-
-            return nextDue >= todayStart && nextDue <= todayEnd;
-        }
     }
 }
 
 module.exports = new HabitService();
+module.exports.isInactive = isInactive;
+module.exports.ARCHIVED_STATUS = ARCHIVED_STATUS;

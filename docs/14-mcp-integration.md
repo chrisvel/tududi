@@ -900,9 +900,16 @@ Delete a tag. Removes it from all entities.
 
 ### Habits Tools (9)
 
+Habits are either **build** habits (do something) or **quit** habits (avoid something, where each logged completion records a slip). See [Habits](21-habits.md) for how streaks and strength are calculated.
+
 #### `list_habits`
 
-List all habits. No required parameters.
+List habits with their streaks, strength (0-100) and `habit_progress` for the current period.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `archived` | boolean | No | List archived habits instead |
 
 ---
 
@@ -925,19 +932,28 @@ Create a new habit.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `name` | string | Yes | Habit name |
-| `frequency` | string | No | Recurrence pattern |
+| `habit_polarity` | string | No | `build` (default) or `quit` |
+| `habit_frequency_period` | string | No | `daily`, `weekly`, `monthly` or `interval` |
+| `habit_target_count` | number | No | Check-ins needed per period |
+| `habit_target_value` | number | No | Makes the habit measurable: amount needed per period |
+| `habit_unit` | string | No | Unit for a measurable habit, e.g. `pages` |
+| `habit_schedule_days` | number[] | No | Daily habits only: weekdays it is due, 0 = Sunday |
+| `habit_interval_days` | number | No | Length of an `interval` period in days |
+| `habit_time_of_day` | string | No | `morning`, `afternoon` or `evening` |
+| `habit_reminder_time` | string | No | Reminder time `HH:MM` in the user's timezone |
 
 ---
 
 #### `update_habit`
 
-Update an existing habit.
+Update a habit, or archive / restore it. Accepts the same settings as `create_habit`.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Habit UID |
 | `name` | string | No | New name |
+| `archived` | boolean | No | `true` archives (keeps history), `false` restores |
 
 ---
 
@@ -954,46 +970,54 @@ Delete a habit and all its completions.
 
 #### `log_habit_completion`
 
-Record a completion entry for a habit.
+Check in a habit, record a slip on a quit habit, or skip a day.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Habit UID |
 | `completed_at` | string | No | ISO 8601 datetime (defaults to now) |
+| `value` | number | No | Amount, required for measurable habits |
+| `note` | string | No | Optional note |
+| `skip` | boolean | No | Skip this day instead; keeps the streak (build habits only) |
 
 ---
 
 #### `get_habit_completions`
 
-Get completion history for a habit.
+Get check-ins (with value and note) and skipped days for a habit.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Habit UID |
+| `start_date` | string | No | ISO 8601, defaults to 30 days ago |
+| `end_date` | string | No | ISO 8601, defaults to now |
 
 ---
 
 #### `delete_habit_completion`
 
-Remove a specific completion entry.
-
-**Parameters:**
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `id` | number | Yes | Completion ID |
-
----
-
-#### `get_habit_stats`
-
-Get aggregated statistics for a habit.
+Remove a check-in or a skipped day.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Habit UID |
+| `completion_id` | number | Yes | Completion ID |
+
+---
+
+#### `get_habit_stats`
+
+Get streaks, strength, the completion rate over judged periods and totals.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+| `start_date` | string | No | ISO 8601 |
+| `end_date` | string | No | ISO 8601 |
 
 ---
 

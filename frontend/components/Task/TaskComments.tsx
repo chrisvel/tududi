@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { hashColor } from '../../constants/colorPalette';
 import {
     ChatBubbleLeftIcon,
     ExclamationTriangleIcon,
@@ -86,27 +87,6 @@ function renderBody(
         parts.push(body.slice(lastIndex));
     }
     return parts;
-}
-
-// A small, stable palette so the same person's avatar is always the same
-// color across renders and viewers, without needing to store a color.
-const AVATAR_PALETTE = [
-    'bg-rose-500',
-    'bg-amber-500',
-    'bg-emerald-500',
-    'bg-sky-500',
-    'bg-violet-500',
-    'bg-pink-500',
-    'bg-teal-500',
-    'bg-orange-500',
-];
-
-function avatarColor(name: string): string {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
-    }
-    return AVATAR_PALETTE[hash % AVATAR_PALETTE.length];
 }
 
 function initials(name: string): string {
@@ -215,9 +195,11 @@ const CommentRow: React.FC<CommentRowProps> = ({
     return (
         <div className="flex gap-4 group">
             <span
-                className={`flex-shrink-0 rounded-full flex items-center justify-center font-semibold text-white ${avatarColor(
-                    authorName
-                )} ${isReply ? 'h-8 w-8 text-[10px]' : 'h-10 w-10 text-xs'}`}
+                // Same person, same color: drawn from the shared palette.
+                className={`flex-shrink-0 rounded-full flex items-center justify-center font-semibold text-white ${
+                    isReply ? 'h-8 w-8 text-[10px]' : 'h-10 w-10 text-xs'
+                }`}
+                style={{ backgroundColor: hashColor(authorName).value }}
                 title={authorName}
             >
                 {initials(authorName)}

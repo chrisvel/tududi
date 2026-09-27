@@ -33,6 +33,7 @@ const getCronExpression = (frequency) => {
         deferred_tasks: '*/5 * * * *',
         due_tasks: '*/15 * * * *',
         due_projects: '*/15 * * * *',
+        habit_reminders: '*/5 * * * *',
     };
     return expressions[frequency];
 };
@@ -46,6 +47,11 @@ const runJob = async (frequency) => {
         await processDueTasks();
     } else if (frequency === 'due_projects') {
         await processDueProjects();
+    } else if (frequency === 'habit_reminders') {
+        const {
+            checkHabitReminders,
+        } = require('../habits/habitReminderService');
+        await checkHabitReminders();
     } else {
         await processSummariesForFrequency(frequency);
     }
@@ -72,6 +78,7 @@ const createJobEntries = () => {
         'deferred_tasks',
         'due_tasks',
         'due_projects',
+        'habit_reminders',
     ];
 
     return frequencies.map((frequency) => {

@@ -14,6 +14,12 @@ const DEFAULT_PREFERENCES = {
     },
     deferUntil: { inApp: true, email: false, push: false, telegram: false },
     taskAssigned: { inApp: true, email: false, push: false, telegram: false },
+    habitReminders: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+    },
 };
 
 /**

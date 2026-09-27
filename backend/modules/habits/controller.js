@@ -2,108 +2,135 @@
 
 const habitsService = require('./service');
 
+const handle = (fn) => async (req, res, next) => {
+    try {
+        await fn(req, res);
+    } catch (error) {
+        next(error);
+    }
+};
+
 const habitsController = {
-    async getAll(req, res, next) {
-        try {
-            const result = await habitsService.getAll(req.currentUser.id);
-            res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
+    getAll: handle(async (req, res) => {
+        res.json(
+            await habitsService.getAll(req.currentUser.id, {
+                archived: req.query.archived === 'true',
+            })
+        );
+    }),
 
-    async create(req, res, next) {
-        try {
-            const result = await habitsService.create(
-                req.currentUser.id,
-                req.body
-            );
-            res.status(201).json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
+    getOne: handle(async (req, res) => {
+        res.json(
+            await habitsService.getOne(req.currentUser.id, req.params.uid)
+        );
+    }),
 
-    async logCompletion(req, res, next) {
-        try {
-            const result = await habitsService.logCompletion(
+    create: handle(async (req, res) => {
+        res.status(201).json(
+            await habitsService.create(req.currentUser.id, req.body)
+        );
+    }),
+
+    logCompletion: handle(async (req, res) => {
+        res.json(
+            await habitsService.logCompletion(
                 req.currentUser.id,
                 req.params.uid,
-                req.body.completed_at
-            );
-            res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
+                req.body
+            )
+        );
+    }),
 
-    async getCompletions(req, res, next) {
-        try {
-            const { start_date, end_date } = req.query;
-            const result = await habitsService.getCompletions(
+    skipDay: handle(async (req, res) => {
+        res.json(
+            await habitsService.skipDay(
+                req.currentUser.id,
+                req.params.uid,
+                req.body
+            )
+        );
+    }),
+
+    getCompletions: handle(async (req, res) => {
+        const { start_date, end_date } = req.query;
+        res.json(
+            await habitsService.getCompletions(
                 req.currentUser.id,
                 req.params.uid,
                 start_date,
                 end_date
-            );
-            res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
+            )
+        );
+    }),
 
-    async deleteCompletion(req, res, next) {
-        try {
-            const result = await habitsService.deleteCompletion(
+    updateCompletion: handle(async (req, res) => {
+        res.json(
+            await habitsService.updateCompletion(
+                req.currentUser.id,
+                req.params.uid,
+                req.params.completionId,
+                req.body
+            )
+        );
+    }),
+
+    deleteCompletion: handle(async (req, res) => {
+        res.json(
+            await habitsService.deleteCompletion(
                 req.currentUser.id,
                 req.params.uid,
                 req.params.completionId
-            );
-            res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
+            )
+        );
+    }),
 
-    async getStats(req, res, next) {
-        try {
-            const { start_date, end_date } = req.query;
-            const result = await habitsService.getStats(
+    getStats: handle(async (req, res) => {
+        const { start_date, end_date } = req.query;
+        res.json(
+            await habitsService.getStats(
                 req.currentUser.id,
                 req.params.uid,
                 start_date,
                 end_date
-            );
-            res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
+            )
+        );
+    }),
 
-    async update(req, res, next) {
-        try {
-            const result = await habitsService.update(
+    update: handle(async (req, res) => {
+        res.json(
+            await habitsService.update(
                 req.currentUser.id,
                 req.params.uid,
                 req.body
-            );
-            res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
+            )
+        );
+    }),
 
-    async delete(req, res, next) {
-        try {
-            const result = await habitsService.delete(
+    archive: handle(async (req, res) => {
+        res.json(
+            await habitsService.setArchived(
                 req.currentUser.id,
-                req.params.uid
-            );
-            res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
+                req.params.uid,
+                true
+            )
+        );
+    }),
+
+    unarchive: handle(async (req, res) => {
+        res.json(
+            await habitsService.setArchived(
+                req.currentUser.id,
+                req.params.uid,
+                false
+            )
+        );
+    }),
+
+    delete: handle(async (req, res) => {
+        res.json(
+            await habitsService.delete(req.currentUser.id, req.params.uid)
+        );
+    }),
 };
 
 module.exports = habitsController;

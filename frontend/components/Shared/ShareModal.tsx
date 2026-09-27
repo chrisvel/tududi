@@ -13,6 +13,7 @@ import {
 import { GroupSummary, fetchGroups } from '../../utils/groupsService';
 import { clearProjectShareCache } from '../../utils/projectShareCache';
 import { getCurrentUser } from '../../utils/userUtils';
+import { FORM } from '../../constants/formClasses';
 
 export type ShareResourceType = ShareGrantRequest['resource_type'];
 
@@ -319,7 +320,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
                                 id="share-group"
                                 value={groupUid}
                                 onChange={(e) => setGroupUid(e.target.value)}
-                                className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                                className={`${FORM.select} w-full`}
                             >
                                 <option value="">
                                     {t('shares.selectGroup', 'Select a group')}
@@ -356,7 +357,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
                             onChange={(e) =>
                                 setAccess(e.target.value as AccessLevel)
                             }
-                            className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                            className={`${FORM.select} w-full`}
                         >
                             <option value="ro">
                                 {t('shares.readOnly', 'Read only')}

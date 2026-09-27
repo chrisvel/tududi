@@ -5,9 +5,9 @@ import {
     updateCaptureSettings,
     useCaptureSettings,
 } from '../../../utils/captureSettings';
+import { FORM } from '../../../constants/formClasses';
 
-const selectClass =
-    'mt-1.5 block w-full sm:w-64 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500';
+const selectClass = `mt-1.5 block w-full sm:w-64 ${FORM.select}`;
 
 // Settings for the shared "Add" box. They apply straight away and are kept on
 // this device.
