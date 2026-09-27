@@ -1,11 +1,59 @@
 'use strict';
 
 const entitlements = require('../../../services/entitlementsService');
-const { Project, Area, Tag } = require('../../../models');
+const { Project, Area, Tag, Goal } = require('../../../models');
 const { Op } = require('sequelize');
 const projectsRepository = require('../../projects/repository');
 const permissionsService = require('../../../services/permissionsService');
 const rolesService = require('../../../services/rolesService');
+const {
+    syncProjectSharesFromContainer,
+} = require('../../../services/containerShareSync');
+
+const goalInputProperties = {
+    goal_id: {
+        type: 'number',
+        description: 'Goal ID to link the project to (null to unlink)',
+    },
+    goal_uid: {
+        type: 'string',
+        description:
+            'Goal UID to link the project to (null or empty to unlink)',
+    },
+};
+
+// Returns undefined when no goal was passed, null to unlink, or the ID of a
+// goal the user owns.
+async function resolveGoalId(params, userId) {
+    const hasId = params.goal_id !== undefined;
+    const hasUid = params.goal_uid !== undefined;
+    if (!hasId && !hasUid) return undefined;
+
+    const where = { user_id: userId };
+    if (hasUid && params.goal_uid !== null && params.goal_uid !== '') {
+        where.uid = params.goal_uid;
+    } else if (hasId && params.goal_id !== null && params.goal_id !== '') {
+        where.id = params.goal_id;
+    } else {
+        return null;
+    }
+
+    const goal = await Goal.findOne({ where, attributes: ['id'] });
+    if (!goal) {
+        throw new Error(`Goal not found: ${params.goal_uid || params.goal_id}`);
+    }
+    return goal.id;
+}
+
+function serializeGoal(goal) {
+    return goal ? { id: goal.id, uid: goal.uid, title: goal.title } : null;
+}
+
+const projectIncludes = [
+    { model: Area, as: 'Area' },
+    { model: Tag, as: 'Tags' },
+    { model: Goal, as: 'Goal', attributes: ['id', 'uid', 'title'] },
+];
 
 function registerProjectTools(server, context, tools) {
     // 1. list_projects - List projects
@@ -57,10 +105,7 @@ function registerProjectTools(server, context, tools) {
 
             const projects = await Project.findAll({
                 where: whereClause,
-                include: [
-                    { model: Area, as: 'Area' },
-                    { model: Tag, as: 'Tags' },
-                ],
+                include: projectIncludes,
                 limit: limit,
                 order: [['created_at', 'DESC']],
             });
@@ -75,6 +120,7 @@ function registerProjectTools(server, context, tools) {
                     status: proj.status,
                     priority: proj.priority,
                     area: proj.Area ? proj.Area.name : null,
+                    goal: serializeGoal(proj.Goal),
                     tags: proj.Tags ? proj.Tags.map((t) => t.name) : [],
                     due_date_at: proj.due_date_at,
                     pin_to_sidebar: proj.pin_to_sidebar,
@@ -118,10 +164,7 @@ function registerProjectTools(server, context, tools) {
         handler: async (params) => {
             const project = await Project.findOne({
                 where: { uid: params.uid },
-                include: [
-                    { model: Area, as: 'Area' },
-                    { model: Tag, as: 'Tags' },
-                ],
+                include: projectIncludes,
             });
 
             if (!project) {
@@ -146,6 +189,7 @@ function registerProjectTools(server, context, tools) {
                 status: proj.status,
                 priority: proj.priority,
                 area: proj.Area ? proj.Area.name : null,
+                goal: serializeGoal(proj.Goal),
                 tags: proj.Tags ? proj.Tags.map((t) => t.name) : [],
                 due_date_at: proj.due_date_at,
                 pin_to_sidebar: proj.pin_to_sidebar,
@@ -212,10 +256,12 @@ function registerProjectTools(server, context, tools) {
                     description:
                         'Image URL (upload via POST /api/upload/project-image first)',
                 },
+                ...goalInputProperties,
             },
             required: ['name'],
         },
         handler: async (params) => {
+            const goalId = await resolveGoalId(params, context.userId);
             const projectData = {
                 user_id: context.userId,
                 name: params.name,
@@ -225,6 +271,7 @@ function registerProjectTools(server, context, tools) {
                 area_id: params.area_id || null,
                 due_date_at: params.due_date_at || null,
                 image_url: params.image_url || null,
+                goal_id: goalId || null,
             };
 
             await rolesService.assertCan(context.userId, 'create_projects');
@@ -242,11 +289,12 @@ function registerProjectTools(server, context, tools) {
                 await project.setTags(tagInstances);
             }
 
+            if (projectData.area_id || projectData.goal_id) {
+                await syncProjectSharesFromContainer(project.id);
+            }
+
             const reloadedProject = await Project.findByPk(project.id, {
-                include: [
-                    { model: Area, as: 'Area' },
-                    { model: Tag, as: 'Tags' },
-                ],
+                include: projectIncludes,
             });
 
             const serialized = {
@@ -257,6 +305,7 @@ function registerProjectTools(server, context, tools) {
                 status: reloadedProject.status,
                 priority: reloadedProject.priority,
                 area: reloadedProject.Area ? reloadedProject.Area.name : null,
+                goal: serializeGoal(reloadedProject.Goal),
                 tags: reloadedProject.Tags
                     ? reloadedProject.Tags.map((t) => t.name)
                     : [],
@@ -326,6 +375,7 @@ function registerProjectTools(server, context, tools) {
                     description:
                         'Image URL (upload via POST /api/upload/project-image first)',
                 },
+                ...goalInputProperties,
             },
             required: ['uid'],
         },
@@ -365,13 +415,27 @@ function registerProjectTools(server, context, tools) {
                 updates.image_url =
                     params.image_url === '' ? null : params.image_url;
 
+            const goalId = await resolveGoalId(params, context.userId);
+            if (goalId !== undefined) {
+                if (project.user_id !== context.userId) {
+                    throw new Error(
+                        'Only the project owner can change its goal'
+                    );
+                }
+                updates.goal_id = goalId;
+            }
+
             await project.update(updates);
 
+            if (
+                project.user_id === context.userId &&
+                (updates.area_id !== undefined || updates.goal_id !== undefined)
+            ) {
+                await syncProjectSharesFromContainer(project.id);
+            }
+
             const reloadedProject = await Project.findByPk(project.id, {
-                include: [
-                    { model: Area, as: 'Area' },
-                    { model: Tag, as: 'Tags' },
-                ],
+                include: projectIncludes,
             });
 
             const serialized = {
@@ -382,6 +446,7 @@ function registerProjectTools(server, context, tools) {
                 status: reloadedProject.status,
                 priority: reloadedProject.priority,
                 area: reloadedProject.Area ? reloadedProject.Area.name : null,
+                goal: serializeGoal(reloadedProject.Goal),
                 tags: reloadedProject.Tags
                     ? reloadedProject.Tags.map((t) => t.name)
                     : [],
