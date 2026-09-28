@@ -215,7 +215,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                     onEscape?.();
                                 }
                             }}
-                            className="flex-1 min-w-0 bg-transparent text-[15px] font-medium tracking-tight text-gray-900 dark:text-gray-100 border-0 p-0 focus:outline-none focus:ring-0"
+                            className="flex-1 min-w-0 bg-transparent text-[15px] font-normal tracking-tight text-gray-900 dark:text-gray-100 border-0 p-0 focus:outline-none focus:ring-0"
                             placeholder={t(
                                 'forms.task.namePlaceholder',
                                 'Task name'
@@ -223,7 +223,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         />
                     ) : (
                         <span
-                            className={`text-[15px] font-medium tracking-tight max-sm:line-clamp-2 max-sm:break-words sm:truncate ${
+                            className={`text-[15px] font-normal tracking-tight max-sm:line-clamp-2 max-sm:break-words sm:truncate ${
                                 isTaskCompleted(task.status)
                                     ? 'text-gray-400 dark:text-gray-500 line-through'
                                     : 'text-gray-900 dark:text-gray-200'
