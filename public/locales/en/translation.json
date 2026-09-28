@@ -2770,6 +2770,9 @@
       "next": "Next tip"
     },
     "more": "More options",
+    "refreshCalendar": "Refresh calendar",
+    "refreshCalendarError": "Could not refresh the calendar.",
+    "refreshingCalendar": "Refreshing calendar…",
     "switchToList": "Switch to list",
     "switchToTimeline": "Switch to timeline",
     "leaveWithoutStarting": "Back to Today",

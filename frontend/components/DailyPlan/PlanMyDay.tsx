@@ -52,7 +52,6 @@ import { useToast } from '../Shared/ToastContext';
 import { useStore } from '../../store/useStore';
 import {
     EllipsisHorizontalIcon,
-    PlusIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
 import PlanTips from './PlanTips';
@@ -160,6 +159,7 @@ const PlanMyDay: React.FC = () => {
     const [items, setItems] = useState<DailyPlanItem[]>([]);
     const [candidates, setCandidates] = useState<PlanCandidates | null>(null);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
+    const [refreshingEvents, setRefreshingEvents] = useState(false);
     const [durations, setDurations] = useState<Record<string, number>>({});
     const [filter, setFilter] = useState<CandidateFilter>('all');
     const [preferredMode, setPreferredMode] = useState<Mode>(readMode);
@@ -251,6 +251,30 @@ const PlanMyDay: React.FC = () => {
         document.addEventListener('visibilitychange', refresh);
         return () => document.removeEventListener('visibilitychange', refresh);
     }, []);
+
+    // The server keeps each feed for a while; this asks it to fetch again.
+    const refreshEvents = useCallback(async () => {
+        if (!date) return;
+        setRefreshingEvents(true);
+        try {
+            const day = await fetchCalendarEvents(date, { refresh: true });
+            setEvents(day.events);
+            if (day.errors.length > 0) {
+                showErrorToast(day.errors[0].message);
+            }
+        } catch (err) {
+            showErrorToast(
+                err instanceof Error
+                    ? err.message
+                    : t(
+                          'dailyPlan.refreshCalendarError',
+                          'Could not refresh the calendar.'
+                      )
+            );
+        } finally {
+            setRefreshingEvents(false);
+        }
+    }, [date, showErrorToast, t]);
 
     const flush = useCallback(async () => {
         if (saveTimer.current) {
@@ -843,80 +867,18 @@ const PlanMyDay: React.FC = () => {
                         </div>
                     )}
 
-                    <button
-                        type="button"
-                        onClick={() => openCapture('task', 'today')}
-                        disabled={!date}
-                        className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium text-blue-700 hover:bg-blue-50 disabled:opacity-60 dark:text-blue-300 dark:hover:bg-blue-900/30"
-                        data-testid="plan-add-task"
-                    >
-                        <PlusIcon className="h-4 w-4" />
-                        {t('dailyPlan.addTask', 'Add task')}
-                    </button>
-
-                    {aiEnabled && (
-                        <div className="relative" ref={draftMenuRef}>
-                            <button
-                                type="button"
-                                onClick={startDraft}
-                                disabled={drafting || !date}
-                                className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium text-violet-700 hover:bg-violet-50 disabled:opacity-60 dark:text-violet-300 dark:hover:bg-violet-900/30"
-                                data-testid="ai-draft-button"
-                            >
-                                <SparklesIcon
-                                    className={`h-4 w-4 ${drafting ? 'animate-pulse' : ''}`}
-                                />
-                                {drafting
-                                    ? t('dailyPlan.ai.drafting', 'Drafting…')
-                                    : t('dailyPlan.ai.draft', 'Draft with AI')}
-                            </button>
-                            {draftChoiceOpen && (
-                                <div className="absolute right-0 z-[45] mt-1 flex w-56 flex-col rounded-lg bg-white p-1 shadow-lg ring-0 dark:bg-gray-800 dark:bg-gray-900">
-                                    <button
-                                        type="button"
-                                        onClick={() => void runDraft('fill')}
-                                        className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    >
-                                        <span className="block font-medium">
-                                            {t(
-                                                'dailyPlan.ai.fill',
-                                                'Fill free time'
-                                            )}
-                                        </span>
-                                        <span className="block text-xs text-gray-500 dark:text-gray-400">
-                                            {t(
-                                                'dailyPlan.ai.fillHint',
-                                                'Keep what is planned, add around it'
-                                            )}
-                                        </span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => void runDraft('replace')}
-                                        className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    >
-                                        <span className="block font-medium">
-                                            {t(
-                                                'dailyPlan.ai.replace',
-                                                'Start over'
-                                            )}
-                                        </span>
-                                        <span className="block text-xs text-gray-500 dark:text-gray-400">
-                                            {t(
-                                                'dailyPlan.ai.replaceHint',
-                                                'Draft the whole day again (you can undo)'
-                                            )}
-                                        </span>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
                     <div className="flex items-center gap-2">
                         {saveState === 'saving' && (
                             <span className="text-xs text-gray-500">
                                 {t('dailyPlan.saving', 'Saving…')}
+                            </span>
+                        )}
+                        {refreshingEvents && (
+                            <span className="text-xs text-gray-500">
+                                {t(
+                                    'dailyPlan.refreshingCalendar',
+                                    'Refreshing calendar…'
+                                )}
                             </span>
                         )}
                         <div className="relative" ref={moreMenuRef}>
@@ -932,6 +894,33 @@ const PlanMyDay: React.FC = () => {
                             </button>
                             {moreOpen && (
                                 <div className="absolute right-0 z-[45] mt-1 flex w-48 flex-col rounded-lg bg-white p-1 text-sm shadow-lg dark:bg-gray-800 dark:bg-gray-900">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setMoreOpen(false);
+                                            openCapture('task', 'today');
+                                        }}
+                                        disabled={!date}
+                                        className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+                                        data-testid="plan-add-task"
+                                    >
+                                        {t('dailyPlan.addTask', 'Add task')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setMoreOpen(false);
+                                            void refreshEvents();
+                                        }}
+                                        disabled={refreshingEvents || !date}
+                                        className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+                                        data-testid="plan-refresh-calendar"
+                                    >
+                                        {t(
+                                            'dailyPlan.refreshCalendar',
+                                            'Refresh calendar'
+                                        )}
+                                    </button>
                                     {!narrow && (
                                         <button
                                             type="button"
@@ -970,6 +959,74 @@ const PlanMyDay: React.FC = () => {
                                 </div>
                             )}
                         </div>
+                        {aiEnabled && (
+                            <div className="relative" ref={draftMenuRef}>
+                                <button
+                                    type="button"
+                                    onClick={startDraft}
+                                    disabled={drafting || !date}
+                                    className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg bg-violet-100 px-3.5 text-sm font-medium text-violet-700 hover:bg-violet-200 disabled:opacity-60 dark:bg-violet-500/20 dark:text-violet-200 dark:hover:bg-violet-500/30"
+                                    data-testid="ai-draft-button"
+                                >
+                                    <SparklesIcon
+                                        className={`h-4 w-4 ${drafting ? 'animate-pulse' : ''}`}
+                                    />
+                                    {drafting
+                                        ? t(
+                                              'dailyPlan.ai.drafting',
+                                              'Drafting…'
+                                          )
+                                        : t(
+                                              'dailyPlan.ai.draft',
+                                              'Draft with AI'
+                                          )}
+                                </button>
+                                {draftChoiceOpen && (
+                                    <div className="absolute right-0 z-[45] mt-1 flex w-56 flex-col rounded-lg bg-white p-1 shadow-lg ring-0 dark:bg-gray-800 dark:bg-gray-900">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                void runDraft('fill')
+                                            }
+                                            className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            <span className="block font-medium">
+                                                {t(
+                                                    'dailyPlan.ai.fill',
+                                                    'Fill free time'
+                                                )}
+                                            </span>
+                                            <span className="block text-xs text-gray-500 dark:text-gray-400">
+                                                {t(
+                                                    'dailyPlan.ai.fillHint',
+                                                    'Keep what is planned, add around it'
+                                                )}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                void runDraft('replace')
+                                            }
+                                            className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            <span className="block font-medium">
+                                                {t(
+                                                    'dailyPlan.ai.replace',
+                                                    'Start over'
+                                                )}
+                                            </span>
+                                            <span className="block text-xs text-gray-500 dark:text-gray-400">
+                                                {t(
+                                                    'dailyPlan.ai.replaceHint',
+                                                    'Draft the whole day again (you can undo)'
+                                                )}
+                                            </span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <button
                             type="button"
                             onClick={() => leave(true)}

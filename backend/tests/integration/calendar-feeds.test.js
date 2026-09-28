@@ -190,6 +190,32 @@ describe('Calendar feed routes', () => {
         expect((await get('start=2026-01-01&end=2026-12-31')).status).toBe(400);
     });
 
+    it('refetches a cached feed only when asked to refresh', async () => {
+        await agent
+            .post('/api/calendar-feeds')
+            .send({ name: 'Google', url: SECRET_URL });
+        fetchFeed.mockClear();
+        const url = `/api/calendar-feeds/events?date=${today}`;
+
+        await agent.get(url);
+        await agent.get(`${url}&refresh=1`);
+        expect(fetchFeed).not.toHaveBeenCalled();
+
+        const realNow = Date.now();
+        const nowSpy = jest
+            .spyOn(Date, 'now')
+            .mockReturnValue(realNow + 60 * 1000);
+        try {
+            await agent.get(url);
+            expect(fetchFeed).not.toHaveBeenCalled();
+            const res = await agent.get(`${url}&refresh=1`);
+            expect(res.status).toBe(200);
+            expect(fetchFeed).toHaveBeenCalledTimes(1);
+        } finally {
+            nowSpy.mockRestore();
+        }
+    });
+
     it('reports a feed that stopped working instead of failing the day', async () => {
         await agent
             .post('/api/calendar-feeds')
