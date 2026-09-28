@@ -549,6 +549,7 @@ docker run \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -v ~/tududi_db:/app/db \
   -v ~/tududi_uploads:/app/uploads \
+  -v ~/tududi_backups:/app/backups \
   -p 3002:3002 \
   -d tududi:latest
 ```

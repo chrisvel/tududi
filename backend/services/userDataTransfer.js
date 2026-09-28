@@ -263,6 +263,7 @@ async function exportUserData(userId) {
             ui_settings: user.ui_settings,
             notification_preferences: user.notification_preferences,
             ai_profile: user.ai_profile,
+            keyboard_shortcuts: user.keyboard_shortcuts,
             avatar_image_data: await readUploadedImage(
                 user.avatar_image,
                 'avatars'
@@ -390,49 +391,6 @@ async function importUserData(userId, backupData, options = { merge: true }) {
     const transaction = await sequelize.transaction();
     const resolve = makeResolver(userId, transaction);
 
-    // Restore the account's own profile and preferences (never email or
-    // password, which are the account's login identity and must not change
-    // just because a backup made on another install gets restored here).
-    if (merge && backupData.user) {
-        const bu = backupData.user;
-        const profileUpdates = {
-            name: bu.name,
-            surname: bu.surname,
-            appearance: bu.appearance,
-            language: bu.language,
-            timezone: bu.timezone,
-            first_day_of_week: bu.first_day_of_week,
-            telegram_bot_token: bu.telegram_bot_token,
-            telegram_chat_id: bu.telegram_chat_id,
-            telegram_allowed_users: bu.telegram_allowed_users,
-            task_summary_enabled: bu.task_summary_enabled,
-            task_summary_frequency: bu.task_summary_frequency,
-            features: bu.features,
-            today_settings: bu.today_settings,
-            sidebar_settings: bu.sidebar_settings,
-            ui_settings: bu.ui_settings,
-            notification_preferences: bu.notification_preferences,
-            ai_profile: bu.ai_profile,
-        };
-        for (const key of Object.keys(profileUpdates)) {
-            if (profileUpdates[key] === undefined) delete profileUpdates[key];
-        }
-        if (bu.avatar_image_data) {
-            const storedFilename = await writeUploadedImage(
-                bu.avatar_image_data,
-                'avatars',
-                'avatar'
-            );
-            if (storedFilename) {
-                writtenFiles.push({ dir: 'avatars', name: storedFilename });
-                profileUpdates.avatar_image = `/uploads/avatars/${storedFilename}`;
-            }
-        }
-        if (Object.keys(profileUpdates).length) {
-            await user.update(profileUpdates, { transaction });
-        }
-    }
-
     // uids are unique across the whole table, not per user. A row with the
     // backup's uid that belongs to this user is the same record (skip); one
     // that belongs to someone else means the backup came from another
@@ -506,6 +464,51 @@ async function importUserData(userId, backupData, options = { merge: true }) {
     };
 
     try {
+        // Restore the account's own profile and preferences (never email or
+        // password, which are the account's login identity and must not change
+        // just because a backup made on another install gets restored here).
+        if (merge && backupData.user) {
+            const bu = backupData.user;
+            const profileUpdates = {
+                name: bu.name,
+                surname: bu.surname,
+                appearance: bu.appearance,
+                language: bu.language,
+                timezone: bu.timezone,
+                first_day_of_week: bu.first_day_of_week,
+                telegram_bot_token: bu.telegram_bot_token,
+                telegram_chat_id: bu.telegram_chat_id,
+                telegram_allowed_users: bu.telegram_allowed_users,
+                task_summary_enabled: bu.task_summary_enabled,
+                task_summary_frequency: bu.task_summary_frequency,
+                features: bu.features,
+                today_settings: bu.today_settings,
+                sidebar_settings: bu.sidebar_settings,
+                ui_settings: bu.ui_settings,
+                notification_preferences: bu.notification_preferences,
+                ai_profile: bu.ai_profile,
+                keyboard_shortcuts: bu.keyboard_shortcuts,
+            };
+            for (const key of Object.keys(profileUpdates)) {
+                if (profileUpdates[key] === undefined)
+                    delete profileUpdates[key];
+            }
+            if (bu.avatar_image_data) {
+                const storedFilename = await writeUploadedImage(
+                    bu.avatar_image_data,
+                    'avatars',
+                    'avatar'
+                );
+                if (storedFilename) {
+                    writtenFiles.push({ dir: 'avatars', name: storedFilename });
+                    profileUpdates.avatar_image = `/uploads/avatars/${storedFilename}`;
+                }
+            }
+            if (Object.keys(profileUpdates).length) {
+                await user.update(profileUpdates, { transaction });
+            }
+        }
+
         // Tags are unique per user by name, and every user is seeded with
         // the same system tags, so a tag matches by name as well as by uid.
         for (const tag of d.tags || []) {
@@ -521,6 +524,8 @@ async function importUserData(userId, backupData, options = { merge: true }) {
             }
             await upsertByUid(Tag, 'tags', tag.uid, async () => ({
                 name: tag.name,
+                tag_type: tag.tag_type || 'user',
+                pinned: !!tag.pinned,
             }));
         }
 
@@ -632,6 +637,8 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                         task_sort_order: project.task_sort_order,
                         status: project.status || project.state,
                         is_maintenance: !!project.is_maintenance,
+                        is_template: !!project.is_template,
+                        template_category: project.template_category ?? null,
                         area_id: await resolve(
                             Area,
                             project.area_uid,
