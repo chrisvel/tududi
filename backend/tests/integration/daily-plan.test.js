@@ -197,6 +197,7 @@ describe('Daily plan routes', () => {
         const project = await Project.create({
             name: 'Home',
             user_id: user.id,
+            status: 'in_progress',
         });
         const lastWeek = moment
             .tz('Europe/Athens')
@@ -238,6 +239,7 @@ describe('Daily plan routes', () => {
         const project = await Project.create({
             name: 'Work',
             user_id: user.id,
+            status: 'in_progress',
         });
         const loose = await makeTask({ name: 'Loose', priority: 0 });
         const inProject = await makeTask({
@@ -302,6 +304,7 @@ describe('Daily plan routes', () => {
         const lateProject = await Project.create({
             name: 'Late project',
             user_id: user.id,
+            status: 'in_progress',
             due_date_at: moment().subtract(5, 'days').toDate(),
         });
         const undated = await makeTask({

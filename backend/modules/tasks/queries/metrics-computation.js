@@ -16,6 +16,8 @@ const {
     fetchSomedayFallbackTasks,
     fetchTasksCompletedToday,
 } = require('./metrics-queries');
+const { compareCandidates } = require('../../daily-plan/ranking');
+const { isSuggestible } = require('../../daily-plan/planningSettings');
 
 const MAX_SUGGESTED_TASKS = 50;
 
@@ -79,7 +81,8 @@ async function computeSuggestedTasks(
     tasksInProgress,
     tasksDueToday,
     tasksOverdue,
-    todayPlanTasks
+    todayPlanTasks,
+    planning = null
 ) {
     if (
         totalOpenTasks < 3 &&
@@ -107,7 +110,16 @@ async function computeSuggestedTasks(
         fetchProjectTasks(visibleTasksWhere, excludedTaskIds, somedayTaskIds),
     ]);
 
-    let combinedTasks = [...nonProjectTasks, ...projectTasks];
+    // Plan my day passes the user's planning settings: filter first, sort
+    // with the planner's rules, and leave the cap to the planner, which
+    // applies it after its final order. The classic Today page passes none
+    // and keeps the behaviour below.
+    const now = Date.now();
+    const keep = planning
+        ? (tasks) => tasks.filter((task) => isSuggestible(task, planning, now))
+        : (tasks) => tasks;
+
+    let combinedTasks = keep([...nonProjectTasks, ...projectTasks]);
 
     if (combinedTasks.length < 6) {
         const usedTaskIds = [
@@ -121,10 +133,15 @@ async function computeSuggestedTasks(
             somedayTaskIds
         );
 
-        combinedTasks = [...combinedTasks, ...somedayFallbackTasks];
+        combinedTasks = [...combinedTasks, ...keep(somedayFallbackTasks)];
     }
 
-    const now = Date.now();
+    if (planning) {
+        return combinedTasks.sort((a, b) =>
+            compareCandidates(a, b, planning.tieBreak)
+        );
+    }
+
     const DUE_DATE_HORIZON_MS = 3 * 24 * 60 * 60 * 1000;
     const filteredTasks = combinedTasks.filter((task) => {
         if (task.defer_until) {
@@ -229,7 +246,8 @@ async function computeWeeklyCompletions(userId, userTimezone) {
 async function computeTaskMetrics(
     userId,
     userTimezone = 'UTC',
-    permissionCache = null
+    permissionCache = null,
+    planning = null
 ) {
     const visibleTasksWhere =
         await permissionsService.ownershipOrPermissionWhere(
@@ -279,7 +297,8 @@ async function computeTaskMetrics(
         tasksInProgress,
         tasksDueToday,
         tasksOverdue,
-        todayPlanTasks
+        todayPlanTasks,
+        planning
     );
 
     return {
