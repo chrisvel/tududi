@@ -29,13 +29,13 @@ const ProductivityPage: React.FC = () => {
                     <h2 className="text-2xl font-light">
                         {t('sidebar.productivityAssistant', 'Productivity Assistant')}
                     </h2>
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-500 dark:text-indigo-400">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-500 dark:text-blue-400">
                         beta
                     </span>
                 </div>
                 {tasksLoading ? (
                     <div className="flex items-center justify-center py-16">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
                     </div>
                 ) : (
                     <ProductivityAssistant tasks={tasks} projects={projects} />

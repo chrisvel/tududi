@@ -26,7 +26,7 @@ interface TemplateCardProps {
 function categoryAccent(category?: string | null) {
     return category
         ? hashColor(category)
-        : PALETTE.find((c) => c.key === 'indigo')!;
+        : PALETTE.find((c) => c.key === 'blue')!;
 }
 
 const TemplateCard: React.FC<TemplateCardProps> = ({

@@ -87,6 +87,15 @@ const UniversalSearch: React.FC = () => {
         };
     }, [isOpen, isMobileSearchOpen]);
 
+    useEffect(() => {
+        const handleOpenSearch = () => {
+            if (window.innerWidth >= 768) setIsOpen(true);
+        };
+        window.addEventListener('openUniversalSearch', handleOpenSearch);
+        return () =>
+            window.removeEventListener('openUniversalSearch', handleOpenSearch);
+    }, []);
+
     const handleInputClick = () => {
         setIsOpen(true);
     };

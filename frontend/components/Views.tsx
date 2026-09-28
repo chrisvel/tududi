@@ -6,9 +6,12 @@ import {
     EllipsisVerticalIcon,
     TagIcon,
     FunnelIcon,
+    XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
+import NewItemButton from './Shared/NewItemButton';
+import BlankSlate from './Shared/BlankSlate';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from '../utils/csrfService';
 import { useStore } from '../store/useStore';
@@ -134,6 +137,9 @@ const Views: React.FC = () => {
         setIsConfirmDialogOpen(true);
     };
 
+    const openUniversalSearch = () =>
+        window.dispatchEvent(new Event('openUniversalSearch'));
+
     const filteredViews = views.filter((view) =>
         view.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -160,8 +166,9 @@ const Views: React.FC = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between gap-2 mb-8">
                     <h2 className="text-2xl font-light">{t('views.title')}</h2>
+                    <div className="flex items-center gap-2">
                     <button
                         type="button"
                         onClick={() => setIsSearchExpanded(!isSearchExpanded)}
@@ -175,6 +182,12 @@ const Views: React.FC = () => {
                     >
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
                     </button>
+                    <NewItemButton
+                        label={t('views.new', 'New View')}
+                        onClick={openUniversalSearch}
+                        testId="new-view-button"
+                    />
+                    </div>
                 </div>
 
                 {/* Collapsible search */}
@@ -197,7 +210,43 @@ const Views: React.FC = () => {
 
                 {/* Views grid */}
                 {filteredViews.length === 0 ? (
-                    <p className="text-gray-700 dark:text-gray-300">{t('views.noViewsFound')}</p>
+                    views.length === 0 ? (
+                        <BlankSlate
+                            title={t('views.noViewsYet', 'No smart views yet.')}
+                            hint={t(
+                                'views.blankSlateHint',
+                                'A smart view is a saved search, like high priority tasks due this week or notes tagged ideas. Search, set your filters and choose Save as Smart View. Pin a view to keep it in the sidebar.'
+                            )}
+                            actions={[
+                                {
+                                    label: t(
+                                        'views.blankSlateNew',
+                                        'Search to create a view'
+                                    ),
+                                    icon: MagnifyingGlassIcon,
+                                    onClick: openUniversalSearch,
+                                },
+                            ]}
+                        />
+                    ) : (
+                        <BlankSlate
+                            title={t('views.noViewsMatch', 'No views found')}
+                            hint={t(
+                                'views.blankSlateFilteredHint',
+                                'Try a different search.'
+                            )}
+                            actions={[
+                                {
+                                    label: t(
+                                        'views.blankSlateClearSearch',
+                                        'Clear search'
+                                    ),
+                                    icon: XMarkIcon,
+                                    onClick: () => setSearchQuery(''),
+                                },
+                            ]}
+                        />
+                    )
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {filteredViews.map((view) => (

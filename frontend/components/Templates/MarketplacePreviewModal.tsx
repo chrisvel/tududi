@@ -22,7 +22,7 @@ interface MarketplacePreviewModalProps {
 function categoryAccent(category?: string | null) {
     return category
         ? hashColor(category)
-        : PALETTE.find((c) => c.key === 'indigo')!;
+        : PALETTE.find((c) => c.key === 'blue')!;
 }
 
 const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
@@ -102,7 +102,7 @@ const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
                 <div className="flex-1 overflow-y-auto px-6 pb-4 min-h-0">
                     {loading ? (
                         <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500" />
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500" />
                         </div>
                     ) : tasks.length === 0 ? (
                         <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">
@@ -145,7 +145,7 @@ const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
                     <button
                         onClick={() => onInstall(full)}
                         disabled={installing}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
                     >
                         <ArrowDownTrayIcon className="h-4 w-4" />
                         {installing ? t('templates.marketplace.installing', 'Installing...') : t('templates.marketplace.install', 'Install')}
