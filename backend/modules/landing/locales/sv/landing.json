@@ -341,7 +341,10 @@
     "subSubmit": "Anmäl mig",
     "rights": "Alla rättigheter förbehållna.",
     "linkLicence": "MIT-licens",
-    "tagline": "Ett öppet system för att organisera liv och arbete. Hostat av oss, eller på din egen server."
+    "tagline": "Ett öppet system för att organisera liv och arbete. Hostat av oss, eller på din egen server.",
+    "linkTerms": "Villkor",
+    "linkPrivacy": "Integritet",
+    "linkRefunds": "Återbetalning"
   },
   "js": {
     "showFewer": "Visa färre",

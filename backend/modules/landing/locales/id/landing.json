@@ -341,7 +341,10 @@
     "subSubmit": "Daftar",
     "rights": "Hak cipta dilindungi undang-undang.",
     "linkLicence": "Lisensi MIT",
-    "tagline": "Sistem terbuka untuk mengatur hidup dan pekerjaan. Dihosting oleh kami, atau di server Anda sendiri."
+    "tagline": "Sistem terbuka untuk mengatur hidup dan pekerjaan. Dihosting oleh kami, atau di server Anda sendiri.",
+    "linkTerms": "Ketentuan",
+    "linkPrivacy": "Privasi",
+    "linkRefunds": "Pengembalian dana"
   },
   "js": {
     "showFewer": "Tampilkan lebih sedikit",

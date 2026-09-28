@@ -341,7 +341,10 @@
     "subSubmit": "Apuntarme",
     "rights": "Todos los derechos reservados.",
     "linkLicence": "Licencia MIT",
-    "tagline": "Un sistema abierto para organizar la vida y el trabajo. Alojado por nosotros, o en tu propio servidor."
+    "tagline": "Un sistema abierto para organizar la vida y el trabajo. Alojado por nosotros, o en tu propio servidor.",
+    "linkTerms": "Términos",
+    "linkPrivacy": "Privacidad",
+    "linkRefunds": "Reembolsos"
   },
   "js": {
     "showFewer": "Ver menos",

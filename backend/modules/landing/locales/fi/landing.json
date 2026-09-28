@@ -341,7 +341,10 @@
     "subSubmit": "Liity",
     "rights": "Kaikki oikeudet pidätetään.",
     "linkLicence": "MIT-lisenssi",
-    "tagline": "Avoin järjestelmä elämän ja työn organisointiin. Meidän isännöimänä, tai omalla palvelimellasi."
+    "tagline": "Avoin järjestelmä elämän ja työn organisointiin. Meidän isännöimänä, tai omalla palvelimellasi.",
+    "linkTerms": "Ehdot",
+    "linkPrivacy": "Tietosuoja",
+    "linkRefunds": "Hyvitykset"
   },
   "js": {
     "showFewer": "Näytä vähemmän",

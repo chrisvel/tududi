@@ -341,7 +341,10 @@
     "subSubmit": "Mă înscriu",
     "rights": "Toate drepturile rezervate.",
     "linkLicence": "Licență MIT",
-    "tagline": "Un sistem deschis pentru organizarea vieții și a muncii. Găzduit de noi, sau pe propriul tău server."
+    "tagline": "Un sistem deschis pentru organizarea vieții și a muncii. Găzduit de noi, sau pe propriul tău server.",
+    "linkTerms": "Termeni",
+    "linkPrivacy": "Confidențialitate",
+    "linkRefunds": "Rambursări"
   },
   "js": {
     "showFewer": "Arată mai puține",

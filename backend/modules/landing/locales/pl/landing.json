@@ -341,7 +341,10 @@
     "subSubmit": "Zapisz mnie",
     "rights": "Wszelkie prawa zastrzeżone.",
     "linkLicence": "Licencja MIT",
-    "tagline": "Otwarty system do organizowania życia i pracy. Hostowany przez nas, albo na Twoim własnym serwerze."
+    "tagline": "Otwarty system do organizowania życia i pracy. Hostowany przez nas, albo na Twoim własnym serwerze.",
+    "linkTerms": "Regulamin",
+    "linkPrivacy": "Prywatność",
+    "linkRefunds": "Zwroty"
   },
   "js": {
     "showFewer": "Pokaż mniej",

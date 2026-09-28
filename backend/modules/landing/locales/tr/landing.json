@@ -341,7 +341,10 @@
     "subSubmit": "Katıl",
     "rights": "Tüm hakları saklıdır.",
     "linkLicence": "MIT lisansı",
-    "tagline": "Yaşamı ve işi organize etmek için açık bir sistem. Bizim tarafımızdan barındırılır, veya kendi sunucunuzda."
+    "tagline": "Yaşamı ve işi organize etmek için açık bir sistem. Bizim tarafımızdan barındırılır, veya kendi sunucunuzda.",
+    "linkTerms": "Koşullar",
+    "linkPrivacy": "Gizlilik",
+    "linkRefunds": "İadeler"
   },
   "js": {
     "showFewer": "Daha az göster",

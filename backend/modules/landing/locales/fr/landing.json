@@ -341,7 +341,10 @@
     "subSubmit": "Je m'inscris",
     "rights": "Tous droits réservés.",
     "linkLicence": "Licence MIT",
-    "tagline": "Un système ouvert pour organiser sa vie et son travail. Hébergé par nous, ou sur votre propre serveur."
+    "tagline": "Un système ouvert pour organiser sa vie et son travail. Hébergé par nous, ou sur votre propre serveur.",
+    "linkTerms": "Conditions",
+    "linkPrivacy": "Confidentialité",
+    "linkRefunds": "Remboursements"
   },
   "js": {
     "showFewer": "Afficher moins",

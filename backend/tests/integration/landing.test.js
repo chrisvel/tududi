@@ -269,6 +269,50 @@ describe('Landing page', () => {
         expect(res.text).toMatch(/MIT licence permits commercial use/);
     });
 
+    describe('legal pages', () => {
+        it.each([
+            ['/terms', 'Terms of Service'],
+            ['/privacy', 'Privacy Policy'],
+            ['/refunds', 'Refund Policy'],
+        ])('serves %s on the landing host', async (url, title) => {
+            const res = await request(app).get(url).set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain(`<h1>${title}</h1>`);
+            expect(res.text).toContain(
+                `rel="canonical" href="https://tududi.com${url}"`
+            );
+            expect(res.text).toContain('<article lang="en"');
+            expect(res.text).toContain('mailto:info@tududi.com');
+            expect(res.headers['content-security-policy']).toBeDefined();
+        });
+
+        it('keeps the document English but the chrome in the visitor language, without changing it', async () => {
+            const res = await request(app)
+                .get('/privacy')
+                .set('Host', 'tududi.com')
+                .set('Cookie', 'tududi_lang=de');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain('<html lang="de"');
+            expect(res.text).toContain('<h1>Privacy Policy</h1>');
+            expect(res.headers['set-cookie']).toBeUndefined();
+        });
+
+        it('links every legal page from the footer', async () => {
+            const res = await request(app).get('/fr').set('Host', 'tududi.com');
+            expect(res.text).toContain('href="/terms"');
+            expect(res.text).toContain('href="/privacy"');
+            expect(res.text).toContain('href="/refunds"');
+            expect(res.text).toContain('Confidentialité');
+        });
+
+        it('leaves /terms on the app host to the app', async () => {
+            const res = await request(app)
+                .get('/terms')
+                .set('Host', 'app.tududi.com');
+            expect(res.text).not.toContain('<h1>Terms of Service</h1>');
+        });
+    });
+
     it('sends /cloud on the app host to the app, not the marketing page', async () => {
         const res = await request(app)
             .get('/cloud')
