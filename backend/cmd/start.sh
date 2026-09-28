@@ -43,7 +43,7 @@ backup_db() {
     
     # Delete backups older than one week
     if [ "$backup_date" -lt "$week_ago" ]; then
-      rm "$backup"
+      rm -f "$backup" "$backup-wal"
       echo "Deleted old backup (>1 week): $(basename "$backup")"
       continue
     fi
@@ -58,7 +58,7 @@ backup_db() {
           first=false
           continue  # Skip the newest one
         fi
-        rm "$old_backup"
+        rm -f "$old_backup" "$old_backup-wal"
         echo "Deleted duplicate backup: $(basename "$old_backup")"
       done
     fi
@@ -71,7 +71,7 @@ backup_db() {
   if [ "$today_backup_count" -ge 4 ]; then
     oldest_today_backup=$(ls -t "$db_dir"/db-backup-${today}*.sqlite3 2>/dev/null | tail -n 1)
     if [ -n "$oldest_today_backup" ]; then
-      rm "$oldest_today_backup"
+      rm -f "$oldest_today_backup" "$oldest_today_backup-wal"
       echo "Deleted oldest backup from today: $(basename "$oldest_today_backup")"
     fi
   fi
@@ -80,8 +80,18 @@ backup_db() {
   backup_file="$db_dir/db-backup-${timestamp}.sqlite3"
 
   if [ -f "$DB_FILE" ]; then
-    cp "$DB_FILE" "$backup_file"
-    echo "Database backed up to $backup_file"
+    # VACUUM INTO includes writes still in the -wal file, which a plain cp of
+    # the main file would silently leave out.
+    if node scripts/sqlite-backup.js "$DB_FILE" "$backup_file"; then
+      echo "Database backed up to $backup_file"
+    else
+      echo "Falling back to a file copy (with its -wal file)"
+      cp "$DB_FILE" "$backup_file"
+      if [ -f "$DB_FILE-wal" ]; then
+        cp "$DB_FILE-wal" "$backup_file-wal"
+      fi
+      echo "Database backed up to $backup_file"
+    fi
   else
     echo "Database file $DB_FILE not found, skipping backup"
   fi

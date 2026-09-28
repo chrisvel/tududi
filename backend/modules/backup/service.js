@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const fs = require('fs').promises;
 const {
     exportUserData,
     importUserData,
@@ -12,6 +11,7 @@ const {
     deleteBackup,
     getBackupsDirectory,
     checkVersionCompatibility,
+    readBackupFile,
 } = require('../../services/backupService');
 const { Backup } = require('../../models');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
@@ -168,7 +168,7 @@ class BackupService {
         const backupsDir = await getBackupsDirectory();
         const filePath = path.join(backupsDir, backup.file_path);
 
-        const fileBuffer = await fs.readFile(filePath);
+        const fileBuffer = await readBackupFile(filePath);
         const isCompressed = backup.file_path.endsWith('.gz');
         const filename = `tududi-backup-${new Date().toISOString().split('T')[0]}${isCompressed ? '.json.gz' : '.json'}`;
         const contentType = isCompressed

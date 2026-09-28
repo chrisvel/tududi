@@ -165,6 +165,9 @@ const backupController = {
             );
             res.json(result);
         } catch (error) {
+            if (error.statusCode === 404) {
+                return res.status(404).json({ error: error.message });
+            }
             if (error.statusCode === 400) {
                 return res.status(400).json({
                     error: 'Version incompatible',
@@ -195,6 +198,9 @@ const backupController = {
             );
             res.json(result);
         } catch (error) {
+            if (error.statusCode === 404) {
+                return res.status(404).json({ error: error.message });
+            }
             logError('Error deleting backup:', error);
             res.status(500).json({
                 error: 'Failed to delete backup',
