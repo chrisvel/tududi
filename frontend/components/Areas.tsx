@@ -6,9 +6,13 @@ import {
     FolderIcon,
     FlagIcon,
     CheckCircleIcon,
+    PlusIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import AreaModal from './Area/AreaModal';
+import NewItemButton from './Shared/NewItemButton';
+import BlankSlate from './Shared/BlankSlate';
+import { useCan } from '../hooks/useCan';
 import { useStore } from '../store/useStore';
 import {
     fetchAreas,
@@ -24,6 +28,7 @@ const Areas: React.FC = () => {
     // Use global store for consistency
     const { areas, loadAreas } = useStore((state: any) => state.areasStore);
 
+    const canCreateAreas = useCan('create_projects');
     const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -118,6 +123,11 @@ const Areas: React.FC = () => {
         }
     };
 
+    const handleNewArea = () => {
+        setSelectedArea(null);
+        setIsAreaModalOpen(true);
+    };
+
     const handleEditArea = (area: Area) => {
         setSelectedArea(area);
         setIsAreaModalOpen(true);
@@ -163,15 +173,48 @@ const Areas: React.FC = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
                 {/* Areas Header */}
-                <div className="flex items-center mb-8">
+                <div className="flex items-center justify-between gap-2 mb-8">
                     <h2 className="text-2xl font-light">{t('areas.title')}</h2>
+                    {canCreateAreas && (
+                        <NewItemButton
+                            label={t('areas.new', 'New Area')}
+                            onClick={handleNewArea}
+                            testId="new-area-button"
+                        />
+                    )}
                 </div>
 
                 {/* Areas Grid */}
                 {areas.length === 0 ? (
-                    <p className="text-gray-700 dark:text-gray-300">
-                        {t('areas.noAreasFound')}
-                    </p>
+                    <BlankSlate
+                        title={t('areas.noAreasYet', 'No areas yet.')}
+                        hint={t(
+                            'areas.blankSlateHint',
+                            'Areas are the parts of your life you keep up over time, like Work, Health or Home. Put your projects and goals in them to see each part in one place.'
+                        )}
+                        actions={[
+                            ...(canCreateAreas
+                                ? [
+                                      {
+                                          label: t(
+                                              'areas.blankSlateNew',
+                                              'Create your first area'
+                                          ),
+                                          icon: PlusIcon,
+                                          onClick: handleNewArea,
+                                      },
+                                  ]
+                                : []),
+                            {
+                                label: t(
+                                    'areas.blankSlateProjects',
+                                    'Go to projects'
+                                ),
+                                icon: FolderIcon,
+                                to: '/projects',
+                            },
+                        ]}
+                    />
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {areas.map((area: any) => (

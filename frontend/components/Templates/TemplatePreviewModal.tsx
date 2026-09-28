@@ -21,7 +21,7 @@ interface TemplatePreviewModalProps {
 function categoryAccent(category?: string | null) {
     return category
         ? hashColor(category)
-        : PALETTE.find((c) => c.key === 'indigo')!;
+        : PALETTE.find((c) => c.key === 'blue')!;
 }
 
 const TaskTree: React.FC<{ task: Task }> = ({ task }) => {
@@ -135,7 +135,7 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                     </span>
                     <button
                         onClick={onClone}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                     >
                         <ArrowDownTrayIcon className="h-4 w-4" />
                         {t('templates.useTemplate', 'Use Template')}

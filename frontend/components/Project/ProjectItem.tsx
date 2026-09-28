@@ -778,7 +778,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                         e.stopPropagation();
                                         onSaveAsTemplate(project);
                                     }}
-                                    className="text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
+                                    className="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                                     title={t('projectItem.saveAsTemplate', 'Save as Template')}
                                 >
                                     <RectangleStackIcon className="h-5 w-5" />

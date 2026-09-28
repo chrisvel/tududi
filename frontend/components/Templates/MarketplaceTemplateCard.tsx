@@ -21,7 +21,7 @@ interface MarketplaceTemplateCardProps {
 function categoryAccent(category?: string | null) {
     return category
         ? hashColor(category)
-        : PALETTE.find((c) => c.key === 'indigo')!;
+        : PALETTE.find((c) => c.key === 'blue')!;
 }
 
 const MarketplaceTemplateCard: React.FC<MarketplaceTemplateCardProps> = ({
@@ -92,7 +92,7 @@ const MarketplaceTemplateCard: React.FC<MarketplaceTemplateCardProps> = ({
                     <button
                         onClick={() => onInstall(template)}
                         disabled={installing}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors ml-auto"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors ml-auto"
                     >
                         <ArrowDownTrayIcon className="h-3.5 w-3.5" />
                         {installing

@@ -70,6 +70,17 @@ const Navbar: React.FC<NavbarProps> = ({
         );
     }, [isMobileSearchOpen]);
 
+    // Pages open Universal Search with an openUniversalSearch event; on
+    // phones that means showing the navbar search bar.
+    useEffect(() => {
+        const handleOpenSearch = () => {
+            if (window.innerWidth < 768) setIsMobileSearchOpen(true);
+        };
+        window.addEventListener('openUniversalSearch', handleOpenSearch);
+        return () =>
+            window.removeEventListener('openUniversalSearch', handleOpenSearch);
+    }, []);
+
     // Listen for close mobile search events
     useEffect(() => {
         const handleCloseMobileSearch = () => {

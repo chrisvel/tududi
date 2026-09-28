@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircleIcon, RectangleStackIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
+import { FolderIcon, PlusIcon, RectangleStackIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 import { Template } from '../../entities/Template';
 import { Project } from '../../entities/Project';
 import {
@@ -15,6 +15,8 @@ import {
 import { useToast } from '../Shared/ToastContext';
 import { useStore } from '../../store/useStore';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import NewItemButton from '../Shared/NewItemButton';
+import BlankSlate from '../Shared/BlankSlate';
 import TemplateCard from './TemplateCard';
 import TemplateCloneModal from './TemplateCloneModal';
 import TemplatePreviewModal from './TemplatePreviewModal';
@@ -62,7 +64,7 @@ const TemplateEditModal: React.FC<{
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
                     <div>
@@ -73,7 +75,7 @@ const TemplateEditModal: React.FC<{
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
-                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
                     <div>
@@ -85,7 +87,7 @@ const TemplateEditModal: React.FC<{
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                             placeholder={t('templates.categoryPlaceholder', 'e.g. Sales, HR, Engineering')}
-                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
                     <div className="flex justify-end gap-3 pt-1 border-t border-gray-100 dark:border-gray-700 mt-1">
@@ -98,7 +100,7 @@ const TemplateEditModal: React.FC<{
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                         >
                             {t('common.save', 'Save')}
                         </button>
@@ -207,17 +209,17 @@ const Templates: React.FC = () => {
         <>
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between gap-2 mb-8">
                     <h2 className="text-2xl font-light">
                         {t('templates.title', 'Templates')}
                     </h2>
-                    <button
-                        onClick={() => setEditingTemplate({})}
-                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors flex-shrink-0 ${activeTab !== 'my' ? 'invisible' : ''}`}
-                    >
-                        <PlusCircleIcon className="h-4 w-4" />
-                        {t('templates.new', 'New Template')}
-                    </button>
+                    <div className={activeTab !== 'my' ? 'invisible' : ''}>
+                        <NewItemButton
+                            label={t('templates.new', 'New Template')}
+                            onClick={() => setEditingTemplate({})}
+                            testId="new-template-button"
+                        />
+                    </div>
                 </div>
 
                 <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
@@ -230,7 +232,7 @@ const Templates: React.FC = () => {
                             onClick={() => setActiveTab(key)}
                             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
                                 activeTab === key
-                                    ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
                             }`}
                         >
@@ -244,21 +246,33 @@ const Templates: React.FC = () => {
                 {activeTab === 'my' && (
                     loading ? (
                         <div className="flex items-center justify-center py-16">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
                         </div>
                     ) : templates.length === 0 ? (
-                        <div className="text-center py-16">
-                            <RectangleStackIcon className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                            <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
-                                {t('templates.empty', 'No templates yet. Create one or save an existing project as a template.')}
-                            </p>
-                            <button
-                                onClick={() => setEditingTemplate({})}
-                                className="px-4 py-2 text-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors"
-                            >
-                                {t('templates.createFirst', 'Create Your First Template')}
-                            </button>
-                        </div>
+                        <BlankSlate
+                            title={t('templates.noTemplatesYet', 'No templates yet.')}
+                            hint={t(
+                                'templates.blankSlateHint',
+                                'A template is a project you can start again and again, with its tasks ready to go, like a trip checklist or onboarding a new client. Create one here, save a project you repeat, or pick one from the marketplace.'
+                            )}
+                            actions={[
+                                {
+                                    label: t('templates.createFirst', 'Create your first template'),
+                                    icon: PlusIcon,
+                                    onClick: () => setEditingTemplate({}),
+                                },
+                                {
+                                    label: t('templates.browseMarketplace', 'Browse the marketplace'),
+                                    icon: ShoppingBagIcon,
+                                    onClick: () => setActiveTab('marketplace'),
+                                },
+                                {
+                                    label: t('templates.fromProject', 'Save a project as a template'),
+                                    icon: FolderIcon,
+                                    to: '/projects',
+                                },
+                            ]}
+                        />
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {templates.map((tpl) => (

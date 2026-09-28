@@ -31,9 +31,16 @@ import { SortOption } from './Shared/SortFilterButton';
 
 import { Project, ProjectStatus } from '../entities/Project';
 import { useSearchParams, Link } from 'react-router-dom';
-import { RectangleStackIcon } from '@heroicons/react/24/outline';
+import {
+    FunnelIcon,
+    PlusIcon,
+    RectangleStackIcon,
+} from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
 import SortableItem from './Shared/SortableItem';
+import NewItemButton from './Shared/NewItemButton';
+import BlankSlate from './Shared/BlankSlate';
+import { useCan } from '../hooks/useCan';
 import {
     mergeVisibleOrder,
     resetSortableCursor,
@@ -105,6 +112,7 @@ const Projects: React.FC = () => {
         setError: setProjectsError,
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
+    const canCreateProjects = useCan('create_projects');
     const templatesEnabled = useStore(
         (state) => state.userSettingsStore.templatesEnabled
     );
@@ -319,6 +327,24 @@ const Projects: React.FC = () => {
         } finally {
             setModalState({ isOpen: false, projectToEdit: null });
         }
+    };
+
+    const handleNewProject = () => {
+        modalStateRef.current = { isOpen: true, projectToEdit: null };
+        setModalState({ isOpen: true, projectToEdit: null });
+    };
+
+    // Clears every filter that can hide a project, including search.
+    const handleShowAllProjects = () => {
+        const params = new URLSearchParams(searchParams);
+        params.set('status', 'all');
+        params.delete('area');
+        params.set('someday', '1');
+        localStorage.setItem('projectsStatusFilter', 'all');
+        localStorage.setItem('projectsAreaFilter', '');
+        localStorage.setItem('projectsSomedayFilter', '1');
+        setSearchParams(params);
+        setSearchQuery('');
     };
 
     const handleEditProject = (project: Project) => {
@@ -613,15 +639,37 @@ const Projects: React.FC = () => {
                     <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
-                    {templatesEnabled && (
-                        <Link
-                            to="/templates"
-                            className="flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
-                        >
-                            <RectangleStackIcon className="h-4 w-4" />
-                            {t('projects.fromTemplate', 'From Template')}
-                        </Link>
-                    )}
+                    <div className="flex items-center gap-3 sm:gap-4">
+                        {templatesEnabled && (
+                            <Link
+                                to="/templates"
+                                aria-label={t(
+                                    'projects.fromTemplate',
+                                    'From Template'
+                                )}
+                                title={t(
+                                    'projects.fromTemplate',
+                                    'From Template'
+                                )}
+                                className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                            >
+                                <RectangleStackIcon className="h-5 w-5 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">
+                                    {t(
+                                        'projects.fromTemplate',
+                                        'From Template'
+                                    )}
+                                </span>
+                            </Link>
+                        )}
+                        {canCreateProjects && (
+                            <NewItemButton
+                                label={t('projects.new', 'New Project')}
+                                onClick={handleNewProject}
+                                testId="new-project-button"
+                            />
+                        )}
+                    </div>
                 </div>
 
                 {/* View Mode and Filters */}
@@ -759,11 +807,85 @@ const Projects: React.FC = () => {
 
                 {/* Projects Grid/List */}
                 {displayProjects.length === 0 ? (
-                    <div className={projectsContainerClass}>
-                        <div className="text-gray-700 dark:text-gray-300">
-                            {t('projects.noProjectsFound')}
-                        </div>
-                    </div>
+                    projects.length === 0 ? (
+                        <BlankSlate
+                            title={t(
+                                'projects.noProjectsYet',
+                                'No projects yet.'
+                            )}
+                            hint={t(
+                                'projects.blankSlateHint',
+                                'A project groups the tasks and notes that lead to one outcome, like planning a trip or launching a website. Keep them tidy by grouping them into areas like Work or Home.'
+                            )}
+                            actions={[
+                                ...(canCreateProjects
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'projects.blankSlateNew',
+                                                  'Create your first project'
+                                              ),
+                                              icon: PlusIcon,
+                                              onClick: handleNewProject,
+                                          },
+                                      ]
+                                    : []),
+                                ...(canCreateProjects && templatesEnabled
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'projects.blankSlateTemplate',
+                                                  'Start from a template'
+                                              ),
+                                              icon: RectangleStackIcon,
+                                              to: '/templates',
+                                          },
+                                      ]
+                                    : []),
+                                {
+                                    label: t(
+                                        'projects.blankSlateAreas',
+                                        'Set up areas'
+                                    ),
+                                    icon: Squares2X2Icon,
+                                    to: '/areas',
+                                },
+                            ]}
+                        />
+                    ) : (
+                        <BlankSlate
+                            title={t(
+                                'projects.noProjectsFound',
+                                'No projects found'
+                            )}
+                            hint={t(
+                                'projects.blankSlateFilteredHint',
+                                'Try changing your filters or search.'
+                            )}
+                            actions={[
+                                {
+                                    label: t(
+                                        'projects.blankSlateShowAll',
+                                        'Show all projects'
+                                    ),
+                                    icon: FunnelIcon,
+                                    onClick: handleShowAllProjects,
+                                },
+                                ...(canCreateProjects
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'projects.new',
+                                                  'New Project'
+                                              ),
+                                              icon: PlusIcon,
+                                              onClick: handleNewProject,
+                                          },
+                                      ]
+                                    : []),
+                            ]}
+                        />
+                    )
                 ) : displayProjects.every((p) => p.uid) ? (
                     <DndContext
                         sensors={sensors}
