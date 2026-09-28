@@ -10,9 +10,12 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
+    ArrowsUpDownIcon,
     Bars3Icon,
     ChevronDownIcon,
     ChevronUpIcon,
+    ClockIcon,
+    FunnelIcon,
     QueueListIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -53,6 +56,51 @@ interface PlanningTabProps {
     isActive: boolean;
 }
 
+interface PlanningCardProps {
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    title: string;
+    description?: string;
+    action?: React.ReactNode;
+    testId?: string;
+    children: React.ReactNode;
+}
+
+// One subsection of the Planning tab, a soft card like the other Profile
+// settings cards.
+const PlanningCard: React.FC<PlanningCardProps> = ({
+    icon: Icon,
+    title,
+    description,
+    action,
+    testId,
+    children,
+}) => (
+    <section
+        className="mb-6 rounded-xl bg-gray-50 p-5 dark:bg-gray-800/60"
+        data-testid={testId}
+    >
+        <div className="mb-4 flex items-start gap-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300">
+                <Icon className="h-4 w-4" />
+            </span>
+            <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {title}
+                    </h4>
+                    {action}
+                </div>
+                {description && (
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        {description}
+                    </p>
+                )}
+            </div>
+        </div>
+        {children}
+    </section>
+);
+
 interface BucketRowProps {
     bucket: RankingBucket;
     index: number;
@@ -87,7 +135,7 @@ const BucketRow: React.FC<BucketRowProps> = ({
         <li
             ref={setNodeRef}
             style={{ transform: CSS.Transform.toString(transform), transition }}
-            className={`flex items-center gap-3 rounded-lg bg-gray-50 px-2 py-2 dark:bg-gray-800/60 ${
+            className={`flex items-center gap-3 rounded-lg bg-white px-2 py-2 dark:bg-gray-900/60 ${
                 isDragging ? 'relative z-10 shadow-lg' : ''
             }`}
             data-testid={`planning-bucket-${bucket}`}
@@ -474,401 +522,51 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
             : t('profile.planning.horizonDays', '{{count}} days', {
                   count: days,
               });
-    const sectionTitle =
-        'mb-1 text-sm font-medium text-gray-800 dark:text-gray-200';
-    const sectionHint = 'mb-3 text-sm text-gray-600 dark:text-gray-300';
-    const checkbox = 'h-4 w-4 rounded text-blue-600 focus:ring-blue-500';
+    const fieldLabel =
+        'mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300';
+    const fieldHint = 'mt-1.5 text-xs text-gray-500 dark:text-gray-400';
+    const pill =
+        'flex cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-800 dark:bg-gray-900/60 dark:text-gray-300 dark:hover:bg-gray-900 dark:has-[:checked]:bg-blue-900/30 dark:has-[:checked]:text-blue-200';
+    const checkbox =
+        'h-4 w-4 shrink-0 rounded text-blue-600 focus:ring-blue-500';
+    const resetLink =
+        'text-xs font-normal text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline dark:text-gray-400 dark:hover:text-gray-200';
+    const loadingText = (
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+            {t('common.loading', 'Loading...')}
+        </p>
+    );
 
     return (
         <div>
-            <h3 className="mb-6 flex items-center text-xl font-semibold text-gray-900 dark:text-white">
+            <h3 className="mb-2 flex items-center text-xl font-semibold text-gray-900 dark:text-white">
                 <QueueListIcon className="mr-3 h-6 w-6 text-blue-500" />
                 {t('profile.planning.title', 'Planning')}
             </h3>
-
             <p className="mb-6 text-sm text-gray-600 dark:text-gray-300">
                 {t(
-                    'profile.planning.description',
-                    'How "What could you do today?" orders your tasks when you plan your day. Drag the rows into the order you want; the same tasks always come out in the same order.'
-                )}
+                    'profile.planning.intro',
+                    'How Plan my day lays out your day and which tasks it offers you.'
+                )}{' '}
+                <Link
+                    to="/today/plan"
+                    className="text-blue-600 hover:underline dark:text-blue-400"
+                >
+                    {t('profile.planning.open', 'Plan my day')}
+                </Link>
             </p>
 
-            <div className="mb-3 flex items-center justify-between gap-2">
-                <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                    {t('profile.planning.orderTitle', 'Order (drag to change)')}
-                </h4>
-                {!isDefault && order.length > 0 && (
-                    <button
-                        type="button"
-                        onClick={() => save(defaultOrder)}
-                        className="text-xs text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline dark:text-gray-400 dark:hover:text-gray-200"
-                    >
-                        {t('profile.planning.reset', 'Reset to default')}
-                    </button>
-                )}
-            </div>
-
-            {loading && order.length === 0 ? (
-                <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                    {t('common.loading', 'Loading...')}
-                </p>
-            ) : (
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={onDragEnd}
-                >
-                    <SortableContext
-                        items={order}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        <ol className="mb-6 flex flex-col gap-2">
-                            {order.map((bucket, index) => (
-                                <BucketRow
-                                    key={bucket}
-                                    bucket={bucket}
-                                    index={index}
-                                    count={order.length}
-                                    {...describe(bucket)}
-                                    onMove={move}
-                                />
-                            ))}
-                        </ol>
-                    </SortableContext>
-                </DndContext>
-            )}
-
-            <h4 className="mb-3 text-sm font-medium text-gray-800 dark:text-gray-200">
-                {t('profile.planning.withinTitle', 'Inside each group')}
-            </h4>
-            <ol className="mb-6 flex list-decimal flex-col gap-1.5 pl-5 text-sm text-gray-700 dark:text-gray-300">
-                {tieBreakers.map((rule) => (
-                    <li key={rule}>{rule}</li>
-                ))}
-            </ol>
-
-            {suggestions && suggestionOptions ? (
-                <div data-testid="planning-suggestions">
-                    <section className="mb-6">
-                        <h4 className={sectionTitle}>
-                            {t(
-                                'profile.planning.projectsTitle',
-                                'Which projects count'
-                            )}
-                        </h4>
-                        <p className={sectionHint}>
-                            {t(
-                                'profile.planning.projectsDescription',
-                                'Tasks from these projects can be suggested under Everything else. Overdue, due today and in progress tasks always show.'
-                            )}
-                        </p>
-                        <div className="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                            {suggestionOptions.projectStatuses.map((status) => (
-                                <label
-                                    key={status}
-                                    className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={suggestions.projectStatuses.includes(
-                                            status
-                                        )}
-                                        onChange={(e) =>
-                                            toggleStatus(
-                                                status,
-                                                e.target.checked
-                                            )
-                                        }
-                                        className={checkbox}
-                                        data-testid={`planning-status-${status}`}
-                                    />
-                                    {statusLabel(status)}
-                                </label>
-                            ))}
-                            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                                <input
-                                    type="checkbox"
-                                    checked={suggestions.includeNoProject}
-                                    onChange={(e) =>
-                                        changeSuggestions({
-                                            includeNoProject: e.target.checked,
-                                        })
-                                    }
-                                    className={checkbox}
-                                    data-testid="planning-include-no-project"
-                                />
-                                {t(
-                                    'profile.planning.includeNoProject',
-                                    'Tasks with no project'
-                                )}
-                            </label>
-                        </div>
-                        <label
-                            className={`${FORM.label} mb-1.5`}
-                            htmlFor="planning-exclude-project"
-                        >
-                            {t(
-                                'profile.planning.excludedTitle',
-                                'Never suggest these projects'
-                            )}
-                        </label>
-                        {excludedProjects.length > 0 && (
-                            <ul
-                                className="mb-2 flex flex-wrap gap-1.5"
-                                data-testid="planning-excluded-projects"
-                            >
-                                {excludedProjects.map((project) => (
-                                    <li
-                                        key={project.id}
-                                        className="inline-flex items-center gap-1 rounded-full bg-gray-100 py-0.5 pl-2.5 pr-1 text-xs text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-                                    >
-                                        {project.name}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setExcluded(
-                                                    suggestions.excludedProjectIds.filter(
-                                                        (id) =>
-                                                            id !== project.id
-                                                    )
-                                                )
-                                            }
-                                            aria-label={t(
-                                                'profile.planning.excludedRemove',
-                                                'Suggest {{name}} again',
-                                                { name: project.name }
-                                            )}
-                                            className="flex h-5 w-5 items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
-                                        >
-                                            <XMarkIcon className="h-3.5 w-3.5" />
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                        <select
-                            id="planning-exclude-project"
-                            value=""
-                            onChange={(e) => {
-                                const id = Number(e.target.value);
-                                if (!id) return;
-                                setExcluded([
-                                    ...suggestions.excludedProjectIds,
-                                    id,
-                                ]);
-                            }}
-                            className={`${FORM.select} w-full sm:w-72`}
-                            data-testid="planning-exclude-project"
-                        >
-                            <option value="">
-                                {t(
-                                    'profile.planning.excludedAdd',
-                                    'Add a project…'
-                                )}
-                            </option>
-                            {projects
-                                .filter(
-                                    (project) =>
-                                        !suggestions.excludedProjectIds.includes(
-                                            project.id as number
-                                        )
-                                )
-                                .map((project) => (
-                                    <option key={project.id} value={project.id}>
-                                        {project.name}
-                                    </option>
-                                ))}
-                        </select>
-                    </section>
-
-                    <section className="mb-6">
-                        <h4 className={sectionTitle}>
-                            {t('profile.planning.tieTitle', 'When tasks tie')}
-                        </h4>
-                        <p className={sectionHint}>
-                            {t(
-                                'profile.planning.tieDescription',
-                                'After priority and due date, which task comes first.'
-                            )}
-                        </p>
-                        <select
-                            value={suggestions.tieBreak}
-                            onChange={(e) =>
-                                changeSuggestions({
-                                    tieBreak: e.target
-                                        .value as SuggestionTieBreak,
-                                })
-                            }
-                            className={FORM.select}
-                            data-testid="planning-tie-break"
-                        >
-                            {suggestionOptions.tieBreak.map((value) => (
-                                <option key={value} value={value}>
-                                    {tieBreakLabels[value]}
-                                </option>
-                            ))}
-                        </select>
-                    </section>
-
-                    <section className="mb-6">
-                        <h4 className={sectionTitle}>
-                            {t(
-                                'profile.planning.staleTitle',
-                                'Leave out untouched tasks'
-                            )}
-                        </h4>
-                        <p className={sectionHint}>
-                            {t(
-                                'profile.planning.staleDescription',
-                                'Skip suggestions nobody has changed for this long.'
-                            )}
-                        </p>
-                        <select
-                            value={suggestions.staleAfterDays ?? ''}
-                            onChange={(e) =>
-                                changeSuggestions({
-                                    staleAfterDays: e.target.value
-                                        ? Number(e.target.value)
-                                        : null,
-                                })
-                            }
-                            className={FORM.select}
-                            data-testid="planning-stale"
-                        >
-                            {suggestionOptions.staleAfterDays.map((days) => (
-                                <option key={days ?? 'off'} value={days ?? ''}>
-                                    {staleLabel(days)}
-                                </option>
-                            ))}
-                        </select>
-                    </section>
-
-                    <section className="mb-6">
-                        <h4 className={sectionTitle}>
-                            {t('profile.planning.horizonTitle', 'Look ahead')}
-                        </h4>
-                        <p className={sectionHint}>
-                            {t(
-                                'profile.planning.horizonDescription',
-                                'Suggest tasks due up to this far ahead.'
-                            )}
-                        </p>
-                        <select
-                            value={suggestions.horizonDays}
-                            onChange={(e) =>
-                                changeSuggestions({
-                                    horizonDays: Number(e.target.value),
-                                })
-                            }
-                            className={FORM.select}
-                            data-testid="planning-horizon"
-                        >
-                            {suggestionOptions.horizonDays.map((days) => (
-                                <option key={days} value={days}>
-                                    {horizonLabel(days)}
-                                </option>
-                            ))}
-                        </select>
-                    </section>
-
-                    <section className="mb-8">
-                        <h4 className={sectionTitle}>
-                            {t('profile.planning.maxTitle', 'Show up to')}
-                        </h4>
-                        <p className={sectionHint}>
-                            {t(
-                                'profile.planning.maxDescription',
-                                'The most tasks to suggest under Everything else.'
-                            )}
-                        </p>
-                        <select
-                            value={suggestions.maxSuggestions}
-                            onChange={(e) =>
-                                changeSuggestions({
-                                    maxSuggestions: Number(e.target.value),
-                                })
-                            }
-                            className={FORM.select}
-                            data-testid="planning-max"
-                        >
-                            {suggestionOptions.maxSuggestions.map((count) => (
-                                <option key={count} value={count}>
-                                    {t(
-                                        'profile.planning.maxOption',
-                                        '{{count}} tasks',
-                                        { count }
-                                    )}
-                                </option>
-                            ))}
-                        </select>
-                    </section>
-                </div>
-            ) : (
-                <p className="mb-8 text-sm text-gray-500 dark:text-gray-400">
-                    {t('common.loading', 'Loading...')}
-                </p>
-            )}
-
-            <h4 className="mb-2 text-sm font-medium text-gray-800 dark:text-gray-200">
-                {t('profile.planning.hoursTitle', 'Your day')}
-            </h4>
-            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
-                {t(
+            <PlanningCard
+                icon={ClockIcon}
+                title={t('profile.planning.hoursTitle', 'Your day')}
+                description={t(
                     'profile.planning.hoursDescription',
                     'The hours the timeline shows on Today and when you plan your day. New tasks and AI drafts get a time inside them. Times are in your timezone ({{timezone}}).',
                     { timezone: getUserTimezone() }
                 )}
-            </p>
-            {dayHours ? (
-                <div
-                    className="mb-8 flex flex-wrap items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
-                    data-testid="planning-day-hours"
-                >
-                    <label className="flex items-center gap-2">
-                        {t('profile.planning.hoursFrom', 'From')}
-                        <select
-                            value={dayHours.start}
-                            onChange={(e) =>
-                                changeHours({
-                                    ...dayHours,
-                                    start: Number(e.target.value),
-                                })
-                            }
-                            className={`${FORM.select}`}
-                            data-testid="planning-day-start"
-                        >
-                            {HOUR_OPTIONS.filter(
-                                (minute) => minute < dayHours.end
-                            ).map((minute) => (
-                                <option key={minute} value={minute}>
-                                    {formatMinute(minute)}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                    <label className="flex items-center gap-2">
-                        {t('profile.planning.hoursTo', 'to')}
-                        <select
-                            value={dayHours.end}
-                            onChange={(e) =>
-                                changeHours({
-                                    ...dayHours,
-                                    end: Number(e.target.value),
-                                })
-                            }
-                            className={`${FORM.select}`}
-                            data-testid="planning-day-end"
-                        >
-                            {HOUR_OPTIONS.filter(
-                                (minute) => minute > dayHours.start
-                            ).map((minute) => (
-                                <option key={minute} value={minute}>
-                                    {formatMinute(minute)}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                    {(dayHours.start !== DEFAULT_DAY_START ||
+                action={
+                    dayHours &&
+                    (dayHours.start !== DEFAULT_DAY_START ||
                         dayHours.end !== DEFAULT_DAY_END) && (
                         <button
                             type="button"
@@ -878,24 +576,448 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
                                     end: DEFAULT_DAY_END,
                                 })
                             }
-                            className="ml-2 text-xs text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline dark:text-gray-400 dark:hover:text-gray-200"
+                            className={resetLink}
                         >
                             {t('profile.planning.reset', 'Reset to default')}
                         </button>
+                    )
+                }
+            >
+                {dayHours ? (
+                    <div
+                        className="flex flex-wrap items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
+                        data-testid="planning-day-hours"
+                    >
+                        <label className="flex items-center gap-2">
+                            {t('profile.planning.hoursFrom', 'From')}
+                            <select
+                                value={dayHours.start}
+                                onChange={(e) =>
+                                    changeHours({
+                                        ...dayHours,
+                                        start: Number(e.target.value),
+                                    })
+                                }
+                                className={FORM.select}
+                                data-testid="planning-day-start"
+                            >
+                                {HOUR_OPTIONS.filter(
+                                    (minute) => minute < dayHours.end
+                                ).map((minute) => (
+                                    <option key={minute} value={minute}>
+                                        {formatMinute(minute)}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="flex items-center gap-2">
+                            {t('profile.planning.hoursTo', 'to')}
+                            <select
+                                value={dayHours.end}
+                                onChange={(e) =>
+                                    changeHours({
+                                        ...dayHours,
+                                        end: Number(e.target.value),
+                                    })
+                                }
+                                className={FORM.select}
+                                data-testid="planning-day-end"
+                            >
+                                {HOUR_OPTIONS.filter(
+                                    (minute) => minute > dayHours.start
+                                ).map((minute) => (
+                                    <option key={minute} value={minute}>
+                                        {formatMinute(minute)}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+                ) : (
+                    loadingText
+                )}
+            </PlanningCard>
+
+            <PlanningCard
+                icon={ArrowsUpDownIcon}
+                title={t(
+                    'profile.planning.orderTitle',
+                    'Order (drag to change)'
+                )}
+                description={t(
+                    'profile.planning.description',
+                    'How "What could you do today?" orders your tasks when you plan your day. Drag the rows into the order you want; the same tasks always come out in the same order.'
+                )}
+                action={
+                    !isDefault &&
+                    order.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={() => save(defaultOrder)}
+                            className={resetLink}
+                        >
+                            {t('profile.planning.reset', 'Reset to default')}
+                        </button>
+                    )
+                }
+            >
+                {loading && order.length === 0 ? (
+                    loadingText
+                ) : (
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={onDragEnd}
+                    >
+                        <SortableContext
+                            items={order}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            <ol className="flex flex-col gap-2">
+                                {order.map((bucket, index) => (
+                                    <BucketRow
+                                        key={bucket}
+                                        bucket={bucket}
+                                        index={index}
+                                        count={order.length}
+                                        {...describe(bucket)}
+                                        onMove={move}
+                                    />
+                                ))}
+                            </ol>
+                        </SortableContext>
+                    </DndContext>
+                )}
+
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <h5 className={fieldLabel}>
+                            {t(
+                                'profile.planning.withinTitle',
+                                'Inside each group'
+                            )}
+                        </h5>
+                        <ol className="flex list-decimal flex-col gap-1 pl-5 text-sm text-gray-700 dark:text-gray-300">
+                            {tieBreakers.map((rule) => (
+                                <li key={rule}>{rule}</li>
+                            ))}
+                        </ol>
+                    </div>
+                    {suggestions && suggestionOptions && (
+                        <div>
+                            <label
+                                htmlFor="planning-tie-break"
+                                className={fieldLabel}
+                            >
+                                {t(
+                                    'profile.planning.tieTitle',
+                                    'When tasks tie'
+                                )}
+                            </label>
+                            <select
+                                id="planning-tie-break"
+                                value={suggestions.tieBreak}
+                                onChange={(e) =>
+                                    changeSuggestions({
+                                        tieBreak: e.target
+                                            .value as SuggestionTieBreak,
+                                    })
+                                }
+                                className={`${FORM.select} w-full`}
+                                data-testid="planning-tie-break"
+                            >
+                                {suggestionOptions.tieBreak.map((value) => (
+                                    <option key={value} value={value}>
+                                        {tieBreakLabels[value]}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className={fieldHint}>
+                                {t(
+                                    'profile.planning.tieDescription',
+                                    'After priority and due date, which task comes first.'
+                                )}
+                            </p>
+                        </div>
                     )}
                 </div>
-            ) : (
-                <p className="mb-8 text-sm text-gray-500 dark:text-gray-400">
-                    {t('common.loading', 'Loading...')}
-                </p>
-            )}
+            </PlanningCard>
 
-            <Link
-                to="/today/plan"
-                className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+            <PlanningCard
+                icon={FunnelIcon}
+                title={t(
+                    'profile.planning.suggestedTitle',
+                    'What gets suggested'
+                )}
+                description={t(
+                    'profile.planning.suggestedDescription',
+                    'Which open tasks can show up under Everything else, and how many. Overdue, due today and in progress tasks always show.'
+                )}
             >
-                {t('profile.planning.open', 'Plan my day')}
-            </Link>
+                {suggestions && suggestionOptions ? (
+                    <div
+                        className="flex flex-col gap-6"
+                        data-testid="planning-suggestions"
+                    >
+                        <div>
+                            <h5 className={fieldLabel}>
+                                {t(
+                                    'profile.planning.projectsTitle',
+                                    'Which projects count'
+                                )}
+                            </h5>
+                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                                {suggestionOptions.projectStatuses.map(
+                                    (status) => (
+                                        <label key={status} className={pill}>
+                                            <input
+                                                type="checkbox"
+                                                checked={suggestions.projectStatuses.includes(
+                                                    status
+                                                )}
+                                                onChange={(e) =>
+                                                    toggleStatus(
+                                                        status,
+                                                        e.target.checked
+                                                    )
+                                                }
+                                                className={checkbox}
+                                                data-testid={`planning-status-${status}`}
+                                            />
+                                            {statusLabel(status)}
+                                        </label>
+                                    )
+                                )}
+                                <label className={pill}>
+                                    <input
+                                        type="checkbox"
+                                        checked={suggestions.includeNoProject}
+                                        onChange={(e) =>
+                                            changeSuggestions({
+                                                includeNoProject:
+                                                    e.target.checked,
+                                            })
+                                        }
+                                        className={checkbox}
+                                        data-testid="planning-include-no-project"
+                                    />
+                                    {t(
+                                        'profile.planning.includeNoProject',
+                                        'Tasks with no project'
+                                    )}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label
+                                className={fieldLabel}
+                                htmlFor="planning-exclude-project"
+                            >
+                                {t(
+                                    'profile.planning.excludedTitle',
+                                    'Never suggest these projects'
+                                )}
+                            </label>
+                            {excludedProjects.length > 0 && (
+                                <ul
+                                    className="mb-2 flex flex-wrap gap-1.5"
+                                    data-testid="planning-excluded-projects"
+                                >
+                                    {excludedProjects.map((project) => (
+                                        <li
+                                            key={project.id}
+                                            className="inline-flex items-center gap-1 rounded-full bg-white py-1 pl-3 pr-1 text-xs font-medium text-gray-800 dark:bg-gray-900/60 dark:text-gray-200"
+                                        >
+                                            {project.name}
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setExcluded(
+                                                        suggestions.excludedProjectIds.filter(
+                                                            (id) =>
+                                                                id !==
+                                                                project.id
+                                                        )
+                                                    )
+                                                }
+                                                aria-label={t(
+                                                    'profile.planning.excludedRemove',
+                                                    'Suggest {{name}} again',
+                                                    { name: project.name }
+                                                )}
+                                                className="flex h-5 w-5 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                                            >
+                                                <XMarkIcon className="h-3.5 w-3.5" />
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                            <select
+                                id="planning-exclude-project"
+                                value=""
+                                onChange={(e) => {
+                                    const id = Number(e.target.value);
+                                    if (!id) return;
+                                    setExcluded([
+                                        ...suggestions.excludedProjectIds,
+                                        id,
+                                    ]);
+                                }}
+                                className={`${FORM.select} w-full sm:w-72`}
+                                data-testid="planning-exclude-project"
+                            >
+                                <option value="">
+                                    {t(
+                                        'profile.planning.excludedAdd',
+                                        'Add a project…'
+                                    )}
+                                </option>
+                                {projects
+                                    .filter(
+                                        (project) =>
+                                            !suggestions.excludedProjectIds.includes(
+                                                project.id as number
+                                            )
+                                    )
+                                    .map((project) => (
+                                        <option
+                                            key={project.id}
+                                            value={project.id}
+                                        >
+                                            {project.name}
+                                        </option>
+                                    ))}
+                            </select>
+                        </div>
+
+                        <div className="grid gap-4 sm:grid-cols-3">
+                            <div>
+                                <label
+                                    htmlFor="planning-horizon"
+                                    className={fieldLabel}
+                                >
+                                    {t(
+                                        'profile.planning.horizonTitle',
+                                        'Look ahead'
+                                    )}
+                                </label>
+                                <select
+                                    id="planning-horizon"
+                                    value={suggestions.horizonDays}
+                                    onChange={(e) =>
+                                        changeSuggestions({
+                                            horizonDays: Number(e.target.value),
+                                        })
+                                    }
+                                    className={`${FORM.select} w-full`}
+                                    data-testid="planning-horizon"
+                                >
+                                    {suggestionOptions.horizonDays.map(
+                                        (days) => (
+                                            <option key={days} value={days}>
+                                                {horizonLabel(days)}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                                <p className={fieldHint}>
+                                    {t(
+                                        'profile.planning.horizonDescription',
+                                        'Suggest tasks due up to this far ahead.'
+                                    )}
+                                </p>
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="planning-stale"
+                                    className={fieldLabel}
+                                >
+                                    {t(
+                                        'profile.planning.staleTitle',
+                                        'Leave out untouched tasks'
+                                    )}
+                                </label>
+                                <select
+                                    id="planning-stale"
+                                    value={suggestions.staleAfterDays ?? ''}
+                                    onChange={(e) =>
+                                        changeSuggestions({
+                                            staleAfterDays: e.target.value
+                                                ? Number(e.target.value)
+                                                : null,
+                                        })
+                                    }
+                                    className={`${FORM.select} w-full`}
+                                    data-testid="planning-stale"
+                                >
+                                    {suggestionOptions.staleAfterDays.map(
+                                        (days) => (
+                                            <option
+                                                key={days ?? 'off'}
+                                                value={days ?? ''}
+                                            >
+                                                {staleLabel(days)}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                                <p className={fieldHint}>
+                                    {t(
+                                        'profile.planning.staleDescription',
+                                        'Skip suggestions nobody has changed for this long.'
+                                    )}
+                                </p>
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="planning-max"
+                                    className={fieldLabel}
+                                >
+                                    {t(
+                                        'profile.planning.maxTitle',
+                                        'Show up to'
+                                    )}
+                                </label>
+                                <select
+                                    id="planning-max"
+                                    value={suggestions.maxSuggestions}
+                                    onChange={(e) =>
+                                        changeSuggestions({
+                                            maxSuggestions: Number(
+                                                e.target.value
+                                            ),
+                                        })
+                                    }
+                                    className={`${FORM.select} w-full`}
+                                    data-testid="planning-max"
+                                >
+                                    {suggestionOptions.maxSuggestions.map(
+                                        (count) => (
+                                            <option key={count} value={count}>
+                                                {t(
+                                                    'profile.planning.maxOption',
+                                                    '{{count}} tasks',
+                                                    { count }
+                                                )}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                                <p className={fieldHint}>
+                                    {t(
+                                        'profile.planning.maxDescription',
+                                        'The most tasks to suggest under Everything else.'
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    loadingText
+                )}
+            </PlanningCard>
         </div>
     );
 };

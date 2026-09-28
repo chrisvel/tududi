@@ -629,7 +629,6 @@
       "horizonDay": "1 day",
       "horizonDays": "{{count}} days",
       "projectsTitle": "Which projects count",
-      "projectsDescription": "Tasks from these projects can be suggested under Everything else. Overdue, due today and in progress tasks always show.",
       "includeNoProject": "Tasks with no project",
       "excludedTitle": "Never suggest these projects",
       "excludedRemove": "Suggest {{name}} again",
@@ -642,7 +641,10 @@
       "horizonDescription": "Suggest tasks due up to this far ahead.",
       "maxTitle": "Show up to",
       "maxDescription": "The most tasks to suggest under Everything else.",
-      "maxOption": "{{count}} tasks"
+      "maxOption": "{{count}} tasks",
+      "intro": "How Plan my day lays out your day and which tasks it offers you.",
+      "suggestedTitle": "What gets suggested",
+      "suggestedDescription": "Which open tasks can show up under Everything else, and how many. Overdue, due today and in progress tasks always show."
     }
   },
   "productivity": {
