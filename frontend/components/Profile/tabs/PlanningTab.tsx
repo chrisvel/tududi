@@ -14,18 +14,27 @@ import {
     ChevronDownIcon,
     ChevronUpIcon,
     QueueListIcon,
+    XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from '../../Shared/ToastContext';
 import { useSortableSensors } from '../../Shared/sortableList';
 import {
     DayHours,
+    ProjectStatusKey,
     RankingBucket,
     RankingGroup,
+    SuggestionSettings,
+    SuggestionSettingsResponse,
+    SuggestionTieBreak,
     fetchDayHours,
     fetchPlanRanking,
+    fetchSuggestionSettings,
     saveDayHours,
     savePlanRanking,
+    saveSuggestionSettings,
 } from '../../../utils/dailyPlanService';
+import { fetchProjects } from '../../../utils/projectsService';
+import { Project } from '../../../entities/Project';
 import { getUserTimezone } from '../../../utils/dateUtils';
 import {
     DEFAULT_DAY_END,
@@ -140,7 +149,8 @@ const BucketRow: React.FC<BucketRowProps> = ({
 };
 
 // Lets the user order the buckets used by backend/modules/daily-plan/
-// ranking.js. Keep the texts here in step with that file.
+// ranking.js and choose which tasks count as suggested
+// (planningSettings.js). Keep the texts here in step with those files.
 const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
     const { t } = useTranslation();
     const { showErrorToast } = useToast();
@@ -149,6 +159,39 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
     const [defaultOrder, setDefaultOrder] = useState<RankingBucket[]>([]);
     const [loading, setLoading] = useState(false);
     const [dayHours, setDayHours] = useState<DayHours | null>(null);
+    const [suggestions, setSuggestions] = useState<SuggestionSettings | null>(
+        null
+    );
+    const [suggestionOptions, setSuggestionOptions] = useState<
+        SuggestionSettingsResponse['options'] | null
+    >(null);
+    const [projects, setProjects] = useState<Project[]>([]);
+
+    useEffect(() => {
+        if (!isActive) return;
+        fetchSuggestionSettings()
+            .then((response) => {
+                setSuggestions(response.settings);
+                setSuggestionOptions(response.options);
+            })
+            .catch(() =>
+                showErrorToast(
+                    t(
+                        'profile.planning.suggestionsLoadError',
+                        'Could not load your suggestion settings'
+                    )
+                )
+            );
+        fetchProjects()
+            .then((list) =>
+                setProjects(
+                    list
+                        .filter((project) => typeof project.id === 'number')
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                )
+            )
+            .catch(() => setProjects([]));
+    }, [isActive]);
 
     useEffect(() => {
         if (!isActive) return;
@@ -185,6 +228,88 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
 
     if (!isActive) return null;
 
+    const statusLabel = (status: ProjectStatusKey) =>
+        t(`projectStatus.${status}`, status);
+
+    // "Everything else" in words, following the saved settings.
+    function describeSuggested() {
+        if (!suggestions) {
+            return t(
+                'profile.planning.suggestedLoading',
+                'Open tasks you could pick up.'
+            );
+        }
+        const labels = suggestions.projectStatuses.map(
+            (status) => `“${statusLabel(status)}”`
+        );
+        const statuses =
+            labels.length > 1
+                ? t('profile.planning.listOr', '{{first}} or {{last}}', {
+                      first: labels.slice(0, -1).join(', '),
+                      last: labels[labels.length - 1],
+                  })
+                : (labels[0] ?? '');
+        const hasStatuses = suggestions.projectStatuses.length > 0;
+        const parts = [
+            hasStatuses && suggestions.includeNoProject
+                ? t(
+                      'profile.planning.suggestedFromProjectsAndNone',
+                      'Open tasks from projects marked {{statuses}}, and tasks with no project.',
+                      { statuses }
+                  )
+                : hasStatuses
+                  ? t(
+                        'profile.planning.suggestedFromProjects',
+                        'Open tasks from projects marked {{statuses}}.',
+                        { statuses }
+                    )
+                  : suggestions.includeNoProject
+                    ? t(
+                          'profile.planning.suggestedFromNone',
+                          'Open tasks with no project.'
+                      )
+                    : t(
+                          'profile.planning.suggestedFromNothing',
+                          'Nothing, because no project status and no tasks without a project are chosen below.'
+                      ),
+        ];
+        if (suggestions.excludedProjectIds.length > 0) {
+            parts.push(
+                t(
+                    'profile.planning.suggestedExcluded',
+                    'Projects you chose to never suggest are left out.'
+                )
+            );
+        }
+        parts.push(
+            suggestions.horizonDays === 1
+                ? t(
+                      'profile.planning.suggestedLeftOutDay',
+                      'Deferred tasks, someday tasks and tasks due more than a day out are left out.'
+                  )
+                : t(
+                      'profile.planning.suggestedLeftOutDays',
+                      'Deferred tasks, someday tasks and tasks due more than {{count}} days out are left out.',
+                      { count: suggestions.horizonDays }
+                  )
+        );
+        if (suggestions.staleAfterDays) {
+            parts.push(
+                t(
+                    'profile.planning.suggestedStale',
+                    'So are tasks nobody changed in {{months}} months.',
+                    { months: Math.round(suggestions.staleAfterDays / 30) }
+                )
+            );
+        }
+        parts.push(
+            t('profile.planning.suggestedCap', 'Up to {{count}} are shown.', {
+                count: suggestions.maxSuggestions,
+            })
+        );
+        return parts.join(' ');
+    }
+
     const groups: Record<RankingGroup, { title: string; detail: string }> = {
         overdue: {
             title: t('profile.planning.overdue', 'Overdue'),
@@ -209,10 +334,7 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
         },
         suggested: {
             title: t('profile.planning.everythingElse', 'Everything else'),
-            detail: t(
-                'profile.planning.everythingElseDetail',
-                'Open tasks you could pick up. Deferred tasks, someday tasks and tasks due more than 3 days out are left out.'
-            ),
+            detail: describeSuggested(),
         },
     };
     const kinds = {
@@ -259,6 +381,44 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
         });
     };
 
+    const changeSuggestions = (patch: Partial<SuggestionSettings>) => {
+        if (!suggestions) return;
+        const previous = suggestions;
+        setSuggestions({ ...suggestions, ...patch });
+        saveSuggestionSettings(patch).catch(() => {
+            setSuggestions(previous);
+            showErrorToast(
+                t(
+                    'profile.planning.suggestionsSaveError',
+                    'Could not save your suggestion settings'
+                )
+            );
+        });
+    };
+
+    const toggleStatus = (status: ProjectStatusKey, on: boolean) => {
+        if (!suggestions || !suggestionOptions) return;
+        const chosen = new Set(suggestions.projectStatuses);
+        if (on) chosen.add(status);
+        else chosen.delete(status);
+        changeSuggestions({
+            projectStatuses: suggestionOptions.projectStatuses.filter((key) =>
+                chosen.has(key)
+            ),
+        });
+    };
+
+    // Only ids of projects that still exist are sent, so a deleted project
+    // left in the setting never blocks a save.
+    const projectIds = new Set(projects.map((project) => project.id));
+    const excludedProjects = projects.filter((project) =>
+        suggestions?.excludedProjectIds.includes(project.id as number)
+    );
+    const setExcluded = (ids: number[]) =>
+        changeSuggestions({
+            excludedProjectIds: ids.filter((id) => projectIds.has(id)),
+        });
+
     const move = (from: number, to: number) => {
         if (to < 0 || to >= order.length || from === to) return;
         save(arrayMove(order, from, to));
@@ -278,11 +438,46 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
 
     const tieBreakers = [
         t('profile.planning.rulePriority', 'Higher priority first.'),
-        t(
-            'profile.planning.ruleDue',
-            'The earlier due date first, then the older task.'
-        ),
+        {
+            recently_touched: t(
+                'profile.planning.ruleDueRecent',
+                'The earlier due date first, then the task changed most recently.'
+            ),
+            newest: t(
+                'profile.planning.ruleDueNewest',
+                'The earlier due date first, then the newest task.'
+            ),
+            oldest: t(
+                'profile.planning.ruleDueOldest',
+                'The earlier due date first, then the oldest task.'
+            ),
+        }[suggestions?.tieBreak ?? 'recently_touched'],
     ];
+
+    const tieBreakLabels: Record<SuggestionTieBreak, string> = {
+        recently_touched: t(
+            'profile.planning.tieRecent',
+            'Most recently changed first'
+        ),
+        newest: t('profile.planning.tieNewest', 'Newest first'),
+        oldest: t('profile.planning.tieOldest', 'Oldest first'),
+    };
+    const staleLabel = (days: number | null) =>
+        days === null
+            ? t('profile.planning.staleOff', 'Off')
+            : t('profile.planning.staleMonths', '{{count}} months', {
+                  count: Math.round(days / 30),
+              });
+    const horizonLabel = (days: number) =>
+        days === 1
+            ? t('profile.planning.horizonDay', '1 day')
+            : t('profile.planning.horizonDays', '{{count}} days', {
+                  count: days,
+              });
+    const sectionTitle =
+        'mb-1 text-sm font-medium text-gray-800 dark:text-gray-200';
+    const sectionHint = 'mb-3 text-sm text-gray-600 dark:text-gray-300';
+    const checkbox = 'h-4 w-4 rounded text-blue-600 focus:ring-blue-500';
 
     return (
         <div>
@@ -351,6 +546,268 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
                     <li key={rule}>{rule}</li>
                 ))}
             </ol>
+
+            {suggestions && suggestionOptions ? (
+                <div data-testid="planning-suggestions">
+                    <section className="mb-6">
+                        <h4 className={sectionTitle}>
+                            {t(
+                                'profile.planning.projectsTitle',
+                                'Which projects count'
+                            )}
+                        </h4>
+                        <p className={sectionHint}>
+                            {t(
+                                'profile.planning.projectsDescription',
+                                'Tasks from these projects can be suggested under Everything else. Overdue, due today and in progress tasks always show.'
+                            )}
+                        </p>
+                        <div className="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            {suggestionOptions.projectStatuses.map((status) => (
+                                <label
+                                    key={status}
+                                    className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={suggestions.projectStatuses.includes(
+                                            status
+                                        )}
+                                        onChange={(e) =>
+                                            toggleStatus(
+                                                status,
+                                                e.target.checked
+                                            )
+                                        }
+                                        className={checkbox}
+                                        data-testid={`planning-status-${status}`}
+                                    />
+                                    {statusLabel(status)}
+                                </label>
+                            ))}
+                            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                <input
+                                    type="checkbox"
+                                    checked={suggestions.includeNoProject}
+                                    onChange={(e) =>
+                                        changeSuggestions({
+                                            includeNoProject: e.target.checked,
+                                        })
+                                    }
+                                    className={checkbox}
+                                    data-testid="planning-include-no-project"
+                                />
+                                {t(
+                                    'profile.planning.includeNoProject',
+                                    'Tasks with no project'
+                                )}
+                            </label>
+                        </div>
+                        <label
+                            className={`${FORM.label} mb-1.5`}
+                            htmlFor="planning-exclude-project"
+                        >
+                            {t(
+                                'profile.planning.excludedTitle',
+                                'Never suggest these projects'
+                            )}
+                        </label>
+                        {excludedProjects.length > 0 && (
+                            <ul
+                                className="mb-2 flex flex-wrap gap-1.5"
+                                data-testid="planning-excluded-projects"
+                            >
+                                {excludedProjects.map((project) => (
+                                    <li
+                                        key={project.id}
+                                        className="inline-flex items-center gap-1 rounded-full bg-gray-100 py-0.5 pl-2.5 pr-1 text-xs text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+                                    >
+                                        {project.name}
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setExcluded(
+                                                    suggestions.excludedProjectIds.filter(
+                                                        (id) =>
+                                                            id !== project.id
+                                                    )
+                                                )
+                                            }
+                                            aria-label={t(
+                                                'profile.planning.excludedRemove',
+                                                'Suggest {{name}} again',
+                                                { name: project.name }
+                                            )}
+                                            className="flex h-5 w-5 items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
+                                        >
+                                            <XMarkIcon className="h-3.5 w-3.5" />
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        <select
+                            id="planning-exclude-project"
+                            value=""
+                            onChange={(e) => {
+                                const id = Number(e.target.value);
+                                if (!id) return;
+                                setExcluded([
+                                    ...suggestions.excludedProjectIds,
+                                    id,
+                                ]);
+                            }}
+                            className={`${FORM.select} w-full sm:w-72`}
+                            data-testid="planning-exclude-project"
+                        >
+                            <option value="">
+                                {t(
+                                    'profile.planning.excludedAdd',
+                                    'Add a project…'
+                                )}
+                            </option>
+                            {projects
+                                .filter(
+                                    (project) =>
+                                        !suggestions.excludedProjectIds.includes(
+                                            project.id as number
+                                        )
+                                )
+                                .map((project) => (
+                                    <option key={project.id} value={project.id}>
+                                        {project.name}
+                                    </option>
+                                ))}
+                        </select>
+                    </section>
+
+                    <section className="mb-6">
+                        <h4 className={sectionTitle}>
+                            {t('profile.planning.tieTitle', 'When tasks tie')}
+                        </h4>
+                        <p className={sectionHint}>
+                            {t(
+                                'profile.planning.tieDescription',
+                                'After priority and due date, which task comes first.'
+                            )}
+                        </p>
+                        <select
+                            value={suggestions.tieBreak}
+                            onChange={(e) =>
+                                changeSuggestions({
+                                    tieBreak: e.target
+                                        .value as SuggestionTieBreak,
+                                })
+                            }
+                            className={FORM.select}
+                            data-testid="planning-tie-break"
+                        >
+                            {suggestionOptions.tieBreak.map((value) => (
+                                <option key={value} value={value}>
+                                    {tieBreakLabels[value]}
+                                </option>
+                            ))}
+                        </select>
+                    </section>
+
+                    <section className="mb-6">
+                        <h4 className={sectionTitle}>
+                            {t(
+                                'profile.planning.staleTitle',
+                                'Leave out untouched tasks'
+                            )}
+                        </h4>
+                        <p className={sectionHint}>
+                            {t(
+                                'profile.planning.staleDescription',
+                                'Skip suggestions nobody has changed for this long.'
+                            )}
+                        </p>
+                        <select
+                            value={suggestions.staleAfterDays ?? ''}
+                            onChange={(e) =>
+                                changeSuggestions({
+                                    staleAfterDays: e.target.value
+                                        ? Number(e.target.value)
+                                        : null,
+                                })
+                            }
+                            className={FORM.select}
+                            data-testid="planning-stale"
+                        >
+                            {suggestionOptions.staleAfterDays.map((days) => (
+                                <option key={days ?? 'off'} value={days ?? ''}>
+                                    {staleLabel(days)}
+                                </option>
+                            ))}
+                        </select>
+                    </section>
+
+                    <section className="mb-6">
+                        <h4 className={sectionTitle}>
+                            {t('profile.planning.horizonTitle', 'Look ahead')}
+                        </h4>
+                        <p className={sectionHint}>
+                            {t(
+                                'profile.planning.horizonDescription',
+                                'Suggest tasks due up to this far ahead.'
+                            )}
+                        </p>
+                        <select
+                            value={suggestions.horizonDays}
+                            onChange={(e) =>
+                                changeSuggestions({
+                                    horizonDays: Number(e.target.value),
+                                })
+                            }
+                            className={FORM.select}
+                            data-testid="planning-horizon"
+                        >
+                            {suggestionOptions.horizonDays.map((days) => (
+                                <option key={days} value={days}>
+                                    {horizonLabel(days)}
+                                </option>
+                            ))}
+                        </select>
+                    </section>
+
+                    <section className="mb-8">
+                        <h4 className={sectionTitle}>
+                            {t('profile.planning.maxTitle', 'Show up to')}
+                        </h4>
+                        <p className={sectionHint}>
+                            {t(
+                                'profile.planning.maxDescription',
+                                'The most tasks to suggest under Everything else.'
+                            )}
+                        </p>
+                        <select
+                            value={suggestions.maxSuggestions}
+                            onChange={(e) =>
+                                changeSuggestions({
+                                    maxSuggestions: Number(e.target.value),
+                                })
+                            }
+                            className={FORM.select}
+                            data-testid="planning-max"
+                        >
+                            {suggestionOptions.maxSuggestions.map((count) => (
+                                <option key={count} value={count}>
+                                    {t(
+                                        'profile.planning.maxOption',
+                                        '{{count}} tasks',
+                                        { count }
+                                    )}
+                                </option>
+                            ))}
+                        </select>
+                    </section>
+                </div>
+            ) : (
+                <p className="mb-8 text-sm text-gray-500 dark:text-gray-400">
+                    {t('common.loading', 'Loading...')}
+                </p>
+            )}
 
             <h4 className="mb-2 text-sm font-medium text-gray-800 dark:text-gray-200">
                 {t('profile.planning.hoursTitle', 'Your day')}
