@@ -161,4 +161,21 @@ describe('PlanMyDay AI help', () => {
         expect(screen.queryByTestId('ai-draft-banner')).not.toBeInTheDocument();
         expect(screen.getByTestId('capacity')).toHaveTextContent('30m planned');
     });
+
+    it('reloads the task list when the planner comes back into view', async () => {
+        aiEnabled = false;
+        render(<PlanMyDay />);
+        expect(await screen.findByText('Pay invoice')).toBeInTheDocument();
+
+        (fetchPlanCandidates as jest.Mock).mockResolvedValue({
+            ...candidates,
+            due_today: [
+                { uid: 'b', name: 'Call bank', status: 0, completed_at: null },
+            ],
+        });
+        document.dispatchEvent(new Event('visibilitychange'));
+
+        expect(await screen.findByText('Call bank')).toBeInTheDocument();
+        expect(screen.queryByText('Pay invoice')).not.toBeInTheDocument();
+    });
 });
