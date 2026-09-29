@@ -4,7 +4,15 @@ const _ = require('lodash');
 const areasRepository = require('./repository');
 const { PUBLIC_ATTRIBUTES } = require('./repository');
 const { validateName, validateUid } = require('./validation');
-const { NotFoundError } = require('../../shared/errors');
+const { NotFoundError, ForbiddenError } = require('../../shared/errors');
+const permissionsService = require('../../services/permissionsService');
+const { ACCESS } = permissionsService;
+
+// An area the caller can neither own nor was shared reads as missing, so
+// area uids cannot be probed.
+async function accessTo(userId, uid) {
+    return permissionsService.getAccess(userId, 'area', uid);
+}
 
 class AreasService {
     /**
@@ -20,9 +28,9 @@ class AreasService {
     async getByUid(userId, uid) {
         validateUid(uid);
 
-        const area = await areasRepository.findByUidPublic(userId, uid);
+        const area = await areasRepository.findAnyByUid(uid, PUBLIC_ATTRIBUTES);
 
-        if (!area) {
+        if (!area || (await accessTo(userId, uid)) === ACCESS.NONE) {
             throw new NotFoundError(
                 "Area not found or doesn't belong to the current user."
             );
@@ -52,10 +60,14 @@ class AreasService {
     async update(userId, uid, { name, description, color }) {
         validateUid(uid);
 
-        const area = await areasRepository.findByUid(userId, uid);
+        const area = await areasRepository.findAnyByUid(uid);
+        const access = area ? await accessTo(userId, uid) : ACCESS.NONE;
 
-        if (!area) {
+        if (access === ACCESS.NONE) {
             throw new NotFoundError('Area not found.');
+        }
+        if (access !== ACCESS.RW && access !== ACCESS.ADMIN) {
+            throw new ForbiddenError('Forbidden');
         }
 
         const updateData = {};
@@ -81,10 +93,16 @@ class AreasService {
     async delete(userId, uid) {
         validateUid(uid);
 
-        const area = await areasRepository.findByUid(userId, uid);
+        const area = await areasRepository.findAnyByUid(uid);
+        const access = area ? await accessTo(userId, uid) : ACCESS.NONE;
 
-        if (!area) {
+        if (access === ACCESS.NONE) {
             throw new NotFoundError('Area not found.');
+        }
+        // Deleting an area orphans the owner's projects and goals, so only
+        // the owner can do it, not someone it was shared with.
+        if (area.user_id !== userId) {
+            throw new ForbiddenError('Only the owner can delete this area.');
         }
 
         await areasRepository.destroy(area);
