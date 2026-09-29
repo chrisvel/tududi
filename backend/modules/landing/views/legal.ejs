@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="<%= i18n.meta.htmlLang %>" dir="<%= i18n.meta.dir || 'ltr' %>">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VC2N7ZBPEE', { page_locale: '<%= i18n.locale %>' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= doc.title %> · tududi</title>
+    <meta name="description" content="<%= doc.description %>">
+    <link rel="canonical" href="<%= canonicalUrl %>" />
+    <link rel="icon" href="/landing-assets/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <%- include('partials/styles') %>
+    <style>
+        .legal { padding: 120px 16px 80px; }
+        .legal article { max-width: 760px; margin: 0 auto; color: #374151; font-size: 16px; line-height: 1.7; }
+        .legal h1 { font-family: 'Manrope', 'Inter', sans-serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 800; letter-spacing: -0.02em; color: #111827; margin-bottom: 8px; }
+        .legal .legal-updated { color: #6b7280; font-size: 14px; margin-bottom: 36px; }
+        .legal h2 { font-size: 20px; font-weight: 700; color: #111827; margin: 36px 0 12px; }
+        .legal p, .legal ul { margin: 0 0 14px; }
+        .legal ul { padding-left: 22px; }
+        .legal li { margin-bottom: 6px; }
+        .legal a { color: #1e86e5; }
+        .legal-nav { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 28px; font-size: 14px; }
+        .legal-nav a { color: #4b5563; text-decoration: none; }
+        .legal-nav a.is-current { color: #111827; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <%- include('partials/nav') %>
+
+    <%# The documents are English only, whatever language the chrome is in:
+        a translated contract that says something slightly different from
+        the English one is worse than no translation. %>
+    <main class="legal">
+        <article lang="en" dir="ltr">
+            <nav class="legal-nav" aria-label="Legal">
+                <% legalDocs.forEach(function (d) { %>
+                <a href="/<%= d.slug %>"<%- d.slug === doc.slug ? ' class="is-current" aria-current="page"' : '' %>><%= d.title %></a>
+                <% }); %>
+            </nav>
+            <h1><%= doc.title %></h1>
+            <p class="legal-updated">Last updated <%= legalUpdated %></p>
+            <%- include('legal/' + doc.slug) %>
+        </article>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

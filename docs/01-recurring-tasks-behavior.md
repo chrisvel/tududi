@@ -89,9 +89,10 @@ This document explains how recurring tasks work in tududi from a user behavior p
 ## **Special Cases**
 
 16. **If a recurring task is overdue:**
+    - It stays at its missed due date until you complete it
+    - It shows once as overdue on Today and in your task lists
     - It doesn't pile up multiple occurrences
-    - Shows the current/next occurrence only
-    - Past-due occurrences are skipped automatically
+    - Upcoming only shows future occurrences
 
 17. **If you delete a recurring task:**
     - The parent template is deleted

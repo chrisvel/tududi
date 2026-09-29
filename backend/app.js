@@ -587,6 +587,35 @@ async function startServer() {
         server.on('error', (err) => {
             console.error('Server error:', err);
         });
+
+        // Close the database on docker stop / Ctrl-C. SQLite then folds its
+        // -wal file back into the main file, so the next start-up backup
+        // and any copy of the file hold every write.
+        let shuttingDown = false;
+        const shutdown = (signal) => {
+            if (shuttingDown) return;
+            shuttingDown = true;
+            console.log(`${signal} received, shutting down`);
+            let closing = false;
+            const exit = () => {
+                if (closing) return;
+                closing = true;
+                sequelize
+                    .close()
+                    .catch((error) =>
+                        console.error('Error closing the database:', error)
+                    )
+                    .finally(() => process.exit(0));
+            };
+            // Open keep-alive connections (MCP clients) would hold
+            // server.close for minutes; stop waiting well before Docker
+            // kills the process.
+            setTimeout(exit, 5000).unref();
+            server.close(exit);
+            server.closeIdleConnections();
+        };
+        process.once('SIGTERM', () => shutdown('SIGTERM'));
+        process.once('SIGINT', () => shutdown('SIGINT'));
     } catch (error) {
         console.error('Failed to start server:', error);
         process.exit(1);

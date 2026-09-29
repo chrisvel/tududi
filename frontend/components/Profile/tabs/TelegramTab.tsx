@@ -174,7 +174,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                                 {telegramBotInfo?.first_name && (
                                     <p>
                                         <span className="font-semibold">
-                                            Bot Name:{' '}
+                                            {t('profile.telegram.botName', 'Bot Name:')}{' '}
                                         </span>
                                         {telegramBotInfo.first_name}
                                     </p>

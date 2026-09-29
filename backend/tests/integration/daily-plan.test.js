@@ -193,10 +193,11 @@ describe('Daily plan routes', () => {
         expect(res.body.inbox[0].content).toBe('Call the plumber');
     });
 
-    it('ranks candidates: overdue first, then project tasks, then priority', async () => {
+    it('ranks candidates: overdue first, then priority, then project tasks', async () => {
         const project = await Project.create({
             name: 'Home',
             user_id: user.id,
+            status: 'in_progress',
         });
         const lastWeek = moment
             .tz('Europe/Athens')
@@ -228,8 +229,8 @@ describe('Daily plan routes', () => {
         expect(res.body.ranked).toEqual([
             startedLate.uid,
             projectHigh.uid,
-            projectLow.uid,
             looseHigh.uid,
+            projectLow.uid,
             looseLow.uid,
         ]);
     });
@@ -238,11 +239,12 @@ describe('Daily plan routes', () => {
         const project = await Project.create({
             name: 'Work',
             user_id: user.id,
+            status: 'in_progress',
         });
         const loose = await makeTask({ name: 'Loose', priority: 0 });
         const inProject = await makeTask({
             name: 'In project',
-            priority: 2,
+            priority: 0,
             project_id: project.id,
         });
         await makeTask({ name: 'Filler one' });
@@ -302,6 +304,7 @@ describe('Daily plan routes', () => {
         const lateProject = await Project.create({
             name: 'Late project',
             user_id: user.id,
+            status: 'in_progress',
             due_date_at: moment().subtract(5, 'days').toDate(),
         });
         const undated = await makeTask({
@@ -320,6 +323,28 @@ describe('Daily plan routes', () => {
         expect(uids('overdue')).toContain(late.uid);
         expect(uids('overdue')).not.toContain(undated.uid);
         expect(uids('suggested')).toContain(undated.uid);
+    });
+
+    it('keeps the real name of recurring tasks in candidates and the plan', async () => {
+        const recurring = await makeTask({
+            name: 'Water plants',
+            recurrence_type: 'weekly',
+            due_date: moment().toDate(),
+        });
+
+        const candidates = await agent.get('/api/daily-plan/candidates');
+        const listed = [
+            ...candidates.body.in_progress,
+            ...candidates.body.overdue,
+            ...candidates.body.due_today,
+            ...candidates.body.suggested,
+        ].find((task) => task.uid === recurring.uid);
+        expect(listed.name).toBe('Water plants');
+
+        const plan = await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: recurring.uid }] });
+        expect(plan.body.plan.items[0].task.name).toBe('Water plants');
     });
 
     it('saves the day hours and returns them with the plan', async () => {

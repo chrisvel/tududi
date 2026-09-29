@@ -490,8 +490,16 @@ const InboxItems: React.FC = () => {
                                 : 'text-gray-400 dark:text-gray-500 hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                         }`}
                         aria-expanded={isInfoExpanded}
-                        aria-label={isInfoExpanded ? 'Collapse info panel' : 'Show inbox information'}
-                        title={isInfoExpanded ? 'Hide info' : 'About Inbox'}
+                        aria-label={
+                            isInfoExpanded
+                                ? t('inbox.collapseInfo', 'Collapse info panel')
+                                : t('inbox.showInfo', 'Show inbox information')
+                        }
+                        title={
+                            isInfoExpanded
+                                ? t('inbox.hideInfo', 'Hide info')
+                                : t('inbox.aboutInbox', 'About Inbox')
+                        }
                     >
                         <InformationCircleIcon className="h-5 w-5" />
                     </button>

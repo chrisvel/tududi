@@ -28,6 +28,33 @@ function isEmailVerified(claims) {
     return claims.email_verified === true || claims.email_verified === 'true';
 }
 
+function clean(value) {
+    return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+// The account name comes from the profile claims: given and family name when
+// the provider sends them, else the display name.
+function nameFromClaims(claims) {
+    const given = clean(claims.given_name);
+    const family = clean(claims.family_name);
+    if (given || family) {
+        return { name: given || family, surname: given ? family : null };
+    }
+    return { name: clean(claims.name), surname: null };
+}
+
+// Fills in the name of an account that has none yet, so an SSO account does
+// not keep showing the part of its email before the @. A name the user set
+// themselves is never replaced. The User hooks rename the account's person.
+async function fillMissingName(user, claims, transaction) {
+    if (!user || clean(user.name) || clean(user.surname)) return;
+
+    const { name, surname } = nameFromClaims(claims);
+    if (!name) return;
+
+    await user.update({ name, surname }, { transaction });
+}
+
 async function findOrCreateIdentity(providerSlug, claims) {
     const identity = await OIDCIdentity.findOne({
         where: {
@@ -69,6 +96,7 @@ async function provisionUser(providerSlug, claims, req) {
                 },
                 { transaction }
             );
+            await fillMissingName(identity.User, claims, transaction);
 
             await transaction.commit();
             return { user: identity.User, isNewUser: false };
@@ -123,6 +151,7 @@ async function provisionUser(providerSlug, claims, req) {
 
             user = await User.create(
                 {
+                    ...nameFromClaims(claims),
                     email: claims.email,
                     email_verified: true,
                     password_digest: null,
@@ -159,6 +188,7 @@ async function provisionUser(providerSlug, claims, req) {
             },
             { transaction }
         );
+        if (!isNewUser) await fillMissingName(user, claims, transaction);
 
         await transaction.commit();
 
@@ -230,6 +260,7 @@ async function linkIdentityToUser(userId, providerSlug, claims) {
             },
             { transaction }
         );
+        await fillMissingName(user, claims, transaction);
 
         await transaction.commit();
         return identity;
@@ -245,6 +276,7 @@ module.exports = {
     provisionUser,
     linkIdentityToUser,
     findOrCreateIdentity,
+    nameFromClaims,
     shouldBeAdmin,
     isEmailVerified,
 };

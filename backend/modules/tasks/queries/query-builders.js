@@ -42,38 +42,9 @@ async function filterTasksByParams(
     };
 
     whereClause[Op.or] = [
-        {
-            [Op.and]: [
-                {
-                    [Op.or]: [
-                        { recurrence_type: 'none' },
-                        { recurrence_type: null },
-                        { recurrence_type: '' },
-                    ],
-                },
-                { recurring_parent_id: null },
-            ],
-        },
-        {
-            [Op.and]: [
-                { recurrence_type: { [Op.ne]: 'none' } },
-                { recurrence_type: { [Op.ne]: null } },
-                { recurrence_type: { [Op.ne]: '' } },
-                { recurring_parent_id: null },
-                {
-                    [Op.or]: [
-                        { due_date: null },
-                        {
-                            due_date: {
-                                [Op.gte]: new Date(
-                                    new Date().setHours(0, 0, 0, 0)
-                                ),
-                            },
-                        },
-                    ],
-                },
-            ],
-        },
+        // Recurring parents keep their due date until completed, so a missed
+        // one stays listed as overdue instead of dropping out the next day.
+        { recurring_parent_id: null },
         {
             [Op.and]: [
                 { recurring_parent_id: { [Op.ne]: null } },

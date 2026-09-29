@@ -341,7 +341,10 @@
     "subSubmit": "Eintragen",
     "rights": "Alle Rechte vorbehalten.",
     "linkLicence": "MIT-Lizenz",
-    "tagline": "Ein offenes System, um Leben und Arbeit zu organisieren. Von uns gehostet, oder auf deinem eigenen Server."
+    "tagline": "Ein offenes System, um Leben und Arbeit zu organisieren. Von uns gehostet, oder auf deinem eigenen Server.",
+    "linkTerms": "AGB",
+    "linkPrivacy": "Datenschutz",
+    "linkRefunds": "Rückerstattung"
   },
   "js": {
     "showFewer": "Weniger anzeigen",

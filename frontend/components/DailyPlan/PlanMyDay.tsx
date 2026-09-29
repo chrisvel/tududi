@@ -239,6 +239,19 @@ const PlanMyDay: React.FC = () => {
         };
     }, [t]);
 
+    // Priorities or due dates changed in another tab or on the task page
+    // should reorder the list as soon as the planner is back in view.
+    useEffect(() => {
+        const refresh = () => {
+            if (document.visibilityState !== 'visible') return;
+            fetchPlanCandidates()
+                .then(setCandidates)
+                .catch(() => undefined);
+        };
+        document.addEventListener('visibilitychange', refresh);
+        return () => document.removeEventListener('visibilitychange', refresh);
+    }, []);
+
     const flush = useCallback(async () => {
         if (saveTimer.current) {
             clearTimeout(saveTimer.current);

@@ -23,6 +23,10 @@ import {
 
 type CompletionMenuTarget = 'desktop' | 'mobile';
 
+const isPhone = () =>
+    typeof window !== 'undefined' &&
+    (window.matchMedia?.('(max-width: 639px)').matches ?? false);
+
 interface TaskStatusControlProps {
     task: Task;
     onToggleCompletion?: () => void;
@@ -146,6 +150,9 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
         ? 'px-2 py-1 sm:px-2.5'
         : 'px-2 py-1 sm:px-3';
     const quickButtonPaddingClass = isSquareVariant ? 'px-1.5' : 'px-2';
+    // Big enough to hit with a thumb on phones (#1669).
+    const phoneTapTargetClass =
+        'max-sm:min-h-9 max-sm:min-w-9 max-sm:justify-center';
     const hoverPaddingClass = isSquareVariant
         ? 'md:group-hover:px-1.5'
         : 'md:group-hover:px-2';
@@ -387,10 +394,18 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                             ? (e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
+                                  // Phones hide the start/done shortcuts, so
+                                  // the status button opens the menu there.
+                                  if (isPhone()) {
+                                      toggleMenu(
+                                          'desktop',
+                                          desktopCompletionMenuRef.current
+                                      );
+                                  }
                               }
                             : handleCompletionClick
                     }
-                    className={`${completionButtonMainClasses} ${completionButtonPaddingClass} ${statusButtonColorClasses}`}
+                    className={`${completionButtonMainClasses} ${completionButtonPaddingClass} ${phoneTapTargetClass} ${statusButtonColorClasses}`}
                     title={
                         taskCompleted
                             ? t('common.undo', 'Undo')
@@ -443,7 +458,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                         e.stopPropagation();
                         toggleMenu('desktop', desktopCompletionMenuRef.current);
                     }}
-                    className={`${completionButtonChevronClasses} ${quickButtonPaddingClass} border-l ${statusBorderColorClass}`}
+                    className={`${completionButtonChevronClasses} ${quickButtonPaddingClass} ${phoneTapTargetClass} border-l ${statusBorderColorClass}`}
                     aria-haspopup="menu"
                     aria-expanded={completionMenuOpen === 'desktop'}
                 >

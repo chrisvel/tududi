@@ -67,7 +67,7 @@ When the app starts (via `npm start` or Docker):
 1. Check if `DB_FILE` exists
 2. If exists, call `backup_db()` function
 3. Clean old backups based on retention policy
-4. Create timestamped copy: `cp $DB_FILE $backup_file`
+4. Create a timestamped copy with `node scripts/sqlite-backup.js $DB_FILE $backup_file` (`VACUUM INTO`, which includes writes still in the `-wal` file; a plain `cp` of the main file would leave them out)
 5. Run migrations: `npx sequelize-cli db:migrate`
 6. Start application
 
@@ -89,9 +89,11 @@ ls -lh backend/db/db-backup-*.sqlite3
 # 3. Identify the backup to restore (e.g., db-backup-20260314193000.sqlite3)
 
 # 4. Backup current state (optional but recommended)
-cp backend/db/development.sqlite3 backend/db/development.sqlite3.before-restore
+node backend/scripts/sqlite-backup.js backend/db/development.sqlite3 backend/db/development.sqlite3.before-restore
 
-# 5. Restore the backup
+# 5. Restore the backup, removing the old -wal/-shm files first so SQLite
+#    does not replay them onto the restored file
+rm -f backend/db/development.sqlite3-wal backend/db/development.sqlite3-shm
 cp backend/db/db-backup-20260314193000.sqlite3 backend/db/development.sqlite3
 
 # 6. Restart the application
@@ -111,10 +113,12 @@ docker volume inspect tududi_db_data
 cd /var/lib/docker/volumes/tududi_db_data/_data
 ls -lh db-backup-*.sqlite3
 
-# 4. Backup current state
+# 4. Backup current state (the -wal file holds recent writes, keep it too)
 cp production.sqlite3 production.sqlite3.before-restore
+[ -f production.sqlite3-wal ] && cp production.sqlite3-wal production.sqlite3.before-restore-wal
 
-# 5. Restore from backup
+# 5. Restore from backup, removing the old -wal/-shm files first
+rm -f production.sqlite3-wal production.sqlite3-shm
 cp db-backup-20260314193000.sqlite3 production.sqlite3
 
 # 6. Restart the container
@@ -134,7 +138,8 @@ cd backend/db
 # Find the most recent backup (will be from just before failure)
 ls -lt db-backup-*.sqlite3 | head -1
 
-# Restore it
+# Restore it (drop the old -wal/-shm files first)
+rm -f production.sqlite3-wal production.sqlite3-shm
 cp db-backup-20260315083000.sqlite3 production.sqlite3
 
 # Try starting again
@@ -186,8 +191,8 @@ Create a manual backup before:
 - Testing new features
 
 ```bash
-# Quick manual backup (development)
-cp backend/db/development.sqlite3 backend/db/manual-backup-$(date +%Y%m%d%H%M%S).sqlite3
+# Quick manual backup (development); safe while the app is running
+node backend/scripts/sqlite-backup.js backend/db/development.sqlite3 backend/db/manual-backup-$(date +%Y%m%d%H%M%S).sqlite3
 ```
 
 ### 2. External Backups
@@ -242,15 +247,16 @@ sqlite3 backend/db/test-restore.sqlite3 "SELECT COUNT(*) FROM Tasks;"
 
 ```bash
 # Manual backup (development)
-cp backend/db/development.sqlite3 backend/db/manual-backup-$(date +%Y%m%d%H%M%S).sqlite3
+node backend/scripts/sqlite-backup.js backend/db/development.sqlite3 backend/db/manual-backup-$(date +%Y%m%d%H%M%S).sqlite3
 
 # Manual backup (production)
-cp backend/db/production.sqlite3 backend/db/manual-backup-$(date +%Y%m%d%H%M%S).sqlite3
+node backend/scripts/sqlite-backup.js backend/db/production.sqlite3 backend/db/manual-backup-$(date +%Y%m%d%H%M%S).sqlite3
 
 # List all backups
 ls -lh backend/db/db-backup-*.sqlite3
 
-# Restore specific backup
+# Restore specific backup (app stopped)
+rm -f backend/db/development.sqlite3-wal backend/db/development.sqlite3-shm
 cp backend/db/db-backup-20260314193000.sqlite3 backend/db/development.sqlite3
 
 # Verify backup file integrity

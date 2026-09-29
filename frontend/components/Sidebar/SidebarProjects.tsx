@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import {
     FolderIcon,
@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { useCan } from '../../hooks/useCan';
 import { Project } from '../../entities/Project';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarProjectsProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -32,7 +33,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
 }) => {
     const { t } = useTranslation();
     const canCreateProjects = useCan('create_projects');
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('projects');
 
     const projects = useStore((state) => state.projectsStore.projects);
     const hasLoaded = useStore((state) => state.projectsStore.hasLoaded);
@@ -115,7 +116,8 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

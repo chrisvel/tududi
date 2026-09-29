@@ -3,6 +3,7 @@
 const { Area, Project, Goal, Task, sequelize } = require('../../models');
 const { Op } = require('sequelize');
 const BaseRepository = require('../../shared/database/BaseRepository');
+const permissionsService = require('../../services/permissionsService');
 
 const PUBLIC_ATTRIBUTES = ['uid', 'name', 'description', 'color'];
 const LIST_ATTRIBUTES = ['id', 'uid', 'name', 'description', 'color'];
@@ -13,11 +14,23 @@ class AreasRepository extends BaseRepository {
     }
 
     /**
-     * Find all areas for a user with counts of associated projects, goals, and tasks.
+     * Find all areas a user owns or has been shared, with counts of the
+     * projects, goals, and tasks in them that the user can see.
      */
     async findAllByUser(userId) {
+        const [areaWhere, projectWhere, goalWhere, taskWhere] =
+            await Promise.all([
+                permissionsService.ownershipOrPermissionWhere('area', userId),
+                permissionsService.ownershipOrPermissionWhere(
+                    'project',
+                    userId
+                ),
+                permissionsService.ownershipOrPermissionWhere('goal', userId),
+                permissionsService.ownershipOrPermissionWhere('task', userId),
+            ]);
+
         const areas = await this.model.findAll({
-            where: { user_id: userId },
+            where: areaWhere,
             attributes: LIST_ATTRIBUTES,
             order: [['name', 'ASC']],
         });
@@ -28,7 +41,9 @@ class AreasRepository extends BaseRepository {
 
         const [projectCounts, goalCounts, taskCounts] = await Promise.all([
             Project.findAll({
-                where: { area_id: { [Op.in]: areaIds }, user_id: userId },
+                where: {
+                    [Op.and]: [{ area_id: { [Op.in]: areaIds } }, projectWhere],
+                },
                 attributes: [
                     'area_id',
                     [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
@@ -37,7 +52,9 @@ class AreasRepository extends BaseRepository {
                 raw: true,
             }),
             Goal.findAll({
-                where: { area_id: { [Op.in]: areaIds }, user_id: userId },
+                where: {
+                    [Op.and]: [{ area_id: { [Op.in]: areaIds } }, goalWhere],
+                },
                 attributes: [
                     'area_id',
                     [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
@@ -47,9 +64,10 @@ class AreasRepository extends BaseRepository {
             }),
             Task.findAll({
                 where: {
-                    area_id: { [Op.in]: areaIds },
-                    user_id: userId,
-                    parent_task_id: null,
+                    [Op.and]: [
+                        { area_id: { [Op.in]: areaIds }, parent_task_id: null },
+                        taskWhere,
+                    ],
                 },
                 attributes: [
                     'area_id',
@@ -104,6 +122,14 @@ class AreasRepository extends BaseRepository {
             },
             attributes: PUBLIC_ATTRIBUTES,
         });
+    }
+
+    /**
+     * Find an area by UID whoever owns it; the caller checks access, so
+     * areas shared with the user are found too.
+     */
+    async findAnyByUid(uid, attributes) {
+        return this.model.findOne({ where: { uid }, attributes });
     }
 
     /**

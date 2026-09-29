@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
     Squares2X2Icon,
     ChevronRightIcon,
@@ -8,6 +8,7 @@ import { Location } from 'react-router-dom';
 import { Area } from '../../entities/Area';
 import { useTranslation } from 'react-i18next';
 import { useCan } from '../../hooks/useCan';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarAreasProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -33,7 +34,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
 }) => {
     const { t } = useTranslation();
     const canCreateAreas = useCan('create_projects');
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('areas');
 
     useEffect(() => {
         if (areas.some((area) => getAreaPath(area) === location.pathname)) {
@@ -106,7 +107,8 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

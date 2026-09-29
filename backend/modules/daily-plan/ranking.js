@@ -5,9 +5,15 @@
 //
 // 1. Every task falls in one bucket: its group (overdue, due today, in
 //    progress, everything else) split by whether it sits in a project.
-// 2. Buckets follow the user's order, or DEFAULT_ORDER.
-// 3. Inside a bucket: higher priority first, then the earlier due date, then
-//    the older task, so the order is stable.
+// 2. Groups follow the user's order: a group sits where its first bucket
+//    does in the user's order, or DEFAULT_ORDER.
+// 3. Inside a group: higher priority first, then the bucket order (so the
+//    project split never puts a task above one with higher priority), then
+//    the earlier due date, then the user's tie-break (planningSettings.js
+//    tieBreak): the most recently changed task, the newest or the oldest.
+//    The task id settles any remaining tie so the order is stable.
+// Which tasks reach "everything else" at all, and how many, is decided by
+// the other settings in planningSettings.js.
 const GROUP_ORDER = ['overdue', 'due_today', 'in_progress', 'suggested'];
 
 const DEFAULT_ORDER = GROUP_ORDER.flatMap((group) => [
@@ -28,27 +34,35 @@ const priorityRank = (priority) => {
     return PRIORITY_RANK[String(priority).toLowerCase()] || 0;
 };
 
-const timeOf = (value) => {
-    if (!value) return Infinity;
+const timeOf = (value, missing = Infinity) => {
+    if (!value) return missing;
     const time = new Date(value).getTime();
-    return Number.isNaN(time) ? Infinity : time;
+    return Number.isNaN(time) ? missing : time;
 };
 
-function compareCandidates(a, b) {
+const TIE_BREAKERS = {
+    recently_touched: (a, b) =>
+        timeOf(b.updated_at, -Infinity) - timeOf(a.updated_at, -Infinity),
+    newest: (a, b) =>
+        timeOf(b.created_at, -Infinity) - timeOf(a.created_at, -Infinity),
+    oldest: (a, b) => timeOf(a.created_at) - timeOf(b.created_at),
+};
+
+function compareCandidates(a, b, tieBreak = 'recently_touched') {
     const priority = priorityRank(b.priority) - priorityRank(a.priority);
     if (priority !== 0) return priority;
 
     const due = timeOf(a.due_date) - timeOf(b.due_date);
     if (due !== 0 && !Number.isNaN(due)) return due;
 
-    const created = timeOf(a.created_at) - timeOf(b.created_at);
-    if (created !== 0 && !Number.isNaN(created)) return created;
+    const tie = (TIE_BREAKERS[tieBreak] || TIE_BREAKERS.recently_touched)(a, b);
+    if (tie !== 0 && !Number.isNaN(tie)) return tie;
 
     return (a.id || 0) - (b.id || 0);
 }
 
-function rankCandidates(tasks) {
-    return [...(tasks || [])].sort(compareCandidates);
+function rankCandidates(tasks, tieBreak) {
+    return [...(tasks || [])].sort((a, b) => compareCandidates(a, b, tieBreak));
 }
 
 const bucketOf = (group, task) =>
@@ -65,16 +79,21 @@ function normalizeOrder(order) {
     return [...known, ...DEFAULT_ORDER.filter((key) => !known.includes(key))];
 }
 
-// Returns [{ group, task }] for every task in `groups`, in bucket order.
-function orderCandidates(groups, order = DEFAULT_ORDER) {
-    const buckets = new Map(normalizeOrder(order).map((key) => [key, []]));
-    for (const group of GROUP_ORDER) {
-        for (const task of groups[group] || []) {
-            buckets.get(bucketOf(group, task)).push({ group, task });
-        }
-    }
-    return [...buckets.values()].flatMap((entries) =>
-        entries.sort((a, b) => compareCandidates(a.task, b.task))
+// Returns [{ group, task }] for every task in `groups`, in the order above.
+function orderCandidates(groups, order = DEFAULT_ORDER, tieBreak) {
+    const buckets = normalizeOrder(order);
+    const groupRank = (group) =>
+        buckets.findIndex((key) => key.startsWith(`${group}:`));
+    const entries = GROUP_ORDER.flatMap((group) =>
+        (groups[group] || []).map((task) => ({ group, task }))
+    );
+    return entries.sort(
+        (a, b) =>
+            groupRank(a.group) - groupRank(b.group) ||
+            priorityRank(b.task.priority) - priorityRank(a.task.priority) ||
+            buckets.indexOf(bucketOf(a.group, a.task)) -
+                buckets.indexOf(bucketOf(b.group, b.task)) ||
+            compareCandidates(a.task, b.task, tieBreak)
     );
 }
 

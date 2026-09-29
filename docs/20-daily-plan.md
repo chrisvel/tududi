@@ -40,12 +40,29 @@ The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics
 The order comes from `backend/modules/daily-plan/ranking.js` and each user sets it in **Profile > Planning**.
 
 1. Every candidate falls in one of eight buckets: its group (overdue, including started tasks past their due date; due today; in progress; everything else) split into tasks in a project and tasks without one.
-2. Buckets follow the user's order (drag or the arrow buttons; saved at once). The default is each group in turn, project tasks first.
-3. Inside a bucket: higher priority first, then the earlier due date, then the older task.
+2. Groups follow the user's bucket order (drag or the arrow buttons; saved at once): a group sits where its first bucket does. The default is each group in turn, project tasks first.
+3. Inside a group: higher priority first, then the bucket order (so a project task without priority never passes a higher-priority task without a project), then the earlier due date, then the user's tie-break (most recently changed by default, or newest, or oldest), then the task id.
+4. The suggestion cap (Profile > Planning) keeps the first suggestions in this order, so higher-priority suggestions always make the cut.
 
 The order is stored in `users.ui_settings.planning.candidateOrder`. A saved order that is missing buckets or has unknown ones is repaired on read, and the profile form's own save keeps the stored order.
 
 Groups follow the task's own due date. A task with no date of its own in a late or due-today project is not overdue here (the classic Today page lists still count the project's date).
+
+### Which tasks are suggested
+
+"Everything else" is shaped by settings in **Profile > Planning**, stored next to `candidateOrder` in `users.ui_settings.planning` and read through `backend/modules/daily-plan/planningSettings.js`. A missing or unknown value falls back to its default on read; the API rejects unknown values.
+
+| Setting              | Default            | Values                                                         |
+| -------------------- | ------------------ | -------------------------------------------------------------- |
+| `projectStatuses`    | `["in_progress"]`  | Any project statuses                                           |
+| `includeNoProject`   | `true`             | Whether tasks without a project are suggested                  |
+| `excludedProjectIds` | `[]`               | Projects never suggested, whatever their status                |
+| `tieBreak`           | `recently_touched` | `recently_touched`, `newest`, `oldest`                         |
+| `staleAfterDays`     | `null` (off)       | `null`, `90`, `180`: leave out tasks not changed for that long |
+| `horizonDays`        | `3`                | `1`, `3`, `7`: nothing due further ahead is suggested          |
+| `maxSuggestions`     | `20`               | `10`, `20`, `50`                                               |
+
+These only filter the suggested group: overdue, due-today and in-progress tasks always show, even from an excluded project. Filters run before the limit, and the limit keeps the first suggestions in the final order. The classic Today page keeps its own suggestions (50, three days ahead, no project filter).
 
 ### Day hours
 
@@ -93,6 +110,8 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | GET                   | `/api/daily-plan/ranking`                | `{ order, default_order }`, the eight bucket keys such as `overdue:project`                                                                                                                  |
 | PUT                   | `/api/daily-plan/ranking`                | Body `{ order }` with every bucket key once; 400 otherwise                                                                                                                                   |
 | GET                   | `/api/daily-plan/hours`                  | `{ start, end }` in minutes after local midnight                                                                                                                                             |
+| GET                   | `/api/daily-plan/suggestions`            | `{ settings, defaults, options }` for the suggested group (see above)                                                                                                                        |
+| PUT                   | `/api/daily-plan/suggestions`            | Body with any of the settings; unknown keys or values, and projects the user cannot see, give 400                                                                                            |
 | PUT                   | `/api/daily-plan/hours`                  | Body `{ start, end }`, 30-minute steps, start before end, end at most 1440; 400 otherwise                                                                                                    |
 | PUT                   | `/api/daily-plan/:date`                  | Replaces all items: `{ items: [{ task_uid, start_minute, duration_minutes }] }`, in order. Rejects overlaps, slots past midnight, duplicates and tasks the user cannot see                   |
 | POST                  | `/api/daily-plan/:date/start`            | Marks the day started                                                                                                                                                                        |

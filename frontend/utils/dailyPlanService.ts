@@ -85,6 +85,38 @@ export interface PlanRanking {
     default_order: RankingBucket[];
 }
 
+export type ProjectStatusKey =
+    | 'not_started'
+    | 'planned'
+    | 'in_progress'
+    | 'waiting'
+    | 'done'
+    | 'cancelled';
+export type SuggestionTieBreak = 'recently_touched' | 'newest' | 'oldest';
+
+// Which tasks count as "Everything else" (Profile > Planning).
+export interface SuggestionSettings {
+    projectStatuses: ProjectStatusKey[];
+    includeNoProject: boolean;
+    excludedProjectIds: number[];
+    tieBreak: SuggestionTieBreak;
+    staleAfterDays: number | null;
+    horizonDays: number;
+    maxSuggestions: number;
+}
+
+export interface SuggestionSettingsResponse {
+    settings: SuggestionSettings;
+    defaults: SuggestionSettings;
+    options: {
+        projectStatuses: ProjectStatusKey[];
+        tieBreak: SuggestionTieBreak[];
+        staleAfterDays: (number | null)[];
+        horizonDays: number[];
+        maxSuggestions: number[];
+    };
+}
+
 export interface PlanItemInput {
     task_uid: string;
     start_minute: number | null;
@@ -98,6 +130,7 @@ export const fetchDailyPlan = async (
     const response = await fetch(getApiPath(`daily-plan${query}`), {
         credentials: 'include',
         headers: getDefaultHeaders(),
+        cache: 'no-store',
     });
     await handleAuthResponse(response, 'Failed to load the day plan.');
     return response.json();
@@ -107,6 +140,7 @@ export const fetchPlanCandidates = async (): Promise<PlanCandidates> => {
     const response = await fetch(getApiPath('daily-plan/candidates'), {
         credentials: 'include',
         headers: getDefaultHeaders(),
+        cache: 'no-store',
     });
     await handleAuthResponse(response, 'Failed to load tasks to plan.');
     return response.json();
@@ -131,6 +165,35 @@ export const savePlanRanking = async (
         body: JSON.stringify({ order }),
     });
     await handleAuthResponse(response, 'Failed to save the planning order.');
+    return response.json();
+};
+
+export const fetchSuggestionSettings =
+    async (): Promise<SuggestionSettingsResponse> => {
+        const response = await fetch(getApiPath('daily-plan/suggestions'), {
+            credentials: 'include',
+            headers: getDefaultHeaders(),
+        });
+        await handleAuthResponse(
+            response,
+            'Failed to load your suggestion settings.'
+        );
+        return response.json();
+    };
+
+export const saveSuggestionSettings = async (
+    settings: Partial<SuggestionSettings>
+): Promise<SuggestionSettingsResponse> => {
+    const response = await fetch(getApiPath('daily-plan/suggestions'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify(settings),
+    });
+    await handleAuthResponse(
+        response,
+        'Failed to save your suggestion settings.'
+    );
     return response.json();
 };
 

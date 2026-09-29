@@ -10,7 +10,12 @@ import {
 import { ensureSyntaxTree, syntaxTree } from '@codemirror/language';
 import { CALLOUT_MARKER_REGEX } from '../../../utils/calloutParser';
 import type { CalloutType } from '../../Shared/CalloutBlock';
-import { blockWidgetKind, selectionTouches } from './blockWidgets';
+import {
+    blockWidgetKind,
+    holdForPointer,
+    selectionTouches,
+    setPointerDown,
+} from './blockWidgets';
 import {
     BulletWidget,
     CalloutTitleWidget,
@@ -372,7 +377,19 @@ class LivePreviewPlugin {
     }
 
     update(update: ViewUpdate) {
+        const released = update.transactions.some((tr) =>
+            tr.effects.some((e) => e.is(setPointerDown) && !e.value)
+        );
         if (
+            !released &&
+            !update.viewportChanged &&
+            update.transactions.length > 0 &&
+            update.transactions.every(holdForPointer)
+        ) {
+            return;
+        }
+        if (
+            released ||
             update.docChanged ||
             update.selectionSet ||
             update.viewportChanged ||

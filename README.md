@@ -101,11 +101,14 @@ docker run \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -v ~/tududi_db:/app/db \
   -v ~/tududi_uploads:/app/uploads \
+  -v ~/tududi_backups:/app/backups \
   -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
+
+If people reach tududi at another address (for example `http://zima.local:3002` or `https://tududi.example.com`), add `-e BASE_URL=<that address>` so links in emails (account verification, password reset) point there instead of `localhost`.
 
 ### Using docker-compose
 
@@ -244,6 +247,7 @@ volumes:
 volumes:
   - ./tududi_db:/app/db
   - ./uploads:/app/uploads
+  - ./backups:/app/backups
 ```
 
 **Migration steps:**

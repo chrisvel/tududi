@@ -341,7 +341,10 @@
     "subSubmit": "登録",
     "rights": "All rights reserved.",
     "linkLicence": "MITライセンス",
-    "tagline": "人生と仕事を整理するためのオープンなシステム。私たちがホストするか、あなた自身のサーバーで。"
+    "tagline": "人生と仕事を整理するためのオープンなシステム。私たちがホストするか、あなた自身のサーバーで。",
+    "linkTerms": "利用規約",
+    "linkPrivacy": "プライバシー",
+    "linkRefunds": "返金"
   },
   "js": {
     "showFewer": "表示を減らす",

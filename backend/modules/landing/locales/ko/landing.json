@@ -341,7 +341,10 @@
     "subSubmit": "구독",
     "rights": "All rights reserved.",
     "linkLicence": "MIT 라이선스",
-    "tagline": "삶과 일을 정리하기 위한 개방형 시스템. 우리가 호스팅하거나, 당신 자신의 서버에서."
+    "tagline": "삶과 일을 정리하기 위한 개방형 시스템. 우리가 호스팅하거나, 당신 자신의 서버에서.",
+    "linkTerms": "이용약관",
+    "linkPrivacy": "개인정보",
+    "linkRefunds": "환불"
   },
   "js": {
     "showFewer": "간략히 보기",

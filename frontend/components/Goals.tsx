@@ -6,8 +6,13 @@ import {
     FlagIcon,
     FolderIcon,
     CheckCircleIcon,
+    PlusIcon,
+    Squares2X2Icon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from './Shared/ConfirmDialog';
+import NewItemButton from './Shared/NewItemButton';
+import BlankSlate from './Shared/BlankSlate';
+import { useCan } from '../hooks/useCan';
 import { useStore } from '../store/useStore';
 import { deleteGoal } from '../utils/goalsService';
 import { Goal } from '../entities/Goal';
@@ -36,6 +41,7 @@ const Goals: React.FC = () => {
     const areasLoaded = useStore((state: any) => state.areasStore.hasLoaded);
     const loadAreas = useStore((state: any) => state.areasStore.loadAreas);
 
+    const canCreateGoals = useCan('create_projects');
     const [selectedAreaUid, setSelectedAreaUid] = useState<string | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
@@ -88,8 +94,15 @@ const Goals: React.FC = () => {
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
-                <div className="flex items-center mb-6">
+                <div className="flex items-center justify-between gap-2 mb-6">
                     <h2 className="text-2xl font-light">{t('goals.title', 'Goals')}</h2>
+                    {canCreateGoals && (
+                        <NewItemButton
+                            label={t('goals.newGoal', 'New Goal')}
+                            onClick={() => navigate('/goal/new')}
+                            testId="new-goal-button"
+                        />
+                    )}
                 </div>
 
                 {/* Area filter tabs */}
@@ -129,9 +142,37 @@ const Goals: React.FC = () => {
                 )}
 
                 {filteredGoals.length === 0 ? (
-                    <p className="text-gray-500 dark:text-gray-400">
-                        {t('goals.noGoalsFound', 'No goals yet.')}
-                    </p>
+                    hasLoaded && (
+                        <BlankSlate
+                            title={t('goals.noGoalsYet', 'No goals yet.')}
+                            hint={t(
+                                'goals.blankSlateHint',
+                                'A goal is an outcome you want to reach this season or this year, like running a half marathon. Link projects to it to see the work that gets you there.'
+                            )}
+                            actions={
+                                canCreateGoals
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'goals.blankSlateNew',
+                                                  'Create your first goal'
+                                              ),
+                                              icon: PlusIcon,
+                                              to: '/goal/new',
+                                          },
+                                          {
+                                              label: t(
+                                                  'goals.blankSlateAreas',
+                                                  'Set up areas'
+                                              ),
+                                              icon: Squares2X2Icon,
+                                              to: '/areas',
+                                          },
+                                      ]
+                                    : []
+                            }
+                        />
+                    )
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {filteredGoals.map((goal: Goal) => {
@@ -276,7 +317,10 @@ const Goals: React.FC = () => {
             {isConfirmDialogOpen && goalToDelete && (
                 <ConfirmDialog
                     title={t('modals.deleteGoal.title', 'Delete Goal')}
-                    message={`${t('modals.deleteGoal.message', 'Are you sure you want to delete the goal')} "${goalToDelete.title}"?`}
+                    message={t('modals.deleteGoal.message', {
+                        title: goalToDelete.title,
+                        defaultValue: 'Are you sure you want to delete the goal "{{title}}"?',
+                    })}
                     onConfirm={handleDeleteGoal}
                     onCancel={() => { setIsConfirmDialogOpen(false); setGoalToDelete(null); }}
                 />

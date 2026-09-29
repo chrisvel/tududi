@@ -65,6 +65,7 @@ import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
+import { resetSessionState } from './utils/sessionReset';
 import {
     clearSharedText,
     hasPendingSharedText,
@@ -104,6 +105,7 @@ const App: React.FC = () => {
                 if (response.status === 401) {
                     invalidateProfileCache();
                     notifySwClearCache();
+                    resetSessionState();
                     setCurrentUser(null);
                     return;
                 }
@@ -193,6 +195,7 @@ const App: React.FC = () => {
     useEffect(() => {
         const handleUserLoggedIn = (event: CustomEvent) => {
             invalidateProfileCache();
+            resetSessionState();
             const user = event.detail;
             setCurrentUser(user);
             setUserInStorage(user);

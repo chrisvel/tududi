@@ -223,7 +223,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         />
                     ) : (
                         <span
-                            className={`text-[15px] font-medium tracking-tight truncate ${
+                            className={`text-[15px] font-medium tracking-tight max-sm:line-clamp-2 max-sm:break-words sm:truncate ${
                                 isTaskCompleted(task.status)
                                     ? 'text-gray-400 dark:text-gray-500 line-through'
                                     : 'text-gray-900 dark:text-gray-200'

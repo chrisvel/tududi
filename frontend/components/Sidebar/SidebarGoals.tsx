@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import {
     FlagIcon,
@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { createGoalUrl } from '../../utils/slugUtils';
 import { useCan } from '../../hooks/useCan';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarGoalsProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -22,7 +23,7 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
 }) => {
     const { t } = useTranslation();
     const canCreateGoals = useCan('create_projects');
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('goals');
 
     const goals = useStore((state: any) => state.goalsStore.goals);
     const hasLoaded = useStore((state: any) => state.goalsStore.hasLoaded);
@@ -101,7 +102,8 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

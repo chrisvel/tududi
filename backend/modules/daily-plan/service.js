@@ -14,6 +14,17 @@ const {
     rankCandidates,
 } = require('./ranking');
 const {
+    DEFAULT_SUGGESTIONS,
+    PROJECT_STATUSES,
+    TIE_BREAKS,
+    STALE_AFTER_DAYS,
+    HORIZON_DAYS,
+    MAX_SUGGESTIONS,
+    isSuggestible,
+    normalizeSuggestionSettings,
+    validateSuggestionUpdate,
+} = require('./planningSettings');
+const {
     getSafeTimezone,
     getCurrentDateInTimezone,
     getTodayBoundsInUTC,
@@ -27,8 +38,6 @@ const MAX_DURATION = 12 * 60;
 const DEFAULT_DURATION = 30;
 const INBOX_LIMIT = 20;
 const DAY_HOURS_STEP = 30;
-// Same window as the Today page's suggestions: nothing due further out.
-const SUGGESTED_HORIZON_MS = 3 * 24 * 60 * 60 * 1000;
 
 function resolvePlanDate(date, timezone) {
     if (
@@ -144,7 +153,9 @@ async function serializePlan(plan, userId, timezone) {
         visibleWhere,
         items.map((item) => item.task_id)
     );
-    const serialized = await serializeTasks(tasks, timezone);
+    const serialized = await serializeTasks(tasks, timezone, {
+        preserveOriginalName: true,
+    });
     const byId = new Map(tasks.map((task, i) => [task.id, serialized[i]]));
 
     return {
@@ -252,10 +263,17 @@ async function clearPlan(user, date) {
 
 // The planner's left column: the same lists the classic Today page shows,
 // deduplicated so a task appears in the first group it belongs to, and
-// ranked by the rules in ranking.js.
+// ranked by the rules in ranking.js. The user's planning settings decide
+// which tasks count as suggested and how many are shown.
 async function getCandidates(user) {
     const timezone = getSafeTimezone(user.timezone);
-    const metrics = await computeTaskMetrics(user.id, timezone);
+    const { order, suggestions } = await getPlanningSettings(user);
+    const metrics = await computeTaskMetrics(
+        user.id,
+        timezone,
+        null,
+        suggestions
+    );
 
     // Groups follow the task's own due date, as Profile > Planning
     // describes them. The Today page lists also count a late or due-today
@@ -265,7 +283,7 @@ async function getCandidates(user) {
     const bounds = getTodayBoundsInUTC(timezone);
     const todayStart = new Date(bounds.start).getTime();
     const todayEnd = new Date(bounds.end).getTime();
-    const horizon = Date.now() + SUGGESTED_HORIZON_MS;
+    const now = Date.now();
     const dueTime = (task) =>
         task.due_date ? new Date(task.due_date).getTime() : null;
     const isLate = (task) =>
@@ -293,13 +311,8 @@ async function getCandidates(user) {
         in_progress: started,
         suggested: [
             ...metrics.suggested_tasks,
-            ...fromProjectDates.filter(
-                (task) =>
-                    (dueTime(task) === null || dueTime(task) <= horizon) &&
-                    !(
-                        task.defer_until &&
-                        new Date(task.defer_until).getTime() > Date.now()
-                    )
+            ...fromProjectDates.filter((task) =>
+                isSuggestible(task, suggestions, now)
             ),
         ],
     };
@@ -307,19 +320,36 @@ async function getCandidates(user) {
     const seen = new Set();
     const unique = {};
     for (const key of GROUP_ORDER) {
-        unique[key] = rankCandidates(groupTasks[key]).filter((task) => {
+        unique[key] = rankCandidates(
+            groupTasks[key],
+            suggestions.tieBreak
+        ).filter((task) => {
             if (seen.has(task.id)) return false;
             seen.add(task.id);
             return true;
         });
     }
 
+    // The cap comes last: keep the first suggestions in the final order.
+    let ranked = orderCandidates(unique, order, suggestions.tieBreak);
+    const shown = new Set(
+        ranked
+            .filter(({ group }) => group === 'suggested')
+            .slice(0, suggestions.maxSuggestions)
+            .map(({ task }) => task.id)
+    );
+    unique.suggested = unique.suggested.filter((task) => shown.has(task.id));
+    ranked = ranked.filter(
+        ({ group, task }) => group !== 'suggested' || shown.has(task.id)
+    );
+
     const result = {};
     for (const key of GROUP_ORDER) {
-        result[key] = await serializeTasks(unique[key], timezone);
+        result[key] = await serializeTasks(unique[key], timezone, {
+            preserveOriginalName: true,
+        });
     }
-    const { order } = await getRanking(user);
-    result.ranked = orderCandidates(unique, order).map(({ task }) => task.uid);
+    result.ranked = ranked.map(({ task }) => task.uid);
 
     const inbox = await repository.findOpenInboxItems(user.id, INBOX_LIMIT);
     result.inbox = inbox.items.map((item) => ({
@@ -331,6 +361,60 @@ async function getCandidates(user) {
     result.inbox_count = inbox.count;
 
     return result;
+}
+
+// Everything the candidate list reads from ui_settings.planning, each value
+// normalized to a known one.
+async function getPlanningSettings(user) {
+    const settings = await repository.findUiSettings(user.id);
+    return {
+        order: normalizeOrder(settings.planning?.candidateOrder),
+        suggestions: normalizeSuggestionSettings(settings.planning),
+    };
+}
+
+// Which tasks count as suggested (Profile > Planning), with the allowed
+// values so the client does not repeat them.
+async function getSuggestionSettings(user) {
+    const { suggestions } = await getPlanningSettings(user);
+    return {
+        settings: suggestions,
+        defaults: DEFAULT_SUGGESTIONS,
+        options: {
+            projectStatuses: PROJECT_STATUSES,
+            tieBreak: TIE_BREAKS,
+            staleAfterDays: STALE_AFTER_DAYS,
+            horizonDays: HORIZON_DAYS,
+            maxSuggestions: MAX_SUGGESTIONS,
+        },
+    };
+}
+
+async function saveSuggestionSettings(user, body) {
+    const update = validateSuggestionUpdate(body);
+    if (update.excludedProjectIds) {
+        const visible = await repository.findVisibleProjectIds(
+            await permissionsService.ownershipOrPermissionWhere(
+                'project',
+                user.id
+            ),
+            update.excludedProjectIds
+        );
+        const unknown = update.excludedProjectIds.filter(
+            (id) => !visible.includes(id)
+        );
+        if (unknown.length > 0) {
+            throw new ValidationError(
+                `Unknown projects in excludedProjectIds: ${unknown.join(', ')}`
+            );
+        }
+    }
+    const settings = await repository.findUiSettings(user.id);
+    await repository.saveUiSettings(user.id, {
+        ...settings,
+        planning: { ...(settings.planning || {}), ...update },
+    });
+    return getSuggestionSettings(user);
 }
 
 // The user's bucket order for the candidate list (Profile > Planning).
@@ -409,4 +493,7 @@ module.exports = {
     getCandidates,
     getRanking,
     saveRanking,
+    getPlanningSettings,
+    getSuggestionSettings,
+    saveSuggestionSettings,
 };

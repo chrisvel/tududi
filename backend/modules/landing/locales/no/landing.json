@@ -341,7 +341,10 @@
     "subSubmit": "Meld meg på",
     "rights": "Med enerett.",
     "linkLicence": "MIT-lisens",
-    "tagline": "Et åpent system for å organisere liv og arbeid. Hostet av oss, eller på din egen server."
+    "tagline": "Et åpent system for å organisere liv og arbeid. Hostet av oss, eller på din egen server.",
+    "linkTerms": "Vilkår",
+    "linkPrivacy": "Personvern",
+    "linkRefunds": "Refusjon"
   },
   "js": {
     "showFewer": "Vis færre",

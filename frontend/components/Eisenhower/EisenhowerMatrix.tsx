@@ -246,8 +246,12 @@ const EisenhowerMatrix: React.FC = () => {
         },
     };
 
+    // Korean, Chinese and Japanese stay upright in vertical text, so the
+    // 180 degree turn that makes Latin read bottom-to-top would flip them
+    // upside down. Laying every glyph sideways keeps all scripts readable.
     const axisLabelStyle: React.CSSProperties = {
         writingMode: 'vertical-rl',
+        textOrientation: 'sideways',
         transform: 'rotate(180deg)',
         whiteSpace: 'nowrap',
     };

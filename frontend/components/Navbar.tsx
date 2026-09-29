@@ -28,6 +28,7 @@ import {
     invalidateProfileCache,
 } from '../utils/profileService';
 import { notifySwClearCache } from '../utils/swUtils';
+import { resetSessionState } from '../utils/sessionReset';
 import { toggleCapture, useCaptureUi } from '../utils/captureUi';
 
 interface NavbarProps {
@@ -69,6 +70,17 @@ const Navbar: React.FC<NavbarProps> = ({
             })
         );
     }, [isMobileSearchOpen]);
+
+    // Pages open Universal Search with an openUniversalSearch event; on
+    // phones that means showing the navbar search bar.
+    useEffect(() => {
+        const handleOpenSearch = () => {
+            if (window.innerWidth < 768) setIsMobileSearchOpen(true);
+        };
+        window.addEventListener('openUniversalSearch', handleOpenSearch);
+        return () =>
+            window.removeEventListener('openUniversalSearch', handleOpenSearch);
+    }, []);
 
     // Listen for close mobile search events
     useEffect(() => {
@@ -159,6 +171,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
             if (response.ok) {
                 notifySwClearCache();
+                resetSessionState();
                 setCurrentUser(null);
                 navigate('/login');
             } else {

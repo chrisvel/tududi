@@ -84,7 +84,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
                     {avatarUrl ? (
                         <img
                             src={avatarUrl}
-                            alt="Avatar"
+                            alt={t('profile.avatar', 'Avatar')}
                             className="w-32 h-32 rounded-full object-cover border-4 border-blue-500"
                         />
                     ) : (

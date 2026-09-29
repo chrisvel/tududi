@@ -9,6 +9,14 @@ router.get('/daily-plan', dailyPlanController.get);
 router.get('/daily-plan/candidates', dailyPlanController.candidates);
 router.get('/daily-plan/ranking', dailyPlanController.getRanking);
 router.put('/daily-plan/ranking', dailyPlanController.saveRanking);
+router.get(
+    '/daily-plan/suggestions',
+    dailyPlanController.getSuggestionSettings
+);
+router.put(
+    '/daily-plan/suggestions',
+    dailyPlanController.saveSuggestionSettings
+);
 router.get('/daily-plan/hours', dailyPlanController.getDayHours);
 router.put('/daily-plan/hours', dailyPlanController.saveDayHours);
 router.post(

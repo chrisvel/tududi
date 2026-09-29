@@ -49,6 +49,41 @@ const RENDER_TTL_MS = 6 * 60 * 60 * 1000;
 // constant so the three can never disagree.
 const MCP_TOOL_COUNT = 59;
 
+// The facts the legal pages are written around. Kept here rather than in the
+// templates so a change of host, provider or backup schedule is one edit, and
+// LEGAL_UPDATED moves with it.
+const LEGAL_UPDATED = '27 September 2026';
+const LEGAL_OPERATOR = {
+    name: 'Chris Veleris',
+    location: 'an individual based in Greece',
+    country: 'Greece',
+    email: 'info@tududi.com',
+    host: 'Vultr',
+    hostRegion: '',
+    aiProvider: 'Our AI model provider',
+    backupDays: 30,
+    dpaName: 'Hellenic Data Protection Authority',
+    dpaUrl: 'https://www.dpa.gr/en',
+};
+const LEGAL_DOCS = [
+    {
+        slug: 'terms',
+        title: 'Terms of Service',
+        description: 'The terms for using tududi Cloud and tududi.com.',
+    },
+    {
+        slug: 'privacy',
+        title: 'Privacy Policy',
+        description:
+            'What personal data tududi Cloud collects, why, and your rights.',
+    },
+    {
+        slug: 'refunds',
+        title: 'Refund Policy',
+        description: 'Money-back and refund terms for tududi Cloud.',
+    },
+];
+
 // The template pulls fonts, icons and analytics from a handful of hosts the
 // app's own policy has no reason to allow, so the marketing responses carry
 // their own policy in place of helmet's. Every form on the page posts back
@@ -338,6 +373,41 @@ function createLandingRouter(landing) {
         }).catch(next);
     });
     router.get('/en/cloud', (req, res) => res.redirect(301, '/cloud'));
+
+    // Terms, privacy and refunds. English only and one URL each, so there is
+    // never a question of which language version is binding. The chrome
+    // follows the visitor's remembered language, but the cookie is only
+    // read here, never set: opening the terms must not switch the site to
+    // English.
+    LEGAL_DOCS.forEach((doc) => {
+        router.get(`/${doc.slug}`, (req, res, next) => {
+            const remembered = parseCookies(req.headers.cookie)[LANG_COOKIE];
+            const locale = isSupportedLocale(remembered)
+                ? remembered
+                : DEFAULT_LOCALE;
+            res.setHeader('Content-Security-Policy', csp);
+            res.setHeader('Cache-Control', 'public, max-age=300');
+            res.set('Vary', 'Cookie');
+            ejs.renderFile(
+                path.join(__dirname, 'views', 'legal.ejs'),
+                {
+                    i18n: createI18n(locale),
+                    locales: LOCALES,
+                    appUrl,
+                    demo: demoSnapshot(),
+                    localePath,
+                    doc,
+                    legalDocs: LEGAL_DOCS,
+                    legalUpdated: LEGAL_UPDATED,
+                    operator: LEGAL_OPERATOR,
+                    canonicalUrl: `${siteOrigin.replace(/\/$/, '')}/${doc.slug}`,
+                },
+                { cache: cacheRenders, rmWhitespace: false }
+            )
+                .then((html) => res.type('html').send(html))
+                .catch(next);
+        });
+    });
 
     router.use(
         '/landing-assets',

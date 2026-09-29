@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "v1.6.0-rc.5",
+  "version": "v1.6.0-rc.6",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {
     "test": "test"
@@ -164,10 +164,10 @@
     "lusca": "^1.7.0",
     "mermaid": "^12.0.0",
     "moment-timezone": "~0.6.0",
-    "multer": "^2.3.0",
+    "multer": "^2.4.0",
     "nanoid": "^3.3.18",
     "node-cron": "~4.1.0",
-    "nodemailer": "^9.1.1",
+    "nodemailer": "^10.0.2",
     "openai": "^6.45.0",
     "openid-client": "^5.7.1",
     "pg": "^8.23.0",

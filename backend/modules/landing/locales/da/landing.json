@@ -341,7 +341,10 @@
     "subSubmit": "Tilmeld",
     "rights": "Alle rettigheder forbeholdes.",
     "linkLicence": "MIT-licens",
-    "tagline": "Et åbent system til at organisere liv og arbejde. Hostet af os, eller på din egen server."
+    "tagline": "Et åbent system til at organisere liv og arbejde. Hostet af os, eller på din egen server.",
+    "linkTerms": "Vilkår",
+    "linkPrivacy": "Privatliv",
+    "linkRefunds": "Refusion"
   },
   "js": {
     "showFewer": "Vis færre",

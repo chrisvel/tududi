@@ -341,7 +341,10 @@
     "subSubmit": "Iscriviti",
     "rights": "Tutti i diritti riservati.",
     "linkLicence": "Licenza MIT",
-    "tagline": "Un sistema aperto per organizzare vita e lavoro. Ospitato da noi, o sul tuo server."
+    "tagline": "Un sistema aperto per organizzare vita e lavoro. Ospitato da noi, o sul tuo server.",
+    "linkTerms": "Termini",
+    "linkPrivacy": "Privacy",
+    "linkRefunds": "Rimborsi"
   },
   "js": {
     "showFewer": "Mostra meno",

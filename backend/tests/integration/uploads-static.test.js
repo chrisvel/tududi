@@ -53,7 +53,9 @@ describe('GET /api/uploads/:category/:filename', () => {
         });
 
         afterEach(async () => {
-            await fs.rm(taskUploadDir, { recursive: true, force: true });
+            await fs.rm(path.join(taskUploadDir, 'task-static-test.pdf'), {
+                force: true,
+            });
         });
 
         it('should require authentication', async () => {
@@ -132,9 +134,14 @@ describe('GET /api/uploads/:category/:filename', () => {
 
     describe('Content-Disposition (GHSA-43p8-ch4p-gqg4)', () => {
         const taskUploadDir = path.join(uploadsDir, 'tasks');
+        const createdFiles = [];
 
         afterEach(async () => {
-            await fs.rm(taskUploadDir, { recursive: true, force: true });
+            await Promise.all(
+                createdFiles
+                    .splice(0)
+                    .map((file) => fs.rm(file, { force: true }))
+            );
         });
 
         const createAttachment = async (
@@ -143,6 +150,7 @@ describe('GET /api/uploads/:category/:filename', () => {
             content = 'file content'
         ) => {
             await fs.mkdir(taskUploadDir, { recursive: true });
+            createdFiles.push(path.join(taskUploadDir, storedFilename));
             await fs.writeFile(
                 path.join(taskUploadDir, storedFilename),
                 content
@@ -447,8 +455,15 @@ describe('GET /api/uploads/:category/:filename', () => {
                 .join('; ');
         });
 
+        // Other test files use this folder at the same time, so only this
+        // block's own files are removed, never the folder.
         afterEach(async () => {
-            await fs.rm(taskUploadDir, { recursive: true, force: true });
+            await Promise.all(
+                ['task-victim-secret.pdf', 'task-attacker-own.pdf'].map(
+                    (name) =>
+                        fs.rm(path.join(taskUploadDir, name), { force: true })
+                )
+            );
         });
 
         it('still serves the attacker their own attachment', async () => {
