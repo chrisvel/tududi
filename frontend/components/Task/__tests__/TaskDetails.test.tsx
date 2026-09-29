@@ -79,6 +79,7 @@ const mockParentTaskInStore = {
 };
 
 const mockUpdateTask = jest.fn();
+const mockSkipTaskOccurrence = jest.fn();
 
 jest.mock('../../../utils/tasksService', () => ({
     updateTask: (...args: any[]) => mockUpdateTask(...args),
@@ -91,6 +92,7 @@ jest.mock('../../../utils/tasksService', () => ({
     fetchTaskNextIterations: jest.fn().mockResolvedValue([]),
     fetchSubtasks: jest.fn(() => Promise.resolve([mockSubtaskInStore])),
     toggleTaskCompletion: jest.fn(),
+    skipTaskOccurrence: (...args: any[]) => mockSkipTaskOccurrence(...args),
 }));
 
 // Stub every TaskDetails/ card except TaskSubtasksCard, which we render
@@ -98,7 +100,10 @@ jest.mock('../../../utils/tasksService', () => ({
 // TaskDetails.tsx - the same path a user hits from the subtask status
 // dropdown.
 jest.mock('../TaskDetails/', () => ({
-    TaskDetailsHeader: () => null,
+    TaskDetailsHeader: ({ onSkipOccurrence }: any) =>
+        onSkipOccurrence ? (
+            <button onClick={onSkipOccurrence}>Skip this occurrence</button>
+        ) : null,
     TaskContentCard: () => null,
     TaskProjectCard: ({ projects }: any) => (
         <div data-testid="task-project-card-projects">
@@ -252,5 +257,53 @@ describe('TaskDetails project selection', () => {
 
         const list = await screen.findByTestId('task-project-card-projects');
         expect(list.textContent).toBe('Active Project');
+    });
+});
+
+describe('TaskDetails skip occurrence', () => {
+    const recurringTask = {
+        ...mockParentTaskInStore,
+        recurrence_type: 'monthly',
+        subtasks: [],
+    };
+
+    beforeEach(() => {
+        mockSkipTaskOccurrence.mockReset();
+        mockSetTasks.mockClear();
+    });
+
+    it('only sends one skip request when the action is clicked twice quickly', async () => {
+        mockTasksInStore = [{ ...recurringTask }];
+        let resolveSkip: (value: any) => void = () => {};
+        mockSkipTaskOccurrence.mockImplementation(
+            () =>
+                new Promise((resolve) => {
+                    resolveSkip = resolve;
+                })
+        );
+
+        render(<TaskDetails />);
+
+        const button = await screen.findByText('Skip this occurrence');
+        fireEvent.click(button);
+        fireEvent.click(button);
+
+        expect(mockSkipTaskOccurrence).toHaveBeenCalledTimes(1);
+
+        resolveSkip({ ...recurringTask, due_date: '2026-02-15' });
+        await waitFor(() => {
+            expect(mockSetTasks).toHaveBeenCalled();
+        });
+    });
+
+    it('hides the skip action once the series is done', async () => {
+        mockTasksInStore = [{ ...recurringTask, status: 'done' }];
+
+        render(<TaskDetails />);
+
+        await screen.findByTestId('task-project-card-projects');
+        expect(
+            screen.queryByText('Skip this occurrence')
+        ).not.toBeInTheDocument();
     });
 });

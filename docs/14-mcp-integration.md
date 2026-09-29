@@ -18,7 +18,7 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
     - [Stdio Mode (Local)](#stdio-mode-local)
     - [HTTP Mode (Remote)](#http-mode-remote)
 - [Available Tools](#available-tools)
-    - [Tasks Tools (11)](#tasks-tools-11)
+    - [Tasks Tools (12)](#tasks-tools-12)
     - [Projects Tools (5)](#projects-tools-5)
     - [Inbox Tools (6)](#inbox-tools-6)
     - [Views Tools (5)](#views-tools-5)
@@ -44,7 +44,7 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 **Key Features:**
 
-- **59 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people
+- **63 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
 - **Enabled by default:** No configuration needed to turn MCP on
@@ -170,9 +170,9 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 62 MCP tools organized into 11 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 63 MCP tools organized into 11 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
-### Tasks Tools (11)
+### Tasks Tools (12)
 
 #### `list_tasks`
 
@@ -313,7 +313,7 @@ Changing recurrence fields on a task that already has future recurring instances
 
 #### `complete_task`
 
-Toggle a task between completed and pending.
+Toggle a task between completed and pending. Completing a recurring task moves it to its next occurrence, same as in the web UI.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
@@ -327,6 +327,17 @@ Toggle a task between completed and pending.
     "id": "abc123"
 }
 ```
+
+---
+
+#### `skip_task_occurrence`
+
+Skip the current occurrence of a recurring task without completing it (e.g. a bill someone else paid). The task moves to its next due date and the occurrence is recorded as skipped; the response says `Occurrence skipped, next due YYYY-MM-DD` and includes `next_due_date`. Returns an error for non-recurring tasks and for tasks that are already done or cancelled.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
 
 ---
 

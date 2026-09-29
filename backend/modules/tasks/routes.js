@@ -11,7 +11,6 @@ const {
     Task,
     TaskEvent,
     TaskAttachment,
-    RecurringCompletion,
     Project,
     sequelize,
 } = require('../../models');
@@ -28,10 +27,8 @@ const {
 const {
     calculateNextDueDate,
     calculateVirtualOccurrences,
-    shouldGenerateNextTask,
 } = require('./recurringTaskService');
 const { logError } = require('../../services/logService');
-const { logEvent } = require('./taskEventService');
 
 const { serializeTask, serializeTasks } = require('./core/serializers');
 const { updateTaskTags } = require('./operations/tags');
@@ -78,6 +75,10 @@ const {
 const {
     handleRecurrenceUpdate,
     calculateNextIterations,
+    planOccurrenceAdvance,
+    recordOccurrence,
+    completeOccurrence,
+    isSeriesFinished,
 } = require('./operations/recurring');
 
 const { getTaskMetrics } = require('./queries/metrics-computation');
@@ -777,82 +778,22 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             req.body
         );
 
-        const resolveFinalValue = (field) =>
-            taskAttributes[field] !== undefined
-                ? taskAttributes[field]
-                : task[field];
-
-        const finalRecurrenceType = resolveFinalValue('recurrence_type');
-        const finalCompletionBased = resolveFinalValue('completion_based');
-        const finalDueDateBeforeAdvance =
-            taskAttributes.due_date !== undefined
-                ? taskAttributes.due_date
-                : task.due_date;
-
-        let recurringCompletionPayload = null;
-        let recurrenceAdvanceInfo = null;
+        let recurringOccurrence = null;
 
         if (
             status !== undefined &&
             (taskAttributes.status === Task.STATUS.DONE ||
-                taskAttributes.status === 'done') &&
-            finalRecurrenceType &&
-            finalRecurrenceType !== 'none' &&
-            !task.recurring_parent_id
+                taskAttributes.status === 'done')
         ) {
-            const completedAt = new Date();
-            const hasOriginalDueDate =
-                finalDueDateBeforeAdvance !== undefined &&
-                finalDueDateBeforeAdvance !== null &&
-                finalDueDateBeforeAdvance !== '';
-            const originalDueDate = hasOriginalDueDate
-                ? new Date(finalDueDateBeforeAdvance)
-                : new Date(completedAt);
-            const recurrenceContext = {
-                ...(typeof task.get === 'function'
-                    ? task.get({ plain: true })
-                    : task),
-                recurrence_type: finalRecurrenceType,
-                recurrence_interval: resolveFinalValue('recurrence_interval'),
-                recurrence_end_date: resolveFinalValue('recurrence_end_date'),
-                recurrence_weekday: resolveFinalValue('recurrence_weekday'),
-                recurrence_weekdays: resolveFinalValue('recurrence_weekdays'),
-                recurrence_month_day: resolveFinalValue('recurrence_month_day'),
-                recurrence_week_of_month: resolveFinalValue(
-                    'recurrence_week_of_month'
-                ),
-                completion_based: finalCompletionBased,
-                due_date: originalDueDate,
-            };
+            recurringOccurrence = planOccurrenceAdvance(task, {
+                overrides: taskAttributes,
+                timezone,
+            });
 
-            const baseDate = finalCompletionBased
-                ? completedAt
-                : new Date(originalDueDate);
-            const nextDueDate = calculateNextDueDate(
-                recurrenceContext,
-                baseDate,
-                timezone
-            );
-
-            recurringCompletionPayload = {
-                task_id: task.id,
-                completed_at: completedAt,
-                original_due_date: new Date(originalDueDate),
-                skipped: false,
-            };
-            recurrenceAdvanceInfo = {
-                originalDueDate: new Date(originalDueDate),
-                completedAt,
-                nextDueDate,
-            };
-
-            if (
-                nextDueDate &&
-                shouldGenerateNextTask(recurrenceContext, nextDueDate)
-            ) {
+            if (recurringOccurrence?.hasNext) {
                 taskAttributes.status = Task.STATUS.NOT_STARTED;
                 taskAttributes.completed_at = null;
-                taskAttributes.due_date = nextDueDate;
+                taskAttributes.due_date = recurringOccurrence.nextDueDate;
             }
         }
 
@@ -896,37 +837,12 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             );
         }
 
-        if (recurringCompletionPayload) {
-            await RecurringCompletion.create(recurringCompletionPayload);
-            try {
-                await logEvent({
-                    taskId: task.id,
-                    userId: req.currentUser.id,
-                    eventType: 'recurring_occurrence_completed',
-                    fieldName: 'recurrence',
-                    oldValue: recurrenceAdvanceInfo
-                        ? recurrenceAdvanceInfo.originalDueDate
-                        : null,
-                    newValue: recurrenceAdvanceInfo
-                        ? recurrenceAdvanceInfo.nextDueDate
-                        : null,
-                    metadata: {
-                        action: 'recurring_occurrence_completed',
-                        original_due_date:
-                            recurrenceAdvanceInfo?.originalDueDate?.toISOString?.() ??
-                            recurrenceAdvanceInfo?.originalDueDate,
-                        next_due_date:
-                            recurrenceAdvanceInfo?.nextDueDate?.toISOString?.() ??
-                            null,
-                        completion_based: finalCompletionBased,
-                    },
-                });
-            } catch (eventError) {
-                logError(
-                    'Error logging recurring occurrence completion event:',
-                    eventError
-                );
-            }
+        if (recurringOccurrence) {
+            await recordOccurrence(
+                task,
+                recurringOccurrence,
+                req.currentUser.id
+            );
         }
 
         await updateTaskTags(task, tagsData, req.currentUser.id);
@@ -1134,6 +1050,54 @@ router.get('/task/:uid/next-iterations', async (req, res) => {
         res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });
+
+router.post(
+    '/task/:uid/skip-occurrence',
+    requireTaskWriteAccess,
+    async (req, res) => {
+        try {
+            const task = await taskRepository.findByUid(req.params.uid);
+
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+
+            if (isSeriesFinished(task)) {
+                return res.status(400).json({
+                    error: 'Task is already done or cancelled, nothing to skip.',
+                });
+            }
+
+            const occurrence = await completeOccurrence(task, {
+                timezone: getSafeTimezone(req.currentUser.timezone),
+                userId: req.currentUser.id,
+                skipped: true,
+            });
+
+            if (!occurrence) {
+                return res.status(400).json({
+                    error: 'Only recurring tasks have occurrences to skip.',
+                });
+            }
+
+            const taskWithAssociations = await taskRepository.findById(
+                task.id,
+                { include: TASK_INCLUDES_WITH_SUBTASKS }
+            );
+
+            const serializedTask = await serializeTask(
+                taskWithAssociations,
+                req.currentUser.timezone,
+                { skipDisplayNameTransform: true }
+            );
+
+            res.json(serializedTask);
+        } catch (error) {
+            logError('Error skipping recurring occurrence:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+);
 
 // Mount sub-routers for task-related routes
 router.use(attachmentsRouter);
