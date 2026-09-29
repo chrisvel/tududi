@@ -233,7 +233,14 @@ const config = {
 
     environment,
 
-    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
+    // In production the app and the API share one address, so BASE_URL (the
+    // public URL of the deployment) also stands in for FRONTEND_URL. Without
+    // it, email links (verification redirect, password reset) would point at
+    // the development server on localhost:8080.
+    frontendUrl:
+        process.env.FRONTEND_URL ||
+        process.env.BASE_URL ||
+        'http://localhost:8080',
 
     // BACKEND_URL is the primary variable; BASE_URL (documented for OIDC
     // callbacks) is accepted as a fallback since it's the publicly-facing

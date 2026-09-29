@@ -455,8 +455,15 @@ describe('GET /api/uploads/:category/:filename', () => {
                 .join('; ');
         });
 
+        // Other test files use this folder at the same time, so only this
+        // block's own files are removed, never the folder.
         afterEach(async () => {
-            await fs.rm(taskUploadDir, { recursive: true, force: true });
+            await Promise.all(
+                ['task-victim-secret.pdf', 'task-attacker-own.pdf'].map(
+                    (name) =>
+                        fs.rm(path.join(taskUploadDir, name), { force: true })
+                )
+            );
         });
 
         it('still serves the attacker their own attachment', async () => {
