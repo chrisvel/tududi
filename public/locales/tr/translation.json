@@ -627,7 +627,14 @@
     "reviewItems": "Çalışma akışınızı gözden geçirmek ve geliştirmek için tıklayın",
     "suggestion": "Geliştirmeler yapmak için yukarıdaki herhangi bir öğeye tıklayın.",
     "issuesFound_one": "1 verimlilik sorunu dikkat gerektiriyor",
-    "issuesFound_other": "{{count}} verimlilik sorunu dikkat gerektiriyor"
+    "issuesFound_other": "{{count}} verimlilik sorunu dikkat gerektiriyor",
+    "nothingYet": "Henüz incelenecek bir şey yok.",
+    "blankSlateHint": "Asistan, görevlerinizi ve projelerinizi dikkat gerektiren şeyler için inceler; örneğin belirsiz görevler, bekleyen işler veya takılmış projeler. Birkaç görev ekleyin ve sonra tekrar bakın.",
+    "noIssues": "Her şey yolunda görünüyor!",
+    "allClearHint": "Şu anda belirsiz görev, bekleyen iş veya takılmış proje yok. Sıradakini planlamak için iyi bir an.",
+    "goToTasks": "Görevlere git",
+    "goToProjects": "Projelere git",
+    "planDay": "Gününüzü planlayın"
   },
   "modals": {
     "confirmDelete": "Silmek istediğinize emin misiniz?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Son tarihi seç",
     "goalTitle": "Hedef",
     "addProject": "Proje Ekle",
-    "noResults": "Proje yok"
+    "noResults": "Proje yok",
+    "new": "Yeni Proje",
+    "noProjectsYet": "Henüz proje yok.",
+    "blankSlateHint": "Proje, tek bir sonuca götüren görevleri ve notları bir araya getirir; örneğin bir geziyi planlamak ya da bir web sitesi yayınlamak. Projeleri İş veya Ev gibi alanlarda toplayarak düzenli tutun.",
+    "blankSlateFilteredHint": "Filtrelerinizi veya aramanızı değiştirmeyi deneyin.",
+    "blankSlateNew": "İlk projenizi oluşturun",
+    "blankSlateTemplate": "Bir şablondan başlayın",
+    "blankSlateAreas": "Alanları ayarlayın",
+    "blankSlateShowAll": "Tüm projeleri göster"
   },
   "projectItem": {
     "edit": "Düzenle",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Hedefi sil",
     "moveBackToUnlinked": "Bağlantısız olanlara geri taşı",
     "horizonSeason": "Sezon",
-    "horizonYear": "Yıl"
+    "horizonYear": "Yıl",
+    "new": "Yeni Alan",
+    "noAreasYet": "Henüz alan yok.",
+    "blankSlateHint": "Alanlar, zaman içinde ilgilendiğiniz yaşam bölümleridir; örneğin İş, Sağlık veya Ev. Her bölümü tek yerde görmek için projelerinizi ve hedeflerinizi bu alanlara koyun.",
+    "blankSlateNew": "İlk alanınızı oluşturun",
+    "blankSlateProjects": "Projelere git"
   },
   "notes": {
     "loading": "Notlar yükleniyor...",
@@ -1240,7 +1260,12 @@
     "addNote": "Not Ekle",
     "tree": {
       "folders": "Klasörler"
-    }
+    },
+    "new": "Yeni Not",
+    "noNotesYet": "Henüz not yok.",
+    "blankSlateHint": "Notlar saklamak istediklerinizi tutar; örneğin toplantı notları, fikirler veya başvuru belgeleri. Markdown ile yazın, notu bir projeye bağlayın ve sonra bulmak için etiketleyin.",
+    "blankSlateNew": "İlk notunuzu yazın",
+    "blankSlateProjects": "Projelere git"
   },
   "tags": {
     "loading": "Etiketler yükleniyor...",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "Bu görünüm kaydedilecek:",
     "saveView": "Görünümü Kaydet",
     "filtersLabel": "Filtreler:",
-    "searchLabel": "Ara:"
+    "searchLabel": "Ara:",
+    "new": "Yeni Görünüm",
+    "noViewsYet": "Henüz akıllı görünüm yok.",
+    "blankSlateHint": "Akıllı görünüm kayıtlı bir aramadır; örneğin bu hafta süresi dolan önemli görevler veya fikirler etiketli notlar. Arayın, filtrelerinizi ayarlayın ve \"Akıllı Görünüm Olarak Kaydet\"i seçin. Kenar çubuğunda tutmak için bir görünümü sabitleyin.",
+    "blankSlateNew": "Görünüm oluşturmak için arayın",
+    "noViewsMatch": "Görünüm bulunamadı",
+    "blankSlateFilteredHint": "Farklı bir arama deneyin.",
+    "blankSlateClearSearch": "Aramayı temizle"
   },
   "search": {
     "placeholder": "Görevleri, projeleri, notları ara...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "Tamamlanmayacak"
   },
   "habits": {
-    "completeHabit": "Alışkanlığı Tamamla"
+    "completeHabit": "Alışkanlığı Tamamla",
+    "new": "Yeni Alışkanlık",
+    "noHabitsYet": "Henüz alışkanlık yok.",
+    "blankSlateHint": "Alışkanlık, düzenli yapmak istediğiniz bir şeydir; örneğin kitap okumak veya sabah yürüyüşü. Bırakmak istediğiniz bir şey de olabilir. Her seferinde işaretleyin ve serinizin ve gücünüzün büyümesini izleyin.",
+    "blankSlateNew": "İlk alışkanlığınızı oluşturun"
   },
   "aiAssistant": {
     "title": "Yapay Zeka Asistanı",
@@ -2280,5 +2316,20 @@
   },
   "area": {
     "loadError": "Alanlar yüklenemedi"
+  },
+  "goals": {
+    "newGoal": "Yeni Hedef",
+    "noGoalsYet": "Henüz hedef yok.",
+    "blankSlateHint": "Hedef, bu sezon ya da bu yıl ulaşmak istediğiniz bir sonuçtur; örneğin yarı maraton koşmak. Sizi oraya götüren işi görmek için hedefe projeler bağlayın.",
+    "blankSlateNew": "İlk hedefinizi oluşturun",
+    "blankSlateAreas": "Alanları ayarlayın"
+  },
+  "templates": {
+    "new": "Yeni Şablon",
+    "noTemplatesYet": "Henüz şablon yok.",
+    "blankSlateHint": "Şablon, görevleri hazır olarak tekrar tekrar başlatabileceğiniz bir projedir; örneğin bir seyahat kontrol listesi veya yeni bir müşterinin katılımı. Burada bir tane oluşturun, tekrarladığınız bir projeyi kaydedin ya da pazar yerinden birini seçin.",
+    "createFirst": "İlk şablonunuzu oluşturun",
+    "browseMarketplace": "Pazar yerine göz atın",
+    "fromProject": "Bir projeyi şablon olarak kaydedin"
   }
 }

@@ -627,7 +627,14 @@
     "reviewItems": "Clique para revisar e melhorar seu fluxo de trabalho",
     "suggestion": "Clique em qualquer item acima para abri-lo e fazer melhorias.",
     "issuesFound_one": "1 problema de produtividade precisa de atenção",
-    "issuesFound_other": "{{count}} problemas de produtividade precisam de atenção"
+    "issuesFound_other": "{{count}} problemas de produtividade precisam de atenção",
+    "nothingYet": "Ainda não há nada para revisar.",
+    "blankSlateHint": "O assistente analisa suas tarefas e projetos em busca do que precisa de atenção, como tarefas vagas, trabalho parado ou projetos travados. Adicione algumas tarefas e volte depois.",
+    "noIssues": "Tudo certo!",
+    "allClearHint": "Nenhuma tarefa vaga, trabalho parado ou projeto travado no momento. Um bom momento para planejar o próximo passo.",
+    "goToTasks": "Ir para tarefas",
+    "goToProjects": "Ir para projetos",
+    "planDay": "Planeje seu dia"
   },
   "modals": {
     "confirmDelete": "Você tem certeza de que deseja excluir?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Selecione a data de vencimento",
     "goalTitle": "Meta",
     "addProject": "Adicionar Projeto",
-    "noResults": "Sem projetos"
+    "noResults": "Sem projetos",
+    "new": "Novo projeto",
+    "noProjectsYet": "Ainda não há projetos.",
+    "blankSlateHint": "Um projeto reúne as tarefas e notas que levam a um resultado, como planejar uma viagem ou lançar um site. Mantenha tudo organizado agrupando-os em áreas como Trabalho ou Casa.",
+    "blankSlateFilteredHint": "Tente mudar os filtros ou a pesquisa.",
+    "blankSlateNew": "Crie seu primeiro projeto",
+    "blankSlateTemplate": "Começar de um modelo",
+    "blankSlateAreas": "Configurar áreas",
+    "blankSlateShowAll": "Mostrar todos os projetos"
   },
   "projectItem": {
     "edit": "Editar",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Excluir meta",
     "moveBackToUnlinked": "Mover de volta para não vinculado",
     "horizonSeason": "Estação",
-    "horizonYear": "Ano"
+    "horizonYear": "Ano",
+    "new": "Nova área",
+    "noAreasYet": "Ainda não há áreas.",
+    "blankSlateHint": "Áreas são as partes da sua vida que você mantém ao longo do tempo, como Trabalho, Saúde ou Casa. Coloque nelas seus projetos e metas para ver cada parte em um só lugar.",
+    "blankSlateNew": "Crie sua primeira área",
+    "blankSlateProjects": "Ir para projetos"
   },
   "notes": {
     "loading": "Carregando notas...",
@@ -1240,7 +1260,12 @@
     "addNote": "Adicionar Nota",
     "tree": {
       "folders": "Pastas"
-    }
+    },
+    "new": "Nova nota",
+    "noNotesYet": "Ainda não há notas.",
+    "blankSlateHint": "As notas guardam o que você quer manter, como anotações de reuniões, ideias ou material de referência. Escreva em Markdown, vincule uma nota a um projeto e adicione etiquetas para encontrá-la depois.",
+    "blankSlateNew": "Escreva sua primeira nota",
+    "blankSlateProjects": "Ir para projetos"
   },
   "tags": {
     "loading": "Carregando tags...",
@@ -1746,7 +1771,14 @@
     "viewWillSave": "Esta visão será salva:",
     "saveView": "Salvar Visão",
     "filtersLabel": "Filtros:",
-    "searchLabel": "Pesquisar:"
+    "searchLabel": "Pesquisar:",
+    "new": "Nova visão",
+    "noViewsYet": "Ainda não há visões inteligentes.",
+    "blankSlateHint": "Uma visão inteligente é uma pesquisa salva, como tarefas prioritárias que vencem nesta semana ou notas com a etiqueta ideias. Pesquise, ajuste os filtros e escolha \"Salvar como Visão Inteligente\". Fixe uma visão para mantê-la na barra lateral.",
+    "blankSlateNew": "Pesquisar para criar uma visão",
+    "noViewsMatch": "Nenhuma visão encontrada",
+    "blankSlateFilteredHint": "Tente outra pesquisa.",
+    "blankSlateClearSearch": "Limpar pesquisa"
   },
   "search": {
     "placeholder": "Pesquisar tarefas, projetos, notas...",
@@ -1907,7 +1939,11 @@
     "cancelled_desc": "Não será concluído"
   },
   "habits": {
-    "completeHabit": "Completar hábito"
+    "completeHabit": "Completar hábito",
+    "new": "Novo hábito",
+    "noHabitsYet": "Ainda não há hábitos.",
+    "blankSlateHint": "Um hábito é algo que você quer fazer com regularidade, como ler ou caminhar de manhã, ou algo que você quer largar. Registre a cada vez e veja sua sequência e sua força crescerem.",
+    "blankSlateNew": "Crie seu primeiro hábito"
   },
   "aiAssistant": {
     "title": "Assistente de IA",
@@ -2281,5 +2317,20 @@
   },
   "area": {
     "loadError": "Não foi possível carregar as áreas"
+  },
+  "goals": {
+    "newGoal": "Nova meta",
+    "noGoalsYet": "Ainda não há metas.",
+    "blankSlateHint": "Uma meta é um resultado que você quer alcançar nesta temporada ou neste ano, como correr uma meia maratona. Vincule projetos a ela para ver o trabalho que leva você até lá.",
+    "blankSlateNew": "Crie sua primeira meta",
+    "blankSlateAreas": "Configurar áreas"
+  },
+  "templates": {
+    "new": "Novo modelo",
+    "noTemplatesYet": "Ainda não há modelos.",
+    "blankSlateHint": "Um modelo é um projeto que você pode iniciar várias vezes, com as tarefas prontas, como uma lista para viagem ou a integração de um novo cliente. Crie um aqui, salve um projeto que você repete ou escolha um no catálogo.",
+    "createFirst": "Crie seu primeiro modelo",
+    "browseMarketplace": "Explorar o catálogo",
+    "fromProject": "Salvar um projeto como modelo"
   }
 }

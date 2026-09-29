@@ -915,7 +915,15 @@
     "selectDueDatePlaceholder": "期限日を選択",
     "goalTitle": "目標",
     "addProject": "プロジェクトを追加",
-    "noResults": "プロジェクトはありません"
+    "noResults": "プロジェクトはありません",
+    "new": "新しいプロジェクト",
+    "noProjectsYet": "まだプロジェクトはありません。",
+    "blankSlateHint": "プロジェクトは、旅行の計画やウェブサイトの公開など、ひとつの成果につながるタスクとノートをまとめたものです。仕事や家などのエリアに分けて整理しましょう。",
+    "blankSlateFilteredHint": "フィルターや検索条件を変えてみてください。",
+    "blankSlateNew": "最初のプロジェクトを作成",
+    "blankSlateTemplate": "テンプレートから始める",
+    "blankSlateAreas": "エリアを設定",
+    "blankSlateShowAll": "すべてのプロジェクトを表示"
   },
   "projectItem": {
     "edit": "編集",
@@ -957,7 +965,12 @@
     "deleteGoal": "目標を削除",
     "moveBackToUnlinked": "リンクされていない状態に戻す",
     "horizonSeason": "シーズン",
-    "horizonYear": "年"
+    "horizonYear": "年",
+    "new": "新しいエリア",
+    "noAreasYet": "まだエリアはありません。",
+    "blankSlateHint": "エリアは、仕事・健康・家など、長く向き合っていく生活の領域です。プロジェクトや目標をエリアに入れると、それぞれの領域をひとつの場所で見渡せます。",
+    "blankSlateNew": "最初のエリアを作成",
+    "blankSlateProjects": "プロジェクトへ"
   },
   "notes": {
     "loading": "ノートを読み込み中...",
@@ -982,7 +995,12 @@
     "addNote": "ノートを追加",
     "tree": {
       "folders": "フォルダー"
-    }
+    },
+    "new": "新しいノート",
+    "noNotesYet": "まだノートはありません。",
+    "blankSlateHint": "ノートには、会議メモやアイデア、参考資料など残しておきたいことを保存できます。Markdown で書き、プロジェクトに紐づけ、タグを付けておけば後から見つけられます。",
+    "blankSlateNew": "最初のノートを書く",
+    "blankSlateProjects": "プロジェクトへ"
   },
   "tags": {
     "loading": "タグを読み込み中...",
@@ -1311,7 +1329,14 @@
     "reviewItems": "クリックしてレビューし、ワークフローを改善します",
     "suggestion": "上記の任意のアイテムをクリックして開き、改善を行います。",
     "issuesFound_other": "{{count}}の生産性の問題に注意が必要です",
-    "issuesFound_one": "1つの生産性の問題に注意が必要です"
+    "issuesFound_one": "1つの生産性の問題に注意が必要です",
+    "nothingYet": "まだ確認するものはありません。",
+    "blankSlateHint": "アシスタントは、あいまいなタスクや止まっている作業、行き詰まったプロジェクトなど、注意が必要なものがないかタスクとプロジェクトを確認します。タスクをいくつか追加して、また確認してください。",
+    "noIssues": "問題はありません！",
+    "allClearHint": "今はあいまいなタスクも、止まっている作業も、行き詰まったプロジェクトもありません。次の計画を立てるのにちょうどよいタイミングです。",
+    "goToTasks": "タスクへ",
+    "goToProjects": "プロジェクトへ",
+    "planDay": "今日の計画を立てる"
   },
   "priority": {
     "low": "低",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "このビューは保存されます:",
     "saveView": "ビューを保存",
     "filtersLabel": "フィルター:",
-    "searchLabel": "検索:"
+    "searchLabel": "検索:",
+    "new": "新しいビュー",
+    "noViewsYet": "まだスマートビューはありません。",
+    "blankSlateHint": "スマートビューは保存した検索です。たとえば今週期限の重要なタスクや「アイデア」タグの付いたノートなど。検索してフィルターを設定し、「スマートビューとして保存」を選びます。ビューをピン留めするとサイドバーに表示されます。",
+    "blankSlateNew": "検索してビューを作成",
+    "noViewsMatch": "ビューが見つかりません",
+    "blankSlateFilteredHint": "別の検索を試してください。",
+    "blankSlateClearSearch": "検索をクリア"
   },
   "search": {
     "placeholder": "タスク、プロジェクト、ノートを検索...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "完了しません"
   },
   "habits": {
-    "completeHabit": "習慣を完了する"
+    "completeHabit": "習慣を完了する",
+    "new": "新しい習慣",
+    "noHabitsYet": "まだ習慣はありません。",
+    "blankSlateHint": "習慣は、読書や朝の散歩など定期的に続けたいこと、またはやめたいことです。毎回記録して、連続記録と定着度が伸びていくのを確かめましょう。",
+    "blankSlateNew": "最初の習慣を作成"
   },
   "aiAssistant": {
     "title": "AIアシスタント",
@@ -2279,5 +2315,20 @@
   },
   "area": {
     "loadError": "エリアを読み込めませんでした"
+  },
+  "goals": {
+    "newGoal": "新しい目標",
+    "noGoalsYet": "まだ目標はありません。",
+    "blankSlateHint": "目標は、ハーフマラソンを走るなど、今シーズンや今年中に達成したい成果です。プロジェクトを紐づけると、そこへ向かう作業が見えるようになります。",
+    "blankSlateNew": "最初の目標を作成",
+    "blankSlateAreas": "エリアを設定"
+  },
+  "templates": {
+    "new": "新しいテンプレート",
+    "noTemplatesYet": "まだテンプレートはありません。",
+    "blankSlateHint": "テンプレートは、旅行の持ち物リストや新規顧客のオンボーディングなど、タスクが揃った状態で何度でも始められるプロジェクトです。ここで作成するか、繰り返すプロジェクトを保存するか、マーケットプレイスから選んでください。",
+    "createFirst": "最初のテンプレートを作成",
+    "browseMarketplace": "マーケットプレイスを見る",
+    "fromProject": "プロジェクトをテンプレートとして保存"
   }
 }

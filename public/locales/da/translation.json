@@ -627,7 +627,14 @@
     "reviewItems": "Klik for at gennemgå og forbedre dit arbejdsgang",
     "suggestion": "Klik på ethvert element ovenfor for at åbne det og lave forbedringer.",
     "issuesFound_one": "1 produktivitetsproblem kræver opmærksomhed",
-    "issuesFound_other": "{{count}} produktivitetsproblemer kræver opmærksomhed"
+    "issuesFound_other": "{{count}} produktivitetsproblemer kræver opmærksomhed",
+    "nothingYet": "Intet at gennemgå endnu.",
+    "blankSlateHint": "Assistenten gennemgår dine opgaver og projekter for ting, der kræver opmærksomhed, fx vage opgaver, arbejde der står stille eller fastlåste projekter. Tilføj nogle opgaver, og kig forbi igen.",
+    "noIssues": "Alt ser godt ud!",
+    "allClearHint": "Ingen vage opgaver, arbejde der står stille eller fastlåste projekter lige nu. Et godt tidspunkt at planlægge det næste.",
+    "goToTasks": "Gå til opgaver",
+    "goToProjects": "Gå til projekter",
+    "planDay": "Planlæg din dag"
   },
   "modals": {
     "confirmDelete": "Er du sikker på, at du vil slette?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Vælg forfaldsdato",
     "goalTitle": "Mål",
     "addProject": "Tilføj Projekt",
-    "noResults": "Ingen projekter"
+    "noResults": "Ingen projekter",
+    "new": "Nyt projekt",
+    "noProjectsYet": "Ingen projekter endnu.",
+    "blankSlateHint": "Et projekt samler de opgaver og noter, der fører til ét resultat, fx at planlægge en rejse eller lancere et websted. Hold orden ved at samle dem i områder som Arbejde eller Hjem.",
+    "blankSlateFilteredHint": "Prøv at ændre dine filtre eller din søgning.",
+    "blankSlateNew": "Opret dit første projekt",
+    "blankSlateTemplate": "Start fra en skabelon",
+    "blankSlateAreas": "Opsæt områder",
+    "blankSlateShowAll": "Vis alle projekter"
   },
   "projectItem": {
     "edit": "Rediger",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Slet mål",
     "moveBackToUnlinked": "Flyt tilbage til ikke-linket",
     "horizonSeason": "Sæson",
-    "horizonYear": "År"
+    "horizonYear": "År",
+    "new": "Nyt område",
+    "noAreasYet": "Ingen områder endnu.",
+    "blankSlateHint": "Områder er de dele af dit liv, du passer på over tid, fx Arbejde, Helbred eller Hjem. Placer dine projekter og mål i dem for at se hver del ét sted.",
+    "blankSlateNew": "Opret dit første område",
+    "blankSlateProjects": "Gå til projekter"
   },
   "notes": {
     "loading": "Indlæser noter...",
@@ -1240,7 +1260,12 @@
     "addNote": "Tilføj Note",
     "tree": {
       "folders": "Mapper"
-    }
+    },
+    "new": "Ny note",
+    "noNotesYet": "Ingen noter endnu.",
+    "blankSlateHint": "Noter gemmer det, du vil beholde, fx mødenoter, idéer eller opslagsmateriale. Skriv i Markdown, knyt en note til et projekt, og giv den tags, så du kan finde den igen.",
+    "blankSlateNew": "Skriv din første note",
+    "blankSlateProjects": "Gå til projekter"
   },
   "tags": {
     "loading": "Indlæser tags...",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "Denne visning vil gemmes:",
     "saveView": "Gem visning",
     "filtersLabel": "Filtre:",
-    "searchLabel": "Søg:"
+    "searchLabel": "Søg:",
+    "new": "Ny visning",
+    "noViewsYet": "Ingen smarte visninger endnu.",
+    "blankSlateHint": "En smart visning er en gemt søgning, fx vigtige opgaver med frist i denne uge eller noter med tagget idéer. Søg, indstil dine filtre, og vælg \"Gem som Smart View\". Fastgør en visning for at beholde den i sidebjælken.",
+    "blankSlateNew": "Søg for at oprette en visning",
+    "noViewsMatch": "Ingen visninger fundet",
+    "blankSlateFilteredHint": "Prøv en anden søgning.",
+    "blankSlateClearSearch": "Ryd søgning"
   },
   "search": {
     "placeholder": "Søg opgaver, projekter, noter...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "Vil ikke blive færdiggjort"
   },
   "habits": {
-    "completeHabit": "Fuldfør vane"
+    "completeHabit": "Fuldfør vane",
+    "new": "Ny vane",
+    "noHabitsYet": "Ingen vaner endnu.",
+    "blankSlateHint": "En vane er noget, du vil gøre regelmæssigt, fx læse eller gå en morgentur, eller noget, du vil holde op med. Tjek ind hver gang, og se din stime og styrke vokse.",
+    "blankSlateNew": "Opret din første vane"
   },
   "aiAssistant": {
     "title": "AI Assistent",
@@ -2280,5 +2316,20 @@
   },
   "area": {
     "loadError": "Kunne ikke indlæse områder"
+  },
+  "goals": {
+    "newGoal": "Nyt mål",
+    "noGoalsYet": "Ingen mål endnu.",
+    "blankSlateHint": "Et mål er et resultat, du vil nå i denne sæson eller i år, fx at løbe et halvmaraton. Knyt projekter til det for at se arbejdet, der fører dig derhen.",
+    "blankSlateNew": "Opret dit første mål",
+    "blankSlateAreas": "Opsæt områder"
+  },
+  "templates": {
+    "new": "Ny skabelon",
+    "noTemplatesYet": "Ingen skabeloner endnu.",
+    "blankSlateHint": "En skabelon er et projekt, du kan starte igen og igen med opgaverne klar, fx en rejsetjekliste eller onboarding af en ny kunde. Opret en her, gem et projekt, du gentager, eller vælg en fra markedspladsen.",
+    "createFirst": "Opret din første skabelon",
+    "browseMarketplace": "Gennemse markedspladsen",
+    "fromProject": "Gem et projekt som skabelon"
   }
 }

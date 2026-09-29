@@ -627,7 +627,14 @@
     "reviewItems": "Klik om je workflow te beoordelen en te verbeteren",
     "suggestion": "Klik op een van de bovenstaande items om het te openen en verbeteringen aan te brengen.",
     "issuesFound_one": "1 productiviteitsprobleem heeft aandacht nodig",
-    "issuesFound_other": "{{count}} productiviteitsproblemen hebben aandacht nodig"
+    "issuesFound_other": "{{count}} productiviteitsproblemen hebben aandacht nodig",
+    "nothingYet": "Nog niets om te bekijken.",
+    "blankSlateHint": "De assistent kijkt je taken en projecten na op dingen die aandacht nodig hebben, zoals vage taken, blijven liggen werk of vastgelopen projecten. Voeg wat taken toe en kom later terug.",
+    "noIssues": "Alles ziet er goed uit!",
+    "allClearHint": "Op dit moment geen vage taken, blijven liggen werk of vastgelopen projecten. Een goed moment om de volgende stap te plannen.",
+    "goToTasks": "Naar taken",
+    "goToProjects": "Naar projecten",
+    "planDay": "Plan je dag"
   },
   "modals": {
     "confirmDelete": "Weet je zeker dat je wilt verwijderen?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Selecteer vervaldatum",
     "goalTitle": "Doel",
     "addProject": "Project Toevoegen",
-    "noResults": "Geen projecten"
+    "noResults": "Geen projecten",
+    "new": "Nieuw project",
+    "noProjectsYet": "Nog geen projecten.",
+    "blankSlateHint": "Een project bundelt de taken en notities die naar één resultaat leiden, zoals een reis plannen of een website lanceren. Houd ze overzichtelijk door ze in gebieden als Werk of Thuis te groeperen.",
+    "blankSlateFilteredHint": "Probeer je filters of zoekopdracht aan te passen.",
+    "blankSlateNew": "Maak je eerste project",
+    "blankSlateTemplate": "Begin met een sjabloon",
+    "blankSlateAreas": "Gebieden instellen",
+    "blankSlateShowAll": "Alle projecten tonen"
   },
   "projectItem": {
     "edit": "Bewerken",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Verwijder doel",
     "moveBackToUnlinked": "Terugzetten naar niet-gekoppeld",
     "horizonSeason": "Seizoen",
-    "horizonYear": "Jaar"
+    "horizonYear": "Jaar",
+    "new": "Nieuw gebied",
+    "noAreasYet": "Nog geen gebieden.",
+    "blankSlateHint": "Gebieden zijn de delen van je leven waar je doorlopend aandacht aan geeft, zoals Werk, Gezondheid of Thuis. Zet er je projecten en doelen in om elk deel op één plek te zien.",
+    "blankSlateNew": "Maak je eerste gebied",
+    "blankSlateProjects": "Naar projecten"
   },
   "notes": {
     "loading": "Bezig met het laden van notities...",
@@ -1240,7 +1260,12 @@
     "addNote": "Notitie Toevoegen",
     "tree": {
       "folders": "Mappen"
-    }
+    },
+    "new": "Nieuwe notitie",
+    "noNotesYet": "Nog geen notities.",
+    "blankSlateHint": "Notities bewaren wat je wilt vasthouden, zoals vergadernotities, ideeën of naslagmateriaal. Schrijf in Markdown, koppel een notitie aan een project en geef haar tags om haar later terug te vinden.",
+    "blankSlateNew": "Schrijf je eerste notitie",
+    "blankSlateProjects": "Naar projecten"
   },
   "tags": {
     "loading": "Tags laden...",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "Deze weergave zal opslaan:",
     "saveView": "Weergave Opslaan",
     "filtersLabel": "Filters:",
-    "searchLabel": "Zoeken:"
+    "searchLabel": "Zoeken:",
+    "new": "Nieuwe weergave",
+    "noViewsYet": "Nog geen slimme weergaven.",
+    "blankSlateHint": "Een slimme weergave is een opgeslagen zoekopdracht, zoals belangrijke taken die deze week vervallen of notities met de tag ideeën. Zoek, stel je filters in en kies \"Opslaan als Slimme Weergave\". Maak een weergave vast om haar in de zijbalk te houden.",
+    "blankSlateNew": "Zoek om een weergave te maken",
+    "noViewsMatch": "Geen weergaven gevonden",
+    "blankSlateFilteredHint": "Probeer een andere zoekopdracht.",
+    "blankSlateClearSearch": "Zoekopdracht wissen"
   },
   "search": {
     "placeholder": "Zoek taken, projecten, notities...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "Zal niet worden voltooid"
   },
   "habits": {
-    "completeHabit": "Gewoonte voltooien"
+    "completeHabit": "Gewoonte voltooien",
+    "new": "Nieuwe gewoonte",
+    "noHabitsYet": "Nog geen gewoonten.",
+    "blankSlateHint": "Een gewoonte is iets wat je regelmatig wilt doen, zoals lezen of een ochtendwandeling, of iets waarmee je wilt stoppen. Vink het elke keer af en zie je reeks en kracht groeien.",
+    "blankSlateNew": "Maak je eerste gewoonte"
   },
   "aiAssistant": {
     "title": "AI Assistent",
@@ -2280,5 +2316,20 @@
   },
   "area": {
     "loadError": "Gebieden konden niet worden geladen"
+  },
+  "goals": {
+    "newGoal": "Nieuw doel",
+    "noGoalsYet": "Nog geen doelen.",
+    "blankSlateHint": "Een doel is een resultaat dat je dit seizoen of dit jaar wilt bereiken, zoals een halve marathon lopen. Koppel er projecten aan om het werk te zien dat je daar brengt.",
+    "blankSlateNew": "Maak je eerste doel",
+    "blankSlateAreas": "Gebieden instellen"
+  },
+  "templates": {
+    "new": "Nieuw sjabloon",
+    "noTemplatesYet": "Nog geen sjablonen.",
+    "blankSlateHint": "Een sjabloon is een project dat je steeds opnieuw kunt starten, met de taken al klaar, zoals een reischecklist of het onboarden van een nieuwe klant. Maak er hier een, sla een project op dat je herhaalt of kies er een uit de marktplaats.",
+    "createFirst": "Maak je eerste sjabloon",
+    "browseMarketplace": "Marktplaats bekijken",
+    "fromProject": "Project opslaan als sjabloon"
   }
 }

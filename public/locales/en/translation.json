@@ -1356,7 +1356,11 @@
     "noItemsWithTag": "No items found with this tag"
   },
   "habits": {
-    "completeHabit": "Complete habit"
+    "completeHabit": "Complete habit",
+    "new": "New Habit",
+    "noHabitsYet": "No habits yet.",
+    "blankSlateHint": "A habit is something you want to do regularly, like reading or a morning walk, or something you want to quit. Check in each time and watch your streak and strength grow.",
+    "blankSlateNew": "Create your first habit"
   },
   "recurrence": {
     "none": "None",
@@ -2399,5 +2403,20 @@
   },
   "area": {
     "loadError": "Failed to load areas"
+  },
+  "goals": {
+    "newGoal": "New Goal",
+    "noGoalsYet": "No goals yet.",
+    "blankSlateHint": "A goal is an outcome you want to reach this season or this year, like running a half marathon. Link projects to it to see the work that gets you there.",
+    "blankSlateNew": "Create your first goal",
+    "blankSlateAreas": "Set up areas"
+  },
+  "templates": {
+    "new": "New Template",
+    "noTemplatesYet": "No templates yet.",
+    "blankSlateHint": "A template is a project you can start again and again, with its tasks ready to go, like a trip checklist or onboarding a new client. Create one here, save a project you repeat, or pick one from the marketplace.",
+    "createFirst": "Create your first template",
+    "browseMarketplace": "Browse the marketplace",
+    "fromProject": "Save a project as a template"
   }
 }

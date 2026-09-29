@@ -441,7 +441,12 @@
     "addNote": "Notiz hinzufügen",
     "tree": {
       "folders": "Ordner"
-    }
+    },
+    "new": "Neue Notiz",
+    "noNotesYet": "Noch keine Notizen.",
+    "blankSlateHint": "Notizen halten fest, was du behalten willst, etwa Besprechungsnotizen, Ideen oder Nachschlagematerial. Schreibe in Markdown, verknüpfe eine Notiz mit einem Projekt und vergib Tags, um sie später zu finden.",
+    "blankSlateNew": "Erste Notiz schreiben",
+    "blankSlateProjects": "Zu den Projekten"
   },
   "recurrence": {
     "none": "Keine",
@@ -1111,7 +1116,14 @@
     "reviewItems": "Klicken Sie, um Ihre Arbeitsabläufe zu überprüfen und zu verbessern",
     "suggestion": "Klicken Sie auf einen der oben genannten Punkte, um ihn zu öffnen und Verbesserungen vorzunehmen.",
     "issuesFound_one": "1 Produktivitätsproblem benötigt Aufmerksamkeit",
-    "issuesFound_other": "{{count}} Produktivitätsprobleme benötigen Aufmerksamkeit"
+    "issuesFound_other": "{{count}} Produktivitätsprobleme benötigen Aufmerksamkeit",
+    "nothingYet": "Noch nichts zu prüfen.",
+    "blankSlateHint": "Der Assistent sieht deine Aufgaben und Projekte auf Dinge durch, die Aufmerksamkeit brauchen, etwa vage Aufgaben, liegengebliebene Arbeit oder festgefahrene Projekte. Lege ein paar Aufgaben an und schau wieder vorbei.",
+    "noIssues": "Alles sieht gut aus!",
+    "allClearHint": "Gerade keine vagen Aufgaben, liegengebliebene Arbeit oder festgefahrenen Projekte. Ein guter Moment, das Nächste zu planen.",
+    "goToTasks": "Zu den Aufgaben",
+    "goToProjects": "Zu den Projekten",
+    "planDay": "Tag planen"
   },
   "auth": {
     "login": "Anmelden",
@@ -1283,7 +1295,15 @@
     "selectDueDatePlaceholder": "Fälligkeitsdatum auswählen",
     "goalTitle": "Ziel",
     "addProject": "Projekt hinzufügen",
-    "noResults": "Keine Projekte"
+    "noResults": "Keine Projekte",
+    "new": "Neues Projekt",
+    "noProjectsYet": "Noch keine Projekte.",
+    "blankSlateHint": "Ein Projekt bündelt die Aufgaben und Notizen, die zu einem Ergebnis führen, etwa eine Reise planen oder eine Website starten. Ordne Projekte Bereichen wie Arbeit oder Zuhause zu, um den Überblick zu behalten.",
+    "blankSlateFilteredHint": "Ändere deine Filter oder deine Suche.",
+    "blankSlateNew": "Erstes Projekt erstellen",
+    "blankSlateTemplate": "Mit einer Vorlage beginnen",
+    "blankSlateAreas": "Bereiche einrichten",
+    "blankSlateShowAll": "Alle Projekte anzeigen"
   },
   "projectItem": {
     "edit": "Bearbeiten",
@@ -1325,7 +1345,12 @@
     "deleteGoal": "Ziel löschen",
     "moveBackToUnlinked": "Zurück zu nicht verknüpft bewegen",
     "horizonSeason": "Saison",
-    "horizonYear": "Jahr"
+    "horizonYear": "Jahr",
+    "new": "Neuer Bereich",
+    "noAreasYet": "Noch keine Bereiche.",
+    "blankSlateHint": "Bereiche sind die Teile deines Lebens, um die du dich dauerhaft kümmerst, etwa Arbeit, Gesundheit oder Zuhause. Ordne ihnen Projekte und Ziele zu, um jeden Teil an einem Ort zu sehen.",
+    "blankSlateNew": "Ersten Bereich erstellen",
+    "blankSlateProjects": "Zu den Projekten"
   },
   "tags": {
     "loading": "Tags laden...",
@@ -1754,7 +1779,14 @@
     "viewWillSave": "Diese Ansicht wird gespeichert:",
     "saveView": "Ansicht speichern",
     "filtersLabel": "Filter:",
-    "searchLabel": "Suche:"
+    "searchLabel": "Suche:",
+    "new": "Neue Ansicht",
+    "noViewsYet": "Noch keine intelligenten Ansichten.",
+    "blankSlateHint": "Eine intelligente Ansicht ist eine gespeicherte Suche, etwa wichtige Aufgaben, die diese Woche fällig sind, oder Notizen mit dem Tag Ideen. Suche, setze deine Filter und wähle „Als intelligente Ansicht speichern“. Hefte eine Ansicht an, um sie in der Seitenleiste zu behalten.",
+    "blankSlateNew": "Suchen, um eine Ansicht zu erstellen",
+    "noViewsMatch": "Keine Ansichten gefunden",
+    "blankSlateFilteredHint": "Versuche eine andere Suche.",
+    "blankSlateClearSearch": "Suche löschen"
   },
   "search": {
     "placeholder": "Aufgaben, Projekte, Notizen suchen...",
@@ -1915,7 +1947,11 @@
     "cancelled_desc": "Wird nicht abgeschlossen"
   },
   "habits": {
-    "completeHabit": "Gewohnheit abschließen"
+    "completeHabit": "Gewohnheit abschließen",
+    "new": "Neue Gewohnheit",
+    "noHabitsYet": "Noch keine Gewohnheiten.",
+    "blankSlateHint": "Eine Gewohnheit ist etwas, das du regelmäßig tun willst, etwa lesen oder ein Morgenspaziergang, oder etwas, das du dir abgewöhnen willst. Hake es jedes Mal ab und sieh deine Serie und Stärke wachsen.",
+    "blankSlateNew": "Erste Gewohnheit erstellen"
   },
   "aiAssistant": {
     "title": "AI-Tagesbericht",
@@ -2289,5 +2325,20 @@
   },
   "area": {
     "loadError": "Bereiche konnten nicht geladen werden"
+  },
+  "goals": {
+    "newGoal": "Neues Ziel",
+    "noGoalsYet": "Noch keine Ziele.",
+    "blankSlateHint": "Ein Ziel ist ein Ergebnis, das du in dieser Saison oder diesem Jahr erreichen willst, etwa einen Halbmarathon laufen. Verknüpfe Projekte damit, um die Arbeit dorthin zu sehen.",
+    "blankSlateNew": "Erstes Ziel erstellen",
+    "blankSlateAreas": "Bereiche einrichten"
+  },
+  "templates": {
+    "new": "Neue Vorlage",
+    "noTemplatesYet": "Noch keine Vorlagen.",
+    "blankSlateHint": "Eine Vorlage ist ein Projekt, das du immer wieder starten kannst, mit fertigen Aufgaben, etwa eine Reise-Checkliste oder das Onboarding neuer Kunden. Erstelle hier eine, speichere ein Projekt, das sich wiederholt, oder wähle eine aus dem Marktplatz.",
+    "createFirst": "Erste Vorlage erstellen",
+    "browseMarketplace": "Marktplatz durchsuchen",
+    "fromProject": "Projekt als Vorlage speichern"
   }
 }

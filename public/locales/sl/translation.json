@@ -627,7 +627,14 @@
     "reviewItems": "Kliknite za pregled in izboljšanje svojega delovnega toka",
     "suggestion": "Kliknite na katerikoli element zgoraj, da ga odprete in izboljšate.",
     "issuesFound_one": "1 težava s produktivnostjo potrebuje pozornost",
-    "issuesFound_other": "{{count}} težav s produktivnostjo potrebuje pozornost"
+    "issuesFound_other": "{{count}} težav s produktivnostjo potrebuje pozornost",
+    "nothingYet": "Še ni ničesar za pregled.",
+    "blankSlateHint": "Asistent pregleda vaše naloge in projekte ter poišče, kar potrebuje pozornost, na primer nejasne naloge, zastalo delo ali obtičale projekte. Dodajte nekaj nalog in se vrnite pozneje.",
+    "noIssues": "Vse je videti v redu!",
+    "allClearHint": "Trenutno ni nejasnih nalog, zastalega dela ali obtičalih projektov. Dober trenutek, da načrtujete naslednji korak.",
+    "goToTasks": "Pojdi na naloge",
+    "goToProjects": "Pojdi na projekte",
+    "planDay": "Načrtujte svoj dan"
   },
   "modals": {
     "confirmDelete": "Ali ste prepričani, da želite izbrisati?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Izberite datum zapadlosti",
     "goalTitle": "Cilj",
     "addProject": "Dodaj projekt",
-    "noResults": "Brez projektov"
+    "noResults": "Brez projektov",
+    "new": "Nov projekt",
+    "noProjectsYet": "Še ni projektov.",
+    "blankSlateHint": "Projekt združuje naloge in opombe, ki vodijo do enega rezultata, na primer načrtovanje potovanja ali zagon spletne strani. Ohranite red tako, da jih razvrstite v področja, kot sta Delo ali Dom.",
+    "blankSlateFilteredHint": "Poskusite spremeniti filtre ali iskanje.",
+    "blankSlateNew": "Ustvarite prvi projekt",
+    "blankSlateTemplate": "Začnite s predlogo",
+    "blankSlateAreas": "Nastavite področja",
+    "blankSlateShowAll": "Pokaži vse projekte"
   },
   "projectItem": {
     "edit": "Uredi",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Izbriši cilj",
     "moveBackToUnlinked": "Premakni nazaj na nepovezano",
     "horizonSeason": "Sezona",
-    "horizonYear": "Leto"
+    "horizonYear": "Leto",
+    "new": "Novo področje",
+    "noAreasYet": "Še ni področij.",
+    "blankSlateHint": "Področja so deli vašega življenja, za katere skrbite dlje časa, na primer Delo, Zdravje ali Dom. Vanje dodajte projekte in cilje, da vsak del vidite na enem mestu.",
+    "blankSlateNew": "Ustvarite prvo področje",
+    "blankSlateProjects": "Pojdi na projekte"
   },
   "notes": {
     "loading": "Nalaganje opomb...",
@@ -1240,7 +1260,12 @@
     "addNote": "Dodaj opombo",
     "tree": {
       "folders": "Mape"
-    }
+    },
+    "new": "Nova opomba",
+    "noNotesYet": "Še ni opomb.",
+    "blankSlateHint": "Opombe hranijo tisto, kar želite obdržati, na primer zapiske s sestankov, ideje ali referenčno gradivo. Pišite v Markdownu, povežite opombo s projektom in ji dodajte oznake, da jo pozneje najdete.",
+    "blankSlateNew": "Napišite prvo opombo",
+    "blankSlateProjects": "Pojdi na projekte"
   },
   "tags": {
     "loading": "Nalagam oznake...",
@@ -1747,7 +1772,14 @@
     "viewWillSave": "Ta pogled bo shranil:",
     "saveView": "Shrani pogled",
     "filtersLabel": "Filtri:",
-    "searchLabel": "Iskanje:"
+    "searchLabel": "Iskanje:",
+    "new": "Nov pogled",
+    "noViewsYet": "Še ni pametnih pogledov.",
+    "blankSlateHint": "Pametni pogled je shranjeno iskanje, na primer pomembne naloge z rokom ta teden ali opombe z oznako ideje. Poiščite, nastavite filtre in izberite »Shrani kot Pametni pogled«. Pripnite pogled, da ostane v stranski vrstici.",
+    "blankSlateNew": "Poiščite, da ustvarite pogled",
+    "noViewsMatch": "Ni najdenih pogledov",
+    "blankSlateFilteredHint": "Poskusite z drugim iskanjem.",
+    "blankSlateClearSearch": "Počisti iskanje"
   },
   "search": {
     "placeholder": "Išči naloge, projekte, zapiske...",
@@ -1908,7 +1940,11 @@
     "cancelled_desc": "Ne bo dokončano"
   },
   "habits": {
-    "completeHabit": "Dokončaj navado"
+    "completeHabit": "Dokončaj navado",
+    "new": "Nova navada",
+    "noHabitsYet": "Še ni navad.",
+    "blankSlateHint": "Navada je nekaj, kar želite početi redno, na primer brati ali se jutranje sprehajati, ali nekaj, čemur se želite odpovedati. Vsakič jo označite in opazujte, kako rasteta niz in moč navade.",
+    "blankSlateNew": "Ustvarite prvo navado"
   },
   "aiAssistant": {
     "title": "AI Pomočnik",
@@ -2229,7 +2265,7 @@
     "dialogLabel": "Dodaj",
     "today": "Danes",
     "inbox": "Prejeto",
-    "task": "Opravilo",
+    "task": "Naloga",
     "note": "Opomba",
     "project": "Projekt",
     "addTo": "Dodaj v",
@@ -2239,8 +2275,8 @@
     "tooManyFiles": "Naenkrat lahko dodate največ {{max}} datotek.",
     "savedInbox": "»{{title}}« shranjeno v Prejeto.",
     "savedInboxMany": "Shranjeno v Prejeto: {{total}}.",
-    "createdTask": "Opravilo »{{title}}« je ustvarjeno.",
-    "createdTasks": "Ustvarjenih opravil: {{total}}.",
+    "createdTask": "Naloga »{{title}}« je ustvarjena.",
+    "createdTasks": "Ustvarjenih nalog: {{total}}.",
     "createdNote": "Opomba »{{title}}« je ustvarjena.",
     "createdNotes": "Ustvarjenih opomb: {{total}}.",
     "createdProject": "Projekt »{{title}}« je ustvarjen.",
@@ -2259,8 +2295,8 @@
     "hintNewline": "Enter začne novo vrstico. Ctrl+Enter shrani.",
     "nounInbox": "element v Prejeto",
     "nounInboxMany": "elementov v Prejeto",
-    "nounTask": "opravilo",
-    "nounTaskMany": "opravil",
+    "nounTask": "naloga",
+    "nounTaskMany": "nalog",
     "wordTitle": "naslov",
     "wordNotes": "opombe",
     "nounNote": "opomba",
@@ -2284,5 +2320,20 @@
   },
   "area": {
     "loadError": "Področij ni bilo mogoče naložiti"
+  },
+  "goals": {
+    "newGoal": "Nov cilj",
+    "noGoalsYet": "Še ni ciljev.",
+    "blankSlateHint": "Cilj je rezultat, ki ga želite doseči to sezono ali letos, na primer preteči polmaraton. Povežite projekte z njim, da vidite delo, ki vas pripelje do tja.",
+    "blankSlateNew": "Ustvarite prvi cilj",
+    "blankSlateAreas": "Nastavite področja"
+  },
+  "templates": {
+    "new": "Nova predloga",
+    "noTemplatesYet": "Še ni predlog.",
+    "blankSlateHint": "Predloga je projekt, ki ga lahko znova in znova začnete s pripravljenimi nalogami, na primer seznam za potovanje ali uvajanje nove stranke. Ustvarite jo tukaj, shranite projekt, ki ga ponavljate, ali izberite predlogo iz kataloga.",
+    "createFirst": "Ustvarite prvo predlogo",
+    "browseMarketplace": "Brskajte po katalogu",
+    "fromProject": "Shranite projekt kot predlogo"
   }
 }

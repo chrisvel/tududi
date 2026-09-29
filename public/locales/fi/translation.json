@@ -627,7 +627,14 @@
     "reviewItems": "Napsauta tarkistaaksesi ja parantaaksesi työnkulkuasi",
     "suggestion": "Napsauta mitä tahansa yllä olevaa kohdetta avatakseen sen ja tehdäkseen parannuksia.",
     "issuesFound_one": "1 tuottavuusongelma tarvitsee huomiota",
-    "issuesFound_other": "{{count}} tuottavuusongelmaa tarvitsee huomiota"
+    "issuesFound_other": "{{count}} tuottavuusongelmaa tarvitsee huomiota",
+    "nothingYet": "Ei vielä mitään tarkistettavaa.",
+    "blankSlateHint": "Avustaja käy läpi tehtäväsi ja projektisi ja etsii asioita, jotka vaativat huomiota, kuten epämääräisiä tehtäviä, pysähtynyttä työtä tai jumiin jääneitä projekteja. Lisää muutama tehtävä ja palaa myöhemmin.",
+    "noIssues": "Kaikki näyttää hyvältä!",
+    "allClearHint": "Ei epämääräisiä tehtäviä, pysähtynyttä työtä tai jumiin jääneitä projekteja juuri nyt. Hyvä hetki suunnitella seuraava askel.",
+    "goToTasks": "Siirry tehtäviin",
+    "goToProjects": "Siirry projekteihin",
+    "planDay": "Suunnittele päiväsi"
   },
   "modals": {
     "confirmDelete": "Oletko varma, että haluat poistaa?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Valitse eräpäivä",
     "goalTitle": "Tavoite",
     "addProject": "Lisää projekti",
-    "noResults": "Ei projekteja"
+    "noResults": "Ei projekteja",
+    "new": "Uusi projekti",
+    "noProjectsYet": "Ei vielä projekteja.",
+    "blankSlateHint": "Projekti kokoaa tehtävät ja muistiinpanot, jotka johtavat yhteen lopputulokseen, kuten matkan suunnitteluun tai verkkosivuston julkaisuun. Pidä ne järjestyksessä ryhmittelemällä ne alueisiin, kuten Työ tai Koti.",
+    "blankSlateFilteredHint": "Kokeile muuttaa suodattimia tai hakua.",
+    "blankSlateNew": "Luo ensimmäinen projektisi",
+    "blankSlateTemplate": "Aloita mallista",
+    "blankSlateAreas": "Määritä alueet",
+    "blankSlateShowAll": "Näytä kaikki projektit"
   },
   "projectItem": {
     "edit": "Muokkaa",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Poista tavoite",
     "moveBackToUnlinked": "Siirrä takaisin linkittämättömiin",
     "horizonSeason": "Kauden",
-    "horizonYear": "Vuosi"
+    "horizonYear": "Vuosi",
+    "new": "Uusi alue",
+    "noAreasYet": "Ei vielä alueita.",
+    "blankSlateHint": "Alueet ovat elämäsi osia, joista huolehdit jatkuvasti, kuten Työ, Terveys tai Koti. Lisää niihin projektisi ja tavoitteesi nähdäksesi jokaisen osan yhdessä paikassa.",
+    "blankSlateNew": "Luo ensimmäinen alueesi",
+    "blankSlateProjects": "Siirry projekteihin"
   },
   "notes": {
     "loading": "Ladataan muistiinpanoja...",
@@ -1240,7 +1260,12 @@
     "addNote": "Lisää muistiinpano",
     "tree": {
       "folders": "Kansiot"
-    }
+    },
+    "new": "Uusi muistiinpano",
+    "noNotesYet": "Ei vielä muistiinpanoja.",
+    "blankSlateHint": "Muistiinpanoihin tallennat sen, minkä haluat säilyttää, kuten kokousmuistiot, ideat tai lähdemateriaalin. Kirjoita Markdownilla, liitä muistiinpano projektiin ja lisää tunnisteita löytääksesi sen myöhemmin.",
+    "blankSlateNew": "Kirjoita ensimmäinen muistiinpanosi",
+    "blankSlateProjects": "Siirry projekteihin"
   },
   "tags": {
     "loading": "Ladataan tageja...",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "Tämä näkymä tallennetaan:",
     "saveView": "Tallenna näkymä",
     "filtersLabel": "Suodattimet:",
-    "searchLabel": "Haku:"
+    "searchLabel": "Haku:",
+    "new": "Uusi näkymä",
+    "noViewsYet": "Ei vielä älynäkymiä.",
+    "blankSlateHint": "Älynäkymä on tallennettu haku, kuten tällä viikolla erääntyvät tärkeät tehtävät tai muistiinpanot tunnisteella ideat. Hae, aseta suodattimet ja valitse ”Tallenna älynäkymänä”. Kiinnitä näkymä pitääksesi sen sivupalkissa.",
+    "blankSlateNew": "Hae luodaksesi näkymän",
+    "noViewsMatch": "Näkymiä ei löytynyt",
+    "blankSlateFilteredHint": "Kokeile toista hakua.",
+    "blankSlateClearSearch": "Tyhjennä haku"
   },
   "search": {
     "placeholder": "Hae tehtäviä, projekteja, muistiinpanoja...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "Ei tule valmistumaan"
   },
   "habits": {
-    "completeHabit": "Valmis tapa"
+    "completeHabit": "Valmis tapa",
+    "new": "Uusi tapa",
+    "noHabitsYet": "Ei vielä tapoja.",
+    "blankSlateHint": "Tapa on jotain, mitä haluat tehdä säännöllisesti, kuten lukeminen tai aamukävely, tai jotain, mistä haluat päästä eroon. Kuittaa se joka kerta ja katso putkesi ja vahvuutesi kasvavan.",
+    "blankSlateNew": "Luo ensimmäinen tapasi"
   },
   "aiAssistant": {
     "title": "AI-avustaja",
@@ -2280,5 +2316,20 @@
   },
   "area": {
     "loadError": "Alueiden lataaminen epäonnistui"
+  },
+  "goals": {
+    "newGoal": "Uusi tavoite",
+    "noGoalsYet": "Ei vielä tavoitteita.",
+    "blankSlateHint": "Tavoite on lopputulos, jonka haluat saavuttaa tällä kaudella tai tänä vuonna, kuten puolimaratonin juokseminen. Liitä siihen projekteja nähdäksesi työn, joka vie sinut perille.",
+    "blankSlateNew": "Luo ensimmäinen tavoitteesi",
+    "blankSlateAreas": "Määritä alueet"
+  },
+  "templates": {
+    "new": "Uusi malli",
+    "noTemplatesYet": "Ei vielä malleja.",
+    "blankSlateHint": "Malli on projekti, jonka voit aloittaa yhä uudelleen valmiine tehtävineen, kuten matkan tarkistuslista tai uuden asiakkaan perehdytys. Luo malli tästä, tallenna toistuva projekti tai valitse malli kauppapaikasta.",
+    "createFirst": "Luo ensimmäinen mallisi",
+    "browseMarketplace": "Selaa kauppapaikkaa",
+    "fromProject": "Tallenna projekti malliksi"
   }
 }

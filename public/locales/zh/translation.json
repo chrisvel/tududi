@@ -627,7 +627,14 @@
     "reviewItems": "点击以审查和改善您的工作流程",
     "suggestion": "点击上面的任何项目以打开并进行改进。",
     "issuesFound_other": "{{count}}个生产力问题需要关注",
-    "issuesFound_one": "1 个生产力问题需要关注"
+    "issuesFound_one": "1 个生产力问题需要关注",
+    "nothingYet": "暂时没有需要查看的内容。",
+    "blankSlateHint": "助手会检查你的任务和项目，找出需要关注的地方，比如含糊的任务、停滞的工作或卡住的项目。先添加一些任务，稍后再来看看。",
+    "noIssues": "一切正常！",
+    "allClearHint": "目前没有含糊的任务、停滞的工作或卡住的项目。正是规划下一步的好时机。",
+    "goToTasks": "前往任务",
+    "goToProjects": "前往项目",
+    "planDay": "规划今天"
   },
   "modals": {
     "confirmDelete": "您确定要删除吗？",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "选择截止日期",
     "goalTitle": "目标",
     "addProject": "添加项目",
-    "noResults": "没有项目"
+    "noResults": "没有项目",
+    "new": "新建项目",
+    "noProjectsYet": "还没有项目。",
+    "blankSlateHint": "项目把通向同一个结果的任务和笔记放在一起，比如规划一次旅行或上线一个网站。把项目归入工作、家庭等区域，保持井然有序。",
+    "blankSlateFilteredHint": "试试更改筛选条件或搜索内容。",
+    "blankSlateNew": "创建第一个项目",
+    "blankSlateTemplate": "从模板开始",
+    "blankSlateAreas": "设置区域",
+    "blankSlateShowAll": "显示所有项目"
   },
   "projectItem": {
     "edit": "编辑",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "删除目标",
     "moveBackToUnlinked": "移回未链接",
     "horizonSeason": "季节",
-    "horizonYear": "年份"
+    "horizonYear": "年份",
+    "new": "新建区域",
+    "noAreasYet": "还没有区域。",
+    "blankSlateHint": "区域是你长期经营的生活领域，比如工作、健康或家庭。把项目和目标放进区域，就能在一个地方看到每个领域。",
+    "blankSlateNew": "创建第一个区域",
+    "blankSlateProjects": "前往项目"
   },
   "notes": {
     "loading": "加载笔记...",
@@ -1240,7 +1260,12 @@
     "addNote": "添加备注",
     "tree": {
       "folders": "文件夹"
-    }
+    },
+    "new": "新建笔记",
+    "noNotesYet": "还没有笔记。",
+    "blankSlateHint": "笔记用来保存你想留下的内容，比如会议记录、想法或参考资料。用 Markdown 书写，把笔记关联到项目并加上标签，方便以后查找。",
+    "blankSlateNew": "写下第一条笔记",
+    "blankSlateProjects": "前往项目"
   },
   "tags": {
     "loading": "加载标签...",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "此视图将保存：",
     "saveView": "保存视图",
     "filtersLabel": "过滤器：",
-    "searchLabel": "搜索："
+    "searchLabel": "搜索：",
+    "new": "新建视图",
+    "noViewsYet": "还没有智能视图。",
+    "blankSlateHint": "智能视图是保存下来的搜索，比如本周到期的重要任务，或带有“想法”标签的笔记。先搜索并设置筛选条件，然后选择“保存为智能视图”。把视图置顶即可保留在侧边栏中。",
+    "blankSlateNew": "搜索以创建视图",
+    "noViewsMatch": "未找到视图",
+    "blankSlateFilteredHint": "换个搜索试试。",
+    "blankSlateClearSearch": "清除搜索"
   },
   "search": {
     "placeholder": "搜索任务、项目、笔记...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "将不会完成"
   },
   "habits": {
-    "completeHabit": "完成习惯"
+    "completeHabit": "完成习惯",
+    "new": "新建习惯",
+    "noHabitsYet": "还没有习惯。",
+    "blankSlateHint": "习惯是你想定期去做的事，比如阅读或晨间散步，也可以是你想戒掉的事。每次都打卡，看着连续记录和习惯强度不断增长。",
+    "blankSlateNew": "创建第一个习惯"
   },
   "aiAssistant": {
     "title": "AI 助手",
@@ -2279,5 +2315,20 @@
   },
   "area": {
     "loadError": "无法加载区域"
+  },
+  "goals": {
+    "newGoal": "新建目标",
+    "noGoalsYet": "还没有目标。",
+    "blankSlateHint": "目标是你想在本季或今年达成的结果，比如跑完半程马拉松。把项目关联到目标，就能看到通往目标的工作。",
+    "blankSlateNew": "创建第一个目标",
+    "blankSlateAreas": "设置区域"
+  },
+  "templates": {
+    "new": "新建模板",
+    "noTemplatesYet": "还没有模板。",
+    "blankSlateHint": "模板是可以反复启动、任务已准备好的项目，比如旅行清单或新客户入驻流程。在这里创建一个、保存你会重复的项目，或从模板市场中挑选。",
+    "createFirst": "创建第一个模板",
+    "browseMarketplace": "浏览模板市场",
+    "fromProject": "将项目保存为模板"
   }
 }

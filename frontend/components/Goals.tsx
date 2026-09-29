@@ -144,7 +144,7 @@ const Goals: React.FC = () => {
                 {filteredGoals.length === 0 ? (
                     hasLoaded && (
                         <BlankSlate
-                            title={t('goals.noGoalsFound', 'No goals yet.')}
+                            title={t('goals.noGoalsYet', 'No goals yet.')}
                             hint={t(
                                 'goals.blankSlateHint',
                                 'A goal is an outcome you want to reach this season or this year, like running a half marathon. Link projects to it to see the work that gets you there.'

@@ -745,7 +745,15 @@
     "selectDueDatePlaceholder": "Seleccionar fecha de vencimiento",
     "goalTitle": "Objetivo",
     "addProject": "Agregar Proyecto",
-    "noResults": "Sin proyectos"
+    "noResults": "Sin proyectos",
+    "new": "Nuevo proyecto",
+    "noProjectsYet": "Aún no hay proyectos.",
+    "blankSlateHint": "Un proyecto agrupa las tareas y notas que llevan a un resultado, como planear un viaje o lanzar un sitio web. Mantenlos ordenados agrupándolos en áreas como Trabajo o Casa.",
+    "blankSlateFilteredHint": "Prueba a cambiar los filtros o la búsqueda.",
+    "blankSlateNew": "Crea tu primer proyecto",
+    "blankSlateTemplate": "Empezar desde una plantilla",
+    "blankSlateAreas": "Configurar áreas",
+    "blankSlateShowAll": "Mostrar todos los proyectos"
   },
   "projectItem": {
     "edit": "Editar",
@@ -1159,7 +1167,12 @@
     "deleteGoal": "Eliminar objetivo",
     "moveBackToUnlinked": "Mover de vuelta a no vinculado",
     "horizonSeason": "Temporada",
-    "horizonYear": "Año"
+    "horizonYear": "Año",
+    "new": "Nueva área",
+    "noAreasYet": "Aún no hay áreas.",
+    "blankSlateHint": "Las áreas son las partes de tu vida que cuidas a lo largo del tiempo, como Trabajo, Salud o Casa. Pon en ellas tus proyectos y metas para ver cada parte en un solo lugar.",
+    "blankSlateNew": "Crea tu primera área",
+    "blankSlateProjects": "Ir a proyectos"
   },
   "notes": {
     "loading": "Cargando notas...",
@@ -1184,7 +1197,12 @@
     "addNote": "Agregar Nota",
     "tree": {
       "folders": "Carpetas"
-    }
+    },
+    "new": "Nueva nota",
+    "noNotesYet": "Aún no hay notas.",
+    "blankSlateHint": "Las notas guardan lo que quieres conservar, como apuntes de reuniones, ideas o material de consulta. Escribe en Markdown, vincula una nota a un proyecto y etiquétala para encontrarla después.",
+    "blankSlateNew": "Escribe tu primera nota",
+    "blankSlateProjects": "Ir a proyectos"
   },
   "tags": {
     "loading": "Cargando etiquetas...",
@@ -1341,7 +1359,14 @@
     "reviewItems": "Haga clic para revisar y mejorar su flujo de trabajo",
     "suggestion": "Haga clic en cualquier elemento de arriba para abrirlo y hacer mejoras.",
     "issuesFound_one": "1 problema de productividad necesita atención",
-    "issuesFound_other": "{{count}} problemas de productividad necesitan atención"
+    "issuesFound_other": "{{count}} problemas de productividad necesitan atención",
+    "nothingYet": "Aún no hay nada que revisar.",
+    "blankSlateHint": "El asistente revisa tus tareas y proyectos en busca de lo que necesita atención, como tareas vagas, trabajo estancado o proyectos atascados. Añade algunas tareas y vuelve más tarde.",
+    "noIssues": "¡Todo se ve bien!",
+    "allClearHint": "Ahora mismo no hay tareas vagas, trabajo estancado ni proyectos atascados. Buen momento para planear lo siguiente.",
+    "goToTasks": "Ir a tareas",
+    "goToProjects": "Ir a proyectos",
+    "planDay": "Planifica tu día"
   },
   "pages": {
     "notFound": {
@@ -1733,7 +1758,14 @@
     "viewWillSave": "Esta vista se guardará:",
     "saveView": "Guardar Vista",
     "filtersLabel": "Filtros:",
-    "searchLabel": "Buscar:"
+    "searchLabel": "Buscar:",
+    "new": "Nueva vista",
+    "noViewsYet": "Aún no hay vistas inteligentes.",
+    "blankSlateHint": "Una vista inteligente es una búsqueda guardada, como las tareas prioritarias de esta semana o las notas etiquetadas como ideas. Busca, ajusta los filtros y elige «Guardar como Vista Inteligente». Fija una vista para tenerla en la barra lateral.",
+    "blankSlateNew": "Buscar para crear una vista",
+    "noViewsMatch": "No se encontraron vistas",
+    "blankSlateFilteredHint": "Prueba con otra búsqueda.",
+    "blankSlateClearSearch": "Borrar búsqueda"
   },
   "search": {
     "placeholder": "Buscar tareas, proyectos, notas...",
@@ -1894,7 +1926,11 @@
     "cancelled_desc": "No se completará"
   },
   "habits": {
-    "completeHabit": "Completar hábito"
+    "completeHabit": "Completar hábito",
+    "new": "Nuevo hábito",
+    "noHabitsYet": "Aún no hay hábitos.",
+    "blankSlateHint": "Un hábito es algo que quieres hacer con regularidad, como leer o dar un paseo por la mañana, o algo que quieres dejar. Regístralo cada vez y mira cómo crecen tu racha y tu fuerza.",
+    "blankSlateNew": "Crea tu primer hábito"
   },
   "aiAssistant": {
     "title": "Asistente de IA",
@@ -2268,5 +2304,20 @@
   },
   "area": {
     "loadError": "No se pudieron cargar las áreas"
+  },
+  "goals": {
+    "newGoal": "Nueva meta",
+    "noGoalsYet": "Aún no hay metas.",
+    "blankSlateHint": "Una meta es un resultado que quieres alcanzar esta temporada o este año, como correr una media maratón. Vincula proyectos a ella para ver el trabajo que te lleva hasta allí.",
+    "blankSlateNew": "Crea tu primera meta",
+    "blankSlateAreas": "Configurar áreas"
+  },
+  "templates": {
+    "new": "Nueva plantilla",
+    "noTemplatesYet": "Aún no hay plantillas.",
+    "blankSlateHint": "Una plantilla es un proyecto que puedes iniciar una y otra vez, con sus tareas listas, como una lista para un viaje o la incorporación de un cliente. Crea una aquí, guarda un proyecto que repites o elige una del catálogo.",
+    "createFirst": "Crea tu primera plantilla",
+    "browseMarketplace": "Explorar el catálogo",
+    "fromProject": "Guardar un proyecto como plantilla"
   }
 }

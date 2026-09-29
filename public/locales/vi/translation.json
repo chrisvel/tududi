@@ -627,7 +627,14 @@
     "reviewItems": "Nhấn để xem xét và cải thiện quy trình làm việc của bạn",
     "suggestion": "Nhấn vào bất kỳ mục nào ở trên để mở nó và thực hiện cải tiến.",
     "issuesFound_other": "{{count}} vấn đề năng suất cần được chú ý",
-    "issuesFound_one": "1 vấn đề năng suất cần được chú ý"
+    "issuesFound_one": "1 vấn đề năng suất cần được chú ý",
+    "nothingYet": "Chưa có gì để xem xét.",
+    "blankSlateHint": "Trợ lý xem qua công việc và dự án của bạn để tìm những điều cần chú ý, như công việc mơ hồ, việc bị bỏ dở hay dự án bị kẹt. Hãy thêm vài công việc và quay lại sau.",
+    "noIssues": "Mọi thứ đều ổn!",
+    "allClearHint": "Hiện không có công việc mơ hồ, việc bị bỏ dở hay dự án bị kẹt. Đây là lúc tốt để lên kế hoạch cho bước tiếp theo.",
+    "goToTasks": "Đến công việc",
+    "goToProjects": "Đến dự án",
+    "planDay": "Lên kế hoạch cho ngày"
   },
   "modals": {
     "confirmDelete": "Bạn có chắc chắn muốn xóa không?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Chọn ngày hết hạn",
     "goalTitle": "Mục tiêu",
     "addProject": "Thêm Dự án",
-    "noResults": "Không có dự án"
+    "noResults": "Không có dự án",
+    "new": "Dự án mới",
+    "noProjectsYet": "Chưa có dự án nào.",
+    "blankSlateHint": "Một dự án gom các công việc và ghi chú dẫn đến một kết quả, như lên kế hoạch cho chuyến đi hay ra mắt một trang web. Giữ gọn gàng bằng cách nhóm chúng vào các khu vực như Công việc hoặc Nhà.",
+    "blankSlateFilteredHint": "Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.",
+    "blankSlateNew": "Tạo dự án đầu tiên",
+    "blankSlateTemplate": "Bắt đầu từ mẫu",
+    "blankSlateAreas": "Thiết lập khu vực",
+    "blankSlateShowAll": "Hiện tất cả dự án"
   },
   "projectItem": {
     "edit": "Chỉnh sửa",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Xóa mục tiêu",
     "moveBackToUnlinked": "Di chuyển trở lại không liên kết",
     "horizonSeason": "Mùa",
-    "horizonYear": "Năm"
+    "horizonYear": "Năm",
+    "new": "Khu vực mới",
+    "noAreasYet": "Chưa có khu vực nào.",
+    "blankSlateHint": "Khu vực là những phần của cuộc sống mà bạn chăm lo lâu dài, như Công việc, Sức khỏe hoặc Nhà. Đặt dự án và mục tiêu vào đó để xem từng phần ở cùng một nơi.",
+    "blankSlateNew": "Tạo khu vực đầu tiên",
+    "blankSlateProjects": "Đến dự án"
   },
   "notes": {
     "loading": "Đang tải ghi chú...",
@@ -1240,7 +1260,12 @@
     "addNote": "Thêm Ghi chú",
     "tree": {
       "folders": "Thư mục"
-    }
+    },
+    "new": "Ghi chú mới",
+    "noNotesYet": "Chưa có ghi chú nào.",
+    "blankSlateHint": "Ghi chú lưu những gì bạn muốn giữ lại, như biên bản họp, ý tưởng hay tài liệu tham khảo. Viết bằng Markdown, liên kết ghi chú với dự án và gắn thẻ để tìm lại sau.",
+    "blankSlateNew": "Viết ghi chú đầu tiên",
+    "blankSlateProjects": "Đến dự án"
   },
   "tags": {
     "loading": "Đang tải thẻ...",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "Xem này sẽ được lưu:",
     "saveView": "Lưu Xem",
     "filtersLabel": "Bộ lọc:",
-    "searchLabel": "Tìm kiếm:"
+    "searchLabel": "Tìm kiếm:",
+    "new": "Chế độ xem mới",
+    "noViewsYet": "Chưa có chế độ xem thông minh nào.",
+    "blankSlateHint": "Chế độ xem thông minh là một tìm kiếm đã lưu, như các công việc ưu tiên đến hạn tuần này hoặc ghi chú gắn thẻ ý tưởng. Tìm kiếm, đặt bộ lọc rồi chọn \"Lưu dưới dạng Smart View\". Ghim một chế độ xem để giữ nó ở thanh bên.",
+    "blankSlateNew": "Tìm kiếm để tạo chế độ xem",
+    "noViewsMatch": "Không tìm thấy chế độ xem",
+    "blankSlateFilteredHint": "Hãy thử tìm kiếm khác.",
+    "blankSlateClearSearch": "Xóa tìm kiếm"
   },
   "search": {
     "placeholder": "Tìm kiếm nhiệm vụ, dự án, ghi chú...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "Sẽ không được hoàn thành"
   },
   "habits": {
-    "completeHabit": "Hoàn thành thói quen"
+    "completeHabit": "Hoàn thành thói quen",
+    "new": "Thói quen mới",
+    "noHabitsYet": "Chưa có thói quen nào.",
+    "blankSlateHint": "Thói quen là việc bạn muốn làm đều đặn, như đọc sách hay đi bộ buổi sáng, hoặc điều bạn muốn bỏ. Ghi nhận mỗi lần và xem chuỗi ngày và độ bền của bạn tăng lên.",
+    "blankSlateNew": "Tạo thói quen đầu tiên"
   },
   "aiAssistant": {
     "title": "Trợ Lý AI",
@@ -2279,5 +2315,20 @@
   },
   "area": {
     "loadError": "Không thể tải khu vực"
+  },
+  "goals": {
+    "newGoal": "Mục tiêu mới",
+    "noGoalsYet": "Chưa có mục tiêu nào.",
+    "blankSlateHint": "Mục tiêu là kết quả bạn muốn đạt được trong mùa này hoặc năm nay, như chạy bán marathon. Liên kết dự án với mục tiêu để thấy những việc đưa bạn đến đó.",
+    "blankSlateNew": "Tạo mục tiêu đầu tiên",
+    "blankSlateAreas": "Thiết lập khu vực"
+  },
+  "templates": {
+    "new": "Mẫu mới",
+    "noTemplatesYet": "Chưa có mẫu nào.",
+    "blankSlateHint": "Mẫu là một dự án bạn có thể bắt đầu lại nhiều lần với các công việc có sẵn, như danh sách chuẩn bị cho chuyến đi hoặc tiếp nhận khách hàng mới. Tạo mẫu ở đây, lưu một dự án bạn hay lặp lại hoặc chọn một mẫu từ kho mẫu.",
+    "createFirst": "Tạo mẫu đầu tiên",
+    "browseMarketplace": "Duyệt kho mẫu",
+    "fromProject": "Lưu dự án thành mẫu"
   }
 }

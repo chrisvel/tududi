@@ -627,7 +627,14 @@
     "reviewItems": "워크플로를 검토하고 개선하려면 클릭하세요.",
     "suggestion": "위의 항목을 클릭하여 열고 개선하세요.",
     "issuesFound_other": "{{count}}개의 생산성 문제에 주의가 필요합니다",
-    "issuesFound_one": "1개의 생산성 문제가 필요합니다"
+    "issuesFound_one": "1개의 생산성 문제가 필요합니다",
+    "nothingYet": "아직 검토할 항목이 없습니다.",
+    "blankSlateHint": "도우미는 모호한 작업, 멈춘 작업, 막힌 프로젝트처럼 주의가 필요한 것이 있는지 작업과 프로젝트를 살펴봅니다. 작업을 몇 개 추가하고 나중에 다시 확인하세요.",
+    "noIssues": "모두 괜찮아 보입니다!",
+    "allClearHint": "지금은 모호한 작업, 멈춘 작업, 막힌 프로젝트가 없습니다. 다음 계획을 세우기 좋은 때입니다.",
+    "goToTasks": "작업으로 이동",
+    "goToProjects": "프로젝트로 이동",
+    "planDay": "하루 계획하기"
   },
   "modals": {
     "confirmDelete": "정말 삭제하시겠습니까?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "마감일 선택",
     "goalTitle": "목표",
     "addProject": "프로젝트 추가",
-    "noResults": "프로젝트가 없습니다"
+    "noResults": "프로젝트가 없습니다",
+    "new": "새 프로젝트",
+    "noProjectsYet": "아직 프로젝트가 없습니다.",
+    "blankSlateHint": "프로젝트는 여행 계획이나 웹사이트 출시처럼 하나의 결과로 이어지는 작업과 노트를 묶어 둡니다. 업무나 집 같은 영역으로 묶어 깔끔하게 관리하세요.",
+    "blankSlateFilteredHint": "필터나 검색어를 바꿔 보세요.",
+    "blankSlateNew": "첫 프로젝트 만들기",
+    "blankSlateTemplate": "템플릿으로 시작",
+    "blankSlateAreas": "영역 설정",
+    "blankSlateShowAll": "모든 프로젝트 보기"
   },
   "projectItem": {
     "edit": "편집",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "목표 삭제",
     "moveBackToUnlinked": "연결되지 않은 상태로 되돌리기",
     "horizonSeason": "계절",
-    "horizonYear": "연도"
+    "horizonYear": "연도",
+    "new": "새 영역",
+    "noAreasYet": "아직 영역이 없습니다.",
+    "blankSlateHint": "영역은 업무, 건강, 집처럼 꾸준히 돌보는 삶의 부분입니다. 프로젝트와 목표를 영역에 넣으면 각 부분을 한곳에서 볼 수 있습니다.",
+    "blankSlateNew": "첫 영역 만들기",
+    "blankSlateProjects": "프로젝트로 이동"
   },
   "notes": {
     "loading": "노트 로딩 중...",
@@ -1240,7 +1260,12 @@
     "addNote": "노트 추가",
     "tree": {
       "folders": "폴더"
-    }
+    },
+    "new": "새 노트",
+    "noNotesYet": "아직 노트가 없습니다.",
+    "blankSlateHint": "노트에는 회의록, 아이디어, 참고 자료처럼 간직하고 싶은 내용을 담습니다. Markdown으로 쓰고, 노트를 프로젝트에 연결하고, 태그를 달아 나중에 찾으세요.",
+    "blankSlateNew": "첫 노트 쓰기",
+    "blankSlateProjects": "프로젝트로 이동"
   },
   "tags": {
     "loading": "태그 로딩 중...",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "이 뷰가 저장됩니다:",
     "saveView": "뷰 저장",
     "filtersLabel": "필터:",
-    "searchLabel": "검색:"
+    "searchLabel": "검색:",
+    "new": "새 뷰",
+    "noViewsYet": "아직 스마트 뷰가 없습니다.",
+    "blankSlateHint": "스마트 뷰는 저장된 검색입니다. 예를 들어 이번 주 마감인 중요한 작업이나 아이디어 태그가 달린 노트가 있습니다. 검색하고 필터를 설정한 다음 \"스마트 뷰로 저장\"을 선택하세요. 뷰를 고정하면 사이드바에 남습니다.",
+    "blankSlateNew": "검색해서 뷰 만들기",
+    "noViewsMatch": "뷰를 찾을 수 없습니다",
+    "blankSlateFilteredHint": "다른 검색어를 입력해 보세요.",
+    "blankSlateClearSearch": "검색 지우기"
   },
   "search": {
     "placeholder": "작업, 프로젝트, 노트 검색...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "완료되지 않을 것임"
   },
   "habits": {
-    "completeHabit": "습관 완료"
+    "completeHabit": "습관 완료",
+    "new": "새 습관",
+    "noHabitsYet": "아직 습관이 없습니다.",
+    "blankSlateHint": "습관은 독서나 아침 산책처럼 꾸준히 하고 싶은 일, 또는 끊고 싶은 일입니다. 할 때마다 기록하고 연속 기록과 습관 강도가 자라는 것을 확인하세요.",
+    "blankSlateNew": "첫 습관 만들기"
   },
   "aiAssistant": {
     "title": "AI 어시스턴트",
@@ -2279,5 +2315,20 @@
   },
   "area": {
     "loadError": "영역을 불러오지 못했습니다"
+  },
+  "goals": {
+    "newGoal": "새 목표",
+    "noGoalsYet": "아직 목표가 없습니다.",
+    "blankSlateHint": "목표는 하프 마라톤 완주처럼 이번 시즌이나 올해 이루고 싶은 결과입니다. 프로젝트를 연결하면 목표로 가는 작업을 볼 수 있습니다.",
+    "blankSlateNew": "첫 목표 만들기",
+    "blankSlateAreas": "영역 설정"
+  },
+  "templates": {
+    "new": "새 템플릿",
+    "noTemplatesYet": "아직 템플릿이 없습니다.",
+    "blankSlateHint": "템플릿은 여행 준비 목록이나 신규 고객 온보딩처럼 작업이 준비된 상태로 몇 번이고 시작할 수 있는 프로젝트입니다. 여기서 만들거나, 반복하는 프로젝트를 저장하거나, 마켓플레이스에서 고르세요.",
+    "createFirst": "첫 템플릿 만들기",
+    "browseMarketplace": "마켓플레이스 둘러보기",
+    "fromProject": "프로젝트를 템플릿으로 저장"
   }
 }

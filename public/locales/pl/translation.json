@@ -627,7 +627,14 @@
     "reviewItems": "Kliknij, aby przejrzeć i poprawić swój przepływ pracy",
     "suggestion": "Kliknij na dowolny element powyżej, aby go otworzyć i wprowadzić poprawki.",
     "issuesFound_one": "1 problem z produktywnością wymaga uwagi",
-    "issuesFound_other": "{{count}} problemów z produktywnością wymaga uwagi"
+    "issuesFound_other": "{{count}} problemów z produktywnością wymaga uwagi",
+    "nothingYet": "Na razie nie ma nic do przejrzenia.",
+    "blankSlateHint": "Asystent przegląda twoje zadania i projekty w poszukiwaniu rzeczy wymagających uwagi, takich jak niejasne zadania, zaległa praca czy utknięte projekty. Dodaj kilka zadań i zajrzyj później.",
+    "noIssues": "Wszystko wygląda dobrze!",
+    "allClearHint": "Obecnie brak niejasnych zadań, zaległej pracy czy utkniętych projektów. Dobry moment, by zaplanować kolejny krok.",
+    "goToTasks": "Przejdź do zadań",
+    "goToProjects": "Przejdź do projektów",
+    "planDay": "Zaplanuj dzień"
   },
   "modals": {
     "confirmDelete": "Czy na pewno chcesz usunąć?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Wybierz datę wymagalności",
     "goalTitle": "Cel",
     "addProject": "Dodaj Projekt",
-    "noResults": "Brak projektów"
+    "noResults": "Brak projektów",
+    "new": "Nowy projekt",
+    "noProjectsYet": "Nie ma jeszcze projektów.",
+    "blankSlateHint": "Projekt łączy zadania i notatki prowadzące do jednego celu, na przykład zaplanowania podróży albo uruchomienia strony. Utrzymuj porządek, grupując projekty w obszary, takie jak Praca czy Dom.",
+    "blankSlateFilteredHint": "Spróbuj zmienić filtry lub wyszukiwanie.",
+    "blankSlateNew": "Utwórz pierwszy projekt",
+    "blankSlateTemplate": "Zacznij od szablonu",
+    "blankSlateAreas": "Skonfiguruj obszary",
+    "blankSlateShowAll": "Pokaż wszystkie projekty"
   },
   "projectItem": {
     "edit": "Edytuj",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Usuń cel",
     "moveBackToUnlinked": "Przenieś z powrotem do niepowiązanych",
     "horizonSeason": "Sezon",
-    "horizonYear": "Rok"
+    "horizonYear": "Rok",
+    "new": "Nowy obszar",
+    "noAreasYet": "Nie ma jeszcze obszarów.",
+    "blankSlateHint": "Obszary to części życia, o które dbasz na co dzień, na przykład Praca, Zdrowie czy Dom. Umieść w nich projekty i cele, aby widzieć każdą część w jednym miejscu.",
+    "blankSlateNew": "Utwórz pierwszy obszar",
+    "blankSlateProjects": "Przejdź do projektów"
   },
   "notes": {
     "loading": "Ładowanie notatek...",
@@ -1240,7 +1260,12 @@
     "addNote": "Dodaj Notatkę",
     "tree": {
       "folders": "Foldery"
-    }
+    },
+    "new": "Nowa notatka",
+    "noNotesYet": "Nie ma jeszcze notatek.",
+    "blankSlateHint": "Notatki przechowują to, co chcesz zachować, na przykład notatki ze spotkań, pomysły lub materiały źródłowe. Pisz w Markdown, powiąż notatkę z projektem i dodaj tagi, aby łatwo ją później znaleźć.",
+    "blankSlateNew": "Napisz pierwszą notatkę",
+    "blankSlateProjects": "Przejdź do projektów"
   },
   "tags": {
     "loading": "Ładowanie tagów...",
@@ -1747,7 +1772,14 @@
     "viewWillSave": "Ten widok zostanie zapisany:",
     "saveView": "Zapisz widok",
     "filtersLabel": "Filtry:",
-    "searchLabel": "Szukaj:"
+    "searchLabel": "Szukaj:",
+    "new": "Nowy widok",
+    "noViewsYet": "Nie ma jeszcze inteligentnych widoków.",
+    "blankSlateHint": "Inteligentny widok to zapisane wyszukiwanie, na przykład ważne zadania z terminem w tym tygodniu albo notatki z tagiem pomysły. Wyszukaj, ustaw filtry i wybierz „Zapisz jako Smart View”. Przypnij widok, aby został na pasku bocznym.",
+    "blankSlateNew": "Wyszukaj, aby utworzyć widok",
+    "noViewsMatch": "Nie znaleziono widoków",
+    "blankSlateFilteredHint": "Spróbuj innego wyszukiwania.",
+    "blankSlateClearSearch": "Wyczyść wyszukiwanie"
   },
   "search": {
     "placeholder": "Szukaj zadań, projektów, notatek...",
@@ -1908,7 +1940,11 @@
     "cancelled_desc": "Nie zostanie ukończone"
   },
   "habits": {
-    "completeHabit": "Zakończ nawyk"
+    "completeHabit": "Zakończ nawyk",
+    "new": "Nowy nawyk",
+    "noHabitsYet": "Nie ma jeszcze nawyków.",
+    "blankSlateHint": "Nawyk to coś, co chcesz robić regularnie, na przykład czytanie albo poranny spacer, lub coś, z czego chcesz zrezygnować. Odznaczaj go za każdym razem i patrz, jak rośnie twoja seria i siła nawyku.",
+    "blankSlateNew": "Utwórz pierwszy nawyk"
   },
   "aiAssistant": {
     "title": "Asystent AI",
@@ -2284,5 +2320,20 @@
   },
   "area": {
     "loadError": "Nie udało się wczytać obszarów"
+  },
+  "goals": {
+    "newGoal": "Nowy cel",
+    "noGoalsYet": "Nie ma jeszcze celów.",
+    "blankSlateHint": "Cel to wynik, który chcesz osiągnąć w tym sezonie lub roku, na przykład przebiec półmaraton. Powiąż z nim projekty, aby widzieć pracę, która cię do niego prowadzi.",
+    "blankSlateNew": "Utwórz pierwszy cel",
+    "blankSlateAreas": "Skonfiguruj obszary"
+  },
+  "templates": {
+    "new": "Nowy szablon",
+    "noTemplatesYet": "Nie ma jeszcze szablonów.",
+    "blankSlateHint": "Szablon to projekt, który możesz uruchamiać wielokrotnie z gotowymi zadaniami, na przykład lista na wyjazd albo wdrożenie nowego klienta. Utwórz go tutaj, zapisz projekt, który powtarzasz, lub wybierz szablon z katalogu.",
+    "createFirst": "Utwórz pierwszy szablon",
+    "browseMarketplace": "Przeglądaj katalog",
+    "fromProject": "Zapisz projekt jako szablon"
   }
 }

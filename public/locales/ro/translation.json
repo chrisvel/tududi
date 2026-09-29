@@ -627,7 +627,14 @@
     "reviewItems": "Faceți clic pentru a revizui și îmbunătăți fluxul de lucru",
     "suggestion": "Faceți clic pe orice element de mai sus pentru a-l deschide și a face îmbunătățiri.",
     "issuesFound_one": "1 problemă de productivitate necesită atenție",
-    "issuesFound_other": "{{count}} probleme de productivitate necesită atenție"
+    "issuesFound_other": "{{count}} probleme de productivitate necesită atenție",
+    "nothingYet": "Încă nu e nimic de verificat.",
+    "blankSlateHint": "Asistentul verifică sarcinile și proiectele tale pentru lucruri care cer atenție, de exemplu sarcini vagi, muncă blocată sau proiecte împotmolite. Adaugă câteva sarcini și revino mai târziu.",
+    "noIssues": "Totul arată bine!",
+    "allClearHint": "Momentan nu există sarcini vagi, muncă blocată sau proiecte împotmolite. Un moment bun să planifici pasul următor.",
+    "goToTasks": "Mergi la sarcini",
+    "goToProjects": "Mergi la proiecte",
+    "planDay": "Planifică-ți ziua"
   },
   "modals": {
     "confirmDelete": "Ești sigur că vrei să ștergi?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Selectează data limită",
     "goalTitle": "Obiectiv",
     "addProject": "Adaugă Proiect",
-    "noResults": "Nu sunt proiecte"
+    "noResults": "Nu sunt proiecte",
+    "new": "Proiect nou",
+    "noProjectsYet": "Încă nu există proiecte.",
+    "blankSlateHint": "Un proiect grupează sarcinile și notele care duc la un rezultat, de exemplu planificarea unei călătorii sau lansarea unui site. Păstrează ordinea grupându-le în arii precum Muncă sau Acasă.",
+    "blankSlateFilteredHint": "Încearcă să schimbi filtrele sau căutarea.",
+    "blankSlateNew": "Creează primul proiect",
+    "blankSlateTemplate": "Pornește de la un șablon",
+    "blankSlateAreas": "Configurează ariile",
+    "blankSlateShowAll": "Afișează toate proiectele"
   },
   "projectItem": {
     "edit": "Editează",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Șterge obiectivul",
     "moveBackToUnlinked": "Mută înapoi la neconectat",
     "horizonSeason": "Sezon",
-    "horizonYear": "An"
+    "horizonYear": "An",
+    "new": "Arie nouă",
+    "noAreasYet": "Încă nu există arii.",
+    "blankSlateHint": "Ariile sunt părțile vieții de care te ocupi în timp, de exemplu Muncă, Sănătate sau Acasă. Pune în ele proiectele și obiectivele tale ca să vezi fiecare parte într-un singur loc.",
+    "blankSlateNew": "Creează prima arie",
+    "blankSlateProjects": "Mergi la proiecte"
   },
   "notes": {
     "loading": "Se încarcă notițele...",
@@ -1240,7 +1260,12 @@
     "addNote": "Adaugă Notă",
     "tree": {
       "folders": "Foldere"
-    }
+    },
+    "new": "Notă nouă",
+    "noNotesYet": "Încă nu există note.",
+    "blankSlateHint": "Notele păstrează ce vrei să reții, de exemplu notițe de la ședințe, idei sau materiale de referință. Scrie în Markdown, leagă o notă de un proiect și adaugă etichete ca s-o găsești mai târziu.",
+    "blankSlateNew": "Scrie prima notă",
+    "blankSlateProjects": "Mergi la proiecte"
   },
   "tags": {
     "loading": "Se încarcă etichetele...",
@@ -1746,7 +1771,14 @@
     "viewWillSave": "Această vedere va salva:",
     "saveView": "Salvează Vederea",
     "filtersLabel": "Filtre:",
-    "searchLabel": "Caută:"
+    "searchLabel": "Caută:",
+    "new": "Vedere nouă",
+    "noViewsYet": "Încă nu există vederi inteligente.",
+    "blankSlateHint": "O vedere inteligentă este o căutare salvată, de exemplu sarcinile importante scadente săptămâna aceasta sau notele etichetate idei. Caută, setează filtrele și alege „Salvează ca Vedere Inteligentă”. Fixează o vedere ca s-o păstrezi în bara laterală.",
+    "blankSlateNew": "Caută pentru a crea o vedere",
+    "noViewsMatch": "Nu s-au găsit vederi",
+    "blankSlateFilteredHint": "Încearcă altă căutare.",
+    "blankSlateClearSearch": "Șterge căutarea"
   },
   "search": {
     "placeholder": "Caută sarcini, proiecte, note...",
@@ -1907,7 +1939,11 @@
     "cancelled_desc": "Nu va fi finalizat"
   },
   "habits": {
-    "completeHabit": "Finalizare obicei"
+    "completeHabit": "Finalizare obicei",
+    "new": "Obicei nou",
+    "noHabitsYet": "Încă nu există obiceiuri.",
+    "blankSlateHint": "Un obicei este ceva ce vrei să faci regulat, de exemplu să citești sau o plimbare de dimineață, ori ceva la care vrei să renunți. Bifează-l de fiecare dată și urmărește cum cresc seria și puterea lui.",
+    "blankSlateNew": "Creează primul obicei"
   },
   "aiAssistant": {
     "title": "Asistent AI",
@@ -2282,5 +2318,20 @@
   },
   "area": {
     "loadError": "Ariile nu au putut fi încărcate"
+  },
+  "goals": {
+    "newGoal": "Obiectiv nou",
+    "noGoalsYet": "Încă nu există obiective.",
+    "blankSlateHint": "Un obiectiv este un rezultat pe care vrei să-l atingi în acest sezon sau anul acesta, de exemplu să alergi un semimaraton. Leagă proiecte de el ca să vezi munca ce te duce acolo.",
+    "blankSlateNew": "Creează primul obiectiv",
+    "blankSlateAreas": "Configurează ariile"
+  },
+  "templates": {
+    "new": "Șablon nou",
+    "noTemplatesYet": "Încă nu există șabloane.",
+    "blankSlateHint": "Un șablon este un proiect pe care îl poți porni din nou și din nou, cu sarcinile gata pregătite, de exemplu o listă pentru călătorie sau integrarea unui client nou. Creează unul aici, salvează un proiect pe care îl repeți sau alege unul din catalog.",
+    "createFirst": "Creează primul șablon",
+    "browseMarketplace": "Răsfoiește catalogul",
+    "fromProject": "Salvează un proiect ca șablon"
   }
 }

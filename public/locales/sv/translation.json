@@ -627,7 +627,14 @@
     "reviewItems": "Klicka för att granska och förbättra ditt arbetsflöde",
     "suggestion": "Klicka på ett objekt ovan för att öppna och förbättra det.",
     "issuesFound_one": "1 produktivitetsproblem behöver uppmärksammas",
-    "issuesFound_other": "{{count}} produktivitetsproblem behöver uppmärksammas"
+    "issuesFound_other": "{{count}} produktivitetsproblem behöver uppmärksammas",
+    "nothingYet": "Inget att gå igenom än.",
+    "blankSlateHint": "Assistenten går igenom dina uppgifter och projekt efter sådant som behöver uppmärksamhet, till exempel vaga uppgifter, arbete som står still eller projekt som fastnat. Lägg till några uppgifter och kom tillbaka senare.",
+    "noIssues": "Allt ser bra ut!",
+    "allClearHint": "Inga vaga uppgifter, arbete som står still eller projekt som fastnat just nu. Ett bra tillfälle att planera nästa steg.",
+    "goToTasks": "Gå till uppgifter",
+    "goToProjects": "Gå till projekt",
+    "planDay": "Planera dagen"
   },
   "modals": {
     "confirmDelete": "Är du säker på att du vill ta bort?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Välj förfallodatum",
     "goalTitle": "Mål",
     "addProject": "Lägg till Projekt",
-    "noResults": "Inga projekt"
+    "noResults": "Inga projekt",
+    "new": "Nytt projekt",
+    "noProjectsYet": "Inga projekt än.",
+    "blankSlateHint": "Ett projekt samlar de uppgifter och anteckningar som leder till ett resultat, till exempel att planera en resa eller lansera en webbplats. Håll ordning genom att samla dem i områden som Jobb eller Hem.",
+    "blankSlateFilteredHint": "Prova att ändra dina filter eller din sökning.",
+    "blankSlateNew": "Skapa ditt första projekt",
+    "blankSlateTemplate": "Börja från en mall",
+    "blankSlateAreas": "Konfigurera områden",
+    "blankSlateShowAll": "Visa alla projekt"
   },
   "projectItem": {
     "edit": "Ändra",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Ta bort mål",
     "moveBackToUnlinked": "Flytta tillbaka till olänkad",
     "horizonSeason": "Säsong",
-    "horizonYear": "År"
+    "horizonYear": "År",
+    "new": "Nytt område",
+    "noAreasYet": "Inga områden än.",
+    "blankSlateHint": "Områden är de delar av livet som du tar hand om över tid, till exempel Jobb, Hälsa eller Hem. Lägg dina projekt och mål i dem för att se varje del på ett ställe.",
+    "blankSlateNew": "Skapa ditt första område",
+    "blankSlateProjects": "Gå till projekt"
   },
   "notes": {
     "loading": "Laddar anteckningar...",
@@ -1240,7 +1260,12 @@
     "addNote": "Lägg till Anteckning",
     "tree": {
       "folders": "Mappar"
-    }
+    },
+    "new": "Ny anteckning",
+    "noNotesYet": "Inga anteckningar än.",
+    "blankSlateHint": "Anteckningar håller det du vill spara, till exempel mötesanteckningar, idéer eller referensmaterial. Skriv i Markdown, koppla en anteckning till ett projekt och tagga den för att hitta den senare.",
+    "blankSlateNew": "Skriv din första anteckning",
+    "blankSlateProjects": "Gå till projekt"
   },
   "tags": {
     "loading": "Laddar taggar...",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "Denna vy kommer att spara:",
     "saveView": "Spara Vy",
     "filtersLabel": "Filter:",
-    "searchLabel": "Sök:"
+    "searchLabel": "Sök:",
+    "new": "Ny vy",
+    "noViewsYet": "Inga smarta vyer än.",
+    "blankSlateHint": "En smart vy är en sparad sökning, till exempel viktiga uppgifter som förfaller den här veckan eller anteckningar taggade idéer. Sök, ställ in dina filter och välj ”Spara som Smart View”. Fäst en vy för att ha den kvar i sidofältet.",
+    "blankSlateNew": "Sök för att skapa en vy",
+    "noViewsMatch": "Inga vyer hittades",
+    "blankSlateFilteredHint": "Prova en annan sökning.",
+    "blankSlateClearSearch": "Rensa sökning"
   },
   "search": {
     "placeholder": "Sök uppgifter, projekt, anteckningar...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "Kommer inte att slutföras"
   },
   "habits": {
-    "completeHabit": "Avsluta vana"
+    "completeHabit": "Avsluta vana",
+    "new": "Ny vana",
+    "noHabitsYet": "Inga vanor än.",
+    "blankSlateHint": "En vana är något du vill göra regelbundet, till exempel läsa eller ta en morgonpromenad, eller något du vill sluta med. Checka in varje gång och se din svit och styrka växa.",
+    "blankSlateNew": "Skapa din första vana"
   },
   "aiAssistant": {
     "title": "AI-assistent",
@@ -2280,5 +2316,20 @@
   },
   "area": {
     "loadError": "Det gick inte att läsa in områden"
+  },
+  "goals": {
+    "newGoal": "Nytt mål",
+    "noGoalsYet": "Inga mål än.",
+    "blankSlateHint": "Ett mål är ett resultat du vill nå den här säsongen eller i år, till exempel att springa ett halvmaraton. Koppla projekt till det för att se arbetet som tar dig dit.",
+    "blankSlateNew": "Skapa ditt första mål",
+    "blankSlateAreas": "Konfigurera områden"
+  },
+  "templates": {
+    "new": "Ny mall",
+    "noTemplatesYet": "Inga mallar än.",
+    "blankSlateHint": "En mall är ett projekt du kan starta om och om igen med uppgifterna klara, till exempel en resechecklista eller introduktion av en ny kund. Skapa en här, spara ett projekt du upprepar eller välj en från marknadsplatsen.",
+    "createFirst": "Skapa din första mall",
+    "browseMarketplace": "Bläddra i marknadsplatsen",
+    "fromProject": "Spara ett projekt som mall"
   }
 }

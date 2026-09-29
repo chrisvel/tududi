@@ -627,7 +627,14 @@
     "reviewItems": "Klik untuk meninjau dan meningkatkan alur kerja Anda",
     "suggestion": "Klik pada item mana pun di atas untuk membukanya dan melakukan perbaikan.",
     "issuesFound_other": "{{count}} masalah produktivitas memerlukan perhatian",
-    "issuesFound_one": "1 masalah produktivitas membutuhkan perhatian"
+    "issuesFound_one": "1 masalah produktivitas membutuhkan perhatian",
+    "nothingYet": "Belum ada yang perlu ditinjau.",
+    "blankSlateHint": "Asisten memeriksa tugas dan proyek Anda untuk hal-hal yang perlu perhatian, seperti tugas yang tidak jelas, pekerjaan yang terbengkalai, atau proyek yang macet. Tambahkan beberapa tugas dan periksa lagi nanti.",
+    "noIssues": "Semuanya terlihat baik!",
+    "allClearHint": "Saat ini tidak ada tugas yang tidak jelas, pekerjaan terbengkalai, atau proyek macet. Saat yang tepat untuk merencanakan langkah berikutnya.",
+    "goToTasks": "Buka tugas",
+    "goToProjects": "Buka proyek",
+    "planDay": "Rencanakan hari Anda"
   },
   "modals": {
     "confirmDelete": "Apakah Anda yakin ingin menghapus?",
@@ -1173,7 +1180,15 @@
     "selectDueDatePlaceholder": "Pilih tanggal jatuh tempo",
     "goalTitle": "Tujuan",
     "addProject": "Tambahkan Proyek",
-    "noResults": "Tidak ada proyek"
+    "noResults": "Tidak ada proyek",
+    "new": "Proyek Baru",
+    "noProjectsYet": "Belum ada proyek.",
+    "blankSlateHint": "Proyek mengelompokkan tugas dan catatan yang mengarah ke satu hasil, seperti merencanakan perjalanan atau meluncurkan situs web. Jaga tetap rapi dengan mengelompokkannya ke dalam area seperti Kerja atau Rumah.",
+    "blankSlateFilteredHint": "Coba ubah filter atau pencarian Anda.",
+    "blankSlateNew": "Buat proyek pertama Anda",
+    "blankSlateTemplate": "Mulai dari templat",
+    "blankSlateAreas": "Siapkan area",
+    "blankSlateShowAll": "Tampilkan semua proyek"
   },
   "projectItem": {
     "edit": "Sunting",
@@ -1215,7 +1230,12 @@
     "deleteGoal": "Hapus tujuan",
     "moveBackToUnlinked": "Kembali ke tidak terhubung",
     "horizonSeason": "Musim",
-    "horizonYear": "Tahun"
+    "horizonYear": "Tahun",
+    "new": "Area Baru",
+    "noAreasYet": "Belum ada area.",
+    "blankSlateHint": "Area adalah bagian hidup yang Anda rawat dari waktu ke waktu, seperti Kerja, Kesehatan, atau Rumah. Masukkan proyek dan tujuan Anda ke dalamnya untuk melihat setiap bagian di satu tempat.",
+    "blankSlateNew": "Buat area pertama Anda",
+    "blankSlateProjects": "Buka proyek"
   },
   "notes": {
     "loading": "Memuat catatan...",
@@ -1240,7 +1260,12 @@
     "addNote": "Tambahkan Catatan",
     "tree": {
       "folders": "Folder"
-    }
+    },
+    "new": "Catatan Baru",
+    "noNotesYet": "Belum ada catatan.",
+    "blankSlateHint": "Catatan menyimpan hal yang ingin Anda simpan, seperti catatan rapat, ide, atau bahan referensi. Tulis dalam Markdown, hubungkan catatan ke proyek, dan beri tag agar mudah ditemukan nanti.",
+    "blankSlateNew": "Tulis catatan pertama Anda",
+    "blankSlateProjects": "Buka proyek"
   },
   "tags": {
     "loading": "Memuat tag...",
@@ -1745,7 +1770,14 @@
     "viewWillSave": "Tampilan ini akan disimpan:",
     "saveView": "Simpan Tampilan",
     "filtersLabel": "Filter:",
-    "searchLabel": "Cari:"
+    "searchLabel": "Cari:",
+    "new": "Tampilan Baru",
+    "noViewsYet": "Belum ada tampilan cerdas.",
+    "blankSlateHint": "Tampilan cerdas adalah pencarian yang disimpan, seperti tugas prioritas yang jatuh tempo minggu ini atau catatan bertag ide. Cari, atur filter, lalu pilih \"Simpan sebagai Tampilan Cerdas\". Sematkan tampilan agar tetap ada di bilah sisi.",
+    "blankSlateNew": "Cari untuk membuat tampilan",
+    "noViewsMatch": "Tampilan tidak ditemukan",
+    "blankSlateFilteredHint": "Coba pencarian lain.",
+    "blankSlateClearSearch": "Hapus pencarian"
   },
   "search": {
     "placeholder": "Cari tugas, proyek, catatan...",
@@ -1906,7 +1938,11 @@
     "cancelled_desc": "Tidak akan diselesaikan"
   },
   "habits": {
-    "completeHabit": "Selesaikan kebiasaan"
+    "completeHabit": "Selesaikan kebiasaan",
+    "new": "Kebiasaan Baru",
+    "noHabitsYet": "Belum ada kebiasaan.",
+    "blankSlateHint": "Kebiasaan adalah sesuatu yang ingin Anda lakukan secara rutin, seperti membaca atau jalan pagi, atau sesuatu yang ingin Anda hentikan. Catat setiap kali dan lihat rentetan serta kekuatannya bertambah.",
+    "blankSlateNew": "Buat kebiasaan pertama Anda"
   },
   "aiAssistant": {
     "title": "Asisten AI",
@@ -2279,5 +2315,20 @@
   },
   "area": {
     "loadError": "Gagal memuat area"
+  },
+  "goals": {
+    "newGoal": "Tujuan Baru",
+    "noGoalsYet": "Belum ada tujuan.",
+    "blankSlateHint": "Tujuan adalah hasil yang ingin Anda capai musim ini atau tahun ini, seperti lari setengah maraton. Hubungkan proyek ke tujuan itu untuk melihat pekerjaan yang membawa Anda ke sana.",
+    "blankSlateNew": "Buat tujuan pertama Anda",
+    "blankSlateAreas": "Siapkan area"
+  },
+  "templates": {
+    "new": "Templat Baru",
+    "noTemplatesYet": "Belum ada templat.",
+    "blankSlateHint": "Templat adalah proyek yang bisa Anda mulai berulang kali dengan tugas yang sudah siap, seperti daftar periksa perjalanan atau orientasi klien baru. Buat di sini, simpan proyek yang Anda ulangi, atau pilih dari marketplace.",
+    "createFirst": "Buat templat pertama Anda",
+    "browseMarketplace": "Jelajahi marketplace",
+    "fromProject": "Simpan proyek sebagai templat"
   }
 }
