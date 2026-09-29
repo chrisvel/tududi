@@ -57,6 +57,7 @@ export interface SavedBackup {
         notes: number;
         inbox_items: number;
         views: number;
+        accounts?: number;
     };
     version: string;
     created_at: string;

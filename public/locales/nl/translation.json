@@ -2176,7 +2176,10 @@
     "validationErrors": "Validatiefouten:",
     "versionIncompatible": "Versie incompatibel",
     "backupVersion": "Backupversie",
-    "restoreButton": "Herstellen"
+    "restoreButton": "Herstellen",
+    "adminInstanceNote": "Als beheerder bevat je back-up elk account op deze installatie, met hun gegevens en wachtwoordhashes. Terugzetten op een nieuwe installatie brengt iedereen terug. Bewaar het bestand net zo zorgvuldig als de database.",
+    "accountsCount_one": "{{count}} ander account",
+    "accountsCount_other": "{{count}} andere accounts"
   },
   "notifications": {
     "table": {

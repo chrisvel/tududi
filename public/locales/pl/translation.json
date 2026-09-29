@@ -2178,7 +2178,10 @@
     "clickToUpload": "Kliknij, aby przeszukać pliki",
     "restoreBackup": "Przywróć kopię zapasową",
     "importing": "Importowanie...",
-    "restoreButton": "Przywróć"
+    "restoreButton": "Przywróć",
+    "adminInstanceNote": "Jako administrator Twoja kopia zapasowa zawiera każde konto na tej instancji, wraz z danymi i hashami haseł. Przywrócenie jej na nowej instalacji przywraca wszystkich. Przechowuj plik tak bezpiecznie jak bazę danych.",
+    "accountsCount_one": "Inne konta: {{count}}",
+    "accountsCount_other": "Inne konta: {{count}}"
   },
   "notifications": {
     "table": {

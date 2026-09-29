@@ -31,9 +31,16 @@ const {
     InboxItemAttachment,
     ProjectAttachment,
     NoteAttachment,
+    Role,
+    Permission,
+    UserGroup,
+    UserGroupMember,
+    GroupShare,
+    GroupPermission,
     sequelize,
 } = require('../models');
 const { getConfig } = require('../config/config');
+const { isAdmin } = require('./rolesService');
 const { uid: generateUid } = require('../utils/uid');
 const packageJson = require('../../package.json');
 
@@ -100,7 +107,7 @@ async function writeUploadedImage(image, subdir, prefix) {
     return storedFilename;
 }
 
-async function exportUserData(userId) {
+async function exportOwnData(userId) {
     const user = await User.findByPk(userId, {
         attributes: {
             exclude: [
@@ -230,6 +237,26 @@ async function exportUserData(userId) {
         exportedNotes.push(data);
     }
 
+    // A card can stand for another account (a member). Its uid lets an
+    // instance restore link the card again.
+    const linkedIds = [
+        ...new Set(
+            people
+                .map((p) => p.linked_user_id)
+                .filter((id) => id && id !== userId)
+        ),
+    ];
+    const linkedUsers = linkedIds.length
+        ? await User.findAll({
+              where: { id: linkedIds },
+              attributes: ['id', 'uid'],
+              raw: true,
+          })
+        : [];
+    const userUidById = Object.fromEntries(
+        linkedUsers.map((u) => [u.id, u.uid])
+    );
+
     const exportedInboxItems = [];
     for (const item of inboxItems) {
         const data = plain(item);
@@ -286,10 +313,123 @@ async function exportUserData(userId) {
                 ...plain(person),
                 // true for the card that represents the exporting user
                 is_self: person.linked_user_id === userId,
+                linked_user_uid:
+                    person.linked_user_id && person.linked_user_id !== userId
+                        ? userUidById[person.linked_user_id] || null
+                        : null,
                 linked_user_id: undefined,
             })),
         },
     };
+}
+
+const isHosted = () => getConfig().hosted?.enabled === true;
+
+const roleData = (role) =>
+    role
+        ? {
+              is_admin: !!role.is_admin,
+              role: role.role,
+              capabilities: role.capabilities ?? null,
+          }
+        : null;
+
+// An admin's backup of a self-hosted instance also carries every other
+// account (with its password hash and its own data), the groups and the
+// shares, so restoring it on a fresh install brings everyone back. Records
+// point at each other by uid.
+async function exportInstance(userId) {
+    const [users, roles, groups, members, groupShares, groupPerms, shares] =
+        await Promise.all([
+            User.findAll({
+                attributes: [
+                    'id',
+                    'uid',
+                    'email',
+                    'name',
+                    'surname',
+                    'password_digest',
+                    'email_verified',
+                    'created_by_user_id',
+                ],
+                raw: true,
+            }),
+            Role.findAll({ raw: true }),
+            UserGroup.findAll({ raw: true }),
+            UserGroupMember.findAll({ raw: true }),
+            GroupShare.findAll({ raw: true }),
+            GroupPermission.findAll({ raw: true }),
+            Permission.findAll({ raw: true }),
+        ]);
+
+    const uidOf = Object.fromEntries(users.map((u) => [u.id, u.uid]));
+    const roleOf = Object.fromEntries(roles.map((r) => [r.user_id, r]));
+
+    const accounts = [];
+    for (const u of users) {
+        if (u.id === userId) continue;
+        accounts.push({
+            account: {
+                uid: u.uid,
+                email: u.email,
+                name: u.name,
+                surname: u.surname,
+                password_digest: u.password_digest,
+                email_verified: u.email_verified,
+                created_by_uid: uidOf[u.created_by_user_id] || null,
+                role: roleData(roleOf[u.id]),
+            },
+            backup: await exportOwnData(u.id),
+        });
+    }
+
+    const groupUidOf = Object.fromEntries(groups.map((g) => [g.id, g.uid]));
+    return {
+        exporter_role: roleData(roleOf[userId]),
+        accounts,
+        groups: groups.map((g) => ({
+            uid: g.uid,
+            name: g.name,
+            description: g.description,
+            created_by_uid: uidOf[g.created_by_user_id] || null,
+            member_uids: members
+                .filter((m) => m.group_id === g.id)
+                .map((m) => uidOf[m.user_id])
+                .filter(Boolean),
+        })),
+        group_shares: groupShares.map((gs) => ({
+            group_uid: groupUidOf[gs.group_id],
+            resource_type: gs.resource_type,
+            resource_uid: gs.resource_uid,
+            access_level: gs.access_level,
+            granted_by_uid: uidOf[gs.granted_by_user_id] || null,
+            permissions: groupPerms
+                .filter((gp) => gp.group_share_id === gs.id)
+                .map((gp) => ({
+                    user_uid: uidOf[gp.user_id],
+                    access_level: gp.access_level,
+                    propagation: gp.propagation,
+                    status: gp.status,
+                })),
+        })),
+        shares: shares.map((p) => ({
+            user_uid: uidOf[p.user_id],
+            resource_type: p.resource_type,
+            resource_uid: p.resource_uid,
+            access_level: p.access_level,
+            propagation: p.propagation,
+            granted_by_uid: uidOf[p.granted_by_user_id] || null,
+            status: p.status,
+        })),
+    };
+}
+
+async function exportUserData(userId) {
+    const backup = await exportOwnData(userId);
+    if (!isHosted() && (await isAdmin(userId))) {
+        backup.instance = await exportInstance(userId);
+    }
+    return backup;
 }
 
 // Resolves a reference either by uid (format 2) or, for old backups, by the
@@ -362,7 +502,15 @@ const IMPORT_STAT_KEYS = [
     'views',
 ];
 
-async function importUserData(userId, backupData, options = { merge: true }) {
+// Imports one account's own records. ctx is shared across the accounts of
+// an instance restore: userIdByUid resolves member links and personUids maps a
+// backup's person uid to the restored one for assignments across accounts.
+async function importOwnData(
+    userId,
+    backupData,
+    options = { merge: true },
+    ctx = {}
+) {
     if (!backupData || !backupData.version || !backupData.data) {
         throw new Error('Invalid backup data format');
     }
@@ -387,6 +535,17 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         tags: {},
         people: {},
     };
+    // backup uid -> uid of the row it became, for relinking shares
+    const uidRenames = {
+        areas: {},
+        goals: {},
+        projects: {},
+        tasks: {},
+        notes: {},
+    };
+    const noteRename = (key, from, to) => {
+        if (uidRenames[key]) uidRenames[key][from] = to;
+    };
     const writtenFiles = [];
     const transaction = await sequelize.transaction();
     const resolve = makeResolver(userId, transaction);
@@ -403,6 +562,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         if (existing && existing.user_id === userId) {
             count(key, 'skipped');
             uidMaps[key][uid] = existing.id;
+            noteRename(key, uid, existing.uid);
             return { row: existing, created: false };
         }
         if (!merge) {
@@ -419,6 +579,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         );
         count(key, 'created');
         uidMaps[key][uid] = row.id;
+        noteRename(key, uid, row.uid);
         return { row, created: true };
     };
 
@@ -563,6 +724,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         for (const person of d.people || []) {
             if (person.is_self && selfPerson) {
                 uidMaps.people[person.uid] = selfPerson.uid;
+                if (ctx.personUids) ctx.personUids[person.uid] = selfPerson.uid;
                 count('people', 'skipped');
                 continue;
             }
@@ -595,6 +757,10 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                     notes: person.notes,
                     archived: !!person.archived,
                     color: person.color,
+                    linked_user_id:
+                        (person.linked_user_uid &&
+                            ctx.userIdByUid?.[person.linked_user_uid]) ||
+                        null,
                 },
                 { transaction }
             );
@@ -602,7 +768,11 @@ async function importUserData(userId, backupData, options = { merge: true }) {
             count('people', 'created');
         }
         const mapPerson = (personUid) =>
-            personUid ? uidMaps.people[personUid] || null : null;
+            personUid
+                ? uidMaps.people[personUid] ||
+                  ctx.personUids?.[personUid] ||
+                  null
+                : null;
 
         for (const project of d.projects || []) {
             const { row, created } = await upsertByUid(
@@ -889,7 +1059,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         }
 
         await transaction.commit();
-        return stats;
+        return { stats, uidRenames };
     } catch (error) {
         await transaction.rollback();
         for (const { dir, name } of writtenFiles) {
@@ -898,6 +1068,318 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         }
         throw error;
     }
+}
+
+const RESOURCE_RENAME_KEYS = {
+    area: 'areas',
+    goal: 'goals',
+    project: 'projects',
+    task: 'tasks',
+    note: 'notes',
+};
+const RESOURCE_MODELS = {
+    area: Area,
+    goal: Goal,
+    project: Project,
+    task: Task,
+    note: Note,
+};
+
+const selfPersonUidIn = (backup) =>
+    (backup?.data?.people || []).find((p) => p.is_self)?.uid || null;
+
+// Creates the backup's accounts that are missing here (keeping their uid,
+// password hash and role) and maps every backup account uid to a local user.
+// Accounts that already exist are matched by uid, then email, and left as
+// they are: a restore never changes someone's password or role.
+async function restoreAccounts(userId, backupData, ctx, stats) {
+    const instance = backupData.instance;
+    const created = [];
+    const transaction = await sequelize.transaction();
+    try {
+        if (backupData.user?.uid) ctx.userIdByUid[backupData.user.uid] = userId;
+
+        for (const { account: a } of instance.accounts || []) {
+            if (!a || !a.uid) continue;
+            let user = await User.findOne({
+                where: { uid: a.uid },
+                transaction,
+            });
+            if (!user && a.email) {
+                user = await User.findOne({
+                    where: { email: a.email.trim().toLowerCase() },
+                    transaction,
+                });
+            }
+            if (user) {
+                stats.accounts.skipped += 1;
+            } else {
+                // password_digest is set directly so the stored hash is kept
+                // as is (the model only hashes the virtual password field).
+                user = await User.create(
+                    {
+                        uid: a.uid,
+                        email: a.email || null,
+                        name: a.name,
+                        surname: a.surname,
+                        password_digest: a.password_digest || null,
+                        email_verified: a.email_verified !== false,
+                    },
+                    { transaction }
+                );
+                if (a.role) {
+                    await Role.update(
+                        {
+                            is_admin: !!a.role.is_admin,
+                            role:
+                                a.role.role ||
+                                (a.role.is_admin ? 'admin' : 'user'),
+                            capabilities: a.role.capabilities ?? null,
+                        },
+                        { where: { user_id: user.id }, transaction }
+                    );
+                }
+                created.push({ user, account: a });
+                stats.accounts.created += 1;
+            }
+            ctx.userIdByUid[a.uid] = user.id;
+        }
+
+        for (const { user, account } of created) {
+            const creatorId = ctx.userIdByUid[account.created_by_uid];
+            if (creatorId && creatorId !== user.id) {
+                await user.update(
+                    { created_by_user_id: creatorId },
+                    { transaction, hooks: false }
+                );
+            }
+        }
+        await transaction.commit();
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
+
+    // Each account's own person keeps the backup's uid when it is free, so
+    // tasks assigned to that person in anyone's data still point at it.
+    const createdIds = new Set(created.map(({ user }) => user.id));
+    const entries = [
+        { id: userId, backup: backupData },
+        ...(instance.accounts || []).map((e) => ({
+            id: ctx.userIdByUid[e.account?.uid],
+            backup: e.backup,
+        })),
+    ];
+    for (const [index, { id, backup }] of entries.entries()) {
+        const backupSelfUid = selfPersonUidIn(backup);
+        if (!id || !backupSelfUid || (index > 0 && id === userId)) continue;
+        const self = await Person.findOne({
+            where: { user_id: id, linked_user_id: id },
+        });
+        if (!self) continue;
+        if (createdIds.has(id) && self.uid !== backupSelfUid) {
+            const taken = await Person.findOne({
+                where: { uid: backupSelfUid },
+                attributes: ['id'],
+            });
+            if (!taken) await self.update({ uid: backupSelfUid });
+        }
+        ctx.personUids[backupSelfUid] = self.uid;
+    }
+}
+
+// Recreates groups, group shares and direct shares from an instance backup.
+// Rows whose user or resource no longer resolves are skipped, and rows that
+// already exist are left alone.
+async function restoreSharing(userId, instance, ctx, renames, stats) {
+    const userIdOf = (uid) => (uid ? ctx.userIdByUid[uid] || null : null);
+    const resolveResource = async (type, uid, transaction) => {
+        const key = RESOURCE_RENAME_KEYS[type];
+        const Model = RESOURCE_MODELS[type];
+        if (!key || !Model || !uid) return null;
+        const localUid = renames[key][uid] || uid;
+        const row = await Model.findOne({
+            where: { uid: localUid },
+            attributes: ['id'],
+            transaction,
+        });
+        return row ? localUid : null;
+    };
+
+    const transaction = await sequelize.transaction();
+    try {
+        const groupIdOf = {};
+        for (const g of instance.groups || []) {
+            let group =
+                (await UserGroup.findOne({
+                    where: { uid: g.uid },
+                    transaction,
+                })) ||
+                (await UserGroup.findOne({
+                    where: { name: g.name },
+                    transaction,
+                }));
+            if (group) {
+                stats.groups.skipped += 1;
+            } else {
+                group = await UserGroup.create(
+                    {
+                        uid: g.uid,
+                        name: g.name,
+                        description: g.description ?? null,
+                        created_by_user_id: userIdOf(g.created_by_uid),
+                    },
+                    { transaction }
+                );
+                stats.groups.created += 1;
+            }
+            groupIdOf[g.uid] = group.id;
+            for (const memberUid of g.member_uids || []) {
+                const memberId = userIdOf(memberUid);
+                if (!memberId) continue;
+                await UserGroupMember.findOrCreate({
+                    where: { group_id: group.id, user_id: memberId },
+                    transaction,
+                });
+            }
+        }
+
+        for (const gs of instance.group_shares || []) {
+            const groupId = groupIdOf[gs.group_uid];
+            const resourceUid = await resolveResource(
+                gs.resource_type,
+                gs.resource_uid,
+                transaction
+            );
+            if (!groupId || !resourceUid) {
+                stats.shares.skipped += 1;
+                continue;
+            }
+            const grantedBy = userIdOf(gs.granted_by_uid) || userId;
+            const [share, createdShare] = await GroupShare.findOrCreate({
+                where: {
+                    group_id: groupId,
+                    resource_type: gs.resource_type,
+                    resource_uid: resourceUid,
+                },
+                defaults: {
+                    access_level: gs.access_level,
+                    granted_by_user_id: grantedBy,
+                },
+                transaction,
+            });
+            stats.shares[createdShare ? 'created' : 'skipped'] += 1;
+            for (const gp of gs.permissions || []) {
+                const memberId = userIdOf(gp.user_uid);
+                if (!memberId) continue;
+                await GroupPermission.findOrCreate({
+                    where: {
+                        group_share_id: share.id,
+                        user_id: memberId,
+                        resource_type: gs.resource_type,
+                        resource_uid: resourceUid,
+                    },
+                    defaults: {
+                        access_level: gp.access_level || gs.access_level,
+                        propagation: gp.propagation || 'direct',
+                        granted_by_user_id: grantedBy,
+                        status: gp.status || 'accepted',
+                    },
+                    transaction,
+                });
+            }
+        }
+
+        for (const p of instance.shares || []) {
+            const recipientId = userIdOf(p.user_uid);
+            const resourceUid = await resolveResource(
+                p.resource_type,
+                p.resource_uid,
+                transaction
+            );
+            if (!recipientId || !resourceUid) {
+                stats.shares.skipped += 1;
+                continue;
+            }
+            const [, createdShare] = await Permission.findOrCreate({
+                where: {
+                    user_id: recipientId,
+                    resource_type: p.resource_type,
+                    resource_uid: resourceUid,
+                },
+                defaults: {
+                    access_level: p.access_level,
+                    propagation: p.propagation || 'direct',
+                    granted_by_user_id: userIdOf(p.granted_by_uid) || userId,
+                    status: p.status || 'accepted',
+                },
+                transaction,
+            });
+            stats.shares[createdShare ? 'created' : 'skipped'] += 1;
+        }
+
+        await transaction.commit();
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
+}
+
+const addStats = (total, part) => {
+    for (const [key, value] of Object.entries(part)) {
+        total[key] = total[key] || { created: 0, skipped: 0 };
+        total[key].created += value.created;
+        total[key].skipped += value.skipped;
+    }
+};
+
+async function importUserData(userId, backupData, options = { merge: true }) {
+    const instance = backupData?.instance;
+    const restoreInstance =
+        instance &&
+        options.merge !== false &&
+        !isHosted() &&
+        (await isAdmin(userId));
+    if (!restoreInstance) {
+        const { stats } = await importOwnData(userId, backupData, options);
+        return stats;
+    }
+
+    const ctx = { userIdByUid: {}, personUids: {} };
+    const extra = {
+        accounts: { created: 0, skipped: 0 },
+        groups: { created: 0, skipped: 0 },
+        shares: { created: 0, skipped: 0 },
+    };
+    await restoreAccounts(userId, backupData, ctx, extra);
+
+    const renames = {
+        areas: {},
+        goals: {},
+        projects: {},
+        tasks: {},
+        notes: {},
+    };
+    const collect = (uidRenames) => {
+        for (const key of Object.keys(renames)) {
+            Object.assign(renames[key], uidRenames[key]);
+        }
+    };
+
+    const own = await importOwnData(userId, backupData, options, ctx);
+    const stats = own.stats;
+    collect(own.uidRenames);
+    for (const { account, backup } of instance.accounts || []) {
+        const accountId = ctx.userIdByUid[account?.uid];
+        // The importer's own entry is the top-level data, restored above.
+        if (!accountId || accountId === userId || !backup?.data) continue;
+        const result = await importOwnData(accountId, backup, options, ctx);
+        addStats(stats, result.stats);
+        collect(result.uidRenames);
+    }
+
+    await restoreSharing(userId, instance, ctx, renames, extra);
+    return { ...stats, ...extra };
 }
 
 module.exports = { exportUserData, importUserData, FORMAT };

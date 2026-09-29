@@ -2176,7 +2176,10 @@
     "validationErrors": "验证错误：",
     "versionIncompatible": "版本不兼容",
     "backupVersion": "备份版本",
-    "restoreButton": "恢复"
+    "restoreButton": "恢复",
+    "adminInstanceNote": "作为管理员,你的备份包含此实例上的所有账户,以及它们的数据和密码哈希。在新安装上恢复即可让所有人回来。请像保管数据库一样妥善保管此文件。",
+    "accountsCount_one": "另外 {{count}} 个账户",
+    "accountsCount_other": "另外 {{count}} 个账户"
   },
   "notifications": {
     "table": {

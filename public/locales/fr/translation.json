@@ -2177,7 +2177,10 @@
     "validationErrors": "Erreurs de validation :",
     "versionIncompatible": "Version incompatible",
     "backupVersion": "Version de la sauvegarde",
-    "restoreButton": "Restaurer"
+    "restoreButton": "Restaurer",
+    "adminInstanceNote": "En tant qu'admin, votre sauvegarde inclut tous les comptes de cette instance, avec leurs données et les hachages de leurs mots de passe. La restaurer sur une nouvelle installation fait revenir tout le monde. Conservez le fichier aussi soigneusement que la base de données.",
+    "accountsCount_one": "{{count}} autre compte",
+    "accountsCount_other": "{{count}} autres comptes"
   },
   "notifications": {
     "table": {

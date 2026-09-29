@@ -2164,7 +2164,10 @@
     "size": "Tamaño",
     "contents": "Contenido",
     "actions": "Acciones",
-    "restoreButton": "Restaurar"
+    "restoreButton": "Restaurar",
+    "adminInstanceNote": "Como administrador, tu copia de seguridad incluye todas las cuentas de esta instancia, con sus datos y los hashes de sus contraseñas. Restaurarla en una instalación nueva los trae a todos de vuelta. Guarda el archivo con el mismo cuidado que la base de datos.",
+    "accountsCount_one": "{{count}} cuenta más",
+    "accountsCount_other": "{{count}} cuentas más"
   },
   "notifications": {
     "table": {

@@ -2185,7 +2185,10 @@
     "validationErrors": "Validierungsfehler:",
     "versionIncompatible": "Version inkompatibel",
     "backupVersion": "Backup-Version",
-    "restoreButton": "Wiederherstellen"
+    "restoreButton": "Wiederherstellen",
+    "adminInstanceNote": "Als Admin enthält deine Sicherung jedes Konto dieser Instanz, mit seinen Daten und Passwort-Hashes. Die Wiederherstellung auf einer neuen Installation bringt alle zurück. Bewahre die Datei so sicher auf wie die Datenbank.",
+    "accountsCount_one": "{{count}} weiteres Konto",
+    "accountsCount_other": "{{count}} weitere Konten"
   },
   "notifications": {
     "table": {

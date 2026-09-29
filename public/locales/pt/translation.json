@@ -2177,7 +2177,10 @@
     "validationErrors": "Erros de validação:",
     "versionIncompatible": "Versão Incompatível",
     "backupVersion": "Versão do backup",
-    "restoreButton": "Restaurar"
+    "restoreButton": "Restaurar",
+    "adminInstanceNote": "Como administrador, a sua cópia de segurança inclui todas as contas desta instância, com os respetivos dados e hashes das palavras-passe. Restaurá-la numa nova instalação traz todos de volta. Guarde o ficheiro com o mesmo cuidado que a base de dados.",
+    "accountsCount_one": "{{count}} outra conta",
+    "accountsCount_other": "{{count}} outras contas"
   },
   "notifications": {
     "table": {

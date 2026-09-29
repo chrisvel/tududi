@@ -2384,7 +2384,10 @@
     "validationError": "The selected file is not a valid backup",
     "validationErrors": "Validation errors:",
     "versionIncompatible": "Version Incompatible",
-    "backupVersion": "Backup version"
+    "backupVersion": "Backup version",
+    "adminInstanceNote": "As an admin, your backup includes every account on this instance, with their data and password hashes. Restoring it on a new install brings everyone back. Keep the file as safe as the database.",
+    "accountsCount_one": "{{count}} other account",
+    "accountsCount_other": "{{count}} other accounts"
   },
   "notifications": {
     "table": {
