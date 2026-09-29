@@ -130,6 +130,7 @@ export const fetchDailyPlan = async (
     const response = await fetch(getApiPath(`daily-plan${query}`), {
         credentials: 'include',
         headers: getDefaultHeaders(),
+        cache: 'no-store',
     });
     await handleAuthResponse(response, 'Failed to load the day plan.');
     return response.json();
@@ -139,6 +140,7 @@ export const fetchPlanCandidates = async (): Promise<PlanCandidates> => {
     const response = await fetch(getApiPath('daily-plan/candidates'), {
         credentials: 'include',
         headers: getDefaultHeaders(),
+        cache: 'no-store',
     });
     await handleAuthResponse(response, 'Failed to load tasks to plan.');
     return response.json();
