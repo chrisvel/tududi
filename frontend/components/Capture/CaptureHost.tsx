@@ -12,12 +12,16 @@ import {
     useCaptureUi,
 } from '../../utils/captureUi';
 import { useStore } from '../../store/useStore';
+import { useScreenCovered } from './useScreenCovered';
 
 // The Inbox page has this same box inline, and the editors need the screen
 // for typing, so the phone button stays out of their way.
 const PHONE_BUTTON_HIDDEN_ON = ['/inbox', '/task/', '/note/'];
 
 const NAVBAR_BUTTON = '[data-testid="capture-navbar-button"]';
+const PHONE_BUTTON = '[data-testid="capture-phone-button"]';
+// Matches the phone button's lg:hidden.
+const PHONE_QUERY = '(max-width: 1023px)';
 
 const DOCK_WIDTH = '640px';
 const SIDEBAR_WIDTH = 'var(--sidebar-width, 22rem)';
@@ -38,6 +42,16 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
     const dialogRef = useRef<HTMLDivElement>(null);
     const returnFocusRef = useRef<HTMLElement | null>(null);
     const [everOpened, setEverOpened] = useState(false);
+    const [isPhoneWidth, setIsPhoneWidth] = useState(
+        () => window.matchMedia?.(PHONE_QUERY).matches ?? false
+    );
+    useEffect(() => {
+        const query = window.matchMedia?.(PHONE_QUERY);
+        if (!query) return undefined;
+        const onChange = () => setIsPhoneWidth(query.matches);
+        query.addEventListener('change', onChange);
+        return () => query.removeEventListener('change', onChange);
+    }, []);
     // A click or tap anywhere outside closes it. The navbar button toggles
     // on its own, so it is left out.
     useEffect(() => {
@@ -83,11 +97,18 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
         return () => cancelAnimationFrame(frame);
     }, [open, openCount, everOpened]);
 
-    const phoneButtonVisible =
+    const phoneButtonAllowed =
         !open &&
         !PHONE_BUTTON_HIDDEN_ON.some((path) =>
             location.pathname.startsWith(path)
         );
+    // Modals and sheets keep their Save buttons at the bottom right, right
+    // where the phone button sits, so it steps aside while one is open.
+    const screenCovered = useScreenCovered(
+        phoneButtonAllowed && isPhoneWidth,
+        PHONE_BUTTON
+    );
+    const phoneButtonVisible = phoneButtonAllowed && !screenCovered;
 
     return (
         <>

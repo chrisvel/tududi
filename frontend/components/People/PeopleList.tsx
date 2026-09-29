@@ -104,9 +104,13 @@ const PeopleList: React.FC = () => {
         try {
             const result = await updatePerson(person.uid!, { archived: !person.archived });
             setPeople((prev) => prev.map((p) => (p.uid === person.uid ? result.person : p)));
-            showSuccessToast(person.archived ? 'Person unarchived' : 'Person archived');
+            showSuccessToast(
+                person.archived
+                    ? t('people.unarchived', 'Person unarchived')
+                    : t('people.archived', 'Person archived')
+            );
         } catch (err: unknown) {
-            showErrorToast(err instanceof Error ? err.message : 'Failed to archive person');
+            showErrorToast(err instanceof Error ? err.message : t('people.archiveError', 'Failed to archive person'));
         }
     };
 
@@ -115,9 +119,9 @@ const PeopleList: React.FC = () => {
         try {
             await deletePerson(personToDelete.uid!);
             setPeople((prev) => prev.filter((p) => p.uid !== personToDelete.uid));
-            showSuccessToast('Person deleted');
+            showSuccessToast(t('people.deleted', 'Person deleted'));
         } catch (err: unknown) {
-            showErrorToast(err instanceof Error ? err.message : 'Failed to delete person');
+            showErrorToast(err instanceof Error ? err.message : t('people.deleteError', 'Failed to delete person'));
         } finally {
             setIsConfirmDialogOpen(false);
             setPersonToDelete(null);
@@ -175,11 +179,11 @@ const PeopleList: React.FC = () => {
     });
 
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-light">People</h2>
+                    <h2 className="text-2xl font-light">{t('people.title', 'People')}</h2>
                     <div className="flex items-center gap-2">
                         {canInvite && (
                             <button
@@ -228,17 +232,17 @@ const PeopleList: React.FC = () => {
                 </div>
 
                 {isLoading ? (
-                    <div className="text-center py-12 text-gray-400 dark:text-gray-500">Loading...</div>
+                    <div className="text-center py-12 text-gray-400 dark:text-gray-500">{t('common.loading', 'Loading...')}</div>
                 ) : displayPeople.length === 0 ? (
                     <div className="text-center py-16">
                         <p className="text-gray-500 dark:text-gray-400 text-sm">
-                            No people yet. Add family, colleagues, or friends.
+                            {t('people.empty', 'No people yet. Add family, colleagues, or friends.')}
                         </p>
                         <button
                             onClick={openCreate}
                             className="mt-4 text-blue-600 dark:text-blue-400 text-sm hover:underline"
                         >
-                            Add your first person
+                            {t('people.addFirst', 'Add your first person')}
                         </button>
                     </div>
                 ) : (
@@ -292,7 +296,7 @@ const PeopleList: React.FC = () => {
                                                             }}
                                                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
                                                         >
-                                                            Edit
+                                                            {t('common.edit', 'Edit')}
                                                         </button>
                                                         {person.kind !== 'member' && canInvite && (
                                                             <button
@@ -319,7 +323,7 @@ const PeopleList: React.FC = () => {
                                                             }}
                                                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                                                         >
-                                                            {person.archived ? 'Unarchive' : 'Archive'}
+                                                            {person.archived ? t('people.unarchive', 'Unarchive') : t('people.archive', 'Archive')}
                                                         </button>
                                                         <button
                                                             onClick={(e) => {
@@ -330,7 +334,7 @@ const PeopleList: React.FC = () => {
                                                             }}
                                                             className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
                                                         >
-                                                            Delete
+                                                            {t('common.delete', 'Delete')}
                                                         </button>
                                                             </>
                                                         )}
@@ -351,7 +355,7 @@ const PeopleList: React.FC = () => {
                                                                 className={`inline-flex items-center ml-1.5 align-middle ${
                                                                     person.color ? 'text-white/70' : 'text-blue-500 dark:text-blue-400'
                                                                 }`}
-                                                                title="Linked to a user account"
+                                                                title={t('people.linkedAccount', 'Linked to a user account')}
                                                             >
                                                                 <UserIcon className="h-3 w-3" />
                                                             </span>
@@ -361,7 +365,7 @@ const PeopleList: React.FC = () => {
                                                         <span className={`mt-1 inline-block text-[10px] uppercase tracking-wide ${
                                                             person.color ? 'text-white/60' : 'text-gray-400 dark:text-gray-500'
                                                         }`}>
-                                                            archived
+                                                            {t('people.archivedBadge', 'archived')}
                                                         </span>
                                                     )}
                                                 </div>
@@ -421,8 +425,11 @@ const PeopleList: React.FC = () => {
 
                 {isConfirmDialogOpen && personToDelete && (
                     <ConfirmDialog
-                        title="Delete Person"
-                        message={`Are you sure you want to delete "${personToDelete.name}"? This cannot be undone.`}
+                        title={t('people.deletePerson', 'Delete Person')}
+                        message={t('people.deleteConfirm', {
+                            name: personToDelete.name,
+                            defaultValue: 'Are you sure you want to delete "{{name}}"? This cannot be undone.',
+                        })}
                         onConfirm={handleDelete}
                         onCancel={() => {
                             setIsConfirmDialogOpen(false);

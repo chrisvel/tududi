@@ -4,6 +4,8 @@ import { useStore } from '../../store/useStore';
 import { Task, HabitTimeOfDay } from '../../entities/Task';
 import HabitCard from './HabitCard';
 import { SURFACE } from '../../constants/colorPalette';
+import NewItemButton from '../Shared/NewItemButton';
+import BlankSlate from '../Shared/BlankSlate';
 import {
     FireIcon,
     CheckCircleIcon,
@@ -177,13 +179,10 @@ const Habits: React.FC = () => {
                         <ArchiveBoxIcon className="w-4 h-4" />
                         {t('habits.archived', 'Archived')}
                     </button>
-                    <button
+                    <NewItemButton
+                        label={t('habits.new', 'New Habit')}
                         onClick={() => navigate('/habit/new')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm ${SURFACE.card} text-gray-700 dark:text-gray-300 rounded-lg shadow-sm hover:shadow transition-all`}
-                    >
-                        <PlusIcon className="w-4 h-4" />
-                        {t('habits.new', 'New Habit')}
-                    </button>
+                    />
                 </div>
             </div>
 
@@ -242,14 +241,23 @@ const Habits: React.FC = () => {
             )}
 
             {habits.length === 0 ? (
-                <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-                    <p>
-                        {t(
-                            'habits.empty',
-                            'No habits yet. Create your first habit to get started!'
-                        )}
-                    </p>
-                </div>
+                <BlankSlate
+                    title={t('habits.noHabitsYet', 'No habits yet.')}
+                    hint={t(
+                        'habits.blankSlateHint',
+                        'A habit is something you want to do regularly, like reading or a morning walk, or something you want to quit. Check in each time and watch your streak and strength grow.'
+                    )}
+                    actions={[
+                        {
+                            label: t(
+                                'habits.blankSlateNew',
+                                'Create your first habit'
+                            ),
+                            icon: PlusIcon,
+                            onClick: () => navigate('/habit/new'),
+                        },
+                    ]}
+                />
             ) : (
                 <>
                     <div className="mb-8">

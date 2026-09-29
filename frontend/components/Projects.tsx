@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import {
-    MagnifyingGlassIcon,
-    Squares2X2Icon,
-    Bars3Icon,
-    ClockIcon,
-} from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon, Squares2X2Icon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
-import Tooltip from './Shared/Tooltip';
 import ProjectModal from './Project/ProjectModal';
-import SortFilter from './Shared/SortFilter';
+import IconSortDropdown from './Shared/IconSortDropdown';
 import FilterDropdown, { FilterOption } from './Shared/FilterDropdown';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import {
@@ -31,9 +25,16 @@ import { SortOption } from './Shared/SortFilterButton';
 
 import { Project, ProjectStatus } from '../entities/Project';
 import { useSearchParams, Link } from 'react-router-dom';
-import { RectangleStackIcon } from '@heroicons/react/24/outline';
+import {
+    FunnelIcon,
+    PlusIcon,
+    RectangleStackIcon,
+} from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
 import SortableItem from './Shared/SortableItem';
+import NewItemButton from './Shared/NewItemButton';
+import BlankSlate from './Shared/BlankSlate';
+import { useCan } from '../hooks/useCan';
 import {
     mergeVisibleOrder,
     resetSortableCursor,
@@ -105,6 +106,7 @@ const Projects: React.FC = () => {
         setError: setProjectsError,
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
+    const canCreateProjects = useCan('create_projects');
     const templatesEnabled = useStore(
         (state) => state.userSettingsStore.templatesEnabled
     );
@@ -202,6 +204,9 @@ const Projects: React.FC = () => {
         { value: 'custom:asc', label: t('sort.custom', 'Custom') },
     ];
     const isCustomOrder = orderBy.startsWith('custom:');
+    // Status and area show on the page; someday lives in the menu, so the
+    // menu marks it when someday projects are shown.
+    const filtersActive = somedayFilter;
 
     const sensors = useSortableSensors();
 
@@ -319,6 +324,24 @@ const Projects: React.FC = () => {
         } finally {
             setModalState({ isOpen: false, projectToEdit: null });
         }
+    };
+
+    const handleNewProject = () => {
+        modalStateRef.current = { isOpen: true, projectToEdit: null };
+        setModalState({ isOpen: true, projectToEdit: null });
+    };
+
+    // Clears every filter that can hide a project, including search.
+    const handleShowAllProjects = () => {
+        const params = new URLSearchParams(searchParams);
+        params.set('status', 'all');
+        params.delete('area');
+        params.set('someday', '1');
+        localStorage.setItem('projectsStatusFilter', 'all');
+        localStorage.setItem('projectsAreaFilter', '');
+        localStorage.setItem('projectsSomedayFilter', '1');
+        setSearchParams(params);
+        setSearchQuery('');
     };
 
     const handleEditProject = (project: Project) => {
@@ -609,132 +632,142 @@ const Projects: React.FC = () => {
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between gap-3 mb-8">
                     <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
-                    {templatesEnabled && (
-                        <Link
-                            to="/templates"
-                            className="flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
-                        >
-                            <RectangleStackIcon className="h-4 w-4" />
-                            {t('projects.fromTemplate', 'From Template')}
-                        </Link>
-                    )}
-                </div>
-
-                {/* View Mode and Filters */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
-                    <div className="flex items-center space-x-2">
-                        <button
-                            onClick={() => setViewMode('cards')}
-                            className={`p-2 rounded-md focus:outline-none ${
-                                viewMode === 'cards'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                            }`}
-                            aria-label={t('projects.cardViewAriaLabel')}
-                        >
-                            <Squares2X2Icon className="h-5 w-5" />
-                        </button>
-
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`p-2 rounded-md focus:outline-none ${
-                                viewMode === 'list'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                            }`}
-                            aria-label={t('projects.listViewAriaLabel')}
-                        >
-                            <Bars3Icon className="h-5 w-5" />
-                        </button>
-
-                        {/* Search Toggle Button */}
+                    <div className="flex items-center gap-3">
                         <button
                             onClick={() =>
                                 setIsSearchExpanded(!isSearchExpanded)
                             }
-                            className={`p-2 rounded-md focus:outline-none transition-colors ${
+                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-1.5 sm:p-2 ${
                                 isSearchExpanded
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
+                            aria-expanded={isSearchExpanded}
                             aria-label={t('common.search', 'Search')}
+                            title={t('common.search', 'Search')}
                         >
-                            <MagnifyingGlassIcon className="h-5 w-5" />
+                            <MagnifyingGlassIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-200" />
                         </button>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                        {/* Someday Tag Toggle */}
-                        <div className="w-full md:w-auto mb-4 md:mb-0">
-                            <Tooltip
-                                content={
-                                    <div className="w-44">
-                                        <p className="font-bold mb-1">
-                                            {t(
-                                                'projects.filters.someday',
-                                                'Someday'
-                                            )}
-                                        </p>
-                                        <p className="font-normal opacity-80">
-                                            {t(
-                                                'projects.filters.somedayTooltip',
-                                                'Projects tagged "someday" are hidden by default. Click to reveal them.'
-                                            )}
-                                        </p>
-                                    </div>
-                                }
-                                position="bottom"
-                            >
-                                <button
-                                    onClick={handleSomedayToggle}
-                                    aria-label={t(
+                        {/* Sort, view and filters in one menu, like the
+                            other list pages */}
+                        <IconSortDropdown
+                            options={sortOptions}
+                            value={orderBy}
+                            onChange={handleSortChange}
+                            ariaLabel={t('tasks.sortBy', 'Sort by')}
+                            title={t('tasks.sortBy', 'Sort by')}
+                            dropdownLabel={t('tasks.sortBy', 'Sort by')}
+                            align="right"
+                            active={filtersActive}
+                            sections={[
+                                {
+                                    key: 'view',
+                                    label: t('projects.viewAs', 'View'),
+                                    options: [
+                                        {
+                                            value: 'cards',
+                                            label: t(
+                                                'projects.cardViewAriaLabel'
+                                            ),
+                                        },
+                                        {
+                                            value: 'list',
+                                            label: t(
+                                                'projects.listViewAriaLabel'
+                                            ),
+                                        },
+                                    ],
+                                    value: viewMode,
+                                    onChange: (value) =>
+                                        setViewMode(value as 'cards' | 'list'),
+                                },
+                                {
+                                    key: 'someday',
+                                    label: t(
                                         'projects.filters.someday',
                                         'Someday'
-                                    )}
-                                    className={`p-2 rounded-md focus:outline-none transition-colors ${
-                                        somedayFilter
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                    }`}
-                                >
-                                    <ClockIcon className="h-5 w-5" />
-                                </button>
-                            </Tooltip>
-                        </div>
-
-                        {/* Status Filter */}
-                        <div className="w-full md:w-auto mb-4 md:mb-0">
-                            <FilterDropdown
-                                options={statusOptions}
-                                value={statusFilter}
-                                onChange={handleStatusFilterChange}
-                                size="desktop"
-                                autoWidth={true}
-                            />
-                        </div>
-
-                        {/* Area Filter */}
-                        <div className="w-full md:w-auto mb-4 md:mb-0">
-                            <FilterDropdown
-                                options={areaOptions}
-                                value={actualAreaFilter}
-                                onChange={handleAreaFilterChange}
-                                size="desktop"
-                                autoWidth={true}
-                            />
-                        </div>
-
-                        {/* Sort Filter Button */}
-                        <SortFilter
-                            sortOptions={sortOptions}
-                            sortValue={orderBy}
-                            onSortChange={handleSortChange}
+                                    ),
+                                    options: [
+                                        {
+                                            value: 'hide',
+                                            label: t(
+                                                'projects.filters.somedayHide',
+                                                'Hide'
+                                            ),
+                                        },
+                                        {
+                                            value: 'show',
+                                            label: t(
+                                                'projects.filters.somedayShow',
+                                                'Show'
+                                            ),
+                                        },
+                                    ],
+                                    value: somedayFilter ? 'show' : 'hide',
+                                    onChange: (value) => {
+                                        if (
+                                            (value === 'show') !==
+                                            somedayFilter
+                                        )
+                                            handleSomedayToggle();
+                                    },
+                                },
+                            ]}
                         />
+                        {templatesEnabled && (
+                            <Link
+                                to="/templates"
+                                aria-label={t(
+                                    'projects.fromTemplate',
+                                    'From Template'
+                                )}
+                                title={t(
+                                    'projects.fromTemplate',
+                                    'From Template'
+                                )}
+                                className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                            >
+                                <RectangleStackIcon className="h-5 w-5 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">
+                                    {t(
+                                        'projects.fromTemplate',
+                                        'From Template'
+                                    )}
+                                </span>
+                            </Link>
+                        )}
+                        {canCreateProjects && (
+                            <NewItemButton
+                                label={t('projects.new', 'New Project')}
+                                onClick={handleNewProject}
+                                testId="new-project-button"
+                            />
+                        )}
                     </div>
+                </div>
+
+                {/* Status and area filters: one row, sharing it on phones */}
+                <div className="flex items-center gap-3 mb-6 sm:justify-end">
+                    <FilterDropdown
+                        options={statusOptions}
+                        value={statusFilter}
+                        onChange={handleStatusFilterChange}
+                        size="desktop"
+                        autoWidth={true}
+                        fill
+                    />
+                    <FilterDropdown
+                        options={areaOptions}
+                        value={actualAreaFilter}
+                        onChange={handleAreaFilterChange}
+                        size="desktop"
+                        autoWidth={true}
+                        fill
+                    />
                 </div>
 
                 {/* Collapsible Search Bar */}
@@ -759,11 +792,85 @@ const Projects: React.FC = () => {
 
                 {/* Projects Grid/List */}
                 {displayProjects.length === 0 ? (
-                    <div className={projectsContainerClass}>
-                        <div className="text-gray-700 dark:text-gray-300">
-                            {t('projects.noProjectsFound')}
-                        </div>
-                    </div>
+                    projects.length === 0 ? (
+                        <BlankSlate
+                            title={t(
+                                'projects.noProjectsYet',
+                                'No projects yet.'
+                            )}
+                            hint={t(
+                                'projects.blankSlateHint',
+                                'A project groups the tasks and notes that lead to one outcome, like planning a trip or launching a website. Keep them tidy by grouping them into areas like Work or Home.'
+                            )}
+                            actions={[
+                                ...(canCreateProjects
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'projects.blankSlateNew',
+                                                  'Create your first project'
+                                              ),
+                                              icon: PlusIcon,
+                                              onClick: handleNewProject,
+                                          },
+                                      ]
+                                    : []),
+                                ...(canCreateProjects && templatesEnabled
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'projects.blankSlateTemplate',
+                                                  'Start from a template'
+                                              ),
+                                              icon: RectangleStackIcon,
+                                              to: '/templates',
+                                          },
+                                      ]
+                                    : []),
+                                {
+                                    label: t(
+                                        'projects.blankSlateAreas',
+                                        'Set up areas'
+                                    ),
+                                    icon: Squares2X2Icon,
+                                    to: '/areas',
+                                },
+                            ]}
+                        />
+                    ) : (
+                        <BlankSlate
+                            title={t(
+                                'projects.noProjectsFound',
+                                'No projects found'
+                            )}
+                            hint={t(
+                                'projects.blankSlateFilteredHint',
+                                'Try changing your filters or search.'
+                            )}
+                            actions={[
+                                {
+                                    label: t(
+                                        'projects.blankSlateShowAll',
+                                        'Show all projects'
+                                    ),
+                                    icon: FunnelIcon,
+                                    onClick: handleShowAllProjects,
+                                },
+                                ...(canCreateProjects
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'projects.new',
+                                                  'New Project'
+                                              ),
+                                              icon: PlusIcon,
+                                              onClick: handleNewProject,
+                                          },
+                                      ]
+                                    : []),
+                            ]}
+                        />
+                    )
                 ) : displayProjects.every((p) => p.uid) ? (
                     <DndContext
                         sensors={sensors}

@@ -35,7 +35,7 @@ const CaptureDestinations: React.FC<CaptureDestinationsProps> = ({
         ];
         return (
             <div
-                className="flex items-center gap-2 min-w-0"
+                className="flex flex-wrap items-center gap-x-2 gap-y-1.5 min-w-0"
                 data-testid="capture-destinations-locked"
             >
                 <span className="text-[13px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
@@ -44,7 +44,7 @@ const CaptureDestinations: React.FC<CaptureDestinationsProps> = ({
                 {chips.map((label) => (
                     <span
                         key={label}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[13px] rounded-md bg-blue-100 dark:bg-blue-900/50 text-gray-900 dark:text-white font-semibold"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[13px] rounded-md max-w-full truncate bg-blue-100 dark:bg-blue-900/50 text-gray-900 dark:text-white font-semibold"
                     >
                         {label}
                     </span>
@@ -57,15 +57,17 @@ const CaptureDestinations: React.FC<CaptureDestinationsProps> = ({
         );
     }
 
+    // Wraps instead of running off narrow screens: long labels (Greek,
+    // German) push the options under "Add to", then onto a second row.
     return (
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 min-w-0">
             <span className="text-[13px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
                 {t('capture.addTo', 'Add to')}
             </span>
             <div
                 role="radiogroup"
                 aria-label={t('capture.addTo', 'Add to')}
-                className="inline-flex rounded-lg bg-gray-100 dark:bg-black/30 p-0.5 gap-0.5"
+                className="inline-flex flex-wrap max-w-full rounded-lg bg-gray-100 dark:bg-black/30 p-0.5 gap-0.5"
             >
                 {CAPTURE_TARGETS.map((target) => {
                     const selected = target === value;
@@ -77,7 +79,7 @@ const CaptureDestinations: React.FC<CaptureDestinationsProps> = ({
                             aria-checked={selected}
                             data-testid={`capture-target-${target}`}
                             onClick={() => onChange(target)}
-                            className={`px-2 sm:px-2.5 py-1 text-[13px] rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                            className={`px-2 sm:px-2.5 py-1 text-[13px] whitespace-nowrap rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                                 selected
                                     ? 'bg-blue-100 dark:bg-blue-900/50 text-gray-900 dark:text-white font-semibold'
                                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'

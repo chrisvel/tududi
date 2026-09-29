@@ -13,6 +13,9 @@ interface FilterDropdownProps {
     placeholder?: string;
     size?: 'mobile' | 'desktop';
     autoWidth?: boolean;
+    // Takes its share of a row on phones, cutting long labels short; a
+    // fixed width from sm up. The menu still shows labels in full.
+    fill?: boolean;
     className?: string;
 }
 
@@ -23,6 +26,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
     placeholder = 'Select...',
     size = 'desktop',
     autoWidth = false,
+    fill = false,
     className = '',
 }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -76,30 +80,35 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
     const dynamicStyles = getMinWidth();
     const widthClass = autoWidth ? '' : isMobile ? 'w-32' : 'w-40';
 
-    const buttonClasses = `inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm ${isMobile ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'} bg-white dark:bg-gray-700 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors ${widthClass}`;
+    const buttonClasses = `inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm ${isMobile ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'} bg-white dark:bg-gray-700 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors ${fill ? 'w-full sm:w-44 gap-1' : widthClass}`;
 
     const iconSize = isMobile ? 'h-3 w-3' : 'h-4 w-4';
 
     return (
-        <div className={`relative ${className}`} ref={dropdownRef}>
+        <div
+            className={`relative ${fill ? 'flex-1 min-w-0 sm:flex-none' : ''} ${className}`}
+            ref={dropdownRef}
+        >
             <button
                 type="button"
                 className={buttonClasses}
-                style={dynamicStyles}
+                style={fill ? undefined : dynamicStyles}
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <span className="whitespace-nowrap">
+                <span
+                    className={fill ? 'truncate min-w-0' : 'whitespace-nowrap'}
+                >
                     {selectedOption?.label || placeholder}
                 </span>
                 <ChevronDownIcon
-                    className={`${iconSize} text-gray-500 dark:text-gray-300 transition-transform ${
+                    className={`${iconSize} flex-shrink-0 text-gray-500 dark:text-gray-300 transition-transform ${
                         isOpen ? 'rotate-180' : ''
                     }`}
                 />
             </button>
             {isOpen && (
                 <div
-                    className={`origin-top-right absolute right-0 mt-1 ${!autoWidth ? (isMobile ? 'w-36' : 'w-40') : ''} rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50`}
+                    className={`origin-top-right absolute right-0 mt-1 ${fill ? 'min-w-full' : ''} ${!autoWidth ? (isMobile ? 'w-36' : 'w-40') : ''} rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50`}
                     style={autoWidth ? dynamicStyles : {}}
                 >
                     <div className="p-1">

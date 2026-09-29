@@ -1,6 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
 import Areas from '../Areas';
 
 jest.mock('react-i18next', () => ({
@@ -23,7 +24,10 @@ const loadAreas = jest.fn();
 
 jest.mock('../../store/useStore', () => {
     const mockUseStore: any = (selector: any) =>
-        selector({ areasStore: { areas: [], loadAreas } });
+        selector({
+            areasStore: { areas: [], loadAreas },
+            userSettingsStore: { capabilities: null },
+        });
     mockUseStore.getState = () => ({
         areasStore: {
             areas: [],
@@ -37,9 +41,25 @@ jest.mock('../../store/useStore', () => {
 });
 
 describe('Areas overview page', () => {
+    const renderAreas = () =>
+        render(
+            <MemoryRouter>
+                <Areas />
+            </MemoryRouter>
+        );
+
     it('forces a fresh reload of areas on mount so card counts do not go stale', () => {
-        render(<Areas />);
+        renderAreas();
 
         expect(loadAreas).toHaveBeenCalledWith(true);
+    });
+
+    it('shows the blank slate with create actions when there are no areas', () => {
+        renderAreas();
+
+        expect(screen.getByText('No areas yet.')).toBeInTheDocument();
+        expect(screen.getByText('Create your first area')).toBeInTheDocument();
+        expect(screen.getByText('Go to projects')).toBeInTheDocument();
+        expect(screen.getByTestId('new-area-button')).toBeInTheDocument();
     });
 });

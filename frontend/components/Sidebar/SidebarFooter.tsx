@@ -266,7 +266,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     {telegramStatus !== 'none' && (
                         <div
                             className="flex items-center justify-center"
-                            title={telegramStatus === 'healthy' ? 'Telegram connected' : 'Telegram connection problem'}
+                            title={telegramStatus === 'healthy' ? t('sidebar.telegramConnected', 'Telegram connected') : t('sidebar.telegramProblem', 'Telegram connection problem')}
                         >
                             <TelegramIcon
                                 className={`h-4 w-4 ${telegramStatus === 'healthy' ? 'text-green-500' : 'text-red-500'}`}

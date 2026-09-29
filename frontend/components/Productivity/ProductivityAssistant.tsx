@@ -7,7 +7,9 @@ import {
     ClockIcon,
     FolderIcon,
     CheckCircleIcon,
+    CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
+import BlankSlate from '../Shared/BlankSlate';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { getVagueTasks } from '../../utils/taskIntelligenceService';
@@ -296,14 +298,51 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
         }
     };
 
+    if (tasks.length === 0 && projects.length === 0) {
+        return (
+            <BlankSlate
+                title={t('productivity.nothingYet', 'Nothing to review yet.')}
+                hint={t(
+                    'productivity.blankSlateHint',
+                    'The assistant looks over your tasks and projects for things that need attention, like vague tasks, stale work or stuck projects. Add some tasks and check back.'
+                )}
+                actions={[
+                    {
+                        label: t('productivity.goToTasks', 'Go to tasks'),
+                        icon: CheckCircleIcon,
+                        to: '/tasks',
+                    },
+                    {
+                        label: t('productivity.goToProjects', 'Go to projects'),
+                        icon: FolderIcon,
+                        to: '/projects',
+                    },
+                ]}
+            />
+        );
+    }
+
     if (totalIssues === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-                <CheckCircleIcon className="h-12 w-12 text-green-400 mb-3" />
-                <p className="text-gray-500 dark:text-gray-400">
-                    {t('productivity.noIssues', 'Everything looks good! No issues found.')}
-                </p>
-            </div>
+            <BlankSlate
+                title={t('productivity.noIssues', 'Everything looks good!')}
+                hint={t(
+                    'productivity.allClearHint',
+                    'No vague tasks, stale work or stuck projects right now. A good moment to plan what comes next.'
+                )}
+                actions={[
+                    {
+                        label: t('productivity.planDay', 'Plan your day'),
+                        icon: CalendarDaysIcon,
+                        to: '/today/plan',
+                    },
+                    {
+                        label: t('productivity.goToTasks', 'Go to tasks'),
+                        icon: CheckCircleIcon,
+                        to: '/tasks',
+                    },
+                ]}
+            />
         );
     }
 
