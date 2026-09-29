@@ -249,3 +249,72 @@ export const validateBackup = async (file: File): Promise<ValidationResult> => {
 
     return await response.json();
 };
+
+export interface InstanceImportResult {
+    success: boolean;
+    message: string;
+    accounts: {
+        email: string | null;
+        name: string | null;
+        status: 'created' | 'existing';
+    }[];
+    shares: number;
+    groups: number;
+    skipped: { type: string; resource_type?: string; reason: string }[];
+}
+
+/**
+ * Download a backup of every account (admins only)
+ */
+export const downloadInstanceBackup = async (): Promise<void> => {
+    const response = await fetch(getApiPath('backup/instance/export'), {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Accept: 'application/gzip' },
+    });
+
+    await handleAuthResponse(response, 'Failed to download backup.');
+
+    const blob = await response.blob();
+    const contentDisposition = response.headers.get('Content-Disposition');
+    const match = contentDisposition?.match(/filename="(.+)"/);
+    const filename =
+        match?.[1] ||
+        `tududi-all-accounts-${new Date().toISOString().split('T')[0]}.json.gz`;
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+};
+
+/**
+ * Restore a backup of every account (admins only)
+ */
+export const importInstanceBackup = async (
+    file: File
+): Promise<InstanceImportResult> => {
+    const formData = new FormData();
+    formData.append('backup', file);
+
+    const response = await fetch(getApiPath('backup/instance/import'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(
+            error.message || error.error || 'Failed to restore backup.'
+        );
+    }
+    return await response.json();
+};

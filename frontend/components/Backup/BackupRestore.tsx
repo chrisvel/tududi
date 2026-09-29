@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import InstanceBackupSection from './InstanceBackupSection';
 import {
     createBackup,
     listSavedBackups,
@@ -23,6 +24,7 @@ import {
 
 interface BackupRestoreProps {
     onImportSuccess?: () => void;
+    isAdmin?: boolean;
 }
 
 type TabType = 'export' | 'import';
@@ -35,7 +37,10 @@ interface ConfirmDialogState {
     confirmButtonText?: string;
 }
 
-const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
+const BackupRestore: React.FC<BackupRestoreProps> = ({
+    onImportSuccess,
+    isAdmin = false,
+}) => {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<TabType>('export');
     const [isExporting, setIsExporting] = useState(false);
@@ -846,6 +851,10 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                         )}
                     </div>
                 </div>
+
+                {isAdmin && (
+                    <InstanceBackupSection onImportSuccess={onImportSuccess} />
+                )}
             </div>
         </>
     );

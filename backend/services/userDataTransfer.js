@@ -100,7 +100,10 @@ async function writeUploadedImage(image, subdir, prefix) {
     return storedFilename;
 }
 
-async function exportUserData(userId) {
+// options.includeLinkedUsers adds the uid of the account a person card points
+// at (linked_user_uid). Only the all-accounts backup uses it: a single
+// account's backup cannot restore links to other accounts.
+async function exportUserData(userId, options = {}) {
     const user = await User.findByPk(userId, {
         attributes: {
             exclude: [
@@ -172,6 +175,21 @@ async function exportUserData(userId) {
         View.findAll({ where: { user_id: userId } }),
         Person.findAll({ where: { user_id: userId } }),
     ]);
+
+    const linkedUserUids = {};
+    if (options.includeLinkedUsers) {
+        const linkedIds = [
+            ...new Set(people.map((p) => p.linked_user_id).filter(Boolean)),
+        ];
+        if (linkedIds.length) {
+            const linked = await User.findAll({
+                where: { id: linkedIds },
+                attributes: ['id', 'uid'],
+                raw: true,
+            });
+            for (const row of linked) linkedUserUids[row.id] = row.uid;
+        }
+    }
 
     const uidById = (rows) =>
         Object.fromEntries(rows.map((r) => [r.id, r.uid]));
@@ -287,6 +305,12 @@ async function exportUserData(userId) {
                 // true for the card that represents the exporting user
                 is_self: person.linked_user_id === userId,
                 linked_user_id: undefined,
+                ...(options.includeLinkedUsers
+                    ? {
+                          linked_user_uid:
+                              linkedUserUids[person.linked_user_id] || null,
+                      }
+                    : {}),
             })),
         },
     };
@@ -370,6 +394,17 @@ async function importUserData(userId, backupData, options = { merge: true }) {
     if (!user) throw new Error('User not found');
 
     const merge = options.merge !== false;
+    // Used by the all-accounts restore: person uids of other accounts
+    // (backup uid -> uid here) for assignments across accounts, account ids
+    // by uid for person cards linked to an account, and an object that is
+    // filled with the uid each backup record ended up with.
+    const externalPeople = options.externalPeople || {};
+    const linkedUsers = options.linkedUsers || {};
+    const resolvedUids = options.resolvedUids || {};
+    const recordUid = (key, backupUid, row) => {
+        resolvedUids[key] = resolvedUids[key] || {};
+        resolvedUids[key][backupUid] = row.uid;
+    };
     const d = backupData.data;
     const stats = {};
     for (const key of IMPORT_STAT_KEYS) {
@@ -403,6 +438,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         if (existing && existing.user_id === userId) {
             count(key, 'skipped');
             uidMaps[key][uid] = existing.id;
+            recordUid(key, uid, existing);
             return { row: existing, created: false };
         }
         if (!merge) {
@@ -419,6 +455,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         );
         count(key, 'created');
         uidMaps[key][uid] = row.id;
+        recordUid(key, uid, row);
         return { row, created: true };
     };
 
@@ -467,7 +504,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         // Restore the account's own profile and preferences (never email or
         // password, which are the account's login identity and must not change
         // just because a backup made on another install gets restored here).
-        if (merge && backupData.user) {
+        if (merge && backupData.user && options.restoreProfile !== false) {
             const bu = backupData.user;
             const profileUpdates = {
                 name: bu.name,
@@ -595,6 +632,10 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                     notes: person.notes,
                     archived: !!person.archived,
                     color: person.color,
+                    linked_user_id:
+                        (person.linked_user_uid &&
+                            linkedUsers[person.linked_user_uid]) ||
+                        null,
                 },
                 { transaction }
             );
@@ -602,7 +643,9 @@ async function importUserData(userId, backupData, options = { merge: true }) {
             count('people', 'created');
         }
         const mapPerson = (personUid) =>
-            personUid ? uidMaps.people[personUid] || null : null;
+            personUid
+                ? uidMaps.people[personUid] || externalPeople[personUid] || null
+                : null;
 
         for (const project of d.projects || []) {
             const { row, created } = await upsertByUid(

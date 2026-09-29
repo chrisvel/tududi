@@ -14,6 +14,14 @@ const {
     readBackupFile,
 } = require('../../services/backupService');
 const { Backup } = require('../../models');
+const zlib = require('zlib');
+const { promisify } = require('util');
+const {
+    KIND: INSTANCE_KIND,
+    exportInstance,
+    importInstance,
+    validateInstanceBackup,
+} = require('../../services/instanceTransfer');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 const { gunzipWithLimit } = require('../../utils/safe-gunzip');
 
@@ -33,6 +41,18 @@ async function parseUploadedBackup(fileBuffer, filename) {
 
     return JSON.parse(backupJson);
 }
+
+// A backup of all accounts restores only through the admin restore, which
+// recreates the accounts; the single-account restore would drop them.
+function refuseInstanceBackup(backupData) {
+    if (backupData && backupData.kind === INSTANCE_KIND) {
+        throw new ValidationError(
+            'This file is a backup of all accounts. An admin can restore it under "All accounts" on the Backup page.'
+        );
+    }
+}
+
+const gzip = promisify(zlib.gzip);
 
 class BackupService {
     async exportData(userId) {
@@ -66,6 +86,8 @@ class BackupService {
                 `Invalid backup file: ${parseError.message}`
             );
         }
+
+        refuseInstanceBackup(backupData);
 
         const validation = validateBackupData(backupData);
         if (!validation.valid) {
@@ -111,6 +133,8 @@ class BackupService {
             error.parseMessage = parseError.message;
             throw error;
         }
+
+        refuseInstanceBackup(backupData);
 
         const validation = validateBackupData(backupData);
 
@@ -202,6 +226,57 @@ class BackupService {
             success: true,
             message: 'Backup restored successfully',
             stats,
+        };
+    }
+
+    async exportInstance() {
+        const data = await exportInstance();
+        const fileBuffer = await gzip(Buffer.from(JSON.stringify(data)));
+        const date = new Date().toISOString().split('T')[0];
+        return {
+            fileBuffer,
+            filename: `tududi-all-accounts-${date}.json.gz`,
+            contentType: 'application/gzip',
+        };
+    }
+
+    async importInstance(file) {
+        if (!file) {
+            throw new ValidationError('No backup file provided');
+        }
+
+        let backupData;
+        try {
+            backupData = await parseUploadedBackup(
+                file.buffer,
+                file.originalname
+            );
+        } catch (parseError) {
+            throw new ValidationError(
+                `Invalid backup file: ${parseError.message}`
+            );
+        }
+
+        const validation = validateInstanceBackup(backupData);
+        if (!validation.valid) {
+            const error = new ValidationError('Invalid backup data');
+            error.errors = validation.errors;
+            throw error;
+        }
+
+        const versionCheck = checkVersionCompatibility(backupData.version);
+        if (!versionCheck.compatible) {
+            const error = new ValidationError('Version incompatible');
+            error.versionMessage = versionCheck.message;
+            error.backupVersion = backupData.version;
+            throw error;
+        }
+
+        const result = await importInstance(backupData);
+        return {
+            success: true,
+            message: 'Backup of all accounts restored',
+            ...result,
         };
     }
 

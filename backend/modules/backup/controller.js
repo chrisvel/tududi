@@ -3,6 +3,8 @@
 const backupService = require('./service');
 const { logError } = require('../../services/logService');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
+const { getConfig } = require('../../config/config');
+const { isAdmin } = require('../../services/rolesService');
 
 const backupController = {
     async export(req, res, next) {
@@ -208,6 +210,74 @@ const backupController = {
             });
         }
     },
+};
+
+// The file holds every account's data and password hash, so only admins of a
+// self-hosted instance can make or restore one. A hosted instance answers as
+// if the routes did not exist.
+async function checkInstanceAccess(req, res) {
+    if (getConfig().hosted?.enabled === true) {
+        res.status(404).json({ error: 'Not found' });
+        return false;
+    }
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+        res.status(401).json({ error: 'Authentication required' });
+        return false;
+    }
+    if (!(await isAdmin(userId))) {
+        res.status(403).json({ error: 'Forbidden' });
+        return false;
+    }
+    return true;
+}
+
+// Runs before the upload is read, so a non-admin cannot make the server
+// buffer a large file.
+backupController.requireInstanceAdmin = async (req, res, next) => {
+    try {
+        if (await checkInstanceAccess(req, res)) next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+backupController.exportInstance = async (req, res) => {
+    try {
+        const result = await backupService.exportInstance();
+        res.setHeader('Content-Type', result.contentType);
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${result.filename}"`
+        );
+        res.setHeader('Content-Length', result.fileBuffer.length);
+        res.send(result.fileBuffer);
+    } catch (error) {
+        logError('Error exporting all accounts:', error);
+        res.status(500).json({ error: 'Failed to export all accounts' });
+    }
+};
+
+backupController.importInstance = async (req, res) => {
+    try {
+        const result = await backupService.importInstance(req.file);
+        res.json(result);
+    } catch (error) {
+        if (error.statusCode === 400) {
+            const response = { error: error.message };
+            if (error.errors) response.errors = error.errors;
+            if (error.versionMessage) {
+                response.message = error.versionMessage;
+                response.backupVersion = error.backupVersion;
+            }
+            return res.status(400).json(response);
+        }
+        logError('Error restoring all accounts:', error);
+        res.status(500).json({
+            error: 'Failed to restore all accounts',
+            message: error.message,
+        });
+    }
 };
 
 module.exports = backupController;

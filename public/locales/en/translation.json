@@ -2384,7 +2384,24 @@
     "validationError": "The selected file is not a valid backup",
     "validationErrors": "Validation errors:",
     "versionIncompatible": "Version Incompatible",
-    "backupVersion": "Backup version"
+    "backupVersion": "Backup version",
+    "instance": {
+      "title": "All accounts",
+      "description": "Back up every account on this instance with its data, shares and groups, to move it or reinstall. Restoring adds what is missing: existing accounts are never changed, and running it twice adds nothing new.",
+      "warning": "The file contains everyone's data and password hashes. Keep it somewhere private.",
+      "download": "Download backup of all accounts",
+      "downloading": "Preparing...",
+      "downloadError": "Failed to download backup",
+      "restore": "Restore backup of all accounts",
+      "restoring": "Restoring...",
+      "restoreSuccess": "All accounts restored",
+      "restoreError": "Failed to restore backup",
+      "resultAccounts": "{{created}} accounts added, {{existing}} already here.",
+      "resultSkipped": "{{count}} shares could not be restored because their account or item is missing.",
+      "confirmTitle": "Restore all accounts?",
+      "confirmMessage": "Accounts and records from \"{{file}}\" that are not here yet will be added. Nothing that exists is changed or removed.",
+      "confirmButton": "Restore"
+    }
   },
   "notifications": {
     "table": {

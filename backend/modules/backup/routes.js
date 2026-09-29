@@ -31,7 +31,30 @@ const upload = multer({
     },
 });
 
+// A backup of every account can be much larger than one account's.
+const instanceUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 500 * 1024 * 1024 },
+    fileFilter: upload.fileFilter,
+});
+
 router.post('/backup/export', backupController.export);
+router.get(
+    '/backup/instance/export',
+    backupController.requireInstanceAdmin,
+    backupController.exportInstance
+);
+router.post(
+    '/backup/instance/import',
+    backupController.requireInstanceAdmin,
+    (req, res, next) => {
+        instanceUpload.single('backup')(req, res, (err) => {
+            if (err) return res.status(400).json({ error: err.message });
+            next();
+        });
+    },
+    backupController.importInstance
+);
 router.post(
     '/backup/import',
     requireFeature('backups_import'),

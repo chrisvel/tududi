@@ -155,6 +155,18 @@ user's `.json.gz` under `TUDUDI_BACKUP_PATH` (default `backend/backups`,
 `/app/backups` in the Docker image, declared as a volume). Mount it like
 `uploads`, or those exports disappear when the container is recreated.
 
+## Backup of All Accounts (admins)
+
+A per-user backup holds only the account that made it, so restoring it after a reinstall brings back one account. Admins can instead download a backup of every account from **Backup & Restore > All accounts**:
+
+- **Contents:** every account (email, name, role and capabilities, password hash, SSO links), each account's data as in a per-user backup, shares between accounts, and user groups with their members and shares.
+- **Not included:** API tokens, sessions, sign-in links, verification or reset tokens, AI keys and billing records.
+- **Restore:** an admin uploads the file on the same page. Accounts that are not on the instance yet are created with their old password, role and uid, so members sign in as before and tasks assigned across accounts keep their assignee. An account that already exists (same email, or same uid for members without an email) is never changed; only records it lacks are added. Running the restore twice adds nothing new.
+- **Keep it private:** the file holds everyone's data and password hashes.
+- **Hosted instances** do not offer it (the routes answer 404).
+
+API: `GET /api/backup/instance/export` returns the gzip file; `POST /api/backup/instance/import` takes it as the `backup` form field (up to 500 MB). Both require an admin.
+
 ## PostgreSQL Dumps
 
 `scripts/pg-backup.sh <dir>` runs `pg_dump --no-owner --no-acl` against
