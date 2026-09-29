@@ -325,6 +325,28 @@ describe('Daily plan routes', () => {
         expect(uids('suggested')).toContain(undated.uid);
     });
 
+    it('keeps the real name of recurring tasks in candidates and the plan', async () => {
+        const recurring = await makeTask({
+            name: 'Water plants',
+            recurrence_type: 'weekly',
+            due_date: moment().toDate(),
+        });
+
+        const candidates = await agent.get('/api/daily-plan/candidates');
+        const listed = [
+            ...candidates.body.in_progress,
+            ...candidates.body.overdue,
+            ...candidates.body.due_today,
+            ...candidates.body.suggested,
+        ].find((task) => task.uid === recurring.uid);
+        expect(listed.name).toBe('Water plants');
+
+        const plan = await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: recurring.uid }] });
+        expect(plan.body.plan.items[0].task.name).toBe('Water plants');
+    });
+
     it('saves the day hours and returns them with the plan', async () => {
         const initial = await agent.get('/api/daily-plan');
         expect(initial.body.day_hours).toEqual({ start: 480, end: 1080 });

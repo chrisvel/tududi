@@ -153,7 +153,9 @@ async function serializePlan(plan, userId, timezone) {
         visibleWhere,
         items.map((item) => item.task_id)
     );
-    const serialized = await serializeTasks(tasks, timezone);
+    const serialized = await serializeTasks(tasks, timezone, {
+        preserveOriginalName: true,
+    });
     const byId = new Map(tasks.map((task, i) => [task.id, serialized[i]]));
 
     return {
@@ -343,7 +345,9 @@ async function getCandidates(user) {
 
     const result = {};
     for (const key of GROUP_ORDER) {
-        result[key] = await serializeTasks(unique[key], timezone);
+        result[key] = await serializeTasks(unique[key], timezone, {
+            preserveOriginalName: true,
+        });
     }
     result.ranked = ranked.map(({ task }) => task.uid);
 
