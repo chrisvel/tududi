@@ -38,7 +38,9 @@
     "clear": "Wyczyść",
     "open": "Otwórz",
     "retry": "Spróbuj ponownie",
-    "updated": "Zaktualizowano"
+    "updated": "Zaktualizowano",
+    "all": "Wszystkie",
+    "optional": "opcjonalnie"
   },
   "sidebar": {
     "dashboard": "Panel sterowania",
@@ -81,7 +83,10 @@
     "reports": "Raporty",
     "productivityAssistant": "Asystent produktywności",
     "assignedToMe": "Przypisane do mnie",
-    "everyone": "Wszyscy"
+    "everyone": "Wszyscy",
+    "goals": "Cele",
+    "habits": "Nawyki",
+    "templates": "Szablony"
   },
   "navigation": {
     "home": "Strona główna",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Usuń projekt",
       "message": "Czy na pewno chcesz usunąć projekt \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Usuń cel",
+      "message": "Czy na pewno chcesz usunąć cel „{{title}}”?"
+    },
+    "createGoal": "Utwórz cel",
+    "updateGoal": "Zaktualizuj cel"
   },
   "forms": {
     "title": "Tytuł",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Wpisz, aby dodać tag",
     "createTagOption": "+ Utwórz \"{{tagName}}\"",
     "removeTagAriaLabel": "Usuń tag {{tagName}}",
-    "projectDescriptionPlaceholder": "Wprowadź opis projektu"
+    "projectDescriptionPlaceholder": "Wprowadź opis projektu",
+    "goalTitlePlaceholder": "Tytuł celu",
+    "goalWhy": "Dlaczego",
+    "goalWhyPlaceholder": "Co stanie się możliwe, gdy go osiągniesz?",
+    "goalHorizon": "Horyzont",
+    "goalStatus": "Status",
+    "goalTargetDate": "Data docelowa",
+    "color": "Kolor",
+    "goalArea": "Obszar",
+    "noArea": "Brak obszaru"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -871,7 +891,10 @@
     "generalError": "Wystąpił błąd. Proszę spróbować ponownie.",
     "viewNameRequired": "Nazwa widoku jest wymagana",
     "viewSaveFailed": "Nie udało się zapisać widoku. Proszę spróbować ponownie.",
-    "generic": "Coś poszło nie tak"
+    "generic": "Coś poszło nie tak",
+    "goalTitleRequired": "Tytuł celu jest wymagany",
+    "failedToSaveGoal": "Nie udało się zapisać celu.",
+    "failedToDeleteGoal": "Nie udało się usunąć celu."
   },
   "inbox": {
     "title": "Skrzynka odbiorcza",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Zadanie zaktualizowane pomyślnie!",
     "taskDeleted": "Zadanie usunięte pomyślnie!",
     "noteDeleted": "Notatka została pomyślnie usunięta!",
-    "bannerUpdated": "Baner zaktualizowany pomyślnie!"
+    "bannerUpdated": "Baner zaktualizowany pomyślnie!",
+    "goalCreated": "Cel utworzony!",
+    "goalUpdated": "Cel zaktualizowany!",
+    "goalDeleted": "Cel usunięty!"
   },
   "note": {
     "title": "Tytuł",
@@ -1116,7 +1142,8 @@
     "estimate": "Szacunek",
     "estimateHint": "Ile mniej więcej zajmie? Używane przy planowaniu dnia.",
     "estimateClearHint": "Kliknij ponownie, aby wyczyścić",
-    "estimateError": "Nie udało się zaktualizować szacunku"
+    "estimateError": "Nie udało się zaktualizować szacunku",
+    "noGoal": "Przypisz do celu"
   },
   "projects": {
     "loading": "Ładowanie projektów...",
@@ -2331,7 +2358,34 @@
     "noGoalsYet": "Nie ma jeszcze celów.",
     "blankSlateHint": "Cel to wynik, który chcesz osiągnąć w tym sezonie lub roku, na przykład przebiec półmaraton. Powiąż z nim projekty, aby widzieć pracę, która cię do niego prowadzi.",
     "blankSlateNew": "Utwórz pierwszy cel",
-    "blankSlateAreas": "Skonfiguruj obszary"
+    "blankSlateAreas": "Skonfiguruj obszary",
+    "addGoal": "Dodaj cel",
+    "title": "Cele",
+    "stats": {
+      "projects": "projekty",
+      "tasks": "zadania"
+    },
+    "notFound": "Nie znaleziono celu",
+    "editGoal": "Edytuj cel",
+    "horizon": {
+      "season": "Sezon",
+      "year": "Rok"
+    },
+    "status": {
+      "active": "Aktywny",
+      "achieved": "Osiągnięty",
+      "paused": "Wstrzymany",
+      "dropped": "Porzucony"
+    },
+    "singular": "Cel",
+    "targetDate": "Termin",
+    "noProjects": "Brak projektów powiązanych z tym celem.",
+    "noTasks": "Brak zadań przypisanych do tego celu.",
+    "searchGoals": "Szukaj celów…",
+    "clearGoal": "Usuń cel",
+    "noGoalsFound": "Nie znaleziono celów",
+    "inactive": "Nieaktywny",
+    "viewGoal": "Przejdź do celu"
   },
   "templates": {
     "new": "Nowy szablon",

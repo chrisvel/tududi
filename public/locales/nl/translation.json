@@ -38,7 +38,9 @@
     "clear": "Wissen",
     "open": "Openen",
     "retry": "Opnieuw proberen",
-    "updated": "Bijgewerkt"
+    "updated": "Bijgewerkt",
+    "all": "Alle",
+    "optional": "optioneel"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -81,7 +83,10 @@
     "reports": "Rapporten",
     "productivityAssistant": "Productiviteitsassistent",
     "assignedToMe": "Aan mij toegewezen",
-    "everyone": "Iedereen"
+    "everyone": "Iedereen",
+    "goals": "Doelen",
+    "habits": "Gewoonten",
+    "templates": "Sjablonen"
   },
   "navigation": {
     "home": "Home",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Project Verwijderen",
       "message": "Weet je zeker dat je het project \"{{projectName}}\" wilt verwijderen?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Doel verwijderen",
+      "message": "Weet je zeker dat je het doel \"{{title}}\" wilt verwijderen?"
+    },
+    "createGoal": "Doel aanmaken",
+    "updateGoal": "Doel bijwerken"
   },
   "forms": {
     "title": "Titel",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Typ om een tag toe te voegen",
     "createTagOption": "+ Maak \"{{tagName}}\"",
     "removeTagAriaLabel": "Verwijder tag {{tagName}}",
-    "projectDescriptionPlaceholder": "Voer projectbeschrijving in"
+    "projectDescriptionPlaceholder": "Voer projectbeschrijving in",
+    "goalTitlePlaceholder": "Titel van het doel",
+    "goalWhy": "Waarom",
+    "goalWhyPlaceholder": "Wat maakt het bereiken hiervan mogelijk?",
+    "goalHorizon": "Termijn",
+    "goalStatus": "Status",
+    "goalTargetDate": "Streefdatum",
+    "color": "Kleur",
+    "goalArea": "Gebied",
+    "noArea": "Geen gebied"
   },
   "auth": {
     "login": "Inloggen",
@@ -871,7 +891,10 @@
     "generalError": "Er is een fout opgetreden. Probeer het opnieuw.",
     "viewNameRequired": "Bekijknaam is vereist",
     "viewSaveFailed": "Opslaan van de weergave is mislukt. Probeer het opnieuw.",
-    "generic": "Er ging iets mis"
+    "generic": "Er ging iets mis",
+    "goalTitleRequired": "Een titel voor het doel is verplicht",
+    "failedToSaveGoal": "Doel opslaan mislukt.",
+    "failedToDeleteGoal": "Doel verwijderen mislukt."
   },
   "inbox": {
     "title": "Inbox",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Taak succesvol bijgewerkt!",
     "taskDeleted": "Taak succesvol verwijderd!",
     "noteDeleted": "Notitie succesvol verwijderd!",
-    "bannerUpdated": "Banner succesvol bijgewerkt!"
+    "bannerUpdated": "Banner succesvol bijgewerkt!",
+    "goalCreated": "Doel aangemaakt!",
+    "goalUpdated": "Doel bijgewerkt!",
+    "goalDeleted": "Doel verwijderd!"
   },
   "note": {
     "title": "Titel",
@@ -1116,7 +1142,8 @@
     "estimate": "Schatting",
     "estimateHint": "Hoe lang ongeveer? Wordt gebruikt bij het plannen van je dag.",
     "estimateClearHint": "Klik nogmaals om te wissen",
-    "estimateError": "Schatting bijwerken mislukt"
+    "estimateError": "Schatting bijwerken mislukt",
+    "noGoal": "Aan een doel koppelen"
   },
   "projects": {
     "loading": "Projecten laden...",
@@ -2327,7 +2354,34 @@
     "noGoalsYet": "Nog geen doelen.",
     "blankSlateHint": "Een doel is een resultaat dat je dit seizoen of dit jaar wilt bereiken, zoals een halve marathon lopen. Koppel er projecten aan om het werk te zien dat je daar brengt.",
     "blankSlateNew": "Maak je eerste doel",
-    "blankSlateAreas": "Gebieden instellen"
+    "blankSlateAreas": "Gebieden instellen",
+    "addGoal": "Doel toevoegen",
+    "title": "Doelen",
+    "stats": {
+      "projects": "projecten",
+      "tasks": "taken"
+    },
+    "notFound": "Doel niet gevonden",
+    "editGoal": "Doel bewerken",
+    "horizon": {
+      "season": "Seizoen",
+      "year": "Jaar"
+    },
+    "status": {
+      "active": "Actief",
+      "achieved": "Bereikt",
+      "paused": "Gepauzeerd",
+      "dropped": "Losgelaten"
+    },
+    "singular": "Doel",
+    "targetDate": "Streefdatum",
+    "noProjects": "Geen projecten gekoppeld aan dit doel.",
+    "noTasks": "Geen taken toegewezen aan dit doel.",
+    "searchGoals": "Doelen zoeken…",
+    "clearGoal": "Doel verwijderen",
+    "noGoalsFound": "Geen doelen gevonden",
+    "inactive": "Inactief",
+    "viewGoal": "Naar doel"
   },
   "templates": {
     "new": "Nieuw sjabloon",

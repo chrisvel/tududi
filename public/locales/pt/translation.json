@@ -38,7 +38,9 @@
     "clear": "Limpar",
     "open": "Abrir",
     "retry": "Tentar novamente",
-    "updated": "Atualizado"
+    "updated": "Atualizado",
+    "all": "Todos",
+    "optional": "opcional"
   },
   "sidebar": {
     "dashboard": "Painel",
@@ -81,7 +83,10 @@
     "reports": "Relatórios",
     "productivityAssistant": "Assistente de Produtividade",
     "assignedToMe": "Atribuído a mim",
-    "everyone": "Todos"
+    "everyone": "Todos",
+    "goals": "Metas",
+    "habits": "Hábitos",
+    "templates": "Modelos"
   },
   "navigation": {
     "home": "Início",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Excluir Projeto",
       "message": "Você tem certeza de que deseja excluir o projeto \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Excluir meta",
+      "message": "Tem certeza de que deseja excluir a meta \"{{title}}\"?"
+    },
+    "createGoal": "Criar meta",
+    "updateGoal": "Atualizar meta"
   },
   "forms": {
     "title": "Título",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Digite para adicionar uma tag",
     "createTagOption": "+ Criar \"{{tagName}}\"",
     "removeTagAriaLabel": "Remover tag {{tagName}}",
-    "projectDescriptionPlaceholder": "Digite a descrição do projeto"
+    "projectDescriptionPlaceholder": "Digite a descrição do projeto",
+    "goalTitlePlaceholder": "Título da meta",
+    "goalWhy": "Por quê",
+    "goalWhyPlaceholder": "O que alcançar isso vai possibilitar?",
+    "goalHorizon": "Horizonte",
+    "goalStatus": "Status",
+    "goalTargetDate": "Data-alvo",
+    "color": "Cor",
+    "goalArea": "Área",
+    "noArea": "Sem área"
   },
   "auth": {
     "login": "Entrar",
@@ -871,7 +891,10 @@
     "generalError": "Ocorreu um erro. Por favor, tente novamente.",
     "viewNameRequired": "O nome da visualização é obrigatório",
     "viewSaveFailed": "Falha ao salvar a visualização. Por favor, tente novamente.",
-    "generic": "Algo correu mal"
+    "generic": "Algo correu mal",
+    "goalTitleRequired": "O título da meta é obrigatório",
+    "failedToSaveGoal": "Não foi possível salvar a meta.",
+    "failedToDeleteGoal": "Não foi possível excluir a meta."
   },
   "inbox": {
     "title": "Caixa de Entrada",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Tarefa atualizada com sucesso!",
     "taskDeleted": "Tarefa excluída com sucesso!",
     "noteDeleted": "Nota deletada com sucesso!",
-    "bannerUpdated": "Banner atualizado com sucesso!"
+    "bannerUpdated": "Banner atualizado com sucesso!",
+    "goalCreated": "Meta criada!",
+    "goalUpdated": "Meta atualizada!",
+    "goalDeleted": "Meta excluída!"
   },
   "note": {
     "title": "Título",
@@ -1116,7 +1142,8 @@
     "estimate": "Estimativa",
     "estimateHint": "Quanto tempo, mais ou menos? Usado ao planear o dia.",
     "estimateClearHint": "Clique de novo para limpar",
-    "estimateError": "Não foi possível atualizar a estimativa"
+    "estimateError": "Não foi possível atualizar a estimativa",
+    "noGoal": "Atribuir a uma meta"
   },
   "projects": {
     "loading": "Carregando projetos...",
@@ -2328,7 +2355,34 @@
     "noGoalsYet": "Ainda não há metas.",
     "blankSlateHint": "Uma meta é um resultado que você quer alcançar nesta temporada ou neste ano, como correr uma meia maratona. Vincule projetos a ela para ver o trabalho que leva você até lá.",
     "blankSlateNew": "Crie sua primeira meta",
-    "blankSlateAreas": "Configurar áreas"
+    "blankSlateAreas": "Configurar áreas",
+    "addGoal": "Adicionar meta",
+    "title": "Metas",
+    "stats": {
+      "projects": "projetos",
+      "tasks": "tarefas"
+    },
+    "notFound": "Meta não encontrada",
+    "editGoal": "Editar meta",
+    "horizon": {
+      "season": "Temporada",
+      "year": "Ano"
+    },
+    "status": {
+      "active": "Ativa",
+      "achieved": "Alcançada",
+      "paused": "Pausada",
+      "dropped": "Abandonada"
+    },
+    "singular": "Meta",
+    "targetDate": "Alvo",
+    "noProjects": "Nenhum projeto vinculado a esta meta.",
+    "noTasks": "Nenhuma tarefa atribuída a esta meta.",
+    "searchGoals": "Buscar metas…",
+    "clearGoal": "Remover meta",
+    "noGoalsFound": "Nenhuma meta encontrada",
+    "inactive": "Inativa",
+    "viewGoal": "Ir para a meta"
   },
   "templates": {
     "new": "Novo modelo",

@@ -38,7 +38,9 @@
     "clear": "Изчисти",
     "open": "Отвори",
     "retry": "Опитай отново",
-    "updated": "Обновено"
+    "updated": "Обновено",
+    "all": "Всички",
+    "optional": "по избор"
   },
   "sidebar": {
     "dashboard": "Табло",
@@ -81,7 +83,10 @@
     "reports": "Доклади",
     "productivityAssistant": "Асистент по продуктивност",
     "assignedToMe": "Назначено на мен",
-    "everyone": "Всеки"
+    "everyone": "Всеки",
+    "goals": "Цели",
+    "habits": "Навици",
+    "templates": "Шаблони"
   },
   "navigation": {
     "home": "Начало",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Изтриване на проект",
       "message": "Сигурни ли сте, че искате да изтриете проекта \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Изтрий целта",
+      "message": "Сигурни ли сте, че искате да изтриете целта „{{title}}“?"
+    },
+    "createGoal": "Създай цел",
+    "updateGoal": "Обнови целта"
   },
   "forms": {
     "title": "Заглавие",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Напишете, за да добавите етикет",
     "createTagOption": "+ Създайте \"{{tagName}}\"",
     "removeTagAriaLabel": "Премахнете етикет {{tagName}}",
-    "projectDescriptionPlaceholder": "Въведете описание на проекта"
+    "projectDescriptionPlaceholder": "Въведете описание на проекта",
+    "goalTitlePlaceholder": "Заглавие на целта",
+    "goalWhy": "Защо",
+    "goalWhyPlaceholder": "Какво ще стане възможно, когато я постигнете?",
+    "goalHorizon": "Хоризонт",
+    "goalStatus": "Статус",
+    "goalTargetDate": "Целева дата",
+    "color": "Цвят",
+    "goalArea": "Област",
+    "noArea": "Без област"
   },
   "auth": {
     "login": "Вход",
@@ -871,7 +891,10 @@
     "generalError": "Възникна грешка. Моля, опитайте отново.",
     "viewNameRequired": "Името на изгледа е задължително",
     "viewSaveFailed": "Неуспешно запазване на изгледа. Моля, опитайте отново.",
-    "generic": "Нещо се обърка"
+    "generic": "Нещо се обърка",
+    "goalTitleRequired": "Заглавието на целта е задължително",
+    "failedToSaveGoal": "Неуспешно запазване на целта.",
+    "failedToDeleteGoal": "Неуспешно изтриване на целта."
   },
   "inbox": {
     "title": "Входяща поща",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Задачата е актуализирана успешно!",
     "taskDeleted": "Задачата е изтрита успешно!",
     "noteDeleted": "Бележката беше изтрита успешно!",
-    "bannerUpdated": "Банерът е актуализиран успешно!"
+    "bannerUpdated": "Банерът е актуализиран успешно!",
+    "goalCreated": "Целта е създадена!",
+    "goalUpdated": "Целта е обновена!",
+    "goalDeleted": "Целта е изтрита!"
   },
   "note": {
     "title": "Заглавие",
@@ -1116,7 +1142,8 @@
     "estimate": "Оценка",
     "estimateHint": "Колко време приблизително? Използва се при планиране на деня.",
     "estimateClearHint": "Кликни отново, за да изчистиш",
-    "estimateError": "Оценката не можа да се обнови"
+    "estimateError": "Оценката не можа да се обнови",
+    "noGoal": "Свържи с цел"
   },
   "projects": {
     "loading": "Зареждане на проекти...",
@@ -2327,7 +2354,34 @@
     "noGoalsYet": "Все още няма цели.",
     "blankSlateHint": "Целта е резултат, който искате да постигнете този сезон или тази година, например да пробягате полумаратон. Свържете проекти с нея, за да виждате работата, която ви води натам.",
     "blankSlateNew": "Създайте първата си цел",
-    "blankSlateAreas": "Настройте области"
+    "blankSlateAreas": "Настройте области",
+    "addGoal": "Добави цел",
+    "title": "Цели",
+    "stats": {
+      "projects": "проекта",
+      "tasks": "задачи"
+    },
+    "notFound": "Целта не е намерена",
+    "editGoal": "Редактирай целта",
+    "horizon": {
+      "season": "Сезон",
+      "year": "Година"
+    },
+    "status": {
+      "active": "Активна",
+      "achieved": "Постигната",
+      "paused": "На пауза",
+      "dropped": "Изоставена"
+    },
+    "singular": "Цел",
+    "targetDate": "Срок",
+    "noProjects": "Няма проекти, свързани с тази цел.",
+    "noTasks": "Няма задачи към тази цел.",
+    "searchGoals": "Търсене на цели…",
+    "clearGoal": "Премахни целта",
+    "noGoalsFound": "Не са намерени цели",
+    "inactive": "Неактивна",
+    "viewGoal": "Към целта"
   },
   "templates": {
     "new": "Нов шаблон",

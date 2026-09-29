@@ -38,7 +38,9 @@
     "clear": "Rensa",
     "open": "Öppna",
     "retry": "Försök igen",
-    "updated": "Uppdaterad"
+    "updated": "Uppdaterad",
+    "all": "Alla",
+    "optional": "valfritt"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -81,7 +83,10 @@
     "reports": "Rapporter",
     "productivityAssistant": "Produktivitetsassistent",
     "assignedToMe": "Tilldelat mig",
-    "everyone": "Alla"
+    "everyone": "Alla",
+    "goals": "Mål",
+    "habits": "Vanor",
+    "templates": "Mallar"
   },
   "navigation": {
     "home": "Hem",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Ta bort projekt",
       "message": "Tar du bort detta projekt kommer endast projektet att tas bort. Alla objekt inuti kommer att finnas kvar men inte längre tillhöra något projekt. Fortsätt?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Radera mål",
+      "message": "Vill du verkligen radera målet ”{{title}}”?"
+    },
+    "createGoal": "Skapa mål",
+    "updateGoal": "Uppdatera mål"
   },
   "forms": {
     "title": "Titel",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Skriv för att lägga till en tagg",
     "createTagOption": "+ Skapa \"{{tagName}}\"",
     "removeTagAriaLabel": "Ta bort tagg {{tagName}}",
-    "projectDescriptionPlaceholder": "Ange projektbeskrivning"
+    "projectDescriptionPlaceholder": "Ange projektbeskrivning",
+    "goalTitlePlaceholder": "Målets titel",
+    "goalWhy": "Varför",
+    "goalWhyPlaceholder": "Vad blir möjligt när du når det här?",
+    "goalHorizon": "Tidshorisont",
+    "goalStatus": "Status",
+    "goalTargetDate": "Måldatum",
+    "color": "Färg",
+    "goalArea": "Område",
+    "noArea": "Inget område"
   },
   "auth": {
     "login": "Logga in",
@@ -871,7 +891,10 @@
     "generalError": "Ett fel inträffade. Försök igen.",
     "viewNameRequired": "Visningsnamn krävs",
     "viewSaveFailed": "Misslyckades med att spara visning. Försök igen.",
-    "generic": "Något gick fel"
+    "generic": "Något gick fel",
+    "goalTitleRequired": "Målet måste ha en titel",
+    "failedToSaveGoal": "Det gick inte att spara målet.",
+    "failedToDeleteGoal": "Det gick inte att radera målet."
   },
   "inbox": {
     "title": "Inkorg",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Uppgift uppdaterad!",
     "taskDeleted": "Uppgift borttagen!",
     "noteDeleted": "Anteckning borttagen!",
-    "bannerUpdated": "Banner uppdaterad framgångsrikt!"
+    "bannerUpdated": "Banner uppdaterad framgångsrikt!",
+    "goalCreated": "Målet skapades!",
+    "goalUpdated": "Målet uppdaterades!",
+    "goalDeleted": "Målet raderades!"
   },
   "note": {
     "title": "Titel",
@@ -1116,7 +1142,8 @@
     "estimate": "Uppskattning",
     "estimateHint": "Ungefär hur lång tid? Används när du planerar dagen.",
     "estimateClearHint": "Klicka igen för att rensa",
-    "estimateError": "Det gick inte att uppdatera uppskattningen"
+    "estimateError": "Det gick inte att uppdatera uppskattningen",
+    "noGoal": "Koppla till ett mål"
   },
   "projects": {
     "loading": "Laddar projekt...",
@@ -2327,7 +2354,34 @@
     "noGoalsYet": "Inga mål än.",
     "blankSlateHint": "Ett mål är ett resultat du vill nå den här säsongen eller i år, till exempel att springa ett halvmaraton. Koppla projekt till det för att se arbetet som tar dig dit.",
     "blankSlateNew": "Skapa ditt första mål",
-    "blankSlateAreas": "Konfigurera områden"
+    "blankSlateAreas": "Konfigurera områden",
+    "addGoal": "Lägg till mål",
+    "title": "Mål",
+    "stats": {
+      "projects": "projekt",
+      "tasks": "uppgifter"
+    },
+    "notFound": "Målet hittades inte",
+    "editGoal": "Redigera mål",
+    "horizon": {
+      "season": "Säsong",
+      "year": "År"
+    },
+    "status": {
+      "active": "Aktivt",
+      "achieved": "Uppnått",
+      "paused": "Pausat",
+      "dropped": "Övergivet"
+    },
+    "singular": "Mål",
+    "targetDate": "Mål",
+    "noProjects": "Inga projekt kopplade till det här målet.",
+    "noTasks": "Inga uppgifter kopplade till det här målet.",
+    "searchGoals": "Sök mål…",
+    "clearGoal": "Ta bort mål",
+    "noGoalsFound": "Inga mål hittades",
+    "inactive": "Inaktivt",
+    "viewGoal": "Gå till målet"
   },
   "templates": {
     "new": "Ny mall",

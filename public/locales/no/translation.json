@@ -38,7 +38,9 @@
     "clear": "Tøm",
     "open": "Åpne",
     "retry": "Prøv igjen",
-    "updated": "Oppdatert"
+    "updated": "Oppdatert",
+    "all": "Alle",
+    "optional": "valgfritt"
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -81,7 +83,10 @@
     "reports": "Rapporter",
     "productivityAssistant": "Produktivitetsassistent",
     "assignedToMe": "Tildelt meg",
-    "everyone": "Alle"
+    "everyone": "Alle",
+    "goals": "Mål",
+    "habits": "Vaner",
+    "templates": "Maler"
   },
   "navigation": {
     "home": "Hjem",
@@ -674,7 +679,13 @@
     "deleteProject": {
       "title": "Slett prosjekt",
       "message": "Er du sikker på at du vil slette prosjektet \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Slett mål",
+      "message": "Er du sikker på at du vil slette målet «{{title}}»?"
+    },
+    "createGoal": "Opprett mål",
+    "updateGoal": "Oppdater mål"
   },
   "forms": {
     "title": "Tittel",
@@ -746,7 +757,16 @@
     "tagInputPlaceholder": "Skriv for å legge til en tag",
     "createTagOption": "+ Opprett \"{{tagName}}\"",
     "removeTagAriaLabel": "Fjern tag {{tagName}}",
-    "projectDescriptionPlaceholder": "Skriv inn prosjektbeskrivelse"
+    "projectDescriptionPlaceholder": "Skriv inn prosjektbeskrivelse",
+    "goalTitlePlaceholder": "Målets tittel",
+    "goalWhy": "Hvorfor",
+    "goalWhyPlaceholder": "Hva blir mulig når du når dette?",
+    "goalHorizon": "Tidshorisont",
+    "goalStatus": "Status",
+    "goalTargetDate": "Måldato",
+    "color": "Farge",
+    "goalArea": "Område",
+    "noArea": "Ikke noe område"
   },
   "auth": {
     "login": "Logg inn",
@@ -872,7 +892,10 @@
     "generalError": "En feil oppstod. Vennligst prøv igjen.",
     "viewNameRequired": "Visningsnavn er påkrevd",
     "viewSaveFailed": "Kunne ikke lagre visning. Vennligst prøv igjen.",
-    "generic": "Noe gikk galt"
+    "generic": "Noe gikk galt",
+    "goalTitleRequired": "Målet må ha en tittel",
+    "failedToSaveGoal": "Kunne ikke lagre målet.",
+    "failedToDeleteGoal": "Kunne ikke slette målet."
   },
   "inbox": {
     "title": "Innboks",
@@ -980,7 +1003,10 @@
     "taskUpdated": "Oppgave oppdatert!",
     "taskDeleted": "Oppgave slettet!",
     "noteDeleted": "Notatet ble slettet med suksess!",
-    "bannerUpdated": "Banner oppdatert med suksess!"
+    "bannerUpdated": "Banner oppdatert med suksess!",
+    "goalCreated": "Mål opprettet!",
+    "goalUpdated": "Mål oppdatert!",
+    "goalDeleted": "Mål slettet!"
   },
   "note": {
     "title": "Tittel",
@@ -1117,7 +1143,8 @@
     "estimate": "Estimat",
     "estimateHint": "Omtrent hvor lenge? Brukes når du planlegger dagen.",
     "estimateClearHint": "Klikk igjen for å fjerne",
-    "estimateError": "Kunne ikke oppdatere estimatet"
+    "estimateError": "Kunne ikke oppdatere estimatet",
+    "noGoal": "Knytt til et mål"
   },
   "projects": {
     "loading": "Laster prosjekter...",
@@ -2332,7 +2359,34 @@
     "noGoalsYet": "Ingen mål ennå.",
     "blankSlateHint": "Et mål er et resultat du vil nå denne sesongen eller i år, for eksempel å løpe et halvmaraton. Knytt prosjekter til det for å se arbeidet som tar deg dit.",
     "blankSlateNew": "Opprett ditt første mål",
-    "blankSlateAreas": "Sett opp områder"
+    "blankSlateAreas": "Sett opp områder",
+    "addGoal": "Legg til mål",
+    "title": "Mål",
+    "stats": {
+      "projects": "prosjekter",
+      "tasks": "oppgaver"
+    },
+    "notFound": "Fant ikke målet",
+    "editGoal": "Rediger mål",
+    "horizon": {
+      "season": "Sesong",
+      "year": "År"
+    },
+    "status": {
+      "active": "Aktiv",
+      "achieved": "Nådd",
+      "paused": "På pause",
+      "dropped": "Droppet"
+    },
+    "singular": "Mål",
+    "targetDate": "Mål",
+    "noProjects": "Ingen prosjekter knyttet til dette målet.",
+    "noTasks": "Ingen oppgaver knyttet til dette målet.",
+    "searchGoals": "Søk etter mål…",
+    "clearGoal": "Fjern mål",
+    "noGoalsFound": "Fant ingen mål",
+    "inactive": "Inaktiv",
+    "viewGoal": "Gå til mål"
   },
   "templates": {
     "new": "Ny mal",

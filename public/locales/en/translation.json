@@ -38,7 +38,9 @@
     "clear": "Clear",
     "open": "Open",
     "retry": "Retry",
-    "updated": "Updated"
+    "updated": "Updated",
+    "all": "All",
+    "optional": "optional"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -85,7 +87,8 @@
     "goals": "Goals",
     "habits": "Habits",
     "allEntities": "All entities",
-    "resize": "Resize sidebar"
+    "resize": "Resize sidebar",
+    "templates": "Templates"
   },
   "navigation": {
     "home": "Home",
@@ -709,7 +712,13 @@
     "deleteProject": {
       "title": "Delete Project",
       "message": "Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Delete Goal",
+      "message": "Are you sure you want to delete the goal \"{{title}}\"?"
+    },
+    "createGoal": "Create Goal",
+    "updateGoal": "Update Goal"
   },
   "forms": {
     "title": "Title",
@@ -780,7 +789,16 @@
     "tagInputPlaceholder": "Type to add a tag",
     "createTagOption": "+ Create \"{{tagName}}\"",
     "removeTagAriaLabel": "Remove tag {{tagName}}",
-    "projectDescriptionPlaceholder": "Enter project description"
+    "projectDescriptionPlaceholder": "Enter project description",
+    "goalTitlePlaceholder": "Goal title",
+    "goalWhy": "Why",
+    "goalWhyPlaceholder": "What will achieving this enable?",
+    "goalHorizon": "Horizon",
+    "goalStatus": "Status",
+    "goalTargetDate": "Target Date",
+    "color": "Color",
+    "goalArea": "Area",
+    "noArea": "No area"
   },
   "auth": {
     "login": "Login",
@@ -912,7 +930,10 @@
     "generalError": "An error occurred. Please try again.",
     "viewNameRequired": "View name is required",
     "viewSaveFailed": "Failed to save view. Please try again.",
-    "generic": "Something went wrong"
+    "generic": "Something went wrong",
+    "goalTitleRequired": "Goal title is required",
+    "failedToSaveGoal": "Failed to save goal.",
+    "failedToDeleteGoal": "Failed to delete goal."
   },
   "inbox": {
     "title": "Inbox",
@@ -1018,7 +1039,10 @@
     "nextActionAdded": "Next action added successfully!",
     "taskCreated": "Task created successfully!",
     "taskUpdated": "Task updated successfully!",
-    "taskDeleted": "Task deleted successfully!"
+    "taskDeleted": "Task deleted successfully!",
+    "goalCreated": "Goal created!",
+    "goalUpdated": "Goal updated!",
+    "goalDeleted": "Goal deleted!"
   },
   "note": {
     "title": "Title",
@@ -1154,7 +1178,8 @@
     "estimate": "Estimate",
     "estimateHint": "Roughly how long? Used when you plan your day.",
     "estimateClearHint": "Click again to clear",
-    "estimateError": "Failed to update the estimate"
+    "estimateError": "Failed to update the estimate",
+    "noGoal": "Assign to a goal"
   },
   "subtasks": {
     "placeholder": "Add a subtask..."
@@ -2413,7 +2438,34 @@
     "noGoalsYet": "No goals yet.",
     "blankSlateHint": "A goal is an outcome you want to reach this season or this year, like running a half marathon. Link projects to it to see the work that gets you there.",
     "blankSlateNew": "Create your first goal",
-    "blankSlateAreas": "Set up areas"
+    "blankSlateAreas": "Set up areas",
+    "addGoal": "Add Goal",
+    "title": "Goals",
+    "stats": {
+      "projects": "projects",
+      "tasks": "tasks"
+    },
+    "notFound": "Goal not found",
+    "editGoal": "Edit Goal",
+    "horizon": {
+      "season": "Season",
+      "year": "Year"
+    },
+    "status": {
+      "active": "Active",
+      "achieved": "Achieved",
+      "paused": "Paused",
+      "dropped": "Dropped"
+    },
+    "singular": "Goal",
+    "targetDate": "Target",
+    "noProjects": "No projects linked to this goal.",
+    "noTasks": "No tasks assigned to this goal.",
+    "searchGoals": "Search goals…",
+    "clearGoal": "Remove goal",
+    "noGoalsFound": "No goals found",
+    "inactive": "Inactive",
+    "viewGoal": "Go to goal"
   },
   "templates": {
     "new": "New Template",

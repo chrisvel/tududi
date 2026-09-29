@@ -38,7 +38,9 @@
     "clear": "Ryd",
     "open": "Åbn",
     "retry": "Prøv igen",
-    "updated": "Opdateret"
+    "updated": "Opdateret",
+    "all": "Alle",
+    "optional": "valgfrit"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -81,7 +83,10 @@
     "reports": "Rapporter",
     "productivityAssistant": "Produktivitetsassistent",
     "assignedToMe": "Tildelt til mig",
-    "everyone": "Alle"
+    "everyone": "Alle",
+    "goals": "Mål",
+    "habits": "Vaner",
+    "templates": "Skabeloner"
   },
   "navigation": {
     "home": "Hjem",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Slet Projekt",
       "message": "Er du sikker på, at du vil slette projektet \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Slet mål",
+      "message": "Er du sikker på, at du vil slette målet \"{{title}}\"?"
+    },
+    "createGoal": "Opret mål",
+    "updateGoal": "Opdater mål"
   },
   "forms": {
     "title": "Titel",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Skriv for at tilføje et tag",
     "createTagOption": "+ Opret \"{{tagName}}\"",
     "removeTagAriaLabel": "Fjern tag {{tagName}}",
-    "projectDescriptionPlaceholder": "Indtast projektbeskrivelse"
+    "projectDescriptionPlaceholder": "Indtast projektbeskrivelse",
+    "goalTitlePlaceholder": "Målets titel",
+    "goalWhy": "Hvorfor",
+    "goalWhyPlaceholder": "Hvad gør det muligt, når du når det?",
+    "goalHorizon": "Tidshorisont",
+    "goalStatus": "Status",
+    "goalTargetDate": "Måldato",
+    "color": "Farve",
+    "goalArea": "Område",
+    "noArea": "Intet område"
   },
   "auth": {
     "login": "Log ind",
@@ -871,7 +891,10 @@
     "generalError": "Der opstod en fejl. Prøv venligst igen.",
     "viewNameRequired": "Visningsnavn er påkrævet",
     "viewSaveFailed": "Fejl ved gemning af visning. Prøv venligst igen.",
-    "generic": "Noget gik galt"
+    "generic": "Noget gik galt",
+    "goalTitleRequired": "Målet skal have en titel",
+    "failedToSaveGoal": "Kunne ikke gemme målet.",
+    "failedToDeleteGoal": "Kunne ikke slette målet."
   },
   "inbox": {
     "title": "Indbakke",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Opgave opdateret med succes!",
     "taskDeleted": "Opgave slettet med succes!",
     "noteDeleted": "Noten blev slettet med succes!",
-    "bannerUpdated": "Banner opdateret med succes!"
+    "bannerUpdated": "Banner opdateret med succes!",
+    "goalCreated": "Mål oprettet!",
+    "goalUpdated": "Mål opdateret!",
+    "goalDeleted": "Mål slettet!"
   },
   "note": {
     "title": "Titel",
@@ -1116,7 +1142,8 @@
     "estimate": "Estimat",
     "estimateHint": "Cirka hvor lang tid? Bruges når du planlægger dagen.",
     "estimateClearHint": "Klik igen for at rydde",
-    "estimateError": "Estimatet kunne ikke opdateres"
+    "estimateError": "Estimatet kunne ikke opdateres",
+    "noGoal": "Knyt til et mål"
   },
   "projects": {
     "loading": "Indlæser projekter...",
@@ -2327,7 +2354,34 @@
     "noGoalsYet": "Ingen mål endnu.",
     "blankSlateHint": "Et mål er et resultat, du vil nå i denne sæson eller i år, fx at løbe et halvmaraton. Knyt projekter til det for at se arbejdet, der fører dig derhen.",
     "blankSlateNew": "Opret dit første mål",
-    "blankSlateAreas": "Opsæt områder"
+    "blankSlateAreas": "Opsæt områder",
+    "addGoal": "Tilføj mål",
+    "title": "Mål",
+    "stats": {
+      "projects": "projekter",
+      "tasks": "opgaver"
+    },
+    "notFound": "Målet blev ikke fundet",
+    "editGoal": "Rediger mål",
+    "horizon": {
+      "season": "Sæson",
+      "year": "År"
+    },
+    "status": {
+      "active": "Aktiv",
+      "achieved": "Nået",
+      "paused": "På pause",
+      "dropped": "Opgivet"
+    },
+    "singular": "Mål",
+    "targetDate": "Mål",
+    "noProjects": "Ingen projekter knyttet til dette mål.",
+    "noTasks": "Ingen opgaver knyttet til dette mål.",
+    "searchGoals": "Søg i mål…",
+    "clearGoal": "Fjern mål",
+    "noGoalsFound": "Ingen mål fundet",
+    "inactive": "Inaktiv",
+    "viewGoal": "Gå til mål"
   },
   "templates": {
     "new": "Ny skabelon",

@@ -38,7 +38,9 @@
     "clear": "Počisti",
     "open": "Odpri",
     "retry": "Poskusi znova",
-    "updated": "Posodobljeno"
+    "updated": "Posodobljeno",
+    "all": "Vse",
+    "optional": "neobvezno"
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -81,7 +83,10 @@
     "reports": "Poročila",
     "productivityAssistant": "Asistent za produktivnost",
     "assignedToMe": "Dodeljeno meni",
-    "everyone": "Vsi"
+    "everyone": "Vsi",
+    "goals": "Cilji",
+    "habits": "Navade",
+    "templates": "Predloge"
   },
   "navigation": {
     "home": "Domov",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Izbriši projekt",
       "message": "Ali ste prepričani, da želite izbrisati projekt \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Izbriši cilj",
+      "message": "Ali res želite izbrisati cilj »{{title}}«?"
+    },
+    "createGoal": "Ustvari cilj",
+    "updateGoal": "Posodobi cilj"
   },
   "forms": {
     "title": "Naslov",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Vtipkajte za dodajanje oznake",
     "createTagOption": "+ Ustvari \"{{tagName}}\"",
     "removeTagAriaLabel": "Odstrani oznako {{tagName}}",
-    "projectDescriptionPlaceholder": "Vnesite opis projekta"
+    "projectDescriptionPlaceholder": "Vnesite opis projekta",
+    "goalTitlePlaceholder": "Naslov cilja",
+    "goalWhy": "Zakaj",
+    "goalWhyPlaceholder": "Kaj bo mogoče, ko ga dosežete?",
+    "goalHorizon": "Obdobje",
+    "goalStatus": "Stanje",
+    "goalTargetDate": "Ciljni datum",
+    "color": "Barva",
+    "goalArea": "Področje",
+    "noArea": "Brez področja"
   },
   "auth": {
     "login": "Prijava",
@@ -871,7 +891,10 @@
     "generalError": "Prišlo je do napake. Poskusite znova.",
     "viewNameRequired": "Ime pogleda je obvezno",
     "viewSaveFailed": "Shranjevanje pogleda ni uspelo. Poskusite znova.",
-    "generic": "Nekaj je šlo narobe"
+    "generic": "Nekaj je šlo narobe",
+    "goalTitleRequired": "Naslov cilja je obvezen",
+    "failedToSaveGoal": "Cilja ni bilo mogoče shraniti.",
+    "failedToDeleteGoal": "Cilja ni bilo mogoče izbrisati."
   },
   "inbox": {
     "title": "Prejeto",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Naloga uspešno posodobljena!",
     "taskDeleted": "Naloga uspešno izbrisana!",
     "noteDeleted": "Opomba je bila uspešno izbrisana!",
-    "bannerUpdated": "Banner je bil uspešno posodobljen!"
+    "bannerUpdated": "Banner je bil uspešno posodobljen!",
+    "goalCreated": "Cilj je ustvarjen!",
+    "goalUpdated": "Cilj je posodobljen!",
+    "goalDeleted": "Cilj je izbrisan!"
   },
   "note": {
     "title": "Naslov",
@@ -1116,7 +1142,8 @@
     "estimate": "Ocena",
     "estimateHint": "Približno koliko časa? Uporabi se pri načrtovanju dneva.",
     "estimateClearHint": "Klikni znova za brisanje",
-    "estimateError": "Ocene ni bilo mogoče posodobiti"
+    "estimateError": "Ocene ni bilo mogoče posodobiti",
+    "noGoal": "Dodeli cilju"
   },
   "projects": {
     "loading": "Nalagam projekte...",
@@ -2331,7 +2358,34 @@
     "noGoalsYet": "Še ni ciljev.",
     "blankSlateHint": "Cilj je rezultat, ki ga želite doseči to sezono ali letos, na primer preteči polmaraton. Povežite projekte z njim, da vidite delo, ki vas pripelje do tja.",
     "blankSlateNew": "Ustvarite prvi cilj",
-    "blankSlateAreas": "Nastavite področja"
+    "blankSlateAreas": "Nastavite področja",
+    "addGoal": "Dodaj cilj",
+    "title": "Cilji",
+    "stats": {
+      "projects": "projekti",
+      "tasks": "naloge"
+    },
+    "notFound": "Cilja ni mogoče najti",
+    "editGoal": "Uredi cilj",
+    "horizon": {
+      "season": "Sezona",
+      "year": "Leto"
+    },
+    "status": {
+      "active": "Aktiven",
+      "achieved": "Dosežen",
+      "paused": "Začasno ustavljen",
+      "dropped": "Opuščen"
+    },
+    "singular": "Cilj",
+    "targetDate": "Rok",
+    "noProjects": "S tem ciljem ni povezanih projektov.",
+    "noTasks": "Temu cilju ni dodeljenih nalog.",
+    "searchGoals": "Išči cilje…",
+    "clearGoal": "Odstrani cilj",
+    "noGoalsFound": "Ni najdenih ciljev",
+    "inactive": "Neaktiven",
+    "viewGoal": "Pojdi na cilj"
   },
   "templates": {
     "new": "Nova predloga",

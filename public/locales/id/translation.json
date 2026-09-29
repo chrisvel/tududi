@@ -38,7 +38,9 @@
     "clear": "Bersihkan",
     "open": "Buka",
     "retry": "Coba lagi",
-    "updated": "Diperbarui"
+    "updated": "Diperbarui",
+    "all": "Semua",
+    "optional": "opsional"
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -81,7 +83,10 @@
     "reports": "Laporan",
     "productivityAssistant": "Asisten Produktivitas",
     "assignedToMe": "Ditetapkan untuk saya",
-    "everyone": "Semua orang"
+    "everyone": "Semua orang",
+    "goals": "Tujuan",
+    "habits": "Kebiasaan",
+    "templates": "Templat"
   },
   "navigation": {
     "home": "Beranda",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Hapus Proyek",
       "message": "Apakah Anda yakin ingin menghapus proyek \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Hapus tujuan",
+      "message": "Yakin ingin menghapus tujuan \"{{title}}\"?"
+    },
+    "createGoal": "Buat tujuan",
+    "updateGoal": "Perbarui tujuan"
   },
   "forms": {
     "title": "Judul",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Ketik untuk menambahkan tag",
     "createTagOption": "+ Buat \"{{tagName}}\"",
     "removeTagAriaLabel": "Hapus tag {{tagName}}",
-    "projectDescriptionPlaceholder": "Masukkan deskripsi proyek"
+    "projectDescriptionPlaceholder": "Masukkan deskripsi proyek",
+    "goalTitlePlaceholder": "Judul tujuan",
+    "goalWhy": "Mengapa",
+    "goalWhyPlaceholder": "Apa yang menjadi mungkin jika ini tercapai?",
+    "goalHorizon": "Jangka waktu",
+    "goalStatus": "Status",
+    "goalTargetDate": "Tanggal target",
+    "color": "Warna",
+    "goalArea": "Area",
+    "noArea": "Tanpa area"
   },
   "auth": {
     "login": "Masuk",
@@ -871,7 +891,10 @@
     "generalError": "Terjadi kesalahan. Silakan coba lagi.",
     "viewNameRequired": "Nama tampilan diperlukan",
     "viewSaveFailed": "Gagal menyimpan tampilan. Silakan coba lagi.",
-    "generic": "Terjadi kesalahan"
+    "generic": "Terjadi kesalahan",
+    "goalTitleRequired": "Judul tujuan wajib diisi",
+    "failedToSaveGoal": "Gagal menyimpan tujuan.",
+    "failedToDeleteGoal": "Gagal menghapus tujuan."
   },
   "inbox": {
     "title": "Kotak Masuk",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Tugas berhasil diperbarui!",
     "taskDeleted": "Tugas berhasil dihapus!",
     "noteDeleted": "Catatan berhasil dihapus!",
-    "bannerUpdated": "Spanduk berhasil diperbarui!"
+    "bannerUpdated": "Spanduk berhasil diperbarui!",
+    "goalCreated": "Tujuan dibuat!",
+    "goalUpdated": "Tujuan diperbarui!",
+    "goalDeleted": "Tujuan dihapus!"
   },
   "note": {
     "title": "Judul",
@@ -1116,7 +1142,8 @@
     "estimate": "Perkiraan",
     "estimateHint": "Kira-kira berapa lama? Dipakai saat merencanakan hari.",
     "estimateClearHint": "Klik lagi untuk menghapus",
-    "estimateError": "Gagal memperbarui perkiraan"
+    "estimateError": "Gagal memperbarui perkiraan",
+    "noGoal": "Tetapkan ke tujuan"
   },
   "projects": {
     "loading": "Memuat proyek...",
@@ -2326,7 +2353,34 @@
     "noGoalsYet": "Belum ada tujuan.",
     "blankSlateHint": "Tujuan adalah hasil yang ingin Anda capai musim ini atau tahun ini, seperti lari setengah maraton. Hubungkan proyek ke tujuan itu untuk melihat pekerjaan yang membawa Anda ke sana.",
     "blankSlateNew": "Buat tujuan pertama Anda",
-    "blankSlateAreas": "Siapkan area"
+    "blankSlateAreas": "Siapkan area",
+    "addGoal": "Tambah tujuan",
+    "title": "Tujuan",
+    "stats": {
+      "projects": "proyek",
+      "tasks": "tugas"
+    },
+    "notFound": "Tujuan tidak ditemukan",
+    "editGoal": "Edit tujuan",
+    "horizon": {
+      "season": "Musim",
+      "year": "Tahun"
+    },
+    "status": {
+      "active": "Aktif",
+      "achieved": "Tercapai",
+      "paused": "Dijeda",
+      "dropped": "Dibatalkan"
+    },
+    "singular": "Tujuan",
+    "targetDate": "Target",
+    "noProjects": "Tidak ada proyek yang terhubung ke tujuan ini.",
+    "noTasks": "Tidak ada tugas untuk tujuan ini.",
+    "searchGoals": "Cari tujuan…",
+    "clearGoal": "Hapus tujuan",
+    "noGoalsFound": "Tujuan tidak ditemukan",
+    "inactive": "Tidak aktif",
+    "viewGoal": "Buka tujuan"
   },
   "templates": {
     "new": "Templat Baru",

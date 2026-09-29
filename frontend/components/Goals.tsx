@@ -317,7 +317,10 @@ const Goals: React.FC = () => {
             {isConfirmDialogOpen && goalToDelete && (
                 <ConfirmDialog
                     title={t('modals.deleteGoal.title', 'Delete Goal')}
-                    message={`${t('modals.deleteGoal.message', 'Are you sure you want to delete the goal')} "${goalToDelete.title}"?`}
+                    message={t('modals.deleteGoal.message', {
+                        title: goalToDelete.title,
+                        defaultValue: 'Are you sure you want to delete the goal "{{title}}"?',
+                    })}
                     onConfirm={handleDeleteGoal}
                     onCancel={() => { setIsConfirmDialogOpen(false); setGoalToDelete(null); }}
                 />

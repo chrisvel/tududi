@@ -38,7 +38,9 @@
     "clear": "Șterge",
     "open": "Deschide",
     "retry": "Reîncearcă",
-    "updated": "Actualizat"
+    "updated": "Actualizat",
+    "all": "Toate",
+    "optional": "opțional"
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -81,7 +83,10 @@
     "reports": "Rapoarte",
     "productivityAssistant": "Asistent de Productivitate",
     "assignedToMe": "Atribuit mie",
-    "everyone": "Toată lumea"
+    "everyone": "Toată lumea",
+    "goals": "Obiective",
+    "habits": "Obiceiuri",
+    "templates": "Șabloane"
   },
   "navigation": {
     "home": "Acasă",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Ștergere Proiect",
       "message": "Ești sigur că vrei să ștergi proiectul \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Șterge obiectivul",
+      "message": "Sigur vrei să ștergi obiectivul „{{title}}”?"
+    },
+    "createGoal": "Creează obiectivul",
+    "updateGoal": "Actualizează obiectivul"
   },
   "forms": {
     "title": "Titlu",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Scrieți pentru a adăuga o etichetă",
     "createTagOption": "+ Creați \"{{tagName}}\"",
     "removeTagAriaLabel": "Eliminați eticheta {{tagName}}",
-    "projectDescriptionPlaceholder": "Introduceți descrierea proiectului"
+    "projectDescriptionPlaceholder": "Introduceți descrierea proiectului",
+    "goalTitlePlaceholder": "Titlul obiectivului",
+    "goalWhy": "De ce",
+    "goalWhyPlaceholder": "Ce va face posibil atingerea lui?",
+    "goalHorizon": "Orizont",
+    "goalStatus": "Stare",
+    "goalTargetDate": "Data țintă",
+    "color": "Culoare",
+    "goalArea": "Arie",
+    "noArea": "Nicio arie"
   },
   "auth": {
     "login": "Conectare",
@@ -871,7 +891,10 @@
     "generalError": "A apărut o eroare. Te rugăm să încerci din nou.",
     "viewNameRequired": "Numele vizualizării este necesar",
     "viewSaveFailed": "Salvarea vizualizării a eșuat. Te rugăm să încerci din nou.",
-    "generic": "Ceva nu a mers bine"
+    "generic": "Ceva nu a mers bine",
+    "goalTitleRequired": "Titlul obiectivului este obligatoriu",
+    "failedToSaveGoal": "Obiectivul nu a putut fi salvat.",
+    "failedToDeleteGoal": "Obiectivul nu a putut fi șters."
   },
   "inbox": {
     "title": "Căsuța de primire",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Sarcină actualizată cu succes!",
     "taskDeleted": "Sarcină ștearsă cu succes!",
     "noteDeleted": "Notă ștearsă cu succes!",
-    "bannerUpdated": "Bannerul a fost actualizat cu succes!"
+    "bannerUpdated": "Bannerul a fost actualizat cu succes!",
+    "goalCreated": "Obiectiv creat!",
+    "goalUpdated": "Obiectiv actualizat!",
+    "goalDeleted": "Obiectiv șters!"
   },
   "note": {
     "title": "Titlu",
@@ -1116,7 +1142,8 @@
     "estimate": "Estimare",
     "estimateHint": "Cât durează aproximativ? Se folosește la planificarea zilei.",
     "estimateClearHint": "Apasă din nou pentru a șterge",
-    "estimateError": "Estimarea nu a putut fi actualizată"
+    "estimateError": "Estimarea nu a putut fi actualizată",
+    "noGoal": "Atribuie unui obiectiv"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",
@@ -2329,7 +2356,34 @@
     "noGoalsYet": "Încă nu există obiective.",
     "blankSlateHint": "Un obiectiv este un rezultat pe care vrei să-l atingi în acest sezon sau anul acesta, de exemplu să alergi un semimaraton. Leagă proiecte de el ca să vezi munca ce te duce acolo.",
     "blankSlateNew": "Creează primul obiectiv",
-    "blankSlateAreas": "Configurează ariile"
+    "blankSlateAreas": "Configurează ariile",
+    "addGoal": "Adaugă obiectiv",
+    "title": "Obiective",
+    "stats": {
+      "projects": "proiecte",
+      "tasks": "sarcini"
+    },
+    "notFound": "Obiectivul nu a fost găsit",
+    "editGoal": "Editează obiectivul",
+    "horizon": {
+      "season": "Sezon",
+      "year": "An"
+    },
+    "status": {
+      "active": "Activ",
+      "achieved": "Atins",
+      "paused": "În pauză",
+      "dropped": "Abandonat"
+    },
+    "singular": "Obiectiv",
+    "targetDate": "Țintă",
+    "noProjects": "Niciun proiect legat de acest obiectiv.",
+    "noTasks": "Nicio sarcină atribuită acestui obiectiv.",
+    "searchGoals": "Caută obiective…",
+    "clearGoal": "Elimină obiectivul",
+    "noGoalsFound": "Nu s-au găsit obiective",
+    "inactive": "Inactiv",
+    "viewGoal": "Mergi la obiectiv"
   },
   "templates": {
     "new": "Șablon nou",

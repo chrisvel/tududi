@@ -38,7 +38,9 @@
     "clear": "Tyhjennä",
     "open": "Avaa",
     "retry": "Yritä uudelleen",
-    "updated": "Päivitetty"
+    "updated": "Päivitetty",
+    "all": "Kaikki",
+    "optional": "valinnainen"
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -81,7 +83,10 @@
     "reports": "Raportit",
     "productivityAssistant": "Tuottavuusavustaja",
     "assignedToMe": "Mulle osoitettu",
-    "everyone": "Kaikki"
+    "everyone": "Kaikki",
+    "goals": "Tavoitteet",
+    "habits": "Tavat",
+    "templates": "Mallit"
   },
   "navigation": {
     "home": "Koti",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Poista projekti",
       "message": "Oletko varma, että haluat poistaa projektin \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Poista tavoite",
+      "message": "Haluatko varmasti poistaa tavoitteen ”{{title}}”?"
+    },
+    "createGoal": "Luo tavoite",
+    "updateGoal": "Päivitä tavoite"
   },
   "forms": {
     "title": "Otsikko",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Kirjoita lisätäksesi tunniste",
     "createTagOption": "+ Luo \"{{tagName}}\"",
     "removeTagAriaLabel": "Poista tunniste {{tagName}}",
-    "projectDescriptionPlaceholder": "Syötä projektin kuvaus"
+    "projectDescriptionPlaceholder": "Syötä projektin kuvaus",
+    "goalTitlePlaceholder": "Tavoitteen otsikko",
+    "goalWhy": "Miksi",
+    "goalWhyPlaceholder": "Mitä tämän saavuttaminen mahdollistaa?",
+    "goalHorizon": "Aikajänne",
+    "goalStatus": "Tila",
+    "goalTargetDate": "Tavoitepäivä",
+    "color": "Väri",
+    "goalArea": "Alue",
+    "noArea": "Ei aluetta"
   },
   "auth": {
     "login": "Kirjaudu",
@@ -871,7 +891,10 @@
     "generalError": "Tapahtui virhe. Yritä uudelleen.",
     "viewNameRequired": "Näkymän nimi on pakollinen",
     "viewSaveFailed": "Näkymän tallentaminen epäonnistui. Yritä uudelleen.",
-    "generic": "Jokin meni pieleen"
+    "generic": "Jokin meni pieleen",
+    "goalTitleRequired": "Tavoitteella on oltava otsikko",
+    "failedToSaveGoal": "Tavoitteen tallentaminen epäonnistui.",
+    "failedToDeleteGoal": "Tavoitteen poistaminen epäonnistui."
   },
   "inbox": {
     "title": "Saapuneet",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Tehtävä päivitetty onnistuneesti!",
     "taskDeleted": "Tehtävä poistettu onnistuneesti!",
     "noteDeleted": "Muistiinpano poistettiin onnistuneesti!",
-    "bannerUpdated": "Banneri päivitettiin onnistuneesti!"
+    "bannerUpdated": "Banneri päivitettiin onnistuneesti!",
+    "goalCreated": "Tavoite luotu!",
+    "goalUpdated": "Tavoite päivitetty!",
+    "goalDeleted": "Tavoite poistettu!"
   },
   "note": {
     "title": "Otsikko",
@@ -1116,7 +1142,8 @@
     "estimate": "Arvio",
     "estimateHint": "Suunnilleen kuinka kauan? Käytetään päivän suunnittelussa.",
     "estimateClearHint": "Tyhjennä napsauttamalla uudelleen",
-    "estimateError": "Arvion päivittäminen epäonnistui"
+    "estimateError": "Arvion päivittäminen epäonnistui",
+    "noGoal": "Liitä tavoitteeseen"
   },
   "projects": {
     "loading": "Ladataan projekteja...",
@@ -2327,7 +2354,34 @@
     "noGoalsYet": "Ei vielä tavoitteita.",
     "blankSlateHint": "Tavoite on lopputulos, jonka haluat saavuttaa tällä kaudella tai tänä vuonna, kuten puolimaratonin juokseminen. Liitä siihen projekteja nähdäksesi työn, joka vie sinut perille.",
     "blankSlateNew": "Luo ensimmäinen tavoitteesi",
-    "blankSlateAreas": "Määritä alueet"
+    "blankSlateAreas": "Määritä alueet",
+    "addGoal": "Lisää tavoite",
+    "title": "Tavoitteet",
+    "stats": {
+      "projects": "projektia",
+      "tasks": "tehtävää"
+    },
+    "notFound": "Tavoitetta ei löytynyt",
+    "editGoal": "Muokkaa tavoitetta",
+    "horizon": {
+      "season": "Kausi",
+      "year": "Vuosi"
+    },
+    "status": {
+      "active": "Aktiivinen",
+      "achieved": "Saavutettu",
+      "paused": "Tauolla",
+      "dropped": "Hylätty"
+    },
+    "singular": "Tavoite",
+    "targetDate": "Tavoite",
+    "noProjects": "Tähän tavoitteeseen ei ole liitetty projekteja.",
+    "noTasks": "Tähän tavoitteeseen ei ole liitetty tehtäviä.",
+    "searchGoals": "Hae tavoitteita…",
+    "clearGoal": "Poista tavoite",
+    "noGoalsFound": "Tavoitteita ei löytynyt",
+    "inactive": "Ei aktiivinen",
+    "viewGoal": "Siirry tavoitteeseen"
   },
   "templates": {
     "new": "Uusi malli",

@@ -38,7 +38,9 @@
     "clear": "Löschen",
     "open": "Öffnen",
     "retry": "Erneut versuchen",
-    "updated": "Aktualisiert"
+    "updated": "Aktualisiert",
+    "all": "Alle",
+    "optional": "optional"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -81,7 +83,10 @@
     "reports": "Berichte",
     "productivityAssistant": "Produktivitätsassistent",
     "assignedToMe": "Mir zugewiesen",
-    "everyone": "Jeder"
+    "everyone": "Jeder",
+    "goals": "Ziele",
+    "habits": "Gewohnheiten",
+    "templates": "Vorlagen"
   },
   "navigation": {
     "home": "Startseite",
@@ -330,7 +335,16 @@
     "tagInputPlaceholder": "Tippen, um ein Tag hinzuzufügen",
     "createTagOption": "+ Erstellen \"{{tagName}}\"",
     "removeTagAriaLabel": "Tag {{tagName}} entfernen",
-    "projectDescriptionPlaceholder": "Projektbeschreibung eingeben"
+    "projectDescriptionPlaceholder": "Projektbeschreibung eingeben",
+    "goalTitlePlaceholder": "Titel des Ziels",
+    "goalWhy": "Warum",
+    "goalWhyPlaceholder": "Was wird möglich, wenn du das erreichst?",
+    "goalHorizon": "Zeitraum",
+    "goalStatus": "Status",
+    "goalTargetDate": "Zieldatum",
+    "color": "Farbe",
+    "goalArea": "Bereich",
+    "noArea": "Kein Bereich"
   },
   "modals": {
     "updateNote": "Notiz aktualisieren",
@@ -368,7 +382,13 @@
     "deleteNote": {
       "title": "Notiz löschen",
       "message": "Sind Sie sicher, dass Sie die Notiz \"{{noteTitle}}\" löschen möchten?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Ziel löschen",
+      "message": "Möchtest du das Ziel „{{title}}“ wirklich löschen?"
+    },
+    "createGoal": "Ziel erstellen",
+    "updateGoal": "Ziel aktualisieren"
   },
   "errors": {
     "noteTitleRequired": "Notiz-Titel ist erforderlich.",
@@ -401,7 +421,10 @@
     "generalError": "Ein Fehler ist aufgetreten. Bitte erneut versuchen.",
     "viewNameRequired": "Der Ansichtsname ist erforderlich",
     "viewSaveFailed": "Speichern der Ansicht fehlgeschlagen. Bitte versuchen Sie es erneut.",
-    "generic": "Etwas ist schiefgelaufen"
+    "generic": "Etwas ist schiefgelaufen",
+    "goalTitleRequired": "Ein Titel für das Ziel ist erforderlich",
+    "failedToSaveGoal": "Ziel konnte nicht gespeichert werden.",
+    "failedToDeleteGoal": "Ziel konnte nicht gelöscht werden."
   },
   "success": {
     "noteUpdated": "Notiz erfolgreich aktualisiert!",
@@ -417,7 +440,10 @@
     "taskUpdated": "Aufgabe erfolgreich aktualisiert!",
     "taskDeleted": "Aufgabe erfolgreich gelöscht!",
     "noteDeleted": "Notiz erfolgreich gelöscht!",
-    "bannerUpdated": "Banner erfolgreich aktualisiert!"
+    "bannerUpdated": "Banner erfolgreich aktualisiert!",
+    "goalCreated": "Ziel erstellt!",
+    "goalUpdated": "Ziel aktualisiert!",
+    "goalDeleted": "Ziel gelöscht!"
   },
   "notes": {
     "title": "Notizen",
@@ -1038,7 +1064,8 @@
     "estimate": "Schätzung",
     "estimateHint": "Wie lange ungefähr? Wird bei der Tagesplanung verwendet.",
     "estimateClearHint": "Zum Entfernen erneut klicken",
-    "estimateError": "Die Schätzung konnte nicht aktualisiert werden"
+    "estimateError": "Die Schätzung konnte nicht aktualisiert werden",
+    "noGoal": "Einem Ziel zuordnen"
   },
   "calendar": {
     "month": "Monat",
@@ -2336,7 +2363,34 @@
     "noGoalsYet": "Noch keine Ziele.",
     "blankSlateHint": "Ein Ziel ist ein Ergebnis, das du in dieser Saison oder diesem Jahr erreichen willst, etwa einen Halbmarathon laufen. Verknüpfe Projekte damit, um die Arbeit dorthin zu sehen.",
     "blankSlateNew": "Erstes Ziel erstellen",
-    "blankSlateAreas": "Bereiche einrichten"
+    "blankSlateAreas": "Bereiche einrichten",
+    "addGoal": "Ziel hinzufügen",
+    "title": "Ziele",
+    "stats": {
+      "projects": "Projekte",
+      "tasks": "Aufgaben"
+    },
+    "notFound": "Ziel nicht gefunden",
+    "editGoal": "Ziel bearbeiten",
+    "horizon": {
+      "season": "Saison",
+      "year": "Jahr"
+    },
+    "status": {
+      "active": "Aktiv",
+      "achieved": "Erreicht",
+      "paused": "Pausiert",
+      "dropped": "Aufgegeben"
+    },
+    "singular": "Ziel",
+    "targetDate": "Ziel",
+    "noProjects": "Keine Projekte mit diesem Ziel verknüpft.",
+    "noTasks": "Diesem Ziel sind keine Aufgaben zugeordnet.",
+    "searchGoals": "Ziele suchen…",
+    "clearGoal": "Ziel entfernen",
+    "noGoalsFound": "Keine Ziele gefunden",
+    "inactive": "Inaktiv",
+    "viewGoal": "Zum Ziel"
   },
   "templates": {
     "new": "Neue Vorlage",

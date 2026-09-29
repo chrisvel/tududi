@@ -38,7 +38,9 @@
     "clear": "지우기",
     "open": "열기",
     "retry": "다시 시도",
-    "updated": "업데이트"
+    "updated": "업데이트",
+    "all": "전체",
+    "optional": "선택 사항"
   },
   "sidebar": {
     "dashboard": "대시보드",
@@ -81,7 +83,10 @@
     "reports": "보고서",
     "productivityAssistant": "생산성 도우미",
     "assignedToMe": "내게 할당됨",
-    "everyone": "모두"
+    "everyone": "모두",
+    "goals": "목표",
+    "habits": "습관",
+    "templates": "템플릿"
   },
   "navigation": {
     "home": "홈",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "프로젝트 삭제",
       "message": "프로젝트 \"{{projectName}}\"를 삭제하시겠습니까?"
-    }
+    },
+    "deleteGoal": {
+      "title": "목표 삭제",
+      "message": "목표 \"{{title}}\"을(를) 삭제하시겠습니까?"
+    },
+    "createGoal": "목표 만들기",
+    "updateGoal": "목표 업데이트"
   },
   "forms": {
     "title": "제목",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "태그 추가를 위해 입력하세요",
     "createTagOption": "+ \"{{tagName}}\" 생성",
     "removeTagAriaLabel": "태그 {{tagName}} 제거",
-    "projectDescriptionPlaceholder": "프로젝트 설명을 입력하세요"
+    "projectDescriptionPlaceholder": "프로젝트 설명을 입력하세요",
+    "goalTitlePlaceholder": "목표 제목",
+    "goalWhy": "이유",
+    "goalWhyPlaceholder": "이 목표를 이루면 무엇이 가능해지나요?",
+    "goalHorizon": "기간",
+    "goalStatus": "상태",
+    "goalTargetDate": "목표 날짜",
+    "color": "색상",
+    "goalArea": "영역",
+    "noArea": "영역 없음"
   },
   "auth": {
     "login": "로그인",
@@ -871,7 +891,10 @@
     "generalError": "오류가 발생했습니다. 다시 시도해 주세요.",
     "viewNameRequired": "뷰 이름은 필수입니다",
     "viewSaveFailed": "뷰 저장에 실패했습니다. 다시 시도해 주세요.",
-    "generic": "문제가 발생했습니다"
+    "generic": "문제가 발생했습니다",
+    "goalTitleRequired": "목표 제목을 입력하세요",
+    "failedToSaveGoal": "목표를 저장하지 못했습니다.",
+    "failedToDeleteGoal": "목표를 삭제하지 못했습니다."
   },
   "inbox": {
     "title": "받은 편지함",
@@ -979,7 +1002,10 @@
     "taskUpdated": "작업이 성공적으로 업데이트되었습니다!",
     "taskDeleted": "작업이 성공적으로 삭제되었습니다!",
     "noteDeleted": "메모가 성공적으로 삭제되었습니다!",
-    "bannerUpdated": "배너가 성공적으로 업데이트되었습니다!"
+    "bannerUpdated": "배너가 성공적으로 업데이트되었습니다!",
+    "goalCreated": "목표를 만들었습니다!",
+    "goalUpdated": "목표를 업데이트했습니다!",
+    "goalDeleted": "목표를 삭제했습니다!"
   },
   "note": {
     "title": "제목",
@@ -1116,7 +1142,8 @@
     "estimate": "예상 시간",
     "estimateHint": "대략 얼마나 걸리나요? 하루를 계획할 때 사용됩니다.",
     "estimateClearHint": "다시 클릭하면 지워집니다",
-    "estimateError": "예상 시간을 업데이트할 수 없습니다"
+    "estimateError": "예상 시간을 업데이트할 수 없습니다",
+    "noGoal": "목표에 할당"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",
@@ -2326,7 +2353,34 @@
     "noGoalsYet": "아직 목표가 없습니다.",
     "blankSlateHint": "목표는 하프 마라톤 완주처럼 이번 시즌이나 올해 이루고 싶은 결과입니다. 프로젝트를 연결하면 목표로 가는 작업을 볼 수 있습니다.",
     "blankSlateNew": "첫 목표 만들기",
-    "blankSlateAreas": "영역 설정"
+    "blankSlateAreas": "영역 설정",
+    "addGoal": "목표 추가",
+    "title": "목표",
+    "stats": {
+      "projects": "프로젝트",
+      "tasks": "작업"
+    },
+    "notFound": "목표를 찾을 수 없습니다",
+    "editGoal": "목표 편집",
+    "horizon": {
+      "season": "시즌",
+      "year": "연도"
+    },
+    "status": {
+      "active": "진행 중",
+      "achieved": "달성",
+      "paused": "일시 중지",
+      "dropped": "중단"
+    },
+    "singular": "목표",
+    "targetDate": "기한",
+    "noProjects": "이 목표에 연결된 프로젝트가 없습니다.",
+    "noTasks": "이 목표에 할당된 작업이 없습니다.",
+    "searchGoals": "목표 검색…",
+    "clearGoal": "목표 제거",
+    "noGoalsFound": "목표를 찾을 수 없습니다",
+    "inactive": "비활성",
+    "viewGoal": "목표로 이동"
   },
   "templates": {
     "new": "새 템플릿",

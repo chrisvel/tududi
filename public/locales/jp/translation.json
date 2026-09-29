@@ -38,7 +38,9 @@
     "clear": "クリア",
     "open": "開く",
     "retry": "再試行",
-    "updated": "更新日"
+    "updated": "更新日",
+    "all": "すべて",
+    "optional": "任意"
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -81,7 +83,10 @@
     "reports": "レポート",
     "productivityAssistant": "生産性アシスタント",
     "assignedToMe": "私に割り当てられた",
-    "everyone": "全員"
+    "everyone": "全員",
+    "goals": "目標",
+    "habits": "習慣",
+    "templates": "テンプレート"
   },
   "navigation": {
     "home": "ホーム",
@@ -648,7 +653,13 @@
     "updateArea": "エリアを更新",
     "createArea": "エリアを作成",
     "updateTag": "タグを更新",
-    "createTag": "タグを作成"
+    "createTag": "タグを作成",
+    "deleteGoal": {
+      "title": "目標を削除",
+      "message": "目標「{{title}}」を削除してもよろしいですか？"
+    },
+    "createGoal": "目標を作成",
+    "updateGoal": "目標を更新"
   },
   "forms": {
     "title": "タイトル",
@@ -720,7 +731,16 @@
     "tagInputPlaceholder": "タグを追加するために入力",
     "createTagOption": "+ 「{{tagName}}」を作成",
     "removeTagAriaLabel": "タグ{{tagName}}を削除",
-    "projectDescriptionPlaceholder": "プロジェクトの説明を入力してください"
+    "projectDescriptionPlaceholder": "プロジェクトの説明を入力してください",
+    "goalTitlePlaceholder": "目標のタイトル",
+    "goalWhy": "理由",
+    "goalWhyPlaceholder": "達成すると何ができるようになりますか？",
+    "goalHorizon": "期間",
+    "goalStatus": "ステータス",
+    "goalTargetDate": "目標日",
+    "color": "色",
+    "goalArea": "エリア",
+    "noArea": "エリアなし"
   },
   "auth": {
     "login": "ログイン",
@@ -812,7 +832,10 @@
     "generalError": "エラーが発生しました。再試行してください。",
     "viewNameRequired": "ビュー名は必須です",
     "viewSaveFailed": "ビューの保存に失敗しました。もう一度お試しください。",
-    "generic": "問題が発生しました"
+    "generic": "問題が発生しました",
+    "goalTitleRequired": "目標のタイトルは必須です",
+    "failedToSaveGoal": "目標を保存できませんでした。",
+    "failedToDeleteGoal": "目標を削除できませんでした。"
   },
   "success": {
     "noteUpdated": "ノートが正常に更新されました！",
@@ -828,7 +851,10 @@
     "taskUpdated": "タスクが正常に更新されました！",
     "taskDeleted": "タスクが正常に削除されました！",
     "noteDeleted": "ノートが正常に削除されました！",
-    "bannerUpdated": "バナーが正常に更新されました！"
+    "bannerUpdated": "バナーが正常に更新されました！",
+    "goalCreated": "目標を作成しました！",
+    "goalUpdated": "目標を更新しました！",
+    "goalDeleted": "目標を削除しました！"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1273,7 +1299,8 @@
     "estimate": "見積もり",
     "estimateHint": "だいたいどれくらいかかりますか?一日の計画に使われます。",
     "estimateClearHint": "もう一度クリックすると解除",
-    "estimateError": "見積もりを更新できませんでした"
+    "estimateError": "見積もりを更新できませんでした",
+    "noGoal": "目標に割り当てる"
   },
   "calendar": {
     "month": "月",
@@ -2326,7 +2353,34 @@
     "noGoalsYet": "まだ目標はありません。",
     "blankSlateHint": "目標は、ハーフマラソンを走るなど、今シーズンや今年中に達成したい成果です。プロジェクトを紐づけると、そこへ向かう作業が見えるようになります。",
     "blankSlateNew": "最初の目標を作成",
-    "blankSlateAreas": "エリアを設定"
+    "blankSlateAreas": "エリアを設定",
+    "addGoal": "目標を追加",
+    "title": "目標",
+    "stats": {
+      "projects": "プロジェクト",
+      "tasks": "タスク"
+    },
+    "notFound": "目標が見つかりません",
+    "editGoal": "目標を編集",
+    "horizon": {
+      "season": "シーズン",
+      "year": "年"
+    },
+    "status": {
+      "active": "進行中",
+      "achieved": "達成",
+      "paused": "一時停止",
+      "dropped": "中止"
+    },
+    "singular": "目標",
+    "targetDate": "期限",
+    "noProjects": "この目標に紐づくプロジェクトはありません。",
+    "noTasks": "この目標に割り当てられたタスクはありません。",
+    "searchGoals": "目標を検索…",
+    "clearGoal": "目標を外す",
+    "noGoalsFound": "目標が見つかりません",
+    "inactive": "非アクティブ",
+    "viewGoal": "目標へ移動"
   },
   "templates": {
     "new": "新しいテンプレート",

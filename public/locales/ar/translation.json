@@ -38,7 +38,9 @@
     "clear": "مسح",
     "open": "فتح",
     "retry": "إعادة المحاولة",
-    "updated": "آخر تحديث"
+    "updated": "آخر تحديث",
+    "all": "الكل",
+    "optional": "اختياري"
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -81,7 +83,10 @@
     "reports": "تقارير",
     "productivityAssistant": "مساعد الإنتاجية",
     "assignedToMe": "مخصص لي",
-    "everyone": "الجميع"
+    "everyone": "الجميع",
+    "goals": "الأهداف",
+    "habits": "العادات",
+    "templates": "القوالب"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "حذف المشروع",
       "message": "هل أنت متأكد أنك تريد حذف المشروع \"{{projectName}}\"؟"
-    }
+    },
+    "deleteGoal": {
+      "title": "حذف الهدف",
+      "message": "هل أنت متأكد من حذف الهدف \"{{title}}\"؟"
+    },
+    "createGoal": "إنشاء الهدف",
+    "updateGoal": "تحديث الهدف"
   },
   "forms": {
     "title": "العنوان",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "اكتب لإضافة وسم",
     "createTagOption": "+ إنشاء \"{{tagName}}\"",
     "removeTagAriaLabel": "إزالة الوسم {{tagName}}",
-    "projectDescriptionPlaceholder": "أدخل وصف المشروع"
+    "projectDescriptionPlaceholder": "أدخل وصف المشروع",
+    "goalTitlePlaceholder": "عنوان الهدف",
+    "goalWhy": "لماذا",
+    "goalWhyPlaceholder": "ما الذي سيتيحه لك تحقيق هذا الهدف؟",
+    "goalHorizon": "المدى الزمني",
+    "goalStatus": "الحالة",
+    "goalTargetDate": "التاريخ المستهدف",
+    "color": "اللون",
+    "goalArea": "المنطقة",
+    "noArea": "بلا منطقة"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -871,7 +891,10 @@
     "generalError": "حدث خطأ. يرجى المحاولة مرة أخرى.",
     "viewNameRequired": "اسم العرض مطلوب",
     "viewSaveFailed": "فشل في حفظ العرض. يرجى المحاولة مرة أخرى.",
-    "generic": "حدث خطأ ما"
+    "generic": "حدث خطأ ما",
+    "goalTitleRequired": "عنوان الهدف مطلوب",
+    "failedToSaveGoal": "تعذر حفظ الهدف.",
+    "failedToDeleteGoal": "تعذر حذف الهدف."
   },
   "inbox": {
     "title": "صندوق الوارد",
@@ -979,7 +1002,10 @@
     "taskUpdated": "تم تحديث المهمة بنجاح!",
     "taskDeleted": "تم حذف المهمة بنجاح!",
     "noteDeleted": "تم حذف الملاحظة بنجاح!",
-    "bannerUpdated": "تم تحديث اللافتة بنجاح!"
+    "bannerUpdated": "تم تحديث اللافتة بنجاح!",
+    "goalCreated": "تم إنشاء الهدف!",
+    "goalUpdated": "تم تحديث الهدف!",
+    "goalDeleted": "تم حذف الهدف!"
   },
   "note": {
     "title": "العنوان",
@@ -1116,7 +1142,8 @@
     "estimate": "التقدير",
     "estimateHint": "كم تستغرق تقريبًا؟ يُستخدم عند تخطيط يومك.",
     "estimateClearHint": "انقر مرة أخرى للمسح",
-    "estimateError": "تعذّر تحديث التقدير"
+    "estimateError": "تعذّر تحديث التقدير",
+    "noGoal": "إسناد إلى هدف"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",
@@ -2335,7 +2362,34 @@
     "noGoalsYet": "لا توجد أهداف بعد.",
     "blankSlateHint": "الهدف نتيجة تريد تحقيقها هذا الموسم أو هذا العام، مثل الجري في نصف ماراثون. اربط المشاريع به لترى العمل الذي يوصلك إليه.",
     "blankSlateNew": "أنشئ هدفك الأول",
-    "blankSlateAreas": "إعداد المناطق"
+    "blankSlateAreas": "إعداد المناطق",
+    "addGoal": "إضافة هدف",
+    "title": "الأهداف",
+    "stats": {
+      "projects": "مشاريع",
+      "tasks": "مهام"
+    },
+    "notFound": "لم يتم العثور على الهدف",
+    "editGoal": "تعديل الهدف",
+    "horizon": {
+      "season": "موسم",
+      "year": "سنة"
+    },
+    "status": {
+      "active": "نشط",
+      "achieved": "تحقق",
+      "paused": "متوقف مؤقتًا",
+      "dropped": "متروك"
+    },
+    "singular": "هدف",
+    "targetDate": "الموعد",
+    "noProjects": "لا توجد مشاريع مرتبطة بهذا الهدف.",
+    "noTasks": "لا توجد مهام لهذا الهدف.",
+    "searchGoals": "ابحث في الأهداف…",
+    "clearGoal": "إزالة الهدف",
+    "noGoalsFound": "لم يتم العثور على أهداف",
+    "inactive": "غير نشط",
+    "viewGoal": "الانتقال إلى الهدف"
   },
   "templates": {
     "new": "قالب جديد",

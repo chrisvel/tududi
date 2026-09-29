@@ -38,7 +38,9 @@
     "clear": "清除",
     "open": "打开",
     "retry": "重试",
-    "updated": "更新时间"
+    "updated": "更新时间",
+    "all": "全部",
+    "optional": "可选"
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -81,7 +83,10 @@
     "reports": "报告",
     "productivityAssistant": "生产力助手",
     "assignedToMe": "分配给我",
-    "everyone": "所有人"
+    "everyone": "所有人",
+    "goals": "目标",
+    "habits": "习惯",
+    "templates": "模板"
   },
   "navigation": {
     "home": "首页",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "删除项目",
       "message": "您确定要删除项目 \"{{projectName}}\" 吗？"
-    }
+    },
+    "deleteGoal": {
+      "title": "删除目标",
+      "message": "确定要删除目标“{{title}}”吗？"
+    },
+    "createGoal": "创建目标",
+    "updateGoal": "更新目标"
   },
   "forms": {
     "title": "标题",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "输入以添加标签",
     "createTagOption": "+ 创建 \"{{tagName}}\"",
     "removeTagAriaLabel": "移除标签 {{tagName}}",
-    "projectDescriptionPlaceholder": "输入项目描述"
+    "projectDescriptionPlaceholder": "输入项目描述",
+    "goalTitlePlaceholder": "目标标题",
+    "goalWhy": "原因",
+    "goalWhyPlaceholder": "实现这个目标能带来什么？",
+    "goalHorizon": "周期",
+    "goalStatus": "状态",
+    "goalTargetDate": "目标日期",
+    "color": "颜色",
+    "goalArea": "区域",
+    "noArea": "无区域"
   },
   "auth": {
     "login": "登录",
@@ -871,7 +891,10 @@
     "generalError": "发生错误。请再试一次。",
     "viewNameRequired": "视图名称是必需的",
     "viewSaveFailed": "保存视图失败。请再试一次。",
-    "generic": "出了点问题"
+    "generic": "出了点问题",
+    "goalTitleRequired": "目标标题为必填项",
+    "failedToSaveGoal": "无法保存目标。",
+    "failedToDeleteGoal": "无法删除目标。"
   },
   "inbox": {
     "title": "收件箱",
@@ -979,7 +1002,10 @@
     "taskUpdated": "任务更新成功！",
     "taskDeleted": "任务删除成功！",
     "noteDeleted": "笔记删除成功！",
-    "bannerUpdated": "横幅更新成功！"
+    "bannerUpdated": "横幅更新成功！",
+    "goalCreated": "目标已创建！",
+    "goalUpdated": "目标已更新！",
+    "goalDeleted": "目标已删除！"
   },
   "note": {
     "title": "标题",
@@ -1116,7 +1142,8 @@
     "estimate": "预估",
     "estimateHint": "大约需要多久?用于规划一天。",
     "estimateClearHint": "再次点击即可清除",
-    "estimateError": "无法更新预估"
+    "estimateError": "无法更新预估",
+    "noGoal": "分配到目标"
   },
   "projects": {
     "loading": "加载项目中...",
@@ -2326,7 +2353,34 @@
     "noGoalsYet": "还没有目标。",
     "blankSlateHint": "目标是你想在本季或今年达成的结果，比如跑完半程马拉松。把项目关联到目标，就能看到通往目标的工作。",
     "blankSlateNew": "创建第一个目标",
-    "blankSlateAreas": "设置区域"
+    "blankSlateAreas": "设置区域",
+    "addGoal": "添加目标",
+    "title": "目标",
+    "stats": {
+      "projects": "项目",
+      "tasks": "任务"
+    },
+    "notFound": "未找到目标",
+    "editGoal": "编辑目标",
+    "horizon": {
+      "season": "季度",
+      "year": "年度"
+    },
+    "status": {
+      "active": "进行中",
+      "achieved": "已达成",
+      "paused": "已暂停",
+      "dropped": "已放弃"
+    },
+    "singular": "目标",
+    "targetDate": "期限",
+    "noProjects": "没有关联到此目标的项目。",
+    "noTasks": "此目标下没有任务。",
+    "searchGoals": "搜索目标…",
+    "clearGoal": "移除目标",
+    "noGoalsFound": "未找到目标",
+    "inactive": "未启用",
+    "viewGoal": "前往目标"
   },
   "templates": {
     "new": "新建模板",

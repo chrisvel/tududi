@@ -38,7 +38,9 @@
     "clear": "Effacer",
     "open": "Ouvrir",
     "retry": "Réessayer",
-    "updated": "Mis à jour"
+    "updated": "Mis à jour",
+    "all": "Tous",
+    "optional": "facultatif"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -81,7 +83,10 @@
     "reports": "Rapports",
     "productivityAssistant": "Assistant de productivité",
     "assignedToMe": "Assigné à moi",
-    "everyone": "Tout le monde"
+    "everyone": "Tout le monde",
+    "goals": "Objectifs",
+    "habits": "Habitudes",
+    "templates": "Modèles"
   },
   "navigation": {
     "home": "Accueil",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Supprimer le projet",
       "message": "Êtes-vous sûr de vouloir supprimer le projet \"{{projectName}}\" ?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Supprimer l'objectif",
+      "message": "Voulez-vous vraiment supprimer l'objectif « {{title}} » ?"
+    },
+    "createGoal": "Créer l'objectif",
+    "updateGoal": "Mettre à jour l'objectif"
   },
   "forms": {
     "title": "Titre",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Tapez pour ajouter une étiquette",
     "createTagOption": "+ Créer \"{{tagName}}\"",
     "removeTagAriaLabel": "Supprimer l'étiquette {{tagName}}",
-    "projectDescriptionPlaceholder": "Entrez la description du projet"
+    "projectDescriptionPlaceholder": "Entrez la description du projet",
+    "goalTitlePlaceholder": "Titre de l'objectif",
+    "goalWhy": "Pourquoi",
+    "goalWhyPlaceholder": "Qu'est-ce que l'atteindre vous permettra ?",
+    "goalHorizon": "Horizon",
+    "goalStatus": "Statut",
+    "goalTargetDate": "Date cible",
+    "color": "Couleur",
+    "goalArea": "Zone",
+    "noArea": "Aucune zone"
   },
   "auth": {
     "login": "Connexion",
@@ -871,7 +891,10 @@
     "generalError": "Une erreur est survenue. Veuillez réessayer.",
     "viewNameRequired": "Le nom de la vue est requis",
     "viewSaveFailed": "Échec de l'enregistrement de la vue. Veuillez réessayer.",
-    "generic": "Une erreur s'est produite"
+    "generic": "Une erreur s'est produite",
+    "goalTitleRequired": "Le titre de l'objectif est obligatoire",
+    "failedToSaveGoal": "Impossible d'enregistrer l'objectif.",
+    "failedToDeleteGoal": "Impossible de supprimer l'objectif."
   },
   "inbox": {
     "title": "Boîte de réception",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Tâche mise à jour avec succès !",
     "taskDeleted": "Tâche supprimée avec succès !",
     "noteDeleted": "Note supprimée avec succès !",
-    "bannerUpdated": "Bannière mise à jour avec succès !"
+    "bannerUpdated": "Bannière mise à jour avec succès !",
+    "goalCreated": "Objectif créé !",
+    "goalUpdated": "Objectif mis à jour !",
+    "goalDeleted": "Objectif supprimé !"
   },
   "note": {
     "title": "Titre",
@@ -1116,7 +1142,8 @@
     "estimate": "Estimation",
     "estimateHint": "Combien de temps environ ? Utilisé pour planifier votre journée.",
     "estimateClearHint": "Cliquez à nouveau pour effacer",
-    "estimateError": "Impossible de mettre à jour l'estimation"
+    "estimateError": "Impossible de mettre à jour l'estimation",
+    "noGoal": "Associer à un objectif"
   },
   "projects": {
     "loading": "Chargement des projets...",
@@ -2328,7 +2355,34 @@
     "noGoalsYet": "Aucun objectif pour l'instant.",
     "blankSlateHint": "Un objectif est un résultat que vous voulez atteindre cette saison ou cette année, comme courir un semi-marathon. Liez-y des projets pour voir le travail qui vous y mène.",
     "blankSlateNew": "Créer votre premier objectif",
-    "blankSlateAreas": "Configurer les zones"
+    "blankSlateAreas": "Configurer les zones",
+    "addGoal": "Ajouter un objectif",
+    "title": "Objectifs",
+    "stats": {
+      "projects": "projets",
+      "tasks": "tâches"
+    },
+    "notFound": "Objectif introuvable",
+    "editGoal": "Modifier l'objectif",
+    "horizon": {
+      "season": "Saison",
+      "year": "Année"
+    },
+    "status": {
+      "active": "Actif",
+      "achieved": "Atteint",
+      "paused": "En pause",
+      "dropped": "Abandonné"
+    },
+    "singular": "Objectif",
+    "targetDate": "Cible",
+    "noProjects": "Aucun projet lié à cet objectif.",
+    "noTasks": "Aucune tâche associée à cet objectif.",
+    "searchGoals": "Rechercher des objectifs…",
+    "clearGoal": "Retirer l'objectif",
+    "noGoalsFound": "Aucun objectif trouvé",
+    "inactive": "Inactif",
+    "viewGoal": "Voir l'objectif"
   },
   "templates": {
     "new": "Nouveau modèle",

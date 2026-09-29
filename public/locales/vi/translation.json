@@ -38,7 +38,9 @@
     "clear": "Xóa",
     "open": "Mở",
     "retry": "Thử lại",
-    "updated": "Đã cập nhật"
+    "updated": "Đã cập nhật",
+    "all": "Tất cả",
+    "optional": "không bắt buộc"
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -81,7 +83,10 @@
     "reports": "Báo cáo",
     "productivityAssistant": "Trợ lý Năng suất",
     "assignedToMe": "Được giao cho tôi",
-    "everyone": "Mọi người"
+    "everyone": "Mọi người",
+    "goals": "Mục tiêu",
+    "habits": "Thói quen",
+    "templates": "Mẫu"
   },
   "navigation": {
     "home": "Trang chủ",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Xóa Dự án",
       "message": "Bạn có chắc chắn muốn xóa dự án \"{{projectName}}\" không?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Xóa mục tiêu",
+      "message": "Bạn có chắc muốn xóa mục tiêu \"{{title}}\" không?"
+    },
+    "createGoal": "Tạo mục tiêu",
+    "updateGoal": "Cập nhật mục tiêu"
   },
   "forms": {
     "title": "Tiêu đề",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Gõ để thêm thẻ",
     "createTagOption": "+ Tạo \"{{tagName}}\"",
     "removeTagAriaLabel": "Xóa thẻ {{tagName}}",
-    "projectDescriptionPlaceholder": "Nhập mô tả dự án"
+    "projectDescriptionPlaceholder": "Nhập mô tả dự án",
+    "goalTitlePlaceholder": "Tiêu đề mục tiêu",
+    "goalWhy": "Vì sao",
+    "goalWhyPlaceholder": "Đạt được điều này sẽ giúp bạn làm được gì?",
+    "goalHorizon": "Thời hạn",
+    "goalStatus": "Trạng thái",
+    "goalTargetDate": "Ngày mục tiêu",
+    "color": "Màu",
+    "goalArea": "Khu vực",
+    "noArea": "Không có khu vực"
   },
   "auth": {
     "login": "Đăng Nhập",
@@ -871,7 +891,10 @@
     "generalError": "Đã xảy ra lỗi. Vui lòng thử lại.",
     "viewNameRequired": "Tên chế độ xem là bắt buộc",
     "viewSaveFailed": "Lưu chế độ xem không thành công. Vui lòng thử lại.",
-    "generic": "Đã xảy ra lỗi"
+    "generic": "Đã xảy ra lỗi",
+    "goalTitleRequired": "Cần có tiêu đề mục tiêu",
+    "failedToSaveGoal": "Không thể lưu mục tiêu.",
+    "failedToDeleteGoal": "Không thể xóa mục tiêu."
   },
   "inbox": {
     "title": "Hộp thư đến",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Nhiệm vụ đã được cập nhật thành công!",
     "taskDeleted": "Nhiệm vụ đã được xóa thành công!",
     "noteDeleted": "Ghi chú đã được xóa thành công!",
-    "bannerUpdated": "Biểu ngữ đã được cập nhật thành công!"
+    "bannerUpdated": "Biểu ngữ đã được cập nhật thành công!",
+    "goalCreated": "Đã tạo mục tiêu!",
+    "goalUpdated": "Đã cập nhật mục tiêu!",
+    "goalDeleted": "Đã xóa mục tiêu!"
   },
   "note": {
     "title": "Tiêu đề",
@@ -1116,7 +1142,8 @@
     "estimate": "Ước tính",
     "estimateHint": "Khoảng bao lâu? Dùng khi bạn lên kế hoạch cho ngày.",
     "estimateClearHint": "Nhấn lần nữa để xóa",
-    "estimateError": "Không thể cập nhật ước tính"
+    "estimateError": "Không thể cập nhật ước tính",
+    "noGoal": "Gán vào mục tiêu"
   },
   "projects": {
     "loading": "Đang tải dự án...",
@@ -2326,7 +2353,34 @@
     "noGoalsYet": "Chưa có mục tiêu nào.",
     "blankSlateHint": "Mục tiêu là kết quả bạn muốn đạt được trong mùa này hoặc năm nay, như chạy bán marathon. Liên kết dự án với mục tiêu để thấy những việc đưa bạn đến đó.",
     "blankSlateNew": "Tạo mục tiêu đầu tiên",
-    "blankSlateAreas": "Thiết lập khu vực"
+    "blankSlateAreas": "Thiết lập khu vực",
+    "addGoal": "Thêm mục tiêu",
+    "title": "Mục tiêu",
+    "stats": {
+      "projects": "dự án",
+      "tasks": "công việc"
+    },
+    "notFound": "Không tìm thấy mục tiêu",
+    "editGoal": "Sửa mục tiêu",
+    "horizon": {
+      "season": "Mùa",
+      "year": "Năm"
+    },
+    "status": {
+      "active": "Đang thực hiện",
+      "achieved": "Đã đạt",
+      "paused": "Tạm dừng",
+      "dropped": "Đã bỏ"
+    },
+    "singular": "Mục tiêu",
+    "targetDate": "Hạn",
+    "noProjects": "Chưa có dự án nào liên kết với mục tiêu này.",
+    "noTasks": "Chưa có công việc nào cho mục tiêu này.",
+    "searchGoals": "Tìm mục tiêu…",
+    "clearGoal": "Bỏ mục tiêu",
+    "noGoalsFound": "Không tìm thấy mục tiêu",
+    "inactive": "Không hoạt động",
+    "viewGoal": "Đến mục tiêu"
   },
   "templates": {
     "new": "Mẫu mới",

@@ -38,7 +38,9 @@
     "clear": "Очистити",
     "open": "Відкрити",
     "retry": "Повторити",
-    "updated": "Оновлено"
+    "updated": "Оновлено",
+    "all": "Усі",
+    "optional": "необов'язково"
   },
   "sidebar": {
     "dashboard": "Дашборд",
@@ -81,7 +83,10 @@
     "reports": "Звіти",
     "productivityAssistant": "Асистент продуктивності",
     "assignedToMe": "Призначено мені",
-    "everyone": "Усі"
+    "everyone": "Усі",
+    "goals": "Цілі",
+    "habits": "Звички",
+    "templates": "Шаблони"
   },
   "navigation": {
     "home": "Головна",
@@ -428,7 +433,16 @@
     "tagInputPlaceholder": "Введіть, щоб додати тег",
     "createTagOption": "+ Створити \"{{tagName}}\"",
     "removeTagAriaLabel": "Видалити тег {{tagName}}",
-    "projectDescriptionPlaceholder": "Введіть опис проекту"
+    "projectDescriptionPlaceholder": "Введіть опис проекту",
+    "goalTitlePlaceholder": "Назва цілі",
+    "goalWhy": "Навіщо",
+    "goalWhyPlaceholder": "Що стане можливим, коли ви її досягнете?",
+    "goalHorizon": "Горизонт",
+    "goalStatus": "Статус",
+    "goalTargetDate": "Цільова дата",
+    "color": "Колір",
+    "goalArea": "Область",
+    "noArea": "Без області"
   },
   "modals": {
     "updateNote": "Оновити нотатку",
@@ -466,7 +480,13 @@
     "deleteNote": {
       "title": "Видалити нотатку",
       "message": "Ви впевнені, що хочете видалити нотатку \"{{noteTitle}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Видалити ціль",
+      "message": "Ви справді хочете видалити ціль «{{title}}»?"
+    },
+    "createGoal": "Створити ціль",
+    "updateGoal": "Оновити ціль"
   },
   "errors": {
     "noteTitleRequired": "Заголовок нотатки обов'язковий.",
@@ -499,7 +519,10 @@
     "generalError": "Сталася помилка. Будь ласка, спробуйте ще раз.",
     "viewNameRequired": "Назва перегляду є обов'язковою",
     "viewSaveFailed": "Не вдалося зберегти перегляд. Будь ласка, спробуйте ще раз.",
-    "generic": "Щось пішло не так"
+    "generic": "Щось пішло не так",
+    "goalTitleRequired": "Вкажіть назву цілі",
+    "failedToSaveGoal": "Не вдалося зберегти ціль.",
+    "failedToDeleteGoal": "Не вдалося видалити ціль."
   },
   "success": {
     "noteUpdated": "Нотатку успішно оновлено!",
@@ -515,7 +538,10 @@
     "taskUpdated": "Завдання успішно оновлено!",
     "taskDeleted": "Завдання успішно видалено!",
     "noteDeleted": "Примітка успішно видалена!",
-    "bannerUpdated": "Банер успішно оновлено!"
+    "bannerUpdated": "Банер успішно оновлено!",
+    "goalCreated": "Ціль створено!",
+    "goalUpdated": "Ціль оновлено!",
+    "goalDeleted": "Ціль видалено!"
   },
   "notes": {
     "loading": "Завантаження нотаток...",
@@ -1136,7 +1162,8 @@
     "estimate": "Оцінка",
     "estimateHint": "Скільки приблизно триватиме? Використовується під час планування дня.",
     "estimateClearHint": "Натисніть ще раз, щоб скинути",
-    "estimateError": "Не вдалося оновити оцінку"
+    "estimateError": "Не вдалося оновити оцінку",
+    "noGoal": "Прив'язати до цілі"
   },
   "calendar": {
     "month": "Місяць",
@@ -2331,7 +2358,34 @@
     "noGoalsYet": "Поки немає цілей.",
     "blankSlateHint": "Ціль — це результат, якого ви хочете досягти цього сезону або року, наприклад пробігти півмарафон. Прив'яжіть до неї проекти, щоб бачити роботу, яка веде вас до мети.",
     "blankSlateNew": "Створити першу ціль",
-    "blankSlateAreas": "Налаштувати області"
+    "blankSlateAreas": "Налаштувати області",
+    "addGoal": "Додати ціль",
+    "title": "Цілі",
+    "stats": {
+      "projects": "проекти",
+      "tasks": "завдання"
+    },
+    "notFound": "Ціль не знайдено",
+    "editGoal": "Редагувати ціль",
+    "horizon": {
+      "season": "Сезон",
+      "year": "Рік"
+    },
+    "status": {
+      "active": "Активна",
+      "achieved": "Досягнута",
+      "paused": "На паузі",
+      "dropped": "Скасована"
+    },
+    "singular": "Ціль",
+    "targetDate": "Термін",
+    "noProjects": "До цієї цілі не прив'язано проектів.",
+    "noTasks": "Ця ціль не має завдань.",
+    "searchGoals": "Пошук цілей…",
+    "clearGoal": "Прибрати ціль",
+    "noGoalsFound": "Цілей не знайдено",
+    "inactive": "Неактивна",
+    "viewGoal": "Перейти до цілі"
   },
   "templates": {
     "new": "Новий шаблон",

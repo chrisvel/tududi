@@ -38,7 +38,9 @@
     "clear": "Очистить",
     "open": "Открыть",
     "retry": "Повторить",
-    "updated": "Обновлено"
+    "updated": "Обновлено",
+    "all": "Все",
+    "optional": "необязательно"
   },
   "sidebar": {
     "dashboard": "Панель управления",
@@ -81,7 +83,10 @@
     "reports": "Отчеты",
     "productivityAssistant": "Ассистент продуктивности",
     "assignedToMe": "Назначено мне",
-    "everyone": "Все"
+    "everyone": "Все",
+    "goals": "Цели",
+    "habits": "Привычки",
+    "templates": "Шаблоны"
   },
   "navigation": {
     "home": "Главная",
@@ -673,7 +678,13 @@
     "deleteProject": {
       "title": "Удалить проект",
       "message": "Вы уверены, что хотите удалить проект \"{{projectName}}\"?"
-    }
+    },
+    "deleteGoal": {
+      "title": "Удалить цель",
+      "message": "Вы действительно хотите удалить цель «{{title}}»?"
+    },
+    "createGoal": "Создать цель",
+    "updateGoal": "Обновить цель"
   },
   "forms": {
     "title": "Название",
@@ -745,7 +756,16 @@
     "tagInputPlaceholder": "Введите, чтобы добавить тег",
     "createTagOption": "+ Создать \"{{tagName}}\"",
     "removeTagAriaLabel": "Удалить тег {{tagName}}",
-    "projectDescriptionPlaceholder": "Введите описание проекта"
+    "projectDescriptionPlaceholder": "Введите описание проекта",
+    "goalTitlePlaceholder": "Название цели",
+    "goalWhy": "Зачем",
+    "goalWhyPlaceholder": "Что станет возможным, когда вы её достигнете?",
+    "goalHorizon": "Горизонт",
+    "goalStatus": "Статус",
+    "goalTargetDate": "Целевая дата",
+    "color": "Цвет",
+    "goalArea": "Область",
+    "noArea": "Без области"
   },
   "auth": {
     "login": "Войти",
@@ -871,7 +891,10 @@
     "viewSaveFailed": "Не удалось сохранить представление. Пожалуйста, попробуйте снова.",
     "loginFailed": "Ошибка входа. Пожалуйста, попробуйте снова.",
     "generalError": "Произошла ошибка. Пожалуйста, попробуйте снова.",
-    "generic": "Что-то пошло не так"
+    "generic": "Что-то пошло не так",
+    "goalTitleRequired": "Укажите название цели",
+    "failedToSaveGoal": "Не удалось сохранить цель.",
+    "failedToDeleteGoal": "Не удалось удалить цель."
   },
   "inbox": {
     "title": "Входящие",
@@ -979,7 +1002,10 @@
     "taskUpdated": "Задача успешно обновлена!",
     "taskDeleted": "Задача успешно удалена!",
     "noteDeleted": "Заметка успешно удалена!",
-    "bannerUpdated": "Баннер успешно обновлен!"
+    "bannerUpdated": "Баннер успешно обновлен!",
+    "goalCreated": "Цель создана!",
+    "goalUpdated": "Цель обновлена!",
+    "goalDeleted": "Цель удалена!"
   },
   "note": {
     "title": "Название",
@@ -1116,7 +1142,8 @@
     "estimate": "Оценка",
     "estimateHint": "Сколько примерно займёт? Используется при планировании дня.",
     "estimateClearHint": "Нажмите ещё раз, чтобы сбросить",
-    "estimateError": "Не удалось обновить оценку"
+    "estimateError": "Не удалось обновить оценку",
+    "noGoal": "Привязать к цели"
   },
   "projects": {
     "loading": "Загрузка проектов...",
@@ -2331,7 +2358,34 @@
     "noGoalsYet": "Пока нет целей.",
     "blankSlateHint": "Цель — это результат, которого вы хотите достичь в этом сезоне или году, например пробежать полумарафон. Привяжите к ней проекты, чтобы видеть работу, которая ведёт вас к ней.",
     "blankSlateNew": "Создать первую цель",
-    "blankSlateAreas": "Настроить области"
+    "blankSlateAreas": "Настроить области",
+    "addGoal": "Добавить цель",
+    "title": "Цели",
+    "stats": {
+      "projects": "проекты",
+      "tasks": "задачи"
+    },
+    "notFound": "Цель не найдена",
+    "editGoal": "Изменить цель",
+    "horizon": {
+      "season": "Сезон",
+      "year": "Год"
+    },
+    "status": {
+      "active": "Активна",
+      "achieved": "Достигнута",
+      "paused": "На паузе",
+      "dropped": "Отменена"
+    },
+    "singular": "Цель",
+    "targetDate": "Срок",
+    "noProjects": "К этой цели не привязаны проекты.",
+    "noTasks": "У этой цели нет задач.",
+    "searchGoals": "Поиск целей…",
+    "clearGoal": "Убрать цель",
+    "noGoalsFound": "Цели не найдены",
+    "inactive": "Неактивна",
+    "viewGoal": "Перейти к цели"
   },
   "templates": {
     "new": "Новый шаблон",
