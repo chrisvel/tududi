@@ -23,6 +23,7 @@ import TaskComments from '../TaskComments';
 import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import { TaskRowSetters } from './useTaskRowSave';
 import TaskRowToolbar, { TaskRowSection } from './TaskRowToolbar';
+import MarkdownRenderer from '../../Shared/MarkdownRenderer';
 
 interface TaskRowExpandedProps {
     task: Task;
@@ -311,6 +312,29 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                     commentCount={commentCount}
                     relationCount={relationCount}
                 />
+
+                {openSection !== 'note' && task.note?.trim() && (
+                    <div
+                        role="button"
+                        tabIndex={0}
+                        data-testid="task-row-note-preview"
+                        onClick={(e) => {
+                            // Links in the note open; a tap anywhere else
+                            // edits it.
+                            if ((e.target as HTMLElement).closest('a')) return;
+                            toggleSection('note');
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') toggleSection('note');
+                        }}
+                        className="mt-2 max-h-72 overflow-y-auto rounded-md bg-gray-50 dark:bg-gray-800/60 px-2 py-1.5 text-sm cursor-text"
+                    >
+                        <MarkdownRenderer
+                            content={task.note}
+                            className="prose prose-sm dark:prose-invert max-w-none break-words"
+                        />
+                    </div>
+                )}
 
                 {openSection === 'note' && (
                     <textarea

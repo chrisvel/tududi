@@ -105,6 +105,30 @@ describe('TaskRow', () => {
         expect(navigateMock).not.toHaveBeenCalled();
     });
 
+    it('shows the task note when the row is expanded (#1668)', () => {
+        renderRow(baseTask({ note: 'Gate B, seat 12' }));
+        fireEvent.click(screen.getByText('Buy tickets'));
+
+        const preview = screen.getByTestId('task-row-note-preview');
+        expect(preview).toHaveTextContent('Gate B, seat 12');
+        expect(
+            screen.queryByPlaceholderText('Add a note...')
+        ).not.toBeInTheDocument();
+
+        fireEvent.click(preview);
+        expect(screen.getByPlaceholderText('Add a note...')).toHaveValue(
+            'Gate B, seat 12'
+        );
+    });
+
+    it('shows no note preview for a task without a note', () => {
+        renderRow(baseTask());
+        fireEvent.click(screen.getByText('Buy tickets'));
+        expect(
+            screen.queryByTestId('task-row-note-preview')
+        ).not.toBeInTheDocument();
+    });
+
     it('hides the title-row comment/subtask badges while editing, so the growing input does not push them to the far right', () => {
         const task = baseTask({
             comments_count: 3,
