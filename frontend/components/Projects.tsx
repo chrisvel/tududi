@@ -632,11 +632,11 @@ const Projects: React.FC = () => {
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between gap-3 mb-8">
                     <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
-                    <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-3">
                         <button
                             onClick={() =>
                                 setIsSearchExpanded(!isSearchExpanded)
@@ -751,7 +751,7 @@ const Projects: React.FC = () => {
                 </div>
 
                 {/* Status and area filters: one row, sharing it on phones */}
-                <div className="flex items-center gap-2 mb-6 sm:justify-end">
+                <div className="flex items-center gap-3 mb-6 sm:justify-end">
                     <FilterDropdown
                         options={statusOptions}
                         value={statusFilter}
