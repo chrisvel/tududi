@@ -1,4 +1,10 @@
-import { EditorState, Range, StateField } from '@codemirror/state';
+import {
+    EditorState,
+    Range,
+    StateEffect,
+    StateField,
+    Transaction,
+} from '@codemirror/state';
 import { Decoration, DecorationSet, EditorView } from '@codemirror/view';
 import { ensureSyntaxTree, syntaxTree } from '@codemirror/language';
 import { MermaidWidget, TableData, TableWidget } from './widgets';
@@ -7,11 +13,50 @@ type SyntaxNode = ReturnType<typeof syntaxTree>['topNode'];
 
 export type BlockWidgetKind = 'table' | 'mermaid';
 
+// True while the mouse button is held in the editor. Decorations are left as
+// they are until it is released, so the text never shifts under the pointer
+// while a selection is being dragged (#1667).
+export const setPointerDown = StateEffect.define<boolean>();
+
+export const pointerDownField = StateField.define<boolean>({
+    create: () => false,
+    update(value, tr) {
+        for (const effect of tr.effects) {
+            if (effect.is(setPointerDown)) value = effect.value;
+        }
+        return value;
+    },
+});
+
+export const pointerDownHandlers = EditorView.domEventHandlers({
+    mousedown(event, view) {
+        if (event.button !== 0) return false;
+        view.dispatch({ effects: setPointerDown.of(true) });
+        const release = () => {
+            window.removeEventListener('mouseup', release);
+            view.dispatch({ effects: setPointerDown.of(false) });
+        };
+        window.addEventListener('mouseup', release);
+        return false;
+    },
+});
+
+export const isPointerDown = (state: EditorState): boolean =>
+    state.field(pointerDownField, false) ?? false;
+
+// Whether a decoration rebuild should wait: the pointer is down and nothing
+// but the selection changed.
+export const holdForPointer = (tr: Transaction): boolean =>
+    isPointerDown(tr.state) && !tr.docChanged;
+
+// Markdown source is shown where the caret is. A selected range keeps the
+// rendered text, so selecting to copy does not turn the note into source.
 export const selectionTouches = (
     state: EditorState,
     from: number,
     to: number
-): boolean => state.selection.ranges.some((r) => r.from <= to && r.to >= from);
+): boolean =>
+    state.selection.ranges.some((r) => r.empty && r.from <= to && r.to >= from);
 
 // Block-replacing decorations have to cover whole lines, so only top-level
 // tables and fences get a rendered widget. Nested ones stay as source.
@@ -135,9 +180,11 @@ export function buildBlockWidgets(state: EditorState): DecorationSet {
 export const blockWidgetsField = StateField.define<DecorationSet>({
     create: (state) => buildBlockWidgets(state),
     update(value, tr) {
+        if (holdForPointer(tr)) return value;
         if (
             tr.docChanged ||
             tr.selection ||
+            tr.effects.some((e) => e.is(setPointerDown)) ||
             syntaxTree(tr.startState) !== syntaxTree(tr.state)
         ) {
             return buildBlockWidgets(tr.state);
