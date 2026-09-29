@@ -284,3 +284,65 @@ describe('table widget in a real view', () => {
         parent.remove();
     });
 });
+
+describe('selecting text keeps the rendered note (#1667)', () => {
+    it('keeps bold markers hidden while a range is selected', () => {
+        const doc = 'a **bold** b\ntail';
+        const state = EditorState.create({
+            doc,
+            selection: { anchor: 0, head: 12 },
+            extensions: [markdown({ base: markdownLanguage })],
+        });
+        const items = flatten(
+            buildLivePreview(state, [{ from: 0, to: state.doc.length }])
+                .decorations
+        );
+        expect(has(items, 'hide', 2, 4)).toBe(true);
+        expect(has(items, 'hide', 8, 10)).toBe(true);
+    });
+
+    it('keeps a table rendered while a selection spans it', () => {
+        const doc = '| a | b |\n|---|---|\n| 1 | 2 |\n\ntail';
+        const state = EditorState.create({
+            doc,
+            selection: { anchor: 0, head: doc.length },
+            extensions: [markdown({ base: markdownLanguage })],
+        });
+        expect(flatten(buildBlockWidgets(state)).map((i) => i.kind)).toEqual([
+            'TableWidget',
+        ]);
+    });
+
+    it('waits for the mouse button to be released before revealing source', () => {
+        const parent = document.createElement('div');
+        document.body.append(parent);
+        const doc = 'a **bold** b\n\ntail';
+        const view = new EditorView({
+            parent,
+            state: EditorState.create({
+                doc,
+                selection: { anchor: doc.length },
+                extensions: [
+                    markdown({ base: markdownLanguage }),
+                    livePreviewExtension(),
+                ],
+            }),
+        });
+        const boldMarkersShown = () =>
+            parent.querySelector('.cm-line')?.textContent === 'a **bold** b';
+
+        expect(boldMarkersShown()).toBe(false);
+
+        view.contentDOM.dispatchEvent(
+            new MouseEvent('mousedown', { bubbles: true, button: 0 })
+        );
+        view.dispatch({ selection: { anchor: 5 } });
+        expect(boldMarkersShown()).toBe(false);
+
+        window.dispatchEvent(new MouseEvent('mouseup'));
+        expect(boldMarkersShown()).toBe(true);
+
+        view.destroy();
+        parent.remove();
+    });
+});
