@@ -35,7 +35,9 @@
     "search": "Search",
     "previous": "Previous",
     "done": "Done",
-    "clear": "Clear"
+    "clear": "Clear",
+    "open": "Open",
+    "retry": "Retry"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -953,7 +955,17 @@
     "recurringFrom": "{{phrase}}, from {{date}}",
     "keepDateAsText": "Keep as text",
     "removeAssignee": "Remove assignee",
-    "attachments": "Attachments"
+    "attachments": "Attachments",
+    "linkPreview": "Link preview",
+    "linkPreviewError": "Could not fetch link details",
+    "or": "or",
+    "saveAsInboxItem": "save as inbox item",
+    "collapseInfo": "Collapse info panel",
+    "showInfo": "Show inbox information",
+    "hideInfo": "Hide info",
+    "aboutInbox": "About Inbox",
+    "shortcutTag": "to label with a tag",
+    "shortcutProject": "to assign to a project"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -2352,5 +2364,8 @@
   },
   "attachments": {
     "limitReached": "Maximum 20 attachments allowed"
+  },
+  "area": {
+    "loadError": "Failed to load areas"
   }
 }
