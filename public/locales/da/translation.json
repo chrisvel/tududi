@@ -40,7 +40,9 @@
     "retry": "Prøv igen",
     "updated": "Opdateret",
     "all": "Alle",
-    "optional": "valgfrit"
+    "optional": "valgfrit",
+    "hideSearch": "Skjul søgning",
+    "showSearch": "Vis søgning"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -894,7 +896,9 @@
     "generic": "Noget gik galt",
     "goalTitleRequired": "Målet skal have en titel",
     "failedToSaveGoal": "Kunne ikke gemme målet.",
-    "failedToDeleteGoal": "Kunne ikke slette målet."
+    "failedToDeleteGoal": "Kunne ikke slette målet.",
+    "failedToDeleteNote": "Kunne ikke slette noten.",
+    "failedToDeleteTag": "Kunne ikke slette tagget."
   },
   "inbox": {
     "title": "Indbakke",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Banner opdateret med succes!",
     "goalCreated": "Mål oprettet!",
     "goalUpdated": "Mål opdateret!",
-    "goalDeleted": "Mål slettet!"
+    "goalDeleted": "Mål slettet!",
+    "tagDeleted": "Tag slettet!"
   },
   "note": {
     "title": "Titel",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Ingen noter endnu.",
     "blankSlateHint": "Noter gemmer det, du vil beholde, fx mødenoter, idéer eller opslagsmateriale. Skriv i Markdown, knyt en note til et projekt, og giv den tags, så du kan finde den igen.",
     "blankSlateNew": "Skriv din første note",
-    "blankSlateProjects": "Gå til projekter"
+    "blankSlateProjects": "Gå til projekter",
+    "deleteNote": "Slet note",
+    "deleteNoteConfirm": "Er du sikker på, at du vil slette noten \"{{title}}\"?"
   },
   "tags": {
     "loading": "Indlæser tags...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Automatisk styret · Kan ikke slettes eller omdøbes",
     "system": "System",
     "customize": "Tilpas",
-    "addTag": "Tilføj Tag"
+    "addTag": "Tilføj Tag",
+    "loadingTags": "Indlæser tags...",
+    "errorLoadingTags": "Fejl ved indlæsning af tags.",
+    "toggleDropdownMenu": "Åbn eller luk menuen",
+    "edit": "Rediger",
+    "delete": "Slet",
+    "pinned": "Fastgjort",
+    "stats": {
+      "tasks": "opgaver",
+      "notes": "noter",
+      "projects": "projekter"
+    },
+    "tag": "Tag",
+    "unpinFromSidebar": "Frigør fra sidebjælken",
+    "pinToSidebar": "Fastgør til sidebjælken",
+    "deleteTag": "Slet tag",
+    "deleteTagConfirm": "Er du sikker på, at du vil slette tagget \"{{name}}\"?",
+    "pinnedTag": "Fastgjort tag",
+    "frequentlyUsed": "Ofte brugt",
+    "createTag": "+ Opret \"{{name}}\"",
+    "pinTag": "Fastgør for hurtig adgang"
   },
   "recurrence": {
     "none": "Ingen",

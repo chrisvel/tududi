@@ -40,7 +40,9 @@
     "retry": "Riprova",
     "updated": "Aggiornato",
     "all": "Tutti",
-    "optional": "facoltativo"
+    "optional": "facoltativo",
+    "hideSearch": "Comprimi la ricerca",
+    "showSearch": "Mostra la ricerca"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -894,7 +896,9 @@
     "generic": "Qualcosa è andato storto",
     "goalTitleRequired": "Il titolo dell'obiettivo è obbligatorio",
     "failedToSaveGoal": "Impossibile salvare l'obiettivo.",
-    "failedToDeleteGoal": "Impossibile eliminare l'obiettivo."
+    "failedToDeleteGoal": "Impossibile eliminare l'obiettivo.",
+    "failedToDeleteNote": "Impossibile eliminare la nota.",
+    "failedToDeleteTag": "Impossibile eliminare il tag."
   },
   "inbox": {
     "title": "Inbox",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Banner aggiornato con successo!",
     "goalCreated": "Obiettivo creato!",
     "goalUpdated": "Obiettivo aggiornato!",
-    "goalDeleted": "Obiettivo eliminato!"
+    "goalDeleted": "Obiettivo eliminato!",
+    "tagDeleted": "Tag eliminato!"
   },
   "note": {
     "title": "Titolo",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Ancora nessuna nota.",
     "blankSlateHint": "Le note conservano ciò che vuoi tenere, come appunti di riunioni, idee o materiale di consultazione. Scrivi in Markdown, collega una nota a un progetto e aggiungi etichette per ritrovarla.",
     "blankSlateNew": "Scrivi la tua prima nota",
-    "blankSlateProjects": "Vai ai progetti"
+    "blankSlateProjects": "Vai ai progetti",
+    "deleteNote": "Elimina nota",
+    "deleteNoteConfirm": "Vuoi davvero eliminare la nota «{{title}}»?"
   },
   "tags": {
     "loading": "Caricamento tag...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Gestiti automaticamente · Non possono essere eliminati o rinominati",
     "system": "Sistema",
     "customize": "Personalizza",
-    "addTag": "Aggiungi Tag"
+    "addTag": "Aggiungi Tag",
+    "loadingTags": "Caricamento dei tag...",
+    "errorLoadingTags": "Errore durante il caricamento dei tag.",
+    "toggleDropdownMenu": "Apri o chiudi il menu",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "pinned": "Fissato",
+    "stats": {
+      "tasks": "attività",
+      "notes": "note",
+      "projects": "progetti"
+    },
+    "tag": "Tag",
+    "unpinFromSidebar": "Rimuovi dalla barra laterale",
+    "pinToSidebar": "Fissa nella barra laterale",
+    "deleteTag": "Elimina tag",
+    "deleteTagConfirm": "Vuoi davvero eliminare il tag «{{name}}»?",
+    "pinnedTag": "Tag fissato",
+    "frequentlyUsed": "Usati spesso",
+    "createTag": "+ Crea «{{name}}»",
+    "pinTag": "Fissa per un accesso rapido"
   },
   "recurrence": {
     "none": "Nessuna",

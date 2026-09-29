@@ -40,7 +40,9 @@
     "retry": "Coba lagi",
     "updated": "Diperbarui",
     "all": "Semua",
-    "optional": "opsional"
+    "optional": "opsional",
+    "hideSearch": "Ciutkan pencarian",
+    "showSearch": "Tampilkan pencarian"
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -894,7 +896,9 @@
     "generic": "Terjadi kesalahan",
     "goalTitleRequired": "Judul tujuan wajib diisi",
     "failedToSaveGoal": "Gagal menyimpan tujuan.",
-    "failedToDeleteGoal": "Gagal menghapus tujuan."
+    "failedToDeleteGoal": "Gagal menghapus tujuan.",
+    "failedToDeleteNote": "Gagal menghapus catatan.",
+    "failedToDeleteTag": "Gagal menghapus tag."
   },
   "inbox": {
     "title": "Kotak Masuk",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Spanduk berhasil diperbarui!",
     "goalCreated": "Tujuan dibuat!",
     "goalUpdated": "Tujuan diperbarui!",
-    "goalDeleted": "Tujuan dihapus!"
+    "goalDeleted": "Tujuan dihapus!",
+    "tagDeleted": "Tag dihapus!"
   },
   "note": {
     "title": "Judul",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Belum ada catatan.",
     "blankSlateHint": "Catatan menyimpan hal yang ingin Anda simpan, seperti catatan rapat, ide, atau bahan referensi. Tulis dalam Markdown, hubungkan catatan ke proyek, dan beri tag agar mudah ditemukan nanti.",
     "blankSlateNew": "Tulis catatan pertama Anda",
-    "blankSlateProjects": "Buka proyek"
+    "blankSlateProjects": "Buka proyek",
+    "deleteNote": "Hapus catatan",
+    "deleteNoteConfirm": "Yakin ingin menghapus catatan \"{{title}}\"?"
   },
   "tags": {
     "loading": "Memuat tag...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Dikelola secara otomatis · Tidak dapat dihapus atau dinamai ulang",
     "system": "Sistem",
     "customize": "Kustomisasi",
-    "addTag": "Tambahkan Tag"
+    "addTag": "Tambahkan Tag",
+    "loadingTags": "Memuat tag...",
+    "errorLoadingTags": "Gagal memuat tag.",
+    "toggleDropdownMenu": "Buka atau tutup menu",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "pinned": "Disematkan",
+    "stats": {
+      "tasks": "tugas",
+      "notes": "catatan",
+      "projects": "proyek"
+    },
+    "tag": "Tag",
+    "unpinFromSidebar": "Lepas dari bilah sisi",
+    "pinToSidebar": "Sematkan ke bilah sisi",
+    "deleteTag": "Hapus tag",
+    "deleteTagConfirm": "Yakin ingin menghapus tag \"{{name}}\"?",
+    "pinnedTag": "Tag disematkan",
+    "frequentlyUsed": "Sering digunakan",
+    "createTag": "+ Buat \"{{name}}\"",
+    "pinTag": "Sematkan untuk akses cepat"
   },
   "recurrence": {
     "none": "Tidak ada",

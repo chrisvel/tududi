@@ -40,7 +40,9 @@
     "retry": "Prøv igjen",
     "updated": "Oppdatert",
     "all": "Alle",
-    "optional": "valgfritt"
+    "optional": "valgfritt",
+    "hideSearch": "Skjul søk",
+    "showSearch": "Vis søk"
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -895,7 +897,9 @@
     "generic": "Noe gikk galt",
     "goalTitleRequired": "Målet må ha en tittel",
     "failedToSaveGoal": "Kunne ikke lagre målet.",
-    "failedToDeleteGoal": "Kunne ikke slette målet."
+    "failedToDeleteGoal": "Kunne ikke slette målet.",
+    "failedToDeleteNote": "Kunne ikke slette notatet.",
+    "failedToDeleteTag": "Kunne ikke slette merkelappen."
   },
   "inbox": {
     "title": "Innboks",
@@ -1006,7 +1010,8 @@
     "bannerUpdated": "Banner oppdatert med suksess!",
     "goalCreated": "Mål opprettet!",
     "goalUpdated": "Mål oppdatert!",
-    "goalDeleted": "Mål slettet!"
+    "goalDeleted": "Mål slettet!",
+    "tagDeleted": "Merkelapp slettet!"
   },
   "note": {
     "title": "Tittel",
@@ -1298,7 +1303,9 @@
     "noNotesYet": "Ingen notater ennå.",
     "blankSlateHint": "Notater tar vare på det du vil beholde, for eksempel møtenotater, ideer eller oppslagsmateriale. Skriv i Markdown, knytt et notat til et prosjekt og gi det etiketter for å finne det igjen.",
     "blankSlateNew": "Skriv ditt første notat",
-    "blankSlateProjects": "Gå til prosjekter"
+    "blankSlateProjects": "Gå til prosjekter",
+    "deleteNote": "Slett notat",
+    "deleteNoteConfirm": "Er du sikker på at du vil slette notatet «{{title}}»?"
   },
   "tags": {
     "loading": "Laster etiketter...",
@@ -1327,7 +1334,27 @@
     "systemTagsDescription": "Automatisk administrert · Kan ikke slettes eller omdøpes",
     "system": "System",
     "customize": "Tilpass",
-    "addTag": "Legg til tag"
+    "addTag": "Legg til tag",
+    "loadingTags": "Laster inn merkelapper...",
+    "errorLoadingTags": "Feil ved innlasting av merkelapper.",
+    "toggleDropdownMenu": "Åpne eller lukk menyen",
+    "edit": "Rediger",
+    "delete": "Slett",
+    "pinned": "Festet",
+    "stats": {
+      "tasks": "oppgaver",
+      "notes": "notater",
+      "projects": "prosjekter"
+    },
+    "tag": "Merkelapp",
+    "unpinFromSidebar": "Løsne fra sidefeltet",
+    "pinToSidebar": "Fest til sidefeltet",
+    "deleteTag": "Slett merkelapp",
+    "deleteTagConfirm": "Er du sikker på at du vil slette merkelappen «{{name}}»?",
+    "pinnedTag": "Festet merkelapp",
+    "frequentlyUsed": "Ofte brukt",
+    "createTag": "+ Opprett «{{name}}»",
+    "pinTag": "Fest for rask tilgang"
   },
   "recurrence": {
     "none": "Ingen",

@@ -40,7 +40,9 @@
     "retry": "Reîncearcă",
     "updated": "Actualizat",
     "all": "Toate",
-    "optional": "opțional"
+    "optional": "opțional",
+    "hideSearch": "Restrânge căutarea",
+    "showSearch": "Afișează căutarea"
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -894,7 +896,9 @@
     "generic": "Ceva nu a mers bine",
     "goalTitleRequired": "Titlul obiectivului este obligatoriu",
     "failedToSaveGoal": "Obiectivul nu a putut fi salvat.",
-    "failedToDeleteGoal": "Obiectivul nu a putut fi șters."
+    "failedToDeleteGoal": "Obiectivul nu a putut fi șters.",
+    "failedToDeleteNote": "Nota nu a putut fi ștearsă.",
+    "failedToDeleteTag": "Eticheta nu a putut fi ștearsă."
   },
   "inbox": {
     "title": "Căsuța de primire",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Bannerul a fost actualizat cu succes!",
     "goalCreated": "Obiectiv creat!",
     "goalUpdated": "Obiectiv actualizat!",
-    "goalDeleted": "Obiectiv șters!"
+    "goalDeleted": "Obiectiv șters!",
+    "tagDeleted": "Etichetă ștearsă!"
   },
   "note": {
     "title": "Titlu",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Încă nu există note.",
     "blankSlateHint": "Notele păstrează ce vrei să reții, de exemplu notițe de la ședințe, idei sau materiale de referință. Scrie în Markdown, leagă o notă de un proiect și adaugă etichete ca s-o găsești mai târziu.",
     "blankSlateNew": "Scrie prima notă",
-    "blankSlateProjects": "Mergi la proiecte"
+    "blankSlateProjects": "Mergi la proiecte",
+    "deleteNote": "Șterge nota",
+    "deleteNoteConfirm": "Sigur vrei să ștergi nota „{{title}}”?"
   },
   "tags": {
     "loading": "Se încarcă etichetele...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Gestionate automat · Nu pot fi șterse sau redenumite",
     "system": "Sistem",
     "customize": "Personalizează",
-    "addTag": "Adaugă Etichetă"
+    "addTag": "Adaugă Etichetă",
+    "loadingTags": "Se încarcă etichetele...",
+    "errorLoadingTags": "Eroare la încărcarea etichetelor.",
+    "toggleDropdownMenu": "Deschide sau închide meniul",
+    "edit": "Editează",
+    "delete": "Șterge",
+    "pinned": "Fixată",
+    "stats": {
+      "tasks": "sarcini",
+      "notes": "note",
+      "projects": "proiecte"
+    },
+    "tag": "Etichetă",
+    "unpinFromSidebar": "Anulează fixarea din bara laterală",
+    "pinToSidebar": "Fixează în bara laterală",
+    "deleteTag": "Șterge eticheta",
+    "deleteTagConfirm": "Sigur vrei să ștergi eticheta „{{name}}”?",
+    "pinnedTag": "Etichetă fixată",
+    "frequentlyUsed": "Folosite des",
+    "createTag": "+ Creează „{{name}}”",
+    "pinTag": "Fixează pentru acces rapid"
   },
   "recurrence": {
     "none": "Niciuna",

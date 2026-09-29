@@ -40,7 +40,9 @@
     "retry": "再試行",
     "updated": "更新日",
     "all": "すべて",
-    "optional": "任意"
+    "optional": "任意",
+    "hideSearch": "検索を閉じる",
+    "showSearch": "検索を表示"
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -835,7 +837,9 @@
     "generic": "問題が発生しました",
     "goalTitleRequired": "目標のタイトルは必須です",
     "failedToSaveGoal": "目標を保存できませんでした。",
-    "failedToDeleteGoal": "目標を削除できませんでした。"
+    "failedToDeleteGoal": "目標を削除できませんでした。",
+    "failedToDeleteNote": "ノートを削除できませんでした。",
+    "failedToDeleteTag": "タグを削除できませんでした。"
   },
   "success": {
     "noteUpdated": "ノートが正常に更新されました！",
@@ -854,7 +858,8 @@
     "bannerUpdated": "バナーが正常に更新されました！",
     "goalCreated": "目標を作成しました！",
     "goalUpdated": "目標を更新しました！",
-    "goalDeleted": "目標を削除しました！"
+    "goalDeleted": "目標を削除しました！",
+    "tagDeleted": "タグを削除しました！"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1031,7 +1036,9 @@
     "noNotesYet": "まだノートはありません。",
     "blankSlateHint": "ノートには、会議メモやアイデア、参考資料など残しておきたいことを保存できます。Markdown で書き、プロジェクトに紐づけ、タグを付けておけば後から見つけられます。",
     "blankSlateNew": "最初のノートを書く",
-    "blankSlateProjects": "プロジェクトへ"
+    "blankSlateProjects": "プロジェクトへ",
+    "deleteNote": "ノートを削除",
+    "deleteNoteConfirm": "ノート「{{title}}」を削除してもよろしいですか？"
   },
   "tags": {
     "loading": "タグを読み込み中...",
@@ -1060,7 +1067,27 @@
     "systemTagsDescription": "自動管理 · 削除または名前変更できません",
     "system": "システム",
     "customize": "カスタマイズ",
-    "addTag": "タグを追加"
+    "addTag": "タグを追加",
+    "loadingTags": "タグを読み込み中...",
+    "errorLoadingTags": "タグの読み込み中にエラーが発生しました。",
+    "toggleDropdownMenu": "メニューを開閉",
+    "edit": "編集",
+    "delete": "削除",
+    "pinned": "ピン留め",
+    "stats": {
+      "tasks": "タスク",
+      "notes": "ノート",
+      "projects": "プロジェクト"
+    },
+    "tag": "タグ",
+    "unpinFromSidebar": "サイドバーから外す",
+    "pinToSidebar": "サイドバーにピン留め",
+    "deleteTag": "タグを削除",
+    "deleteTagConfirm": "タグ「{{name}}」を削除してもよろしいですか？",
+    "pinnedTag": "ピン留めしたタグ",
+    "frequentlyUsed": "よく使うタグ",
+    "createTag": "+「{{name}}」を作成",
+    "pinTag": "すぐ使えるようにピン留め"
   },
   "recurrence": {
     "none": "なし",

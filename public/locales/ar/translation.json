@@ -40,7 +40,9 @@
     "retry": "إعادة المحاولة",
     "updated": "آخر تحديث",
     "all": "الكل",
-    "optional": "اختياري"
+    "optional": "اختياري",
+    "hideSearch": "طي البحث",
+    "showSearch": "إظهار البحث"
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -894,7 +896,9 @@
     "generic": "حدث خطأ ما",
     "goalTitleRequired": "عنوان الهدف مطلوب",
     "failedToSaveGoal": "تعذر حفظ الهدف.",
-    "failedToDeleteGoal": "تعذر حذف الهدف."
+    "failedToDeleteGoal": "تعذر حذف الهدف.",
+    "failedToDeleteNote": "تعذر حذف الملاحظة.",
+    "failedToDeleteTag": "تعذر حذف الوسم."
   },
   "inbox": {
     "title": "صندوق الوارد",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "تم تحديث اللافتة بنجاح!",
     "goalCreated": "تم إنشاء الهدف!",
     "goalUpdated": "تم تحديث الهدف!",
-    "goalDeleted": "تم حذف الهدف!"
+    "goalDeleted": "تم حذف الهدف!",
+    "tagDeleted": "تم حذف الوسم!"
   },
   "note": {
     "title": "العنوان",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "لا توجد ملاحظات بعد.",
     "blankSlateHint": "تحفظ الملاحظات ما تريد الاحتفاظ به، مثل ملاحظات الاجتماعات أو الأفكار أو المواد المرجعية. اكتب بتنسيق Markdown، واربط الملاحظة بمشروع، وأضف وسومًا لتجدها لاحقًا.",
     "blankSlateNew": "اكتب ملاحظتك الأولى",
-    "blankSlateProjects": "الانتقال إلى المشاريع"
+    "blankSlateProjects": "الانتقال إلى المشاريع",
+    "deleteNote": "حذف الملاحظة",
+    "deleteNoteConfirm": "هل أنت متأكد من حذف الملاحظة \"{{title}}\"؟"
   },
   "tags": {
     "loading": "جاري تحميل العلامات...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "مدارة تلقائيًا · لا يمكن حذفها أو إعادة تسميتها",
     "system": "النظام",
     "customize": "تخصيص",
-    "addTag": "إضافة علامة"
+    "addTag": "إضافة علامة",
+    "loadingTags": "جارٍ تحميل الوسوم...",
+    "errorLoadingTags": "حدث خطأ أثناء تحميل الوسوم.",
+    "toggleDropdownMenu": "فتح القائمة أو إغلاقها",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "pinned": "مثبّت",
+    "stats": {
+      "tasks": "مهام",
+      "notes": "ملاحظات",
+      "projects": "مشاريع"
+    },
+    "tag": "وسم",
+    "unpinFromSidebar": "إلغاء التثبيت من الشريط الجانبي",
+    "pinToSidebar": "تثبيت في الشريط الجانبي",
+    "deleteTag": "حذف الوسم",
+    "deleteTagConfirm": "هل أنت متأكد من حذف الوسم \"{{name}}\"؟",
+    "pinnedTag": "وسم مثبّت",
+    "frequentlyUsed": "الأكثر استخدامًا",
+    "createTag": "+ إنشاء \"{{name}}\"",
+    "pinTag": "تثبيت للوصول السريع"
   },
   "recurrence": {
     "none": "لا شيء",

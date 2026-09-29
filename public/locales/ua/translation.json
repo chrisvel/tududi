@@ -40,7 +40,9 @@
     "retry": "Повторити",
     "updated": "Оновлено",
     "all": "Усі",
-    "optional": "необов'язково"
+    "optional": "необов'язково",
+    "hideSearch": "Згорнути пошук",
+    "showSearch": "Показати пошук"
   },
   "sidebar": {
     "dashboard": "Дашборд",
@@ -522,7 +524,9 @@
     "generic": "Щось пішло не так",
     "goalTitleRequired": "Вкажіть назву цілі",
     "failedToSaveGoal": "Не вдалося зберегти ціль.",
-    "failedToDeleteGoal": "Не вдалося видалити ціль."
+    "failedToDeleteGoal": "Не вдалося видалити ціль.",
+    "failedToDeleteNote": "Не вдалося видалити нотатку.",
+    "failedToDeleteTag": "Не вдалося видалити тег."
   },
   "success": {
     "noteUpdated": "Нотатку успішно оновлено!",
@@ -541,7 +545,8 @@
     "bannerUpdated": "Банер успішно оновлено!",
     "goalCreated": "Ціль створено!",
     "goalUpdated": "Ціль оновлено!",
-    "goalDeleted": "Ціль видалено!"
+    "goalDeleted": "Ціль видалено!",
+    "tagDeleted": "Тег видалено!"
   },
   "notes": {
     "loading": "Завантаження нотаток...",
@@ -571,7 +576,9 @@
     "noNotesYet": "Поки немає нотаток.",
     "blankSlateHint": "Нотатки зберігають те, що ви хочете залишити, наприклад записи зустрічей, ідеї чи довідкові матеріали. Пишіть у Markdown, прив'язуйте нотатку до проекту й додавайте теги, щоб знайти її пізніше.",
     "blankSlateNew": "Написати першу нотатку",
-    "blankSlateProjects": "Перейти до проектів"
+    "blankSlateProjects": "Перейти до проектів",
+    "deleteNote": "Видалити нотатку",
+    "deleteNoteConfirm": "Ви справді хочете видалити нотатку «{{title}}»?"
   },
   "recurrence": {
     "none": "Немає",
@@ -1402,7 +1409,27 @@
     "systemTagsDescription": "Автоматично керовані · Не можуть бути видалені або перейменовані",
     "system": "Система",
     "customize": "Налаштувати",
-    "addTag": "Додати тег"
+    "addTag": "Додати тег",
+    "loadingTags": "Завантаження тегів...",
+    "errorLoadingTags": "Помилка під час завантаження тегів.",
+    "toggleDropdownMenu": "Відкрити або закрити меню",
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "pinned": "Закріплено",
+    "stats": {
+      "tasks": "завдання",
+      "notes": "нотатки",
+      "projects": "проекти"
+    },
+    "tag": "Тег",
+    "unpinFromSidebar": "Відкріпити від бічної панелі",
+    "pinToSidebar": "Закріпити на бічній панелі",
+    "deleteTag": "Видалити тег",
+    "deleteTagConfirm": "Ви справді хочете видалити тег «{{name}}»?",
+    "pinnedTag": "Закріплений тег",
+    "frequentlyUsed": "Часто вживані",
+    "createTag": "+ Створити «{{name}}»",
+    "pinTag": "Закріпити для швидкого доступу"
   },
   "pomodoro": {
     "play": "Грати",

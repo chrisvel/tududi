@@ -40,7 +40,9 @@
     "retry": "Poskusi znova",
     "updated": "Posodobljeno",
     "all": "Vse",
-    "optional": "neobvezno"
+    "optional": "neobvezno",
+    "hideSearch": "Strni iskanje",
+    "showSearch": "Pokaži iskanje"
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -894,7 +896,9 @@
     "generic": "Nekaj je šlo narobe",
     "goalTitleRequired": "Naslov cilja je obvezen",
     "failedToSaveGoal": "Cilja ni bilo mogoče shraniti.",
-    "failedToDeleteGoal": "Cilja ni bilo mogoče izbrisati."
+    "failedToDeleteGoal": "Cilja ni bilo mogoče izbrisati.",
+    "failedToDeleteNote": "Opombe ni bilo mogoče izbrisati.",
+    "failedToDeleteTag": "Oznake ni bilo mogoče izbrisati."
   },
   "inbox": {
     "title": "Prejeto",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Banner je bil uspešno posodobljen!",
     "goalCreated": "Cilj je ustvarjen!",
     "goalUpdated": "Cilj je posodobljen!",
-    "goalDeleted": "Cilj je izbrisan!"
+    "goalDeleted": "Cilj je izbrisan!",
+    "tagDeleted": "Oznaka je izbrisana!"
   },
   "note": {
     "title": "Naslov",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Še ni opomb.",
     "blankSlateHint": "Opombe hranijo tisto, kar želite obdržati, na primer zapiske s sestankov, ideje ali referenčno gradivo. Pišite v Markdownu, povežite opombo s projektom in ji dodajte oznake, da jo pozneje najdete.",
     "blankSlateNew": "Napišite prvo opombo",
-    "blankSlateProjects": "Pojdi na projekte"
+    "blankSlateProjects": "Pojdi na projekte",
+    "deleteNote": "Izbriši opombo",
+    "deleteNoteConfirm": "Ali res želite izbrisati opombo »{{title}}«?"
   },
   "tags": {
     "loading": "Nalagam oznake...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Samodejno upravljane · Ne morejo biti izbrisane ali preimenovane",
     "system": "Sistem",
     "customize": "Prilagodi",
-    "addTag": "Dodaj oznako"
+    "addTag": "Dodaj oznako",
+    "loadingTags": "Nalaganje oznak...",
+    "errorLoadingTags": "Napaka pri nalaganju oznak.",
+    "toggleDropdownMenu": "Odpri ali zapri meni",
+    "edit": "Uredi",
+    "delete": "Izbriši",
+    "pinned": "Pripeta",
+    "stats": {
+      "tasks": "naloge",
+      "notes": "opombe",
+      "projects": "projekti"
+    },
+    "tag": "Oznaka",
+    "unpinFromSidebar": "Odpni iz stranske vrstice",
+    "pinToSidebar": "Pripni v stransko vrstico",
+    "deleteTag": "Izbriši oznako",
+    "deleteTagConfirm": "Ali res želite izbrisati oznako »{{name}}«?",
+    "pinnedTag": "Pripeta oznaka",
+    "frequentlyUsed": "Pogosto uporabljene",
+    "createTag": "+ Ustvari »{{name}}«",
+    "pinTag": "Pripni za hiter dostop"
   },
   "recurrence": {
     "none": "Noben",

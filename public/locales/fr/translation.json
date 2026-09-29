@@ -40,7 +40,9 @@
     "retry": "Réessayer",
     "updated": "Mis à jour",
     "all": "Tous",
-    "optional": "facultatif"
+    "optional": "facultatif",
+    "hideSearch": "Replier la recherche",
+    "showSearch": "Afficher la recherche"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -894,7 +896,9 @@
     "generic": "Une erreur s'est produite",
     "goalTitleRequired": "Le titre de l'objectif est obligatoire",
     "failedToSaveGoal": "Impossible d'enregistrer l'objectif.",
-    "failedToDeleteGoal": "Impossible de supprimer l'objectif."
+    "failedToDeleteGoal": "Impossible de supprimer l'objectif.",
+    "failedToDeleteNote": "Impossible de supprimer la note.",
+    "failedToDeleteTag": "Impossible de supprimer l'étiquette."
   },
   "inbox": {
     "title": "Boîte de réception",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Bannière mise à jour avec succès !",
     "goalCreated": "Objectif créé !",
     "goalUpdated": "Objectif mis à jour !",
-    "goalDeleted": "Objectif supprimé !"
+    "goalDeleted": "Objectif supprimé !",
+    "tagDeleted": "Étiquette supprimée !"
   },
   "note": {
     "title": "Titre",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Aucune note pour l'instant.",
     "blankSlateHint": "Les notes gardent ce que vous voulez conserver, comme des comptes rendus de réunion, des idées ou de la documentation. Écrivez en Markdown, liez une note à un projet et ajoutez des étiquettes pour la retrouver.",
     "blankSlateNew": "Écrire votre première note",
-    "blankSlateProjects": "Aller aux projets"
+    "blankSlateProjects": "Aller aux projets",
+    "deleteNote": "Supprimer la note",
+    "deleteNoteConfirm": "Voulez-vous vraiment supprimer la note « {{title}} » ?"
   },
   "tags": {
     "loading": "Chargement des étiquettes...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Géré automatiquement · Ne peut pas être supprimé ou renommé",
     "system": "Système",
     "customize": "Personnaliser",
-    "addTag": "Ajouter une étiquette"
+    "addTag": "Ajouter une étiquette",
+    "loadingTags": "Chargement des étiquettes...",
+    "errorLoadingTags": "Erreur lors du chargement des étiquettes.",
+    "toggleDropdownMenu": "Ouvrir ou fermer le menu",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "pinned": "Épinglée",
+    "stats": {
+      "tasks": "tâches",
+      "notes": "notes",
+      "projects": "projets"
+    },
+    "tag": "Étiquette",
+    "unpinFromSidebar": "Désépingler de la barre latérale",
+    "pinToSidebar": "Épingler à la barre latérale",
+    "deleteTag": "Supprimer l'étiquette",
+    "deleteTagConfirm": "Voulez-vous vraiment supprimer l'étiquette « {{name}} » ?",
+    "pinnedTag": "Étiquette épinglée",
+    "frequentlyUsed": "Souvent utilisées",
+    "createTag": "+ Créer « {{name}} »",
+    "pinTag": "Épingler pour un accès rapide"
   },
   "recurrence": {
     "none": "Aucun",

@@ -40,7 +40,9 @@
     "retry": "Erneut versuchen",
     "updated": "Aktualisiert",
     "all": "Alle",
-    "optional": "optional"
+    "optional": "optional",
+    "hideSearch": "Suche einklappen",
+    "showSearch": "Suche anzeigen"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -424,7 +426,9 @@
     "generic": "Etwas ist schiefgelaufen",
     "goalTitleRequired": "Ein Titel für das Ziel ist erforderlich",
     "failedToSaveGoal": "Ziel konnte nicht gespeichert werden.",
-    "failedToDeleteGoal": "Ziel konnte nicht gelöscht werden."
+    "failedToDeleteGoal": "Ziel konnte nicht gelöscht werden.",
+    "failedToDeleteNote": "Notiz konnte nicht gelöscht werden.",
+    "failedToDeleteTag": "Tag konnte nicht gelöscht werden."
   },
   "success": {
     "noteUpdated": "Notiz erfolgreich aktualisiert!",
@@ -443,7 +447,8 @@
     "bannerUpdated": "Banner erfolgreich aktualisiert!",
     "goalCreated": "Ziel erstellt!",
     "goalUpdated": "Ziel aktualisiert!",
-    "goalDeleted": "Ziel gelöscht!"
+    "goalDeleted": "Ziel gelöscht!",
+    "tagDeleted": "Tag gelöscht!"
   },
   "notes": {
     "title": "Notizen",
@@ -473,7 +478,9 @@
     "noNotesYet": "Noch keine Notizen.",
     "blankSlateHint": "Notizen halten fest, was du behalten willst, etwa Besprechungsnotizen, Ideen oder Nachschlagematerial. Schreibe in Markdown, verknüpfe eine Notiz mit einem Projekt und vergib Tags, um sie später zu finden.",
     "blankSlateNew": "Erste Notiz schreiben",
-    "blankSlateProjects": "Zu den Projekten"
+    "blankSlateProjects": "Zu den Projekten",
+    "deleteNote": "Notiz löschen",
+    "deleteNoteConfirm": "Möchtest du die Notiz „{{title}}“ wirklich löschen?"
   },
   "recurrence": {
     "none": "Keine",
@@ -1411,7 +1418,27 @@
     "systemTagsDescription": "Automatisch verwaltet · Können nicht gelöscht oder umbenannt werden",
     "system": "System",
     "customize": "Anpassen",
-    "addTag": "Tag hinzufügen"
+    "addTag": "Tag hinzufügen",
+    "loadingTags": "Tags werden geladen...",
+    "errorLoadingTags": "Fehler beim Laden der Tags.",
+    "toggleDropdownMenu": "Menü öffnen oder schließen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "pinned": "Angeheftet",
+    "stats": {
+      "tasks": "Aufgaben",
+      "notes": "Notizen",
+      "projects": "Projekte"
+    },
+    "tag": "Tag",
+    "unpinFromSidebar": "Von der Seitenleiste lösen",
+    "pinToSidebar": "An die Seitenleiste anheften",
+    "deleteTag": "Tag löschen",
+    "deleteTagConfirm": "Möchtest du das Tag „{{name}}“ wirklich löschen?",
+    "pinnedTag": "Angeheftetes Tag",
+    "frequentlyUsed": "Häufig verwendet",
+    "createTag": "+ „{{name}}“ erstellen",
+    "pinTag": "Für schnellen Zugriff anheften"
   },
   "pomodoro": {
     "play": "Abspielen",

@@ -40,7 +40,9 @@
     "retry": "Tekrar dene",
     "updated": "Güncellendi",
     "all": "Tümü",
-    "optional": "isteğe bağlı"
+    "optional": "isteğe bağlı",
+    "hideSearch": "Aramayı daralt",
+    "showSearch": "Aramayı göster"
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -894,7 +896,9 @@
     "generic": "Bir şeyler ters gitti",
     "goalTitleRequired": "Hedef başlığı zorunludur",
     "failedToSaveGoal": "Hedef kaydedilemedi.",
-    "failedToDeleteGoal": "Hedef silinemedi."
+    "failedToDeleteGoal": "Hedef silinemedi.",
+    "failedToDeleteNote": "Not silinemedi.",
+    "failedToDeleteTag": "Etiket silinemedi."
   },
   "inbox": {
     "title": "Gelen Kutusu",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Afiş başarıyla güncellendi!",
     "goalCreated": "Hedef oluşturuldu!",
     "goalUpdated": "Hedef güncellendi!",
-    "goalDeleted": "Hedef silindi!"
+    "goalDeleted": "Hedef silindi!",
+    "tagDeleted": "Etiket silindi!"
   },
   "note": {
     "title": "Başlık",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Henüz not yok.",
     "blankSlateHint": "Notlar saklamak istediklerinizi tutar; örneğin toplantı notları, fikirler veya başvuru belgeleri. Markdown ile yazın, notu bir projeye bağlayın ve sonra bulmak için etiketleyin.",
     "blankSlateNew": "İlk notunuzu yazın",
-    "blankSlateProjects": "Projelere git"
+    "blankSlateProjects": "Projelere git",
+    "deleteNote": "Notu sil",
+    "deleteNoteConfirm": "\"{{title}}\" notunu silmek istediğinizden emin misiniz?"
   },
   "tags": {
     "loading": "Etiketler yükleniyor...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Otomatik olarak yönetilir · Silinemez veya yeniden adlandırılamaz",
     "system": "Sistem",
     "customize": "Özelleştir",
-    "addTag": "Etiket Ekle"
+    "addTag": "Etiket Ekle",
+    "loadingTags": "Etiketler yükleniyor...",
+    "errorLoadingTags": "Etiketler yüklenirken hata oluştu.",
+    "toggleDropdownMenu": "Menüyü aç veya kapat",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "pinned": "Sabitlendi",
+    "stats": {
+      "tasks": "görev",
+      "notes": "not",
+      "projects": "proje"
+    },
+    "tag": "Etiket",
+    "unpinFromSidebar": "Kenar çubuğundan kaldır",
+    "pinToSidebar": "Kenar çubuğuna sabitle",
+    "deleteTag": "Etiketi sil",
+    "deleteTagConfirm": "\"{{name}}\" etiketini silmek istediğinizden emin misiniz?",
+    "pinnedTag": "Sabitlenmiş etiket",
+    "frequentlyUsed": "Sık kullanılanlar",
+    "createTag": "+ \"{{name}}\" oluştur",
+    "pinTag": "Hızlı erişim için sabitle"
   },
   "recurrence": {
     "none": "Yok",

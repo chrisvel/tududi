@@ -40,7 +40,9 @@
     "retry": "Opnieuw proberen",
     "updated": "Bijgewerkt",
     "all": "Alle",
-    "optional": "optioneel"
+    "optional": "optioneel",
+    "hideSearch": "Zoeken inklappen",
+    "showSearch": "Zoeken tonen"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -894,7 +896,9 @@
     "generic": "Er ging iets mis",
     "goalTitleRequired": "Een titel voor het doel is verplicht",
     "failedToSaveGoal": "Doel opslaan mislukt.",
-    "failedToDeleteGoal": "Doel verwijderen mislukt."
+    "failedToDeleteGoal": "Doel verwijderen mislukt.",
+    "failedToDeleteNote": "Notitie verwijderen mislukt.",
+    "failedToDeleteTag": "Tag verwijderen mislukt."
   },
   "inbox": {
     "title": "Inbox",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Banner succesvol bijgewerkt!",
     "goalCreated": "Doel aangemaakt!",
     "goalUpdated": "Doel bijgewerkt!",
-    "goalDeleted": "Doel verwijderd!"
+    "goalDeleted": "Doel verwijderd!",
+    "tagDeleted": "Tag verwijderd!"
   },
   "note": {
     "title": "Titel",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Nog geen notities.",
     "blankSlateHint": "Notities bewaren wat je wilt vasthouden, zoals vergadernotities, ideeën of naslagmateriaal. Schrijf in Markdown, koppel een notitie aan een project en geef haar tags om haar later terug te vinden.",
     "blankSlateNew": "Schrijf je eerste notitie",
-    "blankSlateProjects": "Naar projecten"
+    "blankSlateProjects": "Naar projecten",
+    "deleteNote": "Notitie verwijderen",
+    "deleteNoteConfirm": "Weet je zeker dat je de notitie \"{{title}}\" wilt verwijderen?"
   },
   "tags": {
     "loading": "Tags laden...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Automatisch beheerd · Kan niet worden verwijderd of hernoemd",
     "system": "Systeem",
     "customize": "Aanpassen",
-    "addTag": "Label Toevoegen"
+    "addTag": "Label Toevoegen",
+    "loadingTags": "Tags laden...",
+    "errorLoadingTags": "Fout bij het laden van tags.",
+    "toggleDropdownMenu": "Menu openen of sluiten",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "pinned": "Vastgezet",
+    "stats": {
+      "tasks": "taken",
+      "notes": "notities",
+      "projects": "projecten"
+    },
+    "tag": "Tag",
+    "unpinFromSidebar": "Losmaken van de zijbalk",
+    "pinToSidebar": "Vastzetten in de zijbalk",
+    "deleteTag": "Tag verwijderen",
+    "deleteTagConfirm": "Weet je zeker dat je de tag \"{{name}}\" wilt verwijderen?",
+    "pinnedTag": "Vastgezette tag",
+    "frequentlyUsed": "Vaak gebruikt",
+    "createTag": "+ \"{{name}}\" aanmaken",
+    "pinTag": "Vastzetten voor snelle toegang"
   },
   "recurrence": {
     "none": "Geen",

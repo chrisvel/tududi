@@ -40,7 +40,9 @@
     "retry": "Retry",
     "updated": "Updated",
     "all": "All",
-    "optional": "optional"
+    "optional": "optional",
+    "hideSearch": "Collapse search panel",
+    "showSearch": "Show search input"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -933,7 +935,9 @@
     "generic": "Something went wrong",
     "goalTitleRequired": "Goal title is required",
     "failedToSaveGoal": "Failed to save goal.",
-    "failedToDeleteGoal": "Failed to delete goal."
+    "failedToDeleteGoal": "Failed to delete goal.",
+    "failedToDeleteNote": "Failed to delete note.",
+    "failedToDeleteTag": "Failed to delete tag."
   },
   "inbox": {
     "title": "Inbox",
@@ -1042,7 +1046,8 @@
     "taskDeleted": "Task deleted successfully!",
     "goalCreated": "Goal created!",
     "goalUpdated": "Goal updated!",
-    "goalDeleted": "Goal deleted!"
+    "goalDeleted": "Goal deleted!",
+    "tagDeleted": "Tag deleted successfully!"
   },
   "note": {
     "title": "Title",
@@ -1353,7 +1358,9 @@
       "copyFailed": "Could not copy automatically. Select the link and copy it.",
       "ownerOnly": "Only the owner of a note can share it publicly.",
       "failed": "Something went wrong. Try again."
-    }
+    },
+    "deleteNote": "Delete Note",
+    "deleteNoteConfirm": "Are you sure you want to delete the note \"{{title}}\"?"
   },
   "tags": {
     "addTag": "Add Tag",
@@ -1382,7 +1389,27 @@
     "inactive": "Inactive",
     "viewTasksWithTag": "View tasks with this tag",
     "typeToAdd": "Type to add a tag",
-    "noItemsWithTag": "No items found with this tag"
+    "noItemsWithTag": "No items found with this tag",
+    "loadingTags": "Loading tags...",
+    "errorLoadingTags": "Error loading tags.",
+    "toggleDropdownMenu": "Toggle dropdown menu",
+    "edit": "Edit",
+    "delete": "Delete",
+    "pinned": "Pinned",
+    "stats": {
+      "tasks": "tasks",
+      "notes": "notes",
+      "projects": "projects"
+    },
+    "tag": "Tag",
+    "unpinFromSidebar": "Unpin from sidebar",
+    "pinToSidebar": "Pin to sidebar",
+    "deleteTag": "Delete Tag",
+    "deleteTagConfirm": "Are you sure you want to delete the tag \"{{name}}\"?",
+    "pinnedTag": "Pinned tag",
+    "frequentlyUsed": "Frequently used",
+    "createTag": "+ Create \"{{name}}\"",
+    "pinTag": "Pin for quick access"
   },
   "habits": {
     "completeHabit": "Complete habit",

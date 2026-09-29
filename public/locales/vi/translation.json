@@ -40,7 +40,9 @@
     "retry": "Thử lại",
     "updated": "Đã cập nhật",
     "all": "Tất cả",
-    "optional": "không bắt buộc"
+    "optional": "không bắt buộc",
+    "hideSearch": "Thu gọn tìm kiếm",
+    "showSearch": "Hiện tìm kiếm"
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -894,7 +896,9 @@
     "generic": "Đã xảy ra lỗi",
     "goalTitleRequired": "Cần có tiêu đề mục tiêu",
     "failedToSaveGoal": "Không thể lưu mục tiêu.",
-    "failedToDeleteGoal": "Không thể xóa mục tiêu."
+    "failedToDeleteGoal": "Không thể xóa mục tiêu.",
+    "failedToDeleteNote": "Không thể xóa ghi chú.",
+    "failedToDeleteTag": "Không thể xóa thẻ."
   },
   "inbox": {
     "title": "Hộp thư đến",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Biểu ngữ đã được cập nhật thành công!",
     "goalCreated": "Đã tạo mục tiêu!",
     "goalUpdated": "Đã cập nhật mục tiêu!",
-    "goalDeleted": "Đã xóa mục tiêu!"
+    "goalDeleted": "Đã xóa mục tiêu!",
+    "tagDeleted": "Đã xóa thẻ!"
   },
   "note": {
     "title": "Tiêu đề",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Chưa có ghi chú nào.",
     "blankSlateHint": "Ghi chú lưu những gì bạn muốn giữ lại, như biên bản họp, ý tưởng hay tài liệu tham khảo. Viết bằng Markdown, liên kết ghi chú với dự án và gắn thẻ để tìm lại sau.",
     "blankSlateNew": "Viết ghi chú đầu tiên",
-    "blankSlateProjects": "Đến dự án"
+    "blankSlateProjects": "Đến dự án",
+    "deleteNote": "Xóa ghi chú",
+    "deleteNoteConfirm": "Bạn có chắc muốn xóa ghi chú \"{{title}}\" không?"
   },
   "tags": {
     "loading": "Đang tải thẻ...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Quản lý tự động · Không thể xóa hoặc đổi tên",
     "system": "Hệ Thống",
     "customize": "Tùy Chỉnh",
-    "addTag": "Thêm Thẻ"
+    "addTag": "Thêm Thẻ",
+    "loadingTags": "Đang tải thẻ...",
+    "errorLoadingTags": "Lỗi khi tải thẻ.",
+    "toggleDropdownMenu": "Mở hoặc đóng menu",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "pinned": "Đã ghim",
+    "stats": {
+      "tasks": "công việc",
+      "notes": "ghi chú",
+      "projects": "dự án"
+    },
+    "tag": "Thẻ",
+    "unpinFromSidebar": "Bỏ ghim khỏi thanh bên",
+    "pinToSidebar": "Ghim vào thanh bên",
+    "deleteTag": "Xóa thẻ",
+    "deleteTagConfirm": "Bạn có chắc muốn xóa thẻ \"{{name}}\" không?",
+    "pinnedTag": "Thẻ đã ghim",
+    "frequentlyUsed": "Thường dùng",
+    "createTag": "+ Tạo \"{{name}}\"",
+    "pinTag": "Ghim để truy cập nhanh"
   },
   "recurrence": {
     "none": "Không có",

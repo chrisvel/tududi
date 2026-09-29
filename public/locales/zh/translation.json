@@ -40,7 +40,9 @@
     "retry": "重试",
     "updated": "更新时间",
     "all": "全部",
-    "optional": "可选"
+    "optional": "可选",
+    "hideSearch": "收起搜索",
+    "showSearch": "显示搜索"
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -894,7 +896,9 @@
     "generic": "出了点问题",
     "goalTitleRequired": "目标标题为必填项",
     "failedToSaveGoal": "无法保存目标。",
-    "failedToDeleteGoal": "无法删除目标。"
+    "failedToDeleteGoal": "无法删除目标。",
+    "failedToDeleteNote": "无法删除笔记。",
+    "failedToDeleteTag": "无法删除标签。"
   },
   "inbox": {
     "title": "收件箱",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "横幅更新成功！",
     "goalCreated": "目标已创建！",
     "goalUpdated": "目标已更新！",
-    "goalDeleted": "目标已删除！"
+    "goalDeleted": "目标已删除！",
+    "tagDeleted": "标签已删除！"
   },
   "note": {
     "title": "标题",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "还没有笔记。",
     "blankSlateHint": "笔记用来保存你想留下的内容，比如会议记录、想法或参考资料。用 Markdown 书写，把笔记关联到项目并加上标签，方便以后查找。",
     "blankSlateNew": "写下第一条笔记",
-    "blankSlateProjects": "前往项目"
+    "blankSlateProjects": "前往项目",
+    "deleteNote": "删除笔记",
+    "deleteNoteConfirm": "确定要删除笔记“{{title}}”吗？"
   },
   "tags": {
     "loading": "加载标签...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "自动管理 · 不能被删除或重命名",
     "system": "系统",
     "customize": "自定义",
-    "addTag": "添加标签"
+    "addTag": "添加标签",
+    "loadingTags": "正在加载标签...",
+    "errorLoadingTags": "加载标签时出错。",
+    "toggleDropdownMenu": "打开或关闭菜单",
+    "edit": "编辑",
+    "delete": "删除",
+    "pinned": "已置顶",
+    "stats": {
+      "tasks": "任务",
+      "notes": "笔记",
+      "projects": "项目"
+    },
+    "tag": "标签",
+    "unpinFromSidebar": "从侧边栏取消置顶",
+    "pinToSidebar": "置顶到侧边栏",
+    "deleteTag": "删除标签",
+    "deleteTagConfirm": "确定要删除标签“{{name}}”吗？",
+    "pinnedTag": "已置顶的标签",
+    "frequentlyUsed": "常用",
+    "createTag": "+ 创建“{{name}}”",
+    "pinTag": "置顶以便快速访问"
   },
   "recurrence": {
     "none": "无",

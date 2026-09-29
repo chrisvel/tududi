@@ -40,7 +40,9 @@
     "retry": "Försök igen",
     "updated": "Uppdaterad",
     "all": "Alla",
-    "optional": "valfritt"
+    "optional": "valfritt",
+    "hideSearch": "Dölj sökning",
+    "showSearch": "Visa sökning"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -894,7 +896,9 @@
     "generic": "Något gick fel",
     "goalTitleRequired": "Målet måste ha en titel",
     "failedToSaveGoal": "Det gick inte att spara målet.",
-    "failedToDeleteGoal": "Det gick inte att radera målet."
+    "failedToDeleteGoal": "Det gick inte att radera målet.",
+    "failedToDeleteNote": "Det gick inte att ta bort anteckningen.",
+    "failedToDeleteTag": "Det gick inte att ta bort taggen."
   },
   "inbox": {
     "title": "Inkorg",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Banner uppdaterad framgångsrikt!",
     "goalCreated": "Målet skapades!",
     "goalUpdated": "Målet uppdaterades!",
-    "goalDeleted": "Målet raderades!"
+    "goalDeleted": "Målet raderades!",
+    "tagDeleted": "Taggen togs bort!"
   },
   "note": {
     "title": "Titel",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Inga anteckningar än.",
     "blankSlateHint": "Anteckningar håller det du vill spara, till exempel mötesanteckningar, idéer eller referensmaterial. Skriv i Markdown, koppla en anteckning till ett projekt och tagga den för att hitta den senare.",
     "blankSlateNew": "Skriv din första anteckning",
-    "blankSlateProjects": "Gå till projekt"
+    "blankSlateProjects": "Gå till projekt",
+    "deleteNote": "Ta bort anteckning",
+    "deleteNoteConfirm": "Vill du verkligen ta bort anteckningen ”{{title}}”?"
   },
   "tags": {
     "loading": "Laddar taggar...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Automatiskt hanterade · Kan inte tas bort eller döpas om",
     "system": "System",
     "customize": "Anpassa",
-    "addTag": "Lägg till Tagg"
+    "addTag": "Lägg till Tagg",
+    "loadingTags": "Läser in taggar...",
+    "errorLoadingTags": "Det gick inte att läsa in taggarna.",
+    "toggleDropdownMenu": "Öppna eller stäng menyn",
+    "edit": "Ändra",
+    "delete": "Ta bort",
+    "pinned": "Fäst",
+    "stats": {
+      "tasks": "uppgifter",
+      "notes": "anteckningar",
+      "projects": "projekt"
+    },
+    "tag": "Tagg",
+    "unpinFromSidebar": "Lossa från sidofältet",
+    "pinToSidebar": "Fäst i sidofältet",
+    "deleteTag": "Ta bort tagg",
+    "deleteTagConfirm": "Vill du verkligen ta bort taggen ”{{name}}”?",
+    "pinnedTag": "Fäst tagg",
+    "frequentlyUsed": "Används ofta",
+    "createTag": "+ Skapa ”{{name}}”",
+    "pinTag": "Fäst för snabb åtkomst"
   },
   "recurrence": {
     "none": "Ingen",

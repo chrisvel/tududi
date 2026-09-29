@@ -40,7 +40,9 @@
     "retry": "Spróbuj ponownie",
     "updated": "Zaktualizowano",
     "all": "Wszystkie",
-    "optional": "opcjonalnie"
+    "optional": "opcjonalnie",
+    "hideSearch": "Zwiń wyszukiwanie",
+    "showSearch": "Pokaż wyszukiwanie"
   },
   "sidebar": {
     "dashboard": "Panel sterowania",
@@ -894,7 +896,9 @@
     "generic": "Coś poszło nie tak",
     "goalTitleRequired": "Tytuł celu jest wymagany",
     "failedToSaveGoal": "Nie udało się zapisać celu.",
-    "failedToDeleteGoal": "Nie udało się usunąć celu."
+    "failedToDeleteGoal": "Nie udało się usunąć celu.",
+    "failedToDeleteNote": "Nie udało się usunąć notatki.",
+    "failedToDeleteTag": "Nie udało się usunąć tagu."
   },
   "inbox": {
     "title": "Skrzynka odbiorcza",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Baner zaktualizowany pomyślnie!",
     "goalCreated": "Cel utworzony!",
     "goalUpdated": "Cel zaktualizowany!",
-    "goalDeleted": "Cel usunięty!"
+    "goalDeleted": "Cel usunięty!",
+    "tagDeleted": "Tag usunięty!"
   },
   "note": {
     "title": "Tytuł",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Nie ma jeszcze notatek.",
     "blankSlateHint": "Notatki przechowują to, co chcesz zachować, na przykład notatki ze spotkań, pomysły lub materiały źródłowe. Pisz w Markdown, powiąż notatkę z projektem i dodaj tagi, aby łatwo ją później znaleźć.",
     "blankSlateNew": "Napisz pierwszą notatkę",
-    "blankSlateProjects": "Przejdź do projektów"
+    "blankSlateProjects": "Przejdź do projektów",
+    "deleteNote": "Usuń notatkę",
+    "deleteNoteConfirm": "Czy na pewno chcesz usunąć notatkę „{{title}}”?"
   },
   "tags": {
     "loading": "Ładowanie tagów...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Zarządzane automatycznie · Nie można usunąć ani zmienić nazwy",
     "system": "System",
     "customize": "Dostosuj",
-    "addTag": "Dodaj Tag"
+    "addTag": "Dodaj Tag",
+    "loadingTags": "Wczytywanie tagów...",
+    "errorLoadingTags": "Błąd podczas wczytywania tagów.",
+    "toggleDropdownMenu": "Otwórz lub zamknij menu",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "pinned": "Przypięty",
+    "stats": {
+      "tasks": "zadania",
+      "notes": "notatki",
+      "projects": "projekty"
+    },
+    "tag": "Tag",
+    "unpinFromSidebar": "Odepnij od paska bocznego",
+    "pinToSidebar": "Przypnij do paska bocznego",
+    "deleteTag": "Usuń tag",
+    "deleteTagConfirm": "Czy na pewno chcesz usunąć tag „{{name}}”?",
+    "pinnedTag": "Przypięty tag",
+    "frequentlyUsed": "Często używane",
+    "createTag": "+ Utwórz „{{name}}”",
+    "pinTag": "Przypnij dla szybkiego dostępu"
   },
   "recurrence": {
     "none": "Brak",

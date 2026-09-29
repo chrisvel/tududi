@@ -40,7 +40,9 @@
     "retry": "Reintentar",
     "updated": "Actualizado",
     "all": "Todos",
-    "optional": "opcional"
+    "optional": "opcional",
+    "hideSearch": "Contraer la búsqueda",
+    "showSearch": "Mostrar la búsqueda"
   },
   "sidebar": {
     "dashboard": "Tablero",
@@ -563,7 +565,9 @@
     "generic": "Algo salió mal",
     "goalTitleRequired": "El título de la meta es obligatorio",
     "failedToSaveGoal": "No se pudo guardar la meta.",
-    "failedToDeleteGoal": "No se pudo eliminar la meta."
+    "failedToDeleteGoal": "No se pudo eliminar la meta.",
+    "failedToDeleteNote": "No se pudo eliminar la nota.",
+    "failedToDeleteTag": "No se pudo eliminar la etiqueta."
   },
   "dropdown": {
     "createNew": "Crear Nuevo",
@@ -1231,7 +1235,9 @@
     "noNotesYet": "Aún no hay notas.",
     "blankSlateHint": "Las notas guardan lo que quieres conservar, como apuntes de reuniones, ideas o material de consulta. Escribe en Markdown, vincula una nota a un proyecto y etiquétala para encontrarla después.",
     "blankSlateNew": "Escribe tu primera nota",
-    "blankSlateProjects": "Ir a proyectos"
+    "blankSlateProjects": "Ir a proyectos",
+    "deleteNote": "Eliminar nota",
+    "deleteNoteConfirm": "¿Seguro que quieres eliminar la nota «{{title}}»?"
   },
   "tags": {
     "loading": "Cargando etiquetas...",
@@ -1260,7 +1266,27 @@
     "systemTagsDescription": "Gestionadas automáticamente · No se pueden eliminar ni renombrar",
     "system": "Sistema",
     "customize": "Personalizar",
-    "addTag": "Agregar Etiqueta"
+    "addTag": "Agregar Etiqueta",
+    "loadingTags": "Cargando etiquetas...",
+    "errorLoadingTags": "Error al cargar las etiquetas.",
+    "toggleDropdownMenu": "Abrir o cerrar el menú",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "pinned": "Fijada",
+    "stats": {
+      "tasks": "tareas",
+      "notes": "notas",
+      "projects": "proyectos"
+    },
+    "tag": "Etiqueta",
+    "unpinFromSidebar": "Quitar de la barra lateral",
+    "pinToSidebar": "Fijar en la barra lateral",
+    "deleteTag": "Eliminar etiqueta",
+    "deleteTagConfirm": "¿Seguro que quieres eliminar la etiqueta «{{name}}»?",
+    "pinnedTag": "Etiqueta fijada",
+    "frequentlyUsed": "Usadas con frecuencia",
+    "createTag": "+ Crear «{{name}}»",
+    "pinTag": "Fijar para acceso rápido"
   },
   "note": {
     "title": "Título",
@@ -1288,7 +1314,8 @@
     "bannerUpdated": "¡Banner actualizado con éxito!",
     "goalCreated": "¡Meta creada!",
     "goalUpdated": "¡Meta actualizada!",
-    "goalDeleted": "¡Meta eliminada!"
+    "goalDeleted": "¡Meta eliminada!",
+    "tagDeleted": "¡Etiqueta eliminada!"
   },
   "recurrence": {
     "none": "Ninguna",

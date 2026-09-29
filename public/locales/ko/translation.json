@@ -40,7 +40,9 @@
     "retry": "다시 시도",
     "updated": "업데이트",
     "all": "전체",
-    "optional": "선택 사항"
+    "optional": "선택 사항",
+    "hideSearch": "검색 접기",
+    "showSearch": "검색 표시"
   },
   "sidebar": {
     "dashboard": "대시보드",
@@ -894,7 +896,9 @@
     "generic": "문제가 발생했습니다",
     "goalTitleRequired": "목표 제목을 입력하세요",
     "failedToSaveGoal": "목표를 저장하지 못했습니다.",
-    "failedToDeleteGoal": "목표를 삭제하지 못했습니다."
+    "failedToDeleteGoal": "목표를 삭제하지 못했습니다.",
+    "failedToDeleteNote": "노트를 삭제하지 못했습니다.",
+    "failedToDeleteTag": "태그를 삭제하지 못했습니다."
   },
   "inbox": {
     "title": "받은 편지함",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "배너가 성공적으로 업데이트되었습니다!",
     "goalCreated": "목표를 만들었습니다!",
     "goalUpdated": "목표를 업데이트했습니다!",
-    "goalDeleted": "목표를 삭제했습니다!"
+    "goalDeleted": "목표를 삭제했습니다!",
+    "tagDeleted": "태그를 삭제했습니다!"
   },
   "note": {
     "title": "제목",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "아직 노트가 없습니다.",
     "blankSlateHint": "노트에는 회의록, 아이디어, 참고 자료처럼 간직하고 싶은 내용을 담습니다. Markdown으로 쓰고, 노트를 프로젝트에 연결하고, 태그를 달아 나중에 찾으세요.",
     "blankSlateNew": "첫 노트 쓰기",
-    "blankSlateProjects": "프로젝트로 이동"
+    "blankSlateProjects": "프로젝트로 이동",
+    "deleteNote": "노트 삭제",
+    "deleteNoteConfirm": "노트 \"{{title}}\"을(를) 삭제하시겠습니까?"
   },
   "tags": {
     "loading": "태그 로딩 중...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "자동으로 관리됨 · 삭제하거나 이름을 변경할 수 없음",
     "system": "시스템",
     "customize": "사용자 정의",
-    "addTag": "태그 추가"
+    "addTag": "태그 추가",
+    "loadingTags": "태그를 불러오는 중...",
+    "errorLoadingTags": "태그를 불러오지 못했습니다.",
+    "toggleDropdownMenu": "메뉴 열기/닫기",
+    "edit": "편집",
+    "delete": "삭제",
+    "pinned": "고정됨",
+    "stats": {
+      "tasks": "작업",
+      "notes": "노트",
+      "projects": "프로젝트"
+    },
+    "tag": "태그",
+    "unpinFromSidebar": "사이드바에서 고정 해제",
+    "pinToSidebar": "사이드바에 고정",
+    "deleteTag": "태그 삭제",
+    "deleteTagConfirm": "태그 \"{{name}}\"을(를) 삭제하시겠습니까?",
+    "pinnedTag": "고정된 태그",
+    "frequentlyUsed": "자주 사용",
+    "createTag": "+ \"{{name}}\" 만들기",
+    "pinTag": "빠르게 쓰도록 고정"
   },
   "recurrence": {
     "none": "없음",

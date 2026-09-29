@@ -40,7 +40,9 @@
     "retry": "Yritä uudelleen",
     "updated": "Päivitetty",
     "all": "Kaikki",
-    "optional": "valinnainen"
+    "optional": "valinnainen",
+    "hideSearch": "Piilota haku",
+    "showSearch": "Näytä haku"
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -894,7 +896,9 @@
     "generic": "Jokin meni pieleen",
     "goalTitleRequired": "Tavoitteella on oltava otsikko",
     "failedToSaveGoal": "Tavoitteen tallentaminen epäonnistui.",
-    "failedToDeleteGoal": "Tavoitteen poistaminen epäonnistui."
+    "failedToDeleteGoal": "Tavoitteen poistaminen epäonnistui.",
+    "failedToDeleteNote": "Muistiinpanon poistaminen epäonnistui.",
+    "failedToDeleteTag": "Tunnisteen poistaminen epäonnistui."
   },
   "inbox": {
     "title": "Saapuneet",
@@ -1005,7 +1009,8 @@
     "bannerUpdated": "Banneri päivitettiin onnistuneesti!",
     "goalCreated": "Tavoite luotu!",
     "goalUpdated": "Tavoite päivitetty!",
-    "goalDeleted": "Tavoite poistettu!"
+    "goalDeleted": "Tavoite poistettu!",
+    "tagDeleted": "Tunniste poistettu!"
   },
   "note": {
     "title": "Otsikko",
@@ -1297,7 +1302,9 @@
     "noNotesYet": "Ei vielä muistiinpanoja.",
     "blankSlateHint": "Muistiinpanoihin tallennat sen, minkä haluat säilyttää, kuten kokousmuistiot, ideat tai lähdemateriaalin. Kirjoita Markdownilla, liitä muistiinpano projektiin ja lisää tunnisteita löytääksesi sen myöhemmin.",
     "blankSlateNew": "Kirjoita ensimmäinen muistiinpanosi",
-    "blankSlateProjects": "Siirry projekteihin"
+    "blankSlateProjects": "Siirry projekteihin",
+    "deleteNote": "Poista muistiinpano",
+    "deleteNoteConfirm": "Haluatko varmasti poistaa muistiinpanon ”{{title}}”?"
   },
   "tags": {
     "loading": "Ladataan tageja...",
@@ -1326,7 +1333,27 @@
     "systemTagsDescription": "Automaattisesti hallittu · Ei voi poistaa tai nimetä uudelleen",
     "system": "Järjestelmä",
     "customize": "Mukauta",
-    "addTag": "Lisää tunniste"
+    "addTag": "Lisää tunniste",
+    "loadingTags": "Ladataan tunnisteita...",
+    "errorLoadingTags": "Tunnisteiden lataaminen epäonnistui.",
+    "toggleDropdownMenu": "Avaa tai sulje valikko",
+    "edit": "Muokkaa",
+    "delete": "Poista",
+    "pinned": "Kiinnitetty",
+    "stats": {
+      "tasks": "tehtävää",
+      "notes": "muistiinpanoa",
+      "projects": "projektia"
+    },
+    "tag": "Tunniste",
+    "unpinFromSidebar": "Irrota sivupalkista",
+    "pinToSidebar": "Kiinnitä sivupalkkiin",
+    "deleteTag": "Poista tunniste",
+    "deleteTagConfirm": "Haluatko varmasti poistaa tunnisteen ”{{name}}”?",
+    "pinnedTag": "Kiinnitetty tunniste",
+    "frequentlyUsed": "Usein käytetyt",
+    "createTag": "+ Luo ”{{name}}”",
+    "pinTag": "Kiinnitä nopeaa käyttöä varten"
   },
   "recurrence": {
     "none": "Ei mitään",
