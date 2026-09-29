@@ -529,6 +529,43 @@ describe('MCP Tools Integration', () => {
                     'gamma',
                 ]);
             });
+
+            it('should create a task with estimated_minutes', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Task with Estimate',
+                        estimated_minutes: 30,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.estimated_minutes).toBe(30);
+
+                const created = await Task.findByPk(content.task.id);
+                expect(created.estimated_minutes).toBe(30);
+            });
+
+            it('should reject invalid estimated_minutes on create', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Invalid Estimate Task',
+                        estimated_minutes: 3,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const jsonRpc = parseSseResponse(response.text);
+                expect(jsonRpc.result.isError).toBe(true);
+                const { content } = getToolContent(response);
+                expect(content._rawError).toMatch(
+                    /estimated_minutes must be a whole number between 5 and 720/
+                );
+            });
         });
 
         describe('get_task', () => {
@@ -980,6 +1017,84 @@ describe('MCP Tools Integration', () => {
                 const { content } = getToolContent(response);
                 expect(content.task.recurrence_type).toBe('daily');
                 expect(content.task.due_date).toBeDefined();
+            });
+
+            it('should set estimated_minutes on an existing task', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Estimate Target Task',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        estimated_minutes: 45,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.estimated_minutes).toBe(45);
+
+                await task.reload();
+                expect(task.estimated_minutes).toBe(45);
+            });
+
+            it('should clear estimated_minutes to null on update', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Task to Clear Estimate',
+                    status: 0,
+                    estimated_minutes: 60,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        estimated_minutes: null,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.estimated_minutes).toBeNull();
+
+                await task.reload();
+                expect(task.estimated_minutes).toBeNull();
+            });
+
+            it('should reject invalid estimated_minutes on update', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Task with Valid Estimate',
+                    status: 0,
+                    estimated_minutes: 30,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        estimated_minutes: 3,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const jsonRpc = parseSseResponse(response.text);
+                expect(jsonRpc.result.isError).toBe(true);
+                const { content } = getToolContent(response);
+                expect(content._rawError).toMatch(
+                    /estimated_minutes must be a whole number between 5 and 720/
+                );
+
+                await task.reload();
+                expect(task.estimated_minutes).toBe(30);
             });
         });
 

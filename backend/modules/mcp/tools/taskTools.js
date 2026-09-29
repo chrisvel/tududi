@@ -7,6 +7,7 @@ const {
     serializeTasks,
 } = require('../../tasks/core/serializers');
 const { calculateInitialDueDate } = require('../../tasks/core/builders');
+const { parseEstimatedMinutes } = require('../../tasks/core/parsers');
 const { handleRecurrenceUpdate } = require('../../tasks/operations/recurring');
 const { handleCompletionStatus } = require('../../tasks/operations/completion');
 const { Op } = require('sequelize');
@@ -316,6 +317,11 @@ function registerTaskTools(server, context, tools) {
                     enum: ['low', 'medium', 'high'],
                     description: 'Task priority',
                 },
+                estimated_minutes: {
+                    type: 'number',
+                    description:
+                        'Estimated duration in minutes (whole number between 5 and 720)',
+                },
                 due_date: {
                     type: 'string',
                     description:
@@ -407,6 +413,12 @@ function registerTaskTools(server, context, tools) {
                 completion_based: params.completion_based || false,
             };
 
+            if (params.estimated_minutes !== undefined) {
+                taskData.estimated_minutes = parseEstimatedMinutes(
+                    params.estimated_minutes
+                );
+            }
+
             await entitlements.assertCanCreate(context.userId, 'task');
             const task = await taskRepository.create(taskData);
 
@@ -486,6 +498,11 @@ function registerTaskTools(server, context, tools) {
                 'planned',
             ],
         },
+        estimated_minutes: {
+            type: 'number',
+            description:
+                'Estimated duration in minutes (whole number between 5 and 720; pass null to clear)',
+        },
         due_date: {
             type: 'string',
             description:
@@ -558,6 +575,11 @@ function registerTaskTools(server, context, tools) {
             if (params.priority) {
                 const priorityMap = { low: 0, medium: 1, high: 2 };
                 updates.priority = priorityMap[params.priority];
+            }
+            if (params.estimated_minutes !== undefined) {
+                updates.estimated_minutes = parseEstimatedMinutes(
+                    params.estimated_minutes
+                );
             }
             if (params.status) {
                 const statusMap = {
