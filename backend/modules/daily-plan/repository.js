@@ -6,6 +6,7 @@ const {
     DailyPlanItem,
     Task,
     InboxItem,
+    Project,
     User,
     sequelize,
 } = require('../../models');
@@ -37,6 +38,16 @@ class DailyPlanRepository {
             where: { [Op.and]: [visibleWhere, { id: { [Op.in]: ids } }] },
             include: TASK_INCLUDES,
         });
+    }
+
+    async findVisibleProjectIds(visibleWhere, ids) {
+        if (ids.length === 0) return [];
+        const projects = await Project.findAll({
+            where: { [Op.and]: [visibleWhere, { id: { [Op.in]: ids } }] },
+            attributes: ['id'],
+            raw: true,
+        });
+        return projects.map((project) => project.id);
     }
 
     async findVisibleTasksByUids(visibleWhere, uids) {
