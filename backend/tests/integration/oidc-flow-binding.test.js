@@ -272,6 +272,24 @@ describe('OIDC callback is bound to the browser that started it', () => {
             ).toBe(1);
         });
 
+        it('unlinks a linked identity', async () => {
+            const identity = await OIDCIdentity.create({
+                user_id: attacker.id,
+                provider_slug: 'test',
+                subject: 'idp-subject-unlink',
+                email: attacker.email,
+                first_login_at: new Date(),
+                last_login_at: new Date(),
+            });
+            const agent = await login(attacker);
+
+            const res = await agent.delete(`/api/oidc/unlink/${identity.id}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual({ success: true });
+            expect(await OIDCIdentity.findByPk(identity.id)).toBeNull();
+        });
+
         it("does not attach the attacker's identity to a victim who opens the callback URL", async () => {
             const attackerAgent = await login(attacker);
             await attackerAgent.post('/api/oidc/link/test');
