@@ -28,6 +28,7 @@ import {
     invalidateProfileCache,
 } from '../utils/profileService';
 import { notifySwClearCache } from '../utils/swUtils';
+import { resetSessionState } from '../utils/sessionReset';
 import { toggleCapture, useCaptureUi } from '../utils/captureUi';
 
 interface NavbarProps {
@@ -170,6 +171,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
             if (response.ok) {
                 notifySwClearCache();
+                resetSessionState();
                 setCurrentUser(null);
                 navigate('/login');
             } else {
