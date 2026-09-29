@@ -2402,13 +2402,18 @@ const QuickCaptureInput = React.forwardRef<
                         </button>
                     </div>
                 )}
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <CaptureDestinations
-                        value={target}
-                        onChange={setTarget}
-                        locked={lockTarget}
-                        scopeLabel={scopeLabel}
-                    />
+                {/* Phones: destinations, then the hint on the left with
+                    attach and Add on the right. From sm up: destinations
+                    and buttons on one line, the hint below. */}
+                <div className="flex flex-wrap items-center gap-2">
+                    <div className="w-full sm:w-auto sm:flex-1 min-w-0">
+                        <CaptureDestinations
+                            value={target}
+                            onChange={setTarget}
+                            locked={lockTarget}
+                            scopeLabel={scopeLabel}
+                        />
+                    </div>
                     <input
                         ref={fileInputRef}
                         type="file"
@@ -2421,69 +2426,74 @@ const QuickCaptureInput = React.forwardRef<
                             void attachFiles(picked);
                         }}
                     />
-                    <button
-                        type="button"
-                        data-testid="capture-attach"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isSaving}
-                        title={t(
-                            'capture.attachHint',
-                            'Attach files. You can also paste or drop them here.'
-                        )}
-                        aria-label={t('capture.attach', 'Attach files')}
-                        className="ml-auto rounded-lg p-2 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                    >
-                        <PaperClipIcon className="h-5 w-5" aria-hidden="true" />
-                    </button>
-                    <button
-                        type="button"
-                        data-testid="capture-add"
-                        onClick={() => void handleUnifiedSubmit()}
-                        disabled={
-                            (!inputText.trim() && files.length === 0) ||
-                            isSaving
-                        }
-                        className="rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    >
-                        {itemTotal > 1
-                            ? t('capture.addN', 'Add {{total}}', {
-                                  total: itemTotal,
-                              })
-                            : t('capture.add', 'Add')}
-                    </button>
-                </div>
-                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 min-h-[20px] text-xs text-gray-500 dark:text-gray-400">
-                    <span
-                        role="status"
-                        aria-live="polite"
-                        data-testid="capture-status"
-                    >
-                        {status ? status.text : enterHint}
-                        {status?.items && (
-                            <button
-                                type="button"
-                                data-testid="capture-undo"
-                                onClick={() =>
-                                    void undoCaptured(status.items ?? [])
-                                }
-                                className={`ml-2 ${linkButtonClass}`}
-                            >
-                                {t('capture.undo', 'Undo')}
-                            </button>
-                        )}
-                    </span>
-                    <span className="flex gap-3">
-                        {touch && enterSaves && (
-                            <button
-                                type="button"
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={insertLineBreak}
-                                className={linkButtonClass}
-                            >
-                                {t('capture.lineBreak', 'Line break')}
-                            </button>
-                        )}
-                    </span>
+                    <div className="order-3 sm:order-2 ml-auto flex items-center gap-2">
+                        <button
+                            type="button"
+                            data-testid="capture-attach"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isSaving}
+                            title={t(
+                                'capture.attachHint',
+                                'Attach files. You can also paste or drop them here.'
+                            )}
+                            aria-label={t('capture.attach', 'Attach files')}
+                            className="rounded-lg p-2 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        >
+                            <PaperClipIcon
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                            />
+                        </button>
+                        <button
+                            type="button"
+                            data-testid="capture-add"
+                            onClick={() => void handleUnifiedSubmit()}
+                            disabled={
+                                (!inputText.trim() && files.length === 0) ||
+                                isSaving
+                            }
+                            className="rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        >
+                            {itemTotal > 1
+                                ? t('capture.addN', 'Add {{total}}', {
+                                      total: itemTotal,
+                                  })
+                                : t('capture.add', 'Add')}
+                        </button>
+                    </div>
+                    <div className="order-2 sm:order-3 flex-1 sm:flex-none sm:w-full min-w-0 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 min-h-[20px] text-xs text-gray-500 dark:text-gray-400">
+                        <span
+                            role="status"
+                            aria-live="polite"
+                            data-testid="capture-status"
+                        >
+                            {status ? status.text : enterHint}
+                            {status?.items && (
+                                <button
+                                    type="button"
+                                    data-testid="capture-undo"
+                                    onClick={() =>
+                                        void undoCaptured(status.items ?? [])
+                                    }
+                                    className={`ml-2 ${linkButtonClass}`}
+                                >
+                                    {t('capture.undo', 'Undo')}
+                                </button>
+                            )}
+                        </span>
+                        <span className="flex gap-3">
+                            {touch && enterSaves && (
+                                <button
+                                    type="button"
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={insertLineBreak}
+                                    className={linkButtonClass}
+                                >
+                                    {t('capture.lineBreak', 'Line break')}
+                                </button>
+                            )}
+                        </span>
+                    </div>
                 </div>
             </div>
         ) : null;
@@ -2823,7 +2833,10 @@ const QuickCaptureInput = React.forwardRef<
                                                         </p>
                                                         <div className="flex items-center gap-2 text-xs">
                                                             <span className="text-gray-600 dark:text-gray-400">
-                                                                or
+                                                                {t(
+                                                                    'inbox.or',
+                                                                    'or'
+                                                                )}
                                                             </span>
                                                             <button
                                                                 onClick={() => {
@@ -2833,8 +2846,10 @@ const QuickCaptureInput = React.forwardRef<
                                                                 }}
                                                                 className="text-purple-600 dark:text-purple-400 hover:underline"
                                                             >
-                                                                save as inbox
-                                                                item
+                                                                {t(
+                                                                    'inbox.saveAsInboxItem',
+                                                                    'save as inbox item'
+                                                                )}
                                                             </button>
                                                         </div>
                                                     </div>

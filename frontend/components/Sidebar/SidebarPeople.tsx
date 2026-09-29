@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Location } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     UserGroupIcon,
     ChevronRightIcon,
@@ -22,6 +23,7 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
     location,
     openPersonModal,
 }) => {
+    const { t } = useTranslation();
     const canCreatePeople = useCan('create_people');
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -80,13 +82,13 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                         setIsExpanded(true);
                         handleNavClick(
                             '/people',
-                            'People',
+                            t('sidebar.people', 'People'),
                             <UserGroupIcon className="h-4 w-4 mr-2" />
                         );
                     }}
                 >
                     <UserGroupIcon className="h-[14px] w-[14px]" />
-                    People
+                    {t('sidebar.people', 'People')}
                 </span>
                 <div className="flex items-center gap-1">
                     {canCreatePeople && (
@@ -96,8 +98,8 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                                 openPersonModal(null);
                             }}
                             className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                            aria-label="Add Person"
-                            title="Add Person"
+                            aria-label={t('people.addPerson', 'Add Person')}
+                            title={t('people.addPerson', 'Add Person')}
                         >
                             <PlusIcon className="h-3.5 w-3.5" />
                         </button>

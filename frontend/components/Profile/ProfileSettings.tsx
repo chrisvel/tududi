@@ -925,7 +925,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.error || t('profile.sendSummaryFailed'));
+                throw new Error(data.error || t('profile.sendSummaryFailed', 'Failed to send the summary.'));
             }
 
             const data = await response.json();

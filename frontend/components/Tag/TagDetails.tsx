@@ -458,7 +458,9 @@ const TagDetails: React.FC = () => {
                 showSuccessToast(t('success.noteDeleted'));
             } catch (error) {
                 console.error('Error deleting note:', error);
-                showErrorToast(t('errors.failedToDeleteNote'));
+                showErrorToast(
+                    t('errors.failedToDeleteNote', 'Failed to delete note.')
+                );
             }
         }
         setIsNoteConfirmDialogOpen(false);
@@ -490,7 +492,7 @@ const TagDetails: React.FC = () => {
     }
 
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             {/* Tag Header - area-style banner */}
             <div
                 className="rounded-xl mb-8 overflow-hidden"
@@ -514,9 +516,11 @@ const TagDetails: React.FC = () => {
                             <div className={`mt-3 flex gap-4 text-xs ${
                                 tag.color ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'
                             }`}>
-                                <span>{tasks.length} {t('tasks.title', 'tasks')}</span>
-                                <span>{notes.length} {t('notes.title', 'notes')}</span>
-                                <span>{projects.length} {t('projects.title', 'projects')}</span>
+                                <span>{tasks.length} {t('tags.stats.tasks', 'tasks')}</span>
+                                <span>{notes.length} {t('tags.stats.notes', 'notes')}</span>
+                                {projects.length > 0 && (
+                                    <span>{projects.length} {t('tags.stats.projects', 'projects')}</span>
+                                )}
                             </div>
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0">
@@ -1025,10 +1029,11 @@ const TagDetails: React.FC = () => {
             {isConfirmDialogOpen && tag && (
                 <ConfirmDialog
                     title={t('tags.deleteTag', 'Delete Tag')}
-                    message={t(
-                        'tags.deleteTagConfirm',
-                        `Are you sure you want to delete the tag "${tag.name}"?`
-                    )}
+                    message={t('tags.deleteTagConfirm', {
+                        name: tag.name,
+                        defaultValue:
+                            'Are you sure you want to delete the tag "{{name}}"?',
+                    })}
                     onConfirm={handleDeleteTag}
                     onCancel={() => setIsConfirmDialogOpen(false)}
                 />
@@ -1038,10 +1043,11 @@ const TagDetails: React.FC = () => {
             {isNoteConfirmDialogOpen && noteToDelete && (
                 <ConfirmDialog
                     title={t('notes.deleteNote', 'Delete Note')}
-                    message={t(
-                        'notes.deleteNoteConfirm',
-                        `Are you sure you want to delete the note "${noteToDelete.title}"?`
-                    )}
+                    message={t('notes.deleteNoteConfirm', {
+                        title: noteToDelete.title,
+                        defaultValue:
+                            'Are you sure you want to delete the note "{{title}}"?',
+                    })}
                     onConfirm={handleConfirmDeleteNote}
                     onCancel={() => {
                         setIsNoteConfirmDialogOpen(false);

@@ -171,23 +171,24 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                             </li>
                         </ul>
                         <p className="text-xs text-blue-700 dark:text-blue-400 mt-2 italic">
-                            Other MCP clients may use different configuration methods - check your client&apos;s documentation.
+                            {t('profile.mcp.step2.otherClients', "Other MCP clients may use different configuration methods, check your client's documentation.")}
                         </p>
                     </div>
 
                     <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
                         <p className="text-xs font-medium text-green-800 dark:text-green-300 mb-2">
-                            ✓ Remote Access Enabled
+                            ✓ {t('profile.mcp.remote.title', 'Remote Access Enabled')}
                         </p>
                         <p className="text-xs text-green-700 dark:text-green-400">
-                            This configuration uses <code className="px-1 py-0.5 bg-green-100 dark:bg-green-900 rounded">mcp-remote</code> to connect via HTTP.
-                            This means you can:
+                            {t('profile.mcp.remote.usesPrefix', 'This configuration uses')}{' '}
+                            <code className="px-1 py-0.5 bg-green-100 dark:bg-green-900 rounded">mcp-remote</code>{' '}
+                            {t('profile.mcp.remote.usesSuffix', 'to connect via HTTP. This means you can:')}
                         </p>
                         <ul className="text-xs text-green-700 dark:text-green-400 mt-2 ml-4 space-y-1">
-                            <li>• Access local tududi (localhost)</li>
-                            <li>• Access remote tududi (cloud servers)</li>
-                            <li>• Use from Docker deployments</li>
-                            <li>• Connect securely with API tokens</li>
+                            <li>• {t('profile.mcp.remote.local', 'Access local tududi (localhost)')}</li>
+                            <li>• {t('profile.mcp.remote.cloud', 'Access remote tududi (cloud servers)')}</li>
+                            <li>• {t('profile.mcp.remote.docker', 'Use from Docker deployments')}</li>
+                            <li>• {t('profile.mcp.remote.tokens', 'Connect securely with API tokens')}</li>
                         </ul>
                     </div>
                 </section>
@@ -248,35 +249,35 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                         </p>
                         <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
                             <li className="italic">
-                                &quot;Show me my tasks for today&quot;
+                                &quot;{t('profile.mcp.example1', 'Show me my tasks for today')}&quot;
                             </li>
                             <li className="italic">
-                                &quot;Create a task to review the MCP integration&quot;
+                                &quot;{t('profile.mcp.example2', 'Create a task to review the MCP integration')}&quot;
                             </li>
                             <li className="italic">
-                                &quot;What projects do I have in progress?&quot;
+                                &quot;{t('profile.mcp.example3', 'What projects do I have in progress?')}&quot;
                             </li>
                             <li className="italic">
-                                &quot;Add a reminder to my inbox to check emails&quot;
+                                &quot;{t('profile.mcp.example4', 'Add a reminder to my inbox to check emails')}&quot;
                             </li>
                             <li className="italic">
-                                &quot;Search for tasks related to documentation&quot;
+                                &quot;{t('profile.mcp.example5', 'Search for tasks related to documentation')}&quot;
                             </li>
                         </ul>
                     </div>
 
                     <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-md border border-yellow-200 dark:border-yellow-800">
                         <p className="text-xs font-medium text-yellow-800 dark:text-yellow-300 mb-1">
-                            💡 Troubleshooting
+                            💡 {t('profile.mcp.troubleshooting.title', 'Troubleshooting')}
                         </p>
                         <p className="text-xs text-yellow-700 dark:text-yellow-400">
-                            If your MCP client can&apos;t connect, check that:
+                            {t('profile.mcp.troubleshooting.intro', "If your MCP client can't connect, check that:")}
                         </p>
                         <ul className="text-xs text-yellow-700 dark:text-yellow-400 mt-2 ml-4 space-y-1">
-                            <li>• Your API token is valid and not expired</li>
-                            <li>• The tududi server is running and accessible</li>
-                            <li>• You&apos;ve restarted your MCP client completely</li>
-                            <li>• For remote servers, check your firewall settings</li>
+                            <li>• {t('profile.mcp.troubleshooting.token', 'Your API token is valid and not expired')}</li>
+                            <li>• {t('profile.mcp.troubleshooting.server', 'The tududi server is running and accessible')}</li>
+                            <li>• {t('profile.mcp.troubleshooting.restart', "You've restarted your MCP client completely")}</li>
+                            <li>• {t('profile.mcp.troubleshooting.firewall', 'For remote servers, check your firewall settings')}</li>
                         </ul>
                     </div>
                 </section>

@@ -546,7 +546,7 @@ describe('Tasks Routes', () => {
                 user_id: user.id,
                 recurrence_type: 'daily',
                 recurrence_interval: 1,
-                due_date: yesterday, // Template is in the past but should still be included if it's recurring
+                due_date: yesterday, // Missed occurrence, still open
                 status: 0,
             });
 
@@ -589,8 +589,8 @@ describe('Tasks Routes', () => {
             // Should include future instances
             expect(taskIds).toContain(futureInstance.id);
 
-            // Template should not be included because it's in the past
-            expect(taskIds).not.toContain(recurringTemplate.id);
+            // An open template stays listed even when its due date has passed
+            expect(taskIds).toContain(recurringTemplate.id);
         });
     });
 });

@@ -7,6 +7,7 @@ import {
     accentVars,
     resolveColor,
 } from '../constants/colorPalette';
+import { getIntlLocale } from './dateUtils';
 
 const DEFAULT_HABIT_COLOR = PALETTE.find((c) => c.key === 'green')!;
 
@@ -135,7 +136,7 @@ const WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export function weekdayLabel(day: number): string {
     const base = new Date(2026, 0, 4 + day); // 2026-01-04 is a Sunday
     try {
-        return base.toLocaleDateString(undefined, { weekday: 'short' });
+        return base.toLocaleDateString(getIntlLocale(), { weekday: 'short' });
     } catch {
         return WEEKDAY_SHORT[day];
     }

@@ -18,6 +18,7 @@ import {
     XMarkIcon,
     ArrowsPointingOutIcon,
     GlobeAltIcon,
+    PlusIcon,
 } from '@heroicons/react/24/outline';
 import PushPinIcon from './Shared/Icons/PushPinIcon';
 import { useToast } from './Shared/ToastContext';
@@ -41,6 +42,8 @@ import { COLORS } from './Shared/ColorPicker';
 import NoteFocusMode from './Note/NoteFocusMode';
 import MarkdownEditor from './Note/MarkdownEditor';
 import NoteCard from './Shared/NoteCard';
+import NewItemButton from './Shared/NewItemButton';
+import BlankSlate from './Shared/BlankSlate';
 import { FORM } from '../constants/formClasses';
 
 
@@ -519,6 +522,17 @@ const Notes: React.FC = () => {
         );
     }
 
+    const notesHeader = (
+        <div className="flex items-center justify-between gap-2 mb-6">
+            <h2 className="text-2xl font-light">{t('notes.title', 'Notes')}</h2>
+            <NewItemButton
+                label={t('notes.new', 'New Note')}
+                onClick={startNewNote}
+                testId="new-note-button"
+            />
+        </div>
+    );
+
     return (
         <div className="flex flex-col h-[calc(100vh-6rem)] overflow-hidden">
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden pt-2">
@@ -921,6 +935,7 @@ const Notes: React.FC = () => {
                             // effect runs). Show every note to pick from
                             // instead of a dead-end placeholder (#1527).
                             <div className="flex-1 overflow-y-auto p-6">
+                                {notesHeader}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                                     {sortedNotes.map((note) => (
                                         <NoteCard
@@ -931,14 +946,36 @@ const Notes: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
-                        ) : (
-                            <div className="flex items-center justify-center flex-1 text-gray-500 dark:text-gray-400">
-                                {t(
-                                    'notes.selectNote',
-                                    'Select a note to preview'
-                                )}
+                        ) : hasLoaded ? (
+                            <div className="flex-1 overflow-y-auto p-6">
+                                {notesHeader}
+                                <BlankSlate
+                                    title={t('notes.noNotesYet', 'No notes yet.')}
+                                    hint={t(
+                                        'notes.blankSlateHint',
+                                        'Notes hold what you want to keep, like meeting notes, ideas or reference material. Write in Markdown, link a note to a project and tag it to find it later.'
+                                    )}
+                                    actions={[
+                                        {
+                                            label: t(
+                                                'notes.blankSlateNew',
+                                                'Write your first note'
+                                            ),
+                                            icon: PlusIcon,
+                                            onClick: startNewNote,
+                                        },
+                                        {
+                                            label: t(
+                                                'notes.blankSlateProjects',
+                                                'Go to projects'
+                                            ),
+                                            icon: FolderIcon,
+                                            to: '/projects',
+                                        },
+                                    ]}
+                                />
                             </div>
-                        )}
+                        ) : null}
                     </div>
                 </div>
 

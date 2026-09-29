@@ -148,7 +148,7 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                     <span className="h-3.5 w-3.5" aria-hidden="true" />
                     <button
                         className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label={isExpanded ? 'Collapse favorites' : 'Expand favorites'}
+                        aria-label={isExpanded ? t('sidebar.collapseFavorites', 'Collapse favorites') : t('sidebar.expandFavorites', 'Expand favorites')}
                     >
                         <ChevronRightIcon
                             className="h-3 w-3 transition-transform duration-150"

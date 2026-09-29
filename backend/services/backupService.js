@@ -19,6 +19,7 @@ const zlib = require('zlib');
 const { gunzipWithLimit } = require('../utils/safe-gunzip');
 const { promisify } = require('util');
 const { getConfig } = require('../config/config');
+const { NotFoundError } = require('../shared/errors');
 const config = getConfig();
 const packageJson = require('../../package.json');
 
@@ -56,9 +57,32 @@ function compareVersions(version1, version2) {
     if (!parsed1.prerelease && parsed2.prerelease) return 1;
     if (parsed1.prerelease && !parsed2.prerelease) return -1;
     if (parsed1.prerelease && parsed2.prerelease) {
-        return parsed1.prerelease.localeCompare(parsed2.prerelease);
+        return comparePrerelease(parsed1.prerelease, parsed2.prerelease);
     }
 
+    return 0;
+}
+
+// Semver prerelease order: dot-separated parts, numeric parts compared as
+// numbers (rc.10 comes after rc.9), and a shorter list sorts first.
+function comparePrerelease(pre1, pre2) {
+    const parts1 = pre1.split('.');
+    const parts2 = pre2.split('.');
+    for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+        const a = parts1[i];
+        const b = parts2[i];
+        if (a === undefined) return -1;
+        if (b === undefined) return 1;
+        const aNum = /^\d+$/.test(a);
+        const bNum = /^\d+$/.test(b);
+        if (aNum && bNum) {
+            if (Number(a) !== Number(b)) return Number(a) - Number(b);
+        } else if (aNum !== bNum) {
+            return aNum ? -1 : 1;
+        } else if (a !== b) {
+            return a < b ? -1 : 1;
+        }
+    }
     return 0;
 }
 
@@ -261,6 +285,19 @@ async function listBackups(userId, limit = 5) {
     }
 }
 
+// The row can outlive its file, for example when the backups directory was
+// not on a persistent volume and the container was recreated.
+async function readBackupFile(filePath) {
+    try {
+        return await fs.readFile(filePath);
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            throw new NotFoundError('Backup file is missing on the server');
+        }
+        throw error;
+    }
+}
+
 /**
  * Get a specific backup by UID
  * @param {number} userId - The user ID
@@ -274,14 +311,13 @@ async function getBackup(userId, backupUid) {
         });
 
         if (!backup) {
-            throw new Error('Backup not found');
+            throw new NotFoundError('Backup not found');
         }
 
         const backupsDir = await getBackupsDirectory();
         const filePath = path.join(backupsDir, backup.file_path);
 
-        // Read backup file
-        const fileBuffer = await fs.readFile(filePath);
+        const fileBuffer = await readBackupFile(filePath);
 
         // Check if file is compressed (ends with .gz)
         let backupJson;
@@ -316,7 +352,7 @@ async function deleteBackup(userId, backupUid) {
         });
 
         if (!backup) {
-            throw new Error('Backup not found');
+            throw new NotFoundError('Backup not found');
         }
 
         const backupsDir = await getBackupsDirectory();
@@ -338,6 +374,8 @@ async function deleteBackup(userId, backupUid) {
 }
 
 module.exports = {
+    compareVersions,
+    readBackupFile,
     exportUserData,
     importUserData,
     validateBackupData,

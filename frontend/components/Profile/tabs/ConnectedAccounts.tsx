@@ -49,7 +49,7 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
             setError(
                 err instanceof Error
                     ? err.message
-                    : 'Failed to load connected accounts'
+                    : t('profile.connected.loadError', 'Failed to load connected accounts')
             );
         } finally {
             setLoading(false);
@@ -64,7 +64,7 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
             setError(
                 err instanceof Error
                     ? err.message
-                    : 'Failed to initiate account linking'
+                    : t('profile.connected.linkError', 'Failed to initiate account linking')
             );
         }
     };
@@ -102,7 +102,7 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
             setError(
                 err instanceof Error
                     ? err.message
-                    : 'Failed to unlink account'
+                    : t('profile.connected.unlinkError', 'Failed to unlink account')
             );
         } finally {
             setUnlinkingId(null);

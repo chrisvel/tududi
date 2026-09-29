@@ -134,13 +134,14 @@ If a recurring task is overdue:
 - The system automatically advances to the next future occurrence
 - Past-due occurrences are skipped
 - Only upcoming occurrences appear in the view
+- The missed occurrence still shows as overdue on Today and in the task lists until you complete it
 
 **Example:**
 - Recurring task: "Weekly Report" every Monday
 - Today: Wednesday, March 12
 - Last completed: Monday, March 3 (overdue)
 - **Shows in Upcoming**: Monday, March 17 (next occurrence)
-- **Doesn't show**: Monday, March 10 (past, skipped)
+- **Doesn't show in Upcoming**: Monday, March 10 (past, shows as overdue instead)
 
 ---
 

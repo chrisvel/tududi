@@ -101,6 +101,7 @@ docker run \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -v ~/tududi_db:/app/db \
   -v ~/tududi_uploads:/app/uploads \
+  -v ~/tududi_backups:/app/backups \
   -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
@@ -244,6 +245,7 @@ volumes:
 volumes:
   - ./tududi_db:/app/db
   - ./uploads:/app/uploads
+  - ./backups:/app/backups
 ```
 
 **Migration steps:**
