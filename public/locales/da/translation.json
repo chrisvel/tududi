@@ -42,7 +42,8 @@
     "all": "Alle",
     "optional": "valgfrit",
     "hideSearch": "Skjul søgning",
-    "showSearch": "Vis søgning"
+    "showSearch": "Vis søgning",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -89,7 +90,15 @@
     "goals": "Mål",
     "habits": "Vaner",
     "templates": "Skabeloner",
-    "people": "Personer"
+    "people": "Personer",
+    "allEntities": "Alle elementer",
+    "collapseFavorites": "Skjul favoritter",
+    "expandFavorites": "Vis favoritter",
+    "telegramConnected": "Telegram forbundet",
+    "telegramProblem": "Problem med Telegram-forbindelsen",
+    "resize": "Tilpas sidebjælken",
+    "collapseViews": "Skjul listen over visninger",
+    "expandViews": "Vis listen over visninger"
   },
   "navigation": {
     "home": "Hjem",
@@ -105,7 +114,8 @@
     "userMenu": "Bruger menu",
     "search": "Søg",
     "admin": "Admin",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "templates": "Skabeloner"
   },
   "settings": {
     "todayPageSettings": "Indstillinger for i dag",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Skriv din første note",
     "blankSlateProjects": "Gå til projekter",
     "deleteNote": "Slet note",
-    "deleteNoteConfirm": "Er du sikker på, at du vil slette noten \"{{title}}\"?"
+    "deleteNoteConfirm": "Er du sikker på, at du vil slette noten \"{{title}}\"?",
+    "untitled": "Unavngiven note",
+    "publicShare": {
+      "sharedTitle": "Delt med alle, der har linket"
+    }
   },
   "tags": {
     "loading": "Indlæser tags...",
@@ -2176,7 +2190,27 @@
     "completed": "Fuldført (30d)",
     "open": "Åben",
     "streaks": "Serier",
-    "areaBreakdown": "Områdeopdeling"
+    "areaBreakdown": "Områdeopdeling",
+    "mostActive": "mest aktiv",
+    "needsAttention": "kræver opmærksomhed",
+    "doneOpen": "{{done}} færdige · {{open}} åbne",
+    "trends": "Tendenser",
+    "inboxZero": "Tom indbakke",
+    "itemsToProcess_other": "{{count}} elementer at behandle",
+    "allProjectsMoving": "Alle projekter er i gang",
+    "noActivity14": "Ingen aktivitet i 14+ dage",
+    "oldestWait": "Ældste: {{name}} ({{days}} d)",
+    "nothingPending": "Intet udestående",
+    "daysStale": "{{days}} d stille",
+    "daysWaiting": "{{days}} d ventende",
+    "noNextAction": "{{debt}} af {{total}} projekter har ingen næste handling",
+    "completionTrends8": "Fuldførte, seneste 8 uger",
+    "totalCompleted": "fuldført i alt",
+    "avgPerWeek": "gns. / uge",
+    "bestWeek": "bedste ({{week}})",
+    "areaBalance30": "Balance mellem områder, seneste 30 dage",
+    "completionRateLegend": "% = fuldførelsesrate",
+    "itemsToProcess_one": "{{count}} element at behandle"
   },
   "billing": {
     "title": "Abonnement og betaling",
@@ -2558,6 +2592,62 @@
     "blankSlateHint": "En skabelon er et projekt, du kan starte igen og igen med opgaverne klar, fx en rejsetjekliste eller onboarding af en ny kunde. Opret en her, gem et projekt, du gentager, eller vælg en fra markedspladsen.",
     "createFirst": "Opret din første skabelon",
     "browseMarketplace": "Gennemse markedspladsen",
-    "fromProject": "Gem et projekt som skabelon"
+    "fromProject": "Gem et projekt som skabelon",
+    "marketplace": {
+      "free": "Gratis",
+      "paid": "Betalt",
+      "installing": "Installerer...",
+      "install": "Installer",
+      "preview": "Eksempel",
+      "fetchError": "Kunne ikke indlæse skabeloner fra markedspladsen.",
+      "installed": "\"{{name}}\" er føjet til dine skabeloner.",
+      "installError": "Kunne ikke installere skabelonen.",
+      "empty": "Der er endnu ingen skabeloner på markedspladsen.",
+      "title": "Markedsplads",
+      "subtitle": "Gennemse og installer færdige skabeloner fra fællesskabet",
+      "search": "Søg på markedspladsen..."
+    },
+    "taskList": "Opgaver",
+    "noTasks": "Ingen opgaver i denne skabelon",
+    "tasks": "opgaver",
+    "uses": "anvendelser",
+    "allCategories": "Alle",
+    "noResults": "Ingen skabeloner matcher din søgning.",
+    "result": "skabelon",
+    "results": "skabeloner",
+    "inCategory": "i",
+    "toggleMenu": "Åbn eller luk menuen",
+    "useTemplate": "Brug skabelon",
+    "preview": "Eksempel",
+    "cloneTitle": "Opret projekt fra skabelon",
+    "cloneSubtitle": "Opsæt dit nye projekt ud fra \"{{name}}\"",
+    "newProjectName": "Projektnavn",
+    "area": "Område",
+    "noArea": "Intet område",
+    "startDate": "Startdato",
+    "startDateHint2": "justerer relative frister",
+    "startDateHint": "Lad stå tomt for at beholde de oprindelige frister.",
+    "resetStatus": "Nulstil alle opgaver til Ikke startet",
+    "createProject": "Opret projekt",
+    "editTemplate": "Rediger skabelon",
+    "newTemplate": "Ny skabelon",
+    "name": "Navn",
+    "description": "Beskrivelse",
+    "category": "Kategori",
+    "categoryPlaceholder": "fx Salg, HR, Udvikling",
+    "fetchError": "Kunne ikke indlæse skabeloner.",
+    "created": "Skabelon oprettet.",
+    "createError": "Kunne ikke oprette skabelonen.",
+    "updated": "Skabelon opdateret.",
+    "updateError": "Kunne ikke opdatere skabelonen.",
+    "deleted": "Skabelon slettet.",
+    "deleteError": "Kunne ikke slette skabelonen.",
+    "cloned": "Projektet \"{{name}}\" er oprettet.",
+    "cloneError": "Kunne ikke oprette projekt fra skabelonen.",
+    "previewError": "Kunne ikke indlæse eksempel på skabelonen.",
+    "title": "Skabeloner",
+    "myTemplates": "Mine skabeloner",
+    "confirmDelete": "Slet skabelon",
+    "confirmDeleteMessage": "Slet \"{{name}}\"? Projekter oprettet ud fra den påvirkes ikke."
   }
 }

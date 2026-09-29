@@ -42,7 +42,8 @@
     "all": "Alle",
     "optional": "optioneel",
     "hideSearch": "Zoeken inklappen",
-    "showSearch": "Zoeken tonen"
+    "showSearch": "Zoeken tonen",
+    "beta": "bèta"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -89,7 +90,15 @@
     "goals": "Doelen",
     "habits": "Gewoonten",
     "templates": "Sjablonen",
-    "people": "Personen"
+    "people": "Personen",
+    "allEntities": "Alle items",
+    "collapseFavorites": "Favorieten inklappen",
+    "expandFavorites": "Favorieten uitklappen",
+    "telegramConnected": "Telegram verbonden",
+    "telegramProblem": "Probleem met Telegram-verbinding",
+    "resize": "Zijbalk aanpassen",
+    "collapseViews": "Lijst met weergaven inklappen",
+    "expandViews": "Lijst met weergaven uitklappen"
   },
   "navigation": {
     "home": "Home",
@@ -105,7 +114,8 @@
     "userMenu": "Gebruikersmenu",
     "search": "Zoeken",
     "admin": "Beheerder",
-    "adminBadge": "Beheerder"
+    "adminBadge": "Beheerder",
+    "templates": "Sjablonen"
   },
   "settings": {
     "todayPageSettings": "Instellingen Vandaag Pagina",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Schrijf je eerste notitie",
     "blankSlateProjects": "Naar projecten",
     "deleteNote": "Notitie verwijderen",
-    "deleteNoteConfirm": "Weet je zeker dat je de notitie \"{{title}}\" wilt verwijderen?"
+    "deleteNoteConfirm": "Weet je zeker dat je de notitie \"{{title}}\" wilt verwijderen?",
+    "untitled": "Naamloze notitie",
+    "publicShare": {
+      "sharedTitle": "Gedeeld met iedereen met de link"
+    }
   },
   "tags": {
     "loading": "Tags laden...",
@@ -2176,7 +2190,27 @@
     "completed": "Voltooid (30d)",
     "open": "Open",
     "streaks": "Reeksen",
-    "areaBreakdown": "Gebiedsopdeling"
+    "areaBreakdown": "Gebiedsopdeling",
+    "mostActive": "meest actief",
+    "needsAttention": "vraagt aandacht",
+    "doneOpen": "{{done}} klaar · {{open}} open",
+    "trends": "Trends",
+    "inboxZero": "Inbox leeg",
+    "itemsToProcess_other": "{{count}} items te verwerken",
+    "allProjectsMoving": "Alle projecten lopen",
+    "noActivity14": "Geen activiteit in 14+ dagen",
+    "oldestWait": "Oudste: {{name}} ({{days}} d)",
+    "nothingPending": "Niets in afwachting",
+    "daysStale": "{{days}} d stil",
+    "daysWaiting": "{{days}} d wachtend",
+    "noNextAction": "{{debt}} van {{total}} projecten hebben geen volgende actie",
+    "completionTrends8": "Afgerond, laatste 8 weken",
+    "totalCompleted": "totaal afgerond",
+    "avgPerWeek": "gem. / week",
+    "bestWeek": "beste ({{week}})",
+    "areaBalance30": "Balans per gebied, laatste 30 dagen",
+    "completionRateLegend": "% = afrondingspercentage",
+    "itemsToProcess_one": "{{count}} item te verwerken"
   },
   "billing": {
     "title": "Abonnement en facturering",
@@ -2558,6 +2592,62 @@
     "blankSlateHint": "Een sjabloon is een project dat je steeds opnieuw kunt starten, met de taken al klaar, zoals een reischecklist of het onboarden van een nieuwe klant. Maak er hier een, sla een project op dat je herhaalt of kies er een uit de marktplaats.",
     "createFirst": "Maak je eerste sjabloon",
     "browseMarketplace": "Marktplaats bekijken",
-    "fromProject": "Project opslaan als sjabloon"
+    "fromProject": "Project opslaan als sjabloon",
+    "marketplace": {
+      "free": "Gratis",
+      "paid": "Betaald",
+      "installing": "Installeren...",
+      "install": "Installeren",
+      "preview": "Voorbeeld",
+      "fetchError": "Sjablonen uit de marktplaats konden niet worden geladen.",
+      "installed": "\"{{name}}\" is aan je sjablonen toegevoegd.",
+      "installError": "Sjabloon installeren mislukt.",
+      "empty": "Er staan nog geen sjablonen in de marktplaats.",
+      "title": "Marktplaats",
+      "subtitle": "Blader door kant-en-klare sjablonen uit de community en installeer ze",
+      "search": "Marktplaats doorzoeken..."
+    },
+    "taskList": "Taken",
+    "noTasks": "Geen taken in dit sjabloon",
+    "tasks": "taken",
+    "uses": "keer gebruikt",
+    "allCategories": "Alle",
+    "noResults": "Geen sjablonen gevonden voor je zoekopdracht.",
+    "result": "sjabloon",
+    "results": "sjablonen",
+    "inCategory": "in",
+    "toggleMenu": "Menu openen of sluiten",
+    "useTemplate": "Sjabloon gebruiken",
+    "preview": "Voorbeeld",
+    "cloneTitle": "Project maken van sjabloon",
+    "cloneSubtitle": "Stel je nieuwe project in vanuit \"{{name}}\"",
+    "newProjectName": "Projectnaam",
+    "area": "Gebied",
+    "noArea": "Geen gebied",
+    "startDate": "Startdatum",
+    "startDateHint2": "past relatieve vervaldatums aan",
+    "startDateHint": "Laat leeg om de oorspronkelijke vervaldatums te houden.",
+    "resetStatus": "Alle taken terugzetten naar Niet begonnen",
+    "createProject": "Project maken",
+    "editTemplate": "Sjabloon bewerken",
+    "newTemplate": "Nieuw sjabloon",
+    "name": "Naam",
+    "description": "Beschrijving",
+    "category": "Categorie",
+    "categoryPlaceholder": "bijv. Sales, HR, Engineering",
+    "fetchError": "Sjablonen konden niet worden geladen.",
+    "created": "Sjabloon gemaakt.",
+    "createError": "Sjabloon maken mislukt.",
+    "updated": "Sjabloon bijgewerkt.",
+    "updateError": "Sjabloon bijwerken mislukt.",
+    "deleted": "Sjabloon verwijderd.",
+    "deleteError": "Sjabloon verwijderen mislukt.",
+    "cloned": "Project \"{{name}}\" gemaakt.",
+    "cloneError": "Project maken van sjabloon mislukt.",
+    "previewError": "Voorbeeld van sjabloon laden mislukt.",
+    "title": "Sjablonen",
+    "myTemplates": "Mijn sjablonen",
+    "confirmDelete": "Sjabloon verwijderen",
+    "confirmDeleteMessage": "\"{{name}}\" verwijderen? Projecten die ermee zijn gemaakt blijven ongewijzigd."
   }
 }

@@ -42,7 +42,8 @@
     "all": "Alle",
     "optional": "valgfritt",
     "hideSearch": "Skjul søk",
-    "showSearch": "Vis søk"
+    "showSearch": "Vis søk",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -89,7 +90,15 @@
     "goals": "Mål",
     "habits": "Vaner",
     "templates": "Maler",
-    "people": "Personer"
+    "people": "Personer",
+    "allEntities": "Alle elementer",
+    "collapseFavorites": "Skjul favoritter",
+    "expandFavorites": "Vis favoritter",
+    "telegramConnected": "Telegram tilkoblet",
+    "telegramProblem": "Problem med Telegram-tilkoblingen",
+    "resize": "Endre størrelse på sidefeltet",
+    "collapseViews": "Skjul listen over visninger",
+    "expandViews": "Vis listen over visninger"
   },
   "navigation": {
     "home": "Hjem",
@@ -105,7 +114,8 @@
     "userMenu": "Brukermeny",
     "search": "Søk",
     "admin": "Admin",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "templates": "Maler"
   },
   "settings": {
     "todayPageSettings": "Innstillinger for Dagens Side",
@@ -1306,7 +1316,11 @@
     "blankSlateNew": "Skriv ditt første notat",
     "blankSlateProjects": "Gå til prosjekter",
     "deleteNote": "Slett notat",
-    "deleteNoteConfirm": "Er du sikker på at du vil slette notatet «{{title}}»?"
+    "deleteNoteConfirm": "Er du sikker på at du vil slette notatet «{{title}}»?",
+    "untitled": "Notat uten tittel",
+    "publicShare": {
+      "sharedTitle": "Delt med alle som har lenken"
+    }
   },
   "tags": {
     "loading": "Laster etiketter...",
@@ -2181,7 +2195,27 @@
     "completed": "Fullført (30d)",
     "open": "Åpen",
     "streaks": "Serier",
-    "areaBreakdown": "Områdefordeling"
+    "areaBreakdown": "Områdefordeling",
+    "mostActive": "mest aktiv",
+    "needsAttention": "trenger oppmerksomhet",
+    "doneOpen": "{{done}} ferdige · {{open}} åpne",
+    "trends": "Trender",
+    "inboxZero": "Tom innboks",
+    "itemsToProcess_other": "{{count}} elementer å behandle",
+    "allProjectsMoving": "Alle prosjekter er i gang",
+    "noActivity14": "Ingen aktivitet på 14+ dager",
+    "oldestWait": "Eldste: {{name}} ({{days}} d)",
+    "nothingPending": "Ingenting venter",
+    "daysStale": "{{days}} d stille",
+    "daysWaiting": "{{days}} d ventende",
+    "noNextAction": "{{debt}} av {{total}} prosjekter har ingen neste handling",
+    "completionTrends8": "Fullførte, siste 8 uker",
+    "totalCompleted": "fullført totalt",
+    "avgPerWeek": "snitt / uke",
+    "bestWeek": "beste ({{week}})",
+    "areaBalance30": "Balanse mellom områder, siste 30 dager",
+    "completionRateLegend": "% = fullføringsgrad",
+    "itemsToProcess_one": "{{count}} element å behandle"
   },
   "billing": {
     "title": "Abonnement og betaling",
@@ -2563,6 +2597,62 @@
     "blankSlateHint": "En mal er et prosjekt du kan starte igjen og igjen med oppgavene klare, for eksempel en reisesjekkliste eller onboarding av en ny kunde. Lag en her, lagre et prosjekt du gjentar, eller velg en fra markedsplassen.",
     "createFirst": "Lag din første mal",
     "browseMarketplace": "Bla gjennom markedsplassen",
-    "fromProject": "Lagre et prosjekt som mal"
+    "fromProject": "Lagre et prosjekt som mal",
+    "marketplace": {
+      "free": "Gratis",
+      "paid": "Betalt",
+      "installing": "Installerer...",
+      "install": "Installer",
+      "preview": "Forhåndsvis",
+      "fetchError": "Kunne ikke laste inn maler fra markedsplassen.",
+      "installed": "«{{name}}» er lagt til i malene dine.",
+      "installError": "Kunne ikke installere malen.",
+      "empty": "Det finnes ingen maler på markedsplassen ennå.",
+      "title": "Markedsplass",
+      "subtitle": "Bla gjennom og installer ferdige maler fra fellesskapet",
+      "search": "Søk på markedsplassen..."
+    },
+    "taskList": "Oppgaver",
+    "noTasks": "Ingen oppgaver i denne malen",
+    "tasks": "oppgaver",
+    "uses": "bruk",
+    "allCategories": "Alle",
+    "noResults": "Ingen maler passer til søket.",
+    "result": "mal",
+    "results": "maler",
+    "inCategory": "i",
+    "toggleMenu": "Åpne eller lukk menyen",
+    "useTemplate": "Bruk mal",
+    "preview": "Forhåndsvis",
+    "cloneTitle": "Opprett prosjekt fra mal",
+    "cloneSubtitle": "Sett opp det nye prosjektet ut fra «{{name}}»",
+    "newProjectName": "Prosjektnavn",
+    "area": "Område",
+    "noArea": "Ikke noe område",
+    "startDate": "Startdato",
+    "startDateHint2": "justerer relative frister",
+    "startDateHint": "La stå tomt for å beholde de opprinnelige fristene.",
+    "resetStatus": "Tilbakestill alle oppgaver til Ikke startet",
+    "createProject": "Opprett prosjekt",
+    "editTemplate": "Rediger mal",
+    "newTemplate": "Ny mal",
+    "name": "Navn",
+    "description": "Beskrivelse",
+    "category": "Kategori",
+    "categoryPlaceholder": "f.eks. Salg, HR, Utvikling",
+    "fetchError": "Kunne ikke laste inn maler.",
+    "created": "Mal opprettet.",
+    "createError": "Kunne ikke opprette malen.",
+    "updated": "Mal oppdatert.",
+    "updateError": "Kunne ikke oppdatere malen.",
+    "deleted": "Mal slettet.",
+    "deleteError": "Kunne ikke slette malen.",
+    "cloned": "Prosjektet «{{name}}» er opprettet.",
+    "cloneError": "Kunne ikke opprette prosjekt fra malen.",
+    "previewError": "Kunne ikke laste inn forhåndsvisning av malen.",
+    "title": "Maler",
+    "myTemplates": "Mine maler",
+    "confirmDelete": "Slett mal",
+    "confirmDeleteMessage": "Slette «{{name}}»? Prosjekter opprettet fra den påvirkes ikke."
   }
 }

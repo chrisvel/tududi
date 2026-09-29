@@ -42,7 +42,8 @@
     "all": "Alle",
     "optional": "optional",
     "hideSearch": "Suche einklappen",
-    "showSearch": "Suche anzeigen"
+    "showSearch": "Suche anzeigen",
+    "beta": "Beta"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -89,7 +90,15 @@
     "goals": "Ziele",
     "habits": "Gewohnheiten",
     "templates": "Vorlagen",
-    "people": "Personen"
+    "people": "Personen",
+    "allEntities": "Alle Elemente",
+    "collapseFavorites": "Favoriten einklappen",
+    "expandFavorites": "Favoriten ausklappen",
+    "telegramConnected": "Telegram verbunden",
+    "telegramProblem": "Problem mit der Telegram-Verbindung",
+    "resize": "Seitenleiste anpassen",
+    "collapseViews": "Ansichtenliste einklappen",
+    "expandViews": "Ansichtenliste ausklappen"
   },
   "navigation": {
     "home": "Startseite",
@@ -105,7 +114,8 @@
     "userMenu": "Benutzermenü",
     "search": "Suche",
     "admin": "Admin",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "templates": "Vorlagen"
   },
   "settings": {
     "todayPageSettings": "Heute-Seite Einstellungen",
@@ -481,7 +491,11 @@
     "blankSlateNew": "Erste Notiz schreiben",
     "blankSlateProjects": "Zu den Projekten",
     "deleteNote": "Notiz löschen",
-    "deleteNoteConfirm": "Möchtest du die Notiz „{{title}}“ wirklich löschen?"
+    "deleteNoteConfirm": "Möchtest du die Notiz „{{title}}“ wirklich löschen?",
+    "untitled": "Unbenannte Notiz",
+    "publicShare": {
+      "sharedTitle": "Für alle mit dem Link freigegeben"
+    }
   },
   "recurrence": {
     "none": "Keine",
@@ -2185,7 +2199,27 @@
     "completed": "Abgeschlossen (30 Tage)",
     "open": "Offen",
     "streaks": "Streaks",
-    "areaBreakdown": "Bereichsaufgliederung"
+    "areaBreakdown": "Bereichsaufgliederung",
+    "mostActive": "am aktivsten",
+    "needsAttention": "braucht Aufmerksamkeit",
+    "doneOpen": "{{done}} erledigt · {{open}} offen",
+    "trends": "Trends",
+    "inboxZero": "Eingang leer",
+    "itemsToProcess_other": "{{count}} Einträge zu bearbeiten",
+    "allProjectsMoving": "Alle Projekte in Bewegung",
+    "noActivity14": "Keine Aktivität seit 14+ Tagen",
+    "oldestWait": "Am längsten: {{name}} ({{days}} T.)",
+    "nothingPending": "Nichts ausstehend",
+    "daysStale": "{{days}} T. ruhend",
+    "daysWaiting": "{{days}} T. wartend",
+    "noNextAction": "{{debt}} von {{total}} Projekten haben keinen nächsten Schritt",
+    "completionTrends8": "Erledigungen, letzte 8 Wochen",
+    "totalCompleted": "insgesamt erledigt",
+    "avgPerWeek": "Ø / Woche",
+    "bestWeek": "beste ({{week}})",
+    "areaBalance30": "Bereiche, letzte 30 Tage",
+    "completionRateLegend": "% = Erledigungsquote",
+    "itemsToProcess_one": "{{count}} Eintrag zu bearbeiten"
   },
   "billing": {
     "title": "Tarif & Abrechnung",
@@ -2567,6 +2601,62 @@
     "blankSlateHint": "Eine Vorlage ist ein Projekt, das du immer wieder starten kannst, mit fertigen Aufgaben, etwa eine Reise-Checkliste oder das Onboarding neuer Kunden. Erstelle hier eine, speichere ein Projekt, das sich wiederholt, oder wähle eine aus dem Marktplatz.",
     "createFirst": "Erste Vorlage erstellen",
     "browseMarketplace": "Marktplatz durchsuchen",
-    "fromProject": "Projekt als Vorlage speichern"
+    "fromProject": "Projekt als Vorlage speichern",
+    "marketplace": {
+      "free": "Kostenlos",
+      "paid": "Kostenpflichtig",
+      "installing": "Wird installiert...",
+      "install": "Installieren",
+      "preview": "Vorschau",
+      "fetchError": "Marktplatz-Vorlagen konnten nicht geladen werden.",
+      "installed": "„{{name}}“ wurde zu deinen Vorlagen hinzugefügt.",
+      "installError": "Vorlage konnte nicht installiert werden.",
+      "empty": "Im Marktplatz gibt es noch keine Vorlagen.",
+      "title": "Marktplatz",
+      "subtitle": "Fertige Vorlagen aus der Community durchsuchen und installieren",
+      "search": "Marktplatz durchsuchen..."
+    },
+    "taskList": "Aufgaben",
+    "noTasks": "Keine Aufgaben in dieser Vorlage",
+    "tasks": "Aufgaben",
+    "uses": "Verwendungen",
+    "allCategories": "Alle",
+    "noResults": "Keine Vorlagen passen zu deiner Suche.",
+    "result": "Vorlage",
+    "results": "Vorlagen",
+    "inCategory": "in",
+    "toggleMenu": "Menü öffnen oder schließen",
+    "useTemplate": "Vorlage verwenden",
+    "preview": "Vorschau",
+    "cloneTitle": "Projekt aus Vorlage erstellen",
+    "cloneSubtitle": "Richte dein neues Projekt aus „{{name}}“ ein",
+    "newProjectName": "Projektname",
+    "area": "Bereich",
+    "noArea": "Kein Bereich",
+    "startDate": "Startdatum",
+    "startDateHint2": "passt relative Fälligkeitsdaten an",
+    "startDateHint": "Leer lassen, um die ursprünglichen Fälligkeitsdaten zu behalten.",
+    "resetStatus": "Alle Aufgaben auf Nicht begonnen zurücksetzen",
+    "createProject": "Projekt erstellen",
+    "editTemplate": "Vorlage bearbeiten",
+    "newTemplate": "Neue Vorlage",
+    "name": "Name",
+    "description": "Beschreibung",
+    "category": "Kategorie",
+    "categoryPlaceholder": "z. B. Vertrieb, Personal, Entwicklung",
+    "fetchError": "Vorlagen konnten nicht geladen werden.",
+    "created": "Vorlage erstellt.",
+    "createError": "Vorlage konnte nicht erstellt werden.",
+    "updated": "Vorlage aktualisiert.",
+    "updateError": "Vorlage konnte nicht aktualisiert werden.",
+    "deleted": "Vorlage gelöscht.",
+    "deleteError": "Vorlage konnte nicht gelöscht werden.",
+    "cloned": "Projekt „{{name}}“ erstellt.",
+    "cloneError": "Projekt konnte nicht aus der Vorlage erstellt werden.",
+    "previewError": "Vorschau der Vorlage konnte nicht geladen werden.",
+    "title": "Vorlagen",
+    "myTemplates": "Meine Vorlagen",
+    "confirmDelete": "Vorlage löschen",
+    "confirmDeleteMessage": "„{{name}}“ löschen? Daraus erstellte Projekte bleiben unverändert."
   }
 }

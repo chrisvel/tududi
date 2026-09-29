@@ -42,7 +42,8 @@
     "all": "Усі",
     "optional": "необов'язково",
     "hideSearch": "Згорнути пошук",
-    "showSearch": "Показати пошук"
+    "showSearch": "Показати пошук",
+    "beta": "бета"
   },
   "sidebar": {
     "dashboard": "Дашборд",
@@ -89,7 +90,15 @@
     "goals": "Цілі",
     "habits": "Звички",
     "templates": "Шаблони",
-    "people": "Люди"
+    "people": "Люди",
+    "allEntities": "Усі елементи",
+    "collapseFavorites": "Згорнути вибране",
+    "expandFavorites": "Розгорнути вибране",
+    "telegramConnected": "Telegram підключено",
+    "telegramProblem": "Проблема з підключенням Telegram",
+    "resize": "Змінити ширину бічної панелі",
+    "collapseViews": "Згорнути список переглядів",
+    "expandViews": "Розгорнути список переглядів"
   },
   "navigation": {
     "home": "Головна",
@@ -105,7 +114,8 @@
     "userMenu": "Меню користувача",
     "search": "Пошук",
     "admin": "Адміністратор",
-    "adminBadge": "Адміністратор"
+    "adminBadge": "Адміністратор",
+    "templates": "Шаблони"
   },
   "settings": {
     "todayPageSettings": "Налаштування сторінки Сьогодні",
@@ -579,7 +589,11 @@
     "blankSlateNew": "Написати першу нотатку",
     "blankSlateProjects": "Перейти до проектів",
     "deleteNote": "Видалити нотатку",
-    "deleteNoteConfirm": "Ви справді хочете видалити нотатку «{{title}}»?"
+    "deleteNoteConfirm": "Ви справді хочете видалити нотатку «{{title}}»?",
+    "untitled": "Нотатка без назви",
+    "publicShare": {
+      "sharedTitle": "Доступна всім, хто має посилання"
+    }
   },
   "recurrence": {
     "none": "Немає",
@@ -2178,7 +2192,29 @@
     "completed": "Завершено (30 дн.)",
     "open": "Відкрито",
     "streaks": "Серії",
-    "areaBreakdown": "Розподіл по областях"
+    "areaBreakdown": "Розподіл по областях",
+    "mostActive": "найактивніша",
+    "needsAttention": "потребує уваги",
+    "doneOpen": "{{done}} готово · {{open}} відкрито",
+    "trends": "Тренди",
+    "inboxZero": "Вхідні порожні",
+    "itemsToProcess_other": "Потрібно розібрати: {{count}}",
+    "allProjectsMoving": "Усі проекти рухаються",
+    "noActivity14": "Немає активності 14+ днів",
+    "oldestWait": "Найдовше: {{name}} ({{days}} дн.)",
+    "nothingPending": "Нічого не очікується",
+    "daysStale": "{{days}} дн. без руху",
+    "daysWaiting": "{{days}} дн. в очікуванні",
+    "noNextAction": "У {{debt}} з {{total}} проектів немає наступного кроку",
+    "completionTrends8": "Виконано, останні 8 тижнів",
+    "totalCompleted": "виконано загалом",
+    "avgPerWeek": "у середньому / тиждень",
+    "bestWeek": "найкращий ({{week}})",
+    "areaBalance30": "Баланс областей, останні 30 днів",
+    "completionRateLegend": "% = частка виконання",
+    "itemsToProcess_one": "Потрібно розібрати: {{count}}",
+    "itemsToProcess_few": "Потрібно розібрати: {{count}}",
+    "itemsToProcess_many": "Потрібно розібрати: {{count}}"
   },
   "billing": {
     "title": "Тариф і оплата",
@@ -2562,6 +2598,62 @@
     "blankSlateHint": "Шаблон — це проект, який можна запускати знову й знову з готовими завданнями, наприклад список для подорожі чи підключення нового клієнта. Створіть шаблон тут, збережіть проект, який повторюєте, або виберіть шаблон у каталозі.",
     "createFirst": "Створити перший шаблон",
     "browseMarketplace": "Переглянути каталог",
-    "fromProject": "Зберегти проект як шаблон"
+    "fromProject": "Зберегти проект як шаблон",
+    "marketplace": {
+      "free": "Безкоштовно",
+      "paid": "Платно",
+      "installing": "Встановлення...",
+      "install": "Встановити",
+      "preview": "Перегляд",
+      "fetchError": "Не вдалося завантажити шаблони з каталогу.",
+      "installed": "«{{name}}» додано до ваших шаблонів.",
+      "installError": "Не вдалося встановити шаблон.",
+      "empty": "У каталозі поки немає шаблонів.",
+      "title": "Каталог",
+      "subtitle": "Переглядайте та встановлюйте готові шаблони від спільноти",
+      "search": "Пошук у каталозі..."
+    },
+    "taskList": "Завдання",
+    "noTasks": "У цьому шаблоні немає завдань",
+    "tasks": "завдань",
+    "uses": "використань",
+    "allCategories": "Усі",
+    "noResults": "Немає шаблонів за вашим запитом.",
+    "result": "шаблон",
+    "results": "шаблонів",
+    "inCategory": "у категорії",
+    "toggleMenu": "Відкрити або закрити меню",
+    "useTemplate": "Використати шаблон",
+    "preview": "Перегляд",
+    "cloneTitle": "Створити проект із шаблону",
+    "cloneSubtitle": "Налаштуйте новий проект на основі «{{name}}»",
+    "newProjectName": "Назва проекту",
+    "area": "Область",
+    "noArea": "Без області",
+    "startDate": "Дата початку",
+    "startDateHint2": "зсуває відносні терміни",
+    "startDateHint": "Залиште порожнім, щоб зберегти початкові терміни.",
+    "resetStatus": "Скинути всі завдання до статусу «Не розпочато»",
+    "createProject": "Створити проект",
+    "editTemplate": "Редагувати шаблон",
+    "newTemplate": "Новий шаблон",
+    "name": "Назва",
+    "description": "Опис",
+    "category": "Категорія",
+    "categoryPlaceholder": "напр. Продажі, HR, Розробка",
+    "fetchError": "Не вдалося завантажити шаблони.",
+    "created": "Шаблон створено.",
+    "createError": "Не вдалося створити шаблон.",
+    "updated": "Шаблон оновлено.",
+    "updateError": "Не вдалося оновити шаблон.",
+    "deleted": "Шаблон видалено.",
+    "deleteError": "Не вдалося видалити шаблон.",
+    "cloned": "Проект «{{name}}» створено.",
+    "cloneError": "Не вдалося створити проект із шаблону.",
+    "previewError": "Не вдалося завантажити перегляд шаблону.",
+    "title": "Шаблони",
+    "myTemplates": "Мої шаблони",
+    "confirmDelete": "Видалити шаблон",
+    "confirmDeleteMessage": "Видалити «{{name}}»? Проекти, створені на його основі, не зміняться."
   }
 }

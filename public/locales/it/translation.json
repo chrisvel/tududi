@@ -42,7 +42,8 @@
     "all": "Tutti",
     "optional": "facoltativo",
     "hideSearch": "Comprimi la ricerca",
-    "showSearch": "Mostra la ricerca"
+    "showSearch": "Mostra la ricerca",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -89,7 +90,15 @@
     "goals": "Obiettivi",
     "habits": "Abitudini",
     "templates": "Modelli",
-    "people": "Persone"
+    "people": "Persone",
+    "allEntities": "Tutti gli elementi",
+    "collapseFavorites": "Comprimi preferiti",
+    "expandFavorites": "Espandi preferiti",
+    "telegramConnected": "Telegram connesso",
+    "telegramProblem": "Problema di connessione Telegram",
+    "resize": "Ridimensiona la barra laterale",
+    "collapseViews": "Comprimi l'elenco delle viste",
+    "expandViews": "Espandi l'elenco delle viste"
   },
   "navigation": {
     "home": "Home",
@@ -105,7 +114,8 @@
     "userMenu": "Menu Utente",
     "search": "Cerca",
     "admin": "Amministratore",
-    "adminBadge": "Amministratore"
+    "adminBadge": "Amministratore",
+    "templates": "Modelli"
   },
   "settings": {
     "todayPageSettings": "Impostazioni Pagina Oggi",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Scrivi la tua prima nota",
     "blankSlateProjects": "Vai ai progetti",
     "deleteNote": "Elimina nota",
-    "deleteNoteConfirm": "Vuoi davvero eliminare la nota «{{title}}»?"
+    "deleteNoteConfirm": "Vuoi davvero eliminare la nota «{{title}}»?",
+    "untitled": "Nota senza titolo",
+    "publicShare": {
+      "sharedTitle": "Condivisa con chiunque abbia il link"
+    }
   },
   "tags": {
     "loading": "Caricamento tag...",
@@ -2177,7 +2191,27 @@
     "completed": "Completato (30d)",
     "open": "Aperto",
     "streaks": "Serie",
-    "areaBreakdown": "Ripartizione dell'Area"
+    "areaBreakdown": "Ripartizione dell'Area",
+    "mostActive": "più attiva",
+    "needsAttention": "richiede attenzione",
+    "doneOpen": "{{done}} fatte · {{open}} aperte",
+    "trends": "Tendenze",
+    "inboxZero": "Inbox vuota",
+    "itemsToProcess_other": "{{count}} elementi da elaborare",
+    "allProjectsMoving": "Tutti i progetti avanzano",
+    "noActivity14": "Nessuna attività da 14+ giorni",
+    "oldestWait": "Il più vecchio: {{name}} ({{days}} g)",
+    "nothingPending": "Niente in sospeso",
+    "daysStale": "{{days}} g fermo",
+    "daysWaiting": "{{days}} g in attesa",
+    "noNextAction": "{{debt}} progetti su {{total}} non hanno un'azione successiva",
+    "completionTrends8": "Attività completate, ultime 8 settimane",
+    "totalCompleted": "completate in totale",
+    "avgPerWeek": "media / settimana",
+    "bestWeek": "migliore ({{week}})",
+    "areaBalance30": "Equilibrio delle aree, ultimi 30 giorni",
+    "completionRateLegend": "% = tasso di completamento",
+    "itemsToProcess_one": "{{count}} elemento da elaborare"
   },
   "billing": {
     "title": "Piano e fatturazione",
@@ -2559,6 +2593,62 @@
     "blankSlateHint": "Un modello è un progetto che puoi avviare più volte, con le attività già pronte, come una checklist di viaggio o l'inserimento di un nuovo cliente. Creane uno qui, salva un progetto che ripeti o scegline uno dal catalogo.",
     "createFirst": "Crea il tuo primo modello",
     "browseMarketplace": "Sfoglia il catalogo",
-    "fromProject": "Salva un progetto come modello"
+    "fromProject": "Salva un progetto come modello",
+    "marketplace": {
+      "free": "Gratis",
+      "paid": "A pagamento",
+      "installing": "Installazione...",
+      "install": "Installa",
+      "preview": "Anteprima",
+      "fetchError": "Impossibile caricare i modelli del catalogo.",
+      "installed": "«{{name}}» aggiunto ai tuoi modelli.",
+      "installError": "Impossibile installare il modello.",
+      "empty": "Il catalogo non contiene ancora modelli.",
+      "title": "Catalogo",
+      "subtitle": "Sfoglia e installa modelli pronti dalla community",
+      "search": "Cerca nel catalogo..."
+    },
+    "taskList": "Attività",
+    "noTasks": "Nessuna attività in questo modello",
+    "tasks": "attività",
+    "uses": "utilizzi",
+    "allCategories": "Tutte",
+    "noResults": "Nessun modello corrisponde alla ricerca.",
+    "result": "modello",
+    "results": "modelli",
+    "inCategory": "in",
+    "toggleMenu": "Apri o chiudi il menu",
+    "useTemplate": "Usa modello",
+    "preview": "Anteprima",
+    "cloneTitle": "Crea progetto da modello",
+    "cloneSubtitle": "Configura il nuovo progetto da «{{name}}»",
+    "newProjectName": "Nome del progetto",
+    "area": "Area",
+    "noArea": "Nessuna area",
+    "startDate": "Data di inizio",
+    "startDateHint2": "adatta le scadenze relative",
+    "startDateHint": "Lascia vuoto per mantenere le scadenze originali.",
+    "resetStatus": "Riporta tutte le attività a Non iniziata",
+    "createProject": "Crea progetto",
+    "editTemplate": "Modifica modello",
+    "newTemplate": "Nuovo modello",
+    "name": "Nome",
+    "description": "Descrizione",
+    "category": "Categoria",
+    "categoryPlaceholder": "es. Vendite, HR, Ingegneria",
+    "fetchError": "Impossibile caricare i modelli.",
+    "created": "Modello creato.",
+    "createError": "Impossibile creare il modello.",
+    "updated": "Modello aggiornato.",
+    "updateError": "Impossibile aggiornare il modello.",
+    "deleted": "Modello eliminato.",
+    "deleteError": "Impossibile eliminare il modello.",
+    "cloned": "Progetto «{{name}}» creato.",
+    "cloneError": "Impossibile creare il progetto dal modello.",
+    "previewError": "Impossibile caricare l'anteprima del modello.",
+    "title": "Modelli",
+    "myTemplates": "I miei modelli",
+    "confirmDelete": "Elimina modello",
+    "confirmDeleteMessage": "Eliminare «{{name}}»? I progetti creati da questo modello non verranno modificati."
   }
 }

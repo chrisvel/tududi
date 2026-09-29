@@ -289,7 +289,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                                 setIsExpanded((v) => !v);
                             }}
                             className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                            aria-label={isExpanded ? 'Collapse views list' : 'Expand views list'}
+                            aria-label={isExpanded ? t('sidebar.collapseViews', 'Collapse views list') : t('sidebar.expandViews', 'Expand views list')}
                         >
                             <ChevronRightIcon
                                 className="h-3 w-3 transition-transform duration-150"

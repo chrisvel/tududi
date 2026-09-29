@@ -42,7 +42,8 @@
     "all": "Kaikki",
     "optional": "valinnainen",
     "hideSearch": "Piilota haku",
-    "showSearch": "Näytä haku"
+    "showSearch": "Näytä haku",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -89,7 +90,15 @@
     "goals": "Tavoitteet",
     "habits": "Tavat",
     "templates": "Mallit",
-    "people": "Ihmiset"
+    "people": "Ihmiset",
+    "allEntities": "Kaikki kohteet",
+    "collapseFavorites": "Pienennä suosikit",
+    "expandFavorites": "Laajenna suosikit",
+    "telegramConnected": "Telegram yhdistetty",
+    "telegramProblem": "Telegram-yhteydessä on ongelma",
+    "resize": "Muuta sivupalkin kokoa",
+    "collapseViews": "Pienennä näkymäluettelo",
+    "expandViews": "Laajenna näkymäluettelo"
   },
   "navigation": {
     "home": "Koti",
@@ -105,7 +114,8 @@
     "userMenu": "Käyttäjävalikko",
     "search": "Haku",
     "admin": "Ylläpitäjä",
-    "adminBadge": "Ylläpitäjä"
+    "adminBadge": "Ylläpitäjä",
+    "templates": "Mallit"
   },
   "settings": {
     "todayPageSettings": "Tänään-sivun asetukset",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Kirjoita ensimmäinen muistiinpanosi",
     "blankSlateProjects": "Siirry projekteihin",
     "deleteNote": "Poista muistiinpano",
-    "deleteNoteConfirm": "Haluatko varmasti poistaa muistiinpanon ”{{title}}”?"
+    "deleteNoteConfirm": "Haluatko varmasti poistaa muistiinpanon ”{{title}}”?",
+    "untitled": "Nimetön muistiinpano",
+    "publicShare": {
+      "sharedTitle": "Jaettu kaikille, joilla on linkki"
+    }
   },
   "tags": {
     "loading": "Ladataan tageja...",
@@ -2176,7 +2190,27 @@
     "completed": "Valmiit (30 pv)",
     "open": "Avoin",
     "streaks": "Peräkkäisyydet",
-    "areaBreakdown": "Alueen erittely"
+    "areaBreakdown": "Alueen erittely",
+    "mostActive": "aktiivisin",
+    "needsAttention": "vaatii huomiota",
+    "doneOpen": "{{done}} valmis · {{open}} avoinna",
+    "trends": "Trendit",
+    "inboxZero": "Saapuneet tyhjä",
+    "itemsToProcess_other": "{{count}} käsiteltävää kohdetta",
+    "allProjectsMoving": "Kaikki projektit etenevät",
+    "noActivity14": "Ei toimintaa 14+ päivään",
+    "oldestWait": "Vanhin: {{name}} ({{days}} pv)",
+    "nothingPending": "Ei mitään odottamassa",
+    "daysStale": "{{days}} pv paikallaan",
+    "daysWaiting": "{{days}} pv odottanut",
+    "noNextAction": "{{debt}}/{{total}} projektilta puuttuu seuraava toimenpide",
+    "completionTrends8": "Valmistuneet, viimeiset 8 viikkoa",
+    "totalCompleted": "valmistunut yhteensä",
+    "avgPerWeek": "ka / viikko",
+    "bestWeek": "paras ({{week}})",
+    "areaBalance30": "Alueiden tasapaino, viimeiset 30 päivää",
+    "completionRateLegend": "% = valmistumisaste",
+    "itemsToProcess_one": "{{count}} käsiteltävä kohde"
   },
   "billing": {
     "title": "Tilaus ja laskutus",
@@ -2558,6 +2592,62 @@
     "blankSlateHint": "Malli on projekti, jonka voit aloittaa yhä uudelleen valmiine tehtävineen, kuten matkan tarkistuslista tai uuden asiakkaan perehdytys. Luo malli tästä, tallenna toistuva projekti tai valitse malli kauppapaikasta.",
     "createFirst": "Luo ensimmäinen mallisi",
     "browseMarketplace": "Selaa kauppapaikkaa",
-    "fromProject": "Tallenna projekti malliksi"
+    "fromProject": "Tallenna projekti malliksi",
+    "marketplace": {
+      "free": "Ilmainen",
+      "paid": "Maksullinen",
+      "installing": "Asennetaan...",
+      "install": "Asenna",
+      "preview": "Esikatsele",
+      "fetchError": "Kauppapaikan mallien lataaminen epäonnistui.",
+      "installed": "”{{name}}” lisättiin malleihisi.",
+      "installError": "Mallin asentaminen epäonnistui.",
+      "empty": "Kauppapaikassa ei ole vielä malleja.",
+      "title": "Kauppapaikka",
+      "subtitle": "Selaa ja asenna yhteisön valmiita malleja",
+      "search": "Hae kauppapaikasta..."
+    },
+    "taskList": "Tehtävät",
+    "noTasks": "Tässä mallissa ei ole tehtäviä",
+    "tasks": "tehtävää",
+    "uses": "käyttöä",
+    "allCategories": "Kaikki",
+    "noResults": "Hakuasi vastaavia malleja ei löytynyt.",
+    "result": "malli",
+    "results": "mallia",
+    "inCategory": "kategoriassa",
+    "toggleMenu": "Avaa tai sulje valikko",
+    "useTemplate": "Käytä mallia",
+    "preview": "Esikatsele",
+    "cloneTitle": "Luo projekti mallista",
+    "cloneSubtitle": "Määritä uusi projekti mallista ”{{name}}”",
+    "newProjectName": "Projektin nimi",
+    "area": "Alue",
+    "noArea": "Ei aluetta",
+    "startDate": "Aloituspäivä",
+    "startDateHint2": "siirtää suhteellisia eräpäiviä",
+    "startDateHint": "Jätä tyhjäksi, jos haluat säilyttää alkuperäiset eräpäivät.",
+    "resetStatus": "Palauta kaikki tehtävät tilaan Ei aloitettu",
+    "createProject": "Luo projekti",
+    "editTemplate": "Muokkaa mallia",
+    "newTemplate": "Uusi malli",
+    "name": "Nimi",
+    "description": "Kuvaus",
+    "category": "Kategoria",
+    "categoryPlaceholder": "esim. Myynti, HR, Kehitys",
+    "fetchError": "Mallien lataaminen epäonnistui.",
+    "created": "Malli luotu.",
+    "createError": "Mallin luominen epäonnistui.",
+    "updated": "Malli päivitetty.",
+    "updateError": "Mallin päivittäminen epäonnistui.",
+    "deleted": "Malli poistettu.",
+    "deleteError": "Mallin poistaminen epäonnistui.",
+    "cloned": "Projekti ”{{name}}” luotu.",
+    "cloneError": "Projektin luominen mallista epäonnistui.",
+    "previewError": "Mallin esikatselun lataaminen epäonnistui.",
+    "title": "Mallit",
+    "myTemplates": "Omat mallit",
+    "confirmDelete": "Poista malli",
+    "confirmDeleteMessage": "Poistetaanko ”{{name}}”? Sen avulla luodut projektit eivät muutu."
   }
 }

@@ -42,7 +42,8 @@
     "all": "全部",
     "optional": "可选",
     "hideSearch": "收起搜索",
-    "showSearch": "显示搜索"
+    "showSearch": "显示搜索",
+    "beta": "测试版"
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -89,7 +90,15 @@
     "goals": "目标",
     "habits": "习惯",
     "templates": "模板",
-    "people": "人员"
+    "people": "人员",
+    "allEntities": "所有项目",
+    "collapseFavorites": "收起收藏",
+    "expandFavorites": "展开收藏",
+    "telegramConnected": "Telegram 已连接",
+    "telegramProblem": "Telegram 连接出现问题",
+    "resize": "调整侧边栏宽度",
+    "collapseViews": "收起视图列表",
+    "expandViews": "展开视图列表"
   },
   "navigation": {
     "home": "首页",
@@ -105,7 +114,8 @@
     "userMenu": "用户菜单",
     "search": "搜索",
     "admin": "管理员",
-    "adminBadge": "管理员"
+    "adminBadge": "管理员",
+    "templates": "模板"
   },
   "settings": {
     "todayPageSettings": "今日页面设置",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "写下第一条笔记",
     "blankSlateProjects": "前往项目",
     "deleteNote": "删除笔记",
-    "deleteNoteConfirm": "确定要删除笔记“{{title}}”吗？"
+    "deleteNoteConfirm": "确定要删除笔记“{{title}}”吗？",
+    "untitled": "无标题笔记",
+    "publicShare": {
+      "sharedTitle": "已分享给所有拥有链接的人"
+    }
   },
   "tags": {
     "loading": "加载标签...",
@@ -2176,7 +2190,27 @@
     "completed": "已完成（30天）",
     "open": "打开",
     "streaks": "连续记录",
-    "areaBreakdown": "区域细分"
+    "areaBreakdown": "区域细分",
+    "mostActive": "最活跃",
+    "needsAttention": "需要关注",
+    "doneOpen": "已完成 {{done}} · 未完成 {{open}}",
+    "trends": "趋势",
+    "inboxZero": "收件箱已清空",
+    "itemsToProcess_other": "{{count}} 项待处理",
+    "allProjectsMoving": "所有项目都在推进",
+    "noActivity14": "14 天以上没有动静",
+    "oldestWait": "最久：{{name}}（{{days}} 天）",
+    "nothingPending": "没有待处理事项",
+    "daysStale": "{{days}} 天未动",
+    "daysWaiting": "{{days}} 天等待中",
+    "noNextAction": "{{total}} 个项目中有 {{debt}} 个没有下一步行动",
+    "completionTrends8": "完成情况，最近 8 周",
+    "totalCompleted": "总计完成",
+    "avgPerWeek": "平均 / 周",
+    "bestWeek": "最佳（{{week}}）",
+    "areaBalance30": "区域平衡，最近 30 天",
+    "completionRateLegend": "% = 完成率",
+    "itemsToProcess_one": "{{count}} 项待处理"
   },
   "billing": {
     "title": "套餐与账单",
@@ -2557,6 +2591,62 @@
     "blankSlateHint": "模板是可以反复启动、任务已准备好的项目，比如旅行清单或新客户入驻流程。在这里创建一个、保存你会重复的项目，或从模板市场中挑选。",
     "createFirst": "创建第一个模板",
     "browseMarketplace": "浏览模板市场",
-    "fromProject": "将项目保存为模板"
+    "fromProject": "将项目保存为模板",
+    "marketplace": {
+      "free": "免费",
+      "paid": "付费",
+      "installing": "正在安装...",
+      "install": "安装",
+      "preview": "预览",
+      "fetchError": "无法加载模板市场。",
+      "installed": "“{{name}}”已添加到你的模板。",
+      "installError": "无法安装模板。",
+      "empty": "模板市场中还没有模板。",
+      "title": "模板市场",
+      "subtitle": "浏览并安装社区提供的现成模板",
+      "search": "搜索模板市场..."
+    },
+    "taskList": "任务",
+    "noTasks": "此模板中没有任务",
+    "tasks": "个任务",
+    "uses": "次使用",
+    "allCategories": "全部",
+    "noResults": "没有与搜索匹配的模板。",
+    "result": "个模板",
+    "results": "个模板",
+    "inCategory": "分类",
+    "toggleMenu": "打开或关闭菜单",
+    "useTemplate": "使用模板",
+    "preview": "预览",
+    "cloneTitle": "从模板创建项目",
+    "cloneSubtitle": "基于“{{name}}”设置新项目",
+    "newProjectName": "项目名称",
+    "area": "区域",
+    "noArea": "无区域",
+    "startDate": "开始日期",
+    "startDateHint2": "会调整相对截止日期",
+    "startDateHint": "留空则保留原始截止日期。",
+    "resetStatus": "将所有任务重置为未开始",
+    "createProject": "创建项目",
+    "editTemplate": "编辑模板",
+    "newTemplate": "新建模板",
+    "name": "名称",
+    "description": "描述",
+    "category": "分类",
+    "categoryPlaceholder": "例如：销售、人事、工程",
+    "fetchError": "无法加载模板。",
+    "created": "模板已创建。",
+    "createError": "无法创建模板。",
+    "updated": "模板已更新。",
+    "updateError": "无法更新模板。",
+    "deleted": "模板已删除。",
+    "deleteError": "无法删除模板。",
+    "cloned": "项目“{{name}}”已创建。",
+    "cloneError": "无法从模板创建项目。",
+    "previewError": "无法加载模板预览。",
+    "title": "模板",
+    "myTemplates": "我的模板",
+    "confirmDelete": "删除模板",
+    "confirmDeleteMessage": "删除“{{name}}”？由它创建的项目不受影响。"
   }
 }

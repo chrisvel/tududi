@@ -42,7 +42,8 @@
     "all": "Все",
     "optional": "необязательно",
     "hideSearch": "Свернуть поиск",
-    "showSearch": "Показать поиск"
+    "showSearch": "Показать поиск",
+    "beta": "бета"
   },
   "sidebar": {
     "dashboard": "Панель управления",
@@ -89,7 +90,15 @@
     "goals": "Цели",
     "habits": "Привычки",
     "templates": "Шаблоны",
-    "people": "Люди"
+    "people": "Люди",
+    "allEntities": "Все элементы",
+    "collapseFavorites": "Свернуть избранное",
+    "expandFavorites": "Развернуть избранное",
+    "telegramConnected": "Telegram подключён",
+    "telegramProblem": "Проблема с подключением Telegram",
+    "resize": "Изменить ширину боковой панели",
+    "collapseViews": "Свернуть список представлений",
+    "expandViews": "Развернуть список представлений"
   },
   "navigation": {
     "home": "Главная",
@@ -105,7 +114,8 @@
     "userMenu": "Меню пользователя",
     "search": "Поиск",
     "admin": "Администратор",
-    "adminBadge": "Администратор"
+    "adminBadge": "Администратор",
+    "templates": "Шаблоны"
   },
   "settings": {
     "todayPageSettings": "Настройки страницы «Сегодня»",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Написать первую заметку",
     "blankSlateProjects": "Перейти к проектам",
     "deleteNote": "Удалить заметку",
-    "deleteNoteConfirm": "Вы действительно хотите удалить заметку «{{title}}»?"
+    "deleteNoteConfirm": "Вы действительно хотите удалить заметку «{{title}}»?",
+    "untitled": "Заметка без названия",
+    "publicShare": {
+      "sharedTitle": "Доступна всем, у кого есть ссылка"
+    }
   },
   "tags": {
     "loading": "Загрузка тегов...",
@@ -2178,7 +2192,29 @@
     "completed": "Завершено (30д)",
     "open": "Открыто",
     "streaks": "Серии",
-    "areaBreakdown": "Разбивка по областям"
+    "areaBreakdown": "Разбивка по областям",
+    "mostActive": "самая активная",
+    "needsAttention": "требует внимания",
+    "doneOpen": "{{done}} готово · {{open}} открыто",
+    "trends": "Тренды",
+    "inboxZero": "Входящие пусты",
+    "itemsToProcess_other": "Нужно разобрать: {{count}}",
+    "allProjectsMoving": "Все проекты движутся",
+    "noActivity14": "Нет активности 14+ дней",
+    "oldestWait": "Дольше всех: {{name}} ({{days}} дн.)",
+    "nothingPending": "Ничего не ожидается",
+    "daysStale": "{{days}} дн. без движения",
+    "daysWaiting": "{{days}} дн. в ожидании",
+    "noNextAction": "У {{debt}} из {{total}} проектов нет следующего шага",
+    "completionTrends8": "Выполнено, последние 8 недель",
+    "totalCompleted": "выполнено всего",
+    "avgPerWeek": "в среднем / неделю",
+    "bestWeek": "лучшая ({{week}})",
+    "areaBalance30": "Баланс областей, последние 30 дней",
+    "completionRateLegend": "% = доля выполнения",
+    "itemsToProcess_one": "Нужно разобрать: {{count}}",
+    "itemsToProcess_few": "Нужно разобрать: {{count}}",
+    "itemsToProcess_many": "Нужно разобрать: {{count}}"
   },
   "billing": {
     "title": "Тариф и оплата",
@@ -2562,6 +2598,62 @@
     "blankSlateHint": "Шаблон — это проект, который можно запускать снова и снова с готовыми задачами, например список сборов в поездку или подключение нового клиента. Создайте шаблон здесь, сохраните повторяющийся проект или выберите шаблон в каталоге.",
     "createFirst": "Создать первый шаблон",
     "browseMarketplace": "Открыть каталог",
-    "fromProject": "Сохранить проект как шаблон"
+    "fromProject": "Сохранить проект как шаблон",
+    "marketplace": {
+      "free": "Бесплатно",
+      "paid": "Платно",
+      "installing": "Установка...",
+      "install": "Установить",
+      "preview": "Просмотр",
+      "fetchError": "Не удалось загрузить шаблоны из каталога.",
+      "installed": "«{{name}}» добавлен в ваши шаблоны.",
+      "installError": "Не удалось установить шаблон.",
+      "empty": "В каталоге пока нет шаблонов.",
+      "title": "Каталог",
+      "subtitle": "Просматривайте и устанавливайте готовые шаблоны от сообщества",
+      "search": "Поиск в каталоге..."
+    },
+    "taskList": "Задачи",
+    "noTasks": "В этом шаблоне нет задач",
+    "tasks": "задач",
+    "uses": "использований",
+    "allCategories": "Все",
+    "noResults": "Нет шаблонов по вашему запросу.",
+    "result": "шаблон",
+    "results": "шаблонов",
+    "inCategory": "в категории",
+    "toggleMenu": "Открыть или закрыть меню",
+    "useTemplate": "Использовать шаблон",
+    "preview": "Просмотр",
+    "cloneTitle": "Создать проект из шаблона",
+    "cloneSubtitle": "Настройте новый проект на основе «{{name}}»",
+    "newProjectName": "Название проекта",
+    "area": "Область",
+    "noArea": "Без области",
+    "startDate": "Дата начала",
+    "startDateHint2": "сдвигает относительные сроки",
+    "startDateHint": "Оставьте пустым, чтобы сохранить исходные сроки.",
+    "resetStatus": "Сбросить все задачи в статус «Не начата»",
+    "createProject": "Создать проект",
+    "editTemplate": "Изменить шаблон",
+    "newTemplate": "Новый шаблон",
+    "name": "Название",
+    "description": "Описание",
+    "category": "Категория",
+    "categoryPlaceholder": "напр. Продажи, HR, Разработка",
+    "fetchError": "Не удалось загрузить шаблоны.",
+    "created": "Шаблон создан.",
+    "createError": "Не удалось создать шаблон.",
+    "updated": "Шаблон обновлён.",
+    "updateError": "Не удалось обновить шаблон.",
+    "deleted": "Шаблон удалён.",
+    "deleteError": "Не удалось удалить шаблон.",
+    "cloned": "Проект «{{name}}» создан.",
+    "cloneError": "Не удалось создать проект из шаблона.",
+    "previewError": "Не удалось загрузить просмотр шаблона.",
+    "title": "Шаблоны",
+    "myTemplates": "Мои шаблоны",
+    "confirmDelete": "Удалить шаблон",
+    "confirmDeleteMessage": "Удалить «{{name}}»? Проекты, созданные на его основе, не изменятся."
   }
 }

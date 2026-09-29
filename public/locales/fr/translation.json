@@ -42,7 +42,8 @@
     "all": "Tous",
     "optional": "facultatif",
     "hideSearch": "Replier la recherche",
-    "showSearch": "Afficher la recherche"
+    "showSearch": "Afficher la recherche",
+    "beta": "bêta"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -89,7 +90,15 @@
     "goals": "Objectifs",
     "habits": "Habitudes",
     "templates": "Modèles",
-    "people": "Personnes"
+    "people": "Personnes",
+    "allEntities": "Tous les éléments",
+    "collapseFavorites": "Replier les favoris",
+    "expandFavorites": "Déplier les favoris",
+    "telegramConnected": "Telegram connecté",
+    "telegramProblem": "Problème de connexion Telegram",
+    "resize": "Redimensionner la barre latérale",
+    "collapseViews": "Replier la liste des vues",
+    "expandViews": "Déplier la liste des vues"
   },
   "navigation": {
     "home": "Accueil",
@@ -105,7 +114,8 @@
     "userMenu": "Menu utilisateur",
     "search": "Rechercher",
     "admin": "Admin",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "templates": "Modèles"
   },
   "settings": {
     "todayPageSettings": "Paramètres de la page Aujourd'hui",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Écrire votre première note",
     "blankSlateProjects": "Aller aux projets",
     "deleteNote": "Supprimer la note",
-    "deleteNoteConfirm": "Voulez-vous vraiment supprimer la note « {{title}} » ?"
+    "deleteNoteConfirm": "Voulez-vous vraiment supprimer la note « {{title}} » ?",
+    "untitled": "Note sans titre",
+    "publicShare": {
+      "sharedTitle": "Partagé avec toute personne disposant du lien"
+    }
   },
   "tags": {
     "loading": "Chargement des étiquettes...",
@@ -2177,7 +2191,27 @@
     "completed": "Complété (30j)",
     "open": "Ouvert",
     "streaks": "Séries",
-    "areaBreakdown": "Répartition par Zone"
+    "areaBreakdown": "Répartition par Zone",
+    "mostActive": "le plus actif",
+    "needsAttention": "demande de l'attention",
+    "doneOpen": "{{done}} faites · {{open}} ouvertes",
+    "trends": "Tendances",
+    "inboxZero": "Boîte vide",
+    "itemsToProcess_other": "{{count}} éléments à traiter",
+    "allProjectsMoving": "Tous les projets avancent",
+    "noActivity14": "Aucune activité depuis 14 jours ou plus",
+    "oldestWait": "Le plus ancien : {{name}} ({{days}} j)",
+    "nothingPending": "Rien en attente",
+    "daysStale": "{{days}} j sans activité",
+    "daysWaiting": "{{days}} j d'attente",
+    "noNextAction": "{{debt}} projets sur {{total}} n'ont pas de prochaine action",
+    "completionTrends8": "Tâches terminées, 8 dernières semaines",
+    "totalCompleted": "terminées au total",
+    "avgPerWeek": "moy. / semaine",
+    "bestWeek": "record ({{week}})",
+    "areaBalance30": "Équilibre des zones, 30 derniers jours",
+    "completionRateLegend": "% = taux d'achèvement",
+    "itemsToProcess_one": "{{count}} élément à traiter"
   },
   "billing": {
     "title": "Forfait et facturation",
@@ -2559,6 +2593,62 @@
     "blankSlateHint": "Un modèle est un projet que vous pouvez relancer à volonté, avec ses tâches prêtes, comme une liste de voyage ou l'accueil d'un nouveau client. Créez-en un ici, enregistrez un projet que vous répétez ou choisissez-en un dans la bibliothèque.",
     "createFirst": "Créer votre premier modèle",
     "browseMarketplace": "Parcourir la bibliothèque",
-    "fromProject": "Enregistrer un projet comme modèle"
+    "fromProject": "Enregistrer un projet comme modèle",
+    "marketplace": {
+      "free": "Gratuit",
+      "paid": "Payant",
+      "installing": "Installation...",
+      "install": "Installer",
+      "preview": "Aperçu",
+      "fetchError": "Impossible de charger les modèles de la bibliothèque.",
+      "installed": "« {{name}} » a été ajouté à vos modèles.",
+      "installError": "Impossible d'installer le modèle.",
+      "empty": "La bibliothèque ne contient encore aucun modèle.",
+      "title": "Bibliothèque",
+      "subtitle": "Parcourez et installez des modèles prêts à l'emploi de la communauté",
+      "search": "Rechercher dans la bibliothèque..."
+    },
+    "taskList": "Tâches",
+    "noTasks": "Aucune tâche dans ce modèle",
+    "tasks": "tâches",
+    "uses": "utilisations",
+    "allCategories": "Tous",
+    "noResults": "Aucun modèle ne correspond à votre recherche.",
+    "result": "modèle",
+    "results": "modèles",
+    "inCategory": "dans",
+    "toggleMenu": "Ouvrir ou fermer le menu",
+    "useTemplate": "Utiliser le modèle",
+    "preview": "Aperçu",
+    "cloneTitle": "Créer un projet à partir du modèle",
+    "cloneSubtitle": "Configurez votre nouveau projet à partir de « {{name}} »",
+    "newProjectName": "Nom du projet",
+    "area": "Zone",
+    "noArea": "Aucune zone",
+    "startDate": "Date de début",
+    "startDateHint2": "ajuste les échéances relatives",
+    "startDateHint": "Laissez vide pour garder les échéances d'origine.",
+    "resetStatus": "Remettre toutes les tâches à Non commencé",
+    "createProject": "Créer le projet",
+    "editTemplate": "Modifier le modèle",
+    "newTemplate": "Nouveau modèle",
+    "name": "Nom",
+    "description": "Description",
+    "category": "Catégorie",
+    "categoryPlaceholder": "ex. Ventes, RH, Ingénierie",
+    "fetchError": "Impossible de charger les modèles.",
+    "created": "Modèle créé.",
+    "createError": "Impossible de créer le modèle.",
+    "updated": "Modèle mis à jour.",
+    "updateError": "Impossible de mettre à jour le modèle.",
+    "deleted": "Modèle supprimé.",
+    "deleteError": "Impossible de supprimer le modèle.",
+    "cloned": "Projet « {{name}} » créé.",
+    "cloneError": "Impossible de créer le projet à partir du modèle.",
+    "previewError": "Impossible de charger l'aperçu du modèle.",
+    "title": "Modèles",
+    "myTemplates": "Mes modèles",
+    "confirmDelete": "Supprimer le modèle",
+    "confirmDeleteMessage": "Supprimer « {{name}} » ? Les projets créés à partir de celui-ci ne seront pas affectés."
   }
 }

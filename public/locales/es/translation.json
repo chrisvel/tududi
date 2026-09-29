@@ -42,7 +42,8 @@
     "all": "Todos",
     "optional": "opcional",
     "hideSearch": "Contraer la búsqueda",
-    "showSearch": "Mostrar la búsqueda"
+    "showSearch": "Mostrar la búsqueda",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Tablero",
@@ -89,7 +90,15 @@
     "goals": "Metas",
     "habits": "Hábitos",
     "templates": "Plantillas",
-    "people": "Personas"
+    "people": "Personas",
+    "allEntities": "Todos los elementos",
+    "collapseFavorites": "Contraer favoritos",
+    "expandFavorites": "Expandir favoritos",
+    "telegramConnected": "Telegram conectado",
+    "telegramProblem": "Problema de conexión con Telegram",
+    "resize": "Cambiar tamaño de la barra lateral",
+    "collapseViews": "Contraer la lista de vistas",
+    "expandViews": "Expandir la lista de vistas"
   },
   "navigation": {
     "home": "Inicio",
@@ -105,7 +114,8 @@
     "userMenu": "Menú de usuario",
     "search": "Buscar",
     "admin": "Administrador",
-    "adminBadge": "Administrador"
+    "adminBadge": "Administrador",
+    "templates": "Plantillas"
   },
   "settings": {
     "todayPageSettings": "Configuración de Página Hoy",
@@ -1238,7 +1248,11 @@
     "blankSlateNew": "Escribe tu primera nota",
     "blankSlateProjects": "Ir a proyectos",
     "deleteNote": "Eliminar nota",
-    "deleteNoteConfirm": "¿Seguro que quieres eliminar la nota «{{title}}»?"
+    "deleteNoteConfirm": "¿Seguro que quieres eliminar la nota «{{title}}»?",
+    "untitled": "Nota sin título",
+    "publicShare": {
+      "sharedTitle": "Compartida con cualquiera que tenga el enlace"
+    }
   },
   "tags": {
     "loading": "Cargando etiquetas...",
@@ -2164,7 +2178,27 @@
     "completed": "Completadas (30d)",
     "open": "Abierto",
     "streaks": "Rachas",
-    "areaBreakdown": "Desglose de Área"
+    "areaBreakdown": "Desglose de Área",
+    "mostActive": "más activa",
+    "needsAttention": "necesita atención",
+    "doneOpen": "{{done}} hechas · {{open}} abiertas",
+    "trends": "Tendencias",
+    "inboxZero": "Bandeja vacía",
+    "itemsToProcess_other": "{{count}} elementos por procesar",
+    "allProjectsMoving": "Todos los proyectos avanzan",
+    "noActivity14": "Sin actividad en 14+ días",
+    "oldestWait": "El más antiguo: {{name}} ({{days}} d)",
+    "nothingPending": "Nada pendiente",
+    "daysStale": "{{days}} d sin actividad",
+    "daysWaiting": "{{days}} d esperando",
+    "noNextAction": "{{debt}} de {{total}} proyectos no tienen siguiente acción",
+    "completionTrends8": "Tareas completadas, últimas 8 semanas",
+    "totalCompleted": "completadas en total",
+    "avgPerWeek": "media / semana",
+    "bestWeek": "mejor ({{week}})",
+    "areaBalance30": "Equilibrio de áreas, últimos 30 días",
+    "completionRateLegend": "% = tasa de finalización",
+    "itemsToProcess_one": "{{count}} elemento por procesar"
   },
   "billing": {
     "title": "Plan y facturación",
@@ -2546,6 +2580,62 @@
     "blankSlateHint": "Una plantilla es un proyecto que puedes iniciar una y otra vez, con sus tareas listas, como una lista para un viaje o la incorporación de un cliente. Crea una aquí, guarda un proyecto que repites o elige una del catálogo.",
     "createFirst": "Crea tu primera plantilla",
     "browseMarketplace": "Explorar el catálogo",
-    "fromProject": "Guardar un proyecto como plantilla"
+    "fromProject": "Guardar un proyecto como plantilla",
+    "marketplace": {
+      "free": "Gratis",
+      "paid": "De pago",
+      "installing": "Instalando...",
+      "install": "Instalar",
+      "preview": "Vista previa",
+      "fetchError": "No se pudieron cargar las plantillas del catálogo.",
+      "installed": "«{{name}}» se añadió a tus plantillas.",
+      "installError": "No se pudo instalar la plantilla.",
+      "empty": "Todavía no hay plantillas en el catálogo.",
+      "title": "Catálogo",
+      "subtitle": "Explora e instala plantillas listas de la comunidad",
+      "search": "Buscar en el catálogo..."
+    },
+    "taskList": "Tareas",
+    "noTasks": "No hay tareas en esta plantilla",
+    "tasks": "tareas",
+    "uses": "usos",
+    "allCategories": "Todas",
+    "noResults": "Ninguna plantilla coincide con tu búsqueda.",
+    "result": "plantilla",
+    "results": "plantillas",
+    "inCategory": "en",
+    "toggleMenu": "Abrir o cerrar el menú",
+    "useTemplate": "Usar plantilla",
+    "preview": "Vista previa",
+    "cloneTitle": "Crear proyecto desde plantilla",
+    "cloneSubtitle": "Configura tu nuevo proyecto a partir de «{{name}}»",
+    "newProjectName": "Nombre del proyecto",
+    "area": "Área",
+    "noArea": "Sin área",
+    "startDate": "Fecha de inicio",
+    "startDateHint2": "ajusta las fechas relativas",
+    "startDateHint": "Déjalo vacío para mantener las fechas originales.",
+    "resetStatus": "Restablecer todas las tareas a Sin empezar",
+    "createProject": "Crear proyecto",
+    "editTemplate": "Editar plantilla",
+    "newTemplate": "Nueva plantilla",
+    "name": "Nombre",
+    "description": "Descripción",
+    "category": "Categoría",
+    "categoryPlaceholder": "p. ej. Ventas, RR. HH., Ingeniería",
+    "fetchError": "No se pudieron cargar las plantillas.",
+    "created": "Plantilla creada.",
+    "createError": "No se pudo crear la plantilla.",
+    "updated": "Plantilla actualizada.",
+    "updateError": "No se pudo actualizar la plantilla.",
+    "deleted": "Plantilla eliminada.",
+    "deleteError": "No se pudo eliminar la plantilla.",
+    "cloned": "Proyecto «{{name}}» creado.",
+    "cloneError": "No se pudo crear el proyecto desde la plantilla.",
+    "previewError": "No se pudo cargar la vista previa de la plantilla.",
+    "title": "Plantillas",
+    "myTemplates": "Mis plantillas",
+    "confirmDelete": "Eliminar plantilla",
+    "confirmDeleteMessage": "¿Eliminar «{{name}}»? Los proyectos creados con ella no se verán afectados."
   }
 }

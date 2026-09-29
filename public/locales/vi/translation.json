@@ -42,7 +42,8 @@
     "all": "Tất cả",
     "optional": "không bắt buộc",
     "hideSearch": "Thu gọn tìm kiếm",
-    "showSearch": "Hiện tìm kiếm"
+    "showSearch": "Hiện tìm kiếm",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -89,7 +90,15 @@
     "goals": "Mục tiêu",
     "habits": "Thói quen",
     "templates": "Mẫu",
-    "people": "Mọi người"
+    "people": "Mọi người",
+    "allEntities": "Tất cả mục",
+    "collapseFavorites": "Thu gọn mục yêu thích",
+    "expandFavorites": "Mở rộng mục yêu thích",
+    "telegramConnected": "Đã kết nối Telegram",
+    "telegramProblem": "Sự cố kết nối Telegram",
+    "resize": "Đổi kích thước thanh bên",
+    "collapseViews": "Thu gọn danh sách chế độ xem",
+    "expandViews": "Mở rộng danh sách chế độ xem"
   },
   "navigation": {
     "home": "Trang chủ",
@@ -105,7 +114,8 @@
     "userMenu": "Menu Người dùng",
     "search": "Tìm kiếm",
     "admin": "Quản trị viên",
-    "adminBadge": "Quản trị viên"
+    "adminBadge": "Quản trị viên",
+    "templates": "Mẫu"
   },
   "settings": {
     "todayPageSettings": "Cài đặt Trang Hôm nay",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Viết ghi chú đầu tiên",
     "blankSlateProjects": "Đến dự án",
     "deleteNote": "Xóa ghi chú",
-    "deleteNoteConfirm": "Bạn có chắc muốn xóa ghi chú \"{{title}}\" không?"
+    "deleteNoteConfirm": "Bạn có chắc muốn xóa ghi chú \"{{title}}\" không?",
+    "untitled": "Ghi chú không tiêu đề",
+    "publicShare": {
+      "sharedTitle": "Chia sẻ với bất kỳ ai có liên kết"
+    }
   },
   "tags": {
     "loading": "Đang tải thẻ...",
@@ -2176,7 +2190,27 @@
     "completed": "Đã hoàn thành (30 ngày)",
     "open": "Mở",
     "streaks": "Chuỗi",
-    "areaBreakdown": "Phân tích khu vực"
+    "areaBreakdown": "Phân tích khu vực",
+    "mostActive": "hoạt động nhiều nhất",
+    "needsAttention": "cần chú ý",
+    "doneOpen": "{{done}} xong · {{open}} mở",
+    "trends": "Xu hướng",
+    "inboxZero": "Hộp thư trống",
+    "itemsToProcess_other": "{{count}} mục cần xử lý",
+    "allProjectsMoving": "Mọi dự án đều đang tiến triển",
+    "noActivity14": "Không có hoạt động trong 14+ ngày",
+    "oldestWait": "Lâu nhất: {{name}} ({{days}} ngày)",
+    "nothingPending": "Không có gì chờ",
+    "daysStale": "{{days}} ngày đứng yên",
+    "daysWaiting": "{{days}} ngày chờ",
+    "noNextAction": "{{debt}}/{{total}} dự án chưa có bước tiếp theo",
+    "completionTrends8": "Việc hoàn thành, 8 tuần qua",
+    "totalCompleted": "tổng hoàn thành",
+    "avgPerWeek": "tb / tuần",
+    "bestWeek": "tốt nhất ({{week}})",
+    "areaBalance30": "Cân bằng khu vực, 30 ngày qua",
+    "completionRateLegend": "% = tỷ lệ hoàn thành",
+    "itemsToProcess_one": "{{count}} mục cần xử lý"
   },
   "billing": {
     "title": "Gói & Thanh toán",
@@ -2557,6 +2591,62 @@
     "blankSlateHint": "Mẫu là một dự án bạn có thể bắt đầu lại nhiều lần với các công việc có sẵn, như danh sách chuẩn bị cho chuyến đi hoặc tiếp nhận khách hàng mới. Tạo mẫu ở đây, lưu một dự án bạn hay lặp lại hoặc chọn một mẫu từ kho mẫu.",
     "createFirst": "Tạo mẫu đầu tiên",
     "browseMarketplace": "Duyệt kho mẫu",
-    "fromProject": "Lưu dự án thành mẫu"
+    "fromProject": "Lưu dự án thành mẫu",
+    "marketplace": {
+      "free": "Miễn phí",
+      "paid": "Trả phí",
+      "installing": "Đang cài đặt...",
+      "install": "Cài đặt",
+      "preview": "Xem trước",
+      "fetchError": "Không thể tải mẫu từ kho mẫu.",
+      "installed": "Đã thêm \"{{name}}\" vào mẫu của bạn.",
+      "installError": "Không thể cài đặt mẫu.",
+      "empty": "Kho mẫu chưa có mẫu nào.",
+      "title": "Kho mẫu",
+      "subtitle": "Duyệt và cài đặt mẫu có sẵn từ cộng đồng",
+      "search": "Tìm trong kho mẫu..."
+    },
+    "taskList": "Công việc",
+    "noTasks": "Mẫu này không có công việc",
+    "tasks": "công việc",
+    "uses": "lượt dùng",
+    "allCategories": "Tất cả",
+    "noResults": "Không có mẫu nào khớp với tìm kiếm.",
+    "result": "mẫu",
+    "results": "mẫu",
+    "inCategory": "trong",
+    "toggleMenu": "Mở hoặc đóng menu",
+    "useTemplate": "Dùng mẫu",
+    "preview": "Xem trước",
+    "cloneTitle": "Tạo dự án từ mẫu",
+    "cloneSubtitle": "Thiết lập dự án mới từ \"{{name}}\"",
+    "newProjectName": "Tên dự án",
+    "area": "Khu vực",
+    "noArea": "Không có khu vực",
+    "startDate": "Ngày bắt đầu",
+    "startDateHint2": "điều chỉnh hạn tương đối",
+    "startDateHint": "Để trống để giữ hạn ban đầu.",
+    "resetStatus": "Đặt lại mọi công việc về Chưa bắt đầu",
+    "createProject": "Tạo dự án",
+    "editTemplate": "Sửa mẫu",
+    "newTemplate": "Mẫu mới",
+    "name": "Tên",
+    "description": "Mô tả",
+    "category": "Danh mục",
+    "categoryPlaceholder": "vd. Bán hàng, Nhân sự, Kỹ thuật",
+    "fetchError": "Không thể tải mẫu.",
+    "created": "Đã tạo mẫu.",
+    "createError": "Không thể tạo mẫu.",
+    "updated": "Đã cập nhật mẫu.",
+    "updateError": "Không thể cập nhật mẫu.",
+    "deleted": "Đã xóa mẫu.",
+    "deleteError": "Không thể xóa mẫu.",
+    "cloned": "Đã tạo dự án \"{{name}}\".",
+    "cloneError": "Không thể tạo dự án từ mẫu.",
+    "previewError": "Không thể tải bản xem trước của mẫu.",
+    "title": "Mẫu",
+    "myTemplates": "Mẫu của tôi",
+    "confirmDelete": "Xóa mẫu",
+    "confirmDeleteMessage": "Xóa \"{{name}}\"? Các dự án đã tạo từ mẫu này không bị ảnh hưởng."
   }
 }

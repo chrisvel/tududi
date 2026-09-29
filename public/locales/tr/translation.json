@@ -42,7 +42,8 @@
     "all": "Tümü",
     "optional": "isteğe bağlı",
     "hideSearch": "Aramayı daralt",
-    "showSearch": "Aramayı göster"
+    "showSearch": "Aramayı göster",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -89,7 +90,15 @@
     "goals": "Hedefler",
     "habits": "Alışkanlıklar",
     "templates": "Şablonlar",
-    "people": "Kişiler"
+    "people": "Kişiler",
+    "allEntities": "Tüm öğeler",
+    "collapseFavorites": "Favorileri daralt",
+    "expandFavorites": "Favorileri genişlet",
+    "telegramConnected": "Telegram bağlı",
+    "telegramProblem": "Telegram bağlantı sorunu",
+    "resize": "Kenar çubuğunu yeniden boyutlandır",
+    "collapseViews": "Görünüm listesini daralt",
+    "expandViews": "Görünüm listesini genişlet"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -105,7 +114,8 @@
     "userMenu": "Kullanıcı Menüsü",
     "search": "Ara",
     "admin": "Yönetici",
-    "adminBadge": "Yönetici"
+    "adminBadge": "Yönetici",
+    "templates": "Şablonlar"
   },
   "settings": {
     "todayPageSettings": "Bugün Sayfası Ayarları",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "İlk notunuzu yazın",
     "blankSlateProjects": "Projelere git",
     "deleteNote": "Notu sil",
-    "deleteNoteConfirm": "\"{{title}}\" notunu silmek istediğinizden emin misiniz?"
+    "deleteNoteConfirm": "\"{{title}}\" notunu silmek istediğinizden emin misiniz?",
+    "untitled": "Başlıksız not",
+    "publicShare": {
+      "sharedTitle": "Bağlantıya sahip herkesle paylaşıldı"
+    }
   },
   "tags": {
     "loading": "Etiketler yükleniyor...",
@@ -2176,7 +2190,27 @@
     "completed": "Tamamlandı (30g)",
     "open": "Açık",
     "streaks": "Seriler",
-    "areaBreakdown": "Alan Dağılımı"
+    "areaBreakdown": "Alan Dağılımı",
+    "mostActive": "en aktif",
+    "needsAttention": "ilgi bekliyor",
+    "doneOpen": "{{done}} bitti · {{open}} açık",
+    "trends": "Eğilimler",
+    "inboxZero": "Gelen kutusu boş",
+    "itemsToProcess_other": "İşlenecek {{count}} öğe",
+    "allProjectsMoving": "Tüm projeler ilerliyor",
+    "noActivity14": "14+ gündür etkinlik yok",
+    "oldestWait": "En eski: {{name}} ({{days}} g)",
+    "nothingPending": "Bekleyen bir şey yok",
+    "daysStale": "{{days}} g hareketsiz",
+    "daysWaiting": "{{days}} g bekliyor",
+    "noNextAction": "{{total}} projeden {{debt}} tanesinin sonraki adımı yok",
+    "completionTrends8": "Tamamlananlar, son 8 hafta",
+    "totalCompleted": "toplam tamamlanan",
+    "avgPerWeek": "ort. / hafta",
+    "bestWeek": "en iyi ({{week}})",
+    "areaBalance30": "Alan dengesi, son 30 gün",
+    "completionRateLegend": "% = tamamlanma oranı",
+    "itemsToProcess_one": "İşlenecek {{count}} öğe"
   },
   "billing": {
     "title": "Plan ve Faturalandırma",
@@ -2558,6 +2592,62 @@
     "blankSlateHint": "Şablon, görevleri hazır olarak tekrar tekrar başlatabileceğiniz bir projedir; örneğin bir seyahat kontrol listesi veya yeni bir müşterinin katılımı. Burada bir tane oluşturun, tekrarladığınız bir projeyi kaydedin ya da pazar yerinden birini seçin.",
     "createFirst": "İlk şablonunuzu oluşturun",
     "browseMarketplace": "Pazar yerine göz atın",
-    "fromProject": "Bir projeyi şablon olarak kaydedin"
+    "fromProject": "Bir projeyi şablon olarak kaydedin",
+    "marketplace": {
+      "free": "Ücretsiz",
+      "paid": "Ücretli",
+      "installing": "Yükleniyor...",
+      "install": "Yükle",
+      "preview": "Önizle",
+      "fetchError": "Pazar yeri şablonları yüklenemedi.",
+      "installed": "\"{{name}}\" şablonlarınıza eklendi.",
+      "installError": "Şablon yüklenemedi.",
+      "empty": "Pazar yerinde henüz şablon yok.",
+      "title": "Pazar yeri",
+      "subtitle": "Topluluğun hazır şablonlarına göz atın ve yükleyin",
+      "search": "Pazar yerinde ara..."
+    },
+    "taskList": "Görevler",
+    "noTasks": "Bu şablonda görev yok",
+    "tasks": "görev",
+    "uses": "kullanım",
+    "allCategories": "Tümü",
+    "noResults": "Aramanızla eşleşen şablon yok.",
+    "result": "şablon",
+    "results": "şablon",
+    "inCategory": "kategorisinde",
+    "toggleMenu": "Menüyü aç veya kapat",
+    "useTemplate": "Şablonu kullan",
+    "preview": "Önizle",
+    "cloneTitle": "Şablondan proje oluştur",
+    "cloneSubtitle": "Yeni projenizi \"{{name}}\" şablonundan yapılandırın",
+    "newProjectName": "Proje adı",
+    "area": "Alan",
+    "noArea": "Alan yok",
+    "startDate": "Başlangıç tarihi",
+    "startDateHint2": "göreli bitiş tarihlerini ayarlar",
+    "startDateHint": "Orijinal bitiş tarihlerini korumak için boş bırakın.",
+    "resetStatus": "Tüm görevleri Başlanmadı'ya sıfırla",
+    "createProject": "Proje oluştur",
+    "editTemplate": "Şablonu düzenle",
+    "newTemplate": "Yeni şablon",
+    "name": "Ad",
+    "description": "Açıklama",
+    "category": "Kategori",
+    "categoryPlaceholder": "ör. Satış, İK, Mühendislik",
+    "fetchError": "Şablonlar yüklenemedi.",
+    "created": "Şablon oluşturuldu.",
+    "createError": "Şablon oluşturulamadı.",
+    "updated": "Şablon güncellendi.",
+    "updateError": "Şablon güncellenemedi.",
+    "deleted": "Şablon silindi.",
+    "deleteError": "Şablon silinemedi.",
+    "cloned": "\"{{name}}\" projesi oluşturuldu.",
+    "cloneError": "Şablondan proje oluşturulamadı.",
+    "previewError": "Şablon önizlemesi yüklenemedi.",
+    "title": "Şablonlar",
+    "myTemplates": "Şablonlarım",
+    "confirmDelete": "Şablonu sil",
+    "confirmDeleteMessage": "\"{{name}}\" silinsin mi? Ondan oluşturulan projeler etkilenmez."
   }
 }

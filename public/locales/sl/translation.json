@@ -42,7 +42,8 @@
     "all": "Vse",
     "optional": "neobvezno",
     "hideSearch": "Strni iskanje",
-    "showSearch": "Pokaži iskanje"
+    "showSearch": "Pokaži iskanje",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -89,7 +90,15 @@
     "goals": "Cilji",
     "habits": "Navade",
     "templates": "Predloge",
-    "people": "Ljudje"
+    "people": "Ljudje",
+    "allEntities": "Vsi elementi",
+    "collapseFavorites": "Strni priljubljene",
+    "expandFavorites": "Razširi priljubljene",
+    "telegramConnected": "Telegram povezan",
+    "telegramProblem": "Težava s povezavo Telegram",
+    "resize": "Spremeni širino stranske vrstice",
+    "collapseViews": "Strni seznam pogledov",
+    "expandViews": "Razširi seznam pogledov"
   },
   "navigation": {
     "home": "Domov",
@@ -105,7 +114,8 @@
     "userMenu": "Uporabniški meni",
     "search": "Išči",
     "admin": "Administrator",
-    "adminBadge": "Administrator"
+    "adminBadge": "Administrator",
+    "templates": "Predloge"
   },
   "settings": {
     "todayPageSettings": "Nastavitve strani Danes",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Napišite prvo opombo",
     "blankSlateProjects": "Pojdi na projekte",
     "deleteNote": "Izbriši opombo",
-    "deleteNoteConfirm": "Ali res želite izbrisati opombo »{{title}}«?"
+    "deleteNoteConfirm": "Ali res želite izbrisati opombo »{{title}}«?",
+    "untitled": "Opomba brez naslova",
+    "publicShare": {
+      "sharedTitle": "Deljeno z vsemi, ki imajo povezavo"
+    }
   },
   "tags": {
     "loading": "Nalagam oznake...",
@@ -2178,7 +2192,29 @@
     "completed": "Dokončano (30d)",
     "open": "Odprto",
     "streaks": "Niz",
-    "areaBreakdown": "Razčlenitev območja"
+    "areaBreakdown": "Razčlenitev območja",
+    "mostActive": "najbolj aktivno",
+    "needsAttention": "potrebuje pozornost",
+    "doneOpen": "{{done}} opravljenih · {{open}} odprtih",
+    "trends": "Trendi",
+    "inboxZero": "Prejeto je prazno",
+    "itemsToProcess_other": "Za obdelavo: {{count}}",
+    "allProjectsMoving": "Vsi projekti napredujejo",
+    "noActivity14": "Brez dejavnosti 14+ dni",
+    "oldestWait": "Najdlje: {{name}} ({{days}} d)",
+    "nothingPending": "Nič ne čaka",
+    "daysStale": "{{days}} d mirovanja",
+    "daysWaiting": "{{days}} d čakanja",
+    "noNextAction": "{{debt}} od {{total}} projektov nima naslednjega koraka",
+    "completionTrends8": "Opravljeno, zadnjih 8 tednov",
+    "totalCompleted": "skupaj opravljeno",
+    "avgPerWeek": "povpr. / teden",
+    "bestWeek": "najboljši ({{week}})",
+    "areaBalance30": "Ravnovesje področij, zadnjih 30 dni",
+    "completionRateLegend": "% = delež opravljenega",
+    "itemsToProcess_one": "Za obdelavo: {{count}}",
+    "itemsToProcess_two": "Za obdelavo: {{count}}",
+    "itemsToProcess_few": "Za obdelavo: {{count}}"
   },
   "billing": {
     "title": "Paket in obračun",
@@ -2562,6 +2598,62 @@
     "blankSlateHint": "Predloga je projekt, ki ga lahko znova in znova začnete s pripravljenimi nalogami, na primer seznam za potovanje ali uvajanje nove stranke. Ustvarite jo tukaj, shranite projekt, ki ga ponavljate, ali izberite predlogo iz kataloga.",
     "createFirst": "Ustvarite prvo predlogo",
     "browseMarketplace": "Brskajte po katalogu",
-    "fromProject": "Shranite projekt kot predlogo"
+    "fromProject": "Shranite projekt kot predlogo",
+    "marketplace": {
+      "free": "Brezplačno",
+      "paid": "Plačljivo",
+      "installing": "Nameščanje...",
+      "install": "Namesti",
+      "preview": "Predogled",
+      "fetchError": "Predlog iz kataloga ni bilo mogoče naložiti.",
+      "installed": "»{{name}}« je dodana med vaše predloge.",
+      "installError": "Predloge ni bilo mogoče namestiti.",
+      "empty": "V katalogu še ni predlog.",
+      "title": "Katalog",
+      "subtitle": "Brskajte po pripravljenih predlogah skupnosti in jih namestite",
+      "search": "Išči v katalogu..."
+    },
+    "taskList": "Naloge",
+    "noTasks": "V tej predlogi ni nalog",
+    "tasks": "nalog",
+    "uses": "uporab",
+    "allCategories": "Vse",
+    "noResults": "Nobena predloga ne ustreza iskanju.",
+    "result": "predloga",
+    "results": "predlog",
+    "inCategory": "v kategoriji",
+    "toggleMenu": "Odpri ali zapri meni",
+    "useTemplate": "Uporabi predlogo",
+    "preview": "Predogled",
+    "cloneTitle": "Ustvari projekt iz predloge",
+    "cloneSubtitle": "Nastavite nov projekt na podlagi »{{name}}«",
+    "newProjectName": "Ime projekta",
+    "area": "Področje",
+    "noArea": "Brez področja",
+    "startDate": "Začetni datum",
+    "startDateHint2": "premakne relativne roke",
+    "startDateHint": "Pustite prazno, da ohranite prvotne roke.",
+    "resetStatus": "Ponastavi vse naloge na Ni začeto",
+    "createProject": "Ustvari projekt",
+    "editTemplate": "Uredi predlogo",
+    "newTemplate": "Nova predloga",
+    "name": "Ime",
+    "description": "Opis",
+    "category": "Kategorija",
+    "categoryPlaceholder": "npr. Prodaja, Kadri, Razvoj",
+    "fetchError": "Predlog ni bilo mogoče naložiti.",
+    "created": "Predloga ustvarjena.",
+    "createError": "Predloge ni bilo mogoče ustvariti.",
+    "updated": "Predloga posodobljena.",
+    "updateError": "Predloge ni bilo mogoče posodobiti.",
+    "deleted": "Predloga izbrisana.",
+    "deleteError": "Predloge ni bilo mogoče izbrisati.",
+    "cloned": "Projekt »{{name}}« je ustvarjen.",
+    "cloneError": "Projekta iz predloge ni bilo mogoče ustvariti.",
+    "previewError": "Predogleda predloge ni bilo mogoče naložiti.",
+    "title": "Predloge",
+    "myTemplates": "Moje predloge",
+    "confirmDelete": "Izbriši predlogo",
+    "confirmDeleteMessage": "Izbrišem »{{name}}«? Projekti, ustvarjeni iz nje, ne bodo spremenjeni."
   }
 }

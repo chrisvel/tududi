@@ -42,7 +42,8 @@
     "all": "Wszystkie",
     "optional": "opcjonalnie",
     "hideSearch": "Zwiń wyszukiwanie",
-    "showSearch": "Pokaż wyszukiwanie"
+    "showSearch": "Pokaż wyszukiwanie",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Panel sterowania",
@@ -89,7 +90,15 @@
     "goals": "Cele",
     "habits": "Nawyki",
     "templates": "Szablony",
-    "people": "Osoby"
+    "people": "Osoby",
+    "allEntities": "Wszystkie elementy",
+    "collapseFavorites": "Zwiń ulubione",
+    "expandFavorites": "Rozwiń ulubione",
+    "telegramConnected": "Telegram połączony",
+    "telegramProblem": "Problem z połączeniem z Telegramem",
+    "resize": "Zmień szerokość paska bocznego",
+    "collapseViews": "Zwiń listę widoków",
+    "expandViews": "Rozwiń listę widoków"
   },
   "navigation": {
     "home": "Strona główna",
@@ -105,7 +114,8 @@
     "userMenu": "Menu użytkownika",
     "search": "Szukaj",
     "admin": "Administrator",
-    "adminBadge": "Administrator"
+    "adminBadge": "Administrator",
+    "templates": "Szablony"
   },
   "settings": {
     "todayPageSettings": "Ustawienia strony dzisiaj",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Napisz pierwszą notatkę",
     "blankSlateProjects": "Przejdź do projektów",
     "deleteNote": "Usuń notatkę",
-    "deleteNoteConfirm": "Czy na pewno chcesz usunąć notatkę „{{title}}”?"
+    "deleteNoteConfirm": "Czy na pewno chcesz usunąć notatkę „{{title}}”?",
+    "untitled": "Notatka bez tytułu",
+    "publicShare": {
+      "sharedTitle": "Udostępniona każdemu, kto ma link"
+    }
   },
   "tags": {
     "loading": "Ładowanie tagów...",
@@ -2178,7 +2192,29 @@
     "completed": "Ukończone (30d)",
     "open": "Otwarte",
     "streaks": "Seria",
-    "areaBreakdown": "Podział obszaru"
+    "areaBreakdown": "Podział obszaru",
+    "mostActive": "najbardziej aktywny",
+    "needsAttention": "wymaga uwagi",
+    "doneOpen": "{{done}} zrobione · {{open}} otwarte",
+    "trends": "Trendy",
+    "inboxZero": "Skrzynka pusta",
+    "itemsToProcess_other": "Do przetworzenia: {{count}}",
+    "allProjectsMoving": "Wszystkie projekty idą do przodu",
+    "noActivity14": "Brak aktywności od 14+ dni",
+    "oldestWait": "Najdłużej: {{name}} ({{days}} d)",
+    "nothingPending": "Nic nie czeka",
+    "daysStale": "{{days}} d bez ruchu",
+    "daysWaiting": "{{days}} d oczekiwania",
+    "noNextAction": "{{debt}} z {{total}} projektów nie ma następnego kroku",
+    "completionTrends8": "Ukończone, ostatnie 8 tygodni",
+    "totalCompleted": "ukończono łącznie",
+    "avgPerWeek": "śr. / tydzień",
+    "bestWeek": "najlepszy ({{week}})",
+    "areaBalance30": "Równowaga obszarów, ostatnie 30 dni",
+    "completionRateLegend": "% = odsetek ukończenia",
+    "itemsToProcess_one": "Do przetworzenia: {{count}}",
+    "itemsToProcess_few": "Do przetworzenia: {{count}}",
+    "itemsToProcess_many": "Do przetworzenia: {{count}}"
   },
   "billing": {
     "title": "Plan i płatności",
@@ -2562,6 +2598,62 @@
     "blankSlateHint": "Szablon to projekt, który możesz uruchamiać wielokrotnie z gotowymi zadaniami, na przykład lista na wyjazd albo wdrożenie nowego klienta. Utwórz go tutaj, zapisz projekt, który powtarzasz, lub wybierz szablon z katalogu.",
     "createFirst": "Utwórz pierwszy szablon",
     "browseMarketplace": "Przeglądaj katalog",
-    "fromProject": "Zapisz projekt jako szablon"
+    "fromProject": "Zapisz projekt jako szablon",
+    "marketplace": {
+      "free": "Darmowy",
+      "paid": "Płatny",
+      "installing": "Instalowanie...",
+      "install": "Zainstaluj",
+      "preview": "Podgląd",
+      "fetchError": "Nie udało się wczytać szablonów z katalogu.",
+      "installed": "Dodano „{{name}}” do twoich szablonów.",
+      "installError": "Nie udało się zainstalować szablonu.",
+      "empty": "W katalogu nie ma jeszcze szablonów.",
+      "title": "Katalog",
+      "subtitle": "Przeglądaj i instaluj gotowe szablony od społeczności",
+      "search": "Szukaj w katalogu..."
+    },
+    "taskList": "Zadania",
+    "noTasks": "Brak zadań w tym szablonie",
+    "tasks": "zadań",
+    "uses": "użyć",
+    "allCategories": "Wszystkie",
+    "noResults": "Żaden szablon nie pasuje do wyszukiwania.",
+    "result": "szablon",
+    "results": "szablonów",
+    "inCategory": "w kategorii",
+    "toggleMenu": "Otwórz lub zamknij menu",
+    "useTemplate": "Użyj szablonu",
+    "preview": "Podgląd",
+    "cloneTitle": "Utwórz projekt z szablonu",
+    "cloneSubtitle": "Skonfiguruj nowy projekt na podstawie „{{name}}”",
+    "newProjectName": "Nazwa projektu",
+    "area": "Obszar",
+    "noArea": "Brak obszaru",
+    "startDate": "Data rozpoczęcia",
+    "startDateHint2": "przesuwa względne terminy",
+    "startDateHint": "Pozostaw puste, aby zachować pierwotne terminy.",
+    "resetStatus": "Zresetuj wszystkie zadania do stanu Nie rozpoczęto",
+    "createProject": "Utwórz projekt",
+    "editTemplate": "Edytuj szablon",
+    "newTemplate": "Nowy szablon",
+    "name": "Nazwa",
+    "description": "Opis",
+    "category": "Kategoria",
+    "categoryPlaceholder": "np. Sprzedaż, HR, Inżynieria",
+    "fetchError": "Nie udało się wczytać szablonów.",
+    "created": "Utworzono szablon.",
+    "createError": "Nie udało się utworzyć szablonu.",
+    "updated": "Zaktualizowano szablon.",
+    "updateError": "Nie udało się zaktualizować szablonu.",
+    "deleted": "Usunięto szablon.",
+    "deleteError": "Nie udało się usunąć szablonu.",
+    "cloned": "Utworzono projekt „{{name}}”.",
+    "cloneError": "Nie udało się utworzyć projektu z szablonu.",
+    "previewError": "Nie udało się wczytać podglądu szablonu.",
+    "title": "Szablony",
+    "myTemplates": "Moje szablony",
+    "confirmDelete": "Usuń szablon",
+    "confirmDeleteMessage": "Usunąć „{{name}}”? Projekty utworzone na jego podstawie się nie zmienią."
   }
 }

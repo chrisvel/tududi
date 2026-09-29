@@ -42,7 +42,8 @@
     "all": "الكل",
     "optional": "اختياري",
     "hideSearch": "طي البحث",
-    "showSearch": "إظهار البحث"
+    "showSearch": "إظهار البحث",
+    "beta": "تجريبي"
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -89,7 +90,15 @@
     "goals": "الأهداف",
     "habits": "العادات",
     "templates": "القوالب",
-    "people": "الأشخاص"
+    "people": "الأشخاص",
+    "allEntities": "كل العناصر",
+    "collapseFavorites": "طي المفضلة",
+    "expandFavorites": "توسيع المفضلة",
+    "telegramConnected": "Telegram متصل",
+    "telegramProblem": "مشكلة في اتصال Telegram",
+    "resize": "تغيير حجم الشريط الجانبي",
+    "collapseViews": "طي قائمة العروض",
+    "expandViews": "توسيع قائمة العروض"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -105,7 +114,8 @@
     "userMenu": "قائمة المستخدم",
     "search": "بحث",
     "admin": "مدير",
-    "adminBadge": "مدير"
+    "adminBadge": "مدير",
+    "templates": "القوالب"
   },
   "settings": {
     "todayPageSettings": "إعدادات صفحة اليوم",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "اكتب ملاحظتك الأولى",
     "blankSlateProjects": "الانتقال إلى المشاريع",
     "deleteNote": "حذف الملاحظة",
-    "deleteNoteConfirm": "هل أنت متأكد من حذف الملاحظة \"{{title}}\"؟"
+    "deleteNoteConfirm": "هل أنت متأكد من حذف الملاحظة \"{{title}}\"؟",
+    "untitled": "ملاحظة بلا عنوان",
+    "publicShare": {
+      "sharedTitle": "مشاركة مع أي شخص لديه الرابط"
+    }
   },
   "tags": {
     "loading": "جاري تحميل العلامات...",
@@ -2180,7 +2194,31 @@
     "completed": "مكتمل (30 يوم)",
     "open": "مفتوح",
     "streaks": "سلاسل",
-    "areaBreakdown": "تحليل المنطقة"
+    "areaBreakdown": "تحليل المنطقة",
+    "mostActive": "الأكثر نشاطًا",
+    "needsAttention": "تحتاج إلى انتباه",
+    "doneOpen": "{{done}} منجزة · {{open}} مفتوحة",
+    "trends": "الاتجاهات",
+    "inboxZero": "البريد الوارد فارغ",
+    "itemsToProcess_other": "{{count}} عناصر للمعالجة",
+    "allProjectsMoving": "كل المشاريع تتقدم",
+    "noActivity14": "لا نشاط منذ 14+ يومًا",
+    "oldestWait": "الأقدم: {{name}} ({{days}} ي)",
+    "nothingPending": "لا شيء معلّق",
+    "daysStale": "{{days}} ي بلا حركة",
+    "daysWaiting": "{{days}} ي انتظار",
+    "noNextAction": "{{debt}} من {{total}} مشاريع بلا خطوة تالية",
+    "completionTrends8": "المهام المنجزة، آخر 8 أسابيع",
+    "totalCompleted": "إجمالي المنجز",
+    "avgPerWeek": "المتوسط / أسبوع",
+    "bestWeek": "الأفضل ({{week}})",
+    "areaBalance30": "توازن المناطق، آخر 30 يومًا",
+    "completionRateLegend": "% = نسبة الإنجاز",
+    "itemsToProcess_one": "{{count}} عنصر للمعالجة",
+    "itemsToProcess_zero": "{{count}} عناصر للمعالجة",
+    "itemsToProcess_two": "{{count}} عناصر للمعالجة",
+    "itemsToProcess_few": "{{count}} عناصر للمعالجة",
+    "itemsToProcess_many": "{{count}} عناصر للمعالجة"
   },
   "billing": {
     "title": "الخطة والفوترة",
@@ -2566,6 +2604,62 @@
     "blankSlateHint": "القالب مشروع يمكنك بدؤه مرارًا وتكرارًا ومهامه جاهزة، مثل قائمة تجهيز لرحلة أو استقبال عميل جديد. أنشئ قالبًا هنا، أو احفظ مشروعًا تكرره، أو اختر قالبًا من المتجر.",
     "createFirst": "أنشئ قالبك الأول",
     "browseMarketplace": "تصفح المتجر",
-    "fromProject": "احفظ مشروعًا كقالب"
+    "fromProject": "احفظ مشروعًا كقالب",
+    "marketplace": {
+      "free": "مجاني",
+      "paid": "مدفوع",
+      "installing": "جارٍ التثبيت...",
+      "install": "تثبيت",
+      "preview": "معاينة",
+      "fetchError": "تعذر تحميل قوالب المتجر.",
+      "installed": "تمت إضافة \"{{name}}\" إلى قوالبك.",
+      "installError": "تعذر تثبيت القالب.",
+      "empty": "لا توجد قوالب في المتجر بعد.",
+      "title": "المتجر",
+      "subtitle": "تصفح وثبّت قوالب جاهزة من المجتمع",
+      "search": "ابحث في المتجر..."
+    },
+    "taskList": "المهام",
+    "noTasks": "لا توجد مهام في هذا القالب",
+    "tasks": "مهام",
+    "uses": "استخدامات",
+    "allCategories": "الكل",
+    "noResults": "لا توجد قوالب مطابقة لبحثك.",
+    "result": "قالب",
+    "results": "قوالب",
+    "inCategory": "في",
+    "toggleMenu": "فتح القائمة أو إغلاقها",
+    "useTemplate": "استخدام القالب",
+    "preview": "معاينة",
+    "cloneTitle": "إنشاء مشروع من قالب",
+    "cloneSubtitle": "اضبط مشروعك الجديد انطلاقًا من \"{{name}}\"",
+    "newProjectName": "اسم المشروع",
+    "area": "المنطقة",
+    "noArea": "بلا منطقة",
+    "startDate": "تاريخ البدء",
+    "startDateHint2": "يعدّل المواعيد النسبية",
+    "startDateHint": "اتركه فارغًا للإبقاء على المواعيد الأصلية.",
+    "resetStatus": "إعادة كل المهام إلى لم تبدأ",
+    "createProject": "إنشاء المشروع",
+    "editTemplate": "تعديل القالب",
+    "newTemplate": "قالب جديد",
+    "name": "الاسم",
+    "description": "الوصف",
+    "category": "الفئة",
+    "categoryPlaceholder": "مثل: المبيعات، الموارد البشرية، الهندسة",
+    "fetchError": "تعذر تحميل القوالب.",
+    "created": "تم إنشاء القالب.",
+    "createError": "تعذر إنشاء القالب.",
+    "updated": "تم تحديث القالب.",
+    "updateError": "تعذر تحديث القالب.",
+    "deleted": "تم حذف القالب.",
+    "deleteError": "تعذر حذف القالب.",
+    "cloned": "تم إنشاء المشروع \"{{name}}\".",
+    "cloneError": "تعذر إنشاء مشروع من القالب.",
+    "previewError": "تعذر تحميل معاينة القالب.",
+    "title": "القوالب",
+    "myTemplates": "قوالبي",
+    "confirmDelete": "حذف القالب",
+    "confirmDeleteMessage": "حذف \"{{name}}\"؟ لن تتأثر المشاريع التي أُنشئت منه."
   }
 }

@@ -42,7 +42,8 @@
     "all": "すべて",
     "optional": "任意",
     "hideSearch": "検索を閉じる",
-    "showSearch": "検索を表示"
+    "showSearch": "検索を表示",
+    "beta": "ベータ"
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -89,7 +90,15 @@
     "goals": "目標",
     "habits": "習慣",
     "templates": "テンプレート",
-    "people": "人物"
+    "people": "人物",
+    "allEntities": "すべての項目",
+    "collapseFavorites": "お気に入りを閉じる",
+    "expandFavorites": "お気に入りを開く",
+    "telegramConnected": "Telegram 接続済み",
+    "telegramProblem": "Telegram 接続に問題があります",
+    "resize": "サイドバーの幅を変更",
+    "collapseViews": "ビュー一覧を閉じる",
+    "expandViews": "ビュー一覧を開く"
   },
   "navigation": {
     "home": "ホーム",
@@ -105,7 +114,8 @@
     "userMenu": "ユーザーメニュー",
     "search": "検索",
     "admin": "管理者",
-    "adminBadge": "管理者"
+    "adminBadge": "管理者",
+    "templates": "テンプレート"
   },
   "settings": {
     "todayPageSettings": "今日のページ設定",
@@ -1039,7 +1049,11 @@
     "blankSlateNew": "最初のノートを書く",
     "blankSlateProjects": "プロジェクトへ",
     "deleteNote": "ノートを削除",
-    "deleteNoteConfirm": "ノート「{{title}}」を削除してもよろしいですか？"
+    "deleteNoteConfirm": "ノート「{{title}}」を削除してもよろしいですか？",
+    "untitled": "無題のノート",
+    "publicShare": {
+      "sharedTitle": "リンクを知っている全員と共有"
+    }
   },
   "tags": {
     "loading": "タグを読み込み中...",
@@ -2176,7 +2190,27 @@
     "completed": "完了 (30日)",
     "open": "オープン",
     "streaks": "ストリーク",
-    "areaBreakdown": "エリア内訳"
+    "areaBreakdown": "エリア内訳",
+    "mostActive": "最も活発",
+    "needsAttention": "要注意",
+    "doneOpen": "完了 {{done}} · 未完了 {{open}}",
+    "trends": "トレンド",
+    "inboxZero": "受信箱ゼロ",
+    "itemsToProcess_other": "処理待ち {{count}} 件",
+    "allProjectsMoving": "すべてのプロジェクトが進行中",
+    "noActivity14": "14日以上動きなし",
+    "oldestWait": "最長：{{name}}（{{days}}日）",
+    "nothingPending": "保留なし",
+    "daysStale": "{{days}}日停滞",
+    "daysWaiting": "{{days}}日待機",
+    "noNextAction": "{{total}} 件中 {{debt}} 件のプロジェクトに次のアクションがありません",
+    "completionTrends8": "完了数、直近8週間",
+    "totalCompleted": "合計完了",
+    "avgPerWeek": "平均 / 週",
+    "bestWeek": "最高（{{week}}）",
+    "areaBalance30": "エリアのバランス、直近30日",
+    "completionRateLegend": "% = 完了率",
+    "itemsToProcess_one": "処理待ち {{count}} 件"
   },
   "billing": {
     "title": "プランと請求",
@@ -2557,6 +2591,62 @@
     "blankSlateHint": "テンプレートは、旅行の持ち物リストや新規顧客のオンボーディングなど、タスクが揃った状態で何度でも始められるプロジェクトです。ここで作成するか、繰り返すプロジェクトを保存するか、マーケットプレイスから選んでください。",
     "createFirst": "最初のテンプレートを作成",
     "browseMarketplace": "マーケットプレイスを見る",
-    "fromProject": "プロジェクトをテンプレートとして保存"
+    "fromProject": "プロジェクトをテンプレートとして保存",
+    "marketplace": {
+      "free": "無料",
+      "paid": "有料",
+      "installing": "インストール中...",
+      "install": "インストール",
+      "preview": "プレビュー",
+      "fetchError": "マーケットプレイスのテンプレートを読み込めませんでした。",
+      "installed": "「{{name}}」をテンプレートに追加しました。",
+      "installError": "テンプレートをインストールできませんでした。",
+      "empty": "マーケットプレイスにはまだテンプレートがありません。",
+      "title": "マーケットプレイス",
+      "subtitle": "コミュニティの既製テンプレートを探してインストール",
+      "search": "マーケットプレイスを検索..."
+    },
+    "taskList": "タスク",
+    "noTasks": "このテンプレートにはタスクがありません",
+    "tasks": "タスク",
+    "uses": "回使用",
+    "allCategories": "すべて",
+    "noResults": "検索に一致するテンプレートはありません。",
+    "result": "件のテンプレート",
+    "results": "件のテンプレート",
+    "inCategory": "カテゴリ",
+    "toggleMenu": "メニューを開閉",
+    "useTemplate": "テンプレートを使う",
+    "preview": "プレビュー",
+    "cloneTitle": "テンプレートからプロジェクトを作成",
+    "cloneSubtitle": "「{{name}}」から新しいプロジェクトを設定",
+    "newProjectName": "プロジェクト名",
+    "area": "エリア",
+    "noArea": "エリアなし",
+    "startDate": "開始日",
+    "startDateHint2": "相対的な期限を調整",
+    "startDateHint": "空欄のままにすると元の期限が維持されます。",
+    "resetStatus": "すべてのタスクを未着手に戻す",
+    "createProject": "プロジェクトを作成",
+    "editTemplate": "テンプレートを編集",
+    "newTemplate": "新しいテンプレート",
+    "name": "名前",
+    "description": "説明",
+    "category": "カテゴリ",
+    "categoryPlaceholder": "例：営業、人事、開発",
+    "fetchError": "テンプレートを読み込めませんでした。",
+    "created": "テンプレートを作成しました。",
+    "createError": "テンプレートを作成できませんでした。",
+    "updated": "テンプレートを更新しました。",
+    "updateError": "テンプレートを更新できませんでした。",
+    "deleted": "テンプレートを削除しました。",
+    "deleteError": "テンプレートを削除できませんでした。",
+    "cloned": "プロジェクト「{{name}}」を作成しました。",
+    "cloneError": "テンプレートからプロジェクトを作成できませんでした。",
+    "previewError": "テンプレートのプレビューを読み込めませんでした。",
+    "title": "テンプレート",
+    "myTemplates": "マイテンプレート",
+    "confirmDelete": "テンプレートを削除",
+    "confirmDeleteMessage": "「{{name}}」を削除しますか？ このテンプレートから作成したプロジェクトは影響を受けません。"
   }
 }

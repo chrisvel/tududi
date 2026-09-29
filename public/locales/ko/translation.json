@@ -42,7 +42,8 @@
     "all": "전체",
     "optional": "선택 사항",
     "hideSearch": "검색 접기",
-    "showSearch": "검색 표시"
+    "showSearch": "검색 표시",
+    "beta": "베타"
   },
   "sidebar": {
     "dashboard": "대시보드",
@@ -89,7 +90,15 @@
     "goals": "목표",
     "habits": "습관",
     "templates": "템플릿",
-    "people": "사람"
+    "people": "사람",
+    "allEntities": "모든 항목",
+    "collapseFavorites": "즐겨찾기 접기",
+    "expandFavorites": "즐겨찾기 펼치기",
+    "telegramConnected": "Telegram 연결됨",
+    "telegramProblem": "Telegram 연결 문제",
+    "resize": "사이드바 크기 조정",
+    "collapseViews": "뷰 목록 접기",
+    "expandViews": "뷰 목록 펼치기"
   },
   "navigation": {
     "home": "홈",
@@ -105,7 +114,8 @@
     "userMenu": "사용자 메뉴",
     "search": "검색",
     "admin": "관리자",
-    "adminBadge": "관리자"
+    "adminBadge": "관리자",
+    "templates": "템플릿"
   },
   "settings": {
     "todayPageSettings": "오늘 페이지 설정",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "첫 노트 쓰기",
     "blankSlateProjects": "프로젝트로 이동",
     "deleteNote": "노트 삭제",
-    "deleteNoteConfirm": "노트 \"{{title}}\"을(를) 삭제하시겠습니까?"
+    "deleteNoteConfirm": "노트 \"{{title}}\"을(를) 삭제하시겠습니까?",
+    "untitled": "제목 없는 노트",
+    "publicShare": {
+      "sharedTitle": "링크가 있는 모든 사람과 공유됨"
+    }
   },
   "tags": {
     "loading": "태그 로딩 중...",
@@ -2176,7 +2190,27 @@
     "completed": "완료됨 (30일)",
     "open": "열림",
     "streaks": "연속",
-    "areaBreakdown": "영역 분석"
+    "areaBreakdown": "영역 분석",
+    "mostActive": "가장 활발함",
+    "needsAttention": "관심 필요",
+    "doneOpen": "완료 {{done}} · 진행 {{open}}",
+    "trends": "추세",
+    "inboxZero": "받은 편지함 비움",
+    "itemsToProcess_other": "처리할 항목 {{count}}개",
+    "allProjectsMoving": "모든 프로젝트 진행 중",
+    "noActivity14": "14일 이상 활동 없음",
+    "oldestWait": "가장 오래됨: {{name}} ({{days}}일)",
+    "nothingPending": "대기 중인 항목 없음",
+    "daysStale": "{{days}}일 정체",
+    "daysWaiting": "{{days}}일 대기",
+    "noNextAction": "{{total}}개 중 {{debt}}개 프로젝트에 다음 작업이 없습니다",
+    "completionTrends8": "완료, 최근 8주",
+    "totalCompleted": "총 완료",
+    "avgPerWeek": "주 평균",
+    "bestWeek": "최고 ({{week}})",
+    "areaBalance30": "영역 균형, 최근 30일",
+    "completionRateLegend": "% = 완료율",
+    "itemsToProcess_one": "처리할 항목 {{count}}개"
   },
   "billing": {
     "title": "요금제 및 결제",
@@ -2557,6 +2591,62 @@
     "blankSlateHint": "템플릿은 여행 준비 목록이나 신규 고객 온보딩처럼 작업이 준비된 상태로 몇 번이고 시작할 수 있는 프로젝트입니다. 여기서 만들거나, 반복하는 프로젝트를 저장하거나, 마켓플레이스에서 고르세요.",
     "createFirst": "첫 템플릿 만들기",
     "browseMarketplace": "마켓플레이스 둘러보기",
-    "fromProject": "프로젝트를 템플릿으로 저장"
+    "fromProject": "프로젝트를 템플릿으로 저장",
+    "marketplace": {
+      "free": "무료",
+      "paid": "유료",
+      "installing": "설치 중...",
+      "install": "설치",
+      "preview": "미리보기",
+      "fetchError": "마켓플레이스 템플릿을 불러오지 못했습니다.",
+      "installed": "\"{{name}}\"을(를) 템플릿에 추가했습니다.",
+      "installError": "템플릿을 설치하지 못했습니다.",
+      "empty": "마켓플레이스에 아직 템플릿이 없습니다.",
+      "title": "마켓플레이스",
+      "subtitle": "커뮤니티의 기성 템플릿을 둘러보고 설치하세요",
+      "search": "마켓플레이스 검색..."
+    },
+    "taskList": "작업",
+    "noTasks": "이 템플릿에 작업이 없습니다",
+    "tasks": "작업",
+    "uses": "회 사용",
+    "allCategories": "전체",
+    "noResults": "검색과 일치하는 템플릿이 없습니다.",
+    "result": "개 템플릿",
+    "results": "개 템플릿",
+    "inCategory": "카테고리",
+    "toggleMenu": "메뉴 열기/닫기",
+    "useTemplate": "템플릿 사용",
+    "preview": "미리보기",
+    "cloneTitle": "템플릿으로 프로젝트 만들기",
+    "cloneSubtitle": "\"{{name}}\"으로 새 프로젝트 설정",
+    "newProjectName": "프로젝트 이름",
+    "area": "영역",
+    "noArea": "영역 없음",
+    "startDate": "시작일",
+    "startDateHint2": "상대 마감일을 조정합니다",
+    "startDateHint": "비워 두면 원래 마감일이 유지됩니다.",
+    "resetStatus": "모든 작업을 시작 전으로 초기화",
+    "createProject": "프로젝트 만들기",
+    "editTemplate": "템플릿 편집",
+    "newTemplate": "새 템플릿",
+    "name": "이름",
+    "description": "설명",
+    "category": "카테고리",
+    "categoryPlaceholder": "예: 영업, 인사, 엔지니어링",
+    "fetchError": "템플릿을 불러오지 못했습니다.",
+    "created": "템플릿을 만들었습니다.",
+    "createError": "템플릿을 만들지 못했습니다.",
+    "updated": "템플릿을 업데이트했습니다.",
+    "updateError": "템플릿을 업데이트하지 못했습니다.",
+    "deleted": "템플릿을 삭제했습니다.",
+    "deleteError": "템플릿을 삭제하지 못했습니다.",
+    "cloned": "프로젝트 \"{{name}}\"을(를) 만들었습니다.",
+    "cloneError": "템플릿으로 프로젝트를 만들지 못했습니다.",
+    "previewError": "템플릿 미리보기를 불러오지 못했습니다.",
+    "title": "템플릿",
+    "myTemplates": "내 템플릿",
+    "confirmDelete": "템플릿 삭제",
+    "confirmDeleteMessage": "\"{{name}}\"을(를) 삭제할까요? 이 템플릿으로 만든 프로젝트는 영향을 받지 않습니다."
   }
 }

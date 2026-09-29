@@ -42,7 +42,8 @@
     "all": "Toate",
     "optional": "opțional",
     "hideSearch": "Restrânge căutarea",
-    "showSearch": "Afișează căutarea"
+    "showSearch": "Afișează căutarea",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -89,7 +90,15 @@
     "goals": "Obiective",
     "habits": "Obiceiuri",
     "templates": "Șabloane",
-    "people": "Persoane"
+    "people": "Persoane",
+    "allEntities": "Toate elementele",
+    "collapseFavorites": "Restrânge favoritele",
+    "expandFavorites": "Extinde favoritele",
+    "telegramConnected": "Telegram conectat",
+    "telegramProblem": "Problemă cu conexiunea Telegram",
+    "resize": "Redimensionează bara laterală",
+    "collapseViews": "Restrânge lista de vizualizări",
+    "expandViews": "Extinde lista de vizualizări"
   },
   "navigation": {
     "home": "Acasă",
@@ -105,7 +114,8 @@
     "userMenu": "Meniu utilizator",
     "search": "Caută",
     "admin": "Admin",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "templates": "Șabloane"
   },
   "settings": {
     "todayPageSettings": "Setări Pagina de Azi",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Scrie prima notă",
     "blankSlateProjects": "Mergi la proiecte",
     "deleteNote": "Șterge nota",
-    "deleteNoteConfirm": "Sigur vrei să ștergi nota „{{title}}”?"
+    "deleteNoteConfirm": "Sigur vrei să ștergi nota „{{title}}”?",
+    "untitled": "Notă fără titlu",
+    "publicShare": {
+      "sharedTitle": "Partajată cu oricine are linkul"
+    }
   },
   "tags": {
     "loading": "Se încarcă etichetele...",
@@ -2177,7 +2191,28 @@
     "completed": "Finalizate (30z)",
     "open": "Deschis",
     "streaks": "Serii",
-    "areaBreakdown": "Detalierea zonei"
+    "areaBreakdown": "Detalierea zonei",
+    "mostActive": "cea mai activă",
+    "needsAttention": "necesită atenție",
+    "doneOpen": "{{done}} finalizate · {{open}} deschise",
+    "trends": "Tendințe",
+    "inboxZero": "Inbox gol",
+    "itemsToProcess_other": "{{count}} elemente de procesat",
+    "allProjectsMoving": "Toate proiectele avansează",
+    "noActivity14": "Nicio activitate de 14+ zile",
+    "oldestWait": "Cel mai vechi: {{name}} ({{days}} z)",
+    "nothingPending": "Nimic în așteptare",
+    "daysStale": "{{days}} z inactiv",
+    "daysWaiting": "{{days}} z în așteptare",
+    "noNextAction": "{{debt}} din {{total}} proiecte nu au un pas următor",
+    "completionTrends8": "Sarcini finalizate, ultimele 8 săptămâni",
+    "totalCompleted": "finalizate în total",
+    "avgPerWeek": "medie / săptămână",
+    "bestWeek": "cea mai bună ({{week}})",
+    "areaBalance30": "Echilibrul ariilor, ultimele 30 de zile",
+    "completionRateLegend": "% = rata de finalizare",
+    "itemsToProcess_one": "{{count}} element de procesat",
+    "itemsToProcess_few": "{{count}} elemente de procesat"
   },
   "billing": {
     "title": "Plan și facturare",
@@ -2560,6 +2595,62 @@
     "blankSlateHint": "Un șablon este un proiect pe care îl poți porni din nou și din nou, cu sarcinile gata pregătite, de exemplu o listă pentru călătorie sau integrarea unui client nou. Creează unul aici, salvează un proiect pe care îl repeți sau alege unul din catalog.",
     "createFirst": "Creează primul șablon",
     "browseMarketplace": "Răsfoiește catalogul",
-    "fromProject": "Salvează un proiect ca șablon"
+    "fromProject": "Salvează un proiect ca șablon",
+    "marketplace": {
+      "free": "Gratuit",
+      "paid": "Plătit",
+      "installing": "Se instalează...",
+      "install": "Instalează",
+      "preview": "Previzualizare",
+      "fetchError": "Șabloanele din catalog nu au putut fi încărcate.",
+      "installed": "„{{name}}” a fost adăugat la șabloanele tale.",
+      "installError": "Șablonul nu a putut fi instalat.",
+      "empty": "Încă nu există șabloane în catalog.",
+      "title": "Catalog",
+      "subtitle": "Răsfoiește și instalează șabloane gata făcute din comunitate",
+      "search": "Caută în catalog..."
+    },
+    "taskList": "Sarcini",
+    "noTasks": "Nicio sarcină în acest șablon",
+    "tasks": "sarcini",
+    "uses": "utilizări",
+    "allCategories": "Toate",
+    "noResults": "Niciun șablon nu corespunde căutării.",
+    "result": "șablon",
+    "results": "șabloane",
+    "inCategory": "în",
+    "toggleMenu": "Deschide sau închide meniul",
+    "useTemplate": "Folosește șablonul",
+    "preview": "Previzualizare",
+    "cloneTitle": "Creează proiect din șablon",
+    "cloneSubtitle": "Configurează noul proiect pornind de la „{{name}}”",
+    "newProjectName": "Numele proiectului",
+    "area": "Arie",
+    "noArea": "Nicio arie",
+    "startDate": "Data de început",
+    "startDateHint2": "ajustează termenele relative",
+    "startDateHint": "Lasă gol pentru a păstra termenele originale.",
+    "resetStatus": "Resetează toate sarcinile la Neînceput",
+    "createProject": "Creează proiectul",
+    "editTemplate": "Editează șablonul",
+    "newTemplate": "Șablon nou",
+    "name": "Nume",
+    "description": "Descriere",
+    "category": "Categorie",
+    "categoryPlaceholder": "ex. Vânzări, HR, Inginerie",
+    "fetchError": "Șabloanele nu au putut fi încărcate.",
+    "created": "Șablon creat.",
+    "createError": "Șablonul nu a putut fi creat.",
+    "updated": "Șablon actualizat.",
+    "updateError": "Șablonul nu a putut fi actualizat.",
+    "deleted": "Șablon șters.",
+    "deleteError": "Șablonul nu a putut fi șters.",
+    "cloned": "Proiectul „{{name}}” a fost creat.",
+    "cloneError": "Proiectul nu a putut fi creat din șablon.",
+    "previewError": "Previzualizarea șablonului nu a putut fi încărcată.",
+    "title": "Șabloane",
+    "myTemplates": "Șabloanele mele",
+    "confirmDelete": "Șterge șablonul",
+    "confirmDeleteMessage": "Ștergi „{{name}}”? Proiectele create din el nu vor fi afectate."
   }
 }

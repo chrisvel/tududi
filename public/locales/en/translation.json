@@ -42,7 +42,8 @@
     "all": "All",
     "optional": "optional",
     "hideSearch": "Collapse search panel",
-    "showSearch": "Show search input"
+    "showSearch": "Show search input",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -90,7 +91,13 @@
     "habits": "Habits",
     "allEntities": "All entities",
     "resize": "Resize sidebar",
-    "templates": "Templates"
+    "templates": "Templates",
+    "collapseFavorites": "Collapse favorites",
+    "expandFavorites": "Expand favorites",
+    "telegramConnected": "Telegram connected",
+    "telegramProblem": "Telegram connection problem",
+    "collapseViews": "Collapse views list",
+    "expandViews": "Expand views list"
   },
   "navigation": {
     "home": "Home",
@@ -106,7 +113,8 @@
     "userMenu": "User Menu",
     "search": "Search",
     "admin": "Admin",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "templates": "Templates"
   },
   "settings": {
     "todayPageSettings": "Today Page Settings",
@@ -1360,7 +1368,8 @@
       "failed": "Something went wrong. Try again."
     },
     "deleteNote": "Delete Note",
-    "deleteNoteConfirm": "Are you sure you want to delete the note \"{{title}}\"?"
+    "deleteNoteConfirm": "Are you sure you want to delete the note \"{{title}}\"?",
+    "untitled": "Untitled Note"
   },
   "tags": {
     "addTag": "Add Tag",
@@ -2257,7 +2266,27 @@
     "completed": "Completed (30d)",
     "open": "Open",
     "streaks": "Streaks",
-    "areaBreakdown": "Area Breakdown"
+    "areaBreakdown": "Area Breakdown",
+    "mostActive": "most active",
+    "needsAttention": "needs attention",
+    "doneOpen": "{{done}} done · {{open}} open",
+    "trends": "Trends",
+    "inboxZero": "Inbox zero",
+    "allProjectsMoving": "All projects moving",
+    "noActivity14": "No activity in 14+ days",
+    "oldestWait": "Oldest: {{name}} ({{days}}d)",
+    "nothingPending": "Nothing pending",
+    "daysStale": "{{days}}d stale",
+    "daysWaiting": "{{days}}d waiting",
+    "noNextAction": "{{debt}} of {{total}} projects have no next action",
+    "completionTrends8": "Completion Trends, last 8 weeks",
+    "totalCompleted": "total completed",
+    "avgPerWeek": "avg / week",
+    "bestWeek": "best ({{week}})",
+    "areaBalance30": "Area Balance, last 30 days",
+    "completionRateLegend": "% = completion rate",
+    "itemsToProcess_one": "{{count}} item to process",
+    "itemsToProcess_other": "{{count}} items to process"
   },
   "subscription": {
     "title": "Subscription",
@@ -2641,6 +2670,62 @@
     "blankSlateHint": "A template is a project you can start again and again, with its tasks ready to go, like a trip checklist or onboarding a new client. Create one here, save a project you repeat, or pick one from the marketplace.",
     "createFirst": "Create your first template",
     "browseMarketplace": "Browse the marketplace",
-    "fromProject": "Save a project as a template"
+    "fromProject": "Save a project as a template",
+    "marketplace": {
+      "free": "Free",
+      "paid": "Paid",
+      "installing": "Installing...",
+      "install": "Install",
+      "preview": "Preview",
+      "fetchError": "Failed to load marketplace templates.",
+      "installed": "\"{{name}}\" installed to your templates.",
+      "installError": "Failed to install template.",
+      "empty": "No templates available in the marketplace yet.",
+      "title": "Marketplace",
+      "subtitle": "Browse and install ready-made templates from the community",
+      "search": "Search marketplace..."
+    },
+    "taskList": "Tasks",
+    "noTasks": "No tasks in this template",
+    "tasks": "tasks",
+    "uses": "uses",
+    "allCategories": "All",
+    "noResults": "No templates match your search.",
+    "result": "template",
+    "results": "templates",
+    "inCategory": "in",
+    "toggleMenu": "Toggle menu",
+    "useTemplate": "Use Template",
+    "preview": "Preview",
+    "cloneTitle": "Create Project from Template",
+    "cloneSubtitle": "Configure your new project from \"{{name}}\"",
+    "newProjectName": "Project Name",
+    "area": "Area",
+    "noArea": "No area",
+    "startDate": "Start Date",
+    "startDateHint2": "adjusts relative due dates",
+    "startDateHint": "Leave empty to keep original due dates.",
+    "resetStatus": "Reset all tasks to Not Started",
+    "createProject": "Create Project",
+    "editTemplate": "Edit Template",
+    "newTemplate": "New Template",
+    "name": "Name",
+    "description": "Description",
+    "category": "Category",
+    "categoryPlaceholder": "e.g. Sales, HR, Engineering",
+    "fetchError": "Failed to load templates.",
+    "created": "Template created.",
+    "createError": "Failed to create template.",
+    "updated": "Template updated.",
+    "updateError": "Failed to update template.",
+    "deleted": "Template deleted.",
+    "deleteError": "Failed to delete template.",
+    "cloned": "Project \"{{name}}\" created.",
+    "cloneError": "Failed to create project from template.",
+    "previewError": "Failed to load template preview.",
+    "title": "Templates",
+    "myTemplates": "My Templates",
+    "confirmDelete": "Delete Template",
+    "confirmDeleteMessage": "Delete \"{{name}}\"? Projects created from it will not be affected."
   }
 }

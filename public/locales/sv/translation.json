@@ -42,7 +42,8 @@
     "all": "Alla",
     "optional": "valfritt",
     "hideSearch": "Dölj sökning",
-    "showSearch": "Visa sökning"
+    "showSearch": "Visa sökning",
+    "beta": "beta"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -89,7 +90,15 @@
     "goals": "Mål",
     "habits": "Vanor",
     "templates": "Mallar",
-    "people": "Personer"
+    "people": "Personer",
+    "allEntities": "Alla objekt",
+    "collapseFavorites": "Fäll ihop favoriter",
+    "expandFavorites": "Fäll ut favoriter",
+    "telegramConnected": "Telegram anslutet",
+    "telegramProblem": "Problem med Telegram-anslutningen",
+    "resize": "Ändra storlek på sidofältet",
+    "collapseViews": "Fäll ihop listan med vyer",
+    "expandViews": "Fäll ut listan med vyer"
   },
   "navigation": {
     "home": "Hem",
@@ -105,7 +114,8 @@
     "userMenu": "Användarmenyn",
     "search": "Sök",
     "admin": "Admin",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "templates": "Mallar"
   },
   "settings": {
     "todayPageSettings": "Inställningar för dagens sida",
@@ -1305,7 +1315,11 @@
     "blankSlateNew": "Skriv din första anteckning",
     "blankSlateProjects": "Gå till projekt",
     "deleteNote": "Ta bort anteckning",
-    "deleteNoteConfirm": "Vill du verkligen ta bort anteckningen ”{{title}}”?"
+    "deleteNoteConfirm": "Vill du verkligen ta bort anteckningen ”{{title}}”?",
+    "untitled": "Namnlös anteckning",
+    "publicShare": {
+      "sharedTitle": "Delad med alla som har länken"
+    }
   },
   "tags": {
     "loading": "Laddar taggar...",
@@ -2176,7 +2190,27 @@
     "completed": "Slutförda (30d)",
     "open": "Öppen",
     "streaks": "Serier",
-    "areaBreakdown": "Områdesuppdelning"
+    "areaBreakdown": "Områdesuppdelning",
+    "mostActive": "mest aktiv",
+    "needsAttention": "behöver uppmärksamhet",
+    "doneOpen": "{{done}} klara · {{open}} öppna",
+    "trends": "Trender",
+    "inboxZero": "Tom inkorg",
+    "itemsToProcess_other": "{{count}} objekt att hantera",
+    "allProjectsMoving": "Alla projekt rör sig",
+    "noActivity14": "Ingen aktivitet på 14+ dagar",
+    "oldestWait": "Äldsta: {{name}} ({{days}} d)",
+    "nothingPending": "Inget väntar",
+    "daysStale": "{{days}} d stilla",
+    "daysWaiting": "{{days}} d väntande",
+    "noNextAction": "{{debt}} av {{total}} projekt saknar nästa åtgärd",
+    "completionTrends8": "Slutförda, senaste 8 veckorna",
+    "totalCompleted": "slutförda totalt",
+    "avgPerWeek": "snitt / vecka",
+    "bestWeek": "bästa ({{week}})",
+    "areaBalance30": "Balans mellan områden, senaste 30 dagarna",
+    "completionRateLegend": "% = slutförandegrad",
+    "itemsToProcess_one": "{{count}} objekt att hantera"
   },
   "billing": {
     "title": "Prenumeration och betalning",
@@ -2558,6 +2592,62 @@
     "blankSlateHint": "En mall är ett projekt du kan starta om och om igen med uppgifterna klara, till exempel en resechecklista eller introduktion av en ny kund. Skapa en här, spara ett projekt du upprepar eller välj en från marknadsplatsen.",
     "createFirst": "Skapa din första mall",
     "browseMarketplace": "Bläddra i marknadsplatsen",
-    "fromProject": "Spara ett projekt som mall"
+    "fromProject": "Spara ett projekt som mall",
+    "marketplace": {
+      "free": "Gratis",
+      "paid": "Betald",
+      "installing": "Installerar...",
+      "install": "Installera",
+      "preview": "Förhandsgranska",
+      "fetchError": "Det gick inte att läsa in mallar från marknadsplatsen.",
+      "installed": "”{{name}}” har lagts till bland dina mallar.",
+      "installError": "Det gick inte att installera mallen.",
+      "empty": "Det finns inga mallar på marknadsplatsen än.",
+      "title": "Marknadsplats",
+      "subtitle": "Bläddra bland och installera färdiga mallar från gemenskapen",
+      "search": "Sök på marknadsplatsen..."
+    },
+    "taskList": "Uppgifter",
+    "noTasks": "Inga uppgifter i den här mallen",
+    "tasks": "uppgifter",
+    "uses": "användningar",
+    "allCategories": "Alla",
+    "noResults": "Inga mallar matchar din sökning.",
+    "result": "mall",
+    "results": "mallar",
+    "inCategory": "i",
+    "toggleMenu": "Öppna eller stäng menyn",
+    "useTemplate": "Använd mall",
+    "preview": "Förhandsgranska",
+    "cloneTitle": "Skapa projekt från mall",
+    "cloneSubtitle": "Ställ in ditt nya projekt utifrån ”{{name}}”",
+    "newProjectName": "Projektnamn",
+    "area": "Område",
+    "noArea": "Inget område",
+    "startDate": "Startdatum",
+    "startDateHint2": "justerar relativa förfallodatum",
+    "startDateHint": "Lämna tomt för att behålla ursprungliga förfallodatum.",
+    "resetStatus": "Återställ alla uppgifter till Inte påbörjad",
+    "createProject": "Skapa projekt",
+    "editTemplate": "Redigera mall",
+    "newTemplate": "Ny mall",
+    "name": "Namn",
+    "description": "Beskrivning",
+    "category": "Kategori",
+    "categoryPlaceholder": "t.ex. Försäljning, HR, Utveckling",
+    "fetchError": "Det gick inte att läsa in mallar.",
+    "created": "Mallen skapades.",
+    "createError": "Det gick inte att skapa mallen.",
+    "updated": "Mallen uppdaterades.",
+    "updateError": "Det gick inte att uppdatera mallen.",
+    "deleted": "Mallen togs bort.",
+    "deleteError": "Det gick inte att ta bort mallen.",
+    "cloned": "Projektet ”{{name}}” skapades.",
+    "cloneError": "Det gick inte att skapa projekt från mallen.",
+    "previewError": "Det gick inte att läsa in förhandsgranskningen av mallen.",
+    "title": "Mallar",
+    "myTemplates": "Mina mallar",
+    "confirmDelete": "Ta bort mall",
+    "confirmDeleteMessage": "Ta bort ”{{name}}”? Projekt som skapats från den påverkas inte."
   }
 }
