@@ -620,6 +620,7 @@
       "noProject": "brez projekta",
       "withinTitle": "Znotraj vsake skupine",
       "rulePriority": "Najprej višja prioriteta.",
+      "ruleRows": "Nato vrstni red vrstic zgoraj, zato naloga v projektu nikoli ne prehiti naloge z višjo prioriteto.",
       "dragRow": "Povleci {{name}}",
       "moveUp": "Premakni {{name}} gor",
       "moveDown": "Premakni {{name}} dol",

@@ -620,6 +620,7 @@
       "noProject": "zonder project",
       "withinTitle": "Binnen elke groep",
       "rulePriority": "Hogere prioriteit eerst.",
+      "ruleRows": "Daarna de volgorde van de rijen hierboven, zodat een taak in een project nooit vóór een taak met hogere prioriteit komt.",
       "dragRow": "{{name}} slepen",
       "moveUp": "{{name}} omhoog",
       "moveDown": "{{name}} omlaag",

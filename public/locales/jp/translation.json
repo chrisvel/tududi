@@ -620,6 +620,7 @@
       "noProject": "プロジェクトなし",
       "withinTitle": "各グループ内",
       "rulePriority": "優先度の高いものから。",
+      "ruleRows": "次に上の行の順番。プロジェクト内のタスクが優先度の高いタスクより前に来ることはありません。",
       "dragRow": "{{name}}をドラッグ",
       "moveUp": "{{name}}を上へ",
       "moveDown": "{{name}}を下へ",

@@ -620,6 +620,7 @@
       "noProject": "sem projeto",
       "withinTitle": "Dentro de cada grupo",
       "rulePriority": "Prioridade mais alta primeiro.",
+      "ruleRows": "Depois, a ordem das linhas acima, para que uma tarefa num projeto nunca passe à frente de uma com prioridade mais alta.",
       "dragRow": "Arrastar {{name}}",
       "moveUp": "Subir {{name}}",
       "moveDown": "Descer {{name}}",

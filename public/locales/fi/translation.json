@@ -620,6 +620,7 @@
       "noProject": "ei projektia",
       "withinTitle": "Kunkin ryhmän sisällä",
       "rulePriority": "Korkeampi prioriteetti ensin.",
+      "ruleRows": "Sitten yllä olevien rivien järjestys, joten projektin tehtävä ei koskaan ohita tehtävää, jolla on korkeampi prioriteetti.",
       "dragRow": "Vedä {{name}}",
       "moveUp": "Siirrä {{name}} ylös",
       "moveDown": "Siirrä {{name}} alas",
