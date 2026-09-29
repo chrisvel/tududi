@@ -37,7 +37,8 @@
     "done": "Finalizat",
     "clear": "Șterge",
     "open": "Deschide",
-    "retry": "Reîncearcă"
+    "retry": "Reîncearcă",
+    "updated": "Actualizat"
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -802,7 +803,8 @@
     "name": "Nume",
     "priority": "Prioritate",
     "status": "Stare",
-    "created_at": "Creat La"
+    "created_at": "Creat La",
+    "custom": "Personalizat"
   },
   "priority": {
     "low": "Scăzut",
@@ -1136,7 +1138,9 @@
       "someday": "Cândva",
       "somedayTooltip": "Proiectele etichetate \"cândva\" sunt ascunse în mod implicit. Faceti clic pentru a le dezvălui.",
       "systemTagCannotBeDeleted": "Etichetele de sistem nu pot fi șterse",
-      "systemTagCannotBeRenamed": "Etichetele de sistem nu pot fi redenumite"
+      "systemTagCannotBeRenamed": "Etichetele de sistem nu pot fi redenumite",
+      "somedayHide": "Ascunde",
+      "somedayShow": "Afișează"
     },
     "selectState": "Selectați Starea",
     "state": "Starea Proiectului",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "Creează primul proiect",
     "blankSlateTemplate": "Pornește de la un șablon",
     "blankSlateAreas": "Configurează ariile",
-    "blankSlateShowAll": "Afișează toate proiectele"
+    "blankSlateShowAll": "Afișează toate proiectele",
+    "viewAs": "Vizualizare"
   },
   "projectItem": {
     "edit": "Editează",

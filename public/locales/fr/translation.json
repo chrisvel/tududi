@@ -37,7 +37,8 @@
     "done": "Fait",
     "clear": "Effacer",
     "open": "Ouvrir",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "updated": "Mis à jour"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -802,7 +803,8 @@
     "name": "Nom",
     "priority": "Priorité",
     "status": "Statut",
-    "created_at": "Créé le"
+    "created_at": "Créé le",
+    "custom": "Personnalisé"
   },
   "priority": {
     "low": "Faible",
@@ -1136,7 +1138,9 @@
       "someday": "Un jour",
       "somedayTooltip": "Les projets étiquetés \"un jour\" sont cachés par défaut. Cliquez pour les révéler.",
       "systemTagCannotBeDeleted": "Les étiquettes système ne peuvent pas être supprimées",
-      "systemTagCannotBeRenamed": "Les étiquettes système ne peuvent pas être renommées"
+      "systemTagCannotBeRenamed": "Les étiquettes système ne peuvent pas être renommées",
+      "somedayHide": "Masquer",
+      "somedayShow": "Afficher"
     },
     "selectState": "Sélectionner l'état",
     "state": "État du projet",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "Créer votre premier projet",
     "blankSlateTemplate": "Partir d'un modèle",
     "blankSlateAreas": "Configurer les zones",
-    "blankSlateShowAll": "Afficher tous les projets"
+    "blankSlateShowAll": "Afficher tous les projets",
+    "viewAs": "Affichage"
   },
   "projectItem": {
     "edit": "Modifier",

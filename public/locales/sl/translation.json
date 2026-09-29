@@ -37,7 +37,8 @@
     "done": "Končano",
     "clear": "Počisti",
     "open": "Odpri",
-    "retry": "Poskusi znova"
+    "retry": "Poskusi znova",
+    "updated": "Posodobljeno"
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -802,7 +803,8 @@
     "name": "Ime",
     "priority": "Prioriteta",
     "status": "Status",
-    "created_at": "Ustvarjeno"
+    "created_at": "Ustvarjeno",
+    "custom": "Po meri"
   },
   "priority": {
     "low": "Nizka",
@@ -1136,7 +1138,9 @@
       "someday": "Nekega dne",
       "somedayTooltip": "Projekti označeni z \"nekega dne\" so privzeto skriti. Kliknite, da jih prikažete.",
       "systemTagCannotBeDeleted": "Sistemskih oznak ni mogoče izbrisati",
-      "systemTagCannotBeRenamed": "Sistemskih oznak ni mogoče preimenovati"
+      "systemTagCannotBeRenamed": "Sistemskih oznak ni mogoče preimenovati",
+      "somedayHide": "Skrij",
+      "somedayShow": "Pokaži"
     },
     "selectState": "Izberite stanje",
     "state": "Stanje projekta",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "Ustvarite prvi projekt",
     "blankSlateTemplate": "Začnite s predlogo",
     "blankSlateAreas": "Nastavite področja",
-    "blankSlateShowAll": "Pokaži vse projekte"
+    "blankSlateShowAll": "Pokaži vse projekte",
+    "viewAs": "Pogled"
   },
   "projectItem": {
     "edit": "Uredi",

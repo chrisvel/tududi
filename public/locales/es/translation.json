@@ -37,7 +37,8 @@
     "done": "Hecho",
     "clear": "Limpiar",
     "open": "Abrir",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "updated": "Actualizado"
   },
   "sidebar": {
     "dashboard": "Tablero",
@@ -715,7 +716,9 @@
       "someday": "Algún día",
       "somedayTooltip": "Los proyectos etiquetados como \"algún día\" están ocultos por defecto. Haz clic para revelarlos.",
       "systemTagCannotBeDeleted": "Las etiquetas del sistema no se pueden eliminar",
-      "systemTagCannotBeRenamed": "Las etiquetas del sistema no se pueden renombrar"
+      "systemTagCannotBeRenamed": "Las etiquetas del sistema no se pueden renombrar",
+      "somedayHide": "Ocultar",
+      "somedayShow": "Mostrar"
     },
     "selectState": "Seleccionar Estado",
     "state": "Estado del Proyecto",
@@ -753,7 +756,8 @@
     "blankSlateNew": "Crea tu primer proyecto",
     "blankSlateTemplate": "Empezar desde una plantilla",
     "blankSlateAreas": "Configurar áreas",
-    "blankSlateShowAll": "Mostrar todos los proyectos"
+    "blankSlateShowAll": "Mostrar todos los proyectos",
+    "viewAs": "Vista"
   },
   "projectItem": {
     "edit": "Editar",
@@ -781,7 +785,8 @@
     "name": "Nombre",
     "priority": "Prioridad",
     "status": "Estado",
-    "created_at": "Fecha de Creación"
+    "created_at": "Fecha de Creación",
+    "custom": "Personalizado"
   },
   "modals": {
     "confirmDelete": "¿Estás seguro que deseas eliminar?",

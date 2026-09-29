@@ -37,7 +37,8 @@
     "done": "Hoàn thành",
     "clear": "Xóa",
     "open": "Mở",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "updated": "Đã cập nhật"
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -802,7 +803,8 @@
     "name": "Tên",
     "priority": "Độ ưu tiên",
     "status": "Trạng thái",
-    "created_at": "Ngày tạo"
+    "created_at": "Ngày tạo",
+    "custom": "Tùy chỉnh"
   },
   "priority": {
     "low": "Thấp",
@@ -1136,7 +1138,9 @@
       "someday": "Một ngày nào đó",
       "somedayTooltip": "Các dự án được gán nhãn \"một ngày nào đó\" sẽ bị ẩn theo mặc định. Nhấn để hiện chúng.",
       "systemTagCannotBeDeleted": "Những nhãn hệ thống không thể bị xóa",
-      "systemTagCannotBeRenamed": "Những nhãn hệ thống không thể bị đổi tên"
+      "systemTagCannotBeRenamed": "Những nhãn hệ thống không thể bị đổi tên",
+      "somedayHide": "Ẩn",
+      "somedayShow": "Hiện"
     },
     "selectState": "Chọn Trạng Thái",
     "state": "Trạng Thái Dự Án",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "Tạo dự án đầu tiên",
     "blankSlateTemplate": "Bắt đầu từ mẫu",
     "blankSlateAreas": "Thiết lập khu vực",
-    "blankSlateShowAll": "Hiện tất cả dự án"
+    "blankSlateShowAll": "Hiện tất cả dự án",
+    "viewAs": "Chế độ xem"
   },
   "projectItem": {
     "edit": "Chỉnh sửa",

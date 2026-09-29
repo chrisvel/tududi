@@ -37,7 +37,8 @@
     "done": "Готово",
     "clear": "Очистити",
     "open": "Відкрити",
-    "retry": "Повторити"
+    "retry": "Повторити",
+    "updated": "Оновлено"
   },
   "sidebar": {
     "dashboard": "Дашборд",
@@ -276,7 +277,9 @@
       "someday": "Коли-небудь",
       "somedayTooltip": "Проекти з тегом \"коли-небудь\" за замовчуванням приховані. Натисніть, щоб їх показати.",
       "systemTagCannotBeDeleted": "Системні теги не можуть бути видалені",
-      "systemTagCannotBeRenamed": "Системні теги не можуть бути перейменовані"
+      "systemTagCannotBeRenamed": "Системні теги не можуть бути перейменовані",
+      "somedayHide": "Сховати",
+      "somedayShow": "Показати"
     },
     "active": "Активні",
     "inactive": "Неактивні",
@@ -331,7 +334,8 @@
     "blankSlateNew": "Створити перший проект",
     "blankSlateTemplate": "Почати з шаблону",
     "blankSlateAreas": "Налаштувати області",
-    "blankSlateShowAll": "Показати всі проекти"
+    "blankSlateShowAll": "Показати всі проекти",
+    "viewAs": "Вигляд"
   },
   "projectItem": {
     "edit": "Редагувати",
@@ -1267,7 +1271,8 @@
     "name": "Ім'я",
     "priority": "Пріоритет",
     "status": "Статус",
-    "created_at": "Дата створення"
+    "created_at": "Дата створення",
+    "custom": "Власний"
   },
   "priority": {
     "low": "Низький",

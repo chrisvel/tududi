@@ -37,7 +37,8 @@
     "done": "完了",
     "clear": "クリア",
     "open": "開く",
-    "retry": "再試行"
+    "retry": "再試行",
+    "updated": "更新日"
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -777,7 +778,8 @@
     "name": "名前",
     "priority": "優先度",
     "status": "状態",
-    "created_at": "作成日時"
+    "created_at": "作成日時",
+    "custom": "カスタム"
   },
   "errors": {
     "required": "この項目は必須です",
@@ -868,7 +870,9 @@
       "someday": "いつか",
       "somedayTooltip": "\"いつか\" とタグ付けされたプロジェクトはデフォルトで非表示です。クリックして表示します。",
       "systemTagCannotBeDeleted": "システムタグは削除できません",
-      "systemTagCannotBeRenamed": "システムタグは名前を変更できません"
+      "systemTagCannotBeRenamed": "システムタグは名前を変更できません",
+      "somedayHide": "非表示",
+      "somedayShow": "表示"
     },
     "active": "アクティブ",
     "inactive": "非アクティブ",
@@ -923,7 +927,8 @@
     "blankSlateNew": "最初のプロジェクトを作成",
     "blankSlateTemplate": "テンプレートから始める",
     "blankSlateAreas": "エリアを設定",
-    "blankSlateShowAll": "すべてのプロジェクトを表示"
+    "blankSlateShowAll": "すべてのプロジェクトを表示",
+    "viewAs": "表示形式"
   },
   "projectItem": {
     "edit": "編集",

@@ -37,7 +37,8 @@
     "done": "Selesai",
     "clear": "Bersihkan",
     "open": "Buka",
-    "retry": "Coba lagi"
+    "retry": "Coba lagi",
+    "updated": "Diperbarui"
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -802,7 +803,8 @@
     "name": "Nama",
     "priority": "Prioritas",
     "status": "Status",
-    "created_at": "Dibuat Pada"
+    "created_at": "Dibuat Pada",
+    "custom": "Kustom"
   },
   "priority": {
     "low": "Rendah",
@@ -1136,7 +1138,9 @@
       "someday": "Suatu Saat",
       "somedayTooltip": "Proyek yang ditandai \"suatu saat\" disembunyikan secara default. Klik untuk menampilkannya.",
       "systemTagCannotBeDeleted": "Tag sistem tidak dapat dihapus",
-      "systemTagCannotBeRenamed": "Tag sistem tidak dapat diubah namanya"
+      "systemTagCannotBeRenamed": "Tag sistem tidak dapat diubah namanya",
+      "somedayHide": "Sembunyikan",
+      "somedayShow": "Tampilkan"
     },
     "selectState": "Pilih Status",
     "state": "Status Proyek",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "Buat proyek pertama Anda",
     "blankSlateTemplate": "Mulai dari templat",
     "blankSlateAreas": "Siapkan area",
-    "blankSlateShowAll": "Tampilkan semua proyek"
+    "blankSlateShowAll": "Tampilkan semua proyek",
+    "viewAs": "Tampilan"
   },
   "projectItem": {
     "edit": "Sunting",

@@ -37,7 +37,8 @@
     "done": "Готово",
     "clear": "Очистить",
     "open": "Открыть",
-    "retry": "Повторить"
+    "retry": "Повторить",
+    "updated": "Обновлено"
   },
   "sidebar": {
     "dashboard": "Панель управления",
@@ -802,7 +803,8 @@
     "name": "Имя",
     "priority": "Приоритет",
     "status": "Статус",
-    "created_at": "Создано"
+    "created_at": "Создано",
+    "custom": "Своя"
   },
   "priority": {
     "low": "Низкий",
@@ -1136,7 +1138,9 @@
       "someday": "Когда-нибудь",
       "somedayTooltip": "Проекты с меткой \"когда-нибудь\" по умолчанию скрыты. Нажмите, чтобы показать их.",
       "systemTagCannotBeDeleted": "Системные метки не могут быть удалены",
-      "systemTagCannotBeRenamed": "Системные метки не могут быть переименованы"
+      "systemTagCannotBeRenamed": "Системные метки не могут быть переименованы",
+      "somedayHide": "Скрыть",
+      "somedayShow": "Показать"
     },
     "selectState": "Выберите состояние",
     "state": "Состояние проекта",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "Создать первый проект",
     "blankSlateTemplate": "Начать с шаблона",
     "blankSlateAreas": "Настроить области",
-    "blankSlateShowAll": "Показать все проекты"
+    "blankSlateShowAll": "Показать все проекты",
+    "viewAs": "Вид"
   },
   "projectItem": {
     "edit": "Редактировать",

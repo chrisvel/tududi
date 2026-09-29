@@ -37,7 +37,8 @@
     "done": "Done",
     "clear": "Clear",
     "open": "Open",
-    "retry": "Retry"
+    "retry": "Retry",
+    "updated": "Updated"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -1214,10 +1215,13 @@
       "someday": "Someday",
       "somedayTooltip": "Projects tagged \"someday\" are hidden by default. Click to reveal them.",
       "systemTagCannotBeDeleted": "System tags cannot be deleted",
-      "systemTagCannotBeRenamed": "System tags cannot be renamed"
+      "systemTagCannotBeRenamed": "System tags cannot be renamed",
+      "somedayHide": "Hide",
+      "somedayShow": "Show"
     },
     "noResults": "No projects",
-    "reorderError": "Failed to save project order"
+    "reorderError": "Failed to save project order",
+    "viewAs": "View"
   },
   "projectStatus": {
     "not_started": "Not Started",

@@ -37,7 +37,8 @@
     "done": "Fertig",
     "clear": "Löschen",
     "open": "Öffnen",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "updated": "Aktualisiert"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -1181,7 +1182,8 @@
     "name": "Name",
     "priority": "Priorität",
     "status": "Status",
-    "created_at": "Erstellt am"
+    "created_at": "Erstellt am",
+    "custom": "Benutzerdefiniert"
   },
   "priority": {
     "low": "Niedrig",
@@ -1251,7 +1253,9 @@
       "someday": "Irgendwann",
       "somedayTooltip": "Projekte, die mit \"irgendwann\" gekennzeichnet sind, sind standardmäßig ausgeblendet. Klicken Sie, um sie anzuzeigen.",
       "systemTagCannotBeDeleted": "System-Tags können nicht gelöscht werden",
-      "systemTagCannotBeRenamed": "System-Tags können nicht umbenannt werden"
+      "systemTagCannotBeRenamed": "System-Tags können nicht umbenannt werden",
+      "somedayHide": "Ausblenden",
+      "somedayShow": "Anzeigen"
     },
     "selectState": "Zustand auswählen",
     "state": "Projektzustand",
@@ -1303,7 +1307,8 @@
     "blankSlateNew": "Erstes Projekt erstellen",
     "blankSlateTemplate": "Mit einer Vorlage beginnen",
     "blankSlateAreas": "Bereiche einrichten",
-    "blankSlateShowAll": "Alle Projekte anzeigen"
+    "blankSlateShowAll": "Alle Projekte anzeigen",
+    "viewAs": "Ansicht"
   },
   "projectItem": {
     "edit": "Bearbeiten",

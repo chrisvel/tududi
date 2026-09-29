@@ -37,7 +37,8 @@
     "done": "تم",
     "clear": "مسح",
     "open": "فتح",
-    "retry": "إعادة المحاولة"
+    "retry": "إعادة المحاولة",
+    "updated": "آخر تحديث"
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -802,7 +803,8 @@
     "name": "الاسم",
     "priority": "الأولوية",
     "status": "الحالة",
-    "created_at": "تاريخ الإنشاء"
+    "created_at": "تاريخ الإنشاء",
+    "custom": "مخصص"
   },
   "priority": {
     "low": "منخفض",
@@ -1136,7 +1138,9 @@
       "someday": "في يوم ما",
       "somedayTooltip": "المشاريع المميزة بـ \"في يوم ما\" مخفية بشكل افتراضي. انقر للكشف عنها.",
       "systemTagCannotBeDeleted": "لا يمكن حذف العلامات النظامية",
-      "systemTagCannotBeRenamed": "لا يمكن إعادة تسمية العلامات النظامية"
+      "systemTagCannotBeRenamed": "لا يمكن إعادة تسمية العلامات النظامية",
+      "somedayHide": "إخفاء",
+      "somedayShow": "إظهار"
     },
     "selectState": "اختر الحالة",
     "state": "حالة المشروع",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "أنشئ مشروعك الأول",
     "blankSlateTemplate": "ابدأ من قالب",
     "blankSlateAreas": "إعداد المناطق",
-    "blankSlateShowAll": "عرض كل المشاريع"
+    "blankSlateShowAll": "عرض كل المشاريع",
+    "viewAs": "العرض"
   },
   "projectItem": {
     "edit": "تعديل",

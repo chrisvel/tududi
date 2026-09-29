@@ -37,7 +37,8 @@
     "done": "Utförd",
     "clear": "Rensa",
     "open": "Öppna",
-    "retry": "Försök igen"
+    "retry": "Försök igen",
+    "updated": "Uppdaterad"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -802,7 +803,8 @@
     "name": "Namn",
     "priority": "Prioritet",
     "status": "Status",
-    "created_at": "Skapad"
+    "created_at": "Skapad",
+    "custom": "Anpassad"
   },
   "priority": {
     "low": "Låg",
@@ -1136,7 +1138,9 @@
       "someday": "Någon gång",
       "somedayTooltip": "Projekt märkta \"någon gång\" är dolda som standard. Klicka för att visa dem.",
       "systemTagCannotBeDeleted": "Systemtaggar kan inte raderas",
-      "systemTagCannotBeRenamed": "Systemtaggar kan inte döpas om"
+      "systemTagCannotBeRenamed": "Systemtaggar kan inte döpas om",
+      "somedayHide": "Dölj",
+      "somedayShow": "Visa"
     },
     "selectState": "Välj status",
     "state": "Projektstatus",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "Skapa ditt första projekt",
     "blankSlateTemplate": "Börja från en mall",
     "blankSlateAreas": "Konfigurera områden",
-    "blankSlateShowAll": "Visa alla projekt"
+    "blankSlateShowAll": "Visa alla projekt",
+    "viewAs": "Vy"
   },
   "projectItem": {
     "edit": "Ändra",

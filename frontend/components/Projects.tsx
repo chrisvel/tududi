@@ -1,15 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import {
-    MagnifyingGlassIcon,
-    Squares2X2Icon,
-    Bars3Icon,
-    ClockIcon,
-} from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon, Squares2X2Icon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
-import Tooltip from './Shared/Tooltip';
 import ProjectModal from './Project/ProjectModal';
-import SortFilter from './Shared/SortFilter';
-import FilterDropdown, { FilterOption } from './Shared/FilterDropdown';
+import IconSortDropdown from './Shared/IconSortDropdown';
+import { FilterOption } from './Shared/FilterDropdown';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import {
     arrayMove,
@@ -210,6 +204,11 @@ const Projects: React.FC = () => {
         { value: 'custom:asc', label: t('sort.custom', 'Custom') },
     ];
     const isCustomOrder = orderBy.startsWith('custom:');
+    // Anything hiding projects the default view would show.
+    const filtersActive =
+        statusFilter !== 'not_completed' ||
+        !!getAreaUidFromParams() ||
+        somedayFilter;
 
     const sensors = useSortableSensors();
 
@@ -639,7 +638,104 @@ const Projects: React.FC = () => {
                     <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
-                    <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <button
+                            onClick={() =>
+                                setIsSearchExpanded(!isSearchExpanded)
+                            }
+                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-1.5 sm:p-2 ${
+                                isSearchExpanded
+                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                            }`}
+                            aria-expanded={isSearchExpanded}
+                            aria-label={t('common.search', 'Search')}
+                            title={t('common.search', 'Search')}
+                        >
+                            <MagnifyingGlassIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-200" />
+                        </button>
+                        {/* Sort, view and filters in one menu, like the
+                            other list pages */}
+                        <IconSortDropdown
+                            options={sortOptions}
+                            value={orderBy}
+                            onChange={handleSortChange}
+                            ariaLabel={t('tasks.sortBy', 'Sort by')}
+                            title={t('tasks.sortBy', 'Sort by')}
+                            dropdownLabel={t('tasks.sortBy', 'Sort by')}
+                            align="right"
+                            active={filtersActive}
+                            sections={[
+                                {
+                                    key: 'view',
+                                    label: t('projects.viewAs', 'View'),
+                                    options: [
+                                        {
+                                            value: 'cards',
+                                            label: t(
+                                                'projects.cardViewAriaLabel'
+                                            ),
+                                        },
+                                        {
+                                            value: 'list',
+                                            label: t(
+                                                'projects.listViewAriaLabel'
+                                            ),
+                                        },
+                                    ],
+                                    value: viewMode,
+                                    onChange: (value) =>
+                                        setViewMode(value as 'cards' | 'list'),
+                                },
+                                {
+                                    key: 'status',
+                                    label: t('common.status', 'Status'),
+                                    options: statusOptions.filter(
+                                        (option) => option.value !== 'divider'
+                                    ),
+                                    value: statusFilter,
+                                    onChange: handleStatusFilterChange,
+                                },
+                                {
+                                    key: 'area',
+                                    label: t('common.area', 'Area'),
+                                    options: areaOptions,
+                                    value: actualAreaFilter,
+                                    onChange: handleAreaFilterChange,
+                                },
+                                {
+                                    key: 'someday',
+                                    label: t(
+                                        'projects.filters.someday',
+                                        'Someday'
+                                    ),
+                                    options: [
+                                        {
+                                            value: 'hide',
+                                            label: t(
+                                                'projects.filters.somedayHide',
+                                                'Hide'
+                                            ),
+                                        },
+                                        {
+                                            value: 'show',
+                                            label: t(
+                                                'projects.filters.somedayShow',
+                                                'Show'
+                                            ),
+                                        },
+                                    ],
+                                    value: somedayFilter ? 'show' : 'hide',
+                                    onChange: (value) => {
+                                        if (
+                                            (value === 'show') !==
+                                            somedayFilter
+                                        )
+                                            handleSomedayToggle();
+                                    },
+                                },
+                            ]}
+                        />
                         {templatesEnabled && (
                             <Link
                                 to="/templates"
@@ -669,119 +765,6 @@ const Projects: React.FC = () => {
                                 testId="new-project-button"
                             />
                         )}
-                    </div>
-                </div>
-
-                {/* View Mode and Filters */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
-                    <div className="flex items-center space-x-2">
-                        <button
-                            onClick={() => setViewMode('cards')}
-                            className={`p-2 rounded-md focus:outline-none ${
-                                viewMode === 'cards'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                            }`}
-                            aria-label={t('projects.cardViewAriaLabel')}
-                        >
-                            <Squares2X2Icon className="h-5 w-5" />
-                        </button>
-
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`p-2 rounded-md focus:outline-none ${
-                                viewMode === 'list'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                            }`}
-                            aria-label={t('projects.listViewAriaLabel')}
-                        >
-                            <Bars3Icon className="h-5 w-5" />
-                        </button>
-
-                        {/* Search Toggle Button */}
-                        <button
-                            onClick={() =>
-                                setIsSearchExpanded(!isSearchExpanded)
-                            }
-                            className={`p-2 rounded-md focus:outline-none transition-colors ${
-                                isSearchExpanded
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                            }`}
-                            aria-label={t('common.search', 'Search')}
-                        >
-                            <MagnifyingGlassIcon className="h-5 w-5" />
-                        </button>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                        {/* Someday Tag Toggle */}
-                        <div className="w-full md:w-auto mb-4 md:mb-0">
-                            <Tooltip
-                                content={
-                                    <div className="w-44">
-                                        <p className="font-bold mb-1">
-                                            {t(
-                                                'projects.filters.someday',
-                                                'Someday'
-                                            )}
-                                        </p>
-                                        <p className="font-normal opacity-80">
-                                            {t(
-                                                'projects.filters.somedayTooltip',
-                                                'Projects tagged "someday" are hidden by default. Click to reveal them.'
-                                            )}
-                                        </p>
-                                    </div>
-                                }
-                                position="bottom"
-                            >
-                                <button
-                                    onClick={handleSomedayToggle}
-                                    aria-label={t(
-                                        'projects.filters.someday',
-                                        'Someday'
-                                    )}
-                                    className={`p-2 rounded-md focus:outline-none transition-colors ${
-                                        somedayFilter
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                    }`}
-                                >
-                                    <ClockIcon className="h-5 w-5" />
-                                </button>
-                            </Tooltip>
-                        </div>
-
-                        {/* Status Filter */}
-                        <div className="w-full md:w-auto mb-4 md:mb-0">
-                            <FilterDropdown
-                                options={statusOptions}
-                                value={statusFilter}
-                                onChange={handleStatusFilterChange}
-                                size="desktop"
-                                autoWidth={true}
-                            />
-                        </div>
-
-                        {/* Area Filter */}
-                        <div className="w-full md:w-auto mb-4 md:mb-0">
-                            <FilterDropdown
-                                options={areaOptions}
-                                value={actualAreaFilter}
-                                onChange={handleAreaFilterChange}
-                                size="desktop"
-                                autoWidth={true}
-                            />
-                        </div>
-
-                        {/* Sort Filter Button */}
-                        <SortFilter
-                            sortOptions={sortOptions}
-                            sortValue={orderBy}
-                            onSortChange={handleSortChange}
-                        />
                     </div>
                 </div>
 

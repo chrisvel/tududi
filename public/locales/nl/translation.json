@@ -37,7 +37,8 @@
     "done": "Klaar",
     "clear": "Wissen",
     "open": "Openen",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "updated": "Bijgewerkt"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -802,7 +803,8 @@
     "name": "Naam",
     "priority": "Prioriteit",
     "status": "Status",
-    "created_at": "Aangemaakt Op"
+    "created_at": "Aangemaakt Op",
+    "custom": "Aangepast"
   },
   "priority": {
     "low": "Laag",
@@ -1136,7 +1138,9 @@
       "someday": "Ooit",
       "somedayTooltip": "Projecten gemarkeerd als \"ooit\" zijn standaard verborgen. Klik om ze weer te geven.",
       "systemTagCannotBeDeleted": "Systeemtags kunnen niet worden verwijderd",
-      "systemTagCannotBeRenamed": "Systeemtags kunnen niet worden hernoemd"
+      "systemTagCannotBeRenamed": "Systeemtags kunnen niet worden hernoemd",
+      "somedayHide": "Verbergen",
+      "somedayShow": "Tonen"
     },
     "selectState": "Selecteer Staat",
     "state": "Projectstaat",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "Maak je eerste project",
     "blankSlateTemplate": "Begin met een sjabloon",
     "blankSlateAreas": "Gebieden instellen",
-    "blankSlateShowAll": "Alle projecten tonen"
+    "blankSlateShowAll": "Alle projecten tonen",
+    "viewAs": "Weergave"
   },
   "projectItem": {
     "edit": "Bewerken",

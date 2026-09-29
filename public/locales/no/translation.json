@@ -37,7 +37,8 @@
     "done": "Ferdig",
     "clear": "Tøm",
     "open": "Åpne",
-    "retry": "Prøv igjen"
+    "retry": "Prøv igjen",
+    "updated": "Oppdatert"
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -803,7 +804,8 @@
     "name": "Navn",
     "priority": "Prioritet",
     "status": "Status",
-    "created_at": "Opprettet Den"
+    "created_at": "Opprettet Den",
+    "custom": "Egendefinert"
   },
   "priority": {
     "low": "Lav",
@@ -1137,7 +1139,9 @@
       "someday": "En dag",
       "somedayTooltip": "Prosjekter merket \"en dag\" er skjult som standard. Klikk for å vise dem.",
       "systemTagCannotBeDeleted": "Systemmerker kan ikke slettes",
-      "systemTagCannotBeRenamed": "Systemmerker kan ikke omdøpes"
+      "systemTagCannotBeRenamed": "Systemmerker kan ikke omdøpes",
+      "somedayHide": "Skjul",
+      "somedayShow": "Vis"
     },
     "selectState": "Velg tilstand",
     "state": "Prosjektstatus",
@@ -1189,7 +1193,8 @@
     "blankSlateNew": "Opprett ditt første prosjekt",
     "blankSlateTemplate": "Start fra en mal",
     "blankSlateAreas": "Sett opp områder",
-    "blankSlateShowAll": "Vis alle prosjekter"
+    "blankSlateShowAll": "Vis alle prosjekter",
+    "viewAs": "Visning"
   },
   "projectItem": {
     "edit": "Rediger",

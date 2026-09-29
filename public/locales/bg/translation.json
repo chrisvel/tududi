@@ -37,7 +37,8 @@
     "done": "Готово",
     "clear": "Изчисти",
     "open": "Отвори",
-    "retry": "Опитай отново"
+    "retry": "Опитай отново",
+    "updated": "Обновено"
   },
   "sidebar": {
     "dashboard": "Табло",
@@ -802,7 +803,8 @@
     "name": "Име",
     "priority": "Приоритет",
     "status": "Статус",
-    "created_at": "Създадено на"
+    "created_at": "Създадено на",
+    "custom": "Персонализиран"
   },
   "priority": {
     "low": "Нисък",
@@ -1136,7 +1138,9 @@
       "someday": "Някога",
       "somedayTooltip": "Проектите, маркирани с \"някога\", са скрити по подразбиране. Кликнете, за да ги покажете.",
       "systemTagCannotBeDeleted": "Системните тагове не могат да бъдат изтривани",
-      "systemTagCannotBeRenamed": "Системните тагове не могат да бъдат преименувани"
+      "systemTagCannotBeRenamed": "Системните тагове не могат да бъдат преименувани",
+      "somedayHide": "Скрий",
+      "somedayShow": "Покажи"
     },
     "selectState": "Изберете състояние",
     "state": "Състояние на проекта",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "Създайте първия си проект",
     "blankSlateTemplate": "Започнете от шаблон",
     "blankSlateAreas": "Настройте области",
-    "blankSlateShowAll": "Покажи всички проекти"
+    "blankSlateShowAll": "Покажи всички проекти",
+    "viewAs": "Изглед"
   },
   "projectItem": {
     "edit": "Редактиране",

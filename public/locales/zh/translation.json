@@ -37,7 +37,8 @@
     "done": "完成",
     "clear": "清除",
     "open": "打开",
-    "retry": "重试"
+    "retry": "重试",
+    "updated": "更新时间"
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -802,7 +803,8 @@
     "name": "名称",
     "priority": "优先级",
     "status": "状态",
-    "created_at": "创建时间"
+    "created_at": "创建时间",
+    "custom": "自定义"
   },
   "priority": {
     "low": "低",
@@ -1136,7 +1138,9 @@
       "someday": "某天",
       "somedayTooltip": "标记为“某天”的项目默认隐藏。点击以显示它们。",
       "systemTagCannotBeDeleted": "系统标签无法被删除",
-      "systemTagCannotBeRenamed": "系统标签无法被重命名"
+      "systemTagCannotBeRenamed": "系统标签无法被重命名",
+      "somedayHide": "隐藏",
+      "somedayShow": "显示"
     },
     "selectState": "选择状态",
     "state": "项目状态",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "创建第一个项目",
     "blankSlateTemplate": "从模板开始",
     "blankSlateAreas": "设置区域",
-    "blankSlateShowAll": "显示所有项目"
+    "blankSlateShowAll": "显示所有项目",
+    "viewAs": "视图"
   },
   "projectItem": {
     "edit": "编辑",

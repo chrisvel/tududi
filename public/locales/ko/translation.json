@@ -37,7 +37,8 @@
     "done": "완료",
     "clear": "지우기",
     "open": "열기",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "updated": "업데이트"
   },
   "sidebar": {
     "dashboard": "대시보드",
@@ -802,7 +803,8 @@
     "name": "이름",
     "priority": "우선순위",
     "status": "상태",
-    "created_at": "생성일"
+    "created_at": "생성일",
+    "custom": "사용자 지정"
   },
   "priority": {
     "low": "낮음",
@@ -1136,7 +1138,9 @@
       "someday": "언젠가",
       "somedayTooltip": "\"언젠가\" 태그가 붙은 프로젝트는 기본적으로 숨겨져 있습니다. 클릭하여 표시하세요.",
       "systemTagCannotBeDeleted": "시스템 태그는 삭제할 수 없습니다",
-      "systemTagCannotBeRenamed": "시스템 태그는 이름을 변경할 수 없습니다"
+      "systemTagCannotBeRenamed": "시스템 태그는 이름을 변경할 수 없습니다",
+      "somedayHide": "숨기기",
+      "somedayShow": "표시"
     },
     "selectState": "상태 선택",
     "state": "프로젝트 상태",
@@ -1188,7 +1192,8 @@
     "blankSlateNew": "첫 프로젝트 만들기",
     "blankSlateTemplate": "템플릿으로 시작",
     "blankSlateAreas": "영역 설정",
-    "blankSlateShowAll": "모든 프로젝트 보기"
+    "blankSlateShowAll": "모든 프로젝트 보기",
+    "viewAs": "보기"
   },
   "projectItem": {
     "edit": "편집",
