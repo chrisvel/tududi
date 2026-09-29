@@ -435,24 +435,33 @@ function planOccurrenceAdvance(
     };
 }
 
-async function recordOccurrence(task, occurrence, userId) {
+async function recordOccurrence(
+    task,
+    occurrence,
+    userId,
+    { skipped = false } = {}
+) {
     await RecurringCompletion.create({
         task_id: task.id,
         completed_at: occurrence.completedAt,
         original_due_date: occurrence.originalDueDate,
-        skipped: false,
+        skipped,
     });
+
+    const eventType = skipped
+        ? 'recurring_occurrence_skipped'
+        : 'recurring_occurrence_completed';
 
     try {
         await logEvent({
             taskId: task.id,
             userId,
-            eventType: 'recurring_occurrence_completed',
+            eventType,
             fieldName: 'recurrence',
             oldValue: occurrence.originalDueDate,
             newValue: occurrence.nextDueDate,
             metadata: {
-                action: 'recurring_occurrence_completed',
+                action: eventType,
                 original_due_date: occurrence.originalDueDate.toISOString(),
                 next_due_date: occurrence.nextDueDate?.toISOString?.() ?? null,
                 completion_based: occurrence.completionBased,
@@ -466,25 +475,45 @@ async function recordOccurrence(task, occurrence, userId) {
     }
 }
 
-// Moves the task to its next due date and back to not started, or leaves it
-// done when the series has ended. Returns null for non-recurring tasks.
-async function completeOccurrence(task, { timezone = 'UTC', userId } = {}) {
+const FINISHED_STATUSES = [
+    Task.STATUS.DONE,
+    Task.STATUS.CANCELLED,
+    Task.STATUS.ARCHIVED,
+];
+
+// A done, cancelled or archived task has nothing left to skip.
+function isSeriesFinished(task) {
+    return FINISHED_STATUSES.includes(task.status);
+}
+
+// Moves the task to its next due date and back to not started. Once the
+// series has ended a completed task stays done and a skipped one is
+// cancelled. Returns null for non-recurring tasks.
+async function completeOccurrence(
+    task,
+    { timezone = 'UTC', userId, skipped = false } = {}
+) {
     const occurrence = planOccurrenceAdvance(task, { timezone });
     if (!occurrence) return null;
 
-    await task.update(
-        occurrence.hasNext
-            ? {
-                  status: Task.STATUS.NOT_STARTED,
-                  completed_at: null,
-                  due_date: occurrence.nextDueDate,
-              }
-            : {
-                  status: Task.STATUS.DONE,
-                  completed_at: occurrence.completedAt,
-              }
-    );
-    await recordOccurrence(task, occurrence, userId);
+    let updates;
+    if (occurrence.hasNext) {
+        updates = {
+            status: Task.STATUS.NOT_STARTED,
+            completed_at: null,
+            due_date: occurrence.nextDueDate,
+        };
+    } else if (skipped) {
+        updates = { status: Task.STATUS.CANCELLED, completed_at: null };
+    } else {
+        updates = {
+            status: Task.STATUS.DONE,
+            completed_at: occurrence.completedAt,
+        };
+    }
+
+    await task.update(updates);
+    await recordOccurrence(task, occurrence, userId, { skipped });
 
     return occurrence;
 }
@@ -495,4 +524,5 @@ module.exports = {
     planOccurrenceAdvance,
     recordOccurrence,
     completeOccurrence,
+    isSeriesFinished,
 };

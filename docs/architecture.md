@@ -259,7 +259,7 @@ Located in `/backend/modules/`, each follows consistent architecture:
 | **admin** | Admin operations (users, roles, dashboard) | Medium |
 | **admin-ai-usage** | Admin view of AI token usage (hosted mode) | Low |
 | **ai-assistant** | Daily Brief, task and project insights | Medium |
-| **mcp** | Model Context Protocol server (62 tools) | High |
+| **mcp** | Model Context Protocol server (63 tools) | High |
 | **caldav** | CalDAV server and remote calendar sync | High |
 | **telegram** | Telegram bot integration | Medium |
 | **notifications** | In-app notifications | Medium |

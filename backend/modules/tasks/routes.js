@@ -77,6 +77,8 @@ const {
     calculateNextIterations,
     planOccurrenceAdvance,
     recordOccurrence,
+    completeOccurrence,
+    isSeriesFinished,
 } = require('./operations/recurring');
 
 const { getTaskMetrics } = require('./queries/metrics-computation');
@@ -1048,6 +1050,54 @@ router.get('/task/:uid/next-iterations', async (req, res) => {
         res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });
+
+router.post(
+    '/task/:uid/skip-occurrence',
+    requireTaskWriteAccess,
+    async (req, res) => {
+        try {
+            const task = await taskRepository.findByUid(req.params.uid);
+
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+
+            if (isSeriesFinished(task)) {
+                return res.status(400).json({
+                    error: 'Task is already done or cancelled, nothing to skip.',
+                });
+            }
+
+            const occurrence = await completeOccurrence(task, {
+                timezone: getSafeTimezone(req.currentUser.timezone),
+                userId: req.currentUser.id,
+                skipped: true,
+            });
+
+            if (!occurrence) {
+                return res.status(400).json({
+                    error: 'Only recurring tasks have occurrences to skip.',
+                });
+            }
+
+            const taskWithAssociations = await taskRepository.findById(
+                task.id,
+                { include: TASK_INCLUDES_WITH_SUBTASKS }
+            );
+
+            const serializedTask = await serializeTask(
+                taskWithAssociations,
+                req.currentUser.timezone,
+                { skipDisplayNameTransform: true }
+            );
+
+            res.json(serializedTask);
+        } catch (error) {
+            logError('Error skipping recurring occurrence:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+);
 
 // Mount sub-routers for task-related routes
 router.use(attachmentsRouter);
