@@ -265,7 +265,7 @@ describe('OIDC callback is bound to the browser that started it', () => {
             );
 
             expect(callback.headers.location).toBe(
-                '/profile/security?success=linked'
+                '/profile?section=oidc&success=linked'
             );
             expect(
                 await OIDCIdentity.count({ where: { user_id: attacker.id } })
