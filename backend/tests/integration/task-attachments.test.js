@@ -414,9 +414,12 @@ describe('Task Attachments Routes', () => {
         });
 
         afterEach(async () => {
-            // Clean up upload directory
+            // Remove only this block's file: other test files share the
+            // uploads folder and run at the same time.
             try {
-                await fs.rm(uploadPath, { recursive: true, force: true });
+                await fs.rm(path.join(uploadPath, 'task-delete-test.pdf'), {
+                    force: true,
+                });
             } catch (error) {
                 // Ignore errors
             }
@@ -561,9 +564,12 @@ describe('Task Attachments Routes', () => {
         });
 
         afterEach(async () => {
-            // Clean up upload directory
+            // Remove only this block's file: other test files share the
+            // uploads folder and run at the same time.
             try {
-                await fs.rm(uploadPath, { recursive: true, force: true });
+                await fs.rm(path.join(uploadPath, 'task-download-test.pdf'), {
+                    force: true,
+                });
             } catch (error) {
                 // Ignore errors
             }
