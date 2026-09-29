@@ -40,8 +40,9 @@ The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics
 The order comes from `backend/modules/daily-plan/ranking.js` and each user sets it in **Profile > Planning**.
 
 1. Every candidate falls in one of eight buckets: its group (overdue, including started tasks past their due date; due today; in progress; everything else) split into tasks in a project and tasks without one.
-2. Buckets follow the user's order (drag or the arrow buttons; saved at once). The default is each group in turn, project tasks first.
-3. Inside a bucket: higher priority first, then the earlier due date, then the user's tie-break (most recently changed by default, or newest, or oldest), then the task id.
+2. Groups follow the user's bucket order (drag or the arrow buttons; saved at once): a group sits where its first bucket does. The default is each group in turn, project tasks first.
+3. Inside a group: higher priority first, then the bucket order (so a project task without priority never passes a higher-priority task without a project), then the earlier due date, then the user's tie-break (most recently changed by default, or newest, or oldest), then the task id.
+4. The suggestion cap (Profile > Planning) keeps the first suggestions in this order, so higher-priority suggestions always make the cut.
 
 The order is stored in `users.ui_settings.planning.candidateOrder`. A saved order that is missing buckets or has unknown ones is repaired on read, and the profile form's own save keeps the stored order.
 

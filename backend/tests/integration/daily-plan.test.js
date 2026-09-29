@@ -193,7 +193,7 @@ describe('Daily plan routes', () => {
         expect(res.body.inbox[0].content).toBe('Call the plumber');
     });
 
-    it('ranks candidates: overdue first, then project tasks, then priority', async () => {
+    it('ranks candidates: overdue first, then priority, then project tasks', async () => {
         const project = await Project.create({
             name: 'Home',
             user_id: user.id,
@@ -229,8 +229,8 @@ describe('Daily plan routes', () => {
         expect(res.body.ranked).toEqual([
             startedLate.uid,
             projectHigh.uid,
-            projectLow.uid,
             looseHigh.uid,
+            projectLow.uid,
             looseLow.uid,
         ]);
     });
@@ -244,7 +244,7 @@ describe('Daily plan routes', () => {
         const loose = await makeTask({ name: 'Loose', priority: 0 });
         const inProject = await makeTask({
             name: 'In project',
-            priority: 2,
+            priority: 0,
             project_id: project.id,
         });
         await makeTask({ name: 'Filler one' });

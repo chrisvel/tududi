@@ -486,6 +486,10 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
 
     const tieBreakers = [
         t('profile.planning.rulePriority', 'Higher priority first.'),
+        t(
+            'profile.planning.ruleRows',
+            'Then the order of the rows above, so a task in a project never passes one with higher priority.'
+        ),
         {
             recently_touched: t(
                 'profile.planning.ruleDueRecent',

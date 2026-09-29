@@ -161,17 +161,47 @@ describe('orderCandidates', () => {
     const names = (order) =>
         orderCandidates(groups, order).map(({ task }) => task.name);
 
-    it('puts project tasks before loose ones by default, even at lower priority', () => {
+    it('puts higher priority first inside a group, whatever the project split', () => {
         expect(names()).toEqual([
-            'late project',
             'late loose',
-            'idea project',
+            'late project',
             'idea loose high',
             'idea loose low',
+            'idea project',
         ]);
     });
 
-    it('follows a custom bucket order', () => {
+    it('uses the bucket order to break priority ties', () => {
+        const tied = {
+            suggested: [
+                { id: 1, name: 'loose' },
+                { id: 2, name: 'project', project_id: 9 },
+            ],
+        };
+        const order = (buckets) =>
+            orderCandidates(tied, buckets).map(({ task }) => task.name);
+        expect(order()).toEqual(['project', 'loose']);
+        expect(order(['suggested:none', 'suggested:project'])).toEqual([
+            'loose',
+            'project',
+        ]);
+    });
+
+    it('never ranks a project task without priority above a high one in the same group', () => {
+        const tasks = {
+            suggested: [
+                ...Array.from({ length: 30 }, (_, i) => ({
+                    id: i + 10,
+                    name: `project ${i}`,
+                    project_id: 9,
+                })),
+                { id: 1, name: 'loose high', priority: 2 },
+            ],
+        };
+        expect(orderCandidates(tasks)[0].task.name).toBe('loose high');
+    });
+
+    it('places each group where its first bucket is in a custom order', () => {
         expect(
             names([
                 'suggested:none',
@@ -182,8 +212,8 @@ describe('orderCandidates', () => {
         ).toEqual([
             'idea loose high',
             'idea loose low',
-            'late loose',
             'idea project',
+            'late loose',
             'late project',
         ]);
     });

@@ -662,6 +662,7 @@
       "noProject": "no project",
       "withinTitle": "Inside each group",
       "rulePriority": "Higher priority first.",
+      "ruleRows": "Then the order of the rows above, so a task in a project never passes one with higher priority.",
       "dragRow": "Drag {{name}}",
       "moveUp": "Move {{name}} up",
       "moveDown": "Move {{name}} down",
