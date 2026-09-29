@@ -23,7 +23,7 @@ async function getIdentityById(identityId) {
             {
                 model: User,
                 as: 'User',
-                attributes: ['id', 'email', 'username', 'is_admin'],
+                attributes: ['id', 'email'],
             },
         ],
     });
