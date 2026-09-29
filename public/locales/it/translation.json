@@ -43,7 +43,8 @@
     "optional": "facoltativo",
     "hideSearch": "Comprimi la ricerca",
     "showSearch": "Mostra la ricerca",
-    "beta": "beta"
+    "beta": "beta",
+    "comingSoon": "Prossimamente"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -376,7 +377,14 @@
       "oidc": "OIDC/SSO",
       "caldav": "Sincronizzazione CalDAV",
       "calendars": "Calendari",
-      "planning": "Pianificazione"
+      "planning": "Pianificazione",
+      "appearance": "Aspetto",
+      "apiKeys": "Chiavi API",
+      "keyboardShortcuts": "Scorciatoie",
+      "mcp": "Integrazione MCP",
+      "aiAssistant": "Assistente IA",
+      "features": "Funzioni e componenti aggiuntivi",
+      "sidebar": "Barra laterale"
     },
     "security": "Impostazioni Sicurezza",
     "deleteAccount": "Elimina account",
@@ -627,8 +635,181 @@
       "moveDown": "Sposta giù {{name}}",
       "loadError": "Impossibile caricare l’ordine di pianificazione",
       "saveError": "Impossibile salvare l’ordine di pianificazione",
-      "open": "Pianifica la mia giornata"
-    }
+      "open": "Pianifica la mia giornata",
+      "hoursLoadError": "Impossibile caricare le ore della tua giornata",
+      "hoursSaveError": "Impossibile salvare le ore della tua giornata",
+      "hoursTitle": "La tua giornata",
+      "hoursDescription": "Le ore mostrate dalla timeline in Oggi e quando pianifichi. Le nuove attività e le bozze IA ricevono un orario al loro interno. Orari nel tuo fuso ({{timezone}}).",
+      "hoursFrom": "Dalle",
+      "hoursTo": "alle"
+    },
+    "apiKeys": {
+      "nameRequired": "Il nome della chiave API è obbligatorio.",
+      "invalidExpiration": "La data di scadenza non è valida.",
+      "created": "Chiave API creata.",
+      "revokedMessage": "Chiave API revocata.",
+      "deleted": "Chiave API eliminata.",
+      "copied": "Chiave API copiata negli appunti.",
+      "copyFailed": "Impossibile copiare la chiave API.",
+      "status": {
+        "revoked": "Revocata",
+        "expired": "Scaduta",
+        "active": "Attiva"
+      },
+      "never": "Mai",
+      "deleteTitle": "Elimina chiave API",
+      "deleteConfirm": "Eliminare questa chiave API? L'operazione non si può annullare.",
+      "title": "Chiavi API",
+      "description": "Genera token di accesso personali per integrazioni o riga di comando. Puoi revocare o eliminare le chiavi in qualsiasi momento.",
+      "nameLabel": "Nome della chiave",
+      "namePlaceholder": "es. Portatile personale",
+      "expirationLabel": "Scade il (facoltativo)",
+      "generateButton": "Genera chiave",
+      "copyNotice": "Copia ora questo token. Non verrà più mostrato.",
+      "copyButton": "Copia chiave",
+      "loading": "Caricamento chiavi API...",
+      "empty": "Ancora nessuna chiave API. Generane una per iniziare.",
+      "table": {
+        "name": "Nome",
+        "prefix": "Prefisso",
+        "status": "Stato",
+        "lastUsed": "Ultimo utilizzo",
+        "expires": "Scadenza",
+        "actions": "Azioni"
+      },
+      "createdAt": "Creata il {{date}}",
+      "noExpiry": "Nessuna",
+      "revokedLabel": "Revocata",
+      "revokeButton": "Revoca",
+      "deleteAria": "Elimina chiave API"
+    },
+    "fetchError": "Impossibile caricare i dati del profilo.",
+    "pollingStatusError": "Impossibile recuperare lo stato del polling.",
+    "sendSummaryFailed": "Impossibile inviare il riepilogo.",
+    "sidebarShowItem": "Mostra {{name}}",
+    "sidebarMoveItem": "Sposta {{name}}",
+    "sidebarFeatureOff": "Disattivato in Funzioni",
+    "sidebarNoCollaborators": "Nessun collaboratore",
+    "aiAssistantTab": "Assistente IA",
+    "aiAssistantTabDescription": "Riepiloghi giornalieri e analisi di attività e progetti con qualsiasi modello compatibile con OpenAI.",
+    "aiCreditsSection": "Crediti IA",
+    "aiCreditsDescription": "Viene usato un credito per ogni riepilogo giornaliero o analisi di attività o progetto generata. Il saldo si azzera il 1° di ogni mese.",
+    "aiCreditsLabel": "Crediti questo mese",
+    "aiProviderSection": "Fornitore IA",
+    "aiProviderDescription": "Usa la tua chiave API con qualsiasi fornitore compatibile con OpenAI. Lascia vuoto per usare quello del server, se configurato.",
+    "aiApiKey": "Chiave API",
+    "aiApiKeyClear": "Cancella",
+    "aiApiKeyPlaceholder": "sk-...",
+    "aiBaseUrl": "URL di base",
+    "aiBaseUrlPlaceholder": "https://api.openai.com/v1 (predefinito)",
+    "aiModel": "Modello",
+    "aiModelPlaceholder": "gpt-4o-mini (predefinito)",
+    "aiKeyMissingHint": "Inserisci una chiave API qui sopra per attivare le funzioni IA.",
+    "aiEnableSection": "Attiva",
+    "aiAssistantLabel": "Assistente IA (analisi)",
+    "aiAssistantDescription": "Attiva riepiloghi giornalieri e analisi di attività e progetti con l'IA.",
+    "aiProfileLabel": "Su di te",
+    "aiProfileDescription": "Contesto facoltativo per l'IA: il tuo ruolo, il tuo campo o ciò che rende più personali riepiloghi e analisi (es. «Ricercatrice attenta alle scadenze dei bandi e ai periodi d'esame»).",
+    "aiProfilePlaceholder": "es. Ricercatrice. Il mio lavoro ruota attorno a scadenze dei bandi, revisioni di articoli e cicli didattici, non a sprint o rilasci.",
+    "systemMode": "Sistema",
+    "tasks": "Attività",
+    "taskItem": "Elemento attività",
+    "showTaskContextMenu": "Mostra il pulsante del menu contestuale",
+    "showTaskContextMenuDescription": "Mostra su ogni attività un pulsante a tre punti con Modifica ed Elimina",
+    "connected": {
+      "loadError": "Impossibile caricare gli account collegati",
+      "linkError": "Impossibile avviare il collegamento dell'account",
+      "unlinkError": "Impossibile scollegare l'account"
+    },
+    "habitsDescription": "Attiva la sezione Abitudini per monitorare comportamenti ricorrenti e serie.",
+    "eisenhowerDescription": "Attiva la matrice di Eisenhower per dare priorità alle attività per urgenza e importanza.",
+    "calendarDescription": "Attiva la vista Calendario per vedere le attività per scadenza per giorno, settimana e mese.",
+    "templatesDescription": "Attiva i modelli di progetto per salvare e riutilizzare strutture di progetto.",
+    "mcp": {
+      "title": "Integrazione MCP",
+      "description": "Collega tududi a qualsiasi applicazione compatibile con MCP tramite il Model Context Protocol. Gli assistenti IA possono così lavorare con attività, progetti e note, con server tududi locali o remoti.",
+      "step1": {
+        "title": "1. Genera un token API",
+        "description": "Serve un token API per autenticare il server MCP. Generane uno nella scheda Chiavi API.",
+        "button": "Vai alle chiavi API →"
+      },
+      "step2": {
+        "title": "2. Configura il client MCP",
+        "description": "Aggiungi questa configurazione al tuo client MCP. Sostituisci YOUR_API_TOKEN_HERE con il token del passo 1. Usa mcp-remote per collegarsi al server tududi via HTTP. Esempio per Claude Desktop:",
+        "copy": "Copia",
+        "loading": "Caricamento...",
+        "locationTitle": "Percorso del file di configurazione di Claude Desktop:",
+        "otherClients": "Altri client MCP potrebbero configurarsi diversamente, consulta la loro documentazione."
+      },
+      "remote": {
+        "title": "Accesso remoto attivo",
+        "usesPrefix": "Questa configurazione usa",
+        "usesSuffix": "per collegarsi via HTTP. Così puoi:",
+        "local": "Accedere a tududi in locale (localhost)",
+        "cloud": "Accedere a tududi remoto (server cloud)",
+        "docker": "Usarlo da installazioni Docker",
+        "tokens": "Collegarti in sicurezza con token API"
+      },
+      "step3": {
+        "title": "3. Operazioni disponibili",
+        "description": "Una volta configurato, il client MCP avrà accesso a queste 16 operazioni:"
+      },
+      "step4": {
+        "title": "4. Inizia",
+        "description": "Dopo aver aggiunto la configurazione, riavvia il client MCP. Potrai poi usare tududi in linguaggio naturale:",
+        "examplesTitle": "Esempi di richieste:"
+      },
+      "example1": "Mostrami le mie attività di oggi",
+      "example2": "Crea un'attività per rivedere l'integrazione MCP",
+      "example3": "Quali progetti ho in corso?",
+      "example4": "Aggiungi alla inbox un promemoria per controllare le email",
+      "example5": "Cerca attività sulla documentazione",
+      "troubleshooting": {
+        "title": "Risoluzione dei problemi",
+        "intro": "Se il client MCP non si collega, controlla che:",
+        "token": "Il token API sia valido e non scaduto",
+        "server": "Il server tududi sia attivo e raggiungibile",
+        "restart": "Tu abbia riavviato completamente il client MCP",
+        "firewall": "Per server remoti, il firewall sia configurato"
+      }
+    },
+    "oidcConfigLoadError": "Impossibile caricare la configurazione OIDC",
+    "oidcConfigSaved": "Configurazione OIDC salvata",
+    "oidcConfigSaveError": "Impossibile salvare la configurazione OIDC",
+    "loading": "Caricamento...",
+    "oidcProviderConfig": "Configurazione del fornitore",
+    "oidcConfigFromEnv": "Mostra ciò che è caricato da .env. Salva per spostarlo nel database: le modifiche avranno effetto in circa 30 secondi, senza riavvio.",
+    "oidcConfigFromDb": "Salvata nel database. Sostituisce le variabili d'ambiente OIDC_* finché esiste una configurazione qui.",
+    "oidcEnabled": "OIDC/SSO attivo",
+    "oidcEnabledDescription": "Attiva o disattiva l'accesso SSO per tutti su questa istanza.",
+    "oidcNewProvider": "Nuovo fornitore",
+    "oidcRemoveProvider": "Rimuovi fornitore",
+    "oidcProviderName": "Nome",
+    "oidcProviderSlug": "Identificativo",
+    "oidcProviderIssuer": "URL dell'emittente",
+    "oidcProviderClientId": "ID client",
+    "oidcProviderClientSecret": "Segreto client",
+    "oidcSecretSet": "Impostato (••••{{last4}}), lascia vuoto per mantenerlo",
+    "oidcSecretNotSet": "Obbligatorio",
+    "oidcProviderScope": "Ambito",
+    "oidcProviderAdminDomains": "Domini email degli amministratori (separati da virgole)",
+    "oidcAutoProvision": "Crea automaticamente i nuovi utenti",
+    "oidcAddProvider": "Aggiungi fornitore",
+    "saving": "Salvataggio...",
+    "setPassword": "Imposta password",
+    "setPasswordInfo": "Non hai ancora una password. Impostandone una puoi accedere direttamente e usare CalDAV.",
+    "sidebarLayoutDescription": "Questa è un'anteprima della barra laterale. Usa gli interruttori per scegliere cosa mostrare e trascina le maniglie per cambiare l'ordine.",
+    "sidebarLayoutHint": "Modelli e Accesso restano in fondo. Le voci disattivate in Funzioni restano nascoste finché non attivi la funzione.",
+    "telegramAllowedUsers": "Utenti autorizzati",
+    "telegramAllowedUsersDescription": "Scegli chi può scrivere al tuo bot. Lascia vuoto per consentire a tutti.",
+    "examples": "Esempi:",
+    "exampleUsernames": "Consenti nomi utente specifici",
+    "exampleUserIds": "Consenti ID utente specifici",
+    "exampleMixed": "Mescola nomi utente e ID",
+    "telegram": {
+      "botName": "Nome del bot:"
+    },
+    "telegramRequiredForSummaries": "Per usare i riepiloghi delle attività serve l'integrazione Telegram."
   },
   "productivity": {
     "stalledProjects": "Progetti Bloccati",
@@ -1971,7 +2152,8 @@
       "deferUntil": "Rimanda Fino a",
       "dueProjects": "Progetti Scaduti",
       "overdueProjects": "Progetti In Ritardo",
-      "taskAssigned": "Compito Assegnato"
+      "taskAssigned": "Compito Assegnato",
+      "habitReminders": "Promemoria abitudini"
     },
     "descriptions": {
       "dueTasks": "Compiti che scadono entro 24 ore",
@@ -1979,7 +2161,8 @@
       "deferUntil": "Compiti che sono ora disponibili per lavorare",
       "dueProjects": "Progetti che scadono entro 24 ore",
       "overdueProjects": "Progetti che hanno superato la loro data di scadenza",
-      "taskAssigned": "Un compito ti è stato assegnato da qualcun altro"
+      "taskAssigned": "Un compito ti è stato assegnato da qualcun altro",
+      "habitReminders": "All'ora di promemoria impostata sull'abitudine, finché è ancora da fare"
     },
     "telegram": {
       "notConfigured": {
@@ -2248,7 +2431,8 @@
       "project": "progetti",
       "note": "note",
       "storage": "spazio per gli allegati",
-      "ai": "richieste IA oggi"
+      "ai": "richieste IA oggi",
+      "aiCredits": "Crediti IA questo mese"
     },
     "feature": {
       "ai": "l'assistente IA",
@@ -2548,7 +2732,17 @@
     "addN": "Aggiungi {{total}}",
     "undo": "Annulla",
     "lineBreak": "A capo",
-    "placeholder": "Scrivi il titolo"
+    "placeholder": "Scrivi il titolo",
+    "settings": {
+      "save": "Salva",
+      "newline": "Va a capo",
+      "title": "Aggiunta di elementi",
+      "description": "Come si comporta la casella Aggiungi. Le impostazioni valgono subito e restano su questo dispositivo.",
+      "enterKeyboard": "Tasto Invio su una tastiera di computer",
+      "enterTouch": "Tasto Invio su telefono o tablet",
+      "oneItemPerLine": "Un elemento per riga",
+      "oneItemPerLineHelp": "Disattivato: tutto ciò che scrivi diventa un elemento, con la prima riga come titolo e le altre come note. Attivato: ogni riga diventa un elemento."
+    }
   },
   "area": {
     "loadError": "Impossibile caricare le aree"

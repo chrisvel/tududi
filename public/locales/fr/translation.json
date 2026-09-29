@@ -43,7 +43,8 @@
     "optional": "facultatif",
     "hideSearch": "Replier la recherche",
     "showSearch": "Afficher la recherche",
-    "beta": "bêta"
+    "beta": "bêta",
+    "comingSoon": "Bientôt disponible"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -387,7 +388,14 @@
       "oidc": "OIDC/SSO",
       "caldav": "Synchronisation CalDAV",
       "calendars": "Calendriers",
-      "planning": "Planification"
+      "planning": "Planification",
+      "appearance": "Apparence",
+      "apiKeys": "Clés API",
+      "keyboardShortcuts": "Raccourcis",
+      "mcp": "Intégration MCP",
+      "aiAssistant": "Assistant IA",
+      "features": "Fonctionnalités et modules",
+      "sidebar": "Barre latérale"
     },
     "security": "Paramètres de sécurité",
     "deleteAccount": "Supprimer le compte",
@@ -627,8 +635,181 @@
       "moveDown": "Descendre {{name}}",
       "loadError": "Impossible de charger l’ordre de planification",
       "saveError": "Impossible d’enregistrer l’ordre de planification",
-      "open": "Planifier ma journée"
-    }
+      "open": "Planifier ma journée",
+      "hoursLoadError": "Impossible de charger vos heures de journée",
+      "hoursSaveError": "Impossible d'enregistrer vos heures de journée",
+      "hoursTitle": "Votre journée",
+      "hoursDescription": "Les heures affichées par la chronologie dans Aujourd'hui et lors de la planification. Les nouvelles tâches et les brouillons IA y reçoivent un horaire. Heures dans votre fuseau ({{timezone}}).",
+      "hoursFrom": "De",
+      "hoursTo": "à"
+    },
+    "apiKeys": {
+      "nameRequired": "Le nom de la clé API est obligatoire.",
+      "invalidExpiration": "La date d'expiration n'est pas valide.",
+      "created": "Clé API créée.",
+      "revokedMessage": "Clé API révoquée.",
+      "deleted": "Clé API supprimée.",
+      "copied": "Clé API copiée dans le presse-papiers.",
+      "copyFailed": "Impossible de copier la clé API.",
+      "status": {
+        "revoked": "Révoquée",
+        "expired": "Expirée",
+        "active": "Active"
+      },
+      "never": "Jamais",
+      "deleteTitle": "Supprimer la clé API",
+      "deleteConfirm": "Supprimer cette clé API ? Cette action est irréversible.",
+      "title": "Clés API",
+      "description": "Générez des jetons d'accès personnels pour les intégrations ou la ligne de commande. Vous pouvez révoquer ou supprimer les clés à tout moment.",
+      "nameLabel": "Nom de la clé",
+      "namePlaceholder": "ex. Ordinateur personnel",
+      "expirationLabel": "Expire le (facultatif)",
+      "generateButton": "Générer une clé",
+      "copyNotice": "Copiez ce jeton maintenant. Il ne sera plus affiché.",
+      "copyButton": "Copier la clé",
+      "loading": "Chargement des clés API...",
+      "empty": "Aucune clé API. Générez-en une pour commencer.",
+      "table": {
+        "name": "Nom",
+        "prefix": "Préfixe",
+        "status": "État",
+        "lastUsed": "Dernière utilisation",
+        "expires": "Expiration",
+        "actions": "Actions"
+      },
+      "createdAt": "Créée le {{date}}",
+      "noExpiry": "Aucune",
+      "revokedLabel": "Révoquée",
+      "revokeButton": "Révoquer",
+      "deleteAria": "Supprimer la clé API"
+    },
+    "fetchError": "Impossible de charger le profil.",
+    "pollingStatusError": "Impossible de récupérer l'état de l'interrogation.",
+    "sendSummaryFailed": "Impossible d'envoyer le résumé.",
+    "sidebarShowItem": "Afficher {{name}}",
+    "sidebarMoveItem": "Déplacer {{name}}",
+    "sidebarFeatureOff": "Désactivé dans Fonctionnalités",
+    "sidebarNoCollaborators": "Aucun collaborateur",
+    "aiAssistantTab": "Assistant IA",
+    "aiAssistantTabDescription": "Résumés quotidiens et analyses de tâches et de projets, avec n'importe quel modèle compatible OpenAI.",
+    "aiCreditsSection": "Crédits IA",
+    "aiCreditsDescription": "Un crédit est utilisé pour chaque résumé quotidien ou analyse de tâche ou de projet générée. Votre solde est remis à zéro le 1er de chaque mois.",
+    "aiCreditsLabel": "Crédits ce mois-ci",
+    "aiProviderSection": "Fournisseur d'IA",
+    "aiProviderDescription": "Utilisez votre propre clé API pour tout fournisseur compatible OpenAI. Laissez vide pour utiliser celui du serveur, s'il est configuré.",
+    "aiApiKey": "Clé API",
+    "aiApiKeyClear": "Effacer",
+    "aiApiKeyPlaceholder": "sk-...",
+    "aiBaseUrl": "URL de base",
+    "aiBaseUrlPlaceholder": "https://api.openai.com/v1 (par défaut)",
+    "aiModel": "Modèle",
+    "aiModelPlaceholder": "gpt-4o-mini (par défaut)",
+    "aiKeyMissingHint": "Saisissez une clé API ci-dessus pour activer les fonctions d'IA.",
+    "aiEnableSection": "Activer",
+    "aiAssistantLabel": "Assistant IA (analyses)",
+    "aiAssistantDescription": "Activer les résumés quotidiens et les analyses de tâches et de projets par l'IA.",
+    "aiProfileLabel": "À propos de vous",
+    "aiProfileDescription": "Contexte facultatif transmis à l'IA : votre rôle, votre domaine ou tout ce qui personnalise les résumés et analyses (ex. « Chercheuse axée sur les échéances de financement et les périodes d'examens »).",
+    "aiProfilePlaceholder": "ex. Chercheuse. Mon travail tourne autour des échéances de financement, des relectures d'articles et des cycles d'enseignement, pas des sprints ni des déploiements.",
+    "systemMode": "Système",
+    "tasks": "Tâches",
+    "taskItem": "Élément de tâche",
+    "showTaskContextMenu": "Afficher le bouton de menu contextuel",
+    "showTaskContextMenuDescription": "Affiche sur chaque tâche un bouton à trois points avec Modifier et Supprimer",
+    "connected": {
+      "loadError": "Impossible de charger les comptes connectés",
+      "linkError": "Impossible de lancer la liaison du compte",
+      "unlinkError": "Impossible de dissocier le compte"
+    },
+    "habitsDescription": "Active la section Habitudes pour suivre les comportements récurrents et les séries.",
+    "eisenhowerDescription": "Active la matrice d'Eisenhower pour prioriser les tâches selon l'urgence et l'importance.",
+    "calendarDescription": "Active la vue Calendrier pour voir les tâches par échéance, par jour, semaine et mois.",
+    "templatesDescription": "Active les modèles de projet pour enregistrer et réutiliser des structures de projet.",
+    "mcp": {
+      "title": "Intégration MCP",
+      "description": "Connectez tududi à toute application compatible MCP grâce au Model Context Protocol. Les assistants IA peuvent alors travailler avec vos tâches, projets et notes, avec des serveurs tududi locaux ou distants.",
+      "step1": {
+        "title": "1. Générer un jeton API",
+        "description": "Il vous faut un jeton API pour authentifier le serveur MCP. Générez-en un dans l'onglet Clés API.",
+        "button": "Aller aux clés API →"
+      },
+      "step2": {
+        "title": "2. Configurer votre client MCP",
+        "description": "Ajoutez cette configuration à votre client MCP. Remplacez YOUR_API_TOKEN_HERE par le jeton de l'étape 1. Elle utilise mcp-remote pour se connecter à votre serveur tududi en HTTP. Exemple pour Claude Desktop :",
+        "copy": "Copier",
+        "loading": "Chargement...",
+        "locationTitle": "Emplacement du fichier de configuration de Claude Desktop :",
+        "otherClients": "D'autres clients MCP se configurent peut-être autrement, consultez leur documentation."
+      },
+      "remote": {
+        "title": "Accès distant activé",
+        "usesPrefix": "Cette configuration utilise",
+        "usesSuffix": "pour se connecter en HTTP. Vous pouvez ainsi :",
+        "local": "Accéder à tududi en local (localhost)",
+        "cloud": "Accéder à tududi à distance (serveurs cloud)",
+        "docker": "L'utiliser depuis des déploiements Docker",
+        "tokens": "Vous connecter en toute sécurité avec des jetons API"
+      },
+      "step3": {
+        "title": "3. Opérations disponibles",
+        "description": "Une fois configuré, votre client MCP aura accès à ces 16 opérations :"
+      },
+      "step4": {
+        "title": "4. Commencer",
+        "description": "Après avoir ajouté la configuration, redémarrez votre client MCP. Vous pourrez ensuite parler à tududi en langage naturel :",
+        "examplesTitle": "Exemples de demandes :"
+      },
+      "example1": "Montre-moi mes tâches du jour",
+      "example2": "Crée une tâche pour relire l'intégration MCP",
+      "example3": "Quels projets sont en cours ?",
+      "example4": "Ajoute un rappel dans ma boîte de réception pour vérifier mes e-mails",
+      "example5": "Cherche les tâches liées à la documentation",
+      "troubleshooting": {
+        "title": "Dépannage",
+        "intro": "Si votre client MCP ne se connecte pas, vérifiez que :",
+        "token": "Votre jeton API est valide et n'a pas expiré",
+        "server": "Le serveur tududi tourne et est accessible",
+        "restart": "Vous avez complètement redémarré votre client MCP",
+        "firewall": "Pour les serveurs distants, votre pare-feu est bien réglé"
+      }
+    },
+    "oidcConfigLoadError": "Impossible de charger la configuration OIDC",
+    "oidcConfigSaved": "Configuration OIDC enregistrée",
+    "oidcConfigSaveError": "Impossible d'enregistrer la configuration OIDC",
+    "loading": "Chargement...",
+    "oidcProviderConfig": "Configuration du fournisseur",
+    "oidcConfigFromEnv": "Affiche ce qui est chargé depuis .env. Enregistrez pour le passer en base de données : les changements s'appliquent alors en 30 secondes environ, sans redémarrage.",
+    "oidcConfigFromDb": "Enregistré en base de données. Cela remplace les variables d'environnement OIDC_* tant qu'une configuration existe ici.",
+    "oidcEnabled": "OIDC/SSO activé",
+    "oidcEnabledDescription": "Active ou désactive la connexion SSO pour tout le monde sur cette instance.",
+    "oidcNewProvider": "Nouveau fournisseur",
+    "oidcRemoveProvider": "Retirer le fournisseur",
+    "oidcProviderName": "Nom",
+    "oidcProviderSlug": "Identifiant",
+    "oidcProviderIssuer": "URL de l'émetteur",
+    "oidcProviderClientId": "ID client",
+    "oidcProviderClientSecret": "Secret client",
+    "oidcSecretSet": "Défini (••••{{last4}}), laissez vide pour le conserver",
+    "oidcSecretNotSet": "Obligatoire",
+    "oidcProviderScope": "Portée",
+    "oidcProviderAdminDomains": "Domaines e-mail administrateurs (séparés par des virgules)",
+    "oidcAutoProvision": "Créer automatiquement les nouveaux utilisateurs",
+    "oidcAddProvider": "Ajouter un fournisseur",
+    "saving": "Enregistrement...",
+    "setPassword": "Définir un mot de passe",
+    "setPasswordInfo": "Vous n'avez pas encore de mot de passe. En définir un vous permet de vous connecter directement et d'utiliser CalDAV.",
+    "sidebarLayoutDescription": "Voici un aperçu de votre barre latérale. Choisissez ce qui s'affiche avec les interrupteurs et faites glisser les poignées pour changer l'ordre.",
+    "sidebarLayoutHint": "Modèles et Accès restent en bas. Les éléments désactivés dans Fonctionnalités restent masqués jusqu'à ce que vous activiez la fonctionnalité.",
+    "telegramAllowedUsers": "Utilisateurs autorisés",
+    "telegramAllowedUsersDescription": "Choisissez qui peut écrire à votre bot. Laissez vide pour autoriser tout le monde.",
+    "examples": "Exemples :",
+    "exampleUsernames": "Autoriser certains noms d'utilisateur",
+    "exampleUserIds": "Autoriser certains identifiants",
+    "exampleMixed": "Mélanger noms d'utilisateur et identifiants",
+    "telegram": {
+      "botName": "Nom du bot :"
+    },
+    "telegramRequiredForSummaries": "L'intégration Telegram doit être configurée pour utiliser les résumés de tâches."
   },
   "productivity": {
     "stalledProjects": "Projets Bloqués",
@@ -1971,7 +2152,8 @@
       "deferUntil": "Différer Jusqu'à",
       "dueProjects": "Projets Échus",
       "overdueProjects": "Projets En Retard",
-      "taskAssigned": "Tâche assignée"
+      "taskAssigned": "Tâche assignée",
+      "habitReminders": "Rappels d'habitudes"
     },
     "descriptions": {
       "dueTasks": "Tâches qui doivent être effectuées dans les 24 heures",
@@ -1979,7 +2161,8 @@
       "deferUntil": "Tâches qui sont maintenant disponibles pour travailler",
       "dueProjects": "Projets qui doivent être réalisés dans les 24 heures",
       "overdueProjects": "Projets dont la date limite est dépassée",
-      "taskAssigned": "Une tâche vous a été assignée par quelqu'un d'autre"
+      "taskAssigned": "Une tâche vous a été assignée par quelqu'un d'autre",
+      "habitReminders": "À l'heure de rappel définie sur une habitude, tant qu'elle n'est pas faite"
     },
     "telegram": {
       "notConfigured": {
@@ -2248,7 +2431,8 @@
       "project": "projets",
       "note": "notes",
       "storage": "stockage des pièces jointes",
-      "ai": "requêtes IA aujourd'hui"
+      "ai": "requêtes IA aujourd'hui",
+      "aiCredits": "Crédits IA ce mois-ci"
     },
     "feature": {
       "ai": "l'assistant IA",
@@ -2548,7 +2732,17 @@
     "addN": "Ajouter {{total}}",
     "undo": "Annuler",
     "lineBreak": "Saut de ligne",
-    "placeholder": "Saisissez le titre"
+    "placeholder": "Saisissez le titre",
+    "settings": {
+      "save": "Enregistre",
+      "newline": "Commence une nouvelle ligne",
+      "title": "Ajout d'éléments",
+      "description": "Comportement de la zone d'ajout. Ces réglages s'appliquent immédiatement et restent sur cet appareil.",
+      "enterKeyboard": "Touche Entrée sur un clavier d'ordinateur",
+      "enterTouch": "Touche Retour sur un téléphone ou une tablette",
+      "oneItemPerLine": "Un élément par ligne",
+      "oneItemPerLineHelp": "Désactivé : tout ce que vous tapez devient un seul élément, la première ligne en titre et les autres en notes. Activé : chaque ligne devient un élément."
+    }
   },
   "area": {
     "loadError": "Impossible de charger les zones"

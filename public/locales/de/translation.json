@@ -43,7 +43,8 @@
     "optional": "optional",
     "hideSearch": "Suche einklappen",
     "showSearch": "Suche anzeigen",
-    "beta": "Beta"
+    "beta": "Beta",
+    "comingSoon": "Demnächst"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -659,7 +660,14 @@
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV-Synchronisierung",
       "calendars": "Kalender",
-      "planning": "Planung"
+      "planning": "Planung",
+      "appearance": "Darstellung",
+      "apiKeys": "API-Schlüssel",
+      "keyboardShortcuts": "Tastenkürzel",
+      "mcp": "MCP-Integration",
+      "aiAssistant": "KI-Assistent",
+      "features": "Funktionen & Add-ons",
+      "sidebar": "Seitenleiste"
     },
     "security": "Sicherheitseinstellungen",
     "changePassword": "Passwort ändern",
@@ -957,8 +965,181 @@
       "moveDown": "{{name}} nach unten",
       "loadError": "Die Planungsreihenfolge konnte nicht geladen werden",
       "saveError": "Die Planungsreihenfolge konnte nicht gespeichert werden",
-      "open": "Meinen Tag planen"
-    }
+      "open": "Meinen Tag planen",
+      "hoursLoadError": "Deine Tageszeiten konnten nicht geladen werden",
+      "hoursSaveError": "Deine Tageszeiten konnten nicht gespeichert werden",
+      "hoursTitle": "Dein Tag",
+      "hoursDescription": "Die Stunden, die die Zeitleiste unter Heute und beim Planen zeigt. Neue Aufgaben und KI-Entwürfe bekommen eine Zeit darin. Zeiten in deiner Zeitzone ({{timezone}}).",
+      "hoursFrom": "Von",
+      "hoursTo": "bis"
+    },
+    "apiKeys": {
+      "nameRequired": "Ein Name für den API-Schlüssel ist erforderlich.",
+      "invalidExpiration": "Das Ablaufdatum ist ungültig.",
+      "created": "API-Schlüssel erstellt.",
+      "revokedMessage": "API-Schlüssel widerrufen.",
+      "deleted": "API-Schlüssel gelöscht.",
+      "copied": "API-Schlüssel in die Zwischenablage kopiert.",
+      "copyFailed": "API-Schlüssel konnte nicht kopiert werden.",
+      "status": {
+        "revoked": "Widerrufen",
+        "expired": "Abgelaufen",
+        "active": "Aktiv"
+      },
+      "never": "Nie",
+      "deleteTitle": "API-Schlüssel löschen",
+      "deleteConfirm": "Diesen API-Schlüssel löschen? Das lässt sich nicht rückgängig machen.",
+      "title": "API-Schlüssel",
+      "description": "Erstelle persönliche Zugriffstoken für Integrationen oder die Kommandozeile. Du kannst Schlüssel jederzeit widerrufen oder löschen.",
+      "nameLabel": "Name des Schlüssels",
+      "namePlaceholder": "z. B. Privater Laptop",
+      "expirationLabel": "Läuft ab am (optional)",
+      "generateButton": "Schlüssel erstellen",
+      "copyNotice": "Kopiere dieses Token jetzt. Es wird nicht noch einmal angezeigt.",
+      "copyButton": "Schlüssel kopieren",
+      "loading": "API-Schlüssel werden geladen...",
+      "empty": "Noch keine API-Schlüssel. Erstelle einen, um loszulegen.",
+      "table": {
+        "name": "Name",
+        "prefix": "Präfix",
+        "status": "Status",
+        "lastUsed": "Zuletzt verwendet",
+        "expires": "Läuft ab",
+        "actions": "Aktionen"
+      },
+      "createdAt": "Erstellt {{date}}",
+      "noExpiry": "Keine",
+      "revokedLabel": "Widerrufen",
+      "revokeButton": "Widerrufen",
+      "deleteAria": "API-Schlüssel löschen"
+    },
+    "fetchError": "Profildaten konnten nicht geladen werden.",
+    "pollingStatusError": "Abfragestatus konnte nicht geladen werden.",
+    "sendSummaryFailed": "Die Zusammenfassung konnte nicht gesendet werden.",
+    "sidebarShowItem": "{{name}} anzeigen",
+    "sidebarMoveItem": "{{name}} verschieben",
+    "sidebarFeatureOff": "In Funktionen deaktiviert",
+    "sidebarNoCollaborators": "Keine Mitwirkenden",
+    "aiAssistantTab": "KI-Assistent",
+    "aiAssistantTabDescription": "Tägliche Briefings, Aufgaben- und Projekteinblicke mit jedem OpenAI-kompatiblen Modell.",
+    "aiCreditsSection": "KI-Guthaben",
+    "aiCreditsDescription": "Für jedes tägliche Briefing und jeden Aufgaben- oder Projekteinblick wird ein Guthaben verbraucht. Dein Guthaben wird am 1. jedes Monats zurückgesetzt.",
+    "aiCreditsLabel": "Guthaben diesen Monat",
+    "aiProviderSection": "KI-Anbieter",
+    "aiProviderDescription": "Nutze deinen eigenen API-Schlüssel für jeden OpenAI-kompatiblen Anbieter. Leer lassen, um den Server-Standard zu verwenden, falls eingerichtet.",
+    "aiApiKey": "API-Schlüssel",
+    "aiApiKeyClear": "Löschen",
+    "aiApiKeyPlaceholder": "sk-...",
+    "aiBaseUrl": "Basis-URL",
+    "aiBaseUrlPlaceholder": "https://api.openai.com/v1 (Standard)",
+    "aiModel": "Modell",
+    "aiModelPlaceholder": "gpt-4o-mini (Standard)",
+    "aiKeyMissingHint": "Gib oben einen API-Schlüssel ein, um KI-Funktionen zu aktivieren.",
+    "aiEnableSection": "Aktivieren",
+    "aiAssistantLabel": "KI-Assistent (Einblicke)",
+    "aiAssistantDescription": "KI-gestützte tägliche Briefings, Aufgaben- und Projekteinblicke aktivieren.",
+    "aiProfileLabel": "Über dich",
+    "aiProfileDescription": "Optionaler Kontext für die KI: deine Rolle, dein Fachgebiet oder alles, was Briefings und Einblicke persönlicher macht (z. B. „Forscherin mit Fokus auf Förderfristen und Prüfungsphasen“).",
+    "aiProfilePlaceholder": "z. B. Forscherin. Meine Arbeit dreht sich um Förderfristen, Gutachten und Semester, nicht um Sprints oder Deployments.",
+    "systemMode": "System",
+    "tasks": "Aufgaben",
+    "taskItem": "Aufgabeneintrag",
+    "showTaskContextMenu": "Schaltfläche für das Kontextmenü anzeigen",
+    "showTaskContextMenuDescription": "Zeigt an jeder Aufgabe eine Drei-Punkte-Schaltfläche mit Bearbeiten und Löschen",
+    "connected": {
+      "loadError": "Verbundene Konten konnten nicht geladen werden",
+      "linkError": "Kontoverknüpfung konnte nicht gestartet werden",
+      "unlinkError": "Konto konnte nicht getrennt werden"
+    },
+    "habitsDescription": "Aktiviert den Bereich Gewohnheiten, um wiederkehrendes Verhalten und Serien zu verfolgen.",
+    "eisenhowerDescription": "Aktiviert die Eisenhower-Matrix, um Aufgaben nach Dringlichkeit und Wichtigkeit zu priorisieren.",
+    "calendarDescription": "Aktiviert die Kalenderansicht, um Aufgaben nach Fälligkeit in Tag, Woche und Monat zu sehen.",
+    "templatesDescription": "Aktiviert Projektvorlagen, um Projektstrukturen zu speichern und wiederzuverwenden.",
+    "mcp": {
+      "title": "MCP-Integration",
+      "description": "Verbinde tududi über das Model Context Protocol mit jeder MCP-fähigen Anwendung. So können KI-Assistenten mit deinen Aufgaben, Projekten und Notizen arbeiten, mit lokalen und entfernten tududi-Servern.",
+      "step1": {
+        "title": "1. API-Token erstellen",
+        "description": "Du brauchst ein API-Token, um den MCP-Server zu authentifizieren. Erstelle eines im Tab API-Schlüssel.",
+        "button": "Zu den API-Schlüsseln →"
+      },
+      "step2": {
+        "title": "2. MCP-Client einrichten",
+        "description": "Füge diese Konfiguration zu deinem MCP-Client hinzu. Ersetze YOUR_API_TOKEN_HERE durch das Token aus Schritt 1. Sie verbindet sich über mcp-remote per HTTP mit deinem tududi-Server. Beispiel für Claude Desktop:",
+        "copy": "Kopieren",
+        "loading": "Wird geladen...",
+        "locationTitle": "Speicherort der Claude-Desktop-Konfiguration:",
+        "otherClients": "Andere MCP-Clients werden eventuell anders eingerichtet, sieh in der Dokumentation deines Clients nach."
+      },
+      "remote": {
+        "title": "Fernzugriff aktiviert",
+        "usesPrefix": "Diese Konfiguration nutzt",
+        "usesSuffix": "für die Verbindung per HTTP. Damit kannst du:",
+        "local": "Auf lokales tududi zugreifen (localhost)",
+        "cloud": "Auf entferntes tududi zugreifen (Cloud-Server)",
+        "docker": "Es aus Docker-Installationen nutzen",
+        "tokens": "Dich sicher mit API-Token verbinden"
+      },
+      "step3": {
+        "title": "3. Verfügbare Funktionen",
+        "description": "Nach der Einrichtung hat dein MCP-Client Zugriff auf diese 16 Funktionen:"
+      },
+      "step4": {
+        "title": "4. Loslegen",
+        "description": "Starte deinen MCP-Client nach dem Hinzufügen der Konfiguration neu. Dann kannst du in natürlicher Sprache mit tududi arbeiten:",
+        "examplesTitle": "Beispiel-Anfragen:"
+      },
+      "example1": "Zeig mir meine Aufgaben für heute",
+      "example2": "Erstelle eine Aufgabe, um die MCP-Integration zu prüfen",
+      "example3": "Welche Projekte laufen gerade?",
+      "example4": "Füge eine Erinnerung zum E-Mail-Check in meinen Eingang",
+      "example5": "Suche Aufgaben zum Thema Dokumentation",
+      "troubleshooting": {
+        "title": "Fehlerbehebung",
+        "intro": "Wenn dein MCP-Client keine Verbindung herstellt, prüfe:",
+        "token": "Dein API-Token ist gültig und nicht abgelaufen",
+        "server": "Der tududi-Server läuft und ist erreichbar",
+        "restart": "Du hast deinen MCP-Client vollständig neu gestartet",
+        "firewall": "Bei entfernten Servern: deine Firewall-Einstellungen"
+      }
+    },
+    "oidcConfigLoadError": "OIDC-Konfiguration konnte nicht geladen werden",
+    "oidcConfigSaved": "OIDC-Konfiguration gespeichert",
+    "oidcConfigSaveError": "OIDC-Konfiguration konnte nicht gespeichert werden",
+    "loading": "Wird geladen...",
+    "oidcProviderConfig": "Anbieter-Konfiguration",
+    "oidcConfigFromEnv": "Zeigt, was aktuell aus .env geladen ist. Speichere, um es in die Datenbank zu übernehmen. Änderungen greifen dann innerhalb von etwa 30 Sekunden, ohne Neustart.",
+    "oidcConfigFromDb": "In der Datenbank gespeichert. Das überschreibt alle OIDC_*-Umgebungsvariablen, solange hier eine Konfiguration besteht.",
+    "oidcEnabled": "OIDC/SSO aktiviert",
+    "oidcEnabledDescription": "Schaltet die SSO-Anmeldung für alle auf dieser Instanz ein oder aus.",
+    "oidcNewProvider": "Neuer Anbieter",
+    "oidcRemoveProvider": "Anbieter entfernen",
+    "oidcProviderName": "Name",
+    "oidcProviderSlug": "Kürzel",
+    "oidcProviderIssuer": "Aussteller-URL",
+    "oidcProviderClientId": "Client-ID",
+    "oidcProviderClientSecret": "Client-Geheimnis",
+    "oidcSecretSet": "Gesetzt (••••{{last4}}), leer lassen zum Beibehalten",
+    "oidcSecretNotSet": "Erforderlich",
+    "oidcProviderScope": "Scope",
+    "oidcProviderAdminDomains": "Admin-E-Mail-Domains (durch Kommas getrennt)",
+    "oidcAutoProvision": "Neue Benutzer automatisch anlegen",
+    "oidcAddProvider": "Anbieter hinzufügen",
+    "saving": "Wird gespeichert...",
+    "setPassword": "Passwort festlegen",
+    "setPasswordInfo": "Du hast noch kein Passwort. Mit einem Passwort kannst du dich direkt anmelden und CalDAV nutzen.",
+    "sidebarLayoutDescription": "Das ist eine Vorschau deiner Seitenleiste. Wähle mit den Schaltern, was erscheint, und ziehe an den Griffen, um die Reihenfolge zu ändern.",
+    "sidebarLayoutHint": "Vorlagen und Zugriff bleiben unten. Einträge, die unter Funktionen deaktiviert sind, bleiben verborgen, bis du die Funktion einschaltest.",
+    "telegramAllowedUsers": "Erlaubte Benutzer",
+    "telegramAllowedUsersDescription": "Lege fest, wer deinem Bot schreiben darf. Leer lassen, um alle zuzulassen.",
+    "examples": "Beispiele:",
+    "exampleUsernames": "Bestimmte Benutzernamen erlauben",
+    "exampleUserIds": "Bestimmte Benutzer-IDs erlauben",
+    "exampleMixed": "Benutzernamen und IDs mischen",
+    "telegram": {
+      "botName": "Bot-Name:"
+    },
+    "telegramRequiredForSummaries": "Für Aufgabenzusammenfassungen muss die Telegram-Integration eingerichtet sein."
   },
   "task": {
     "suggestions": {
@@ -1979,7 +2160,8 @@
       "deferUntil": "Aufschieben bis",
       "dueProjects": "Fällige Projekte",
       "overdueProjects": "Überfällige Projekte",
-      "taskAssigned": "Aufgabe zugewiesen"
+      "taskAssigned": "Aufgabe zugewiesen",
+      "habitReminders": "Gewohnheits-Erinnerungen"
     },
     "descriptions": {
       "dueTasks": "Aufgaben, die innerhalb von 24 Stunden fällig sind",
@@ -1987,7 +2169,8 @@
       "deferUntil": "Aufgaben, die jetzt zur Bearbeitung verfügbar sind",
       "dueProjects": "Projekte, die innerhalb von 24 Stunden fällig sind",
       "overdueProjects": "Projekte, deren Fälligkeitsdatum überschritten ist",
-      "taskAssigned": "Eine Aufgabe wurde Ihnen von jemand anderem zugewiesen"
+      "taskAssigned": "Eine Aufgabe wurde Ihnen von jemand anderem zugewiesen",
+      "habitReminders": "Zur bei der Gewohnheit eingestellten Zeit, solange sie noch offen ist"
     },
     "telegram": {
       "notConfigured": {
@@ -2256,7 +2439,8 @@
       "project": "Projekte",
       "note": "Notizen",
       "storage": "Speicher für Anhänge",
-      "ai": "KI-Anfragen heute"
+      "ai": "KI-Anfragen heute",
+      "aiCredits": "KI-Guthaben diesen Monat"
     },
     "feature": {
       "ai": "den KI-Assistenten",
@@ -2556,7 +2740,17 @@
     "addN": "{{total}} hinzufügen",
     "undo": "Rückgängig",
     "lineBreak": "Zeilenumbruch",
-    "placeholder": "Titel eingeben"
+    "placeholder": "Titel eingeben",
+    "settings": {
+      "save": "Speichert",
+      "newline": "Beginnt eine neue Zeile",
+      "title": "Einträge hinzufügen",
+      "description": "So verhält sich das Hinzufügen-Feld. Die Einstellungen gelten sofort und bleiben auf diesem Gerät gespeichert.",
+      "enterKeyboard": "Eingabetaste auf einer Computertastatur",
+      "enterTouch": "Eingabetaste auf Telefon oder Tablet",
+      "oneItemPerLine": "Ein Eintrag pro Zeile",
+      "oneItemPerLineHelp": "Aus: Alles, was du tippst, wird ein Eintrag, die erste Zeile als Titel und die übrigen als Notizen. An: Jede Zeile wird ein eigener Eintrag."
+    }
   },
   "area": {
     "loadError": "Bereiche konnten nicht geladen werden"

@@ -43,7 +43,8 @@
     "optional": "optional",
     "hideSearch": "Collapse search panel",
     "showSearch": "Show search input",
-    "beta": "beta"
+    "beta": "beta",
+    "comingSoon": "Coming Soon"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -444,7 +445,17 @@
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Sync",
       "calendars": "Calendars",
-      "planning": "Planning"
+      "planning": "Planning",
+      "general": "General",
+      "appearance": "Appearance",
+      "security": "Security",
+      "apiKeys": "API Keys",
+      "telegram": "Telegram",
+      "keyboardShortcuts": "Shortcuts",
+      "mcp": "MCP Integration",
+      "aiAssistant": "AI Assistant",
+      "features": "Features & Add-ons",
+      "sidebar": "Sidebar"
     },
     "caldav": {
       "title": "CalDAV Synchronization",
@@ -659,7 +670,168 @@
       "loadError": "Could not load the planning order",
       "saveError": "Could not save the planning order",
       "open": "Plan my day"
-    }
+    },
+    "apiKeys": {
+      "nameRequired": "API key name is required.",
+      "invalidExpiration": "Expiration date is invalid.",
+      "created": "API key created successfully.",
+      "revokedMessage": "API key revoked.",
+      "deleted": "API key deleted.",
+      "copied": "API key copied to clipboard.",
+      "copyFailed": "Unable to copy API key to clipboard.",
+      "status": {
+        "revoked": "Revoked",
+        "expired": "Expired",
+        "active": "Active"
+      },
+      "never": "Never",
+      "deleteTitle": "Delete API key",
+      "deleteConfirm": "Delete this API key? This action cannot be undone.",
+      "title": "API Keys",
+      "description": "Generate personal access tokens for integrations or CLI usage. You can revoke or delete keys at any time.",
+      "nameLabel": "Key name",
+      "namePlaceholder": "e.g. Personal laptop",
+      "expirationLabel": "Expires on (optional)",
+      "generateButton": "Generate key",
+      "copyNotice": "Copy this token now. It will not be shown again.",
+      "copyButton": "Copy key",
+      "loading": "Loading API keys...",
+      "empty": "No API keys yet. Generate one to begin.",
+      "table": {
+        "name": "Name",
+        "prefix": "Prefix",
+        "status": "Status",
+        "lastUsed": "Last used",
+        "expires": "Expires",
+        "actions": "Actions"
+      },
+      "createdAt": "Created {{date}}",
+      "noExpiry": "None",
+      "revokedLabel": "Revoked",
+      "revokeButton": "Revoke",
+      "deleteAria": "Delete API key"
+    },
+    "fetchError": "Failed to fetch profile data.",
+    "pollingStatusError": "Failed to fetch polling status.",
+    "aiAssistantTab": "AI Assistant",
+    "aiAssistantTabDescription": "Daily briefs, task insights, and project insights powered by any OpenAI-compatible model.",
+    "aiCreditsSection": "AI Credits",
+    "aiCreditsDescription": "One credit is used for each daily brief, task insight, or project insight you generate. Your balance resets on the 1st of each month.",
+    "aiCreditsLabel": "Credits this month",
+    "aiProviderSection": "AI Provider",
+    "aiProviderDescription": "Bring your own API key for any OpenAI-compatible provider. Leave blank to use the server default, if one is configured.",
+    "aiApiKey": "API Key",
+    "aiApiKeyClear": "Clear",
+    "aiApiKeyPlaceholder": "sk-...",
+    "aiBaseUrl": "Base URL",
+    "aiBaseUrlPlaceholder": "https://api.openai.com/v1 (default)",
+    "aiModel": "Model",
+    "aiModelPlaceholder": "gpt-4o-mini (default)",
+    "aiKeyMissingHint": "Set an API key above to enable AI features.",
+    "aiEnableSection": "Enable",
+    "aiAssistantLabel": "AI Assistant (Insights)",
+    "aiAssistantDescription": "Enable AI-powered daily briefs, task insights, and project insights.",
+    "aiProfileLabel": "About You",
+    "aiProfileDescription": "Optional context fed into the AI prompts: your role, field, or anything that helps personalise the briefs and insights (e.g. \"Academic researcher focused on grant deadlines and grading cycles\").",
+    "aiProfilePlaceholder": "e.g. Academic researcher. My work revolves around grant deadlines, paper reviews, and teaching cycles, not sprints or deploys.",
+    "systemMode": "System",
+    "tasks": "Tasks",
+    "taskItem": "Task Item",
+    "showTaskContextMenu": "Show context menu button",
+    "showTaskContextMenuDescription": "Display a three-dot button on each task with Edit and Delete actions",
+    "connected": {
+      "loadError": "Failed to load connected accounts",
+      "linkError": "Failed to initiate account linking",
+      "unlinkError": "Failed to unlink account"
+    },
+    "habitsDescription": "Enable the Habits section for tracking recurring behaviours and streaks.",
+    "eisenhowerDescription": "Enable the Eisenhower Matrix page for prioritising tasks by urgency and importance.",
+    "calendarDescription": "Enable the Calendar view for visualising tasks by due date across day, week, and month.",
+    "templatesDescription": "Enable Project Templates to save and reuse project structures.",
+    "mcp": {
+      "title": "MCP Integration",
+      "description": "Connect tududi with any MCP-compatible application using the Model Context Protocol. This enables AI assistants to interact with your tasks, projects, and notes - works with both local and remote tududi servers.",
+      "step1": {
+        "title": "1. Generate API Token",
+        "description": "You need an API token to authenticate the MCP server. Go to the API Keys tab to generate one.",
+        "button": "Go to API Keys →"
+      },
+      "step2": {
+        "title": "2. Configure Your MCP Client",
+        "description": "Add this configuration to your MCP client. Replace YOUR_API_TOKEN_HERE with the token you generated in step 1. This uses mcp-remote to connect to your tududi server via HTTP. Example shown for Claude Desktop:",
+        "copy": "Copy",
+        "loading": "Loading...",
+        "locationTitle": "Claude Desktop config file location:",
+        "otherClients": "Other MCP clients may use different configuration methods, check your client's documentation."
+      },
+      "remote": {
+        "title": "Remote Access Enabled",
+        "usesPrefix": "This configuration uses",
+        "usesSuffix": "to connect via HTTP. This means you can:",
+        "local": "Access local tududi (localhost)",
+        "cloud": "Access remote tududi (cloud servers)",
+        "docker": "Use from Docker deployments",
+        "tokens": "Connect securely with API tokens"
+      },
+      "step3": {
+        "title": "3. Available Operations",
+        "description": "Once configured, your MCP client will have access to these 16 operations:"
+      },
+      "step4": {
+        "title": "4. Start Using",
+        "description": "After adding the configuration, restart your MCP client. You can then use natural language to interact with tududi:",
+        "examplesTitle": "Example prompts:"
+      },
+      "example1": "Show me my tasks for today",
+      "example2": "Create a task to review the MCP integration",
+      "example3": "What projects do I have in progress?",
+      "example4": "Add a reminder to my inbox to check emails",
+      "example5": "Search for tasks related to documentation",
+      "troubleshooting": {
+        "title": "Troubleshooting",
+        "intro": "If your MCP client can't connect, check that:",
+        "token": "Your API token is valid and not expired",
+        "server": "The tududi server is running and accessible",
+        "restart": "You've restarted your MCP client completely",
+        "firewall": "For remote servers, check your firewall settings"
+      }
+    },
+    "oidcConfigLoadError": "Failed to load OIDC configuration",
+    "oidcConfigSaved": "OIDC configuration saved",
+    "oidcConfigSaveError": "Failed to save OIDC configuration",
+    "loading": "Loading...",
+    "oidcProviderConfig": "Provider Configuration",
+    "oidcConfigFromEnv": "Showing what's currently loaded from .env. Save to move it into the database — changes then take effect within about 30 seconds, no restart needed.",
+    "oidcConfigFromDb": "Saved to the database. This overrides any OIDC_* environment variables while a configuration exists here.",
+    "oidcEnabled": "OIDC/SSO enabled",
+    "oidcEnabledDescription": "Turns SSO login on or off for everyone on this instance.",
+    "oidcNewProvider": "New provider",
+    "oidcRemoveProvider": "Remove provider",
+    "oidcProviderName": "Name",
+    "oidcProviderSlug": "Slug",
+    "oidcProviderIssuer": "Issuer URL",
+    "oidcProviderClientId": "Client ID",
+    "oidcProviderClientSecret": "Client secret",
+    "oidcSecretSet": "Set (••••{{last4}}) — leave blank to keep",
+    "oidcSecretNotSet": "Required",
+    "oidcProviderScope": "Scope",
+    "oidcProviderAdminDomains": "Admin email domains (comma-separated)",
+    "oidcAutoProvision": "Auto-provision new users",
+    "oidcAddProvider": "Add provider",
+    "saving": "Saving...",
+    "setPassword": "Set Password",
+    "setPasswordInfo": "You have not set a password yet. Setting one lets you sign in directly and use CalDAV.",
+    "telegramAllowedUsers": "Allowed Users",
+    "telegramAllowedUsersDescription": "Control who can send messages to your bot. Leave empty to allow all users.",
+    "examples": "Examples:",
+    "exampleUsernames": "Allow specific usernames",
+    "exampleUserIds": "Allow specific user IDs",
+    "exampleMixed": "Mix usernames and user IDs",
+    "telegram": {
+      "botName": "Bot Name:"
+    },
+    "telegramRequiredForSummaries": "Telegram integration must be set up to use task summaries.",
+    "sendSummaryFailed": "Failed to send the summary."
   },
   "productivity": {
     "nothingYet": "Nothing to review yet.",
@@ -1998,7 +2170,8 @@
       "project": "projects",
       "note": "notes",
       "storage": "attachment storage",
-      "ai": "AI requests this month"
+      "ai": "AI requests this month",
+      "aiCredits": "AI credits this month"
     },
     "feature": {
       "ai": "the AI assistant",
