@@ -5,11 +5,13 @@
 //
 // 1. Every task falls in one bucket: its group (overdue, due today, in
 //    progress, everything else) split by whether it sits in a project.
-// 2. Buckets follow the user's order, or DEFAULT_ORDER.
-// 3. Inside a bucket: higher priority first, then the earlier due date, then
-//    the user's tie-break (planningSettings.js tieBreak): the most recently
-//    changed task, the newest or the oldest. The task id settles any
-//    remaining tie so the order is stable.
+// 2. Groups follow the user's order: a group sits where its first bucket
+//    does in the user's order, or DEFAULT_ORDER.
+// 3. Inside a group: higher priority first, then the bucket order (so the
+//    project split never puts a task above one with higher priority), then
+//    the earlier due date, then the user's tie-break (planningSettings.js
+//    tieBreak): the most recently changed task, the newest or the oldest.
+//    The task id settles any remaining tie so the order is stable.
 // Which tasks reach "everything else" at all, and how many, is decided by
 // the other settings in planningSettings.js.
 const GROUP_ORDER = ['overdue', 'due_today', 'in_progress', 'suggested'];
@@ -77,16 +79,21 @@ function normalizeOrder(order) {
     return [...known, ...DEFAULT_ORDER.filter((key) => !known.includes(key))];
 }
 
-// Returns [{ group, task }] for every task in `groups`, in bucket order.
+// Returns [{ group, task }] for every task in `groups`, in the order above.
 function orderCandidates(groups, order = DEFAULT_ORDER, tieBreak) {
-    const buckets = new Map(normalizeOrder(order).map((key) => [key, []]));
-    for (const group of GROUP_ORDER) {
-        for (const task of groups[group] || []) {
-            buckets.get(bucketOf(group, task)).push({ group, task });
-        }
-    }
-    return [...buckets.values()].flatMap((entries) =>
-        entries.sort((a, b) => compareCandidates(a.task, b.task, tieBreak))
+    const buckets = normalizeOrder(order);
+    const groupRank = (group) =>
+        buckets.findIndex((key) => key.startsWith(`${group}:`));
+    const entries = GROUP_ORDER.flatMap((group) =>
+        (groups[group] || []).map((task) => ({ group, task }))
+    );
+    return entries.sort(
+        (a, b) =>
+            groupRank(a.group) - groupRank(b.group) ||
+            priorityRank(b.task.priority) - priorityRank(a.task.priority) ||
+            buckets.indexOf(bucketOf(a.group, a.task)) -
+                buckets.indexOf(bucketOf(b.group, b.task)) ||
+            compareCandidates(a.task, b.task, tieBreak)
     );
 }
 

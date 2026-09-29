@@ -209,6 +209,16 @@ describe('Plan my day suggestion settings', () => {
             expect(body.suggested).toHaveLength(10);
             expect(body.ranked).toHaveLength(22);
         });
+
+        it('keeps a high priority task without a project above the cap', async () => {
+            await makeSixtyTasks();
+            const urgent = await makeTask({ name: 'Urgent', priority: 2 });
+
+            const body = await candidates();
+
+            expect(body.suggested).toHaveLength(20);
+            expect(body.ranked[0]).toBe(urgent.uid);
+        });
     });
 
     describe('project filters', () => {
