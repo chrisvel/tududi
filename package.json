@@ -164,7 +164,7 @@
     "lusca": "^1.7.0",
     "mermaid": "^12.0.0",
     "moment-timezone": "~0.6.0",
-    "multer": "^2.3.0",
+    "multer": "^2.4.0",
     "nanoid": "^3.3.18",
     "node-cron": "~4.1.0",
     "nodemailer": "^9.1.1",
