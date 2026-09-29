@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -9,6 +9,7 @@ import {
 import { Person } from '../../entities/Person';
 import { useStore } from '../../store/useStore';
 import { useCan } from '../../hooks/useCan';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarPeopleProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -25,7 +26,7 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
 }) => {
     const { t } = useTranslation();
     const canCreatePeople = useCan('create_people');
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('people');
 
     const people = useStore((state) => state.peopleStore.people);
     const hasLoaded = useStore((state) => state.peopleStore.hasLoaded);
@@ -114,7 +115,8 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

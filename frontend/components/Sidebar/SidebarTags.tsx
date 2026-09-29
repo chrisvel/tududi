@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import {
     TagIcon,
@@ -9,6 +9,7 @@ import { Tag } from '../../entities/Tag';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { createTagUrl } from '../../utils/slugUtils';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarTagsProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -24,7 +25,7 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
     openTagModal,
 }) => {
     const { t } = useTranslation();
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('tags');
 
     const tags = useStore((state) => state.tagsStore.tags);
     const hasLoaded = useStore((state) => state.tagsStore.hasLoaded);
@@ -99,7 +100,8 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

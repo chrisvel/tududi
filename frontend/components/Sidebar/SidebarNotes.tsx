@@ -10,6 +10,7 @@ import { Note } from '../../entities/Note';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import SidebarNotesTree from './SidebarNotesTree';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarNotesProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -25,7 +26,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
     onCreateNote,
 }) => {
     const { t } = useTranslation();
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('notes');
     const [searchQuery, setSearchQuery] = useState('');
 
     const notes = useStore((state) => state.notesStore.notes);
@@ -95,7 +96,8 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

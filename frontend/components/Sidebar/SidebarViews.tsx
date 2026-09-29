@@ -25,6 +25,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { getApiPath } from '../../config/paths';
 import { getCsrfToken } from '../../utils/csrfService';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface View {
     id: number;
@@ -104,7 +105,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
     location,
 }) => {
     const { t } = useTranslation();
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('views');
     const [pinnedViews, setPinnedViews] = useState<View[]>([]);
     const [sidebarSettings, setSidebarSettings] = useState<{
         pinnedViewsOrder: string[];
@@ -288,7 +289,8 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                                 e.stopPropagation();
                                 setIsExpanded((v) => !v);
                             }}
-                            className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             aria-label={isExpanded ? t('sidebar.collapseViews', 'Collapse views list') : t('sidebar.expandViews', 'Expand views list')}
                         >
                             <ChevronRightIcon
