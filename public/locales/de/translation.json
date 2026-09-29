@@ -958,6 +958,7 @@
       "noProject": "ohne Projekt",
       "withinTitle": "Innerhalb jeder Gruppe",
       "rulePriority": "Höhere Priorität zuerst.",
+      "ruleRows": "Danach die Reihenfolge der Zeilen oben, sodass eine Aufgabe in einem Projekt nie vor einer mit höherer Priorität steht.",
       "dragRow": "{{name}} ziehen",
       "moveUp": "{{name}} nach oben",
       "moveDown": "{{name}} nach unten",

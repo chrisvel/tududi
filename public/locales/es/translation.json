@@ -540,6 +540,7 @@
       "noProject": "sin proyecto",
       "withinTitle": "Dentro de cada grupo",
       "rulePriority": "Primero la prioridad más alta.",
+      "ruleRows": "Después, el orden de las filas de arriba, así una tarea de un proyecto nunca pasa delante de otra con más prioridad.",
       "dragRow": "Arrastrar {{name}}",
       "moveUp": "Subir {{name}}",
       "moveDown": "Bajar {{name}}",

@@ -620,6 +620,7 @@
       "noProject": "projesiz",
       "withinTitle": "Her grubun içinde",
       "rulePriority": "Önce yüksek öncelik.",
+      "ruleRows": "Ardından yukarıdaki satırların sırası; böylece projedeki bir görev, daha yüksek öncelikli bir görevin önüne asla geçmez.",
       "dragRow": "{{name}} öğesini sürükle",
       "moveUp": "{{name}} öğesini yukarı taşı",
       "moveDown": "{{name}} öğesini aşağı taşı",

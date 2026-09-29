@@ -620,6 +620,7 @@
       "noProject": "无项目",
       "withinTitle": "每个分组内",
       "rulePriority": "优先级高的在前。",
+      "ruleRows": "然后按上方各行的顺序，因此项目中的任务不会排在优先级更高的任务之前。",
       "dragRow": "拖动 {{name}}",
       "moveUp": "上移 {{name}}",
       "moveDown": "下移 {{name}}",

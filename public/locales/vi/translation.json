@@ -620,6 +620,7 @@
       "noProject": "không có dự án",
       "withinTitle": "Trong mỗi nhóm",
       "rulePriority": "Ưu tiên cao hơn trước.",
+      "ruleRows": "Sau đó là thứ tự các hàng ở trên, nên việc trong dự án không bao giờ vượt lên trước việc có ưu tiên cao hơn.",
       "dragRow": "Kéo {{name}}",
       "moveUp": "Di chuyển {{name}} lên",
       "moveDown": "Di chuyển {{name}} xuống",

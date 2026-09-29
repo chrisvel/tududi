@@ -621,6 +621,7 @@
       "noProject": "uten prosjekt",
       "withinTitle": "Innenfor hver gruppe",
       "rulePriority": "Høyere prioritet først.",
+      "ruleRows": "Deretter rekkefølgen på radene over, så en oppgave i et prosjekt aldri kommer foran en med høyere prioritet.",
       "dragRow": "Dra {{name}}",
       "moveUp": "Flytt {{name}} opp",
       "moveDown": "Flytt {{name}} ned",

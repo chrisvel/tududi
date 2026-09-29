@@ -620,6 +620,7 @@
       "noProject": "tanpa proyek",
       "withinTitle": "Di dalam setiap grup",
       "rulePriority": "Prioritas lebih tinggi dulu.",
+      "ruleRows": "Lalu urutan baris di atas, jadi tugas dalam proyek tidak pernah mendahului tugas dengan prioritas lebih tinggi.",
       "dragRow": "Seret {{name}}",
       "moveUp": "Pindahkan {{name}} ke atas",
       "moveDown": "Pindahkan {{name}} ke bawah",

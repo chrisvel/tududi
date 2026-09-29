@@ -620,6 +620,7 @@
       "noProject": "fără proiect",
       "withinTitle": "În fiecare grup",
       "rulePriority": "Mai întâi prioritatea mai mare.",
+      "ruleRows": "Apoi ordinea rândurilor de mai sus, astfel încât o sarcină dintr-un proiect nu trece niciodată înaintea uneia cu prioritate mai mare.",
       "dragRow": "Trage {{name}}",
       "moveUp": "Mută {{name}} în sus",
       "moveDown": "Mută {{name}} în jos",

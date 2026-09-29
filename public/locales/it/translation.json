@@ -628,6 +628,7 @@
       "noProject": "senza progetto",
       "withinTitle": "All’interno di ogni gruppo",
       "rulePriority": "Prima la priorità più alta.",
+      "ruleRows": "Poi l’ordine delle righe sopra, così un’attività in un progetto non supera mai una con priorità più alta.",
       "dragRow": "Trascina {{name}}",
       "moveUp": "Sposta su {{name}}",
       "moveDown": "Sposta giù {{name}}",
