@@ -62,13 +62,30 @@ const canAccessNoteAttachment = async (userId, filename) => {
     return hasReadAccess(userId, 'note', attachment.Note.uid);
 };
 
+// Several projects can point at the same cover image (a restored backup, or
+// image_url set over MCP), so every project using it is checked. The image also shows on the
+// cards of a project's tasks, so someone with a task assigned to them in the
+// project sees it too.
 const canAccessProjectFile = async (userId, filename) => {
-    const project = await Project.findOne({
+    const projects = await Project.findAll({
         where: { image_url: `/api/uploads/projects/${filename}` },
-        attributes: ['uid'],
+        attributes: ['id', 'uid'],
+        raw: true,
     });
-    if (!project) return false;
-    return hasReadAccess(userId, 'project', project.uid);
+    for (const project of projects) {
+        if (await hasReadAccess(userId, 'project', project.uid)) return true;
+    }
+    if (projects.length === 0) return false;
+
+    const myPersonUids = await permissionsService.getMyPersonUids(userId);
+    if (myPersonUids.length === 0) return false;
+    const assigned = await Task.count({
+        where: {
+            project_id: { [Op.in]: projects.map((p) => p.id) },
+            assigned_to: { [Op.in]: myPersonUids },
+        },
+    });
+    return assigned > 0;
 };
 
 // Two users are collaborators when either has accepted a share from the

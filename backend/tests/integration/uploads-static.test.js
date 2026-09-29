@@ -3,7 +3,7 @@ const http = require('http');
 const app = require('../../app');
 const path = require('path');
 const fs = require('fs').promises;
-const { Task, TaskAttachment, Project } = require('../../models');
+const { Task, TaskAttachment, Project, Person } = require('../../models');
 const {
     createTestUser,
     acceptAllInvitations,
@@ -266,11 +266,99 @@ describe('GET /api/uploads/:category/:filename', () => {
         });
 
         afterEach(async () => {
-            await fs.rm(projectUploadDir, { recursive: true, force: true });
+            await fs.rm(
+                path.join(projectUploadDir, 'project-static-test.png'),
+                {
+                    force: true,
+                }
+            );
         });
+
+        const loginNewUser = async (prefix) => {
+            const user = await createTestUser({
+                email: `${prefix}_${Date.now()}@test.com`,
+            });
+            const agent = request.agent(app);
+            await agent
+                .post('/api/login')
+                .send({ email: user.email, password: 'password123' });
+            return { user, agent };
+        };
 
         it('should allow the owner to fetch their project image', async () => {
             const response = await ownerAgent.get(
+                '/api/uploads/projects/project-static-test.png'
+            );
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should allow a user the project is shared with to fetch its image', async () => {
+            const project = await Project.findOne({
+                where: {
+                    image_url: '/api/uploads/projects/project-static-test.png',
+                },
+            });
+            const { user, agent } = await loginNewUser('uploads-shared-proj');
+
+            await ownerAgent.post('/api/shares').send({
+                resource_type: 'project',
+                resource_uid: project.uid,
+                target_user_email: user.email,
+                access_level: 'ro',
+            });
+            await acceptAllInvitations(agent);
+
+            const response = await agent.get(
+                '/api/uploads/projects/project-static-test.png'
+            );
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should allow a user shared on any project that uses the image (#1674)', async () => {
+            // A second project with the same cover image, shared with the
+            // user. The first one, created in beforeEach, is not shared.
+            const copy = await Project.create({
+                name: 'Restored copy with the same banner',
+                user_id: owner.id,
+                image_url: '/api/uploads/projects/project-static-test.png',
+            });
+            const { user, agent } = await loginNewUser('uploads-copy-proj');
+
+            await ownerAgent.post('/api/shares').send({
+                resource_type: 'project',
+                resource_uid: copy.uid,
+                target_user_email: user.email,
+                access_level: 'ro',
+            });
+            await acceptAllInvitations(agent);
+
+            const response = await agent.get(
+                '/api/uploads/projects/project-static-test.png'
+            );
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should allow a user with a task assigned to them in the project (#1674)', async () => {
+            const project = await Project.findOne({
+                where: {
+                    image_url: '/api/uploads/projects/project-static-test.png',
+                },
+            });
+            const { user, agent } = await loginNewUser('uploads-assignee-proj');
+            const person = await Person.findOne({
+                where: { linked_user_id: user.id },
+            });
+            await Task.create({
+                name: 'Assigned task in the project',
+                user_id: owner.id,
+                project_id: project.id,
+                assigned_to: person.uid,
+            });
+
+            const response = await agent.get(
                 '/api/uploads/projects/project-static-test.png'
             );
 
