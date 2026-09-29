@@ -108,6 +108,8 @@ docker run \
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
 
+If people reach tududi at another address (for example `http://zima.local:3002` or `https://tududi.example.com`), add `-e BASE_URL=<that address>` so links in emails (account verification, password reset) point there instead of `localhost`.
+
 ### Using docker-compose
 
 The repo also includes a `docker-compose.yml`. It reads its configuration from a `.env` file, so copy the example first:
