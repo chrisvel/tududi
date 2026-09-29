@@ -3,7 +3,7 @@ import { MagnifyingGlassIcon, Squares2X2Icon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import ProjectModal from './Project/ProjectModal';
 import IconSortDropdown from './Shared/IconSortDropdown';
-import { FilterOption } from './Shared/FilterDropdown';
+import FilterDropdown, { FilterOption } from './Shared/FilterDropdown';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import {
     arrayMove,
@@ -204,11 +204,9 @@ const Projects: React.FC = () => {
         { value: 'custom:asc', label: t('sort.custom', 'Custom') },
     ];
     const isCustomOrder = orderBy.startsWith('custom:');
-    // Anything hiding projects the default view would show.
-    const filtersActive =
-        statusFilter !== 'not_completed' ||
-        !!getAreaUidFromParams() ||
-        somedayFilter;
+    // Status and area show on the page; someday lives in the menu, so the
+    // menu marks it when someday projects are shown.
+    const filtersActive = somedayFilter;
 
     const sensors = useSortableSensors();
 
@@ -688,22 +686,6 @@ const Projects: React.FC = () => {
                                         setViewMode(value as 'cards' | 'list'),
                                 },
                                 {
-                                    key: 'status',
-                                    label: t('common.status', 'Status'),
-                                    options: statusOptions.filter(
-                                        (option) => option.value !== 'divider'
-                                    ),
-                                    value: statusFilter,
-                                    onChange: handleStatusFilterChange,
-                                },
-                                {
-                                    key: 'area',
-                                    label: t('common.area', 'Area'),
-                                    options: areaOptions,
-                                    value: actualAreaFilter,
-                                    onChange: handleAreaFilterChange,
-                                },
-                                {
                                     key: 'someday',
                                     label: t(
                                         'projects.filters.someday',
@@ -766,6 +748,26 @@ const Projects: React.FC = () => {
                             />
                         )}
                     </div>
+                </div>
+
+                {/* Status and area filters: one row, sharing it on phones */}
+                <div className="flex items-center gap-2 mb-6 sm:justify-end">
+                    <FilterDropdown
+                        options={statusOptions}
+                        value={statusFilter}
+                        onChange={handleStatusFilterChange}
+                        size="desktop"
+                        autoWidth={true}
+                        fill
+                    />
+                    <FilterDropdown
+                        options={areaOptions}
+                        value={actualAreaFilter}
+                        onChange={handleAreaFilterChange}
+                        size="desktop"
+                        autoWidth={true}
+                        fill
+                    />
                 </div>
 
                 {/* Collapsible Search Bar */}
