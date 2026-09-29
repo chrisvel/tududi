@@ -4,6 +4,7 @@ const {
     OIDCIdentity,
     Role,
     Setting,
+    Person,
 } = require('../../../../models');
 const provisioningService = require('../../../../modules/oidc/provisioningService');
 const providerConfig = require('../../../../modules/oidc/providerConfig');
@@ -22,6 +23,7 @@ describe('OIDC Provisioning Service', () => {
 
     beforeEach(async () => {
         await OIDCIdentity.destroy({ where: {}, force: true });
+        await Person.destroy({ where: {}, force: true });
         await Role.destroy({ where: {}, force: true });
         await User.destroy({ where: {}, force: true });
 
@@ -30,6 +32,91 @@ describe('OIDC Provisioning Service', () => {
             name: 'Test Provider',
             autoProvision: true,
             adminEmailDomains: ['admin.com'],
+        });
+    });
+
+    describe('account name from profile claims', () => {
+        it('names a new account from given_name and family_name', async () => {
+            const { user } = await provisioningService.provisionUser(
+                'test-provider',
+                {
+                    sub: 'sub-name-1',
+                    email: 'first.last@example.com',
+                    email_verified: true,
+                    name: 'Display Name',
+                    given_name: 'First',
+                    family_name: 'Last',
+                },
+                {}
+            );
+
+            const saved = await User.findByPk(user.id);
+            expect(saved.name).toBe('First');
+            expect(saved.surname).toBe('Last');
+            const person = await Person.findOne({
+                where: { linked_user_id: user.id },
+            });
+            expect(person.name).toBe('First Last');
+        });
+
+        it('falls back to the name claim without given or family name', () => {
+            expect(
+                provisioningService.nameFromClaims({ name: ' Display ' })
+            ).toEqual({ name: 'Display', surname: null });
+            expect(provisioningService.nameFromClaims({})).toEqual({
+                name: null,
+                surname: null,
+            });
+        });
+
+        it('fills in a blank name on the next sign-in and renames the person', async () => {
+            const user = await User.create({
+                email: 'first.last@example.com',
+                password_digest: null,
+            });
+            const before = await Person.findOne({
+                where: { linked_user_id: user.id },
+            });
+            expect(before.name).toBe('first.last');
+            await OIDCIdentity.create({
+                user_id: user.id,
+                provider_slug: 'test-provider',
+                subject: 'sub-name-2',
+                email: user.email,
+                first_login_at: new Date(),
+                last_login_at: new Date(),
+            });
+
+            await provisioningService.provisionUser(
+                'test-provider',
+                { sub: 'sub-name-2', name: 'MyName', given_name: 'Given' },
+                {}
+            );
+
+            const saved = await User.findByPk(user.id);
+            expect(saved.name).toBe('Given');
+            const person = await Person.findOne({
+                where: { linked_user_id: user.id },
+            });
+            expect(person.name).toBe('Given');
+        });
+
+        it('keeps a name the user set themselves', async () => {
+            const user = await User.create({
+                email: 'kept@example.com',
+                name: 'Chosen',
+                password_digest: 'hashed',
+            });
+
+            await provisioningService.linkIdentityToUser(
+                user.id,
+                'test-provider',
+                { sub: 'sub-name-3', given_name: 'Other', family_name: 'Name' }
+            );
+
+            const saved = await User.findByPk(user.id);
+            expect(saved.name).toBe('Chosen');
+            expect(saved.surname).toBeNull();
         });
     });
 
