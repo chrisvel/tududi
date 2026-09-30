@@ -48,6 +48,19 @@ const FORMAT = 2;
 
 const plain = (row) => (row && row.toJSON ? row.toJSON() : row);
 
+// Older installs stored some priorities as names ('low', 'high'). SQLite kept
+// them in the integer column, but Postgres rejects them, so map them back.
+const PRIORITY_VALUES = { low: 0, medium: 1, high: 2 };
+const toPriority = (value) => {
+    if (value === null || value === undefined || value === '') return null;
+    if (typeof value === 'string') {
+        const named = PRIORITY_VALUES[value.trim().toLowerCase()];
+        if (named !== undefined) return named;
+    }
+    const n = Number(value);
+    return Number.isInteger(n) && n >= 0 && n <= 2 ? n : null;
+};
+
 async function readAttachmentData(attachment) {
     try {
         const filePath = path.join(
@@ -799,7 +812,7 @@ async function importOwnData(
                         name: project.name,
                         description: project.description,
                         pin_to_sidebar: project.pin_to_sidebar,
-                        priority: project.priority,
+                        priority: toPriority(project.priority),
                         due_date_at: project.due_date_at,
                         image_url: imageUrl,
                         color: project.color,
@@ -853,7 +866,7 @@ async function importOwnData(
                     defer_until: task.defer_until,
                     reminder_at: task.reminder_at,
                     estimated_minutes: task.estimated_minutes ?? null,
-                    priority: task.priority,
+                    priority: toPriority(task.priority),
                     status: task.status,
                     note: task.note,
                     recurrence_type: task.recurrence_type,
