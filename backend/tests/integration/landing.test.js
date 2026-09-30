@@ -239,6 +239,22 @@ describe('Landing page', () => {
         expect(grid).toContain('Today with your calendar');
     });
 
+    it('plays the hero loop with the still as its poster', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).toContain(
+            'src="/landing-assets/screenshots/hero.mp4"'
+        );
+        expect(res.text).toContain(
+            'poster="/landing-assets/screenshots/hero-light.png"'
+        );
+        expect(res.text).toContain('prefers-reduced-motion: reduce');
+        const video = await request(app)
+            .get('/landing-assets/screenshots/hero.mp4')
+            .set('Host', 'tududi.com');
+        expect(video.status).toBe(200);
+        expect(video.headers['content-type']).toMatch(/video\/mp4/);
+    });
+
     it('serves the new screenshots', async () => {
         for (const img of [
             'capture-light.png',

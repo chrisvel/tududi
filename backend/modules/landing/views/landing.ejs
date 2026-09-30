@@ -330,7 +330,24 @@
                 <span style="background:#e5b95c;"></span>
                 <span style="background:#61c454;"></span>
             </div>
-            <img src="/landing-assets/screenshots/hero-light.png" alt="<%= t('hero.screenshotAlt') %>">
+            <%# A short loop of the planner drafting a day with AI, then Today.
+                It plays only when a script starts it and the visitor has not
+                asked for reduced motion; everyone else keeps the poster, the
+                same frame as a still. Recorded from a seeded account. %>
+            <video id="hero-video" class="hero-video" muted loop playsinline preload="metadata"
+                   poster="/landing-assets/screenshots/hero-light.png"
+                   aria-label="<%= t('hero.screenshotAlt') %>">
+                <source src="/landing-assets/screenshots/hero.mp4" type="video/mp4">
+            </video>
+            <script>
+                (function () {
+                    var v = document.getElementById('hero-video');
+                    if (!v || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                    v.preload = 'auto';
+                    var p = v.play();
+                    if (p && p.catch) p.catch(function () {});
+                })();
+            </script>
         </div>
     </section>
 
