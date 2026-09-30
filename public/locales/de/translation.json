@@ -1437,9 +1437,7 @@
     },
     "captcha_required": "Bitte schließe die Überprüfung ab und versuche es erneut.",
     "registration_successful": "Bestätige deine E-Mail-Adresse",
-    "registration_email_sent": "Bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren. Wir haben dir einen Link geschickt, sieh in deinem Posteingang nach.",
-    "notify_joined": "Du bist auf der Liste. Wir senden dir eine E-Mail, wenn die tududi Cloud öffnet.",
-    "notify_failed": "Wir konnten deine Adresse nicht speichern. Bitte versuche es erneut."
+    "registration_email_sent": "Bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren. Wir haben dir einen Link geschickt, sieh in deinem Posteingang nach."
   },
   "dropdown": {
     "createNew": "Neu erstellen",

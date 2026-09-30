@@ -1042,9 +1042,7 @@
     },
     "captcha_required": "Fuldfør verificeringen, og prøv igen.",
     "registration_successful": "Bekræft din e-mailadresse",
-    "registration_email_sent": "Bekræft din e-mailadresse for at aktivere din konto. Vi har sendt dig et link, tjek din indbakke.",
-    "notify_joined": "Du er på listen. Vi sender dig en e-mail den dag tududi Cloud åbner.",
-    "notify_failed": "Vi kunne ikke gemme din adresse. Prøv venligst igen."
+    "registration_email_sent": "Bekræft din e-mailadresse for at aktivere din konto. Vi har sendt dig et link, tjek din indbakke."
   },
   "dropdown": {
     "createNew": "Opret Ny",

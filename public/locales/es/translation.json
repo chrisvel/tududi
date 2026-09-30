@@ -187,9 +187,7 @@
     },
     "captcha_required": "Completa la verificación e inténtalo de nuevo.",
     "registration_successful": "Verifica tu dirección de correo",
-    "registration_email_sent": "Verifica tu dirección de correo para activar tu cuenta. Te hemos enviado un enlace, revisa tu bandeja de entrada.",
-    "notify_joined": "Estás en la lista. Te enviaremos un correo electrónico el día que se abra tududi Cloud.",
-    "notify_failed": "No pudimos guardar tu dirección. Por favor, inténtalo de nuevo."
+    "registration_email_sent": "Verifica tu dirección de correo para activar tu cuenta. Te hemos enviado un enlace, revisa tu bandeja de entrada."
   },
   "profile": {
     "title": "Configuración de Perfil",

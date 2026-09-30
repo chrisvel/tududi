@@ -1042,9 +1042,7 @@
     },
     "captcha_required": "请完成验证后重试。",
     "registration_successful": "请验证您的邮箱地址",
-    "registration_email_sent": "请验证您的邮箱地址以激活账户。我们已发送链接，请查看收件箱。",
-    "notify_joined": "您已在列表中。我们将在tududi Cloud开放的那天通过电子邮件通知您。",
-    "notify_failed": "我们无法保存您的地址。请再试一次。"
+    "registration_email_sent": "请验证您的邮箱地址以激活账户。我们已发送链接，请查看收件箱。"
   },
   "dropdown": {
     "createNew": "创建新项",

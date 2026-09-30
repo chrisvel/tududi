@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "stjärnor på GitHub",
     "badgeMcp": "MCP-server inbyggd",
+    "badgeCloudOpen": "tududi Cloud är nu öppet",
     "starsLoading": "Laddar antalet stjärnor",
     "ctaDemo": "Prova livedemon",
     "demoNote": "En riktig hostad instans med exempeldata, delad och återställs regelbundet",
     "screenshotAlt": "tududis gränssnitt med vyn Idag och de planerade uppgifterna",
-    "ctaWaitlist": "Gå med i väntelistan",
     "cloudNote": "Ingen server att sätta upp. Månadsvis eller årsvis, och du kan avsluta när du vill.",
     "ctaPrimary": "Kom igång på tududi Cloud",
     "lede": "Områden, mål, projekt, uppgifter, anteckningar och vanor, i ett system. Skapa ett Cloud-konto på en minut.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "eller",
         "launchNote": "Early bird-årspris, ditt så länge du är prenumerant.",
-        "comingSoon": "Öppnar om några dagar",
-        "comingSoonNote": "Vi flyttar Cloud till ny infrastruktur. Lämna din e-postadress nedan så hör vi av oss så snart den är tillbaka.",
-        "notifySubmit": "Meddela mig",
         "action": "Kom igång →",
         "features": [
           "Igång på en minut, utan server att sätta upp",
@@ -312,13 +309,12 @@
     "sub": "Samma applikation i båda fallen. Vad som skiljer är vem som driver den, och vad det kostar dig."
   },
   "waitlist": {
-    "title": "Inte redo än?",
-    "sub": "Lämna din e-post för versionsnoteringar och en uppdatering då och då. Ingen skräppost, avsluta med ett klick.",
     "placeholder": "du@email.com",
-    "inputLabel": "E-postadress",
-    "submit": "Meddela mig",
+    "inputLabel": "E-postadress"
+  },
+  "signup": {
     "note": "Vi sparar din adress och datumet du gav oss den, för att skicka releasenoteringar och inget annat. Vi delar den aldrig.",
-    "joined": "Du står på listan. Vi mejlar dig när tududi Cloud öppnar."
+    "joined": "Du är anmäld. Versionsinformation kommer via e-post."
   },
   "langs": {
     "heading": "Tillgänglig på {{count}} språk världen över"

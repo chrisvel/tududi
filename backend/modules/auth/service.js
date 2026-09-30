@@ -8,7 +8,6 @@ const { getConfig } = require('../../config/config');
 const { isPasswordAuthEnabled } = require('../../config/authConfig');
 const {
     isRegistrationEnabled,
-    isCloudClosed,
     createUnverifiedUser,
     sendVerificationEmail,
     verifyUserEmail,
@@ -42,7 +41,6 @@ class AuthService {
         const { isEmailEnabled } = require('../../services/emailService');
         return {
             enabled: await isRegistrationEnabled(),
-            waitlist: isCloudClosed(),
             email_enabled: isEmailEnabled(),
         };
     }

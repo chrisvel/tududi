@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "GitHub yıldızı",
     "badgeMcp": "Yerleşik MCP sunucusu",
+    "badgeCloudOpen": "tududi Cloud artık açık",
     "starsLoading": "Yıldız sayısı yükleniyor",
     "ctaDemo": "Canlı demoyu deneyin",
     "demoNote": "Örnek verilerle dolu gerçek bir barındırılan örnek; paylaşılır ve düzenli olarak sıfırlanır",
     "screenshotAlt": "tududi arayüzü; Bugün görünümü ve planlanmış görevler",
-    "ctaWaitlist": "Bekleme listesine katıl",
     "cloudNote": "Kurulacak sunucu yok. Aylık veya yıllık, ve istediğiniz zaman iptal edebilirsiniz.",
     "ctaPrimary": "tududi Cloud'da başlayın",
     "lede": "Alanlar, hedefler, projeler, görevler, notlar ve alışkanlıklar, bir sistemde. Bir dakikada bir Cloud hesabı oluşturun.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "veya",
         "launchNote": "Erken kayıt yıllık fiyatı, abone kaldığınız sürece sizin.",
-        "comingSoon": "Birkaç gün içinde açılıyor",
-        "comingSoonNote": "Cloud'u yeni altyapıya taşıyoruz. E-posta adresinizi aşağıya bırakın, geri döndüğü anda haber verelim.",
-        "notifySubmit": "Haber ver",
         "action": "Başlayın →",
         "features": [
           "Kurulacak sunucu olmadan bir dakikada çalışır",
@@ -312,13 +309,12 @@
     "sub": "Her iki durumda da aynı uygulama. Farklı olan, onu kimin işlettiği, ve bunun size ne kadara mal olduğu."
   },
   "waitlist": {
-    "title": "Henüz hazır değil misiniz?",
-    "sub": "Sürüm notları ve ara sıra bir haber için e-postanızı bırakın. Spam yok, tek tıkla abonelikten çıkın.",
     "placeholder": "siz@email.com",
-    "inputLabel": "E-posta adresi",
-    "submit": "Haber ver",
+    "inputLabel": "E-posta adresi"
+  },
+  "signup": {
     "note": "Adresinizi ve bize verdiğiniz tarihi yalnızca sürüm notları göndermek için saklıyoruz, başka bir şey için değil. Asla paylaşmıyoruz.",
-    "joined": "Listedesiniz. tududi Cloud açıldığında size e-posta göndereceğiz."
+    "joined": "Abone oldunuz. Sürüm notları e-postayla gelecek."
   },
   "langs": {
     "heading": "Dünya genelinde {{count}} dilde kullanılabilir"

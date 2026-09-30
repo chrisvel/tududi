@@ -1042,9 +1042,7 @@
     },
     "captcha_required": "Dokončajte preverjanje in poskusite znova.",
     "registration_successful": "Potrdite svoj e-poštni naslov",
-    "registration_email_sent": "Potrdite svoj e-poštni naslov, da aktivirate račun. Poslali smo vam povezavo, preverite nabiralnik.",
-    "notify_joined": "Na seznamu ste. Poslali vam bomo e-pošto, ko se tududi Cloud odpre.",
-    "notify_failed": "Vaš naslov ni bil shranjen. Poskusite znova."
+    "registration_email_sent": "Potrdite svoj e-poštni naslov, da aktivirate račun. Poslali smo vam povezavo, preverite nabiralnik."
   },
   "dropdown": {
     "createNew": "Ustvari novo",

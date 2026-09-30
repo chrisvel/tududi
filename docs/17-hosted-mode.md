@@ -233,40 +233,24 @@ Awesome from cdnjs, Google Analytics, the GitHub API for the star count).
 `node backend/scripts/landing-i18n-check.js` reports locale keys that are
 missing or whose `{{placeholders}}` differ from English.
 
-### Waitlist
+### Release-notes signup
 
-`cloudOpen` in the pricing config says whether Cloud is selling. It ships
-false, and is reopened with `TUDUDI_PRICING_JSON='{"cloudOpen":true}'`.
+The page's signup section and its footer take an email for release notes.
+Both post to `POST /waitlist` on the landing host, never to a third party,
+and write one `waitlist_subscribers` row per address (the name is older than
+the feature), counting a repeat submission in `submission_count` rather than
+adding a row. The answer is the same redirect whether the address was new,
+already listed or malformed, so the form cannot be used to find out who has
+signed up. `source` records which form it was (`waitlist`, `footer`, and
+older rows may say `hero`, `cloud`, `pricing` or `app`).
 
-While it is false:
-
-- every "start on tududi Cloud" call to action becomes "join the waitlist"
-  and points at the page's own `#waitlist` form, and the Cloud pricing card
-  swaps its price and register link for an "opening soon" notice with its
-  own capture form;
-- in hosted mode registration is closed with it, whatever the admin toggle
-  says, so a direct link to `app.example.com/register` cannot open an
-  account that a payment provider is not ready to charge. SSO provisioning
-  of new accounts is closed too; existing accounts sign in as usual. A
-  self-hosted instance is untouched, since hosted mode is off there;
-- the register page shows the same "opening in a few days" copy and capture
-  form rather than the generic "registration closed" notice.
-
-Every form posts to tududi itself, never to a third party: the marketing
-page's to `POST /waitlist` on the landing host, the register page's to
-`POST /api/waitlist`. The latter answers `404` and writes nothing unless
-hosted mode is on and Cloud is shut, so a self-hosted instance, or Cloud
-once it opens, exposes no unauthenticated write. Both write one `waitlist_subscribers` row per
-address, counting a repeat submission in `submission_count` rather than
-adding a row, and both answer identically whether the address was new,
-already listed or malformed, so neither can be used to find out who has
-signed up. `source` records which form it was (`hero`, `waitlist`,
-`footer`, `cloud`, `pricing`, `app`).
+Every Cloud call to action links to `/register` on the app. Registration on
+a hosted instance follows the admin toggle (`registration_enabled`) alone,
+which is also the way to close it quickly.
 
 Admins read the list at `/admin/waitlist` in the app: newest first, search
-by address, and "Export CSV" (`GET /api/admin/waitlist/export`) for the
-whole list on launch day. The dashboard shows the total and the last seven
-days beside it.
+by address, and "Export CSV" (`GET /api/admin/waitlist/export`). The
+dashboard shows the total and the last seven days beside it.
 
 ## Deploying on one machine
 

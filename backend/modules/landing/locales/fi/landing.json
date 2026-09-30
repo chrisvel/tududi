@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "tähteä GitHubissa",
     "badgeMcp": "MCP-palvelin sisäänrakennettuna",
+    "badgeCloudOpen": "tududi Cloud on nyt avoinna",
     "starsLoading": "Ladataan tähtien määrää",
     "ctaDemo": "Kokeile live-demoa",
     "demoNote": "Aito isännöity instanssi esimerkkidatalla, jaettu ja nollataan säännöllisesti",
     "screenshotAlt": "tududin käyttöliittymä, jossa näkyy Tänään-näkymä ja suunnitellut tehtävät",
-    "ctaWaitlist": "Liity jonotuslistalle",
     "cloudNote": "Ei palvelinta pystytettäväksi. Kuukausittain tai vuosittain, ja voit peruuttaa milloin tahansa.",
     "ctaPrimary": "Aloita tududi Cloudissa",
     "lede": "Alueet, tavoitteet, projektit, tehtävät, muistiinpanot ja tavat, yhdessä järjestelmässä. Luo Cloud-tili minuutissa.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "tai",
         "launchNote": "Early bird -vuosihinta, sinun niin kauan kuin pysyt tilaajana.",
-        "comingSoon": "Avautuu muutaman päivän kuluttua",
-        "comingSoonNote": "Siirrämme Cloudin uuteen infrastruktuuriin. Jätä sähköpostiosoitteesi alle, niin ilmoitamme heti kun se on taas käytössä.",
-        "notifySubmit": "Ilmoita minulle",
         "action": "Aloita →",
         "features": [
           "Käynnissä minuutissa, ei palvelinta pystytettäväksi",
@@ -312,13 +309,12 @@
     "sub": "Samat sovellus molemmissa tapauksissa. Se, mikä eroaa, on kuka sitä ylläpitää ja mitä se maksaa sinulle."
   },
   "waitlist": {
-    "title": "Etkö ole vielä valmis?",
-    "sub": "Jätä sähköpostisi julkaisutiedotteita ja satunnaisia kuulumisia varten. Ei roskapostia, peruutus yhdellä klikkauksella.",
     "placeholder": "sina@email.com",
-    "inputLabel": "Sähköpostiosoite",
-    "submit": "Ilmoita minulle",
+    "inputLabel": "Sähköpostiosoite"
+  },
+  "signup": {
     "note": "Säilytämme osoitteesi ja päivämäärän jolloin annoit sen, jotta voimme lähettää sinulle julkaisutiedotteita eikä mitään muuta. Emme jaa sitä koskaan.",
-    "joined": "Olet listalla. Lähetämme sähköpostia, kun tududi Cloud avautuu."
+    "joined": "Tilaus on tehty. Julkaisutiedot tulevat sähköpostiisi."
   },
   "langs": {
     "heading": "Saatavilla {{count}} kielellä ympäri maailman"

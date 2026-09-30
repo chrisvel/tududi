@@ -351,6 +351,22 @@ const App: React.FC = () => {
                             element={<SubscriptionRequired />}
                         />
                         <Route path="/demo" element={<DemoEntry />} />
+                        {/* The marketing site links here whether or not the
+                            visitor is signed in, so these send an existing
+                            session home instead of falling through to 404. */}
+                        {['/login', '/register', '/forgot-password'].map(
+                            (path) => (
+                                <Route
+                                    key={path}
+                                    path={path}
+                                    element={<Navigate to="/" replace />}
+                                />
+                            )
+                        )}
+                        <Route
+                            path="/reset-password"
+                            element={<ResetPassword />}
+                        />
                         <Route
                             element={
                                 <SubscriptionGate>

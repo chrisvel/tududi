@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "stelle su GitHub",
     "badgeMcp": "Server MCP integrato",
+    "badgeCloudOpen": "tududi Cloud è aperto",
     "starsLoading": "Caricamento del numero di stelle",
     "ctaDemo": "Prova la demo dal vivo",
     "demoNote": "Un'istanza ospitata reale, con dati di esempio, condivisa e reimpostata regolarmente",
     "screenshotAlt": "L'interfaccia di tududi, con la vista Oggi e le attività pianificate",
-    "ctaWaitlist": "Iscriviti alla lista d'attesa",
     "cloudNote": "Nessun server da configurare. Mensile o annuale, e puoi cancellare in qualsiasi momento.",
     "ctaPrimary": "Inizia su tududi Cloud",
     "lede": "Aree, obiettivi, progetti, attività, note e abitudini, in un unico sistema. Crea un account Cloud in un minuto.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "oppure",
         "launchNote": "Prezzo annuale early bird, tuo finché resti abbonato.",
-        "comingSoon": "Apre tra pochi giorni",
-        "comingSoonNote": "Stiamo spostando Cloud su una nuova infrastruttura. Lascia la tua email qui sotto e ti avvisiamo appena torna.",
-        "notifySubmit": "Avvisami",
         "action": "Inizia →",
         "features": [
           "Operativo in un minuto, senza server da configurare",
@@ -312,13 +309,12 @@
     "sub": "La stessa applicazione in entrambi i casi. Cambia chi la gestisce, e quanto ti costa."
   },
   "waitlist": {
-    "title": "Non sei ancora pronto?",
-    "sub": "Lascia la tua email per le note di rilascio e qualche aggiornamento occasionale. Niente spam, disiscrizione con un clic.",
     "placeholder": "tu@email.com",
-    "inputLabel": "Indirizzo email",
-    "submit": "Avvisami",
+    "inputLabel": "Indirizzo email"
+  },
+  "signup": {
     "note": "Conserviamo il tuo indirizzo e la data in cui ce l'hai lasciato, solo per inviarti le note di rilascio. Non lo condividiamo mai.",
-    "joined": "Sei in lista. Ti scriveremo quando tududi Cloud aprirà."
+    "joined": "Iscrizione completata. Le note di rilascio arriveranno via email."
   },
   "langs": {
     "heading": "L'app tududi è disponibile in {{count}} lingue in tutto il mondo"

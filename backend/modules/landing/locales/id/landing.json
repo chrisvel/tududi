@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "bintang di GitHub",
     "badgeMcp": "Server MCP bawaan",
+    "badgeCloudOpen": "tududi Cloud kini dibuka",
     "starsLoading": "Memuat jumlah bintang",
     "ctaDemo": "Coba demo langsung",
     "demoNote": "Instance terkelola sungguhan dengan data contoh, dipakai bersama dan direset secara berkala",
     "screenshotAlt": "Antarmuka tududi, menampilkan tampilan Hari Ini dengan tugas yang direncanakan",
-    "ctaWaitlist": "Gabung daftar tunggu",
     "cloudNote": "Tidak ada server yang perlu disiapkan. Bulanan atau tahunan, dan Anda bisa membatalkan kapan saja.",
     "ctaPrimary": "Mulai di tududi Cloud",
     "lede": "Area, tujuan, proyek, tugas, catatan, dan kebiasaan, dalam satu sistem. Buat akun Cloud dalam satu menit.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "atau",
         "launchNote": "Harga tahunan early bird, tetap milik Anda selama berlangganan.",
-        "comingSoon": "Dibuka dalam beberapa hari",
-        "comingSoonNote": "Kami sedang memindahkan Cloud ke infrastruktur baru. Tinggalkan email Anda di bawah dan kami akan mengabari begitu kembali aktif.",
-        "notifySubmit": "Beri tahu saya",
         "action": "Mulai →",
         "features": [
           "Berjalan dalam satu menit, tanpa server yang perlu disiapkan",
@@ -312,13 +309,12 @@
     "sub": "Aplikasi yang sama pada kedua kasus. Yang berbeda adalah siapa yang menjalankannya, dan berapa biayanya bagi Anda."
   },
   "waitlist": {
-    "title": "Belum siap?",
-    "sub": "Tinggalkan email Anda untuk catatan rilis dan kabar sesekali. Tanpa spam, berhenti berlangganan dengan sekali klik.",
     "placeholder": "kamu@email.com",
-    "inputLabel": "Alamat email",
-    "submit": "Beri tahu saya",
+    "inputLabel": "Alamat email"
+  },
+  "signup": {
     "note": "Kami menyimpan alamat Anda dan tanggal Anda memberikannya, semata untuk mengirim catatan rilis dan tidak untuk hal lain. Kami tidak pernah membagikannya.",
-    "joined": "Anda sudah masuk daftar. Kami akan mengirim email saat tududi Cloud dibuka."
+    "joined": "Anda sudah berlangganan. Catatan rilis akan dikirim lewat email."
   },
   "langs": {
     "heading": "Tersedia dalam {{count}} bahasa di seluruh dunia"

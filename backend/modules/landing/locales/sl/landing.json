@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "zvezdic na GitHubu",
     "badgeMcp": "Vgrajen strežnik MCP",
+    "badgeCloudOpen": "tududi Cloud je zdaj odprt",
     "starsLoading": "Nalaganje števila zvezdic",
     "ctaDemo": "Preizkusite demo v živo",
     "demoNote": "Prava gostovana instanca z vzorčnimi podatki, deljena in redno ponastavljena",
     "screenshotAlt": "Vmesnik tududi s pogledom Danes in načrtovanimi opravili",
-    "ctaWaitlist": "Pridruži se čakalnemu seznamu",
     "cloudNote": "Brez strežnika za namestitev. Mesečno ali letno, in lahko prekličete kadarkoli.",
     "ctaPrimary": "Začni na tududi Cloud",
     "lede": "Področja, cilji, projekti, naloge, opombe in navade, v enem sistemu. Ustvarite račun Cloud v minuti.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "ali",
         "launchNote": "Letna cena early bird, vaša, dokler ostanete naročeni.",
-        "comingSoon": "Odpremo čez nekaj dni",
-        "comingSoonNote": "Cloud selimo na novo infrastrukturo. Spodaj pustite svoj e-naslov in sporočili vam bomo takoj, ko bo spet na voljo.",
-        "notifySubmit": "Obvestite me",
         "action": "Začni →",
         "features": [
           "Deluje v minuti, brez strežnika za namestitev",
@@ -312,13 +309,12 @@
     "sub": "Enaka aplikacija v obeh primerih. Razlikuje se, kdo jo upravlja, in koliko vas to stane."
   },
   "waitlist": {
-    "title": "Še niste pripravljeni?",
-    "sub": "Pustite svoj e-poštni naslov za opombe ob izdajah in občasno novico. Brez nezaželene pošte, odjava z enim klikom.",
     "placeholder": "vi@email.com",
-    "inputLabel": "E-poštni naslov",
-    "submit": "Obvestite me",
+    "inputLabel": "E-poštni naslov"
+  },
+  "signup": {
     "note": "Shranimo vaš naslov in datum, ko ste nam ga dali, da vam pošiljamo opombe ob izdajah in nič drugega. Nikoli ga ne delimo naprej.",
-    "joined": "Ste na seznamu. Pisali vam bomo, ko se tududi Cloud odpre."
+    "joined": "Naročeni ste. Opombe ob izdaji bodo prihajale po e-pošti."
   },
   "langs": {
     "heading": "Na voljo v {{count}} jezikih po vsem svetu"

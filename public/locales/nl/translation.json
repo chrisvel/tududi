@@ -1042,9 +1042,7 @@
     },
     "captcha_required": "Voltooi de verificatie en probeer het opnieuw.",
     "registration_successful": "Bevestig je e-mailadres",
-    "registration_email_sent": "Bevestig je e-mailadres om je account te activeren. We hebben je een link gestuurd, controleer je inbox.",
-    "notify_joined": "Je staat op de lijst. We sturen je een e-mail op de dag dat tududi Cloud opent.",
-    "notify_failed": "We konden je adres niet opslaan. Probeer het opnieuw."
+    "registration_email_sent": "Bevestig je e-mailadres om je account te activeren. We hebben je een link gestuurd, controleer je inbox."
   },
   "dropdown": {
     "createNew": "Nieuw Aanmaken",

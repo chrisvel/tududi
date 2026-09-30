@@ -1042,9 +1042,7 @@
     },
     "captcha_required": "Lütfen doğrulamayı tamamlayıp tekrar deneyin.",
     "registration_successful": "E-posta adresinizi doğrulayın",
-    "registration_email_sent": "Hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın. Size bir bağlantı gönderdik, gelen kutunuzu kontrol edin.",
-    "notify_joined": "Listedesiniz. Tududi Cloud açıldığında size e-posta göndereceğiz.",
-    "notify_failed": "Adresinizi kaydedemedik. Lütfen tekrar deneyin."
+    "registration_email_sent": "Hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın. Size bir bağlantı gönderdik, gelen kutunuzu kontrol edin."
   },
   "dropdown": {
     "createNew": "Yeni Oluştur",

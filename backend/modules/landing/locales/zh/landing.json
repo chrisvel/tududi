@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "GitHub 星标",
     "badgeMcp": "内置 MCP 服务器",
+    "badgeCloudOpen": "tududi Cloud 现已开放",
     "starsLoading": "正在加载星标数",
     "ctaDemo": "试用在线演示",
     "demoNote": "一个真实的托管实例，内含示例数据，共享使用并定期重置",
     "screenshotAlt": "tududi 的界面，显示「今天」视图和已规划的任务",
-    "ctaWaitlist": "加入等候名单",
     "cloudNote": "没有服务器需要搭建。按月或按年，随时可以取消。",
     "ctaPrimary": "在 tududi Cloud 上开始使用",
     "lede": "领域、目标、项目、任务、笔记和习惯，全都在一个系统中。一分钟内创建一个 Cloud 账户。",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "或",
         "launchNote": "早鸟年付价格，只要保持订阅就一直有效。",
-        "comingSoon": "几天后开放",
-        "comingSoonNote": "我们正在将 Cloud 迁移到新的基础设施。在下方留下你的邮箱，恢复上线时我们会第一时间通知你。",
-        "notifySubmit": "通知我",
         "action": "开始使用 →",
         "features": [
           "一分钟内运行起来，无需搭建服务器",
@@ -312,13 +309,12 @@
     "sub": "无论哪种方式都是同一个应用程序。不同的是谁来运营它，以及这会花费您多少。"
   },
   "waitlist": {
-    "title": "还没想好？",
-    "sub": "留下邮箱，接收版本说明和偶尔的动态。没有垃圾邮件，一键退订。",
     "placeholder": "you@email.com",
-    "inputLabel": "电子邮箱地址",
-    "submit": "通知我",
+    "inputLabel": "电子邮箱地址"
+  },
+  "signup": {
     "note": "我们只保存你的邮箱地址和提交日期，用来给你发送版本更新说明，别无他用。我们从不将它分享给任何人。",
-    "joined": "你已在名单中。tududi Cloud 开放时我们会发邮件通知你。"
+    "joined": "订阅成功。版本说明将通过邮件发送给你。"
   },
   "langs": {
     "heading": "在全球提供 {{count}} 种语言"

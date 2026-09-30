@@ -5,6 +5,14 @@ Notable changes to tududi. Versions match the git tags and the
 
 ## Unreleased
 
+### Changed
+
+- tududi Cloud is open: the marketing page links every Cloud call to action
+  to registration and announces the launch in the hero. The waitlist, its
+  "opening soon" copy and the `cloudOpen` pricing flag are gone; hosted
+  registration follows the admin toggle alone. The page's email signup is
+  now for release notes only.
+
 ## 1.5.0
 
 ### Security

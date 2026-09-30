@@ -1044,9 +1044,7 @@
     },
     "captcha_required": "Finalizează verificarea și încearcă din nou.",
     "registration_successful": "Verifică-ți adresa de e-mail",
-    "registration_email_sent": "Verifică-ți adresa de e-mail pentru a-ți activa contul. Ți-am trimis o legătură, verifică-ți inboxul.",
-    "notify_joined": "Ești pe listă. Îți vom trimite un email în ziua în care tududi Cloud se deschide.",
-    "notify_failed": "Nu am putut salva adresa ta. Te rugăm să încerci din nou."
+    "registration_email_sent": "Verifică-ți adresa de e-mail pentru a-ți activa contul. Ți-am trimis o legătură, verifică-ți inboxul."
   },
   "dropdown": {
     "createNew": "Creează Nou",

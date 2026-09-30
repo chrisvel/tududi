@@ -1042,9 +1042,7 @@
     },
     "captcha_required": "Suorita vahvistus loppuun ja yritä uudelleen.",
     "registration_successful": "Vahvista sähköpostiosoitteesi",
-    "registration_email_sent": "Vahvista sähköpostiosoitteesi aktivoidaksesi tilisi. Lähetimme sinulle linkin, tarkista saapuneet viestit.",
-    "notify_joined": "Olet listalla. Lähetämme sinulle sähköpostia, kun tududi Cloud avautuu.",
-    "notify_failed": "Emme voineet tallentaa osoitettasi. Yritä uudelleen."
+    "registration_email_sent": "Vahvista sähköpostiosoitteesi aktivoidaksesi tilisi. Lähetimme sinulle linkin, tarkista saapuneet viestit."
   },
   "dropdown": {
     "createNew": "Luo uusi",

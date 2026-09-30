@@ -273,6 +273,11 @@
         <div class="hero-glow"></div>
         <div class="hero-inner">
             <div class="hero-badges">
+                <a href="<%= localePath(i18n.locale, '/cloud') %>" class="hero-badge hero-badge-launch" data-testid="cloud-open-badge">
+                    <i class="fas fa-cloud"></i>
+                    <span><%= t('hero.badgeCloudOpen') %></span>
+                    <i class="fas fa-arrow-right hero-badge-arrow" aria-hidden="true"></i>
+                </a>
                 <span class="hero-badge">
                     <i class="fab fa-github"></i>
                     <strong data-github-stars><span class="stars-spinner" role="status" aria-label="<%= t('hero.starsLoading') %>"></span></strong>
@@ -301,7 +306,7 @@
                     page, in the self-host section and the footer, where someone
                     who came looking for them will still find them. The stars
                     chip above stays, because that is proof rather than an exit. %>
-                <a href="<%= pricing.cloudOpen ? appUrl + '/register' : '#waitlist' %>" class="btn-primary"><i class="fas fa-cloud"></i><%= pricing.cloudOpen ? t('hero.ctaPrimary') : t('hero.ctaWaitlist') %></a>
+                <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('hero.ctaPrimary') %></a>
                 <%# Rendered only when there is genuinely an instance to open.
                     demo.available is false while the container is being rebuilt
                     or if provisioning failed, and the whole button disappears
@@ -313,9 +318,7 @@
                 </a>
                 <% } %>
             </div>
-            <% if (pricing.cloudOpen) { %>
             <p class="hero-note"><i class="fas fa-cloud"></i><%= t('hero.cloudNote') %></p>
-            <% } %>
             <% if (demo && demo.available) { %>
             <p class="hero-note"><i class="fas fa-eye"></i><%= t('hero.demoNote') %></p>
             <% } %>
@@ -361,10 +364,8 @@
                 <span class="proofbar-item"><%= t('proof.mcp', { tools: mcpToolCount }) %></span>
                 <span class="proofbar-sep">&middot;</span>
                 <span class="proofbar-item"><%= t('proof.languages', { count: languageCount }) %></span>
-                <% if (pricing.cloudOpen) { %>
                 <span class="proofbar-sep">&middot;</span>
                 <span class="proofbar-item"><%= t('proof.minute') %></span>
-                <% } %>
             </div>
         </div>
     </section>
@@ -663,7 +664,6 @@
                         <div class="plan-icon"><i class="fas fa-cloud"></i></div>
                         <h3><%= t('pricing.plans.cloud.name') %></h3>
                     </div>
-                    <% if (pricing.cloudOpen) { %>
                     <div class="plan-price">
                         <%# One plan, and it is paid. There is no free tier and no
                             trial, so nothing here may imply a way in without a
@@ -693,32 +693,6 @@
                         <% }); %>
                     </ul>
                     <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= t('pricing.plans.cloud.action') %></a>
-                    <% } else { %>
-                    <%# Cloud is being moved to new infrastructure: no register
-                        link, just the notice and the same email capture the
-                        waitlist section below posts to, tagged with its own
-                        source so we can see which form people used. %>
-                    <div class="plan-price">
-                        <div class="plan-amount"><span><%= t('pricing.plans.cloud.comingSoon') %></span></div>
-                        <div class="plan-price-note"><%= t('pricing.plans.cloud.comingSoonNote') %></div>
-                    </div>
-                    <ul class="plan-features">
-                        <% i18n.tList('pricing.plans.cloud.features', faqVars).forEach(function (feature) { %>
-                        <li><i class="fas fa-check"></i><%= feature %></li>
-                        <% }); %>
-                    </ul>
-                    <% if (joined) { %>
-                    <p class="waitlist-done" style="margin-top:28px;"><%= t('waitlist.joined') %></p>
-                    <% } else { %>
-                    <form class="waitlist-form" action="/waitlist" method="post" style="margin-top:28px;">
-                        <input type="text" name="company" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-                        <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
-                        <input type="hidden" name="source" value="pricing">
-                        <input type="hidden" name="locale" value="<%= i18n.locale %>">
-                        <button type="submit"><%= t('pricing.plans.cloud.notifySubmit') %></button>
-                    </form>
-                    <% } %>
-                    <% } %>
                 </div>
 
                 <%# Bullets here are work the visitor takes on, not benefits, so
@@ -882,9 +856,7 @@
             </div>
 
             <div class="selfhost-actions">
-                <% if (pricing.cloudOpen) { %>
                 <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('selfHost.ctaCloud') %></a>
-                <% } %>
                 <a href="https://docs.tududi.com" class="btn-ghost"><i class="fas fa-book"></i><%= t('selfHost.linkDocs') %></a>
             </div>
 
@@ -963,7 +935,7 @@
                 <h2 class="section-title" style="font-size:32px; margin-bottom:14px;"><%= t('finalCta.title') %></h2>
                 <p><%= t('finalCta.sub') %></p>
                 <div class="closing-actions">
-                    <a href="<%= pricing.cloudOpen ? appUrl + '/register' : '#waitlist' %>" class="btn-primary"><i class="fas fa-cloud"></i><%= pricing.cloudOpen ? t('finalCta.primary') : t('hero.ctaWaitlist') %></a>
+                    <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('finalCta.primary') %></a>
                     <a href="#pricing" class="btn-secondary"><%= t('finalCta.secondary') %></a>
                 </div>
                 <p class="closing-selfhost"><%= t('finalCta.selfHostPrefix') %> <a href="#self-host"><%= t('finalCta.selfHostLink') %></a></p>
@@ -972,22 +944,20 @@
     </section>
 
     <!--
-        Release-notes signup. Posts straight to the mailing-list provider in
-        TUDUDI_LANDING_NEWSLETTER_URL and renders nothing when none is set.
+        Release-notes signup. Posts to /waitlist on this host, which stores the
+        address in waitlist_subscribers.
 
         Sits after the comparison because it is the catch for everyone the three
         cards did not close: the ask is an email, not a card.
     -->
     <section class="waitlist" id="waitlist">
         <div class="waitlist-inner">
-            <%# Two jobs, one form. While Cloud is shut this is the waitlist the
-                hero points at; while it is open the same capture is the release
-                notes list, and it says so, because "Cloud is opening soon" sitting
-                under a live signup button is a plain contradiction. The open-state
-                strings are the footer's, already translated everywhere. %>
-            <h2 class="section-title" style="font-size:30px; margin-bottom:14px;"><%= pricing.cloudOpen ? t('footer.subTitle') : t('waitlist.title') %></h2>
+            <%# The release-notes list, with the same title as the footer's form.
+                The anchor and the /waitlist route keep their old names so
+                existing links and stored rows stay valid. %>
+            <h2 class="section-title" style="font-size:30px; margin-bottom:14px;"><%= t('footer.subTitle') %></h2>
             <p class="section-sub" style="font-size:16.5px; margin-bottom:28px;">
-                <%= pricing.cloudOpen ? t('footer.subBody') : t('waitlist.sub') %>
+                <%= t('footer.subBody') %>
             </p>
             <div class="waitlist-proof">
                 <a href="https://github.com/chrisvel/tududi" class="waitlist-proof-item" rel="noopener">
@@ -1003,17 +973,17 @@
                 </a>
             </div>
             <% if (joined) { %>
-            <p class="waitlist-done" data-testid="waitlist-joined"><%= t('waitlist.joined') %></p>
+            <p class="waitlist-done" data-testid="waitlist-joined"><%= t('signup.joined') %></p>
             <% } else { %>
             <form class="waitlist-form" action="/waitlist" method="post">
-                <input type="text" name="company" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+                <input type="text" name="company" value="" autocomplete="off" tabindex="-1" aria-hidden="true" class="hp-field">
                 <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
                 <input type="hidden" name="source" value="waitlist">
                 <input type="hidden" name="locale" value="<%= i18n.locale %>">
-                <button type="submit"><%= t('waitlist.submit') %></button>
+                <button type="submit"><%= t('footer.subSubmit') %></button>
             </form>
             <p class="waitlist-note">
-                <%= t('waitlist.note') %>
+                <%= t('signup.note') %>
             </p>
             <% } %>
         </div>

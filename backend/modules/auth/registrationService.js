@@ -12,19 +12,7 @@ const {
     getDefaultNotificationPreferences,
 } = require('../../utils/notificationPreferences');
 
-// While Cloud is shut there is nothing to sign up for: a new account would
-// land on a payment provider that cannot take money yet. The admin toggle
-// still applies on top, and a self-hosted instance is never affected, since
-// hosted mode is off there.
-const isCloudClosed = () => {
-    const config = getConfig();
-    return (
-        config.hosted?.enabled === true && config.pricing?.cloudOpen === false
-    );
-};
-
 const isRegistrationEnabled = async () => {
-    if (isCloudClosed()) return false;
     const setting = await Setting.findOne({
         where: { key: 'registration_enabled' },
     });
@@ -269,7 +257,6 @@ const cleanupExpiredTokens = async () => {
 
 module.exports = {
     isRegistrationEnabled,
-    isCloudClosed,
     setRegistrationEnabled,
     generateVerificationToken,
     createUnverifiedUser,

@@ -1042,9 +1042,7 @@
     },
     "captcha_required": "Completa la verifica e riprova.",
     "registration_successful": "Verifica il tuo indirizzo email",
-    "registration_email_sent": "Verifica il tuo indirizzo email per attivare l'account. Ti abbiamo inviato un link, controlla la tua casella di posta.",
-    "notify_joined": "Sei nella lista. Ti invieremo un'email il giorno in cui tududi Cloud apre.",
-    "notify_failed": "Non siamo riusciti a salvare il tuo indirizzo. Per favore riprova."
+    "registration_email_sent": "Verifica il tuo indirizzo email per attivare l'account. Ti abbiamo inviato un link, controlla la tua casella di posta."
   },
   "dropdown": {
     "createNew": "Crea Nuovo",

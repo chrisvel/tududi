@@ -1042,9 +1042,7 @@
     },
     "captcha_required": "Selesaikan verifikasi lalu coba lagi.",
     "registration_successful": "Verifikasi alamat email Anda",
-    "registration_email_sent": "Verifikasi alamat email Anda untuk mengaktifkan akun. Kami telah mengirim tautan, periksa kotak masuk Anda.",
-    "notify_joined": "Anda ada dalam daftar. Kami akan mengirimkan email kepada Anda pada hari tududi Cloud dibuka.",
-    "notify_failed": "Kami tidak dapat menyimpan alamat Anda. Silakan coba lagi."
+    "registration_email_sent": "Verifikasi alamat email Anda untuk mengaktifkan akun. Kami telah mengirim tautan, periksa kotak masuk Anda."
   },
   "dropdown": {
     "createNew": "Buat Baru",

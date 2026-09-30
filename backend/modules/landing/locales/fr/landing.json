@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "étoiles sur GitHub",
     "badgeMcp": "Serveur MCP intégré",
+    "badgeCloudOpen": "tududi Cloud est ouvert",
     "starsLoading": "Chargement du nombre d'étoiles",
     "ctaDemo": "Essayer la démo en direct",
     "demoNote": "Une véritable instance hébergée, remplie de données d'exemple, partagée et réinitialisée régulièrement",
     "screenshotAlt": "L'interface de tududi, affichant la vue Aujourd'hui et ses tâches planifiées",
-    "ctaWaitlist": "Rejoindre la liste d'attente",
     "cloudNote": "Aucun serveur à configurer. Mensuel ou annuel, résiliable à tout moment.",
     "ctaPrimary": "Démarrer sur tududi Cloud",
     "lede": "Domaines, objectifs, projets, tâches, notes et habitudes, dans un seul système. Créez un compte Cloud en une minute.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "ou",
         "launchNote": "Tarif annuel early bird, conservé tant que vous restez abonné.",
-        "comingSoon": "Ouverture dans quelques jours",
-        "comingSoonNote": "Nous migrons Cloud vers une nouvelle infrastructure. Laissez votre e-mail ci-dessous et nous vous préviendrons dès son retour.",
-        "notifySubmit": "Prévenez-moi",
         "action": "Commencer →",
         "features": [
           "Opérationnel en une minute, sans serveur à configurer",
@@ -312,13 +309,12 @@
     "sub": "La même application dans les deux cas. Ce qui change, c'est qui la gère, et ce que cela vous coûte."
   },
   "waitlist": {
-    "title": "Pas encore prêt ?",
-    "sub": "Laissez votre e-mail pour recevoir les notes de version et une nouvelle de temps en temps. Pas de spam, désinscription en un clic.",
     "placeholder": "vous@email.com",
-    "inputLabel": "Adresse e-mail",
-    "submit": "Prévenez-moi",
+    "inputLabel": "Adresse e-mail"
+  },
+  "signup": {
     "note": "Nous conservons votre adresse et la date à laquelle vous nous l'avez donnée, uniquement pour vous envoyer les notes de version. Nous ne la partageons jamais.",
-    "joined": "Vous êtes sur la liste. Nous vous écrirons à l'ouverture de tududi Cloud."
+    "joined": "Vous êtes inscrit. Les notes de version arriveront par e-mail."
   },
   "langs": {
     "heading": "L'application tududi est disponible en {{count}} langues dans le monde"

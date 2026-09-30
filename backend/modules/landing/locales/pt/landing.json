@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "estrelas no GitHub",
     "badgeMcp": "Servidor MCP integrado",
+    "badgeCloudOpen": "O tududi Cloud já está aberto",
     "starsLoading": "A carregar o número de estrelas",
     "ctaDemo": "Experimentar a demo ao vivo",
     "demoNote": "Uma instância alojada real, com dados de exemplo, partilhada e reiniciada regularmente",
     "screenshotAlt": "A interface do tududi, com a vista Hoje e as tarefas planeadas",
-    "ctaWaitlist": "Entrar na lista de espera",
     "cloudNote": "Nenhum servidor para configurar. Mensal ou anual, e você pode cancelar quando quiser.",
     "ctaPrimary": "Começar no tududi Cloud",
     "lede": "Áreas, metas, projetos, tarefas, notas e hábitos, em um sistema só. Crie uma conta Cloud em um minuto.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "ou",
         "launchNote": "Preço anual early bird, seu enquanto mantiver a subscrição.",
-        "comingSoon": "Abre dentro de dias",
-        "comingSoonNote": "Estamos a mudar o Cloud para uma nova infraestrutura. Deixe o seu e-mail abaixo e avisamos assim que voltar.",
-        "notifySubmit": "Avisem-me",
         "action": "Começar →",
         "features": [
           "Funcionando em um minuto, sem servidor para configurar",
@@ -312,13 +309,12 @@
     "sub": "A mesma aplicação nos dois casos. O que muda é quem a administra, e o que isso custa para você."
   },
   "waitlist": {
-    "title": "Ainda não está pronto?",
-    "sub": "Deixe o seu e-mail para receber notas de versão e uma novidade ocasional. Sem spam, cancele com um clique.",
     "placeholder": "voce@email.com",
-    "inputLabel": "Endereço de e-mail",
-    "submit": "Avisem-me",
+    "inputLabel": "Endereço de e-mail"
+  },
+  "signup": {
     "note": "Guardamos o seu endereço e a data em que no-lo deu, apenas para lhe enviar as notas de versão. Nunca o partilhamos.",
-    "joined": "Está na lista. Enviamos um e-mail quando o tududi Cloud abrir."
+    "joined": "Inscrição feita. As notas de versão chegam por email."
   },
   "langs": {
     "heading": "Disponível em {{count}} idiomas em todo o mundo"

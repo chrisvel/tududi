@@ -55,7 +55,7 @@ Read shared access through `permissionSources`, never `Permission` alone: group 
 | **CalDAVCalendar**, **CalDAVRemoteCalendar**, **CalDAVSyncState**, **CalDAVOccurrenceOverride** | `caldav_*.js` | CalDAV server and sync (see [CalDAV](11-caldav-sync.md)) |
 | **CalendarToken** | `calendar_token.js` | External calendar OAuth tokens |
 | **BillingAccount**, **BillingEvent**, **UsageCounter** | `billing_account.js`, `billing_event.js`, `usage_counter.js` | Subscriptions, webhook events and metered usage (see [Hosted Mode](17-hosted-mode.md)) |
-| **WaitlistSubscriber** | `waitlist_subscriber.js` | Cloud waitlist sign-ups |
+| **WaitlistSubscriber** | `waitlist_subscriber.js` | Release-notes signups from the marketing page (formerly the Cloud waitlist) |
 | **RateLimit** | `rate_limit.js` | Shared rate-limit store |
 | **Setting**, **Action** | `setting.js`, `action.js` | Instance key-value settings; audit trail of share actions (actor, verb, resource, target) |
 

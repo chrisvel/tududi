@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "sterren op GitHub",
     "badgeMcp": "MCP-server ingebouwd",
+    "badgeCloudOpen": "tududi Cloud is nu open",
     "starsLoading": "Aantal sterren wordt geladen",
     "ctaDemo": "Probeer de live demo",
     "demoNote": "Een echte gehoste instantie met voorbeeldgegevens, gedeeld en regelmatig gereset",
     "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken",
-    "ctaWaitlist": "Zet me op de wachtlijst",
     "cloudNote": "Geen server om op te zetten. Maandelijks of jaarlijks, en je kunt op elk moment opzeggen.",
     "ctaPrimary": "Begin op tududi Cloud",
     "lede": "Gebieden, doelen, projecten, taken, notities en gewoontes, in één systeem. Maak een Cloud-account in een minuut.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "of",
         "launchNote": "Early-bird jaarprijs, van jou zolang je geabonneerd blijft.",
-        "comingSoon": "Opent over een paar dagen",
-        "comingSoonNote": "We verhuizen Cloud naar nieuwe infrastructuur. Laat hieronder je e-mailadres achter, dan laten we het weten zodra het er weer is.",
-        "notifySubmit": "Houd me op de hoogte",
         "action": "Aan de slag →",
         "features": [
           "Binnen een minuut draaiend, zonder server om op te zetten",
@@ -312,13 +309,12 @@
     "sub": "Dezelfde applicatie in beide gevallen. Wat verschilt, is wie hem beheert, en wat je dat kost."
   },
   "waitlist": {
-    "title": "Nog niet zover?",
-    "sub": "Laat je e-mailadres achter voor releasenotes en af en toe een update. Geen spam, uitschrijven met één klik.",
     "placeholder": "jij@email.com",
-    "inputLabel": "E-mailadres",
-    "submit": "Houd me op de hoogte",
+    "inputLabel": "E-mailadres"
+  },
+  "signup": {
     "note": "We bewaren je adres en de datum waarop je het gaf, om je releasenotes te sturen en niets anders. We delen het nooit.",
-    "joined": "Je staat op de lijst. We mailen je zodra tududi Cloud opengaat."
+    "joined": "Je bent aangemeld. Release notes komen per e-mail."
   },
   "langs": {
     "heading": "Beschikbaar in {{count}} talen wereldwijd"
