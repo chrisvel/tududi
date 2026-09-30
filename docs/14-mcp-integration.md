@@ -182,7 +182,7 @@ List tasks with optional filtering by type, status, or project.
 **Parameters:**
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `type` | string | No | — | Filter: `today`, `upcoming`, `completed`, `archived`, `all` |
+| `type` | string | No | — | Filter: `today` (what the Today page shows: in progress, planned for today, due today, overdue), `upcoming` (due or deferred in the next 7 days), `completed`, `archived`, `all` |
 | `status` | string | No | — | Filter: `pending`, `in_progress`, `completed`, `archived` |
 | `project_id` | number | No | — | Filter by project ID |
 | `blocked` | boolean | No | — | `true`: only tasks with an open blocker. `false`: only tasks without one |

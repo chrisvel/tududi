@@ -255,7 +255,7 @@ describe('MCP Tools Integration', () => {
                 await Task.create({
                     user_id: user.id,
                     name: 'Active Task',
-                    status: 0,
+                    status: 1,
                 });
                 await Task.create({
                     user_id: user.id,
@@ -277,6 +277,108 @@ describe('MCP Tools Integration', () => {
                 expect(
                     content.tasks.some((t) => t.name === 'Active Task')
                 ).toBe(true);
+            });
+
+            it('should return only what the Today page shows for today type', async () => {
+                const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+                const nextMonth = new Date(
+                    Date.now() + 30 * 24 * 60 * 60 * 1000
+                );
+                await Task.create({
+                    user_id: user.id,
+                    name: 'In Progress Task',
+                    status: 1,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Overdue Task',
+                    status: 0,
+                    due_date: yesterday,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Unscheduled Task',
+                    status: 0,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Next Month Task',
+                    status: 0,
+                    due_date: nextMonth,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Done Task',
+                    status: 2,
+                    due_date: yesterday,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    { type: 'today' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                const names = content.tasks.map((t) => t.name).sort();
+                expect(names).toEqual(['In Progress Task', 'Overdue Task']);
+            });
+
+            it('should apply the status filter within today type', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'In Progress Task',
+                    status: 1,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Overdue Task',
+                    status: 0,
+                    due_date: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    { type: 'today', status: 'in_progress' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.tasks.map((t) => t.name)).toEqual([
+                    'In Progress Task',
+                ]);
+            });
+
+            it('should return tasks due in the next 7 days for upcoming type', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Soon Task',
+                    status: 0,
+                    due_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Next Month Task',
+                    status: 0,
+                    due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Unscheduled Task',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    { type: 'upcoming' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.tasks.map((t) => t.name)).toEqual(['Soon Task']);
             });
 
             it('should filter planned tasks by status using status 6', async () => {
