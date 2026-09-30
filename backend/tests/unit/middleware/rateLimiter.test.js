@@ -15,6 +15,7 @@ jest.mock('../../../config/config', () => {
                     authenticatedApi: { windowMs: 60000, max: 3 },
                     bearerFailure: { max: 2 },
                     passwordConfirm: { windowMs: 60000, max: 2 },
+                    caldavAuth: { max: 2 },
                 },
             };
         },
@@ -31,6 +32,7 @@ const {
     signInLinkLimiter,
     authLimiter,
     loginLimiter,
+    caldavAuthLimiter,
     requestIdentity,
 } = require('../../../middleware/rateLimiter');
 
@@ -55,9 +57,23 @@ const buildApp = (...limiters) => {
         }
         return res.status(401).json({ error: 'nope' });
     });
+    app.use((req, res, next) => {
+        if (req.headers['x-caldav-user']) {
+            req.caldavUsername = req.headers['x-caldav-user'];
+        }
+        next();
+    });
     app.post('/login', (req, res) => {
         if (req.body.password === 'right') return res.json({ ok: true });
         return res.status(401).json({ error: 'bad credentials' });
+    });
+    // CalDAV clients return multi-status on success; status < 400 must not
+    // consume the auth budget once skipSuccessfulRequests is enabled.
+    app.all('/caldav', (req, res) => {
+        if (req.headers['x-caldav-auth'] === 'bad') {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        return res.status(207).json({ ok: true });
     });
     return app;
 };
@@ -317,4 +333,34 @@ describe('the sign-in link routes', () => {
             expect(handlers).not.toContain(authLimiter);
         }
     );
+});
+
+describe('caldavAuthLimiter', () => {
+    const propfind = (
+        app,
+        ip,
+        { user = 'dav@example.com', bad = false } = {}
+    ) => {
+        const req = request(app)
+            .propfind('/caldav')
+            .set('X-Forwarded-For', ip)
+            .set('X-Caldav-User', user);
+        if (bad) req.set('X-Caldav-Auth', 'bad');
+        return req.send('<?xml version="1.0"?><D:propfind xmlns:D="DAV:"/>');
+    };
+
+    it('counts only failed Basic auth attempts', async () => {
+        const app = buildApp(caldavAuthLimiter);
+        const ip = nextIp();
+
+        // Successful CalDAV sync traffic must not exhaust the auth budget
+        // (iOS discovery alone exceeds the default max of 20).
+        for (let i = 0; i < 5; i++) {
+            await propfind(app, ip).expect(207);
+        }
+
+        await propfind(app, ip, { bad: true }).expect(401);
+        await propfind(app, ip, { bad: true }).expect(401);
+        await propfind(app, ip, { bad: true }).expect(429);
+    });
 });
