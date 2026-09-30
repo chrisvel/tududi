@@ -267,7 +267,7 @@
         "features": [
           "Running in a minute, with no server to set up",
           "Unlimited tasks, projects and notes, plus attachments",
-          "AI day planning with {{aiCredits}} AI credits a month, MCP, calendar feeds, CalDAV and the Telegram bot",
+          "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
           "Updates and daily backups handled for you, with {{proStorageGb}} GB of storage",
           "Export everything any time, delete your account yourself"
         ],
@@ -433,7 +433,7 @@
     "includes": [
       "Unlimited tasks, projects and notes",
       "Attachments and file uploads",
-      "AI day planning with {{aiCredits}} AI credits a month, MCP, calendar feeds, CalDAV and the Telegram bot",
+      "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
       "Daily backups and managed updates",
       "Support by email",
       "Export everything at any time"

@@ -266,7 +266,7 @@
         "features": [
           "Binnen een minuut draaiend, zonder server om op te zetten",
           "Onbeperkte taken, projecten en notities, plus bijlagen",
-          "Dagplanning met AI met {{aiCredits}} AI-credits per maand, MCP, agendafeeds, CalDAV en de Telegram-bot",
+          "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
           "Updates en dagelijkse backups voor je verzorgd, met {{proStorageGb}} GB opslag",
           "Exporteer alles op elk moment, verwijder je account zelf"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Onbeperkte taken, projecten en notities",
       "Bijlagen en bestandsuploads",
-      "Dagplanning met AI met {{aiCredits}} AI-credits per maand, MCP, agendafeeds, CalDAV en de Telegram-bot",
+      "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
       "Dagelijkse backups en beheerde updates",
       "Support via e-mail",
       "Exporteer alles, op elk moment"

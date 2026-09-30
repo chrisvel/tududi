@@ -266,7 +266,7 @@
         "features": [
           "Funcțional într-un minut, fără server de configurat",
           "Sarcini, proiecte și notițe nelimitate, plus atașamente",
-          "Planificarea zilei cu AI cu {{aiCredits}} credite AI pe lună, MCP, calendare, CalDAV și botul Telegram",
+          "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
           "Actualizări și backupuri zilnice gestionate pentru tine, cu {{proStorageGb}} GB de spațiu",
           "Exportă totul oricând, șterge-ți contul singur"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Sarcini, proiecte și notițe nelimitate",
       "Atașamente și încărcare de fișiere",
-      "Planificarea zilei cu AI cu {{aiCredits}} credite AI pe lună, MCP, calendare, CalDAV și botul Telegram",
+      "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
       "Backupuri zilnice și actualizări administrate",
       "Suport prin e-mail",
       "Exportă totul, oricând"

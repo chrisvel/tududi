@@ -266,7 +266,7 @@
         "features": [
           "Kurulacak sunucu olmadan bir dakikada çalışır",
           "Sınırsız görev, proje ve not, ayrıca ekler",
-          "Ayda {{aiCredits}} yapay zekâ kredisiyle gün planlama, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
+          "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
           "Sizin için halledilmiş güncellemeler ve günlük yedeklemeler, {{proStorageGb}} GB depolama ile",
           "Her şeyi istediğiniz zaman dışa aktarın, hesabınızı kendiniz silin"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Sınırsız görev, proje ve not",
       "Ekler ve dosya yüklemeleri",
-      "Ayda {{aiCredits}} yapay zekâ kredisiyle gün planlama, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
+      "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
       "Günlük yedeklemeler ve yönetilen güncellemeler",
       "E-posta ile destek",
       "Her şeyi istediğiniz zaman dışa aktarın"

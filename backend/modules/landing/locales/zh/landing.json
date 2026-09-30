@@ -266,7 +266,7 @@
         "features": [
           "一分钟内运行起来，无需搭建服务器",
           "无限任务、项目和笔记，加上附件",
-          "AI 每日规划，每月 {{aiCredits}} 个 AI 额度，MCP、日历订阅、CalDAV 和 Telegram 机器人",
+          "AI 每日规划、MCP、日历订阅、CalDAV 和 Telegram 机器人",
           "为您处理的更新和每日备份，附带 {{proStorageGb}} GB 存储空间",
           "随时导出所有内容，自行删除您的账户"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "无限任务、项目和笔记",
       "附件和文件上传",
-      "AI 每日规划，每月 {{aiCredits}} 个 AI 额度，MCP、日历订阅、CalDAV 和 Telegram 机器人",
+      "AI 每日规划、MCP、日历订阅、CalDAV 和 Telegram 机器人",
       "每日备份和托管更新",
       "电子邮件支持",
       "随时导出所有内容"

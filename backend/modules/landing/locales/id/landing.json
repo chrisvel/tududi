@@ -266,7 +266,7 @@
         "features": [
           "Berjalan dalam satu menit, tanpa server yang perlu disiapkan",
           "Tugas, proyek, dan catatan tak terbatas, plus lampiran",
-          "Perencanaan hari dengan AI dan {{aiCredits}} kredit AI per bulan, MCP, kalender, CalDAV, dan bot Telegram",
+          "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
           "Pembaruan dan cadangan harian yang diurus untuk Anda, dengan {{proStorageGb}} GB penyimpanan",
           "Ekspor semuanya kapan saja, hapus akun Anda sendiri"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Tugas, proyek, dan catatan tak terbatas",
       "Lampiran dan unggahan file",
-      "Perencanaan hari dengan AI dan {{aiCredits}} kredit AI per bulan, MCP, kalender, CalDAV, dan bot Telegram",
+      "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
       "Cadangan harian dan pembaruan yang dikelola",
       "Dukungan melalui email",
       "Ekspor semuanya, kapan saja"

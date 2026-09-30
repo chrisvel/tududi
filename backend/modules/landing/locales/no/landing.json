@@ -266,7 +266,7 @@
         "features": [
           "I gang på ett minutt, uten server å sette opp",
           "Ubegrenset med oppgaver, prosjekter og notater, pluss vedlegg",
-          "Dagsplanlegging med AI med {{aiCredits}} AI-kreditter i måneden, MCP, kalenderfeeder, CalDAV og Telegram-boten",
+          "Dagsplanlegging med AI, MCP, kalenderfeeder, CalDAV og Telegram-boten",
           "Oppdateringer og daglige sikkerhetskopier tatt hånd om for deg, med {{proStorageGb}} GB lagring",
           "Eksporter alt når som helst, slett kontoen din selv"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Ubegrenset med oppgaver, prosjekter og notater",
       "Vedlegg og filopplasting",
-      "Dagsplanlegging med AI med {{aiCredits}} AI-kreditter i måneden, MCP, kalenderfeeder, CalDAV og Telegram-boten",
+      "Dagsplanlegging med AI, MCP, kalenderfeeder, CalDAV og Telegram-boten",
       "Daglige sikkerhetskopier og administrerte oppdateringer",
       "Support via e-post",
       "Eksporter alt, når du vil"

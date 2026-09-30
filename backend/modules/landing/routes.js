@@ -213,7 +213,6 @@ function createLandingRouter(landing) {
                     proStorageGb: Math.round(
                         plans.pro.limits.storage_mb / 1000
                     ),
-                    aiCredits: plans.pro.limits.ai_credits_per_month,
                 },
                 appUrl,
                 dockerPulls: stats.dockerPulls,
@@ -271,7 +270,6 @@ function createLandingRouter(landing) {
                     proStorageGb: Math.round(
                         plans.pro.limits.storage_mb / 1000
                     ),
-                    aiCredits: plans.pro.limits.ai_credits_per_month,
                 },
                 appUrl,
                 dockerPulls: stats.dockerPulls,

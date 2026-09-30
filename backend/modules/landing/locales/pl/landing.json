@@ -266,7 +266,7 @@
         "features": [
           "Działające w minutę, bez serwera do skonfigurowania",
           "Nieograniczona liczba zadań, projektów i notatek, plus załączniki",
-          "Planowanie dnia z AI z {{aiCredits}} kredytami AI miesięcznie, MCP, kalendarze, CalDAV i bot Telegram",
+          "Planowanie dnia z AI, MCP, kalendarze, CalDAV i bot Telegram",
           "Aktualizacje i codzienne kopie zapasowe obsłużone za Ciebie, z {{proStorageGb}} GB miejsca",
           "Eksportuj wszystko w każdej chwili, usuń konto samodzielnie"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Nieograniczona liczba zadań, projektów i notatek",
       "Załączniki i przesyłanie plików",
-      "Planowanie dnia z AI z {{aiCredits}} kredytami AI miesięcznie, MCP, kalendarze, CalDAV i bot Telegram",
+      "Planowanie dnia z AI, MCP, kalendarze, CalDAV i bot Telegram",
       "Codzienne kopie zapasowe i zarządzane aktualizacje",
       "Wsparcie mailowe",
       "Eksportuj wszystko, w każdej chwili"

@@ -266,7 +266,7 @@
         "features": [
           "Hoạt động trong một phút, không cần máy chủ để thiết lập",
           "Nhiệm vụ, dự án và ghi chú không giới hạn, cộng với tệp đính kèm",
-          "Lập kế hoạch ngày bằng AI với {{aiCredits}} tín dụng AI mỗi tháng, MCP, lịch, CalDAV và bot Telegram",
+          "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
           "Các bản cập nhật và sao lưu hàng ngày được xử lý cho bạn, với {{proStorageGb}} GB dung lượng lưu trữ",
           "Xuất mọi thứ bất cứ lúc nào, tự xóa tài khoản của mình"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Nhiệm vụ, dự án và ghi chú không giới hạn",
       "Tệp đính kèm và tải lên tệp",
-      "Lập kế hoạch ngày bằng AI với {{aiCredits}} tín dụng AI mỗi tháng, MCP, lịch, CalDAV và bot Telegram",
+      "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
       "Sao lưu hàng ngày và cập nhật được quản lý",
       "Hỗ trợ qua email",
       "Xuất mọi thứ, bất cứ lúc nào"

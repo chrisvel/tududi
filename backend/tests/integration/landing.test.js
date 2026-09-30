@@ -193,16 +193,16 @@ describe('Landing page', () => {
         );
     });
 
-    it('quotes a 14-day money-back guarantee and the Cloud AI credits', async () => {
+    it('quotes a 14-day money-back guarantee and no AI credit count', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         expect(res.text).toContain('14-day money-back guarantee');
         expect(res.text).not.toContain('30-day');
-        expect(res.text).toContain('50 AI credits a month');
+        expect(res.text).not.toMatch(/AI credits/i);
         const pricing = res.text.slice(
             res.text.indexOf('id="pricing"'),
             res.text.indexOf('class="compare')
         );
-        expect(pricing).toContain('AI day planning with 50 AI credits a month');
+        expect(pricing).toContain('AI day planning, MCP, calendar feeds');
     });
 
     it('walks through capture, planning and Today before the feature grid', async () => {

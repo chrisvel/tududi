@@ -266,7 +266,7 @@
         "features": [
           "Funcionando en un minuto, sin servidor que configurar",
           "Tareas, proyectos y notas ilimitados, más adjuntos",
-          "Planificación con IA con {{aiCredits}} créditos de IA al mes, MCP, calendarios, CalDAV y el bot de Telegram",
+          "Planificación con IA, MCP, calendarios, CalDAV y el bot de Telegram",
           "Actualizaciones y copias de seguridad diarias gestionadas por nosotros, con {{proStorageGb}} GB de almacenamiento",
           "Exporta todo cuando quieras, elimina tu cuenta tú mismo"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Tareas, proyectos y notas ilimitados",
       "Adjuntos y subida de archivos",
-      "Planificación con IA con {{aiCredits}} créditos de IA al mes, MCP, calendarios, CalDAV y el bot de Telegram",
+      "Planificación con IA, MCP, calendarios, CalDAV y el bot de Telegram",
       "Copias de seguridad diarias y actualizaciones gestionadas",
       "Soporte por correo electrónico",
       "Exporta todo, cuando quieras"

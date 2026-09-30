@@ -266,7 +266,7 @@
         "features": [
           "Käynnissä minuutissa, ei palvelinta pystytettäväksi",
           "Rajattomat tehtävät, projektit ja muistiinpanot, plus liitteet",
-          "Päivän suunnittelu tekoälyllä, {{aiCredits}} tekoälykrediittiä kuussa, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
+          "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
           "Päivitykset ja päivittäiset varmuuskopiot hoidettuna puolestasi, ja {{proStorageGb}} GB tallennustilaa",
           "Vie kaikki milloin tahansa, poista tilisi itse"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Rajattomat tehtävät, projektit ja muistiinpanot",
       "Liitteet ja tiedostojen lataus",
-      "Päivän suunnittelu tekoälyllä, {{aiCredits}} tekoälykrediittiä kuussa, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
+      "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
       "Päivittäiset varmuuskopiot ja hallitut päivitykset",
       "Tuki sähköpostitse",
       "Vie kaikki, milloin tahansa"

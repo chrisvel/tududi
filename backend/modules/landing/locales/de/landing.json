@@ -266,7 +266,7 @@
         "features": [
           "In einer Minute startklar, ohne Server einzurichten",
           "Unbegrenzte Aufgaben, Projekte und Notizen, plus Anhänge",
-          "KI-Tagesplanung mit {{aiCredits}} KI-Credits pro Monat, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
+          "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
           "Updates und tägliche Backups für dich erledigt, mit {{proStorageGb}} GB Speicher",
           "Exportiere jederzeit alles, lösche dein Konto selbst"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Unbegrenzte Aufgaben, Projekte und Notizen",
       "Anhänge und Datei-Uploads",
-      "KI-Tagesplanung mit {{aiCredits}} KI-Credits pro Monat, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
+      "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
       "Tägliche Backups und verwaltete Updates",
       "Support per E-Mail",
       "Exportiere jederzeit alles"

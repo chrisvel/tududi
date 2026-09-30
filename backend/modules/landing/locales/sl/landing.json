@@ -266,7 +266,7 @@
         "features": [
           "Deluje v minuti, brez strežnika za namestitev",
           "Neomejene naloge, projekti in opombe, plus priloge",
-          "Načrtovanje dneva z UI in {{aiCredits}} kreditov UI na mesec, MCP, koledarski viri, CalDAV in Telegram bot",
+          "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
           "Posodobitve in dnevne varnostne kopije, poskrbljene za vas, z {{proStorageGb}} GB prostora",
           "Izvozite vse kadarkoli, izbrišite svoj račun sami"
         ],
@@ -395,7 +395,7 @@
     "includes": [
       "Neomejene naloge, projekti in opombe",
       "Priloge in nalaganje datotek",
-      "Načrtovanje dneva z UI in {{aiCredits}} kreditov UI na mesec, MCP, koledarski viri, CalDAV in Telegram bot",
+      "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
       "Dnevne varnostne kopije in upravljane posodobitve",
       "Podpora po e-pošti",
       "Izvozite vse, kadarkoli"
