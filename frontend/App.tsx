@@ -89,7 +89,7 @@ const App: React.FC = () => {
     const [loading, setLoading] = useState(true);
 
     if (!i18n.isInitialized) {
-        return <LoadingScreen />;
+        return <LoadingScreen fullScreen />;
     }
 
     const fetchCurrentUser = async () => {
