@@ -92,6 +92,13 @@ self.addEventListener('fetch', (event) => {
     // it must never be answered from a cache.
     if (url.pathname.startsWith('/api/public/')) return;
 
+    // File uploads go straight to the network. WebKit (every iOS browser)
+    // loses the file part of a FormData body when a service worker re-sends
+    // the request, so the server gets a cut-off form. They could not be
+    // queued offline anyway: the queue stores bodies as text.
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.startsWith('multipart/form-data')) return;
+
     if (url.pathname.startsWith('/api/')) {
         if (request.method === 'GET') {
             event.respondWith(handleApiGet(request));

@@ -1841,7 +1841,12 @@ const QuickCaptureInput = React.forwardRef<
                     uploaded.push(await upload(file));
                 } catch (error) {
                     console.error('Failed to attach file:', error);
-                    failed.push(file.name);
+                    // The server's reason (too large, storage full) is what
+                    // tells the user what to do about it.
+                    const reason = error instanceof Error ? error.message : '';
+                    failed.push(
+                        reason ? `${file.name} (${reason})` : file.name
+                    );
                 }
             }
             // A note shows its files in its text: images inline, the rest
