@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "연 {{price}}",
-      "aiCredits": "매월 AI 크레딧 {{count}}개",
       "businessOnly": "Business 요금제 전용",
       "separateApp": "별도 앱",
       "diy": "직접 구성"

@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/yıl",
-      "aiCredits": "Ayda {{count}} yapay zekâ kredisi",
       "businessOnly": "Yalnızca Business planı",
       "separateApp": "Ayrı uygulama",
       "diy": "Kendin kur"

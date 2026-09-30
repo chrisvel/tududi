@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/năm",
-      "aiCredits": "{{count}} tín dụng AI mỗi tháng",
       "businessOnly": "Chỉ gói Business",
       "separateApp": "Ứng dụng riêng",
       "diy": "Tự dựng"

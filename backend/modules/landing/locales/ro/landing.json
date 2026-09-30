@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/an",
-      "aiCredits": "{{count}} credite AI pe lună",
       "businessOnly": "Doar planul Business",
       "separateApp": "Aplicație separată",
       "diy": "Construiești singur"

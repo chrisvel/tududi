@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/v",
-      "aiCredits": "{{count}} tekoälykrediittiä kuussa",
       "businessOnly": "Vain Business-tilaus",
       "separateApp": "Erillinen sovellus",
       "diy": "Rakenna itse"

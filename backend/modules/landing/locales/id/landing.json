@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/thn",
-      "aiCredits": "{{count}} kredit AI per bulan",
       "businessOnly": "Hanya paket Business",
       "separateApp": "Aplikasi terpisah",
       "diy": "Bangun sendiri"

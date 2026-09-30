@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/年",
-      "aiCredits": "每月 {{count}} 个 AI 额度",
       "businessOnly": "仅 Business 方案",
       "separateApp": "独立应用",
       "diy": "需自行搭建"

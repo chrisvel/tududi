@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/год",
-      "aiCredits": "{{count}} ИИ-кредитов в месяц",
       "businessOnly": "Только тариф Business",
       "separateApp": "Отдельное приложение",
       "diy": "Собрать самому"

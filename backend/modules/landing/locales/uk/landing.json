@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/рік",
-      "aiCredits": "{{count}} ШІ-кредитів на місяць",
       "businessOnly": "Лише тариф Business",
       "separateApp": "Окремий застосунок",
       "diy": "Зібрати самому"

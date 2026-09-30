@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/έτος",
-      "aiCredits": "{{count}} μονάδες AI τον μήνα",
       "businessOnly": "Μόνο στο πλάνο Business",
       "separateApp": "Ξεχωριστή εφαρμογή",
       "diy": "Φτιάξ’ το μόνος σου"

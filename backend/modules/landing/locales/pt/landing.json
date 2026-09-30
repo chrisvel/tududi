@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/ano",
-      "aiCredits": "{{count}} créditos de IA por mês",
       "businessOnly": "Só no plano Business",
       "separateApp": "App separado",
       "diy": "Monte você mesmo"

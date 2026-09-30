@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/leto",
-      "aiCredits": "{{count}} kreditov UI na mesec",
       "businessOnly": "Samo paket Business",
       "separateApp": "Ločena aplikacija",
       "diy": "Naredite sami"

@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/jaar",
-      "aiCredits": "{{count}} AI-credits per maand",
       "businessOnly": "Alleen Business-abonnement",
       "separateApp": "Aparte app",
       "diy": "Zelf bouwen"

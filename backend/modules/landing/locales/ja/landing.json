@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/年",
-      "aiCredits": "毎月{{count}} AIクレジット",
       "businessOnly": "Businessプランのみ",
       "separateApp": "別アプリ",
       "diy": "自分で構築"

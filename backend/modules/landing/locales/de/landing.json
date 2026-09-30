@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/Jahr",
-      "aiCredits": "{{count}} KI-Credits pro Monat",
       "businessOnly": "Nur im Business-Tarif",
       "separateApp": "Separate App",
       "diy": "Selbst bauen"

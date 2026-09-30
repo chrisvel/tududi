@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/سنة",
-      "aiCredits": "{{count}} رصيد ذكاء اصطناعي شهريًا",
       "businessOnly": "خطة Business فقط",
       "separateApp": "تطبيق منفصل",
       "diy": "ابنه بنفسك"

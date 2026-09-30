@@ -292,7 +292,6 @@
     },
     "values": {
       "perYear": "{{price}}/år",
-      "aiCredits": "{{count}} AI-krediter i månaden",
       "businessOnly": "Endast Business-abonnemang",
       "separateApp": "Separat app",
       "diy": "Bygg själv"
