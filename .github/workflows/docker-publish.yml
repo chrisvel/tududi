@@ -24,7 +24,7 @@ permissions:
   contents: read
 
 jobs:
-  publish:
+  version:
     runs-on: ubuntu-latest
 
     outputs:
@@ -33,9 +33,6 @@ jobs:
       prerelease: ${{ steps.version.outputs.prerelease }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Resolve version
         id: version
         env:
@@ -66,8 +63,30 @@ jobs:
           echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
           echo "Publishing $VERSION (latest: $LATEST, prerelease: $PRERELEASE)"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+  # Each platform builds on a runner of its own CPU. Building arm64 under
+  # QEMU crashed npm install at random (Illegal instruction) and shipped an
+  # arm64 image without its node_modules (#1725).
+  build:
+    needs: version
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Platform slug
+        id: platform
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: echo "slug=${PLATFORM//\//-}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -78,22 +97,86 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            chrisvel/tududi:${{ steps.version.outputs.version }}
-            ${{ steps.version.outputs.latest == 'true' && 'chrisvel/tududi:latest' || '' }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,name=chrisvel/tududi,push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=${{ steps.platform.outputs.slug }}
+          cache-to: type=gha,scope=${{ steps.platform.outputs.slug }},mode=max
+
+      - name: Smoke test the image
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          docker run --rm --entrypoint sh "chrisvel/tududi@$DIGEST" -c \
+            "cd /app/backend && node -e \"require('sequelize'); require('sqlite3'); require('express')\""
+
+      - name: Export digest
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          mkdir -p /tmp/digests
+          touch "/tmp/digests/${DIGEST#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ steps.platform.outputs.slug }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # Tags are only moved once every platform built, so a version tag never
+  # points at a partial image.
+  publish:
+    needs: [version, build]
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ needs.version.outputs.version }}
+      latest: ${{ needs.version.outputs.latest }}
+      prerelease: ${{ needs.version.outputs.prerelease }}
+
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digest-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create and push the multi-platform tags
+        working-directory: /tmp/digests
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          LATEST: ${{ needs.version.outputs.latest }}
+        run: |
+          set -- -t "chrisvel/tududi:$VERSION"
+          if [ "$LATEST" = "true" ]; then
+            set -- "$@" -t chrisvel/tududi:latest
+          fi
+          for digest in *; do
+            set -- "$@" "chrisvel/tududi@sha256:$digest"
+          done
+          docker buildx imagetools create "$@"
 
       - name: Print digest
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
         run: |
-          echo "chrisvel/tududi:${{ steps.version.outputs.version }}@${{ steps.build.outputs.digest }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          docker buildx imagetools inspect "chrisvel/tududi:$VERSION" | tee -a "$GITHUB_STEP_SUMMARY"
 
   # The GitHub Release is cut only from a real tag push, and only after the
   # image it describes is on Docker Hub, so a release never points at
