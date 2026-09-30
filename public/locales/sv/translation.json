@@ -1036,15 +1036,14 @@
     "logoutSuccess": "Utloggning lyckades",
     "or_continue_with_email": "Eller fortsätt med e-post",
     "sign_in_with": "Logga in med {{provider}}",
+    "sign_up_with": "Registrera dig med {{provider}}",
     "oidc": {
       "completing_signin": "Avslutar inloggning...",
       "authenticating_with_provider": "Autentiserar med leverantör. Vänligen vänta..."
     },
     "captcha_required": "Slutför verifieringen och försök igen.",
     "registration_successful": "Bekräfta din e-postadress",
-    "registration_email_sent": "Bekräfta din e-postadress för att aktivera ditt konto. Vi har skickat en länk, kontrollera din inkorg.",
-    "notify_joined": "Du är på listan. Vi kommer att mejla dig den dag tududi Cloud öppnar.",
-    "notify_failed": "Vi kunde inte spara din adress. Vänligen försök igen."
+    "registration_email_sent": "Bekräfta din e-postadress för att aktivera ditt konto. Vi har skickat en länk, kontrollera din inkorg."
   },
   "dropdown": {
     "createNew": "Skapa ny",

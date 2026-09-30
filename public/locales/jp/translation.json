@@ -1011,15 +1011,14 @@
     "logoutSuccess": "ログアウト成功",
     "or_continue_with_email": "またはメールで続行",
     "sign_in_with": "{{provider}}でサインイン",
+    "sign_up_with": "{{provider}} で登録",
     "oidc": {
       "completing_signin": "サインインを完了しています...",
       "authenticating_with_provider": "プロバイダーで認証中です。お待ちください..."
     },
     "captcha_required": "認証を完了してから、もう一度お試しください。",
     "registration_successful": "メールアドレスを確認してください",
-    "registration_email_sent": "アカウントを有効にするには、メールアドレスを確認してください。リンクをお送りしましたので、受信トレイをご確認ください。",
-    "notify_joined": "リストに載っています。tududi Cloudがオープンする日にはメールをお送りします。",
-    "notify_failed": "アドレスを保存できませんでした。もう一度お試しください。"
+    "registration_email_sent": "アカウントを有効にするには、メールアドレスを確認してください。リンクをお送りしましたので、受信トレイをご確認ください。"
   },
   "dropdown": {
     "createNew": "新規作成",

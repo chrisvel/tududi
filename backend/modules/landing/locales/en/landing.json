@@ -20,6 +20,7 @@
   "hero": {
     "badgeStars": "stars on GitHub",
     "badgeMcp": "MCP server built in",
+    "badgeCloudOpen": "tududi Cloud is now open",
     "starsLoading": "Loading star count",
     "titleLine1": "Productivity made simple",
     "titleLine2": "",
@@ -28,7 +29,6 @@
     "ctaDemo": "Try the live demo",
     "demoNote": "A real hosted instance, seeded with sample data, shared and reset regularly",
     "screenshotAlt": "The tududi interface, showing the Today view with planned tasks",
-    "ctaWaitlist": "Join the waitlist",
     "cloudNote": "No server to set up. Monthly or yearly, and you can cancel any time."
   },
   "proof": {
@@ -272,10 +272,7 @@
           "Updates and daily backups handled for you, with {{proStorageGb}} GB of storage",
           "Export everything any time, delete your account yourself"
         ],
-        "action": "Get started →",
-        "comingSoon": "Opening in a few days",
-        "comingSoonNote": "We're moving Cloud to new infrastructure. Leave your email below and we'll let you know the moment it's back.",
-        "notifySubmit": "Notify me"
+        "action": "Get started →"
       }
     },
     "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 30-day money-back guarantee, no questions asked.",
@@ -387,13 +384,12 @@
     }
   },
   "waitlist": {
-    "title": "tududi Cloud is opening soon",
-    "sub": "Leave your email and we will tell you the day it opens. Nothing else, and one click to leave.",
     "placeholder": "you@email.com",
-    "inputLabel": "Email address",
-    "submit": "Notify me",
-    "note": "We store your address and the date you gave it, so we can tell you when Cloud opens. We never share it.",
-    "joined": "You are on the list. We will email you when tududi Cloud opens."
+    "inputLabel": "Email address"
+  },
+  "signup": {
+    "note": "We store your address and the date you gave it, only to send release notes. We never share it.",
+    "joined": "You are subscribed. Release notes will arrive by email."
   },
   "langs": {
     "heading": "The tududi app is available in {{count}} languages worldwide"

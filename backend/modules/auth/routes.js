@@ -23,7 +23,6 @@ router.get(
     authController.getPasswordAuthStatus
 );
 router.get('/csrf-token', csrfMiddleware, authController.getCsrfToken);
-router.post('/waitlist', authLimiter, authController.joinWaitlist);
 router.post('/register', authLimiter, requireCaptcha, authController.register);
 router.get('/verify-email', authLimiter, authController.verifyEmail);
 router.post(

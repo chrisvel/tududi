@@ -41,13 +41,6 @@ const displayPricing = () => ({
     // deliberately if that ever changes.
     standard: 50,
     launchActive: true,
-    // False while Cloud is being stood up on new infrastructure: the CTAs
-    // become "join the waitlist", the pricing card swaps to an "opening
-    // soon" notice with an email capture instead of the register link, and
-    // in hosted mode registration is closed with it (see
-    // modules/auth/registrationService). Reopen with
-    // TUDUDI_PRICING_JSON='{"cloudOpen":true}' or by flipping this back.
-    cloudOpen: false,
     ...parseJsonEnv(
         process.env.TUDUDI_PRICING_JSON ||
             process.env.TUDUDI_LANDING_PRICING_JSON

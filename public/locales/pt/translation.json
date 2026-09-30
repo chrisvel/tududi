@@ -1036,15 +1036,14 @@
     "logoutSuccess": "Logout Bem-sucedido",
     "or_continue_with_email": "Ou continue com e-mail",
     "sign_in_with": "Fazer login com {{provider}}",
+    "sign_up_with": "Registar com {{provider}}",
     "oidc": {
       "completing_signin": "Concluindo login...",
       "authenticating_with_provider": "Autenticando com o provedor. Por favor, aguarde..."
     },
     "captcha_required": "Conclua a verificação e tente novamente.",
     "registration_successful": "Verifique o seu endereço de e-mail",
-    "registration_email_sent": "Verifique o seu endereço de e-mail para ativar a sua conta. Enviámos-lhe uma ligação, verifique a sua caixa de entrada.",
-    "notify_joined": "Você está na lista. Enviaremos um e-mail no dia em que o tududi Cloud abrir.",
-    "notify_failed": "Não conseguimos salvar seu endereço. Por favor, tente novamente."
+    "registration_email_sent": "Verifique o seu endereço de e-mail para ativar a sua conta. Enviámos-lhe uma ligação, verifique a sua caixa de entrada."
   },
   "dropdown": {
     "createNew": "Criar Novo",

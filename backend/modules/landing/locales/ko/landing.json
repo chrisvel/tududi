@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "GitHub 스타",
     "badgeMcp": "MCP 서버 내장",
+    "badgeCloudOpen": "tududi Cloud 오픈",
     "starsLoading": "스타 수를 불러오는 중",
     "ctaDemo": "라이브 데모 사용해보기",
     "demoNote": "샘플 데이터가 들어 있는 실제 호스팅 인스턴스입니다. 공유되며 주기적으로 초기화됩니다",
     "screenshotAlt": "오늘 보기와 계획된 작업이 표시된 tududi 화면",
-    "ctaWaitlist": "대기자 명단에 등록",
     "cloudNote": "설정할 서버가 없습니다. 월간 또는 연간이며, 언제든지 취소할 수 있습니다.",
     "ctaPrimary": "tududi Cloud에서 시작하기",
     "lede": "영역, 목표, 프로젝트, 작업, 노트, 습관을 하나의 시스템에서. 1분 안에 Cloud 계정을 만드세요.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "또는",
         "launchNote": "얼리버드 연간 가격은 구독을 유지하는 동안 그대로 적용됩니다.",
-        "comingSoon": "며칠 뒤 오픈",
-        "comingSoonNote": "Cloud를 새로운 인프라로 옮기고 있습니다. 아래에 이메일을 남겨주시면 다시 열리는 즉시 알려드립니다.",
-        "notifySubmit": "알려 주세요",
         "action": "시작하기 →",
         "features": [
           "설정할 서버 없이 1분 안에 작동",
@@ -312,13 +309,12 @@
     "sub": "어느 쪽이든 동일한 애플리케이션입니다. 다른 것은 누가 운영하는지, 그리고 그것이 당신에게 얼마나 드는지입니다."
   },
   "waitlist": {
-    "title": "아직 결정하지 못하셨나요?",
-    "sub": "이메일을 남기시면 릴리스 노트와 가끔 소식을 보내드립니다. 스팸 없음, 클릭 한 번으로 구독 해지.",
     "placeholder": "you@email.com",
-    "inputLabel": "이메일 주소",
-    "submit": "알려 주세요",
+    "inputLabel": "이메일 주소"
+  },
+  "signup": {
     "note": "릴리스 노트를 보내 드리기 위해서만 주소와 남겨 주신 날짜를 보관합니다. 그 외 용도로는 쓰지 않으며 결코 공유하지 않습니다.",
-    "joined": "명단에 등록되었습니다. tududi Cloud가 열리면 이메일로 알려드립니다."
+    "joined": "구독되었습니다. 릴리스 노트를 이메일로 보내드립니다."
   },
   "langs": {
     "heading": "전 세계 {{count}}개 언어로 제공됩니다"

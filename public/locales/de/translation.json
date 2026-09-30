@@ -1431,15 +1431,14 @@
     "logoutSuccess": "Abmeldung erfolgreich",
     "or_continue_with_email": "Oder mit E-Mail fortfahren",
     "sign_in_with": "Mit {{provider}} anmelden",
+    "sign_up_with": "Mit {{provider}} registrieren",
     "oidc": {
       "completing_signin": "Anmeldung wird abgeschlossen...",
       "authenticating_with_provider": "Authentifizierung beim Anbieter. Bitte warten..."
     },
     "captcha_required": "Bitte schließe die Überprüfung ab und versuche es erneut.",
     "registration_successful": "Bestätige deine E-Mail-Adresse",
-    "registration_email_sent": "Bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren. Wir haben dir einen Link geschickt, sieh in deinem Posteingang nach.",
-    "notify_joined": "Du bist auf der Liste. Wir senden dir eine E-Mail, wenn die tududi Cloud öffnet.",
-    "notify_failed": "Wir konnten deine Adresse nicht speichern. Bitte versuche es erneut."
+    "registration_email_sent": "Bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren. Wir haben dir einen Link geschickt, sieh in deinem Posteingang nach."
   },
   "dropdown": {
     "createNew": "Neu erstellen",

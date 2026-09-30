@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "stjerner på GitHub",
     "badgeMcp": "MCP-server indbygget",
+    "badgeCloudOpen": "tududi Cloud er nu åben",
     "starsLoading": "Indlæser antal stjerner",
     "ctaDemo": "Prøv live-demoen",
     "demoNote": "En rigtig hostet instans med eksempeldata, som deles og nulstilles regelmæssigt",
     "screenshotAlt": "tududis brugerflade med I dag-visningen og de planlagte opgaver",
-    "ctaWaitlist": "Kom på ventelisten",
     "cloudNote": "Ingen server at sætte op. Månedlig eller årlig, og du kan opsige når som helst.",
     "ctaPrimary": "Kom i gang på tududi Cloud",
     "lede": "Områder, mål, projekter, opgaver, noter og vaner, i ét system. Opret en Cloud-konto på et minut.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "eller",
         "launchNote": "Early bird-årspris, din så længe du forbliver abonnent.",
-        "comingSoon": "Åbner om få dage",
-        "comingSoonNote": "Vi flytter Cloud til ny infrastruktur. Skriv din e-mail nedenfor, så siger vi til, så snart den er tilbage.",
-        "notifySubmit": "Giv mig besked",
         "action": "Kom i gang →",
         "features": [
           "Kørende på et minut, uden server at sætte op",
@@ -312,13 +309,12 @@
     "sub": "Samme applikation begge veje. Det, der er forskelligt, er hvem der driver den, og hvad det koster dig."
   },
   "waitlist": {
-    "title": "Ikke klar endnu?",
-    "sub": "Efterlad din e-mail for udgivelsesnoter og en nyhed i ny og næ. Ingen spam, afmeld med ét klik.",
     "placeholder": "dig@email.com",
-    "inputLabel": "E-mailadresse",
-    "submit": "Giv mig besked",
+    "inputLabel": "E-mailadresse"
+  },
+  "signup": {
     "note": "Vi gemmer din adresse og datoen, du gav os den, så vi kan sende dig udgivelsesnoter og intet andet. Vi deler den aldrig.",
-    "joined": "Du er på listen. Vi skriver til dig, når tududi Cloud åbner."
+    "joined": "Du er tilmeldt. Udgivelsesnoter kommer med e-mail."
   },
   "langs": {
     "heading": "Tilgængelig på {{count}} sprog verden over"

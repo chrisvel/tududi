@@ -1053,15 +1053,14 @@
     "logoutSuccess": "Logout Successful",
     "or_continue_with_email": "Or continue with email",
     "sign_in_with": "Sign in with {{provider}}",
+    "sign_up_with": "Sign up with {{provider}}",
     "oidc": {
       "completing_signin": "Completing sign-in...",
       "authenticating_with_provider": "Authenticating with provider. Please wait..."
     },
     "captcha_required": "Please complete the verification and try again.",
     "registration_successful": "Verify your email address",
-    "registration_email_sent": "Verify your email address to activate your account. We have sent you a link, check your inbox.",
-    "notify_joined": "You're on the list. We'll email you the day tududi Cloud opens.",
-    "notify_failed": "We could not save your address. Please try again."
+    "registration_email_sent": "Verify your email address to activate your account. We have sent you a link, check your inbox."
   },
   "dropdown": {
     "createNew": "Create New",

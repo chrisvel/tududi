@@ -312,7 +312,7 @@
             pointer-events: none;
         }
         .hero-inner { max-width: 900px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
-        /* Two badges now, so the bottom margin lives on the row rather than on
+        /* Several badges, so the bottom margin lives on the row rather than on
            each pill - otherwise a wrap on mobile doubles the gap under them. */
         .hero-badges {
             display: flex;
@@ -335,6 +335,12 @@
         }
         .hero-badge i { color: #1e86e5; }
         .hero-badge strong { font-weight: 700; color: #111827; }
+        .hero-badge-launch { color: #1e3a5f; font-weight: 600; text-decoration: none; background: #eef6fd; border-color: #d6e9fa; }
+        .hero-badge-launch:hover { background: #e2f0fc; }
+        .hero-badge-launch .hero-badge-arrow { font-size: 11px; transition: transform 0.15s ease; }
+        .hero-badge-launch:hover .hero-badge-arrow { transform: translateX(2px); }
+        [dir="rtl"] .hero-badge-launch .hero-badge-arrow { transform: scaleX(-1); }
+        [dir="rtl"] .hero-badge-launch:hover .hero-badge-arrow { transform: scaleX(-1) translateX(2px); }
         /* Placeholder for the star count until the GitHub fetch lands. Used by
            both the hero badge and the proof bar; inherits their text colour. */
         .stars-spinner {
@@ -1451,6 +1457,18 @@
         .closing-selfhost a:hover { color: #111827; }
 
         /* ---------- Waitlist ---------- */
+        /* Honeypot fields. Clipped in place rather than pushed off to the left,
+           which in a right-to-left page widens the document by the offset. */
+        .hp-field {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+        }
         .waitlist { background: #fbf8f3; padding: 80px 16px; border-top: 1px solid #f0eae1; }
         .waitlist-inner { max-width: 620px; margin: 0 auto; text-align: center; }
         .waitlist-form {

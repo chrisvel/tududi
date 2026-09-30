@@ -1036,15 +1036,14 @@
     "logoutSuccess": "Çıkış Başarılı",
     "or_continue_with_email": "Ya da e-posta ile devam et",
     "sign_in_with": "{{provider}} ile oturum aç",
+    "sign_up_with": "{{provider}} ile kaydol",
     "oidc": {
       "completing_signin": "Oturum açma işlemi tamamlanıyor...",
       "authenticating_with_provider": "Sağlayıcı ile kimlik doğrulama yapılıyor. Lütfen bekleyin..."
     },
     "captcha_required": "Lütfen doğrulamayı tamamlayıp tekrar deneyin.",
     "registration_successful": "E-posta adresinizi doğrulayın",
-    "registration_email_sent": "Hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın. Size bir bağlantı gönderdik, gelen kutunuzu kontrol edin.",
-    "notify_joined": "Listedesiniz. Tududi Cloud açıldığında size e-posta göndereceğiz.",
-    "notify_failed": "Adresinizi kaydedemedik. Lütfen tekrar deneyin."
+    "registration_email_sent": "Hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın. Size bir bağlantı gönderdik, gelen kutunuzu kontrol edin."
   },
   "dropdown": {
     "createNew": "Yeni Oluştur",

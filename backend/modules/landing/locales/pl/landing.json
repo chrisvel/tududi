@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "gwiazdek na GitHubie",
     "badgeMcp": "Wbudowany serwer MCP",
+    "badgeCloudOpen": "tududi Cloud jest już otwarte",
     "starsLoading": "Wczytywanie liczby gwiazdek",
     "ctaDemo": "Wypróbuj demo na żywo",
     "demoNote": "Prawdziwa hostowana instancja z przykładowymi danymi, współdzielona i regularnie resetowana",
     "screenshotAlt": "Interfejs tududi z widokiem Dziś i zaplanowanymi zadaniami",
-    "ctaWaitlist": "Dołącz do listy oczekujących",
     "cloudNote": "Żadnego serwera do skonfigurowania. Miesięcznie lub rocznie, i możesz anulować w każdej chwili.",
     "ctaPrimary": "Zacznij na tududi Cloud",
     "lede": "Obszary, cele, projekty, zadania, notatki i zwyczaje, w jednym systemie. Utwórz konto Cloud w minutę.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "lub",
         "launchNote": "Roczna cena early bird, Twoja tak długo, jak utrzymujesz subskrypcję.",
-        "comingSoon": "Otwieramy za kilka dni",
-        "comingSoonNote": "Przenosimy Cloud na nową infrastrukturę. Zostaw poniżej swój adres e-mail, a damy znać, gdy tylko wróci.",
-        "notifySubmit": "Powiadom mnie",
         "action": "Zacznij →",
         "features": [
           "Działające w minutę, bez serwera do skonfigurowania",
@@ -312,13 +309,12 @@
     "sub": "Ta sama aplikacja w obu przypadkach. Różni się, kto ją prowadzi i co to Cię kosztuje."
   },
   "waitlist": {
-    "title": "Jeszcze nie teraz?",
-    "sub": "Zostaw e-mail, a wyślemy informacje o nowych wersjach i od czasu do czasu jakąś nowość. Bez spamu, wypisanie jednym kliknięciem.",
     "placeholder": "ty@email.com",
-    "inputLabel": "Adres e-mail",
-    "submit": "Powiadom mnie",
+    "inputLabel": "Adres e-mail"
+  },
+  "signup": {
     "note": "Przechowujemy twój adres i datę, kiedy nam go podałeś, wyłącznie po to, by wysyłać ci informacje o nowych wersjach. Nigdy go nie udostępniamy.",
-    "joined": "Jesteś na liście. Napiszemy, gdy tududi Cloud zostanie otwarte."
+    "joined": "Zapisano. Informacje o wydaniach będą przychodzić e-mailem."
   },
   "langs": {
     "heading": "Dostępne w {{count}} językach na całym świecie"

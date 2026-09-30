@@ -20,11 +20,11 @@
   "hero": {
     "badgeStars": "estrellas en GitHub",
     "badgeMcp": "Servidor MCP integrado",
+    "badgeCloudOpen": "tududi Cloud ya está abierto",
     "starsLoading": "Cargando el número de estrellas",
     "ctaDemo": "Prueba la demo en vivo",
     "demoNote": "Una instancia alojada real, con datos de ejemplo, compartida y reiniciada con regularidad",
     "screenshotAlt": "La interfaz de tududi, con la vista Hoy y sus tareas planificadas",
-    "ctaWaitlist": "Únete a la lista de espera",
     "cloudNote": "Sin servidor que configurar. Mensual o anual, y puedes cancelar cuando quieras.",
     "ctaPrimary": "Empezar en tududi Cloud",
     "lede": "Áreas, objetivos, proyectos, tareas, notas y hábitos, en un solo sistema. Crea una cuenta Cloud en un minuto.",
@@ -263,9 +263,6 @@
         "name": "Cloud",
         "or": "o",
         "launchNote": "Precio anual early bird, tuyo mientras sigas suscrito.",
-        "comingSoon": "Abre en unos días",
-        "comingSoonNote": "Estamos moviendo Cloud a una nueva infraestructura. Déjanos tu correo abajo y te avisamos en cuanto vuelva.",
-        "notifySubmit": "Avísame",
         "action": "Empezar →",
         "features": [
           "Funcionando en un minuto, sin servidor que configurar",
@@ -312,13 +309,12 @@
     "sub": "La misma aplicación en ambos casos. Lo que cambia es quién la gestiona y lo que eso te cuesta."
   },
   "waitlist": {
-    "title": "¿Aún no te decides?",
-    "sub": "Déjanos tu correo para recibir las notas de versión y alguna novedad ocasional. Sin spam, baja con un clic.",
     "placeholder": "tu@email.com",
-    "inputLabel": "Dirección de correo",
-    "submit": "Avísame",
+    "inputLabel": "Dirección de correo"
+  },
+  "signup": {
     "note": "Guardamos tu dirección y la fecha en que nos la diste, solo para enviarte las notas de versión. Nunca la compartimos.",
-    "joined": "Estás en la lista. Te escribiremos cuando tududi Cloud abra."
+    "joined": "Te has suscrito. Recibirás las notas de versión por correo."
   },
   "langs": {
     "heading": "Disponible en {{count}} idiomas en todo el mundo"

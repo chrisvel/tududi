@@ -1036,15 +1036,14 @@
     "logoutSuccess": "Đăng xuất thành công",
     "or_continue_with_email": "Hoặc tiếp tục với email",
     "sign_in_with": "Đăng nhập với {{provider}}",
+    "sign_up_with": "Đăng ký bằng {{provider}}",
     "oidc": {
       "completing_signin": "Đang hoàn tất đăng nhập...",
       "authenticating_with_provider": "Đang xác thực với nhà cung cấp. Vui lòng chờ..."
     },
     "captcha_required": "Vui lòng hoàn tất xác minh và thử lại.",
     "registration_successful": "Xác minh địa chỉ email của bạn",
-    "registration_email_sent": "Xác minh địa chỉ email của bạn để kích hoạt tài khoản. Chúng tôi đã gửi một liên kết, hãy kiểm tra hộp thư.",
-    "notify_joined": "Bạn đã có trong danh sách. Chúng tôi sẽ gửi email cho bạn vào ngày tududi Cloud mở.",
-    "notify_failed": "Chúng tôi không thể lưu địa chỉ của bạn. Vui lòng thử lại."
+    "registration_email_sent": "Xác minh địa chỉ email của bạn để kích hoạt tài khoản. Chúng tôi đã gửi một liên kết, hãy kiểm tra hộp thư."
   },
   "dropdown": {
     "createNew": "Tạo mới",

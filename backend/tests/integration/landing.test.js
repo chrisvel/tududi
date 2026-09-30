@@ -16,22 +16,15 @@ const {
 describe('Landing page', () => {
     const config = getConfig();
     const original = { ...config.landing };
-    // pricing is a nested object, so the spread above holds the same
-    // reference: cloudOpen has to be restored on its own.
-    const originalCloudOpen = config.landing.pricing.cloudOpen;
 
     beforeAll(() => {
         config.landing.hosts = ['tududi.com', 'www.tududi.com'];
         config.landing.siteUrl = 'https://tududi.com';
         config.landing.appUrl = 'https://app.tududi.com';
-        // Most of what follows describes the page as it looks once Cloud is
-        // selling; the shut state has its own block at the end.
-        config.landing.pricing.cloudOpen = true;
     });
 
     afterAll(() => {
         Object.assign(config.landing, original);
-        config.landing.pricing.cloudOpen = originalCloudOpen;
     });
 
     it('renders the English page on a landing host', async () => {
@@ -320,7 +313,7 @@ describe('Landing page', () => {
         expect(res.text).toContain('<div id="root"');
     });
 
-    describe('the Cloud waitlist', () => {
+    describe('the release-notes signup', () => {
         const { WaitlistSubscriber } = require('../../models');
 
         it('stores an address and answers the same way twice', async () => {
@@ -419,6 +412,49 @@ describe('Landing page', () => {
             );
         });
 
+        describe('with the mail server check on', () => {
+            const dns = require('dns');
+            let mx;
+
+            beforeEach(() => {
+                config.waitlist.mxCheck = true;
+                mx = jest.spyOn(dns.promises.Resolver.prototype, 'resolveMx');
+            });
+
+            afterEach(() => {
+                config.waitlist.mxCheck = false;
+                jest.restoreAllMocks();
+            });
+
+            it('stores an address whose domain takes mail', async () => {
+                mx.mockResolvedValue([{ exchange: 'mx.tududi-test.dev' }]);
+                const email = `mx_${Date.now()}@tududi-test.dev`;
+                await request(app)
+                    .post('/waitlist')
+                    .set('Host', 'tududi.com')
+                    .type('form')
+                    .send({ email, source: 'footer' });
+                expect(
+                    await WaitlistSubscriber.count({ where: { email } })
+                ).toBe(1);
+            });
+
+            it('says the same thing but stores nothing for a domain with no mail', async () => {
+                mx.mockResolvedValue([{ exchange: '' }]);
+                const email = `nomx_${Date.now()}@tududi-test.dev`;
+                const res = await request(app)
+                    .post('/waitlist')
+                    .set('Host', 'tududi.com')
+                    .type('form')
+                    .send({ email, source: 'footer' });
+                expect(res.status).toBe(303);
+                expect(res.headers.location).toBe('/?joined=1#waitlist');
+                expect(
+                    await WaitlistSubscriber.count({ where: { email } })
+                ).toBe(0);
+            });
+        });
+
         describe('rate limiting', () => {
             const originalEnabled = config.rateLimiting.enabled;
             beforeAll(() => {
@@ -461,57 +497,62 @@ describe('Landing page', () => {
         });
     });
 
-    describe('while Cloud is shut', () => {
-        beforeAll(() => {
-            config.landing.pricing.cloudOpen = false;
-        });
-        afterAll(() => {
-            config.landing.pricing.cloudOpen = true;
-        });
-
-        it('sends the hero to the waitlist instead of registration', async () => {
+    describe('with Cloud open', () => {
+        it('announces it in the hero, linking to the Cloud page', async () => {
             const res = await request(app).get('/').set('Host', 'tududi.com');
-            expect(res.text).toContain('href="#waitlist"');
-            expect(res.text).toContain('action="/waitlist"');
-            expect(res.text).toContain('Join the waitlist');
-            expect(res.text).not.toContain('https://app.tududi.com/register');
-        });
-
-        it('captures the pricing card address on the site itself', async () => {
-            const res = await request(app).get('/').set('Host', 'tududi.com');
-            const pricing = res.text.slice(
-                res.text.indexOf('<section id="pricing"'),
-                res.text.indexOf('<section id="faq"')
+            expect(res.text).toContain('data-testid="cloud-open-badge"');
+            expect(res.text).toContain('tududi Cloud is now open');
+            const fr = await request(app).get('/fr').set('Host', 'tududi.com');
+            expect(fr.text).toMatch(
+                /href="\/fr\/cloud" class="hero-badge hero-badge-launch"/
             );
-            // Its own source, so the two forms can be told apart in the
-            // admin list, and it posts here rather than to a mail provider.
-            expect(pricing).toContain('action="/waitlist"');
-            expect(pricing).toContain('value="pricing"');
-            expect(pricing).not.toMatch(/action="https?:/);
         });
 
-        it('stores an address from the pricing card', async () => {
-            const email = `pricing_${Date.now()}@tududi-test.dev`;
-            const res = await request(app)
-                .post('/waitlist')
-                .set('Host', 'tududi.com')
-                .type('form')
-                .send({ email, source: 'pricing', locale: 'fr' });
-            expect(res.status).toBe(303);
-
-            const { WaitlistSubscriber } = require('../../models');
-            const row = await WaitlistSubscriber.findOne({ where: { email } });
-            expect(row).not.toBeNull();
-            expect(row.source).toBe('pricing');
-            expect(row.locale).toBe('fr');
+        it('sends every Cloud call to action to registration', async () => {
+            for (const path of ['/', '/cloud', '/de', '/de/cloud']) {
+                const res = await request(app)
+                    .get(path)
+                    .set('Host', 'tududi.com');
+                expect(res.text).toContain('https://app.tududi.com/register');
+                expect(res.text).not.toContain('href="#waitlist"');
+            }
         });
 
-        it('answers the joined redirect with the confirmation, not a cached page', async () => {
+        it('has no waitlist or opening-soon copy left', async () => {
+            const res = await request(app).get('/').set('Host', 'tududi.com');
+            expect(res.text).not.toMatch(/opening soon|Opening in a few days/i);
+            expect(res.text).not.toContain('Notify me');
+            expect(res.text).not.toContain('Join the waitlist');
+            expect(res.text).not.toContain('when Cloud opens');
+            expect(res.text).not.toContain('value="pricing"');
+        });
+
+        it('hides the honeypot without pushing a right-to-left page wide', async () => {
+            const res = await request(app).get('/ar').set('Host', 'tududi.com');
+            expect(res.text).toContain('name="company"');
+            expect(res.text).toContain('class="hp-field"');
+            expect(res.text).not.toContain('left:-9999px');
+        });
+
+        it('offers release notes in the signup section', async () => {
+            const res = await request(app).get('/').set('Host', 'tududi.com');
+            const section = res.text.slice(
+                res.text.indexOf('<section class="waitlist"')
+            );
+            expect(section).toContain('Release notes by email');
+            expect(section).toContain('only to send release notes');
+        });
+
+        it('confirms a release-notes signup, not a waitlist place', async () => {
             await request(app).get('/').set('Host', 'tududi.com');
             const res = await request(app)
                 .get('/?joined=1')
                 .set('Host', 'tududi.com');
             expect(res.text).toContain('data-testid="waitlist-joined"');
+            expect(res.text).toContain(
+                'You are subscribed. Release notes will arrive by email.'
+            );
+            expect(res.text).not.toContain('when tududi Cloud opens');
         });
     });
 

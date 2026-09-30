@@ -1037,15 +1037,14 @@
     "logoutSuccess": "Utlogging vellykket",
     "or_continue_with_email": "Eller fortsett med e-post",
     "sign_in_with": "Logg inn med {{provider}}",
+    "sign_up_with": "Registrer deg med {{provider}}",
     "oidc": {
       "completing_signin": "Fullfører pålogging...",
       "authenticating_with_provider": "Autentiserer med leverandør. Vennligst vent..."
     },
     "captcha_required": "Fullfør verifiseringen og prøv igjen.",
     "registration_successful": "Bekreft e-postadressen din",
-    "registration_email_sent": "Bekreft e-postadressen din for å aktivere kontoen. Vi har sendt deg en lenke, sjekk innboksen din.",
-    "notify_joined": "Du er på listen. Vi sender deg en e-post den dagen tududi Cloud åpner.",
-    "notify_failed": "Vi kunne ikke lagre adressen din. Vennligst prøv igjen."
+    "registration_email_sent": "Bekreft e-postadressen din for å aktivere kontoen. Vi har sendt deg en lenke, sjekk innboksen din."
   },
   "dropdown": {
     "createNew": "Opprett ny",
