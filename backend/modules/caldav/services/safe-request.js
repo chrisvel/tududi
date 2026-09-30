@@ -1,5 +1,6 @@
 const axios = require('axios');
 const dns = require('dns');
+const net = require('net');
 const http = require('http');
 const https = require('https');
 const { URL } = require('url');
@@ -9,6 +10,7 @@ const {
     UnsafeUrlError,
     assertPublicHostname,
     isPrivateOrReservedIp,
+    isLinkLocalIp,
 } = require('../../url/ssrfGuard');
 
 const MAX_REDIRECTS = 5;
@@ -22,6 +24,31 @@ const PRIVATE_ADDRESS_MESSAGE =
     'CALDAV_ALLOW_PRIVATE_HOSTS=true.';
 
 const allowPrivateHosts = () => !!getConfig().caldav?.allowPrivateHosts;
+
+// Allowing private hosts is for CalDAV servers on the same network. It never
+// opens link-local addresses, where the cloud metadata service lives.
+const LINK_LOCAL_MESSAGE =
+    'Cannot connect to link-local or cloud metadata addresses.';
+
+async function assertNotLinkLocal(hostname) {
+    const bare =
+        hostname.startsWith('[') && hostname.endsWith(']')
+            ? hostname.slice(1, -1)
+            : hostname;
+    let addresses;
+    if (net.isIP(bare)) {
+        addresses = [{ address: bare }];
+    } else {
+        try {
+            addresses = await dns.promises.lookup(bare, { all: true });
+        } catch {
+            return; // Unresolvable: the request itself will fail.
+        }
+    }
+    if (addresses.some(({ address }) => isLinkLocalIp(address))) {
+        throw new AppError(LINK_LOCAL_MESSAGE, 400);
+    }
+}
 
 // A remote calendar URL is user input that drives a server-side request, so
 // it is checked before every request (not only when it is saved) and again
@@ -40,6 +67,7 @@ async function assertSafeCalDavUrl(urlLike, { requireHttps = false } = {}) {
     }
 
     if (allowPrivateHosts()) {
+        await assertNotLinkLocal(parsed.hostname);
         return parsed;
     }
 
@@ -74,6 +102,10 @@ function guardedLookup(hostname, options, callback) {
 
     dns.lookup(hostname, { ...options, all: true }, (error, addresses) => {
         if (error) return callback(error);
+
+        if (addresses.some(({ address }) => isLinkLocalIp(address))) {
+            return callback(new AppError(LINK_LOCAL_MESSAGE, 400));
+        }
 
         if (
             !allowPrivateHosts() &&

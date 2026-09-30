@@ -144,6 +144,30 @@ function isPrivateIpv6(ip) {
     return false;
 }
 
+// Link-local addresses, which include every cloud provider's instance
+// metadata service (169.254.169.254, fd00:ec2::254). Nothing a user points
+// the server at legitimately lives there, so this stays blocked even where a
+// setting allows other private addresses (CALDAV_ALLOW_PRIVATE_HOSTS).
+function isLinkLocalIp(ip) {
+    if (net.isIPv4(ip)) {
+        return isIpv4InCidr(ip, '169.254.0.0/16');
+    }
+    if (!net.isIPv6(ip)) {
+        return false;
+    }
+    const normalized = ip.toLowerCase();
+    const embeddedIpv4 = extractEmbeddedIpv4(normalized);
+    if (embeddedIpv4) {
+        return isIpv4InCidr(embeddedIpv4, '169.254.0.0/16');
+    }
+    if (/^fe[89ab][0-9a-f]:/.test(normalized)) {
+        return true;
+    }
+    const groups = expandIpv6Groups(normalized);
+    const awsMetadata = [0xfd00, 0x0ec2, 0, 0, 0, 0, 0, 0x0254];
+    return !!groups && groups.every((g, i) => g === awsMetadata[i]);
+}
+
 function isPrivateOrReservedIp(ip) {
     if (net.isIPv4(ip)) {
         return isPrivateIpv4(ip);
@@ -248,5 +272,6 @@ module.exports = {
     assertSafeUrl,
     assertPublicHostname,
     isPrivateOrReservedIp,
+    isLinkLocalIp,
     publicOnlyLookup,
 };
