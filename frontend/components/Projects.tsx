@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { MagnifyingGlassIcon, Squares2X2Icon } from '@heroicons/react/24/solid';
+import {
+    Bars3Icon,
+    MagnifyingGlassIcon,
+    Squares2X2Icon,
+} from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import ProjectModal from './Project/ProjectModal';
 import IconSortDropdown from './Shared/IconSortDropdown';
@@ -45,6 +49,10 @@ import {
 import ProjectShareModal from './Project/ProjectShareModal';
 import { useToast } from './Shared/ToastContext';
 import { saveProjectAsTemplate } from '../utils/templatesService';
+import { fetchProfile, updateUiSettings } from '../utils/profileService';
+import ProjectsListSettings, {
+    ProjectsListFilters,
+} from './Project/ProjectsListSettings';
 
 // Custom order: projects without a position (new ones) come first, newest
 // first, then the rest by the position the user dragged them to.
@@ -90,6 +98,34 @@ const compareProjects = (a: Project, b: Project, orderBy: string) => {
     if (valueA < valueB) return isAsc ? -1 : 1;
     if (valueA > valueB) return isAsc ? 1 : -1;
     return 0;
+};
+
+const LIST_FILTERS_KEY = 'projectsListFilters';
+
+const readCachedListFilters = (): ProjectsListFilters => {
+    const defaults = { showSomeday: false };
+    try {
+        const cached = localStorage.getItem(LIST_FILTERS_KEY);
+        if (cached) {
+            const { showSomeday } = JSON.parse(cached);
+            return { showSomeday: showSomeday === true };
+        }
+        // Carry over the older someday-only toggle
+        if (localStorage.getItem('projectsSomedayFilter') === '1') {
+            return { ...defaults, showSomeday: true };
+        }
+    } catch {
+        // ignore storage errors
+    }
+    return defaults;
+};
+
+const cacheListFilters = (filters: ProjectsListFilters) => {
+    try {
+        localStorage.setItem(LIST_FILTERS_KEY, JSON.stringify(filters));
+    } catch {
+        // ignore storage errors
+    }
 };
 
 const Projects: React.FC = () => {
@@ -147,7 +183,42 @@ const Projects: React.FC = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const statusFilter = searchParams.get('status') || 'not_completed';
-    const somedayFilter = searchParams.get('someday') === '1';
+    const [listFilters, setListFilters] = useState<ProjectsListFilters>(
+        readCachedListFilters
+    );
+    const somedayFilter = listFilters.showSomeday;
+
+    // The saved settings live on the user; the local copy only avoids a
+    // flash of hidden projects before the profile loads.
+    useEffect(() => {
+        let cancelled = false;
+        fetchProfile()
+            .then((profile) => {
+                const saved = profile.ui_settings?.project?.list?.showSomeday;
+                if (cancelled || typeof saved !== 'boolean') return;
+                const next = { showSomeday: saved };
+                setListFilters(next);
+                cacheListFilters(next);
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const handleListFiltersChange = (next: ProjectsListFilters) => {
+        setListFilters(next);
+        cacheListFilters(next);
+        updateUiSettings({ project: { list: next } }).catch((error) => {
+            console.error('Error saving projects settings:', error);
+            showErrorToast(
+                t(
+                    'projects.listSettings.saveError',
+                    'Failed to save projects settings'
+                )
+            );
+        });
+    };
 
     // Restore persisted filters from localStorage on first mount (URL params take precedence)
     useEffect(() => {
@@ -166,14 +237,6 @@ const Projects: React.FC = () => {
             const saved = localStorage.getItem('projectsAreaFilter');
             if (saved) {
                 params.set('area', saved);
-                changed = true;
-            }
-        }
-
-        if (!params.has('someday')) {
-            const saved = localStorage.getItem('projectsSomedayFilter');
-            if (saved === '1') {
-                params.set('someday', '1');
                 changed = true;
             }
         }
@@ -204,10 +267,6 @@ const Projects: React.FC = () => {
         { value: 'custom:asc', label: t('sort.custom', 'Custom') },
     ];
     const isCustomOrder = orderBy.startsWith('custom:');
-    // Status and area show on the page; someday lives in the menu, so the
-    // menu marks it when someday projects are shown.
-    const filtersActive = somedayFilter;
-
     const sensors = useSortableSensors();
 
     // Filter options for dropdowns
@@ -233,6 +292,7 @@ const Projects: React.FC = () => {
             value: 'not_completed',
             label: t('projects.filters.notCompleted', 'Not Completed'),
         },
+        { value: 'shared', label: t('projects.filters.shared', 'Shared') },
     ];
 
     const areaOptions: FilterOption[] = [
@@ -336,12 +396,13 @@ const Projects: React.FC = () => {
         const params = new URLSearchParams(searchParams);
         params.set('status', 'all');
         params.delete('area');
-        params.set('someday', '1');
         localStorage.setItem('projectsStatusFilter', 'all');
         localStorage.setItem('projectsAreaFilter', '');
-        localStorage.setItem('projectsSomedayFilter', '1');
         setSearchParams(params);
         setSearchQuery('');
+        if (!listFilters.showSomeday) {
+            handleListFiltersChange({ showSomeday: true });
+        }
     };
 
     const handleEditProject = (project: Project) => {
@@ -454,18 +515,6 @@ const Projects: React.FC = () => {
         setSearchParams(params);
     };
 
-    const handleSomedayToggle = () => {
-        const params = new URLSearchParams(searchParams);
-        if (somedayFilter) {
-            params.delete('someday');
-            localStorage.setItem('projectsSomedayFilter', '0');
-        } else {
-            params.set('someday', '1');
-            localStorage.setItem('projectsSomedayFilter', '1');
-        }
-        setSearchParams(params);
-    };
-
     const handleAreaFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
@@ -493,6 +542,10 @@ const Projects: React.FC = () => {
                 (project) =>
                     project.status !== 'done' && project.status !== 'cancelled'
             );
+        } else if (statusFilter === 'shared') {
+            filteredProjects = filteredProjects.filter(
+                (project) => project.is_shared
+            );
         } else if (statusFilter !== 'all') {
             filteredProjects = filteredProjects.filter(
                 (project) => project.status === statusFilter
@@ -507,7 +560,7 @@ const Projects: React.FC = () => {
             });
         }
 
-        // Hide someday-tagged projects unless the button is active
+        // Hide someday-tagged projects unless the setting shows them
         if (!somedayFilter) {
             filteredProjects = filteredProjects.filter(
                 (project) =>
@@ -652,8 +705,42 @@ const Projects: React.FC = () => {
                         >
                             <MagnifyingGlassIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-200" />
                         </button>
-                        {/* Sort, view and filters in one menu, like the
-                            other list pages */}
+                        <div
+                            className="flex items-center rounded-lg bg-gray-100 dark:bg-gray-800 p-0.5"
+                            role="group"
+                            aria-label={t('projects.viewAs', 'View')}
+                        >
+                            {(
+                                [
+                                    [
+                                        'cards',
+                                        Squares2X2Icon,
+                                        t('projects.cardViewAriaLabel'),
+                                    ],
+                                    [
+                                        'list',
+                                        Bars3Icon,
+                                        t('projects.listViewAriaLabel'),
+                                    ],
+                                ] as const
+                            ).map(([mode, Icon, label]) => (
+                                <button
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => setViewMode(mode)}
+                                    className={`p-1 sm:p-1.5 rounded-md focus:outline-none transition-colors ${
+                                        viewMode === mode
+                                            ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    }`}
+                                    aria-label={label}
+                                    aria-pressed={viewMode === mode}
+                                    title={label}
+                                >
+                                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                                </button>
+                            ))}
+                        </div>
                         <IconSortDropdown
                             options={sortOptions}
                             value={orderBy}
@@ -662,61 +749,10 @@ const Projects: React.FC = () => {
                             title={t('tasks.sortBy', 'Sort by')}
                             dropdownLabel={t('tasks.sortBy', 'Sort by')}
                             align="right"
-                            active={filtersActive}
-                            sections={[
-                                {
-                                    key: 'view',
-                                    label: t('projects.viewAs', 'View'),
-                                    options: [
-                                        {
-                                            value: 'cards',
-                                            label: t(
-                                                'projects.cardViewAriaLabel'
-                                            ),
-                                        },
-                                        {
-                                            value: 'list',
-                                            label: t(
-                                                'projects.listViewAriaLabel'
-                                            ),
-                                        },
-                                    ],
-                                    value: viewMode,
-                                    onChange: (value) =>
-                                        setViewMode(value as 'cards' | 'list'),
-                                },
-                                {
-                                    key: 'someday',
-                                    label: t(
-                                        'projects.filters.someday',
-                                        'Someday'
-                                    ),
-                                    options: [
-                                        {
-                                            value: 'hide',
-                                            label: t(
-                                                'projects.filters.somedayHide',
-                                                'Hide'
-                                            ),
-                                        },
-                                        {
-                                            value: 'show',
-                                            label: t(
-                                                'projects.filters.somedayShow',
-                                                'Show'
-                                            ),
-                                        },
-                                    ],
-                                    value: somedayFilter ? 'show' : 'hide',
-                                    onChange: (value) => {
-                                        if (
-                                            (value === 'show') !==
-                                            somedayFilter
-                                        )
-                                            handleSomedayToggle();
-                                    },
-                                },
-                            ]}
+                        />
+                        <ProjectsListSettings
+                            value={listFilters}
+                            onChange={handleListFiltersChange}
                         />
                         {templatesEnabled && (
                             <Link

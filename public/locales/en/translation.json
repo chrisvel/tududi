@@ -1460,12 +1460,19 @@
       "all": "All",
       "allAreas": "All Areas",
       "notCompleted": "Not Completed",
+      "shared": "Shared",
       "someday": "Someday",
       "somedayTooltip": "Projects tagged \"someday\" are hidden by default. Click to reveal them.",
       "systemTagCannotBeDeleted": "System tags cannot be deleted",
       "systemTagCannotBeRenamed": "System tags cannot be renamed",
       "somedayHide": "Hide",
       "somedayShow": "Show"
+    },
+    "listSettings": {
+      "title": "Projects settings",
+      "showSomeday": "Show someday projects",
+      "showSomedayHint": "Projects tagged #someday.",
+      "saveError": "Failed to save projects settings"
     },
     "noResults": "No projects",
     "reorderError": "Failed to save project order",

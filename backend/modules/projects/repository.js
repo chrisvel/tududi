@@ -95,6 +95,10 @@ class ProjectsRepository extends BaseRepository {
         );
     }
 
+    async getSharedProjectUids(projectUids) {
+        return permissionSources.findSharedResourceUids('project', projectUids);
+    }
+
     /**
      * Find project by UID (simple).
      */
