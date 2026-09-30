@@ -37,6 +37,7 @@ import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import { ownerAttachmentsApi } from '../../utils/attachmentsService';
 import { noteLinkFor } from '../../utils/noteAttachmentLinks';
+import { takePickedFiles } from '../Capture/useCaptureFiles';
 import {
     filesToAttachFromPaste,
     nameForPastedFile,
@@ -562,9 +563,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 multiple
                 hidden
                 data-testid="note-file-input"
-                onChange={(e) => {
-                    const picked = Array.from(e.target.files ?? []);
-                    e.target.value = '';
+                onChange={async (e) => {
+                    const picked = await takePickedFiles(e.currentTarget);
                     const view = viewRef.current;
                     if (!view || picked.length === 0) return;
                     void uploadIntoEditor(

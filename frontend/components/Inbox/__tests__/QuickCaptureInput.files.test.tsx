@@ -290,6 +290,34 @@ describe('QuickCaptureInput files', () => {
         );
     });
 
+    it('locks Add with a spinner while the files upload', async () => {
+        let finishUpload!: (value: unknown) => void;
+        (uploadInboxAttachment as jest.Mock).mockReturnValue(
+            new Promise((resolve) => {
+                finishUpload = resolve;
+            })
+        );
+        renderBox();
+        await paste([screenshot()]);
+        type('Receipt');
+
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('capture-add'));
+        });
+
+        const add = screen.getByTestId('capture-add');
+        expect(add).toBeDisabled();
+        expect(add).toHaveTextContent('Uploading...');
+        expect(screen.getByTestId('capture-add-spinner')).toBeInTheDocument();
+
+        await act(async () => {
+            finishUpload({ uid: 'att-1', original_filename: 'x.png' });
+        });
+
+        expect(screen.queryByTestId('capture-add-spinner')).toBeNull();
+        expect(screen.getByTestId('capture-add')).toHaveTextContent('Add');
+    });
+
     it('refuses a file over the upload limit', async () => {
         renderBox();
         const big = new File([new Uint8Array(2 * 1024 * 1024)], 'big.zip', {
