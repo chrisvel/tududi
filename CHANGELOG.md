@@ -5,6 +5,8 @@ Notable changes to tududi. Versions match the git tags and the
 
 ## Unreleased
 
+## 1.6.0
+
 ### Changed
 
 - tududi Cloud is open: the marketing page links every Cloud call to action
