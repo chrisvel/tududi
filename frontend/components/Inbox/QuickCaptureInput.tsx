@@ -214,6 +214,10 @@ const QuickCaptureInput = React.forwardRef<
                 ? captureSettings.enterTouch
                 : captureSettings.enterKeyboard) === 'save';
         const [isSaving, setIsSaving] = useState(false);
+        // Picked files are read into memory first, then uploaded after the
+        // item is saved; Add stays locked through both.
+        const [isPreparingFiles, setIsPreparingFiles] = useState(false);
+        const [isUploading, setIsUploading] = useState(false);
         const { showSuccessToast, showErrorToast } = useToast();
         const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
         const fieldRef = useRef<HTMLDivElement>(null);
@@ -1895,7 +1899,7 @@ const QuickCaptureInput = React.forwardRef<
             // becomes the title.
             const raw =
                 inputText.trim() || (withFiles ? titleFromFiles(files) : '');
-            if (!raw || isSaving) return;
+            if (!raw || isSaving || isPreparingFiles) return;
 
             const texts = splitCaptureText(raw, captureSettings.oneItemPerLine);
             const captured: CapturedItem[] = [];
@@ -1939,7 +1943,15 @@ const QuickCaptureInput = React.forwardRef<
                 if (withFiles) {
                     const toUpload = files;
                     clearFiles();
-                    attached = await uploadCaptureFiles(captured[0], toUpload);
+                    setIsUploading(true);
+                    try {
+                        attached = await uploadCaptureFiles(
+                            captured[0],
+                            toUpload
+                        );
+                    } finally {
+                        setIsUploading(false);
+                    }
                 }
                 finish(captured, [], attached);
             } catch (error) {
@@ -2427,9 +2439,10 @@ const QuickCaptureInput = React.forwardRef<
                         hidden
                         data-testid="capture-file-input"
                         onChange={(e) => {
-                            void takePickedFiles(e.currentTarget).then(
-                                attachFiles
-                            );
+                            setIsPreparingFiles(true);
+                            void takePickedFiles(e.currentTarget)
+                                .then(attachFiles)
+                                .finally(() => setIsPreparingFiles(false));
                         }}
                     />
                     <div className="order-3 sm:order-2 ml-auto flex items-center gap-2">
@@ -2437,7 +2450,7 @@ const QuickCaptureInput = React.forwardRef<
                             type="button"
                             data-testid="capture-attach"
                             onClick={() => fileInputRef.current?.click()}
-                            disabled={isSaving}
+                            disabled={isSaving || isPreparingFiles}
                             title={t(
                                 'capture.attachHint',
                                 'Attach files. You can also paste or drop them here.'
@@ -2456,15 +2469,28 @@ const QuickCaptureInput = React.forwardRef<
                             onClick={() => void handleUnifiedSubmit()}
                             disabled={
                                 (!inputText.trim() && files.length === 0) ||
-                                isSaving
+                                isSaving ||
+                                isPreparingFiles
                             }
-                            className="rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                            aria-busy={isSaving || isPreparingFiles}
+                            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         >
-                            {itemTotal > 1
-                                ? t('capture.addN', 'Add {{total}}', {
-                                      total: itemTotal,
-                                  })
-                                : t('capture.add', 'Add')}
+                            {(isSaving || isPreparingFiles) && (
+                                <span
+                                    data-testid="capture-add-spinner"
+                                    className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin"
+                                    aria-hidden="true"
+                                />
+                            )}
+                            {isUploading
+                                ? t('common.uploading', 'Uploading...')
+                                : isSaving
+                                  ? t('common.saving', 'Saving...')
+                                  : itemTotal > 1
+                                    ? t('capture.addN', 'Add {{total}}', {
+                                          total: itemTotal,
+                                      })
+                                    : t('capture.add', 'Add')}
                         </button>
                     </div>
                     <div className="order-2 sm:order-3 flex-1 sm:flex-none sm:w-full min-w-0 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 min-h-[20px] text-xs text-gray-500 dark:text-gray-400">
