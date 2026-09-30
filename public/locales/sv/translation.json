@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Utloggning lyckades",
     "or_continue_with_email": "Eller fortsätt med e-post",
     "sign_in_with": "Logga in med {{provider}}",
+    "sign_up_with": "Registrera dig med {{provider}}",
     "oidc": {
       "completing_signin": "Avslutar inloggning...",
       "authenticating_with_provider": "Autentiserar med leverantör. Vänligen vänta..."

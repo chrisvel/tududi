@@ -183,6 +183,21 @@ not need to be on Cloudflare DNS). The forms send the token as
 let through and logged, so an outage there never locks people out; the
 rate limiters still apply. Unset (the default) means no captcha anywhere.
 
+## Google sign-in
+
+Google is configured as an ordinary OIDC provider (see
+[OIDC/SSO](10-oidc-sso.md#google)) with slug `google`, which gives its button
+the Google mark on both the login and the register page. On a hosted
+instance a first Google sign-in creates an account only while registration
+is enabled, skips the captcha (Google has already vouched for the person) and
+then meets the same subscription gate as any other new account.
+
+The Google OAuth client needs `https://<app host>/api/oidc/callback/google`
+as a redirect URI, and `BASE_URL` must be the app's public URL because the
+callback is built from it. On the consent screen, publish the app (a client
+left in testing admits only its listed test users) and link the landing
+page's `/privacy` and `/terms`.
+
 ## Public demo
 
 `TUDUDI_DEMO_ENABLED=true` stands up a sandbox anyone can open without

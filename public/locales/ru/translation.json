@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Выход выполнен успешно",
     "or_continue_with_email": "Или продолжите с электронной почтой",
     "sign_in_with": "Войти с помощью {{provider}}",
+    "sign_up_with": "Регистрация через {{provider}}",
     "oidc": {
       "completing_signin": "Завершение входа...",
       "authenticating_with_provider": "Аутентификация с провайдером. Пожалуйста, подождите..."

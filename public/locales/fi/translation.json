@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Uloskirjautuminen onnistui",
     "or_continue_with_email": "Tai jatka sähköpostilla",
     "sign_in_with": "Kirjaudu sisään {{provider}} avulla",
+    "sign_up_with": "Rekisteröidy palvelulla {{provider}}",
     "oidc": {
       "completing_signin": "Kirjautumisen viimeistely...",
       "authenticating_with_provider": "Todennetaan palveluntarjoajalla. Ole hyvä ja odota..."

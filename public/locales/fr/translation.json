@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Déconnexion réussie",
     "or_continue_with_email": "Ou continuez avec l'email",
     "sign_in_with": "Se connecter avec {{provider}}",
+    "sign_up_with": "S'inscrire avec {{provider}}",
     "oidc": {
       "completing_signin": "Finalisation de la connexion...",
       "authenticating_with_provider": "Authentification avec le fournisseur. Veuillez patienter..."

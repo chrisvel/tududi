@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Đăng xuất thành công",
     "or_continue_with_email": "Hoặc tiếp tục với email",
     "sign_in_with": "Đăng nhập với {{provider}}",
+    "sign_up_with": "Đăng ký bằng {{provider}}",
     "oidc": {
       "completing_signin": "Đang hoàn tất đăng nhập...",
       "authenticating_with_provider": "Đang xác thực với nhà cung cấp. Vui lòng chờ..."

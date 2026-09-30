@@ -181,6 +181,7 @@
     "logoutSuccess": "Επιτυχής Αποσύνδεση",
     "or_continue_with_email": "Ή συνεχίστε με email",
     "sign_in_with": "Συνδεθείτε με {{provider}}",
+    "sign_up_with": "Εγγραφή με {{provider}}",
     "oidc": {
       "completing_signin": "Ολοκλήρωση σύνδεσης...",
       "authenticating_with_provider": "Αυθεντικοποίηση με τον πάροχο. Παρακαλώ περιμένετε..."

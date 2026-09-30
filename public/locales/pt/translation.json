@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Logout Bem-sucedido",
     "or_continue_with_email": "Ou continue com e-mail",
     "sign_in_with": "Fazer login com {{provider}}",
+    "sign_up_with": "Registar com {{provider}}",
     "oidc": {
       "completing_signin": "Concluindo login...",
       "authenticating_with_provider": "Autenticando com o provedor. Por favor, aguarde..."

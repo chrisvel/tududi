@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Uitloggen Succesvol",
     "or_continue_with_email": "Of ga verder met e-mail",
     "sign_in_with": "Inloggen met {{provider}}",
+    "sign_up_with": "Registreren met {{provider}}",
     "oidc": {
       "completing_signin": "Inloggen voltooien...",
       "authenticating_with_provider": "Authenticeren met provider. Even geduld..."

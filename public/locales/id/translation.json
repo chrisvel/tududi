@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Logout Berhasil",
     "or_continue_with_email": "Atau lanjutkan dengan email",
     "sign_in_with": "Masuk dengan {{provider}}",
+    "sign_up_with": "Daftar dengan {{provider}}",
     "oidc": {
       "completing_signin": "Menyelesaikan masuk...",
       "authenticating_with_provider": "Mengautentikasi dengan penyedia. Silakan tunggu..."

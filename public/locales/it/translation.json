@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Disconnessione Riuscita",
     "or_continue_with_email": "Oppure continua con l'email",
     "sign_in_with": "Accedi con {{provider}}",
+    "sign_up_with": "Registrati con {{provider}}",
     "oidc": {
       "completing_signin": "Completando l'accesso...",
       "authenticating_with_provider": "Autenticazione con il fornitore. Attendere prego..."

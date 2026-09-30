@@ -181,6 +181,7 @@
     "logoutSuccess": "Cierre de Sesión Exitoso",
     "or_continue_with_email": "O continuar con el correo electrónico",
     "sign_in_with": "Iniciar sesión con {{provider}}",
+    "sign_up_with": "Regístrate con {{provider}}",
     "oidc": {
       "completing_signin": "Completando el inicio de sesión...",
       "authenticating_with_provider": "Autenticando con el proveedor. Por favor, espere..."

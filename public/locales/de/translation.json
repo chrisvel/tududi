@@ -1431,6 +1431,7 @@
     "logoutSuccess": "Abmeldung erfolgreich",
     "or_continue_with_email": "Oder mit E-Mail fortfahren",
     "sign_in_with": "Mit {{provider}} anmelden",
+    "sign_up_with": "Mit {{provider}} registrieren",
     "oidc": {
       "completing_signin": "Anmeldung wird abgeschlossen...",
       "authenticating_with_provider": "Authentifizierung beim Anbieter. Bitte warten..."

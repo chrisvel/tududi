@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Odjava uspešna",
     "or_continue_with_email": "Ali nadaljujte z e-pošto",
     "sign_in_with": "Prijavite se z {{provider}}",
+    "sign_up_with": "Registracija z {{provider}}",
     "oidc": {
       "completing_signin": "Dokončujem prijavo...",
       "authenticating_with_provider": "Avtentikacija pri ponudniku. Prosimo, počakajte..."

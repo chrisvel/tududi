@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getAssetPath } from '../config/paths';
+import { getApiPath, getAssetPath } from '../config/paths';
 import { PASSWORD_MIN_LENGTH } from '../utils/passwordPolicy';
 import CaptchaWidget from './Auth/CaptchaWidget';
+import OIDCProviderButtons from './Auth/OIDCProviderButtons';
 import { fetchCaptchaConfig, CaptchaConfig } from '../utils/captcha';
 
 const Register: React.FC = () => {
@@ -18,9 +19,21 @@ const Register: React.FC = () => {
     const [captcha, setCaptcha] = useState<CaptchaConfig | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [captchaReset, setCaptchaReset] = useState(0);
+    const [oidcProviders, setOidcProviders] = useState<
+        { slug: string; name: string }[]
+    >([]);
 
     useEffect(() => {
         fetchCaptchaConfig().then(setCaptcha);
+    }, []);
+
+    useEffect(() => {
+        fetch(getApiPath('oidc/providers'), { credentials: 'include' })
+            .then((response) => (response.ok ? response.json() : null))
+            .then((data) => setOidcProviders(data?.providers || []))
+            .catch((err) =>
+                console.error('Error fetching OIDC providers:', err)
+            );
     }, []);
     const { t } = useTranslation();
     const [isDarkMode] = useState<boolean>(() => {
@@ -335,6 +348,25 @@ const Register: React.FC = () => {
                                     data-testid="register-error"
                                 >
                                     {error}
+                                </div>
+                            )}
+                            <OIDCProviderButtons
+                                providers={oidcProviders}
+                                mode="signUp"
+                            />
+                            {oidcProviders.length > 0 && (
+                                <div className="relative mb-6">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                                    </div>
+                                    <div className="relative flex justify-center text-sm">
+                                        <span className="px-2 bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
+                                            {t(
+                                                'auth.or_continue_with_email',
+                                                'Or continue with email'
+                                            )}
+                                        </span>
+                                    </div>
                                 </div>
                             )}
                             <form onSubmit={handleSubmit}>

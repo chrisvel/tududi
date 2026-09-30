@@ -1036,6 +1036,7 @@
     "logoutSuccess": "تسجيل الخروج ناجح",
     "or_continue_with_email": "أو تابع باستخدام البريد الإلكتروني",
     "sign_in_with": "تسجيل الدخول باستخدام {{provider}}",
+    "sign_up_with": "التسجيل باستخدام {{provider}}",
     "oidc": {
       "completing_signin": "يتم إكمال تسجيل الدخول...",
       "authenticating_with_provider": "يتم المصادقة مع المزود. يرجى الانتظار..."

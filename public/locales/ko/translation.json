@@ -1036,6 +1036,7 @@
     "logoutSuccess": "로그아웃 성공",
     "or_continue_with_email": "또는 이메일로 계속하기",
     "sign_in_with": "{{provider}}로 로그인",
+    "sign_up_with": "{{provider}}(으)로 가입",
     "oidc": {
       "completing_signin": "로그인 완료 중...",
       "authenticating_with_provider": "제공자와 인증 중입니다. 잠시 기다려 주세요..."

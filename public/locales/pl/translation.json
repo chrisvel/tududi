@@ -1036,6 +1036,7 @@
     "logoutSuccess": "Wylogowanie Udane",
     "or_continue_with_email": "Lub kontynuuj z e-mailem",
     "sign_in_with": "Zaloguj się za pomocą {{provider}}",
+    "sign_up_with": "Zarejestruj się przez {{provider}}",
     "oidc": {
       "completing_signin": "Kończenie logowania...",
       "authenticating_with_provider": "Uwierzytelnianie z dostawcą. Proszę czekać..."

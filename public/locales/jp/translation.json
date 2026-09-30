@@ -1011,6 +1011,7 @@
     "logoutSuccess": "ログアウト成功",
     "or_continue_with_email": "またはメールで続行",
     "sign_in_with": "{{provider}}でサインイン",
+    "sign_up_with": "{{provider}} で登録",
     "oidc": {
       "completing_signin": "サインインを完了しています...",
       "authenticating_with_provider": "プロバイダーで認証中です。お待ちください..."

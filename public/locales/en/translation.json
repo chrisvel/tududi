@@ -1053,6 +1053,7 @@
     "logoutSuccess": "Logout Successful",
     "or_continue_with_email": "Or continue with email",
     "sign_in_with": "Sign in with {{provider}}",
+    "sign_up_with": "Sign up with {{provider}}",
     "oidc": {
       "completing_signin": "Completing sign-in...",
       "authenticating_with_provider": "Authenticating with provider. Please wait..."

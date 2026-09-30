@@ -1038,6 +1038,7 @@
     "logoutSuccess": "Deconectare reușită",
     "or_continue_with_email": "Sau continuă cu email",
     "sign_in_with": "Conectează-te cu {{provider}}",
+    "sign_up_with": "Înregistrează-te cu {{provider}}",
     "oidc": {
       "completing_signin": "Finalizând conectarea...",
       "authenticating_with_provider": "Autentificare cu furnizorul. Te rugăm să aștepți..."

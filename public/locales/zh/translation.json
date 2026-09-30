@@ -1036,6 +1036,7 @@
     "logoutSuccess": "注销成功",
     "or_continue_with_email": "或继续使用电子邮件",
     "sign_in_with": "使用 {{provider}} 登录",
+    "sign_up_with": "使用 {{provider}} 注册",
     "oidc": {
       "completing_signin": "正在完成登录...",
       "authenticating_with_provider": "正在与提供商进行身份验证。请稍候..."

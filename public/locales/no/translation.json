@@ -1037,6 +1037,7 @@
     "logoutSuccess": "Utlogging vellykket",
     "or_continue_with_email": "Eller fortsett med e-post",
     "sign_in_with": "Logg inn med {{provider}}",
+    "sign_up_with": "Registrer deg med {{provider}}",
     "oidc": {
       "completing_signin": "Fullfører pålogging...",
       "authenticating_with_provider": "Autentiserer med leverandør. Vennligst vent..."

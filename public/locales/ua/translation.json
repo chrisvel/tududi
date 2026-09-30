@@ -1520,6 +1520,7 @@
     "logoutSuccess": "Успішний вихід",
     "or_continue_with_email": "Або продовжити з електронною поштою",
     "sign_in_with": "Увійти з {{provider}}",
+    "sign_up_with": "Зареєструватися через {{provider}}",
     "oidc": {
       "completing_signin": "Завершення входу...",
       "authenticating_with_provider": "Аутентифікація з постачальником. Будь ласка, зачекайте..."
