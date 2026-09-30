@@ -204,12 +204,13 @@ async function fetchTasksDueToday(
     if (projectWhere && projectWhere[Op.or]) {
         const conditions = [];
         projectWhere[Op.or].forEach((condition) => {
-            if (condition.user_id) {
-                conditions.push(`projects.user_id = ${condition.user_id}`);
+            const ownerId = Number(condition.user_id);
+            if (Number.isInteger(ownerId)) {
+                conditions.push(`projects.user_id = ${ownerId}`);
             }
             if (condition.uid && condition.uid[Op.in]) {
                 const uids = condition.uid[Op.in]
-                    .map((uid) => `'${uid}'`)
+                    .map((uid) => sequelize.escape(String(uid)))
                     .join(',');
                 if (uids) {
                     conditions.push(`projects.uid IN (${uids})`);
@@ -288,12 +289,13 @@ async function fetchOverdueTasks(
     if (projectWhere && projectWhere[Op.or]) {
         const conditions = [];
         projectWhere[Op.or].forEach((condition) => {
-            if (condition.user_id) {
-                conditions.push(`projects.user_id = ${condition.user_id}`);
+            const ownerId = Number(condition.user_id);
+            if (Number.isInteger(ownerId)) {
+                conditions.push(`projects.user_id = ${ownerId}`);
             }
             if (condition.uid && condition.uid[Op.in]) {
                 const uids = condition.uid[Op.in]
-                    .map((uid) => `'${uid}'`)
+                    .map((uid) => sequelize.escape(String(uid)))
                     .join(',');
                 if (uids) {
                     conditions.push(`projects.uid IN (${uids})`);

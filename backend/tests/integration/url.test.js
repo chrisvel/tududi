@@ -1,10 +1,61 @@
+const dns = require('dns');
+const http = require('http');
+const https = require('https');
+const EventEmitter = require('events');
 const request = require('supertest');
 const { createTestUser } = require('../helpers/testUtils');
 
-// Mock fetch before loading the app
+// Only the third-party proxy fallback uses fetch; keep it offline.
 global.fetch = jest.fn();
 
 const app = require('../../app');
+
+// Page fetches go through http/https (pinned to public addresses at connect
+// time), so the tests answer those instead of touching the network.
+
+// supertest itself talks to the app over http.request, so only calls that
+// carry the URL fetcher's pinned lookup are answered here.
+const realRequest = { http: http.request, https: https.request };
+const outbound = () =>
+    [...http.request.mock.calls, ...https.request.mock.calls].filter(
+        ([options]) => options && options.lookup
+    );
+
+function answerRequests(respond) {
+    for (const [name, mod] of Object.entries({ http, https })) {
+        jest.spyOn(mod, 'request').mockImplementation((...args) => {
+            const [options, callback] = args;
+            if (!options || !options.lookup) {
+                return realRequest[name].apply(mod, args);
+            }
+            const req = new EventEmitter();
+            req.end = () => respond(req, callback);
+            req.destroy = jest.fn();
+            return req;
+        });
+    }
+}
+
+function serveHtml(html) {
+    answerRequests((req, callback) => {
+        const res = new EventEmitter();
+        res.statusCode = 200;
+        res.headers = { 'content-type': 'text/html; charset=utf-8' };
+        res.resume = jest.fn();
+        res.destroy = jest.fn();
+        callback(res);
+        process.nextTick(() => {
+            res.emit('data', Buffer.from(html));
+            res.emit('end');
+        });
+    });
+}
+
+function failRequests(message) {
+    answerRequests((req) =>
+        process.nextTick(() => req.emit('error', new Error(message)))
+    );
+}
 
 describe('URL Routes', () => {
     let user, agent;
@@ -22,7 +73,13 @@ describe('URL Routes', () => {
         });
 
         // Reset mocks before each test
+        jest.restoreAllMocks();
         jest.clearAllMocks();
+        global.fetch.mockRejectedValue(new Error('offline'));
+        jest.spyOn(dns.promises, 'lookup').mockResolvedValue([
+            { address: '93.184.216.34', family: 4 },
+        ]);
+        failRequests('no response configured');
     });
 
     describe('GET /api/url/title', () => {
@@ -43,15 +100,9 @@ describe('URL Routes', () => {
         });
 
         it('should return title for valid URL', async () => {
-            // Mock successful HTML fetch
-            global.fetch.mockResolvedValue({
-                ok: true,
-                headers: {
-                    get: () => 'text/html',
-                },
-                text: async () =>
-                    '<html><head><title>Herman Melville - Moby-Dick</title></head></html>',
-            });
+            serveHtml(
+                '<html><head><title>Herman Melville - Moby-Dick</title></head></html>'
+            );
 
             const response = await agent
                 .get('/api/url/title')
@@ -65,15 +116,7 @@ describe('URL Routes', () => {
         });
 
         it('should handle URL without protocol', async () => {
-            // Mock successful HTML fetch
-            global.fetch.mockResolvedValue({
-                ok: true,
-                headers: {
-                    get: () => 'text/html',
-                },
-                text: async () =>
-                    '<html><head><title>Test Page</title></head></html>',
-            });
+            serveHtml('<html><head><title>Test Page</title></head></html>');
 
             const response = await agent
                 .get('/api/url/title')
@@ -87,10 +130,7 @@ describe('URL Routes', () => {
         });
 
         it('should handle invalid URL gracefully', async () => {
-            // Mock failed fetch
-            global.fetch.mockRejectedValue(
-                new Error('getaddrinfo ENOTFOUND not-a-valid-url')
-            );
+            failRequests('getaddrinfo ENOTFOUND not-a-valid-url');
 
             const response = await agent
                 .get('/api/url/title')
@@ -104,10 +144,7 @@ describe('URL Routes', () => {
         });
 
         it('should handle unreachable URL', async () => {
-            // Mock failed fetch for unreachable URL
-            global.fetch.mockRejectedValue(
-                new Error('getaddrinfo ENOTFOUND nonexistent-domain-12345.com')
-            );
+            failRequests('getaddrinfo ENOTFOUND nonexistent-domain-12345.com');
 
             const response = await agent
                 .get('/api/url/title')
@@ -130,7 +167,7 @@ describe('URL Routes', () => {
             expect(response.status).toBe(200);
             expect(response.body.title).toBe(null);
             expect(response.body.error).toBe('Could not extract metadata');
-            expect(global.fetch).not.toHaveBeenCalled();
+            expect(outbound()).toHaveLength(0);
         });
 
         it('should block requests to private/loopback IPs (SSRF)', async () => {
@@ -140,7 +177,7 @@ describe('URL Routes', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.title).toBe(null);
-            expect(global.fetch).not.toHaveBeenCalled();
+            expect(outbound()).toHaveLength(0);
         });
 
         it('should block requests to non-standard ports (SSRF)', async () => {
@@ -150,7 +187,7 @@ describe('URL Routes', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.title).toBe(null);
-            expect(global.fetch).not.toHaveBeenCalled();
+            expect(outbound()).toHaveLength(0);
         });
     });
 
@@ -174,15 +211,9 @@ describe('URL Routes', () => {
         });
 
         it('should extract URL from text and get title', async () => {
-            // Mock successful HTML fetch
-            global.fetch.mockResolvedValue({
-                ok: true,
-                headers: {
-                    get: () => 'text/html',
-                },
-                text: async () =>
-                    '<html><head><title>Herman Melville - Moby-Dick</title><meta name="description" content="A classic novel"></head></html>',
-            });
+            serveHtml(
+                '<html><head><title>Herman Melville - Moby-Dick</title><meta name="description" content="A classic novel"></head></html>'
+            );
 
             const testText =
                 'Check out this interesting site: https://httpbin.org/html';
@@ -198,15 +229,7 @@ describe('URL Routes', () => {
         });
 
         it('should extract first URL when multiple URLs in text', async () => {
-            // Mock successful HTML fetch
-            global.fetch.mockResolvedValue({
-                ok: true,
-                headers: {
-                    get: () => 'text/html',
-                },
-                text: async () =>
-                    '<html><head><title>Test Page</title></head></html>',
-            });
+            serveHtml('<html><head><title>Test Page</title></head></html>');
 
             const testText =
                 'Check out https://httpbin.org/html and also https://example.com';
@@ -222,15 +245,7 @@ describe('URL Routes', () => {
         });
 
         it('should detect URLs without protocol', async () => {
-            // Mock successful HTML fetch
-            global.fetch.mockResolvedValue({
-                ok: true,
-                headers: {
-                    get: () => 'text/html',
-                },
-                text: async () =>
-                    '<html><head><title>Test Page</title></head></html>',
-            });
+            serveHtml('<html><head><title>Test Page</title></head></html>');
 
             const testText = 'Visit httpbin.org/html for testing';
             const response = await agent

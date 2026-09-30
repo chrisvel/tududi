@@ -2,6 +2,7 @@ const dns = require('dns');
 const {
     assertSafeUrl,
     isPrivateOrReservedIp,
+    publicOnlyLookup,
     UnsafeUrlError,
 } = require('../../../../modules/url/ssrfGuard');
 
@@ -159,6 +160,47 @@ describe('ssrfGuard', () => {
                     assertSafeUrl('http://[2001:4860:4860::8888]/')
                 ).resolves.toBeInstanceOf(URL);
             });
+        });
+    });
+
+    describe('publicOnlyLookup', () => {
+        afterEach(() => jest.restoreAllMocks());
+
+        const answer = (addresses) =>
+            jest
+                .spyOn(dns, 'lookup')
+                .mockImplementation((host, options, callback) =>
+                    callback(null, addresses)
+                );
+
+        const lookup = (options) =>
+            new Promise((resolve, reject) =>
+                publicOnlyLookup('rebind.example', options, (err, ...rest) =>
+                    err ? reject(err) : resolve(rest)
+                )
+            );
+
+        it('refuses a host that resolves to a private address at connect time', async () => {
+            answer([{ address: '127.0.0.1', family: 4 }]);
+            await expect(lookup({})).rejects.toBeInstanceOf(UnsafeUrlError);
+        });
+
+        it('refuses when any of several answers is private', async () => {
+            answer([
+                { address: '93.184.216.34', family: 4 },
+                { address: '169.254.169.254', family: 4 },
+            ]);
+            await expect(lookup({ all: true })).rejects.toBeInstanceOf(
+                UnsafeUrlError
+            );
+        });
+
+        it('passes a public address through in both callback shapes', async () => {
+            answer([{ address: '93.184.216.34', family: 4 }]);
+            await expect(lookup({})).resolves.toEqual(['93.184.216.34', 4]);
+            await expect(lookup({ all: true })).resolves.toEqual([
+                [{ address: '93.184.216.34', family: 4 }],
+            ]);
         });
     });
 });
