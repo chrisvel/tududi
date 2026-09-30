@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Vaihda kieltä",
     "langSwitcherCurrent": "Kieli: {{name}}",
-    "description": "Alueet, tavoitteet, projektit ja tehtävät, sekä muistiinpanot ja tavat, yhdessä järjestelmässä. Ota tududi Cloud -tili käyttöön minuutissa. MCP-palvelin, joka tarjoaa {{tools}} työkalua, antaa AI-agenttien työskennellä listasi kanssa. Itse ylläpito on tarjolla, jos haluat mieluummin ajaa palvelinta itse.",
+    "description": "Kirjaa kaikki, suunnittele päivä tekoälyllä kalenterisi ympärille ja pidä alueet, tavoitteet, projektit, muistiinpanot ja tavat yhdessä järjestelmässä. MCP-palvelin, jossa on {{tools}} työkalua, antaa tekoälyagenttien käsitellä listaasi. tududi Cloud -tili on valmis minuutissa.",
     "title": "tududi: tehtävienhallinta ja elämänhallintajärjestelmä, MCP:llä AI-agenteille"
   },
   "nav": {
@@ -11,11 +11,9 @@
     "ai": "Tekoäly & MCP",
     "pricing": "Hinnat",
     "faq": "UKK",
-    "docs": "Dokumentaatio",
-    "changelog": "Muutokset",
     "signIn": "Kirjaudu sisään",
     "toggle": "Avaa valikko",
-    "selfHostGuide": "Itse ylläpidon opas"
+    "plan": "Suunnittele päivä"
   },
   "hero": {
     "badgeStars": "tähteä GitHubissa",
@@ -27,7 +25,7 @@
     "screenshotAlt": "tududin käyttöliittymä, jossa näkyy Tänään-näkymä ja suunnitellut tehtävät",
     "cloudNote": "Ei palvelinta pystytettäväksi. Kuukausittain tai vuosittain, ja voit peruuttaa milloin tahansa.",
     "ctaPrimary": "Aloita tududi Cloudissa",
-    "lede": "Alueet, tavoitteet, projektit, tehtävät, muistiinpanot ja tavat, yhdessä järjestelmässä. Luo Cloud-tili minuutissa.",
+    "lede": "Kirjaa kaikki, suunnittele päivä tekoälyllä kalenterisi ympärille ja pidä alueet, tavoitteet, projektit, muistiinpanot ja tavat yhdessä järjestelmässä. Luo Cloud-tili minuutissa.",
     "titleLine1": "Tuottavuus tehty yksinkertaiseksi",
     "titleLine2": ""
   },
@@ -63,16 +61,11 @@
         "body": "Rakennettu avoimen Model Context Protocolin päälle. Toimii Clauden ja muiden MCP-asiakasohjelmien kanssa."
       }
     },
-    "configTitle": "Yhdistä se Claude Desktopiin",
     "footnoteClients": "Sama toimii Cursorin, Windsurfin, Clinen ja minkä tahansa muun MCP-asiakkaan kanssa.",
     "footnoteDocsLink": "Lue MCP-dokumentaatio →",
     "assistantTitle": "Tekoälyavustaja",
     "assistantLede": "Erillinen, valinnainen kerros, joka lukee tietosi ja kirjoittaa niistä yhteenvedot selkokielellä. Toimii minkä tahansa OpenAI-yhteensopivan palveluntarjoajan kanssa, myös itse ylläpidettyjen kuten Ollaman.",
     "assistantCards": {
-      "daily": {
-        "title": "Aamukatsaus",
-        "body": "Aamuinen yhteenveto tärkeimmästä tehtävästäsi ja riskeistä, jotka kannattaa tietää."
-      },
       "task": {
         "title": "Tehtäväanalyysi",
         "body": "Ehdotetut seuraavat askeleet tietylle tehtävälle, luodaan pyynnöstä."
@@ -80,11 +73,16 @@
       "project": {
         "title": "Projektianalyysi",
         "body": "Nopea arvio projektin tilasta: mikä etenee ja mikä on jumissa."
+      },
+      "plan": {
+        "title": "Suunnittele päivä",
+        "body": "Jakaa päiväsi tapaamisten ympärille vapaaseen aikaan ja perustelee jokaisen lohkon."
+      },
+      "wrapUp": {
+        "title": "Päiväkooste",
+        "body": "Päivän päätteeksi: mitä tehtiin, huomionarvoinen kuvio ja mitä viedään huomiseen."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Osoita TUDUDI_URL sen sijaan omaan instanssiisi. Kaikki muu on identtistä.",
-    "configSelfHostTab": "Ylläpidätkö sitä itse?",
     "demo": {
       "answer1Html": "Aloita <strong>Laskutusmigraation julkaisemisesta</strong>. Se erääntyy tänään, ja kolme tehtävää kohteessa <strong>Maksut</strong> odottaa sen jälkeen.",
       "answer2Html": "Valmis. <strong>Tarkista uudelleensuunnittelun luonnos</strong> erääntyy nyt perjantaina, ja <strong>Poista Maksut-jonon esto</strong> on Maksut-projektissa, erääntyy tänään.",
@@ -120,13 +118,36 @@
     "eyebrow": "Ominaisuudet",
     "title": "Täydellinen järjestelmä järjestäytyneeseen elämään",
     "showAll": "Näytä kaikki {{count}} ominaisuutta",
+    "preview": "Esikatselu",
+    "closePreview": "Sulje esikatselu",
     "groups": {
+      "planDay": "Kirjaa & suunnittele",
       "planFocus": "Suunnittele & keskity",
       "tasksProjects": "Tehtävät & projektit",
       "accessAnywhere": "Käytettävissä kaikkialla",
       "privacyCollab": "Yksityisyys & yhteistyö"
     },
     "cards": {
+      "capture": {
+        "title": "Yksi ruutu kaikelle",
+        "body": "Lisää saapuneita, tehtäviä, muistiinpanoja tai projekteja mistä tahansa, tiedostoineen. Liitetystä kuvakaappauksesta tulee itse kohde."
+      },
+      "nlpDates": {
+        "title": "Päivämäärät tavallisin sanoin",
+        "body": "“tomorrow”, “next fri”, “every weekday”: päivät ja toistot luetaan kirjoittaessa, samoin #tunnisteet, +Projekti ja @henkilö."
+      },
+      "planMyDay": {
+        "title": "Suunnittele päivä",
+        "body": "Suunnittelija, joka sijoittaa tehtävät tapaamisten ympärille vapaaseen aikaan, kestoineen, järjestettyine ehdotuksineen ja vinkkeineen."
+      },
+      "todayCalendar": {
+        "title": "Tänään kalenterisi kanssa",
+        "body": "Yhdistä Google-, Apple- tai Outlook-kalenterit ja näe tapaamiset tehtävien vieressä, nykyinen lohko ylimpänä."
+      },
+      "aiPlanning": {
+        "title": "Päivän suunnittelu tekoälyllä",
+        "body": "Luonnostele päivä tekoälyllä, saa kestoarviot tehtäville ja päiväkooste, joka siirtää keskeneräiset eteenpäin."
+      },
       "goals": {
         "title": "Tavoitteet",
         "body": "Aseta tulokset kaudelle tai vuodelle, ja näe mitkä Osa-alueet ja Projektit oikeasti vievät niitä eteenpäin."
@@ -146,10 +167,6 @@
       "matrixKanban": {
         "title": "Eisenhower-matriisi & Kanban",
         "body": "Vaihda Eisenhower-matriisiin tai Kanban-tauluun, kun kysymys on yksinkertaisesti: mitä teen juuri nyt."
-      },
-      "dueDates": {
-        "title": "Älykkäät eräpäivät",
-        "body": "Automaattinen luokittelu: tämän päivän prioriteetit, lähestyvät määräajat ja joskus-tehtävät."
       },
       "insights": {
         "title": "Tuottavuusnäkymät",
@@ -211,10 +228,6 @@
         "title": "API-käyttö & Swagger",
         "body": "Versioitu Swagger-dokumentaatio ja henkilökohtaiset käyttötunnisteet omiin integraatioihin."
       },
-      "responsive": {
-        "title": "Responsiivinen ulkoasu",
-        "body": "Asettelu, joka mukautuu siististi laajasta työpöytänäytöstä taskussa olevaan puhelimeen."
-      },
       "privacy": {
         "title": "Yksityisyys ja hallinta",
         "body": "Pidä tietosi yksityisinä. Ylläpidä itse täydellä hallinnalla, tai käytä Hallittua instanssia salatuin varmuuskopioin."
@@ -225,20 +238,6 @@
       }
     },
     "sub": "tududi yhdistää tavoitteet, projektit, tehtävät, muistiinpanot ja älykkäät näkymät yhdeksi rauhalliseksi, keskittyneeksi järjestelmäksi. Anna meidän ylläpitää sitä puolestasi, tai ylläpidä se itse, jos haluat."
-  },
-  "selfHost": {
-    "eyebrow": "Ylläpidä itse",
-    "title": "Aja se omalla palvelimellasi",
-    "cardTitle": "Docker-asennus",
-    "step1": "Hae Docker-image",
-    "step2": "Käynnistä kontti",
-    "step3Prefix": "Avaa osoitteessa",
-    "linkGithub": "Katso GitHubissa",
-    "cardSub": "Niille, jotka ajavat jo Dockeria",
-    "ctaCloud": "Aloita Cloudissa",
-    "linkDocs": "Lue itse ylläpidon opas",
-    "showCommands": "Näytä asennuskomennot",
-    "sub": "Itse ylläpito on niille, jotka ajavat jo Dockeria ja reverse proxyä. Jos haluat tududin muuttumatta järjestelmänvalvojaksi, käytä Cloudia."
   },
   "pricing": {
     "eyebrow": "Hinnat",
@@ -267,54 +266,50 @@
         "features": [
           "Käynnissä minuutissa, ei palvelinta pystytettäväksi",
           "Rajattomat tehtävät, projektit ja muistiinpanot, plus liitteet",
-          "AI-avustaja, MCP, CalDAV-synkronointi ja Telegram-botti",
+          "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
           "Päivitykset ja päivittäiset varmuuskopiot hoidettuna puolestasi, ja {{proStorageGb}} GB tallennustilaa",
           "Vie kaikki milloin tahansa, poista tilisi itse"
         ],
         "priceNote": "Kaikki mukana. Peruuta milloin tahansa."
       }
     },
-    "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 30 päivän rahat takaisin -takuu, ilman kysymyksiä.",
+    "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 14 päivän rahat takaisin -takuu, ilman kysymyksiä.",
     "perMonth": "/kk",
     "sub": "Yksi isännöity paketti, tai aja sitä itse, jos haluat mieluummin hoitaa ylläpidon."
   },
   "compare": {
     "title": "Nopea vertailu",
+    "sub": "Näin tududi Cloud vertautuu sovelluksiin, joihin sitä useimmiten verrataan, henkilökohtaisilla tilauksilla.",
+    "footnote": "Todoist Pro, TickTick Premium ja Notion Plus niiden julkisilta hintasivuilta syyskuussa 2026. Tarkista ajantasaiset hinnat niiden sivuilta. Niiden hinnat ovat Yhdysvaltain listahintoja dollareissa.",
     "rows": {
-      "openSource": "Avoimen lähdekoodin ydin",
-      "commercialUse": "Kaupallinen käyttö",
-      "infraControl": "Täysi hallinta infrastruktuurista",
-      "dataOnHardware": "Tiedot pysyvät omalla laitteistollasi",
-      "noRecurring": "Ei toistuvia kuluja",
-      "noSetup": "Ei palvelimen pystytystä",
-      "managedUpdates": "Hallitut päivitykset",
-      "autoBackups": "Automaattiset varmuuskopiot",
-      "pricing": "Hinta",
-      "exportAnytime": "Vie kaikki milloin tahansa",
-      "proFeatures": "AI-avustaja, MCP, CalDAV, Telegram",
-      "startMinute": "Aloita minuutissa",
-      "storage": "Liitetiedostojen tallennustila",
-      "support": "Tuki"
+      "price": "Hinta, vuosilaskutus",
+      "aiIncluded": "Tekoäly mukana",
+      "dayPlanner": "Päivän suunnittelu kalenterin mukaan",
+      "habits": "Tapojen seuranta",
+      "goals": "Tavoitteet, alueet ja projektit",
+      "notes": "Muistiinpanot tehtävien rinnalla",
+      "matrix": "Eisenhowerin matriisi",
+      "kanban": "Kanban-taulut",
+      "views": "Tallennetut älynäkymät",
+      "people": "Tehtävien osoittaminen henkilöille",
+      "telegram": "Kirjaus Telegramista",
+      "caldav": "Tehtävien CalDAV-synkronointi",
+      "mcp": "MCP-palvelin tekoälyagenteille"
     },
     "values": {
-      "community": "Yhteisö",
-      "email": "Sähköposti",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/kk tai {{price}}/vuosi",
-      "selfCost": "Ilmainen, plus omat isännöintikustannuksesi",
-      "yourDisk": "Oma levysi"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Itse ylläpidetty",
-    "sub": "Samat sovellus molemmissa tapauksissa. Se, mikä eroaa, on kuka sitä ylläpitää ja mitä se maksaa sinulle."
+      "perYear": "{{price}}/v",
+      "businessOnly": "Vain Business-tilaus",
+      "separateApp": "Erillinen sovellus",
+      "diy": "Rakenna itse"
+    }
   },
   "waitlist": {
     "placeholder": "sina@email.com",
     "inputLabel": "Sähköpostiosoite"
   },
   "signup": {
-    "note": "Säilytämme osoitteesi ja päivämäärän jolloin annoit sen, jotta voimme lähettää sinulle julkaisutiedotteita eikä mitään muuta. Emme jaa sitä koskaan.",
-    "joined": "Tilaus on tehty. Julkaisutiedot tulevat sähköpostiisi."
+    "note": "Tallennamme osoitteesi ja sen antamispäivän vain uutisten ja päivitysten lähettämistä varten. Emme koskaan jaa sitä.",
+    "joined": "Olet tilannut. Uutiset ja päivitykset tulevat sähköpostiin."
   },
   "langs": {
     "heading": "Saatavilla {{count}} kielellä ympäri maailman"
@@ -325,22 +320,18 @@
   },
   "footer": {
     "colProduct": "Tuote",
-    "colResources": "Resurssit",
     "colCommunity": "Yhteisö & tuki",
     "colSupport": "Tue",
-    "linkRoadmap": "Tiekartta",
-    "linkIssues": "Ongelmat",
-    "linkEmail": "Sähköposti",
     "linkCoffee": "Tarjoa kahvit",
-    "subTitle": "Julkaisutiedotteet sähköpostiin",
-    "subBody": "Satunnaisia julkaisutiedotteita. Ei markkinointia, peruuta milloin tahansa.",
+    "subTitle": "Uutiset ja päivitykset sähköpostiin",
+    "subBody": "Satunnaisia tuoteuutisia ja päivityksiä. Ei roskapostia, peru tilaus milloin tahansa.",
     "subSubmit": "Liity",
     "rights": "Kaikki oikeudet pidätetään.",
-    "linkLicence": "MIT-lisenssi",
-    "tagline": "Avoin järjestelmä elämän ja työn organisointiin. Meidän isännöimänä, tai omalla palvelimellasi.",
+    "tagline": "Rauhallinen ja kattava järjestelmä elämän ja työn järjestämiseen.",
     "linkTerms": "Ehdot",
     "linkPrivacy": "Tietosuoja",
-    "linkRefunds": "Hyvitykset"
+    "linkRefunds": "Hyvitykset",
+    "linkContact": "Yhteystiedot"
   },
   "js": {
     "showFewer": "Näytä vähemmän",
@@ -350,7 +341,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Ei. Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa, ja se on koko hinnasto: ei ilmaistasoa, ei kokeiluaikaa, ei korttia veloitettuna jostain, joka alkaa hiljaa laskuttaa myöhemmin. Tarjolla on 30 päivän rahat takaisin -takuu, jos se ei osoittaudu sopivaksi, ja tällä sivulla on live-demo, jos haluat vilkaista ensin. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimellasi, joka on samat sovellus.",
+        "a": "Ei. Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa, ja se on koko hinnasto: ei ilmaistasoa, ei kokeiluaikaa, ei korttia veloitettuna jostain, joka alkaa hiljaa laskuttaa myöhemmin. Tarjolla on 14 päivän rahat takaisin -takuu, jos se ei osoittaudu sopivaksi, ja tällä sivulla on live-demo, jos haluat vilkaista ensin. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimellasi, joka on samat sovellus.",
         "q": "Onko tududi Cloudissa ilmaistaso tai kokeilua?"
       },
       "leaving": {
@@ -369,10 +360,6 @@
         "a": "Kyllä, ja sinun ei tarvitse ostaa mitään ensin. MIT-lisenssi sallii kommertiaalisen käytön, myös yrityksessä ja kommertiaalisessa tuotteessa, ilman liikevaihtorajaa ja ilman raportointivelvollisuutta. Jos taloushallintosi tarvitsee laskun, Cloud-tilaus laskutetaan maksunvälittäjämme kautta ja tuottaa sellaisen. Mikään tällä sivulla ei myy lupaa, koska se lupa on jo sinun.",
         "q": "Voinko käyttää tududia töissä tai yrityksessäni?"
       },
-      "dataLocation": {
-        "a": "Kaikki asuu yhdessä SQLite-tietokantatiedostossa liittämäsi taltion sisällä. Sen varmuuskopiointi tarkoittaa tiedoston kopioimista turvalliseen paikkaan, ja sen palauttaminen tarkoittaa sen kopioimista takaisin. tududi ottaa myös automaattisesti tietokannasta tilannevedoksen ennen migraatioiden ajamista ja säilyttää tuoreita kopioita. Ei ole omistusoikeudellista muotoa eikä vientivaihetta sinun ja omien tietojesi välissä.",
-        "q": "Missä tietoni ovat, ja miten varmuuskopioin ne?"
-      },
       "licence": {
         "a": "Sovellus on avoimen lähdekoodin MIT-lisenssillä, niin voit ajaa sitä omalla palvelimellasi ilmaiseksi, muokata sitä ja rakentaa sen päälle maksamatta kenellekään. Ei käyttäjärajoja eikä pidätettyjä ominaisuuksia: itse ylläpidetty versio on koko tuote. tududi Cloud on maksullinen palvelu, koska isännöinti, varmuuskopiot ja sähköposti maksavat rahaa ylläpitää. Maksat käyttötyöstä, ei koskaan ohjelmiston käyttöoikeudesta.",
         "q": "Onko tududi todella ilmainen?"
@@ -386,23 +373,6 @@
         "a": "MCP on Model Context Protocol, avoin standardi AI-agenttien yhdistämiseksi oikeisiin järjestelmiin. tududi sisältää MCP-palvelimen, joka tarjoaa {{tools}} työkalua tehtäviin, projekteihin, alueisiin, tavoitteisiin, tapoihin, muistiinpanoihin, henkilöihin, tageihin, näkymiin, saapuneisiin, hakuun ja mittareihin, jotta agentti voi tallentaa, löytää, päivittää ja saattaa työn loppuun sen sijaan, että puhuisi siitä vain. Se on valinnainen, sisältyy Cloudiin ja kaikkiin itse ylläpidettyihin instansseihin, ja toimii Claude Desktopin, Cursorin, Windsurfin, Clinen tai minkä tahansa muun MCP-asiakkaan kanssa.",
         "q": "Mikä on MCP, ja mitä agentti voi oikeastaan tehdä?"
       },
-      "mobile": {
-        "a": "tududi asentuu PWA:na eikä alkuperäisenä sovelluksena. Lisää se aloitusnäytöllesi Androidissa tai iOS:ssa, tai asenna se työpöydälle, ja se käyttäytyy kuin sovellus: se lukee välimuistista, kun olet offline, ja synkronoi muutoksesi, kun yhdistät uudelleen. Ei ole mitään ladattavaa App Storesta tai Play Storesta.",
-        "q": "Onko mobiilisovellusta?"
-      },
-      "multiUser": {
-        "a": "Kyllä. Yksi instanssi voi isännöidä useita käyttäjiä, ja projekteja voidaan jakaa luku- tai luku-kirjoitusoikeudella, jonka niiden sisällä olevat tehtävät ja muistiinpanot perivät. Itserekisteröinti on oletuksena pois päältä, niin ylläpitäjä luo tilit tai avaa rekisteröitymisen tarkoituksella. Kukaan ei pääse sisään, koska unohdit sulkea oven.",
-        "q": "Voiko useampi henkilö jakaa yhden instanssin?"
-      },
-      "requirements": {
-        "a": "Docker, pysyvä paikka tietokannan tallentamiseen, reverse proxy TLS:llä edessä, ja kuri päivitysten ajamiseen ja varmuuskopioiden säilyttämiseen. Se toimii mukavasti pienellä VPS:llä tai omassa verkossasi olevalla koneella, ja komennot löytyvät Itse ylläpito -osiosta ja dokumentaatiosta. Useimmat ovat paremmin palveltuja Cloudilla, joka on sama sovellus ilman kaikkea sitä työtä.",
-        "linkLabel": "Lue dokumentaatio",
-        "q": "Mitä tarvitsen ylläpitääkseni sitä itse?"
-      },
-      "reverseProxy": {
-        "a": "Kyllä, ja se on normaali tapa ajaa sitä. Aseta TUDUDI_TRUST_PROXY, jotta sovellus luottaa nginxin, Caddyn tai Traefikin välittämiin otsikoihin. Jos ohitat sen, kirjautumiset ja IP-lokitus käyttäytyvät oudosti tavalla, jota on vaikea diagnosoida, niin sovellus heittää tarkan virheen sen sijaan, että epäonnistuisi hiljaa. Hyväksytyt arvot on dokumentoitu README:ssä.",
-        "q": "Toimiiko se reverse proxyn takana?"
-      },
       "shutdown": {
         "a": "Sovellus on MIT-lisensoitu ja lähdekoodi on julkinen, niin sitä ei voida viedä sinulta. Kuka tahansa voi jatkaa sen ajamista, ja voit forkata sen. tududi Cloudissa tietosi asuvat vakiomuotoisessa tududi-tietokannassa eikä omistusoikeudellisessa muodossa, niin jos palvelu joskus suljettaisiin, saisit tietosi ja oppaan niiden siirtämiseen omalle palvelimellesi.",
         "q": "Mitä tapahtuu tiedoillleni, jos tududi katoaa?"
@@ -415,8 +385,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "AI, MCP & Cloud",
-      "project": "Lisenssi & projekti",
-      "selfHost": "Itse ylläpito & data"
+      "project": "Lisenssi & projekti"
     },
     "permalink": "Linkki tähän vastaukseen",
     "sub": "Lisenssi, AI ja mitä tiedoillesi tapahtuu. Jos jokin puuttuu, kysy Discordissa.",
@@ -428,7 +397,7 @@
     "includes": [
       "Rajattomat tehtävät, projektit ja muistiinpanot",
       "Liitteet ja tiedostojen lataus",
-      "AI-avustaja, MCP, CalDAV-synkronointi ja Telegram-botti",
+      "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
       "Päivittäiset varmuuskopiot ja hallitut päivitykset",
       "Tuki sähköpostitse",
       "Vie kaikki, milloin tahansa"
@@ -477,8 +446,56 @@
     "primary": "Aloita",
     "secondary": "Katso hinnat",
     "selfHostLink": "Lue opas.",
-    "selfHostPrefix": "Haluatko mieluummin ajaa sen omalla palvelimellasi?",
-    "sub": "Me ylläpidämme palvelinta, päivityksiä ja varmuuskopioita. Sinä saat järjestelmän, ja 30 päivän rahat takaisin -takuun, jos se ei sopinut sinulle.",
+    "sub": "Me ylläpidämme palvelinta, päivityksiä ja varmuuskopioita. Sinä saat järjestelmän, ja 14 päivän rahat takaisin -takuun, jos se ei sopinut sinulle.",
     "title": "Järjestäydy minuutissa"
+  },
+  "contact": {
+    "title": "Ota yhteyttä",
+    "lede": "Kysyttävää tududi Cloudista, laskutuksesta tai tilistäsi? Lähetä viesti, niin vastaamme sähköpostitse.",
+    "name": "Nimi",
+    "email": "Sähköposti",
+    "message": "Viesti",
+    "submit": "Lähetä viesti",
+    "sent": "Kiitos, viestisi on matkalla. Vastaamme sähköpostitse.",
+    "invalid": "Täytä nimesi, kelvollinen sähköpostiosoite ja viesti.",
+    "failed": "Viestiäsi ei voitu lähettää juuri nyt. Lähetä meille sähköpostia osoitteeseen"
+  },
+  "plan": {
+    "eyebrow": "Suunnittele päivä",
+    "title": "Ohimenevästä ajatuksesta valmiiksi päiväksi",
+    "sub": "Kirjaa asiat heti kun ne tulevat mieleen, suunnittele päivä tapaamisten ympärille tekoälyn avulla ja etene lohko kerrallaan.",
+    "stepLabel": "Vaihe {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Kirjaa kaikki omin sanoin",
+        "body": "Yksi lisäysruutu saapuneille, tehtäville, muistiinpanoille ja projekteille, kaikkialla sovelluksessa. Kirjoita kuten ajattelet, tududi hoitaa loput.",
+        "points": [
+          "“next fri”, “in 3 days” tai “every first monday” asettaa päivän tai toiston",
+          "#tunnisteet, +Projekti ja @henkilö tunnistetaan kirjoittaessa",
+          "Liitä kuvakaappaus tai pudota tiedostoja, ne kulkevat mukana"
+        ],
+        "alt": "Lisäysruutu muuttaa lauseen toistuvaksi tehtäväksi tunnisteineen ja projekteineen"
+      },
+      "plan": {
+        "title": "Suunnittele päivä tekoälyn kanssa (tai ilman)",
+        "body": "Suunnittelija näyttää, mitä tänään mahtuu, valitsemassasi järjestyksessä. Anna tehtäville kesto ja sijoita ne tapaamisten väliseen vapaaseen aikaan, tai anna tekoälyn luonnostella koko päivä.",
+        "points": [
+          "Järjestetyt ehdotukset: myöhässä, tänään erääntyvät, käynnissä, sitten muut",
+          "Luonnos tekoälyllä täyttää vapaan ajan tapaamisten ympäriltä, Kumoa palauttaa",
+          "Vinkit varoittavat ylibuukatusta päivästä ja kertovat, mihin tehtävä mahtuu"
+        ],
+        "alt": "Päiväsuunnittelija, jossa tehtävät ja tapaamiset ovat samalla aikajanalla"
+      },
+      "today": {
+        "title": "Tänään, kalenterisi kanssa",
+        "body": "Aloita päivä, niin Tänään näyttää vain sen, mihin sitouduit: nykyisen lohkon ja sitten agendan, Google-, Apple- tai Outlook-tapaamiset välissä.",
+        "points": [
+          "Merkitse valmiiksi tai siirrä Nyt-kortista",
+          "Kalenterisyötteet vain luettavina, tallennettu salattuna",
+          "Tekoälyn päiväkooste siirtää keskeneräiset huomiselle"
+        ],
+        "alt": "Tänään-näkymä, jossa seuraava tehtävä, agenda ja kahden kalenterin tapaamiset"
+      }
+    }
   }
 }

@@ -8,6 +8,7 @@ const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
 const { getStats } = require('./stats');
 const waitlist = require('../../services/waitlistService');
+const emailService = require('../../services/emailService');
 const { createRateLimitStore } = require('../../middleware/rateLimitStore');
 
 // Whether to offer the demo, refreshed in the background so a page render
@@ -130,6 +131,32 @@ function buildWaitlistLimiter() {
     });
 }
 
+// Same per-IP window as the waitlist, in its own bucket so a visitor who
+// just subscribed can still write in. Over the limit, the sender sees the
+// same "message sent" page and nothing goes out, the waitlist's rule again.
+function buildContactLimiter() {
+    const { rateLimiting } = getConfig();
+    return rateLimit({
+        store: createRateLimitStore('contact'),
+        windowMs: rateLimiting.waitlist.windowMs,
+        max: rateLimiting.waitlist.max,
+        standardHeaders: true,
+        legacyHeaders: false,
+        skip: () => !rateLimiting.enabled,
+        keyGenerator: (req) => ipKeyGenerator(req.ip),
+        handler: (req, res) => res.redirect(303, '/contact?sent=1'),
+    });
+}
+
+const CONTACT_LIMITS = { name: 100, message: 5000 };
+
+// The chrome follows the remembered language without setting it, the same
+// as the legal pages.
+function rememberedLocale(req) {
+    const remembered = parseCookies(req.headers.cookie)[LANG_COOKIE];
+    return isSupportedLocale(remembered) ? remembered : DEFAULT_LOCALE;
+}
+
 function createLandingRouter(landing) {
     const router = express.Router();
     const siteOrigin = landing.siteUrl;
@@ -137,6 +164,7 @@ function createLandingRouter(landing) {
     const appUrl = landing.appUrl.replace(/\/$/, '');
     const csp = buildCsp();
     const waitlistLimiter = buildWaitlistLimiter();
+    const contactLimiter = buildContactLimiter();
     const cacheRenders = process.env.NODE_ENV === 'production';
     const rendered = new Map();
     const secureCookie = /^https:/.test(siteOrigin);
@@ -408,6 +436,78 @@ function createLandingRouter(landing) {
                 .catch(next);
         });
     });
+
+    // Contact form. A plain post like the waitlist, mailed to the operator
+    // with the sender as Reply-To so answering is one click. Nothing is
+    // stored: if the mail cannot go out, the sender is told so and given the
+    // address to write to instead, rather than a success that went nowhere.
+    router.get('/contact', (req, res, next) => {
+        const locale = rememberedLocale(req);
+        res.setHeader('Content-Security-Policy', csp);
+        res.setHeader('Cache-Control', 'no-store');
+        res.set('Vary', 'Cookie');
+        const status = req.query.sent === '1' ? 'sent' : req.query.error;
+        ejs.renderFile(
+            path.join(__dirname, 'views', 'contact.ejs'),
+            {
+                i18n: createI18n(locale),
+                locales: LOCALES,
+                appUrl,
+                demo: demoSnapshot(),
+                localePath,
+                operator: LEGAL_OPERATOR,
+                limits: CONTACT_LIMITS,
+                status: ['sent', 'invalid', 'failed'].includes(status)
+                    ? status
+                    : null,
+                canonicalUrl: `${siteOrigin.replace(/\/$/, '')}/contact`,
+            },
+            { cache: cacheRenders, rmWhitespace: false }
+        )
+            .then((html) => res.type('html').send(html))
+            .catch(next);
+    });
+
+    router.post(
+        '/contact',
+        express.urlencoded({ extended: false, limit: '16kb' }),
+        contactLimiter,
+        async (req, res) => {
+            const field = (key) =>
+                typeof req.body?.[key] === 'string' ? req.body[key].trim() : '';
+            if (field('company')) return res.redirect(303, '/contact?sent=1');
+
+            const name = field('name');
+            const email = waitlist.normalizeEmail(field('email'));
+            const message = field('message');
+            if (
+                !name ||
+                name.length > CONTACT_LIMITS.name ||
+                !waitlist.isValidEmail(email) ||
+                !message ||
+                message.length > CONTACT_LIMITS.message
+            ) {
+                return res.redirect(303, '/contact?error=invalid');
+            }
+
+            // The name goes into a header, so no line breaks survive.
+            const safeName = name.replace(/[\r\n]+/g, ' ');
+            const result = await emailService.sendEmail({
+                to: LEGAL_OPERATOR.email,
+                replyTo: `"${safeName.replace(/"/g, "'")}" <${email}>`,
+                subject: `[tududi contact] ${safeName}`,
+                text: `From: ${safeName} <${email}>\nIP: ${req.ip}\n\n${message}`,
+            });
+            if (!result.success) {
+                logError(
+                    new Error(result.reason || 'send failed'),
+                    'Contact form message was not sent'
+                );
+                return res.redirect(303, '/contact?error=failed');
+            }
+            return res.redirect(303, '/contact?sent=1');
+        }
+    );
 
     router.use(
         '/landing-assets',

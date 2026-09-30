@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Sprache wechseln",
     "langSwitcherCurrent": "Sprache: {{name}}",
-    "description": "Bereiche, Ziele, Projekte und Aufgaben, dazu Notizen und Gewohnheiten, in einem System. Richte in einer Minute ein tududi-Cloud-Konto ein. Ein MCP-Server mit {{tools}} Tools lässt KI-Agenten an deiner Liste arbeiten. Self-Hosting steht bereit, wenn du den Server lieber selbst betreiben möchtest.",
+    "description": "Alles festhalten, den Tag mit KI rund um deinen Kalender planen und Bereiche, Ziele, Projekte, Notizen und Gewohnheiten in einem System. Ein MCP-Server mit {{tools}} Werkzeugen lässt KI-Agenten mit deiner Liste arbeiten. Ein tududi-Cloud-Konto ist in einer Minute eingerichtet.",
     "title": "tududi: Aufgabenverwaltung und Lebensorganisationssystem, mit MCP für KI-Agenten"
   },
   "nav": {
@@ -11,11 +11,9 @@
     "ai": "KI & MCP",
     "pricing": "Preise",
     "faq": "FAQ",
-    "docs": "Doku",
-    "changelog": "Änderungen",
     "signIn": "Anmelden",
     "toggle": "Navigation umschalten",
-    "selfHostGuide": "Self-Host-Anleitung"
+    "plan": "Tag planen"
   },
   "hero": {
     "badgeStars": "Sterne auf GitHub",
@@ -27,7 +25,7 @@
     "screenshotAlt": "Die Oberfläche von tududi mit der Heute-Ansicht und den geplanten Aufgaben",
     "cloudNote": "Kein Server einzurichten. Monatlich oder jährlich, und du kannst jederzeit kündigen.",
     "ctaPrimary": "Auf tududi Cloud starten",
-    "lede": "Bereiche, Ziele, Projekte, Aufgaben, Notizen und Gewohnheiten in einem System. Erstelle in einer Minute ein Cloud-Konto.",
+    "lede": "Alles festhalten, den Tag mit KI rund um deinen Kalender planen und Bereiche, Ziele, Projekte, Notizen und Gewohnheiten in einem System. In einer Minute ein Cloud-Konto anlegen.",
     "titleLine1": "Produktivität ganz einfach",
     "titleLine2": ""
   },
@@ -63,16 +61,11 @@
         "body": "Basiert auf dem offenen Model Context Protocol. Funktioniert mit Claude und anderen MCP-Clients."
       }
     },
-    "configTitle": "Mit Claude Desktop verbinden",
     "footnoteClients": "Genauso funktioniert es mit Cursor, Windsurf, Cline und jedem anderen MCP-Client.",
     "footnoteDocsLink": "MCP-Doku lesen →",
     "assistantTitle": "KI-Assistent",
     "assistantLede": "Eine separate, optionale Schicht, die deine Daten liest und Zusammenfassungen in verständlicher Sprache zurückschreibt. Funktioniert mit jedem OpenAI-kompatiblen Anbieter, auch selbstgehostet wie Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Tagesbriefing",
-        "body": "Eine Zusammenfassung am Morgen mit deiner wichtigsten Aufgabe und allen Warnsignalen, die du kennen solltest."
-      },
       "task": {
         "title": "Aufgaben-Analyse",
         "body": "Vorgeschlagene nächste Schritte für eine bestimmte Aufgabe, auf Abruf erzeugt."
@@ -80,11 +73,16 @@
       "project": {
         "title": "Projekt-Analyse",
         "body": "Eine schnelle Einschätzung zum Zustand eines Projekts: was läuft, was hängt."
+      },
+      "plan": {
+        "title": "Tag planen",
+        "body": "Plant deinen Tag in die freie Zeit um deine Termine, mit einer Begründung für jeden Block."
+      },
+      "wrapUp": {
+        "title": "Tagesabschluss",
+        "body": "Am Ende des Tages: was erledigt ist, ein Muster, das auffällt, und was in den nächsten Tag geht."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Zeige TUDUDI_URL stattdessen auf deine eigene Instanz. Alles andere ist identisch.",
-    "configSelfHostTab": "Betreibst du es selbst?",
     "demo": {
       "answer1Html": "Beginne mit <strong>Billing-Migration veröffentlichen</strong>. Sie ist heute fällig, und drei Aufgaben in <strong>Zahlungen</strong> warten dahinter.",
       "answer2Html": "Erledigt. <strong>Redesign-Entwurf prüfen</strong> ist jetzt bis Freitag fällig, und <strong>Payments-Warteschlange freigeben</strong> liegt im Projekt Zahlungen und ist heute fällig.",
@@ -120,13 +118,36 @@
     "eyebrow": "Funktionen",
     "title": "Ein vollständiges System für ein geordnetes Leben",
     "showAll": "Alle {{count}} Funktionen anzeigen",
+    "preview": "Vorschau",
+    "closePreview": "Vorschau schließen",
     "groups": {
+      "planDay": "Erfassen & Planen",
       "planFocus": "Planen & fokussieren",
       "tasksProjects": "Aufgaben & Projekte",
       "accessAnywhere": "Überall zugänglich",
       "privacyCollab": "Privatsphäre & Zusammenarbeit"
     },
     "cards": {
+      "capture": {
+        "title": "Ein Feld für alles",
+        "body": "Eingang, Aufgaben, Notizen oder Projekte von überall hinzufügen, mit Dateien. Ein eingefügter Screenshot wird selbst zum Eintrag."
+      },
+      "nlpDates": {
+        "title": "Daten in normalen Worten",
+        "body": "„tomorrow“, „next fri“, „every weekday“: Daten und Wiederholungen werden beim Tippen erkannt, dazu #Tags, +Projekt und @Person."
+      },
+      "planMyDay": {
+        "title": "Tag planen",
+        "body": "Ein Planer, der Aufgaben in die freie Zeit um deine Termine legt, mit Dauer, sortierten Vorschlägen und Planungstipps."
+      },
+      "todayCalendar": {
+        "title": "Heute mit deinem Kalender",
+        "body": "Verbinde Google-, Apple- oder Outlook-Kalender und sieh Termine neben deinen Aufgaben, den aktuellen Block oben."
+      },
+      "aiPlanning": {
+        "title": "KI-Tagesplanung",
+        "body": "Den Tag mit KI entwerfen, Dauer für Aufgaben schätzen lassen und ein Tagesabschluss, der Unerledigtes mitnimmt."
+      },
       "goals": {
         "title": "Ziele",
         "body": "Lege Ergebnisse für eine Saison oder ein Jahr fest und sieh, welche Bereiche und Projekte sie tatsächlich voranbringen."
@@ -146,10 +167,6 @@
       "matrixKanban": {
         "title": "Eisenhower-Matrix & Kanban",
         "body": "Wechsle zur Eisenhower-Matrix oder zum Kanban-Board, wenn die Frage schlicht lautet: was mache ich jetzt."
-      },
-      "dueDates": {
-        "title": "Intelligente Fälligkeiten",
-        "body": "Automatische Einordnung: die Prioritäten von heute, anstehende Fristen und Aufgaben für irgendwann."
       },
       "insights": {
         "title": "Produktivitäts-Auswertungen",
@@ -211,10 +228,6 @@
         "title": "API-Zugriff & Swagger",
         "body": "Versionierte Swagger-Doku und persönliche Zugriffstoken für eigene Integrationen."
       },
-      "responsive": {
-        "title": "Responsives Design",
-        "body": "Ein Layout, das sich sauber vom breiten Desktop bis zum Handy in deiner Tasche anpasst."
-      },
       "privacy": {
         "title": "Privatsphäre und Kontrolle",
         "body": "Halte deine Daten privat. Selbst hosten für volle Kontrolle, oder eine Managed-Instanz mit verschlüsselten Backups nutzen."
@@ -225,20 +238,6 @@
       }
     },
     "sub": "tududi vereint Ziele, Projekte, Aufgaben, Notizen und smarte Ansichten in einem ruhigen, fokussierten System. Lass uns es für dich betreiben, oder betreibe es selbst, wenn du das bevorzugst."
-  },
-  "selfHost": {
-    "eyebrow": "Selbst hosten",
-    "title": "Betreibe es auf deinem eigenen Server",
-    "cardTitle": "Docker-Setup",
-    "step1": "Docker-Image holen",
-    "step2": "Container starten",
-    "step3Prefix": "Aufrufen unter",
-    "linkGithub": "Auf GitHub ansehen",
-    "cardSub": "Für alle, die bereits Docker nutzen",
-    "ctaCloud": "Auf Cloud starten",
-    "linkDocs": "Self-Host-Anleitung lesen",
-    "showCommands": "Installationsbefehle anzeigen",
-    "sub": "Self-Hosting ist für Leute, die bereits Docker und einen Reverse Proxy betreiben. Wenn du tududi willst, ohne Systemadministrator zu werden, nutze Cloud."
   },
   "pricing": {
     "eyebrow": "Preise",
@@ -267,54 +266,50 @@
         "features": [
           "In einer Minute startklar, ohne Server einzurichten",
           "Unbegrenzte Aufgaben, Projekte und Notizen, plus Anhänge",
-          "KI-Assistent, MCP, CalDAV-Sync und der Telegram-Bot",
+          "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
           "Updates und tägliche Backups für dich erledigt, mit {{proStorageGb}} GB Speicher",
           "Exportiere jederzeit alles, lösche dein Konto selbst"
         ],
         "priceNote": "Alles inklusive. Jederzeit kündbar."
       }
     },
-    "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 30 Tage Geld-zurück-Garantie, ohne Nachfragen.",
+    "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 14 Tage Geld-zurück-Garantie, ohne Nachfragen.",
     "perMonth": "/Monat",
     "sub": "Ein gehosteter Plan, oder betreibe ihn selbst, wenn du den Betrieb lieber übernimmst."
   },
   "compare": {
     "title": "Kurzer Vergleich",
+    "sub": "So schlägt sich tududi Cloud gegen die Apps, mit denen es meist verglichen wird, jeweils im Einzeltarif.",
+    "footnote": "Todoist Pro, TickTick Premium und Notion Plus, laut ihren öffentlichen Preisseiten im September 2026. Aktuelle Preise auf deren Websites prüfen. Ihre Preise sind US-Listenpreise in Dollar.",
     "rows": {
-      "openSource": "Open-Source-Kern",
-      "commercialUse": "Kommerzielle Nutzung",
-      "infraControl": "Volle Kontrolle über die Infrastruktur",
-      "dataOnHardware": "Daten bleiben auf deiner Hardware",
-      "noRecurring": "Keine laufenden Kosten",
-      "noSetup": "Keine Servereinrichtung nötig",
-      "managedUpdates": "Verwaltete Updates",
-      "autoBackups": "Automatische Backups",
-      "pricing": "Preis",
-      "exportAnytime": "Exportiere jederzeit alles",
-      "proFeatures": "KI-Assistent, MCP, CalDAV, Telegram",
-      "startMinute": "Starte in einer Minute",
-      "storage": "Anhang-Speicher",
-      "support": "Support"
+      "price": "Preis, jährlich",
+      "aiIncluded": "KI inklusive",
+      "dayPlanner": "Tag rund um den Kalender planen",
+      "habits": "Gewohnheiten",
+      "goals": "Ziele, Bereiche und Projekte",
+      "notes": "Notizen neben den Aufgaben",
+      "matrix": "Eisenhower-Matrix",
+      "kanban": "Kanban-Boards",
+      "views": "Gespeicherte smarte Ansichten",
+      "people": "Aufgaben an Personen zuweisen",
+      "telegram": "Erfassen über Telegram",
+      "caldav": "Aufgaben-Sync per CalDAV",
+      "mcp": "MCP-Server für KI-Agenten"
     },
     "values": {
-      "community": "Community",
-      "email": "E-Mail",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/Monat oder {{price}}/Jahr",
-      "selfCost": "Kostenlos, plus dein Hosting",
-      "yourDisk": "Deine eigene Festplatte"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Self-Hosting",
-    "sub": "Dieselbe Anwendung in beiden Fällen. Was sich unterscheidet, ist, wer sie betreibt, und was dich das kostet."
+      "perYear": "{{price}}/Jahr",
+      "businessOnly": "Nur im Business-Tarif",
+      "separateApp": "Separate App",
+      "diy": "Selbst bauen"
+    }
   },
   "waitlist": {
     "placeholder": "du@email.com",
     "inputLabel": "E-Mail-Adresse"
   },
   "signup": {
-    "note": "Wir speichern deine Adresse und das Datum, an dem du sie uns gegeben hast, um dir Release-Notes zu schicken und sonst nichts. Wir geben sie niemals weiter.",
-    "joined": "Du bist angemeldet. Die Release Notes kommen per E-Mail."
+    "note": "Wir speichern deine Adresse und das Datum, an dem du sie angegeben hast, nur um Neuigkeiten und Updates zu senden. Wir geben sie niemals weiter.",
+    "joined": "Du bist angemeldet. Neuigkeiten und Updates kommen per E-Mail."
   },
   "langs": {
     "heading": "Die tududi-App ist weltweit in {{count}} Sprachen verfügbar"
@@ -325,22 +320,18 @@
   },
   "footer": {
     "colProduct": "Produkt",
-    "colResources": "Ressourcen",
     "colCommunity": "Community & Support",
     "colSupport": "Unterstützen",
-    "linkRoadmap": "Roadmap",
-    "linkIssues": "Issues",
-    "linkEmail": "E-Mail",
     "linkCoffee": "Einen Kaffee spendieren",
-    "subTitle": "Release Notes per E-Mail",
-    "subBody": "Gelegentliche Release Notes. Kein Marketing, jederzeit abbestellbar.",
+    "subTitle": "Neuigkeiten und Updates per E-Mail",
+    "subBody": "Gelegentliche Produktneuigkeiten und Updates. Kein Spam, jederzeit abbestellbar.",
     "subSubmit": "Eintragen",
     "rights": "Alle Rechte vorbehalten.",
-    "linkLicence": "MIT-Lizenz",
-    "tagline": "Ein offenes System, um Leben und Arbeit zu organisieren. Von uns gehostet, oder auf deinem eigenen Server.",
+    "tagline": "Ein ruhiges, vollständiges System, um Leben und Arbeit zu organisieren.",
     "linkTerms": "AGB",
     "linkPrivacy": "Datenschutz",
-    "linkRefunds": "Rückerstattung"
+    "linkRefunds": "Rückerstattung",
+    "linkContact": "Kontakt"
   },
   "js": {
     "showFewer": "Weniger anzeigen",
@@ -350,7 +341,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nein. Cloud kostet {{monthly}} im Monat oder {{price}} im Jahr, und das ist die gesamte Preisliste: kein kostenloser Tarif, keine Probezeit, keine Karte, die für etwas belastet wird, das später still zu berechnen beginnt. Es gibt eine 30-tägige Geld-zurück-Garantie, falls es sich als unpassend erweist, und es gibt auf dieser Seite eine Live-Demo, falls du dir vorab einen Eindruck verschaffen möchtest. Der kostenlose Weg, tududi zu nutzen, ist, es auf deinem eigenen Server zu betreiben, was dieselbe Anwendung ist.",
+        "a": "Nein. Cloud kostet {{monthly}} im Monat oder {{price}} im Jahr, und das ist die gesamte Preisliste: kein kostenloser Tarif, keine Probezeit, keine Karte, die für etwas belastet wird, das später still zu berechnen beginnt. Es gibt eine 14-tägige Geld-zurück-Garantie, falls es sich als unpassend erweist, und es gibt auf dieser Seite eine Live-Demo, falls du dir vorab einen Eindruck verschaffen möchtest. Der kostenlose Weg, tududi zu nutzen, ist, es auf deinem eigenen Server zu betreiben, was dieselbe Anwendung ist.",
         "q": "Gibt es bei tududi Cloud einen kostenlosen Tarif oder eine Testphase?"
       },
       "leaving": {
@@ -369,10 +360,6 @@
         "a": "Ja, und du musst dafür nichts kaufen. Die MIT-Lizenz erlaubt die kommerzielle Nutzung, auch innerhalb eines Unternehmens und in einem kommerziellen Produkt, ohne Umsatzschwelle und ohne Meldepflicht. Falls deine Buchhaltung eine Rechnung braucht: Ein Cloud-Abo wird über unseren Zahlungsanbieter abgerechnet und erzeugt eine. Nichts auf dieser Seite verkauft eine Erlaubnis, denn diese Erlaubnis gehört dir bereits.",
         "q": "Darf ich tududi bei der Arbeit oder in meiner Firma nutzen?"
       },
-      "dataLocation": {
-        "a": "Alles liegt in einer einzigen SQLite-Datenbankdatei innerhalb des von dir eingebundenen Volumes. Sie zu sichern heißt, diese Datei an einen sicheren Ort zu kopieren, und sie wiederherzustellen heißt, sie zurückzukopieren. tududi erstellt außerdem automatisch einen Datenbank-Snapshot, bevor Migrationen angewendet werden, und behält aktuelle Kopien. Es gibt kein proprietäres Format und keinen Exportschritt zwischen dir und deinen eigenen Daten.",
-        "q": "Wo liegen meine Daten, und wie sichere ich sie?"
-      },
       "licence": {
         "a": "Die Anwendung ist Open Source unter der MIT-Lizenz, du kannst sie also kostenlos auf deinem eigenen Server betreiben, verändern und darauf aufbauen, ohne jemanden zu bezahlen. Es gibt keine Nutzerzahl-Begrenzung und keine zurückgehaltenen Funktionen: Der Self-Hosted-Build ist das komplette Produkt. tududi Cloud ist ein kostenpflichtiger Dienst, weil Hosting, Backups und E-Mail Geld kosten, um sie zu betreiben. Du bezahlst für die Betriebsarbeit, nie für den Zugang zur Software.",
         "q": "Ist tududi wirklich kostenlos?"
@@ -386,23 +373,6 @@
         "a": "MCP ist das Model Context Protocol, ein offener Standard, um KI-Agenten mit echten Systemen zu verbinden. tududi liefert einen MCP-Server mit {{tools}} Tools, die Aufgaben, Projekte, Bereiche, Ziele, Gewohnheiten, Notizen, Personen, Tags, Ansichten, den Posteingang, die Suche und Kennzahlen abdecken, damit ein Agent Arbeit erfassen, finden, aktualisieren und abschließen kann, statt nur darüber zu reden. Es ist optional, ist in Cloud und in jeder selbst gehosteten Instanz enthalten und funktioniert mit Claude Desktop, Cursor, Windsurf, Cline oder jedem anderen MCP-Client.",
         "q": "Was ist MCP, und was kann ein Agent damit wirklich tun?"
       },
-      "mobile": {
-        "a": "tududi installiert sich als PWA statt als native App. Füge es auf Android oder iOS zum Startbildschirm hinzu oder installiere es auf dem Desktop, dann verhält es sich wie eine App: Es liest offline aus dem Cache und synchronisiert deine Änderungen, sobald du wieder verbunden bist. Es gibt nichts aus dem App Store oder Play Store herunterzuladen.",
-        "q": "Gibt es eine mobile App?"
-      },
-      "multiUser": {
-        "a": "Ja. Eine einzelne Instanz kann mehrere Nutzer beherbergen, und Projekte lassen sich mit Nur-Lese- oder Lese-Schreib-Zugriff teilen, den die enthaltenen Aufgaben und Notizen erben. Die Selbstregistrierung ist standardmäßig deaktiviert, ein Admin erstellt also entweder Konten oder öffnet die Registrierung bewusst. Niemand kommt herein, weil du vergessen hast, eine Tür zu schließen.",
-        "q": "Können sich mehrere Personen eine Instanz teilen?"
-      },
-      "requirements": {
-        "a": "Docker, ein dauerhafter Ort, um die Datenbank zu speichern, ein Reverse Proxy mit TLS davor, und die Disziplin, Updates einzuspielen und Backups aufzubewahren. Es läuft angenehm auf einem kleinen VPS oder einer Maschine im eigenen Netzwerk, und die Befehle finden sich im Self-Host-Abschnitt und in der Dokumentation. Den meisten Leuten ist mit Cloud besser gedient, das dieselbe Anwendung ohne diesen ganzen Aufwand ist.",
-        "linkLabel": "Dokumentation lesen",
-        "q": "Was brauche ich, um es selbst zu betreiben?"
-      },
-      "reverseProxy": {
-        "a": "Ja, und das ist der normale Weg, es zu betreiben. Setze TUDUDI_TRUST_PROXY, damit die App den von nginx, Caddy oder Traefik weitergeleiteten Headern vertraut. Lässt du das aus, verhalten sich Anmeldungen und IP-Protokollierung auf schwer zu diagnostizierende Weise seltsam, weshalb die App einen spezifischen Fehler auslöst, statt stillschweigend zu versagen. Die akzeptierten Werte sind im README dokumentiert.",
-        "q": "Funktioniert es hinter einem Reverse Proxy?"
-      },
       "shutdown": {
         "a": "Die App ist MIT-lizenziert und der Quellcode ist öffentlich, sie kann dir also nicht entzogen werden. Jeder kann sie weiterbetreiben, und du kannst sie forken. In tududi Cloud liegen deine Daten in einer Standard-tududi-Datenbank statt in einem proprietären Format, sollte der Dienst also je eingestellt werden, bekämst du deine Daten und eine Anleitung, sie auf deinen eigenen Server umzuziehen.",
         "q": "Was passiert mit meinen Daten, wenn es tududi nicht mehr gibt?"
@@ -415,8 +385,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "KI, MCP & Cloud",
-      "project": "Lizenz & Projekt",
-      "selfHost": "Self-Hosting & Daten"
+      "project": "Lizenz & Projekt"
     },
     "permalink": "Link zu dieser Antwort",
     "sub": "Die Lizenz, die KI, und was mit deinen Daten passiert. Fehlt etwas, frag im Discord.",
@@ -428,7 +397,7 @@
     "includes": [
       "Unbegrenzte Aufgaben, Projekte und Notizen",
       "Anhänge und Datei-Uploads",
-      "KI-Assistent, MCP, CalDAV-Sync und der Telegram-Bot",
+      "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
       "Tägliche Backups und verwaltete Updates",
       "Support per E-Mail",
       "Exportiere jederzeit alles"
@@ -477,8 +446,56 @@
     "primary": "Loslegen",
     "secondary": "Preise ansehen",
     "selfHostLink": "Lies die Anleitung.",
-    "selfHostPrefix": "Möchtest du es lieber auf deinem eigenen Server betreiben?",
-    "sub": "Wir betreiben den Server, die Updates und die Backups. Du bekommst das System, und eine 30-tägige Geld-zurück-Garantie, falls es nichts für dich ist.",
+    "sub": "Wir betreiben den Server, die Updates und die Backups. Du bekommst das System, und eine 14-tägige Geld-zurück-Garantie, falls es nichts für dich ist.",
     "title": "In einer Minute organisiert sein"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "lede": "Fragen zu tududi Cloud, zur Abrechnung oder zu deinem Konto? Schreib uns eine Nachricht, wir antworten per E-Mail.",
+    "name": "Name",
+    "email": "E-Mail",
+    "message": "Nachricht",
+    "submit": "Nachricht senden",
+    "sent": "Danke, deine Nachricht ist unterwegs. Wir antworten per E-Mail.",
+    "invalid": "Bitte gib deinen Namen, eine gültige E-Mail-Adresse und eine Nachricht ein.",
+    "failed": "Deine Nachricht konnte gerade nicht gesendet werden. Schreib uns bitte an"
+  },
+  "plan": {
+    "eyebrow": "Tag planen",
+    "title": "Vom flüchtigen Gedanken zum erledigten Tag",
+    "sub": "Halte Dinge fest, sobald sie auftauchen, plane den Tag mit KI rund um deine Termine und arbeite ihn Block für Block ab.",
+    "stepLabel": "Schritt {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Alles festhalten, in normalen Worten",
+        "body": "Ein Hinzufügen-Feld für Eingang, Aufgaben, Notizen und Projekte, überall in der App. Schreib, wie du denkst, tududi erledigt den Rest.",
+        "points": [
+          "„next fri“, „in 3 days“ oder „every first monday“ setzt Datum oder Wiederholung",
+          "#Tags, +Projekt und @Person werden beim Tippen erkannt",
+          "Screenshot einfügen oder Dateien ablegen, sie kommen mit"
+        ],
+        "alt": "Das Hinzufügen-Feld macht aus einem Satz eine wiederkehrende Aufgabe mit Tag und Projekt"
+      },
+      "plan": {
+        "title": "Tag planen, mit KI (oder ohne)",
+        "body": "Der Planer zeigt, was heute passen könnte, in deiner Reihenfolge. Gib jeder Aufgabe eine Dauer und leg sie in die freie Zeit zwischen Terminen, oder lass die KI den ganzen Tag entwerfen.",
+        "points": [
+          "Sortierte Vorschläge: überfällig, heute fällig, in Arbeit, dann der Rest",
+          "Mit KI entwerfen füllt die freie Zeit um Termine, Rückgängig stellt alles wieder her",
+          "Hinweise zeigen einen überbuchten Tag und Lücken, in die eine Aufgabe passt"
+        ],
+        "alt": "Der Tagesplaner mit Aufgaben und Kalenderterminen auf einer Zeitleiste"
+      },
+      "today": {
+        "title": "Heute, mit deinem Kalender",
+        "body": "Starte den Tag und Heute zeigt nur, was du dir vorgenommen hast: den aktuellen Block, dann die Agenda, mit deinen Google-, Apple- oder Outlook-Terminen dazwischen.",
+        "points": [
+          "Über die Jetzt-Karte erledigen oder verschieben",
+          "Kalender-Feeds nur lesend, verschlüsselt gespeichert",
+          "Ein KI-Tagesabschluss nimmt Unerledigtes mit in den nächsten Tag"
+        ],
+        "alt": "Heute mit der nächsten Aufgabe, der Agenda und Terminen aus zwei Kalendern"
+      }
+    }
   }
 }

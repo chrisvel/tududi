@@ -172,28 +172,181 @@ describe('Landing page', () => {
         expect(hero).not.toMatch(/MIT|open source/i);
         expect(hero).toContain('stars on GitHub');
 
-        // Still reachable further down, in the self-host section and footer.
+        // Still reachable further down, on the pricing card and in the footer.
         const belowHero = res.text.slice(
             res.text.indexOf('</section>', heroStart)
         );
         expect(belowHero).toContain('https://github.com/chrisvel/tududi');
     });
 
-    it('keeps self-hosting reachable, one click in', async () => {
+    it('sends self-hosters to GitHub instead of a section of its own', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('id="self-host"');
+        expect(res.text).not.toContain('href="#self-host"');
+        expect(res.text).not.toContain('docker pull chrisvel/tududi:latest');
+        expect(res.text).not.toContain('id="faq-requirements"');
+        expect(res.text).not.toContain('Prefer to run it on your own server?');
 
-        // Out of the top row of the navbar, into Resources - in both the
-        // desktop dropdown and the mobile sheet - and still in the footer.
+        const pricing = res.text.slice(res.text.indexOf('id="pricing"'));
+        expect(pricing).toMatch(
+            /href="https:\/\/github\.com\/chrisvel\/tududi" class="plan-action"/
+        );
+    });
+
+    it('quotes a 14-day money-back guarantee and no AI credit count', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).toContain('14-day money-back guarantee');
+        expect(res.text).not.toContain('30-day');
+        expect(res.text).not.toMatch(/AI credits/i);
+        const pricing = res.text.slice(
+            res.text.indexOf('id="pricing"'),
+            res.text.indexOf('class="compare')
+        );
+        expect(pricing).toContain('AI day planning, MCP, calendar feeds');
+    });
+
+    it('walks through capture, planning and Today before the feature grid', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const planAt = res.text.indexOf('id="plan"');
+        expect(planAt).toBeGreaterThan(-1);
+        expect(planAt).toBeLessThan(res.text.indexOf('id="features"'));
+
+        const section = res.text.slice(
+            planAt,
+            res.text.indexOf('</section>', planAt)
+        );
+        ['capture-light.png', 'plan-light.png', 'today-light.png'].forEach(
+            (img) =>
+                expect(section).toContain(`/landing-assets/screenshots/${img}`)
+        );
+        expect(section).toContain('Plan my day, with AI');
+
         const nav = res.text.slice(
             res.text.indexOf('<div class="nav-wrap">'),
             res.text.indexOf('<section class="hero"')
         );
-        expect(nav.match(/href="#self-host"/g)).toHaveLength(2);
-        expect(res.text).toContain('id="self-host"');
-        expect(res.text).toContain('docker pull chrisvel/tududi:latest');
-        expect(res.text).toContain(
-            'https://github.com/chrisvel/tududi/blob/main/LICENSE'
+        const desktop = nav.slice(0, nav.indexOf('id="nav-mobile"'));
+        const mobile = nav.slice(nav.indexOf('id="nav-mobile"'));
+        expect(desktop.match(/href="#plan"/g)).toHaveLength(1);
+        expect(mobile.match(/href="#plan"/g)).toHaveLength(1);
+    });
+
+    it('leads the featured cards with capture and planning', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const grid = res.text.slice(
+            res.text.indexOf('<div class="feature-grid">'),
+            res.text.indexOf('id="feature-rest"')
         );
+        expect(grid.match(/class="feature-card[ "]/g)).toHaveLength(8);
+        expect(grid).toContain('One box for everything');
+        expect(grid).toContain('Plan my day');
+        expect(grid).toContain('Today with your calendar');
+    });
+
+    it('plays the hero loop with the still as its poster', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).toContain(
+            'src="/landing-assets/screenshots/hero.mp4"'
+        );
+        expect(res.text).toContain(
+            'poster="/landing-assets/screenshots/hero-light.png"'
+        );
+        expect(res.text).toContain('prefers-reduced-motion: reduce');
+        const video = await request(app)
+            .get('/landing-assets/screenshots/hero.mp4')
+            .set('Host', 'tududi.com');
+        expect(video.status).toBe(200);
+        expect(video.headers['content-type']).toMatch(/video\/mp4/);
+    });
+
+    it('leads every card with an icon and puts screenshots behind a preview link', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const grid = res.text.slice(
+            res.text.indexOf('<div class="feature-grid">'),
+            res.text.indexOf('id="feature-rest"')
+        );
+        expect(grid.match(/class="feature-icon"/g)).toHaveLength(8);
+        expect(grid.match(/class="feature-peek"/g)).toHaveLength(8);
+        expect(res.text).not.toContain('class="feature-shot"');
+        expect(res.text).toContain('id="feature-preview"');
+
+        const cards = res.text.match(/class="feature-card"/g);
+        const icons = res.text.match(/class="feature-icon"/g);
+        expect(icons).toHaveLength(cards.length);
+
+        const hrefs = [
+            ...res.text.matchAll(
+                /href="(\/landing-assets\/screenshots\/features\/[^"]+)"/g
+            ),
+        ].map((m) => m[1]);
+        expect(hrefs.length).toBeGreaterThanOrEqual(18);
+        for (const href of new Set(hrefs)) {
+            const img = await request(app).get(href).set('Host', 'tududi.com');
+            expect(img.status).toBe(200);
+        }
+    });
+
+    it('has no Resources menu in the nav or the footer', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('>Resources<');
+        expect(res.text).not.toContain(
+            'https://docs.tududi.com" class="nav-link"'
+        );
+        expect(res.text).not.toContain('github.com/users/chrisvel/projects/2');
+    });
+
+    it('serves the new screenshots', async () => {
+        for (const img of [
+            'capture-light.png',
+            'plan-light.png',
+            'today-light.png',
+        ]) {
+            const res = await request(app)
+                .get(`/landing-assets/screenshots/${img}`)
+                .set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+        }
+    });
+
+    it('compares Cloud with Todoist, TickTick and Notion, not self-hosting', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const at = res.text.indexOf('class="compare compare-vendors"');
+        expect(at).toBeGreaterThan(-1);
+        const table = res.text.slice(
+            at,
+            res.text.indexOf('compare-footnote', at)
+        );
+        [
+            'tududi Cloud',
+            'Todoist Pro',
+            'TickTick Premium',
+            'Notion Plus',
+        ].forEach((vendor) => expect(table).toContain(vendor));
+        expect(table).not.toContain('Self-host');
+        [
+            'Eisenhower matrix',
+            'Capture from Telegram',
+            'CalDAV task sync',
+        ].forEach((row) => expect(table).toContain(row));
+        expect(res.text).toContain('from their public pricing pages');
+    });
+
+    it('shows no MCP config code and no Daily Brief', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('mcpServers');
+        expect(res.text).not.toContain('claude_desktop_config.json');
+        expect(res.text).not.toContain('Daily Brief');
+    });
+
+    it('keeps the footer brand free of open source wording', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const brandStart = res.text.indexOf('<div class="footer-brand">');
+        const brand = res.text.slice(
+            brandStart,
+            res.text.indexOf('</div>', brandStart)
+        );
+        expect(brand).not.toMatch(/open|github/i);
+        expect(res.text).toContain('href="/contact"');
     });
 
     it('flags the Cloud card rather than the self-host one', async () => {
@@ -497,6 +650,98 @@ describe('Landing page', () => {
         });
     });
 
+    describe('the contact form', () => {
+        const emailService = require('../../services/emailService');
+        let send;
+
+        beforeEach(() => {
+            send = jest
+                .spyOn(emailService, 'sendEmail')
+                .mockResolvedValue({ success: true });
+        });
+
+        afterEach(() => send.mockRestore());
+
+        const post = (body) =>
+            request(app)
+                .post('/contact')
+                .set('Host', 'tududi.com')
+                .type('form')
+                .send(body);
+
+        it('serves the form on the landing host', async () => {
+            const res = await request(app)
+                .get('/contact')
+                .set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain('action="/contact"');
+            expect(res.text).toContain('name="message"');
+            expect(res.text).toContain('class="hp-field"');
+        });
+
+        it('mails the operator with the sender as reply-to', async () => {
+            const res = await post({
+                name: 'Ada\r\nBcc: x@evil.test',
+                email: 'Ada@Gmail.com',
+                message: 'Hello there',
+            });
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe('/contact?sent=1');
+            expect(send).toHaveBeenCalledTimes(1);
+            const mail = send.mock.calls[0][0];
+            expect(mail.to).toBe('info@tududi.com');
+            expect(mail.replyTo).toBe('"Ada Bcc: x@evil.test" <ada@gmail.com>');
+            expect(mail.subject).not.toMatch(/[\r\n]/);
+            expect(mail.text).toContain('Hello there');
+
+            const page = await request(app)
+                .get(res.headers.location)
+                .set('Host', 'tududi.com');
+            expect(page.text).toContain('data-testid="contact-sent"');
+        });
+
+        it('rejects a missing message or a bad address without sending', async () => {
+            const noMessage = await post({
+                name: 'Ada',
+                email: 'ada@gmail.com',
+                message: '  ',
+            });
+            const badEmail = await post({
+                name: 'Ada',
+                email: 'nope',
+                message: 'Hi',
+            });
+            expect(noMessage.headers.location).toBe('/contact?error=invalid');
+            expect(badEmail.headers.location).toBe('/contact?error=invalid');
+            expect(send).not.toHaveBeenCalled();
+        });
+
+        it('says so when the mail cannot go out', async () => {
+            send.mockResolvedValue({ success: false, reason: 'down' });
+            const res = await post({
+                name: 'Ada',
+                email: 'ada@gmail.com',
+                message: 'Hi',
+            });
+            expect(res.headers.location).toBe('/contact?error=failed');
+            const page = await request(app)
+                .get(res.headers.location)
+                .set('Host', 'tududi.com');
+            expect(page.text).toContain('mailto:info@tududi.com');
+        });
+
+        it('trips the honeypot without sending or saying so', async () => {
+            const res = await post({
+                company: 'Acme',
+                name: 'Bot',
+                email: 'bot@gmail.com',
+                message: 'spam',
+            });
+            expect(res.headers.location).toBe('/contact?sent=1');
+            expect(send).not.toHaveBeenCalled();
+        });
+    });
+
     describe('with Cloud open', () => {
         it('announces it in the hero, linking to the Cloud page', async () => {
             const res = await request(app).get('/').set('Host', 'tududi.com');
@@ -534,23 +779,23 @@ describe('Landing page', () => {
             expect(res.text).not.toContain('left:-9999px');
         });
 
-        it('offers release notes in the signup section', async () => {
+        it('offers news and updates in the signup section', async () => {
             const res = await request(app).get('/').set('Host', 'tududi.com');
             const section = res.text.slice(
                 res.text.indexOf('<section class="waitlist"')
             );
-            expect(section).toContain('Release notes by email');
-            expect(section).toContain('only to send release notes');
+            expect(section).toContain('News and updates by email');
+            expect(section).toContain('only to send news and updates');
         });
 
-        it('confirms a release-notes signup, not a waitlist place', async () => {
+        it('confirms a news signup, not a waitlist place', async () => {
             await request(app).get('/').set('Host', 'tududi.com');
             const res = await request(app)
                 .get('/?joined=1')
                 .set('Host', 'tududi.com');
             expect(res.text).toContain('data-testid="waitlist-joined"');
             expect(res.text).toContain(
-                'You are subscribed. Release notes will arrive by email.'
+                'You are subscribed. News and updates will arrive by email.'
             );
             expect(res.text).not.toContain('when tududi Cloud opens');
         });
@@ -587,6 +832,13 @@ describe('Landing page', () => {
             expect(i18n.t('faq.items.freePlan.q')).not.toBe(
                 'faq.items.freePlan.q'
             );
+            ['capture', 'plan', 'today'].forEach((step) => {
+                expect(catalog.plan.steps[step].title).toBeTruthy();
+                expect(catalog.plan.steps[step].points).toHaveLength(3);
+            });
+            expect(catalog.plan.stepLabel).toContain('{{n}}');
+            expect(catalog.features.cards.planMyDay.title).toBeTruthy();
+            expect(catalog.features.cards.dueDates).toBeUndefined();
         });
     });
 });

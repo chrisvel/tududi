@@ -325,14 +325,16 @@ const Navbar: React.FC<NavbarProps> = ({
                                         'Backup & Restore'
                                     )}
                                 </Link>
-                                <Link
-                                    to="/about"
-                                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                >
-                                    <InformationCircleIcon className="h-4 w-4 mr-2 shrink-0" />
-                                    {t('navigation.about', 'About')}
-                                </Link>
+                                {!featureFlags.hosted && (
+                                    <Link
+                                        to="/about"
+                                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        onClick={() => setIsDropdownOpen(false)}
+                                    >
+                                        <InformationCircleIcon className="h-4 w-4 mr-2 shrink-0" />
+                                        {t('navigation.about', 'About')}
+                                    </Link>
+                                )}
                                 <hr className="my-1 border-gray-200 dark:border-gray-600" />
                                 <button
                                     onClick={() => {

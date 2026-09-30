@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "tududi: task manager and life management system, with MCP for AI agents",
-    "description": "Areas, goals, projects and tasks, plus notes and habits, in one system. Set up a tududi Cloud account in a minute. An MCP server exposing {{tools}} tools lets AI agents work your list. Self-hosting is there if you would rather run the server yourself.",
+    "description": "Capture anything, plan your day with AI around your calendar, and keep areas, goals, projects, notes and habits in one system. An MCP server exposing {{tools}} tools lets AI agents work your list. Set up a tududi Cloud account in a minute.",
     "langSwitcherLabel": "Change language",
     "langSwitcherCurrent": "Language: {{name}}"
   },
@@ -11,11 +11,9 @@
     "ai": "AI & MCP",
     "pricing": "Pricing",
     "faq": "FAQ",
-    "docs": "Docs",
-    "changelog": "Changelog",
     "signIn": "Sign in",
     "toggle": "Toggle navigation",
-    "selfHostGuide": "Self-host guide"
+    "plan": "Plan your day"
   },
   "hero": {
     "badgeStars": "stars on GitHub",
@@ -24,7 +22,7 @@
     "starsLoading": "Loading star count",
     "titleLine1": "Productivity made simple",
     "titleLine2": "",
-    "lede": "Areas, goals, projects, tasks, notes and habits, in one system. Create a Cloud account in a minute.",
+    "lede": "Capture anything, plan your day with AI around your calendar, and keep areas, goals, projects, notes and habits in one system. Create a Cloud account in a minute.",
     "ctaPrimary": "Start on tududi Cloud",
     "ctaDemo": "Try the live demo",
     "demoNote": "A real hosted instance, seeded with sample data, shared and reset regularly",
@@ -92,17 +90,12 @@
         "body": "Built on the open Model Context Protocol. Works with Claude and other MCP clients."
       }
     },
-    "configTitle": "Connect it to Claude Desktop",
     "footnoteClients": "The same works with Cursor, Windsurf, Cline, and any other MCP client.",
     "footnoteDocsLink": "Read the MCP docs →",
     "footnoteIncluded": "MCP comes with tududi Cloud, and with every self-hosted instance.",
     "assistantTitle": "AI Assistant",
     "assistantLede": "A separate, optional layer that reads your data and writes back plain-language summaries. Works with any OpenAI-compatible provider, including self-hosted ones like Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Daily Brief",
-        "body": "A morning summary with your focus task and any risk flags worth knowing about."
-      },
       "task": {
         "title": "Task Insights",
         "body": "Suggested next steps for a specific task, generated on demand."
@@ -110,24 +103,52 @@
       "project": {
         "title": "Project Insights",
         "body": "A quick health assessment for a project: what's moving, what's stuck."
+      },
+      "plan": {
+        "title": "Plan my day",
+        "body": "Drafts your day into the free time around your meetings, with a reason for every block."
+      },
+      "wrapUp": {
+        "title": "Day wrap-up",
+        "body": "At the end of the day: what got done, a pattern worth noticing, and what to carry into tomorrow."
       }
-    },
-    "configCloudTab": "Cloud",
-    "configSelfHostTab": "Running it yourself?",
-    "configSelfHostNote": "Point TUDUDI_URL at your own instance instead. Everything else is identical."
+    }
   },
   "features": {
     "eyebrow": "Features",
     "title": "A complete system for organized living",
     "sub": "tududi combines goals, projects, tasks, notes, and smart views into one calm, focused system. Let us run it for you, or run it yourself if you prefer.",
     "showAll": "Show all {{count}} features",
+    "preview": "Preview",
+    "closePreview": "Close preview",
     "groups": {
+      "planDay": "Capture & Plan",
       "planFocus": "Plan & Focus",
       "tasksProjects": "Tasks & Projects",
       "accessAnywhere": "Access Anywhere",
       "privacyCollab": "Privacy & Collaboration"
     },
     "cards": {
+      "capture": {
+        "title": "One box for everything",
+        "body": "Add inbox items, tasks, notes or projects from anywhere, with files attached. Paste a screenshot and it becomes the item."
+      },
+      "nlpDates": {
+        "title": "Dates in plain words",
+        "body": "“tomorrow”, “next fri”, “every weekday”: dates and repeats are read as you type, along with #tags, +Project and @person."
+      },
+      "planMyDay": {
+        "title": "Plan my day",
+        "body": "A planner that places tasks in the free time around your meetings, with lengths, ranked suggestions and planning tips."
+      },
+      "todayCalendar": {
+        "title": "Today with your calendar",
+        "body": "Connect Google, Apple or Outlook calendars and see meetings next to your tasks, with the current block on top."
+      },
+      "aiPlanning": {
+        "title": "AI day planning",
+        "body": "Draft the day with AI, get length estimates for tasks, and an end-of-day wrap-up that carries unfinished work over."
+      },
       "goals": {
         "title": "Goals",
         "body": "Set outcomes for a season or a year, and see which Areas and Projects are actually moving them forward."
@@ -147,10 +168,6 @@
       "matrixKanban": {
         "title": "Eisenhower Matrix & Kanban",
         "body": "Switch to an Eisenhower Matrix or a Kanban board when the question is simply: what do I do right now."
-      },
-      "dueDates": {
-        "title": "Intelligent Due Dates",
-        "body": "Smart categorization: Today's priorities, Upcoming deadlines, and Someday tasks."
       },
       "insights": {
         "title": "Productivity Insights",
@@ -212,10 +229,6 @@
         "title": "API Access & Swagger",
         "body": "Versioned Swagger docs and personal access tokens for custom integrations."
       },
-      "responsive": {
-        "title": "Responsive Design",
-        "body": "A layout that adapts cleanly from a widescreen desktop down to a phone in your pocket."
-      },
       "privacy": {
         "title": "Privacy and Control",
         "body": "Keep your data private. Self-host for full control, or use a Managed instance with encrypted backups."
@@ -225,20 +238,6 @@
         "body": "Share projects with granular access controls - read-only or read-write permissions."
       }
     }
-  },
-  "selfHost": {
-    "eyebrow": "Self-Host",
-    "title": "Run it on your own server",
-    "sub": "Self-hosting is for people who already run Docker and a reverse proxy. If you want tududi without becoming the sysadmin, use Cloud.",
-    "cardTitle": "Docker Setup",
-    "cardSub": "For people already running Docker",
-    "step1": "Pull the Docker image",
-    "step2": "Run the container",
-    "step3Prefix": "Access at",
-    "linkGithub": "View on GitHub",
-    "linkDocs": "Read the self-host guide",
-    "ctaCloud": "Get started on Cloud",
-    "showCommands": "Show install commands"
   },
   "pricing": {
     "eyebrow": "Pricing",
@@ -268,45 +267,41 @@
         "features": [
           "Running in a minute, with no server to set up",
           "Unlimited tasks, projects and notes, plus attachments",
-          "AI Assistant, MCP, CalDAV sync and the Telegram bot",
+          "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
           "Updates and daily backups handled for you, with {{proStorageGb}} GB of storage",
           "Export everything any time, delete your account yourself"
         ],
         "action": "Get started →"
       }
     },
-    "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 30-day money-back guarantee, no questions asked.",
+    "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",
     "perMonth": "/month"
   },
   "compare": {
     "title": "Quick Comparison",
-    "sub": "The same application either way. What differs is who runs it, and what that costs you.",
-    "colSelf": "Self-host",
+    "sub": "How tududi Cloud compares with the apps people usually weigh it against, on their individual plans.",
+    "footnote": "Todoist Pro, TickTick Premium and Notion Plus, from their public pricing pages in September 2026. Check their sites for current prices. Their prices are US list prices in dollars.",
     "rows": {
-      "openSource": "Open source core",
-      "commercialUse": "Commercial use",
-      "infraControl": "Full infrastructure control",
-      "dataOnHardware": "Data stays on your hardware",
-      "noRecurring": "No recurring cost",
-      "noSetup": "No server setup required",
-      "managedUpdates": "Managed updates",
-      "autoBackups": "Automatic backups",
-      "pricing": "Pricing",
-      "startMinute": "Start in a minute",
-      "exportAnytime": "Export everything any time",
-      "proFeatures": "AI Assistant, MCP, CalDAV, Telegram",
-      "storage": "Attachment storage",
-      "support": "Support"
+      "price": "Price, billed yearly",
+      "aiIncluded": "AI included",
+      "dayPlanner": "Plan your day around your calendar",
+      "habits": "Habit tracking",
+      "goals": "Goals, areas and projects",
+      "notes": "Notes alongside tasks",
+      "matrix": "Eisenhower matrix",
+      "kanban": "Kanban boards",
+      "views": "Saved smart views",
+      "people": "Assign tasks to people",
+      "telegram": "Capture from Telegram",
+      "caldav": "CalDAV task sync",
+      "mcp": "MCP server for AI agents"
     },
     "values": {
-      "community": "Community",
-      "email": "Email",
-      "gigabytes": "{{count}} GB",
-      "yourDisk": "Your own disk",
-      "perMonthOrYear": "{{monthly}}/mo or {{price}}/yr",
-      "selfCost": "Free, plus your hosting"
-    },
-    "colCloud": "tududi Cloud"
+      "perYear": "{{price}}/yr",
+      "businessOnly": "Business plan only",
+      "separateApp": "Separate app",
+      "diy": "Build it yourself"
+    }
   },
   "faq": {
     "eyebrow": "FAQ",
@@ -315,7 +310,6 @@
     "permalink": "Link to this answer",
     "groups": {
       "project": "Licence & project",
-      "selfHost": "Self-hosting & data",
       "managed": "AI, MCP & Cloud"
     },
     "items": {
@@ -336,27 +330,6 @@
         "q": "What happens to my data if tududi goes away?",
         "a": "The app is MIT licensed and the source is public, so it cannot be withdrawn from you. Anyone can keep running it, and you can fork it. On tududi Cloud your data lives in a standard tududi database rather than a proprietary format, so if the service ever shut down you would get your data and a guide to moving it onto your own server."
       },
-      "requirements": {
-        "q": "What do I need to run it myself?",
-        "a": "Docker, somewhere persistent to store the database, a reverse proxy with TLS in front of it, and the discipline to apply updates and keep backups. It is comfortable on a small VPS or a machine on your own network, and the commands are in the Self-Host section and the docs. Most people are better served by Cloud, which is the same application with none of that work.",
-        "linkLabel": "Read the docs"
-      },
-      "dataLocation": {
-        "q": "Where is my data, and how do I back it up?",
-        "a": "Everything lives in a single SQLite database file inside the volume you mounted. Backing it up is copying that file somewhere safe, and restoring it is copying it back. tududi also snapshots the database automatically before it applies migrations, keeping recent copies. There is no proprietary format and no export step standing between you and your own data."
-      },
-      "multiUser": {
-        "q": "Can several people share one instance?",
-        "a": "Yes. A single instance can host multiple users, and projects can be shared with read-only or read-write access, which the tasks and notes inside them inherit. Self-registration is off by default, so an admin either creates accounts or deliberately opens sign-ups. Nobody gets in because you forgot to close a door."
-      },
-      "mobile": {
-        "q": "Is there a mobile app?",
-        "a": "tududi installs as a PWA rather than a native app. Add it to your home screen on Android or iOS, or install it on a desktop, and it behaves like an app: it reads from cache when you are offline and syncs your changes when you reconnect. There is nothing to download from the App Store or Play Store."
-      },
-      "reverseProxy": {
-        "q": "Does it work behind a reverse proxy?",
-        "a": "Yes, and that is the normal way to run it. Set TUDUDI_TRUST_PROXY so the app trusts the forwarded headers from nginx, Caddy, or Traefik. If you skip it, logins and IP logging behave strangely in ways that are hard to diagnose, so the app raises a specific error rather than failing quietly. The accepted values are documented in the README."
-      },
       "aiOptional": {
         "q": "Do I have to use the AI features?",
         "a": "No. Both AI layers are off until you switch them on, and tududi is a complete system without either. If you never enable them, nothing is missing and nothing nags you."
@@ -375,7 +348,7 @@
       },
       "freePlan": {
         "q": "Is there a free plan or a trial on tududi Cloud?",
-        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 30-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first. The free way to use tududi is to run it on your own server, which is the same application."
+        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 14-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first. The free way to use tududi is to run it on your own server, which is the same application."
       },
       "leaving": {
         "q": "Can I leave, and what happens to my data?",
@@ -388,8 +361,8 @@
     "inputLabel": "Email address"
   },
   "signup": {
-    "note": "We store your address and the date you gave it, only to send release notes. We never share it.",
-    "joined": "You are subscribed. Release notes will arrive by email."
+    "note": "We store your address and the date you gave it, only to send news and updates. We never share it.",
+    "joined": "You are subscribed. News and updates will arrive by email."
   },
   "langs": {
     "heading": "The tududi app is available in {{count}} languages worldwide"
@@ -399,23 +372,19 @@
     "sub": "Connect with other tududi users, get support, and stay updated"
   },
   "footer": {
-    "tagline": "An open system for organizing life and work. Hosted by us, or run it on your own server.",
+    "tagline": "A calm, complete system for organizing life and work.",
     "colProduct": "Product",
-    "colResources": "Resources",
     "colCommunity": "Community & Support",
     "colSupport": "Support",
-    "linkRoadmap": "Roadmap",
-    "linkIssues": "Issues",
-    "linkEmail": "Email",
     "linkCoffee": "Buy a Coffee",
-    "subTitle": "Release notes by email",
-    "subBody": "Occasional release notes. No marketing, unsubscribe any time.",
+    "subTitle": "News and updates by email",
+    "subBody": "Occasional product news and updates. No spam, unsubscribe any time.",
     "subSubmit": "Join",
     "rights": "All rights reserved.",
-    "linkLicence": "MIT licence",
     "linkTerms": "Terms",
     "linkPrivacy": "Privacy",
-    "linkRefunds": "Refunds"
+    "linkRefunds": "Refunds",
+    "linkContact": "Contact"
   },
   "js": {
     "showFewer": "Show fewer",
@@ -466,7 +435,7 @@
     "includes": [
       "Unlimited tasks, projects and notes",
       "Attachments and file uploads",
-      "AI assistant, MCP, CalDAV sync and the Telegram bot",
+      "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
       "Daily backups and managed updates",
       "Support by email",
       "Export everything at any time"
@@ -475,10 +444,58 @@
   },
   "finalCta": {
     "title": "Get organized in a minute",
-    "sub": "We run the server, the updates and the backups. You get the system, and a 30-day money-back guarantee if it is not for you.",
+    "sub": "We run the server, the updates and the backups. You get the system, and a 14-day money-back guarantee if it is not for you.",
     "primary": "Get started",
     "secondary": "See pricing",
-    "selfHostPrefix": "Prefer to run it on your own server?",
     "selfHostLink": "Read the guide."
+  },
+  "contact": {
+    "title": "Contact us",
+    "lede": "Questions about tududi Cloud, billing or your account? Send us a message and we will reply by email.",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "submit": "Send message",
+    "sent": "Thanks, your message is on its way. We will reply by email.",
+    "invalid": "Please fill in your name, a valid email address and a message.",
+    "failed": "Your message could not be sent right now. Please email us at"
+  },
+  "plan": {
+    "eyebrow": "Plan your day",
+    "title": "From a passing thought to a finished day",
+    "sub": "Capture things the moment they come up, plan the day around your meetings with AI, then work through it one block at a time.",
+    "stepLabel": "Step {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Capture anything, in plain words",
+        "body": "One Add box for the inbox, tasks, notes and projects, everywhere in the app. Write the way you think and tududi fills in the rest.",
+        "points": [
+          "“next fri”, “in 3 days” or “every first monday” sets the date or the repeat",
+          "#tags, +Project and @person are picked up as you type",
+          "Paste a screenshot or drop files and they go along with it"
+        ],
+        "alt": "The Add box turning a sentence into a recurring task with a tag and a project"
+      },
+      "plan": {
+        "title": "Plan my day, with AI (or not)",
+        "body": "The planner shows what could fit today, in the order you choose. Give each task a length and place it in the free time between meetings, or let AI draft the whole day.",
+        "points": [
+          "Ranked suggestions: overdue, due today, in progress, then the rest",
+          "Draft with AI fills your free time around meetings, and Undo puts it back",
+          "Tips flag an overbooked day and the gaps a task would fit"
+        ],
+        "alt": "The day planner with tasks and calendar meetings on one timeline"
+      },
+      "today": {
+        "title": "Today, with your calendar",
+        "body": "Start the day and Today shows only what you committed to: the block you should be on now, then the agenda, with your Google, Apple or Outlook meetings in between.",
+        "points": [
+          "Mark done or push to later from the Now card",
+          "Read-only calendar feeds, stored encrypted",
+          "An AI wrap-up at the end of the day carries unfinished work to tomorrow"
+        ],
+        "alt": "Today with the next task, the agenda and meetings from two calendars"
+      }
+    }
   }
 }
