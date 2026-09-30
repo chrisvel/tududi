@@ -46,6 +46,7 @@ import {
     CaptureFileError,
     filesToAttachFromPaste,
     nameForPastedFile,
+    takePickedFiles,
     titleFromFiles,
     useCaptureFiles,
 } from '../Capture/useCaptureFiles';
@@ -2426,9 +2427,9 @@ const QuickCaptureInput = React.forwardRef<
                         hidden
                         data-testid="capture-file-input"
                         onChange={(e) => {
-                            const picked = Array.from(e.target.files ?? []);
-                            e.target.value = '';
-                            void attachFiles(picked);
+                            void takePickedFiles(e.currentTarget).then(
+                                attachFiles
+                            );
                         }}
                     />
                     <div className="order-3 sm:order-2 ml-auto flex items-center gap-2">
