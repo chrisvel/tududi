@@ -311,6 +311,10 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Streak rules, the strength score, and archiving
     - Habit reminders and the habits API
 
+31. **[Kubernetes](docs/22-kubernetes.md)**
+    - Example manifests in `docs/examples/kubernetes`
+    - One replica, block storage for SQLite, ingress and backup notes
+
 ---
 
 ## Project Overview
