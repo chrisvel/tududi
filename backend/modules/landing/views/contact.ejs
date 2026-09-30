@@ -1,0 +1,79 @@
+<% const t = i18n.t; %>
+<!DOCTYPE html>
+<html lang="<%= i18n.meta.htmlLang %>" dir="<%= i18n.meta.dir || 'ltr' %>">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VC2N7ZBPEE', { page_locale: '<%= i18n.locale %>' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t('contact.title') %> · tududi</title>
+    <meta name="description" content="<%= t('contact.lede') %>">
+    <link rel="canonical" href="<%= canonicalUrl %>" />
+    <link rel="icon" href="/landing-assets/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <%- include('partials/styles') %>
+    <style>
+        .contact { padding: 120px 16px 80px; }
+        .contact-inner { max-width: 620px; margin: 0 auto; }
+        .contact h1 { font-family: 'Manrope', 'Inter', sans-serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 800; letter-spacing: -0.02em; color: #111827; margin-bottom: 10px; }
+        .contact-lede { color: #4b5563; font-size: 17px; line-height: 1.6; margin-bottom: 32px; }
+        .contact-form { display: grid; gap: 18px; }
+        .contact-form label { display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .contact-form input, .contact-form textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; font: inherit; font-size: 15px; color: #111827; background: #f3f4f6; border: 0; border-radius: 10px; }
+        .contact-form input:focus, .contact-form textarea:focus { outline: 2px solid #1e86e5; outline-offset: 0; background: #fff; }
+        .contact-form textarea { min-height: 180px; resize: vertical; }
+        .contact-form button { justify-self: start; }
+        .contact-notice { padding: 14px 16px; border-radius: 10px; font-size: 15px; line-height: 1.5; margin-bottom: 24px; }
+        .contact-notice.is-ok { background: #ecfdf5; color: #065f46; }
+        .contact-notice.is-error { background: #fef2f2; color: #991b1b; }
+        .contact-notice a { color: inherit; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <%- include('partials/nav') %>
+
+    <main class="contact">
+        <div class="contact-inner">
+            <h1><%= t('contact.title') %></h1>
+            <p class="contact-lede"><%= t('contact.lede') %></p>
+
+            <% if (status === 'sent') { %>
+            <p class="contact-notice is-ok" role="status" data-testid="contact-sent"><%= t('contact.sent') %></p>
+            <% } else { %>
+            <% if (status === 'invalid') { %>
+            <p class="contact-notice is-error" role="alert"><%= t('contact.invalid') %></p>
+            <% } else if (status === 'failed') { %>
+            <p class="contact-notice is-error" role="alert"><%= t('contact.failed') %> <a href="mailto:<%= operator.email %>"><%= operator.email %></a></p>
+            <% } %>
+            <form class="contact-form" action="/contact" method="post">
+                <input type="text" name="company" value="" autocomplete="off" tabindex="-1" aria-hidden="true" class="hp-field">
+                <div>
+                    <label for="contact-name"><%= t('contact.name') %></label>
+                    <input id="contact-name" type="text" name="name" maxlength="<%= limits.name %>" autocomplete="name" required>
+                </div>
+                <div>
+                    <label for="contact-email"><%= t('contact.email') %></label>
+                    <input id="contact-email" type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" autocomplete="email" required>
+                </div>
+                <div>
+                    <label for="contact-message"><%= t('contact.message') %></label>
+                    <textarea id="contact-message" name="message" maxlength="<%= limits.message %>" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i><%= t('contact.submit') %></button>
+            </form>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

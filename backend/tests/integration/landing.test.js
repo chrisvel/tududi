@@ -172,28 +172,44 @@ describe('Landing page', () => {
         expect(hero).not.toMatch(/MIT|open source/i);
         expect(hero).toContain('stars on GitHub');
 
-        // Still reachable further down, in the self-host section and footer.
+        // Still reachable further down, on the pricing card and in the footer.
         const belowHero = res.text.slice(
             res.text.indexOf('</section>', heroStart)
         );
         expect(belowHero).toContain('https://github.com/chrisvel/tududi');
     });
 
-    it('keeps self-hosting reachable, one click in', async () => {
+    it('sends self-hosters to GitHub instead of a section of its own', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('id="self-host"');
+        expect(res.text).not.toContain('href="#self-host"');
+        expect(res.text).not.toContain('docker pull chrisvel/tududi:latest');
+        expect(res.text).not.toContain('id="faq-requirements"');
+        expect(res.text).not.toContain('Prefer to run it on your own server?');
 
-        // Out of the top row of the navbar, into Resources - in both the
-        // desktop dropdown and the mobile sheet - and still in the footer.
-        const nav = res.text.slice(
-            res.text.indexOf('<div class="nav-wrap">'),
-            res.text.indexOf('<section class="hero"')
+        const pricing = res.text.slice(res.text.indexOf('id="pricing"'));
+        expect(pricing).toMatch(
+            /href="https:\/\/github\.com\/chrisvel\/tududi" class="plan-action"/
         );
-        expect(nav.match(/href="#self-host"/g)).toHaveLength(2);
-        expect(res.text).toContain('id="self-host"');
-        expect(res.text).toContain('docker pull chrisvel/tududi:latest');
-        expect(res.text).toContain(
-            'https://github.com/chrisvel/tududi/blob/main/LICENSE'
+    });
+
+    it('quotes a 14-day money-back guarantee and the Cloud AI credits', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).toContain('14-day money-back guarantee');
+        expect(res.text).not.toContain('30-day');
+        expect(res.text).toContain('AI credits');
+        expect(res.text).toContain('50 free every month');
+    });
+
+    it('keeps the footer brand free of open source wording', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const brandStart = res.text.indexOf('<div class="footer-brand">');
+        const brand = res.text.slice(
+            brandStart,
+            res.text.indexOf('</div>', brandStart)
         );
+        expect(brand).not.toMatch(/open|github/i);
+        expect(res.text).toContain('href="/contact"');
     });
 
     it('flags the Cloud card rather than the self-host one', async () => {
@@ -497,6 +513,98 @@ describe('Landing page', () => {
         });
     });
 
+    describe('the contact form', () => {
+        const emailService = require('../../services/emailService');
+        let send;
+
+        beforeEach(() => {
+            send = jest
+                .spyOn(emailService, 'sendEmail')
+                .mockResolvedValue({ success: true });
+        });
+
+        afterEach(() => send.mockRestore());
+
+        const post = (body) =>
+            request(app)
+                .post('/contact')
+                .set('Host', 'tududi.com')
+                .type('form')
+                .send(body);
+
+        it('serves the form on the landing host', async () => {
+            const res = await request(app)
+                .get('/contact')
+                .set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain('action="/contact"');
+            expect(res.text).toContain('name="message"');
+            expect(res.text).toContain('class="hp-field"');
+        });
+
+        it('mails the operator with the sender as reply-to', async () => {
+            const res = await post({
+                name: 'Ada\r\nBcc: x@evil.test',
+                email: 'Ada@Gmail.com',
+                message: 'Hello there',
+            });
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe('/contact?sent=1');
+            expect(send).toHaveBeenCalledTimes(1);
+            const mail = send.mock.calls[0][0];
+            expect(mail.to).toBe('info@tududi.com');
+            expect(mail.replyTo).toBe('"Ada Bcc: x@evil.test" <ada@gmail.com>');
+            expect(mail.subject).not.toMatch(/[\r\n]/);
+            expect(mail.text).toContain('Hello there');
+
+            const page = await request(app)
+                .get(res.headers.location)
+                .set('Host', 'tududi.com');
+            expect(page.text).toContain('data-testid="contact-sent"');
+        });
+
+        it('rejects a missing message or a bad address without sending', async () => {
+            const noMessage = await post({
+                name: 'Ada',
+                email: 'ada@gmail.com',
+                message: '  ',
+            });
+            const badEmail = await post({
+                name: 'Ada',
+                email: 'nope',
+                message: 'Hi',
+            });
+            expect(noMessage.headers.location).toBe('/contact?error=invalid');
+            expect(badEmail.headers.location).toBe('/contact?error=invalid');
+            expect(send).not.toHaveBeenCalled();
+        });
+
+        it('says so when the mail cannot go out', async () => {
+            send.mockResolvedValue({ success: false, reason: 'down' });
+            const res = await post({
+                name: 'Ada',
+                email: 'ada@gmail.com',
+                message: 'Hi',
+            });
+            expect(res.headers.location).toBe('/contact?error=failed');
+            const page = await request(app)
+                .get(res.headers.location)
+                .set('Host', 'tududi.com');
+            expect(page.text).toContain('mailto:info@tududi.com');
+        });
+
+        it('trips the honeypot without sending or saying so', async () => {
+            const res = await post({
+                company: 'Acme',
+                name: 'Bot',
+                email: 'bot@gmail.com',
+                message: 'spam',
+            });
+            expect(res.headers.location).toBe('/contact?sent=1');
+            expect(send).not.toHaveBeenCalled();
+        });
+    });
+
     describe('with Cloud open', () => {
         it('announces it in the hero, linking to the Cloud page', async () => {
             const res = await request(app).get('/').set('Host', 'tududi.com');
@@ -534,23 +642,23 @@ describe('Landing page', () => {
             expect(res.text).not.toContain('left:-9999px');
         });
 
-        it('offers release notes in the signup section', async () => {
+        it('offers news and updates in the signup section', async () => {
             const res = await request(app).get('/').set('Host', 'tududi.com');
             const section = res.text.slice(
                 res.text.indexOf('<section class="waitlist"')
             );
-            expect(section).toContain('Release notes by email');
-            expect(section).toContain('only to send release notes');
+            expect(section).toContain('News and updates by email');
+            expect(section).toContain('only to send news and updates');
         });
 
-        it('confirms a release-notes signup, not a waitlist place', async () => {
+        it('confirms a news signup, not a waitlist place', async () => {
             await request(app).get('/').set('Host', 'tududi.com');
             const res = await request(app)
                 .get('/?joined=1')
                 .set('Host', 'tududi.com');
             expect(res.text).toContain('data-testid="waitlist-joined"');
             expect(res.text).toContain(
-                'You are subscribed. Release notes will arrive by email.'
+                'You are subscribed. News and updates will arrive by email.'
             );
             expect(res.text).not.toContain('when tududi Cloud opens');
         });

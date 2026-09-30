@@ -14,8 +14,7 @@
     "docs": "Docs",
     "changelog": "Changelog",
     "signIn": "Sign in",
-    "toggle": "Toggle navigation",
-    "selfHostGuide": "Self-host guide"
+    "toggle": "Toggle navigation"
   },
   "hero": {
     "badgeStars": "stars on GitHub",
@@ -226,20 +225,6 @@
       }
     }
   },
-  "selfHost": {
-    "eyebrow": "Self-Host",
-    "title": "Run it on your own server",
-    "sub": "Self-hosting is for people who already run Docker and a reverse proxy. If you want tududi without becoming the sysadmin, use Cloud.",
-    "cardTitle": "Docker Setup",
-    "cardSub": "For people already running Docker",
-    "step1": "Pull the Docker image",
-    "step2": "Run the container",
-    "step3Prefix": "Access at",
-    "linkGithub": "View on GitHub",
-    "linkDocs": "Read the self-host guide",
-    "ctaCloud": "Get started on Cloud",
-    "showCommands": "Show install commands"
-  },
   "pricing": {
     "eyebrow": "Pricing",
     "title": "Choose how to use tududi",
@@ -275,7 +260,7 @@
         "action": "Get started →"
       }
     },
-    "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 30-day money-back guarantee, no questions asked.",
+    "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",
     "perMonth": "/month"
   },
   "compare": {
@@ -296,7 +281,8 @@
       "exportAnytime": "Export everything any time",
       "proFeatures": "AI Assistant, MCP, CalDAV, Telegram",
       "storage": "Attachment storage",
-      "support": "Support"
+      "support": "Support",
+      "aiCredits": "AI credits"
     },
     "values": {
       "community": "Community",
@@ -304,7 +290,9 @@
       "gigabytes": "{{count}} GB",
       "yourDisk": "Your own disk",
       "perMonthOrYear": "{{monthly}}/mo or {{price}}/yr",
-      "selfCost": "Free, plus your hosting"
+      "selfCost": "Free, plus your hosting",
+      "aiCredits": "{{count}} free every month",
+      "ownAiKey": "Your own provider key"
     },
     "colCloud": "tududi Cloud"
   },
@@ -315,7 +303,6 @@
     "permalink": "Link to this answer",
     "groups": {
       "project": "Licence & project",
-      "selfHost": "Self-hosting & data",
       "managed": "AI, MCP & Cloud"
     },
     "items": {
@@ -336,27 +323,6 @@
         "q": "What happens to my data if tududi goes away?",
         "a": "The app is MIT licensed and the source is public, so it cannot be withdrawn from you. Anyone can keep running it, and you can fork it. On tududi Cloud your data lives in a standard tududi database rather than a proprietary format, so if the service ever shut down you would get your data and a guide to moving it onto your own server."
       },
-      "requirements": {
-        "q": "What do I need to run it myself?",
-        "a": "Docker, somewhere persistent to store the database, a reverse proxy with TLS in front of it, and the discipline to apply updates and keep backups. It is comfortable on a small VPS or a machine on your own network, and the commands are in the Self-Host section and the docs. Most people are better served by Cloud, which is the same application with none of that work.",
-        "linkLabel": "Read the docs"
-      },
-      "dataLocation": {
-        "q": "Where is my data, and how do I back it up?",
-        "a": "Everything lives in a single SQLite database file inside the volume you mounted. Backing it up is copying that file somewhere safe, and restoring it is copying it back. tududi also snapshots the database automatically before it applies migrations, keeping recent copies. There is no proprietary format and no export step standing between you and your own data."
-      },
-      "multiUser": {
-        "q": "Can several people share one instance?",
-        "a": "Yes. A single instance can host multiple users, and projects can be shared with read-only or read-write access, which the tasks and notes inside them inherit. Self-registration is off by default, so an admin either creates accounts or deliberately opens sign-ups. Nobody gets in because you forgot to close a door."
-      },
-      "mobile": {
-        "q": "Is there a mobile app?",
-        "a": "tududi installs as a PWA rather than a native app. Add it to your home screen on Android or iOS, or install it on a desktop, and it behaves like an app: it reads from cache when you are offline and syncs your changes when you reconnect. There is nothing to download from the App Store or Play Store."
-      },
-      "reverseProxy": {
-        "q": "Does it work behind a reverse proxy?",
-        "a": "Yes, and that is the normal way to run it. Set TUDUDI_TRUST_PROXY so the app trusts the forwarded headers from nginx, Caddy, or Traefik. If you skip it, logins and IP logging behave strangely in ways that are hard to diagnose, so the app raises a specific error rather than failing quietly. The accepted values are documented in the README."
-      },
       "aiOptional": {
         "q": "Do I have to use the AI features?",
         "a": "No. Both AI layers are off until you switch them on, and tududi is a complete system without either. If you never enable them, nothing is missing and nothing nags you."
@@ -375,7 +341,7 @@
       },
       "freePlan": {
         "q": "Is there a free plan or a trial on tududi Cloud?",
-        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 30-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first. The free way to use tududi is to run it on your own server, which is the same application."
+        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 14-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first. The free way to use tududi is to run it on your own server, which is the same application."
       },
       "leaving": {
         "q": "Can I leave, and what happens to my data?",
@@ -388,8 +354,8 @@
     "inputLabel": "Email address"
   },
   "signup": {
-    "note": "We store your address and the date you gave it, only to send release notes. We never share it.",
-    "joined": "You are subscribed. Release notes will arrive by email."
+    "note": "We store your address and the date you gave it, only to send news and updates. We never share it.",
+    "joined": "You are subscribed. News and updates will arrive by email."
   },
   "langs": {
     "heading": "The tududi app is available in {{count}} languages worldwide"
@@ -399,23 +365,23 @@
     "sub": "Connect with other tududi users, get support, and stay updated"
   },
   "footer": {
-    "tagline": "An open system for organizing life and work. Hosted by us, or run it on your own server.",
+    "tagline": "A calm, complete system for organizing life and work.",
     "colProduct": "Product",
     "colResources": "Resources",
     "colCommunity": "Community & Support",
     "colSupport": "Support",
     "linkRoadmap": "Roadmap",
     "linkIssues": "Issues",
-    "linkEmail": "Email",
     "linkCoffee": "Buy a Coffee",
-    "subTitle": "Release notes by email",
-    "subBody": "Occasional release notes. No marketing, unsubscribe any time.",
+    "subTitle": "News and updates by email",
+    "subBody": "Occasional product news and updates. No spam, unsubscribe any time.",
     "subSubmit": "Join",
     "rights": "All rights reserved.",
     "linkLicence": "MIT licence",
     "linkTerms": "Terms",
     "linkPrivacy": "Privacy",
-    "linkRefunds": "Refunds"
+    "linkRefunds": "Refunds",
+    "linkContact": "Contact"
   },
   "js": {
     "showFewer": "Show fewer",
@@ -475,10 +441,20 @@
   },
   "finalCta": {
     "title": "Get organized in a minute",
-    "sub": "We run the server, the updates and the backups. You get the system, and a 30-day money-back guarantee if it is not for you.",
+    "sub": "We run the server, the updates and the backups. You get the system, and a 14-day money-back guarantee if it is not for you.",
     "primary": "Get started",
     "secondary": "See pricing",
-    "selfHostPrefix": "Prefer to run it on your own server?",
     "selfHostLink": "Read the guide."
+  },
+  "contact": {
+    "title": "Contact us",
+    "lede": "Questions about tududi Cloud, billing or your account? Send us a message and we will reply by email.",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "submit": "Send message",
+    "sent": "Thanks, your message is on its way. We will reply by email.",
+    "invalid": "Please fill in your name, a valid email address and a message.",
+    "failed": "Your message could not be sent right now. Please email us at"
   }
 }

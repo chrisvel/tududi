@@ -14,8 +14,7 @@
     "docs": "Dokumentasjon",
     "changelog": "Endringer",
     "signIn": "Logg inn",
-    "toggle": "Åpne menyen",
-    "selfHostGuide": "Selvhostingveiledning"
+    "toggle": "Åpne menyen"
   },
   "hero": {
     "badgeStars": "stjerner på GitHub",
@@ -226,20 +225,6 @@
     },
     "sub": "tududi kombinerer mål, prosjekter, oppgaver, notater og smarte visninger i ett rolig, fokusert system. La oss drifte det for deg, eller drift det selv hvis du foretrekker det."
   },
-  "selfHost": {
-    "eyebrow": "Host selv",
-    "title": "Kjør det på din egen server",
-    "cardTitle": "Docker-oppsett",
-    "step1": "Hent Docker-imaget",
-    "step2": "Start containeren",
-    "step3Prefix": "Nå den på",
-    "linkGithub": "Se på GitHub",
-    "cardSub": "For folk som allerede kjører Docker",
-    "ctaCloud": "Kom i gang på Cloud",
-    "linkDocs": "Les selvhostingveiledningen",
-    "showCommands": "Vis installasjonskommandoer",
-    "sub": "Selvhosting er for folk som allerede kjører Docker og en reverse proxy. Hvis du vil ha tududi uten å bli systemadministratoren, bruk Cloud."
-  },
   "pricing": {
     "eyebrow": "Priser",
     "title": "Velg hvordan du bruker tududi",
@@ -274,7 +259,7 @@
         "priceNote": "Alt inkludert. Avslutt når som helst."
       }
     },
-    "fineprint": "Si opp når som helst og eksporter alt. Skulle tududi Cloud noen gang stenge, får du dataene dine og en guide til selvhosting. Rimelig bruk gjelder for lagring og API-volum. 30 dagers pengene-tilbake-garanti, ingen spørsmål.",
+    "fineprint": "Si opp når som helst og eksporter alt. Skulle tududi Cloud noen gang stenge, får du dataene dine og en guide til selvhosting. Rimelig bruk gjelder for lagring og API-volum. 14 dagers pengene-tilbake-garanti, ingen spørsmål.",
     "perMonth": "/måned",
     "sub": "Én hostet plan, eller kjør den selv hvis du foretrekker å ta hånd om driften."
   },
@@ -294,7 +279,8 @@
       "proFeatures": "AI-assistent, MCP, CalDAV, Telegram",
       "startMinute": "Kom i gang på ett minutt",
       "storage": "Lagring for vedlegg",
-      "support": "Support"
+      "support": "Support",
+      "aiCredits": "AI-kreditter"
     },
     "values": {
       "community": "Fellesskap",
@@ -302,7 +288,9 @@
       "gigabytes": "{{count}} GB",
       "perMonthOrYear": "{{monthly}}/mnd eller {{price}}/år",
       "selfCost": "Gratis, pluss din hosting",
-      "yourDisk": "Din egen disk"
+      "yourDisk": "Din egen disk",
+      "aiCredits": "{{count}} gratis hver måned",
+      "ownAiKey": "Din egen leverandørnøkkel"
     },
     "colCloud": "tududi Cloud",
     "colSelf": "Selvhosting",
@@ -313,8 +301,8 @@
     "inputLabel": "E-postadresse"
   },
   "signup": {
-    "note": "Vi lagrer adressen din og datoen du ga oss den, for å sende deg utgivelsesnotater og ingenting annet. Vi deler den aldri.",
-    "joined": "Du er påmeldt. Versjonsnotater kommer på e-post."
+    "note": "Vi lagrer adressen din og datoen du oppga den, bare for å sende nyheter og oppdateringer. Vi deler den aldri.",
+    "joined": "Du er påmeldt. Nyheter og oppdateringer kommer på e-post."
   },
   "langs": {
     "heading": "Tilgjengelig på {{count}} språk over hele verden"
@@ -330,17 +318,17 @@
     "colSupport": "Støtt",
     "linkRoadmap": "Veikart",
     "linkIssues": "Saker",
-    "linkEmail": "E-post",
     "linkCoffee": "Spander en kaffe",
-    "subTitle": "Utgivelsesnotater på e-post",
-    "subBody": "Sporadiske utgivelsesnotater. Ingen markedsføring, meld deg av når som helst.",
+    "subTitle": "Nyheter og oppdateringer på e-post",
+    "subBody": "Nyheter og oppdateringer om produktet innimellom. Ingen spam, meld deg av når som helst.",
     "subSubmit": "Meld meg på",
     "rights": "Med enerett.",
     "linkLicence": "MIT-lisens",
-    "tagline": "Et åpent system for å organisere liv og arbeid. Hostet av oss, eller på din egen server.",
+    "tagline": "Et rolig og komplett system for å organisere liv og arbeid.",
     "linkTerms": "Vilkår",
     "linkPrivacy": "Personvern",
-    "linkRefunds": "Refusjon"
+    "linkRefunds": "Refusjon",
+    "linkContact": "Kontakt"
   },
   "js": {
     "showFewer": "Vis færre",
@@ -350,7 +338,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nei. Cloud kostet {{monthly}} i måneden eller {{price}} i året, og det er hele prislisten: ingen gratis plan, ingen prøveklokke, ingen kort belastet for noe som senere stille begynner å fakturere. Det er en 30-dagers pengene-tilbake-garanti hvis det ikke passer for deg, og det er en live-demo på denne siden hvis du vil ta en titt først. Den gratis måten å bruke tududi er å kjøre det på din egen server, som er samme applikasjon.",
+        "a": "Nei. Cloud kostet {{monthly}} i måneden eller {{price}} i året, og det er hele prislisten: ingen gratis plan, ingen prøveklokke, ingen kort belastet for noe som senere stille begynner å fakturere. Det er en 14-dagers pengene-tilbake-garanti hvis det ikke passer for deg, og det er en live-demo på denne siden hvis du vil ta en titt først. Den gratis måten å bruke tududi er å kjøre det på din egen server, som er samme applikasjon.",
         "q": "Finnes det en gratis plan eller prøveperiode på tududi Cloud?"
       },
       "leaving": {
@@ -369,10 +357,6 @@
         "a": "Ja, og du trenger ikke kjøpe noe først. MIT-lisensen tillater kommersiell bruk, også i en bedrift og i et kommersielt produkt, uten inntektsgrense og uten noe å rapportere. Hvis regnskapsavdelingen din trenger en faktura, faktureres et Cloud-abonnement gjennom vår betalingsleverandør og gir en. Ingenting på denne siden selger en tillatelse, fordi den tillatelsen allerede er din.",
         "q": "Kan jeg bruke tududi på jobb, eller i bedriften min?"
       },
-      "dataLocation": {
-        "a": "Alt lever i én enkelt SQLite-databasefil inne i volumet du monterte. Å sikkerhetskopiere den betyr å kopiere den filen et trygt sted, og å gjenopprette den betyr å kopiere den tilbake. tududi tar også automatisk et øyeblikksbilde av databasen før migreringer utføres, og beholder nylige kopier. Det finnes ikke noe proprietært format og ikke noe eksportsteg mellom deg og dine egne data.",
-        "q": "Hvor er dataene mine, og hvordan sikkerhetskopierer jeg dem?"
-      },
       "licence": {
         "a": "Applikasjonen er åpen kildekode under MIT-lisensen, så du kan kjøre den på din egen server gratis, endre den og bygge videre på den uten å betale noen. Det er ingen begrensning på antall brukere og ingen funksjoner holdt tilbake: den selvhostede versjonen er hele produktet. tududi Cloud er en betalt tjeneste, fordi hosting, sikkerhetskopier og e-post koster penger å drifte. Du betaler for driftsarbeidet, aldri for tilgang til programvaren.",
         "q": "Er tududi virkelig gratis?"
@@ -386,23 +370,6 @@
         "a": "MCP er Model Context Protocol, en åpen standard for å koble AI-agenter til virkelige systemer. tududi leverer en MCP-server som eksponerer {{tools}} verktøy for oppgaver, prosjekter, områder, mål, vaner, notater, personer, tagger, visninger, innboksen, søk og målinger, så en agent kan fange opp, finne, oppdatere og fullføre arbeid i stedet for bare å snakke om det. Det er valgfritt, følger med Cloud og med hver selvhostede instans, og fungerer med Claude Desktop, Cursor, Windsurf, Cline, eller en hvilken som helst annen MCP-klient.",
         "q": "Hva er MCP, og hva kan en agent faktisk gjøre?"
       },
-      "mobile": {
-        "a": "tududi installeres som en PWA i stedet for en nativ app. Legg den til på hjemskjermen på Android eller iOS, eller installer den på skrivebordet, og den oppfører seg som en app: den leser fra cache når du er offline og synkroniserer endringene dine når du kobler til igjen. Det er ingenting å laste ned fra App Store eller Play Store.",
-        "q": "Finnes det en mobilapp?"
-      },
-      "multiUser": {
-        "a": "Ja. En enkelt instans kan hoste flere brukere, og prosjekter kan deles med lesetilgang eller lese- og skrivetilgang, som oppgavene og notatene i dem arver. Selvregistrering er av som standard, så en administrator lager kontoer eller åpner registreringen med vilje. Ingen kommer inn fordi du glemte å lukke en dør.",
-        "q": "Kan flere personer dele én instans?"
-      },
-      "requirements": {
-        "a": "Docker, et vedvarende sted å lagre databasen, en reverse proxy med TLS foran, og disiplinen til å utføre oppdateringer og beholde sikkerhetskopier. Det går komfortabelt på en liten VPS eller en maskin i ditt eget nettverk, og kommandoene finnes i Selvhosting-delen og i dokumentasjonen. De fleste er bedre tjent med Cloud, som er samme applikasjon uten alt det arbeidet.",
-        "linkLabel": "Les dokumentasjonen",
-        "q": "Hva trenger jeg for å drifte det selv?"
-      },
-      "reverseProxy": {
-        "a": "Ja, og det er den vanlige måten å kjøre det. Sett TUDUDI_TRUST_PROXY slik at appen tillit til headere videresendt av nginx, Caddy eller Traefik. Hvis du hopper over det, oppfører innlogginger og IP-logging seg rart på en måte som er vanskelig å diagnostisere, så appen kaster en spesifikk feil i stedet for å mislykkes stille. De godkjente verdiene er dokumentert i README.",
-        "q": "Fungerer det bak en reverse proxy?"
-      },
       "shutdown": {
         "a": "Appen er MIT-lisensiert og kildekoden er offentlig, så den kan ikke tas fra deg. Hvem som helst kan fortsette å kjøre den, og du kan forke den. På tududi Cloud lever dataene dine i en standard tududi-database i stedet for et proprietært format, så hvis tjenesten noen gang skulle stenge, ville du få dataene dine og en guide til å flytte dem til din egen server.",
         "q": "Hva skjer med dataene mine hvis tududi forsvinner?"
@@ -415,8 +382,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "AI, MCP & Cloud",
-      "project": "Lisens & prosjekt",
-      "selfHost": "Selvhosting & data"
+      "project": "Lisens & prosjekt"
     },
     "permalink": "Lenke til dette svaret",
     "sub": "Lisensen, AI-en, og hva som skjer med dataene dine. Hvis noe mangler, spør på Discord.",
@@ -477,8 +443,18 @@
     "primary": "Kom i gang",
     "secondary": "Se priser",
     "selfHostLink": "Les veiledningen.",
-    "selfHostPrefix": "Foretrekker du å kjøre det på din egen server?",
-    "sub": "Vi drifter serveren, oppdateringene og sikkerhetskopiene. Du får systemet, og en 30-dagers pengene-tilbake-garanti hvis det ikke er for deg.",
+    "sub": "Vi drifter serveren, oppdateringene og sikkerhetskopiene. Du får systemet, og en 14-dagers pengene-tilbake-garanti hvis det ikke er for deg.",
     "title": "Bli organisert på ett minutt"
+  },
+  "contact": {
+    "title": "Kontakt oss",
+    "lede": "Spørsmål om tududi Cloud, fakturering eller kontoen din? Send oss en melding, så svarer vi på e-post.",
+    "name": "Navn",
+    "email": "E-post",
+    "message": "Melding",
+    "submit": "Send melding",
+    "sent": "Takk, meldingen din er på vei. Vi svarer på e-post.",
+    "invalid": "Fyll inn navnet ditt, en gyldig e-postadresse og en melding.",
+    "failed": "Meldingen din kunne ikke sendes akkurat nå. Send oss en e-post på"
   }
 }

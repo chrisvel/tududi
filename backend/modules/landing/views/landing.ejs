@@ -67,15 +67,6 @@
             { id: 'mcp' },
             { id: 'leaving' },
         ]},
-        // Self-hosting last. Nothing here is hidden, and the requirements answer
-        // leads the group; it is simply not the first thing the page argues for.
-        { id: 'selfHost', items: [
-            { id: 'requirements', link: { href: 'https://docs.tududi.com' } },
-            { id: 'dataLocation' },
-            { id: 'multiUser' },
-            { id: 'mobile' },
-            { id: 'reverseProxy' },
-        ]},
     ];
 
     // One vars object for every FAQ string: interpolate() is a no-op on a string
@@ -255,6 +246,8 @@
                                  selfText:  t('compare.values.community') },
         { id: 'storage',         cloudText: t('compare.values.gigabytes', { count: plans.proStorageGb }),
                                  selfText:  t('compare.values.yourDisk') },
+        { id: 'aiCredits',       cloudText: t('compare.values.aiCredits', { count: plans.aiCredits }),
+                                 selfText:  t('compare.values.ownAiKey') },
         { id: 'proFeatures',     cloudCheck: true, selfCheck: true },
         { id: 'openSource',      cloudCheck: true, selfCheck: true },
         { id: 'commercialUse',   cloudCheck: true, selfCheck: true },
@@ -303,7 +296,7 @@
                 <%# One offer, not a fork in the road: sign up, or look at a
                     real instance first. Neither self-hosting nor the source
                     repository is offered here - both live near the foot of the
-                    page, in the self-host section and the footer, where someone
+                    page, on the pricing card and in the footer, where someone
                     who came looking for them will still find them. The stars
                     chip above stays, because that is proof rather than an exit. %>
                 <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('hero.ctaPrimary') %></a>
@@ -343,9 +336,9 @@
         Row one is who has covered tududi - previously two unlinked claims
         ("Covered by XDA", "Listed in awesome-selfhosted") buried mid-sentence
         in row two, where nobody could check them. Row two is the countable
-        facts. The Docker pull count used to sit here and now lives in the
-        self-host section: it is proof that people run containers, which is a
-        different argument from the one this part of the page is making.
+        facts. The Docker pull count used to sit here and was dropped: it is
+        proof that people run containers, which is a different argument from
+        the one this part of the page is making.
     -->
     <section class="proofbar">
         <div class="proofbar-inner">
@@ -717,7 +710,7 @@
                         <li><i class="fas fa-wrench"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="#self-host" class="plan-action"><%= t('pricing.plans.selfHosted.action') %></a>
+                    <a href="https://github.com/chrisvel/tududi" class="plan-action"><%= t('pricing.plans.selfHosted.action') %></a>
                 </div>
             </div>
 
@@ -840,94 +833,10 @@
     </section>
 
     <!--
-        Self-Host. Demoted on purpose, and late on purpose. It used to open with
-        "deploy in minutes" above the pricing, which sold the hard path to people
-        who had not asked for it. The honest version leads with what the reader
-        signs up for - Docker, a reverse proxy, TLS, updates, backups - offers
-        Cloud first, and keeps the commands behind a disclosure. Nothing is
-        removed: everything that was here is still here, one click in.
-    -->
-    <section id="self-host" class="section section-dark selfhost">
-        <div class="container-sm">
-            <div class="section-head" style="margin-bottom:36px;">
-                <span class="eyebrow"><%= t('selfHost.eyebrow') %></span>
-                <h2 class="section-title" style="margin-bottom:16px;"><%= t('selfHost.title') %></h2>
-                <p class="section-sub"><%= t('selfHost.sub') %></p>
-            </div>
-
-            <div class="selfhost-actions">
-                <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('selfHost.ctaCloud') %></a>
-                <a href="https://docs.tududi.com" class="btn-ghost"><i class="fas fa-book"></i><%= t('selfHost.linkDocs') %></a>
-            </div>
-
-            <div class="setup-card">
-                <div class="setup-head">
-                    <div class="setup-head-icon"><i class="fab fa-docker"></i></div>
-                    <div>
-                        <h3><%= t('selfHost.cardTitle') %></h3>
-                        <p><%= t('selfHost.cardSub') %></p>
-                    </div>
-                </div>
-
-                <%# Collapsed rather than deleted. A two-line docker run in the
-                    open reads as "this is easy", which is the claim the section
-                    above spends three sentences correcting. The uploads volume
-                    is here because the README mounts it too: a one-liner that
-                    quietly loses attachments is worse than no one-liner. %>
-                <details class="setup-disclosure">
-                    <summary><i class="fas fa-terminal"></i><%= t('selfHost.showCommands') %></summary>
-                    <div class="setup-steps">
-                        <div>
-                            <div class="setup-step-head">
-                                <span class="setup-num">1</span>
-                                <h4><%= t('selfHost.step1') %></h4>
-                            </div>
-                            <div class="setup-pre"><pre><code>docker pull chrisvel/tududi:latest</code></pre></div>
-                        </div>
-                        <div>
-                            <div class="setup-step-head">
-                                <span class="setup-num">2</span>
-                                <h4><%= t('selfHost.step2') %></h4>
-                            </div>
-                            <div class="setup-pre"><pre><code>docker run \
-  -e TUDUDI_USER_EMAIL=you@example.com \
-  -e TUDUDI_USER_PASSWORD=yourpassword \
-  -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
-  -v ~/tududi_db:/app/db \
-  -v ~/tududi_uploads:/app/uploads \
-  -p 3002:3002 \
-  -d chrisvel/tududi:latest</code></pre></div>
-                        </div>
-                        <div>
-                            <div class="setup-step-head" style="margin-bottom:0;">
-                                <span class="setup-num">3</span>
-                                <h4><%= t('selfHost.step3Prefix') %> <code style="color:#60bffa;">http://localhost:3002</code></h4>
-                            </div>
-                        </div>
-                    </div>
-                </details>
-
-                <div class="setup-links">
-                    <a href="https://github.com/chrisvel/tududi" class="btn-ghost"><i class="fab fa-github"></i><%= t('selfHost.linkGithub') %></a>
-                    <a href="https://docs.tududi.com" class="btn-ghost"><i class="fas fa-book"></i><%= t('nav.docs') %></a>
-                </div>
-
-                <%# The pull count lives here now rather than in the proof bar.
-                    Same rule as before: omitted entirely when the fetch has
-                    nothing cached, never a stale hardcoded number. %>
-                <% if (dockerPulls) { %>
-                <p class="setup-pulls"><i class="fab fa-docker"></i><strong><%= Math.floor(dockerPulls / 1000).toLocaleString() %>k+</strong> <%= t('proof.dockerPulls') %></p>
-                <% } %>
-            </div>
-        </div>
-    </section>
-
-    <!--
         Final CTA. Replaces the band that used to close the comparison table with
         "Ready to run your own system?" and a Docker button. Same position in the
-        funnel, opposite recommendation: the filled button is the free Cloud
-        account, and self-hosting is a sentence of plain text underneath, which
-        is the weight it should have had all along.
+        funnel, opposite recommendation: the filled button is the Cloud
+        account, and self-hosting is left to the pricing card and the footer.
     -->
     <section class="section" style="padding-top:72px; padding-bottom:72px;">
         <div class="container-sm">
@@ -938,7 +847,6 @@
                     <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('finalCta.primary') %></a>
                     <a href="#pricing" class="btn-secondary"><%= t('finalCta.secondary') %></a>
                 </div>
-                <p class="closing-selfhost"><%= t('finalCta.selfHostPrefix') %> <a href="#self-host"><%= t('finalCta.selfHostLink') %></a></p>
             </div>
         </div>
     </section>

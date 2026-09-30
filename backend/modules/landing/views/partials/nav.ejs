@@ -14,9 +14,9 @@
                     <a href="#pricing" class="nav-link"><%= t('nav.pricing') %></a>
                     <a href="#faq" class="nav-link"><%= t('nav.faq') %></a>
                     <%# Everything the visitor does not need in order to choose:
-                        docs, releases, the source, and the self-host guide, which
-                        used to sit in the top row as a peer of Pricing. It is a
-                        real option, not the offer, so it lives one click in.
+                        docs, releases and the source, which is also where
+                        self-hosters find the setup guide. It is a real option,
+                        not the offer, so it lives one click in.
                         Labels and hrefs are the footer's, so the two lists cannot
                         drift apart. %>
                     <details class="nav-dd">
@@ -27,7 +27,6 @@
                         <div class="nav-dd-menu" role="menu">
                             <a role="menuitem" class="nav-dd-item" href="https://docs.tududi.com"><%= t('nav.docs') %></a>
                             <a role="menuitem" class="nav-dd-item" href="https://github.com/chrisvel/tududi/releases"><%= t('nav.changelog') %></a>
-                            <a role="menuitem" class="nav-dd-item" href="#self-host"><%= t('nav.selfHostGuide') %></a>
                             <a role="menuitem" class="nav-dd-item" href="https://github.com/chrisvel/tududi">GitHub</a>
                             <a role="menuitem" class="nav-dd-item" href="https://github.com/users/chrisvel/projects/2"><%= t('footer.linkRoadmap') %></a>
                             <a role="menuitem" class="nav-dd-item" href="https://discord.gg/fkbeJ9CmcH">Discord</a>
@@ -80,7 +79,6 @@
                 <p class="nav-mobile-heading"><%= t('footer.colResources') %></p>
                 <a href="https://docs.tududi.com" class="nav-link"><%= t('nav.docs') %></a>
                 <a href="https://github.com/chrisvel/tududi/releases" class="nav-link"><%= t('nav.changelog') %></a>
-                <a href="#self-host" class="nav-link"><%= t('nav.selfHostGuide') %></a>
                 <a href="https://github.com/chrisvel/tududi" class="nav-link">GitHub</a>
                 <a href="https://github.com/users/chrisvel/projects/2" class="nav-link"><%= t('footer.linkRoadmap') %></a>
                 <a href="https://discord.gg/fkbeJ9CmcH" class="nav-link">Discord</a>

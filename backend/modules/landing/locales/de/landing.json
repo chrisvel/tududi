@@ -14,8 +14,7 @@
     "docs": "Doku",
     "changelog": "Änderungen",
     "signIn": "Anmelden",
-    "toggle": "Navigation umschalten",
-    "selfHostGuide": "Self-Host-Anleitung"
+    "toggle": "Navigation umschalten"
   },
   "hero": {
     "badgeStars": "Sterne auf GitHub",
@@ -226,20 +225,6 @@
     },
     "sub": "tududi vereint Ziele, Projekte, Aufgaben, Notizen und smarte Ansichten in einem ruhigen, fokussierten System. Lass uns es für dich betreiben, oder betreibe es selbst, wenn du das bevorzugst."
   },
-  "selfHost": {
-    "eyebrow": "Selbst hosten",
-    "title": "Betreibe es auf deinem eigenen Server",
-    "cardTitle": "Docker-Setup",
-    "step1": "Docker-Image holen",
-    "step2": "Container starten",
-    "step3Prefix": "Aufrufen unter",
-    "linkGithub": "Auf GitHub ansehen",
-    "cardSub": "Für alle, die bereits Docker nutzen",
-    "ctaCloud": "Auf Cloud starten",
-    "linkDocs": "Self-Host-Anleitung lesen",
-    "showCommands": "Installationsbefehle anzeigen",
-    "sub": "Self-Hosting ist für Leute, die bereits Docker und einen Reverse Proxy betreiben. Wenn du tududi willst, ohne Systemadministrator zu werden, nutze Cloud."
-  },
   "pricing": {
     "eyebrow": "Preise",
     "title": "Wähle, wie du tududi nutzt",
@@ -274,7 +259,7 @@
         "priceNote": "Alles inklusive. Jederzeit kündbar."
       }
     },
-    "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 30 Tage Geld-zurück-Garantie, ohne Nachfragen.",
+    "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 14 Tage Geld-zurück-Garantie, ohne Nachfragen.",
     "perMonth": "/Monat",
     "sub": "Ein gehosteter Plan, oder betreibe ihn selbst, wenn du den Betrieb lieber übernimmst."
   },
@@ -294,7 +279,8 @@
       "proFeatures": "KI-Assistent, MCP, CalDAV, Telegram",
       "startMinute": "Starte in einer Minute",
       "storage": "Anhang-Speicher",
-      "support": "Support"
+      "support": "Support",
+      "aiCredits": "KI-Guthaben"
     },
     "values": {
       "community": "Community",
@@ -302,7 +288,9 @@
       "gigabytes": "{{count}} GB",
       "perMonthOrYear": "{{monthly}}/Monat oder {{price}}/Jahr",
       "selfCost": "Kostenlos, plus dein Hosting",
-      "yourDisk": "Deine eigene Festplatte"
+      "yourDisk": "Deine eigene Festplatte",
+      "aiCredits": "{{count}} kostenlos jeden Monat",
+      "ownAiKey": "Dein eigener Anbieter-Schlüssel"
     },
     "colCloud": "tududi Cloud",
     "colSelf": "Self-Hosting",
@@ -313,8 +301,8 @@
     "inputLabel": "E-Mail-Adresse"
   },
   "signup": {
-    "note": "Wir speichern deine Adresse und das Datum, an dem du sie uns gegeben hast, um dir Release-Notes zu schicken und sonst nichts. Wir geben sie niemals weiter.",
-    "joined": "Du bist angemeldet. Die Release Notes kommen per E-Mail."
+    "note": "Wir speichern deine Adresse und das Datum, an dem du sie angegeben hast, nur um Neuigkeiten und Updates zu senden. Wir geben sie niemals weiter.",
+    "joined": "Du bist angemeldet. Neuigkeiten und Updates kommen per E-Mail."
   },
   "langs": {
     "heading": "Die tududi-App ist weltweit in {{count}} Sprachen verfügbar"
@@ -330,17 +318,17 @@
     "colSupport": "Unterstützen",
     "linkRoadmap": "Roadmap",
     "linkIssues": "Issues",
-    "linkEmail": "E-Mail",
     "linkCoffee": "Einen Kaffee spendieren",
-    "subTitle": "Release Notes per E-Mail",
-    "subBody": "Gelegentliche Release Notes. Kein Marketing, jederzeit abbestellbar.",
+    "subTitle": "Neuigkeiten und Updates per E-Mail",
+    "subBody": "Gelegentliche Produktneuigkeiten und Updates. Kein Spam, jederzeit abbestellbar.",
     "subSubmit": "Eintragen",
     "rights": "Alle Rechte vorbehalten.",
     "linkLicence": "MIT-Lizenz",
-    "tagline": "Ein offenes System, um Leben und Arbeit zu organisieren. Von uns gehostet, oder auf deinem eigenen Server.",
+    "tagline": "Ein ruhiges, vollständiges System, um Leben und Arbeit zu organisieren.",
     "linkTerms": "AGB",
     "linkPrivacy": "Datenschutz",
-    "linkRefunds": "Rückerstattung"
+    "linkRefunds": "Rückerstattung",
+    "linkContact": "Kontakt"
   },
   "js": {
     "showFewer": "Weniger anzeigen",
@@ -350,7 +338,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nein. Cloud kostet {{monthly}} im Monat oder {{price}} im Jahr, und das ist die gesamte Preisliste: kein kostenloser Tarif, keine Probezeit, keine Karte, die für etwas belastet wird, das später still zu berechnen beginnt. Es gibt eine 30-tägige Geld-zurück-Garantie, falls es sich als unpassend erweist, und es gibt auf dieser Seite eine Live-Demo, falls du dir vorab einen Eindruck verschaffen möchtest. Der kostenlose Weg, tududi zu nutzen, ist, es auf deinem eigenen Server zu betreiben, was dieselbe Anwendung ist.",
+        "a": "Nein. Cloud kostet {{monthly}} im Monat oder {{price}} im Jahr, und das ist die gesamte Preisliste: kein kostenloser Tarif, keine Probezeit, keine Karte, die für etwas belastet wird, das später still zu berechnen beginnt. Es gibt eine 14-tägige Geld-zurück-Garantie, falls es sich als unpassend erweist, und es gibt auf dieser Seite eine Live-Demo, falls du dir vorab einen Eindruck verschaffen möchtest. Der kostenlose Weg, tududi zu nutzen, ist, es auf deinem eigenen Server zu betreiben, was dieselbe Anwendung ist.",
         "q": "Gibt es bei tududi Cloud einen kostenlosen Tarif oder eine Testphase?"
       },
       "leaving": {
@@ -369,10 +357,6 @@
         "a": "Ja, und du musst dafür nichts kaufen. Die MIT-Lizenz erlaubt die kommerzielle Nutzung, auch innerhalb eines Unternehmens und in einem kommerziellen Produkt, ohne Umsatzschwelle und ohne Meldepflicht. Falls deine Buchhaltung eine Rechnung braucht: Ein Cloud-Abo wird über unseren Zahlungsanbieter abgerechnet und erzeugt eine. Nichts auf dieser Seite verkauft eine Erlaubnis, denn diese Erlaubnis gehört dir bereits.",
         "q": "Darf ich tududi bei der Arbeit oder in meiner Firma nutzen?"
       },
-      "dataLocation": {
-        "a": "Alles liegt in einer einzigen SQLite-Datenbankdatei innerhalb des von dir eingebundenen Volumes. Sie zu sichern heißt, diese Datei an einen sicheren Ort zu kopieren, und sie wiederherzustellen heißt, sie zurückzukopieren. tududi erstellt außerdem automatisch einen Datenbank-Snapshot, bevor Migrationen angewendet werden, und behält aktuelle Kopien. Es gibt kein proprietäres Format und keinen Exportschritt zwischen dir und deinen eigenen Daten.",
-        "q": "Wo liegen meine Daten, und wie sichere ich sie?"
-      },
       "licence": {
         "a": "Die Anwendung ist Open Source unter der MIT-Lizenz, du kannst sie also kostenlos auf deinem eigenen Server betreiben, verändern und darauf aufbauen, ohne jemanden zu bezahlen. Es gibt keine Nutzerzahl-Begrenzung und keine zurückgehaltenen Funktionen: Der Self-Hosted-Build ist das komplette Produkt. tududi Cloud ist ein kostenpflichtiger Dienst, weil Hosting, Backups und E-Mail Geld kosten, um sie zu betreiben. Du bezahlst für die Betriebsarbeit, nie für den Zugang zur Software.",
         "q": "Ist tududi wirklich kostenlos?"
@@ -386,23 +370,6 @@
         "a": "MCP ist das Model Context Protocol, ein offener Standard, um KI-Agenten mit echten Systemen zu verbinden. tududi liefert einen MCP-Server mit {{tools}} Tools, die Aufgaben, Projekte, Bereiche, Ziele, Gewohnheiten, Notizen, Personen, Tags, Ansichten, den Posteingang, die Suche und Kennzahlen abdecken, damit ein Agent Arbeit erfassen, finden, aktualisieren und abschließen kann, statt nur darüber zu reden. Es ist optional, ist in Cloud und in jeder selbst gehosteten Instanz enthalten und funktioniert mit Claude Desktop, Cursor, Windsurf, Cline oder jedem anderen MCP-Client.",
         "q": "Was ist MCP, und was kann ein Agent damit wirklich tun?"
       },
-      "mobile": {
-        "a": "tududi installiert sich als PWA statt als native App. Füge es auf Android oder iOS zum Startbildschirm hinzu oder installiere es auf dem Desktop, dann verhält es sich wie eine App: Es liest offline aus dem Cache und synchronisiert deine Änderungen, sobald du wieder verbunden bist. Es gibt nichts aus dem App Store oder Play Store herunterzuladen.",
-        "q": "Gibt es eine mobile App?"
-      },
-      "multiUser": {
-        "a": "Ja. Eine einzelne Instanz kann mehrere Nutzer beherbergen, und Projekte lassen sich mit Nur-Lese- oder Lese-Schreib-Zugriff teilen, den die enthaltenen Aufgaben und Notizen erben. Die Selbstregistrierung ist standardmäßig deaktiviert, ein Admin erstellt also entweder Konten oder öffnet die Registrierung bewusst. Niemand kommt herein, weil du vergessen hast, eine Tür zu schließen.",
-        "q": "Können sich mehrere Personen eine Instanz teilen?"
-      },
-      "requirements": {
-        "a": "Docker, ein dauerhafter Ort, um die Datenbank zu speichern, ein Reverse Proxy mit TLS davor, und die Disziplin, Updates einzuspielen und Backups aufzubewahren. Es läuft angenehm auf einem kleinen VPS oder einer Maschine im eigenen Netzwerk, und die Befehle finden sich im Self-Host-Abschnitt und in der Dokumentation. Den meisten Leuten ist mit Cloud besser gedient, das dieselbe Anwendung ohne diesen ganzen Aufwand ist.",
-        "linkLabel": "Dokumentation lesen",
-        "q": "Was brauche ich, um es selbst zu betreiben?"
-      },
-      "reverseProxy": {
-        "a": "Ja, und das ist der normale Weg, es zu betreiben. Setze TUDUDI_TRUST_PROXY, damit die App den von nginx, Caddy oder Traefik weitergeleiteten Headern vertraut. Lässt du das aus, verhalten sich Anmeldungen und IP-Protokollierung auf schwer zu diagnostizierende Weise seltsam, weshalb die App einen spezifischen Fehler auslöst, statt stillschweigend zu versagen. Die akzeptierten Werte sind im README dokumentiert.",
-        "q": "Funktioniert es hinter einem Reverse Proxy?"
-      },
       "shutdown": {
         "a": "Die App ist MIT-lizenziert und der Quellcode ist öffentlich, sie kann dir also nicht entzogen werden. Jeder kann sie weiterbetreiben, und du kannst sie forken. In tududi Cloud liegen deine Daten in einer Standard-tududi-Datenbank statt in einem proprietären Format, sollte der Dienst also je eingestellt werden, bekämst du deine Daten und eine Anleitung, sie auf deinen eigenen Server umzuziehen.",
         "q": "Was passiert mit meinen Daten, wenn es tududi nicht mehr gibt?"
@@ -415,8 +382,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "KI, MCP & Cloud",
-      "project": "Lizenz & Projekt",
-      "selfHost": "Self-Hosting & Daten"
+      "project": "Lizenz & Projekt"
     },
     "permalink": "Link zu dieser Antwort",
     "sub": "Die Lizenz, die KI, und was mit deinen Daten passiert. Fehlt etwas, frag im Discord.",
@@ -477,8 +443,18 @@
     "primary": "Loslegen",
     "secondary": "Preise ansehen",
     "selfHostLink": "Lies die Anleitung.",
-    "selfHostPrefix": "Möchtest du es lieber auf deinem eigenen Server betreiben?",
-    "sub": "Wir betreiben den Server, die Updates und die Backups. Du bekommst das System, und eine 30-tägige Geld-zurück-Garantie, falls es nichts für dich ist.",
+    "sub": "Wir betreiben den Server, die Updates und die Backups. Du bekommst das System, und eine 14-tägige Geld-zurück-Garantie, falls es nichts für dich ist.",
     "title": "In einer Minute organisiert sein"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "lede": "Fragen zu tududi Cloud, zur Abrechnung oder zu deinem Konto? Schreib uns eine Nachricht, wir antworten per E-Mail.",
+    "name": "Name",
+    "email": "E-Mail",
+    "message": "Nachricht",
+    "submit": "Nachricht senden",
+    "sent": "Danke, deine Nachricht ist unterwegs. Wir antworten per E-Mail.",
+    "invalid": "Bitte gib deinen Namen, eine gültige E-Mail-Adresse und eine Nachricht ein.",
+    "failed": "Deine Nachricht konnte gerade nicht gesendet werden. Schreib uns bitte an"
   }
 }

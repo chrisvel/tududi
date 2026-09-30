@@ -14,8 +14,7 @@
     "docs": "Dokumentaatio",
     "changelog": "Muutokset",
     "signIn": "Kirjaudu sisään",
-    "toggle": "Avaa valikko",
-    "selfHostGuide": "Itse ylläpidon opas"
+    "toggle": "Avaa valikko"
   },
   "hero": {
     "badgeStars": "tähteä GitHubissa",
@@ -226,20 +225,6 @@
     },
     "sub": "tududi yhdistää tavoitteet, projektit, tehtävät, muistiinpanot ja älykkäät näkymät yhdeksi rauhalliseksi, keskittyneeksi järjestelmäksi. Anna meidän ylläpitää sitä puolestasi, tai ylläpidä se itse, jos haluat."
   },
-  "selfHost": {
-    "eyebrow": "Ylläpidä itse",
-    "title": "Aja se omalla palvelimellasi",
-    "cardTitle": "Docker-asennus",
-    "step1": "Hae Docker-image",
-    "step2": "Käynnistä kontti",
-    "step3Prefix": "Avaa osoitteessa",
-    "linkGithub": "Katso GitHubissa",
-    "cardSub": "Niille, jotka ajavat jo Dockeria",
-    "ctaCloud": "Aloita Cloudissa",
-    "linkDocs": "Lue itse ylläpidon opas",
-    "showCommands": "Näytä asennuskomennot",
-    "sub": "Itse ylläpito on niille, jotka ajavat jo Dockeria ja reverse proxyä. Jos haluat tududin muuttumatta järjestelmänvalvojaksi, käytä Cloudia."
-  },
   "pricing": {
     "eyebrow": "Hinnat",
     "title": "Valitse miten käytät tududia",
@@ -274,7 +259,7 @@
         "priceNote": "Kaikki mukana. Peruuta milloin tahansa."
       }
     },
-    "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 30 päivän rahat takaisin -takuu, ilman kysymyksiä.",
+    "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 14 päivän rahat takaisin -takuu, ilman kysymyksiä.",
     "perMonth": "/kk",
     "sub": "Yksi isännöity paketti, tai aja sitä itse, jos haluat mieluummin hoitaa ylläpidon."
   },
@@ -294,7 +279,8 @@
       "proFeatures": "AI-avustaja, MCP, CalDAV, Telegram",
       "startMinute": "Aloita minuutissa",
       "storage": "Liitetiedostojen tallennustila",
-      "support": "Tuki"
+      "support": "Tuki",
+      "aiCredits": "AI-krediitit"
     },
     "values": {
       "community": "Yhteisö",
@@ -302,7 +288,9 @@
       "gigabytes": "{{count}} GB",
       "perMonthOrYear": "{{monthly}}/kk tai {{price}}/vuosi",
       "selfCost": "Ilmainen, plus omat isännöintikustannuksesi",
-      "yourDisk": "Oma levysi"
+      "yourDisk": "Oma levysi",
+      "aiCredits": "{{count}} ilmaiseksi joka kuukausi",
+      "ownAiKey": "Oma palveluntarjoajan avaimesi"
     },
     "colCloud": "tududi Cloud",
     "colSelf": "Itse ylläpidetty",
@@ -313,8 +301,8 @@
     "inputLabel": "Sähköpostiosoite"
   },
   "signup": {
-    "note": "Säilytämme osoitteesi ja päivämäärän jolloin annoit sen, jotta voimme lähettää sinulle julkaisutiedotteita eikä mitään muuta. Emme jaa sitä koskaan.",
-    "joined": "Tilaus on tehty. Julkaisutiedot tulevat sähköpostiisi."
+    "note": "Tallennamme osoitteesi ja sen antamispäivän vain uutisten ja päivitysten lähettämistä varten. Emme koskaan jaa sitä.",
+    "joined": "Olet tilannut. Uutiset ja päivitykset tulevat sähköpostiin."
   },
   "langs": {
     "heading": "Saatavilla {{count}} kielellä ympäri maailman"
@@ -330,17 +318,17 @@
     "colSupport": "Tue",
     "linkRoadmap": "Tiekartta",
     "linkIssues": "Ongelmat",
-    "linkEmail": "Sähköposti",
     "linkCoffee": "Tarjoa kahvit",
-    "subTitle": "Julkaisutiedotteet sähköpostiin",
-    "subBody": "Satunnaisia julkaisutiedotteita. Ei markkinointia, peruuta milloin tahansa.",
+    "subTitle": "Uutiset ja päivitykset sähköpostiin",
+    "subBody": "Satunnaisia tuoteuutisia ja päivityksiä. Ei roskapostia, peru tilaus milloin tahansa.",
     "subSubmit": "Liity",
     "rights": "Kaikki oikeudet pidätetään.",
     "linkLicence": "MIT-lisenssi",
-    "tagline": "Avoin järjestelmä elämän ja työn organisointiin. Meidän isännöimänä, tai omalla palvelimellasi.",
+    "tagline": "Rauhallinen ja kattava järjestelmä elämän ja työn järjestämiseen.",
     "linkTerms": "Ehdot",
     "linkPrivacy": "Tietosuoja",
-    "linkRefunds": "Hyvitykset"
+    "linkRefunds": "Hyvitykset",
+    "linkContact": "Yhteystiedot"
   },
   "js": {
     "showFewer": "Näytä vähemmän",
@@ -350,7 +338,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Ei. Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa, ja se on koko hinnasto: ei ilmaistasoa, ei kokeiluaikaa, ei korttia veloitettuna jostain, joka alkaa hiljaa laskuttaa myöhemmin. Tarjolla on 30 päivän rahat takaisin -takuu, jos se ei osoittaudu sopivaksi, ja tällä sivulla on live-demo, jos haluat vilkaista ensin. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimellasi, joka on samat sovellus.",
+        "a": "Ei. Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa, ja se on koko hinnasto: ei ilmaistasoa, ei kokeiluaikaa, ei korttia veloitettuna jostain, joka alkaa hiljaa laskuttaa myöhemmin. Tarjolla on 14 päivän rahat takaisin -takuu, jos se ei osoittaudu sopivaksi, ja tällä sivulla on live-demo, jos haluat vilkaista ensin. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimellasi, joka on samat sovellus.",
         "q": "Onko tududi Cloudissa ilmaistaso tai kokeilua?"
       },
       "leaving": {
@@ -369,10 +357,6 @@
         "a": "Kyllä, ja sinun ei tarvitse ostaa mitään ensin. MIT-lisenssi sallii kommertiaalisen käytön, myös yrityksessä ja kommertiaalisessa tuotteessa, ilman liikevaihtorajaa ja ilman raportointivelvollisuutta. Jos taloushallintosi tarvitsee laskun, Cloud-tilaus laskutetaan maksunvälittäjämme kautta ja tuottaa sellaisen. Mikään tällä sivulla ei myy lupaa, koska se lupa on jo sinun.",
         "q": "Voinko käyttää tududia töissä tai yrityksessäni?"
       },
-      "dataLocation": {
-        "a": "Kaikki asuu yhdessä SQLite-tietokantatiedostossa liittämäsi taltion sisällä. Sen varmuuskopiointi tarkoittaa tiedoston kopioimista turvalliseen paikkaan, ja sen palauttaminen tarkoittaa sen kopioimista takaisin. tududi ottaa myös automaattisesti tietokannasta tilannevedoksen ennen migraatioiden ajamista ja säilyttää tuoreita kopioita. Ei ole omistusoikeudellista muotoa eikä vientivaihetta sinun ja omien tietojesi välissä.",
-        "q": "Missä tietoni ovat, ja miten varmuuskopioin ne?"
-      },
       "licence": {
         "a": "Sovellus on avoimen lähdekoodin MIT-lisenssillä, niin voit ajaa sitä omalla palvelimellasi ilmaiseksi, muokata sitä ja rakentaa sen päälle maksamatta kenellekään. Ei käyttäjärajoja eikä pidätettyjä ominaisuuksia: itse ylläpidetty versio on koko tuote. tududi Cloud on maksullinen palvelu, koska isännöinti, varmuuskopiot ja sähköposti maksavat rahaa ylläpitää. Maksat käyttötyöstä, ei koskaan ohjelmiston käyttöoikeudesta.",
         "q": "Onko tududi todella ilmainen?"
@@ -386,23 +370,6 @@
         "a": "MCP on Model Context Protocol, avoin standardi AI-agenttien yhdistämiseksi oikeisiin järjestelmiin. tududi sisältää MCP-palvelimen, joka tarjoaa {{tools}} työkalua tehtäviin, projekteihin, alueisiin, tavoitteisiin, tapoihin, muistiinpanoihin, henkilöihin, tageihin, näkymiin, saapuneisiin, hakuun ja mittareihin, jotta agentti voi tallentaa, löytää, päivittää ja saattaa työn loppuun sen sijaan, että puhuisi siitä vain. Se on valinnainen, sisältyy Cloudiin ja kaikkiin itse ylläpidettyihin instansseihin, ja toimii Claude Desktopin, Cursorin, Windsurfin, Clinen tai minkä tahansa muun MCP-asiakkaan kanssa.",
         "q": "Mikä on MCP, ja mitä agentti voi oikeastaan tehdä?"
       },
-      "mobile": {
-        "a": "tududi asentuu PWA:na eikä alkuperäisenä sovelluksena. Lisää se aloitusnäytöllesi Androidissa tai iOS:ssa, tai asenna se työpöydälle, ja se käyttäytyy kuin sovellus: se lukee välimuistista, kun olet offline, ja synkronoi muutoksesi, kun yhdistät uudelleen. Ei ole mitään ladattavaa App Storesta tai Play Storesta.",
-        "q": "Onko mobiilisovellusta?"
-      },
-      "multiUser": {
-        "a": "Kyllä. Yksi instanssi voi isännöidä useita käyttäjiä, ja projekteja voidaan jakaa luku- tai luku-kirjoitusoikeudella, jonka niiden sisällä olevat tehtävät ja muistiinpanot perivät. Itserekisteröinti on oletuksena pois päältä, niin ylläpitäjä luo tilit tai avaa rekisteröitymisen tarkoituksella. Kukaan ei pääse sisään, koska unohdit sulkea oven.",
-        "q": "Voiko useampi henkilö jakaa yhden instanssin?"
-      },
-      "requirements": {
-        "a": "Docker, pysyvä paikka tietokannan tallentamiseen, reverse proxy TLS:llä edessä, ja kuri päivitysten ajamiseen ja varmuuskopioiden säilyttämiseen. Se toimii mukavasti pienellä VPS:llä tai omassa verkossasi olevalla koneella, ja komennot löytyvät Itse ylläpito -osiosta ja dokumentaatiosta. Useimmat ovat paremmin palveltuja Cloudilla, joka on sama sovellus ilman kaikkea sitä työtä.",
-        "linkLabel": "Lue dokumentaatio",
-        "q": "Mitä tarvitsen ylläpitääkseni sitä itse?"
-      },
-      "reverseProxy": {
-        "a": "Kyllä, ja se on normaali tapa ajaa sitä. Aseta TUDUDI_TRUST_PROXY, jotta sovellus luottaa nginxin, Caddyn tai Traefikin välittämiin otsikoihin. Jos ohitat sen, kirjautumiset ja IP-lokitus käyttäytyvät oudosti tavalla, jota on vaikea diagnosoida, niin sovellus heittää tarkan virheen sen sijaan, että epäonnistuisi hiljaa. Hyväksytyt arvot on dokumentoitu README:ssä.",
-        "q": "Toimiiko se reverse proxyn takana?"
-      },
       "shutdown": {
         "a": "Sovellus on MIT-lisensoitu ja lähdekoodi on julkinen, niin sitä ei voida viedä sinulta. Kuka tahansa voi jatkaa sen ajamista, ja voit forkata sen. tududi Cloudissa tietosi asuvat vakiomuotoisessa tududi-tietokannassa eikä omistusoikeudellisessa muodossa, niin jos palvelu joskus suljettaisiin, saisit tietosi ja oppaan niiden siirtämiseen omalle palvelimellesi.",
         "q": "Mitä tapahtuu tiedoillleni, jos tududi katoaa?"
@@ -415,8 +382,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "AI, MCP & Cloud",
-      "project": "Lisenssi & projekti",
-      "selfHost": "Itse ylläpito & data"
+      "project": "Lisenssi & projekti"
     },
     "permalink": "Linkki tähän vastaukseen",
     "sub": "Lisenssi, AI ja mitä tiedoillesi tapahtuu. Jos jokin puuttuu, kysy Discordissa.",
@@ -477,8 +443,18 @@
     "primary": "Aloita",
     "secondary": "Katso hinnat",
     "selfHostLink": "Lue opas.",
-    "selfHostPrefix": "Haluatko mieluummin ajaa sen omalla palvelimellasi?",
-    "sub": "Me ylläpidämme palvelinta, päivityksiä ja varmuuskopioita. Sinä saat järjestelmän, ja 30 päivän rahat takaisin -takuun, jos se ei sopinut sinulle.",
+    "sub": "Me ylläpidämme palvelinta, päivityksiä ja varmuuskopioita. Sinä saat järjestelmän, ja 14 päivän rahat takaisin -takuun, jos se ei sopinut sinulle.",
     "title": "Järjestäydy minuutissa"
+  },
+  "contact": {
+    "title": "Ota yhteyttä",
+    "lede": "Kysyttävää tududi Cloudista, laskutuksesta tai tilistäsi? Lähetä viesti, niin vastaamme sähköpostitse.",
+    "name": "Nimi",
+    "email": "Sähköposti",
+    "message": "Viesti",
+    "submit": "Lähetä viesti",
+    "sent": "Kiitos, viestisi on matkalla. Vastaamme sähköpostitse.",
+    "invalid": "Täytä nimesi, kelvollinen sähköpostiosoite ja viesti.",
+    "failed": "Viestiäsi ei voitu lähettää juuri nyt. Lähetä meille sähköpostia osoitteeseen"
   }
 }

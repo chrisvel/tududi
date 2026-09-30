@@ -14,8 +14,7 @@
     "docs": "Documentazione",
     "changelog": "Novità",
     "signIn": "Accedi",
-    "toggle": "Apri il menu",
-    "selfHostGuide": "Guida al self-hosting"
+    "toggle": "Apri il menu"
   },
   "hero": {
     "badgeStars": "stelle su GitHub",
@@ -226,20 +225,6 @@
     },
     "sub": "tududi combina obiettivi, progetti, attività, note e viste smart in un unico sistema calmo e concentrato. Lascia che lo gestiamo noi, o gestiscilo tu se preferisci."
   },
-  "selfHost": {
-    "eyebrow": "Self-hosting",
-    "title": "Installalo sul tuo server",
-    "cardTitle": "Installazione con Docker",
-    "step1": "Scarica l'immagine Docker",
-    "step2": "Avvia il container",
-    "step3Prefix": "Raggiungilo su",
-    "linkGithub": "Guarda su GitHub",
-    "cardSub": "Per chi usa già Docker",
-    "ctaCloud": "Inizia su Cloud",
-    "linkDocs": "Leggi la guida al self-hosting",
-    "showCommands": "Mostra i comandi di installazione",
-    "sub": "Il self-hosting è per chi già usa Docker e un reverse proxy. Se vuoi tududi senza diventare il sysadmin, usa Cloud."
-  },
   "pricing": {
     "eyebrow": "Prezzi",
     "title": "Scegli come usare tududi",
@@ -274,7 +259,7 @@
         "priceNote": "Tutto incluso. Cancella in qualsiasi momento."
       }
     },
-    "fineprint": "Annulla quando vuoi ed esporta tutto. Se tududi Cloud dovesse mai chiudere, ricevi i tuoi dati e una guida alla migrazione self-hosted. Per spazio e volume API vale il fair use. Garanzia soddisfatti o rimborsati di 30 giorni, senza domande.",
+    "fineprint": "Annulla quando vuoi ed esporta tutto. Se tududi Cloud dovesse mai chiudere, ricevi i tuoi dati e una guida alla migrazione self-hosted. Per spazio e volume API vale il fair use. Garanzia soddisfatti o rimborsati di 14 giorni, senza domande.",
     "perMonth": "/mese",
     "sub": "Un piano ospitato, oppure gestiscilo tu se preferisci occuparti dell'operatività."
   },
@@ -294,7 +279,8 @@
       "proFeatures": "Assistente IA, MCP, CalDAV, Telegram",
       "startMinute": "Inizia in un minuto",
       "storage": "Spazio per gli allegati",
-      "support": "Supporto"
+      "support": "Supporto",
+      "aiCredits": "Crediti IA"
     },
     "values": {
       "community": "Community",
@@ -302,7 +288,9 @@
       "gigabytes": "{{count}} GB",
       "perMonthOrYear": "{{monthly}}/mese o {{price}}/anno",
       "selfCost": "Gratis, più il tuo hosting",
-      "yourDisk": "Il tuo disco"
+      "yourDisk": "Il tuo disco",
+      "aiCredits": "{{count}} gratis ogni mese",
+      "ownAiKey": "La tua chiave del provider"
     },
     "colCloud": "tududi Cloud",
     "colSelf": "Self-hosting",
@@ -313,8 +301,8 @@
     "inputLabel": "Indirizzo email"
   },
   "signup": {
-    "note": "Conserviamo il tuo indirizzo e la data in cui ce l'hai lasciato, solo per inviarti le note di rilascio. Non lo condividiamo mai.",
-    "joined": "Iscrizione completata. Le note di rilascio arriveranno via email."
+    "note": "Conserviamo il tuo indirizzo e la data in cui ce l’hai dato solo per inviarti novità e aggiornamenti. Non lo condividiamo mai.",
+    "joined": "Sei iscritto. Novità e aggiornamenti arriveranno via email."
   },
   "langs": {
     "heading": "L'app tududi è disponibile in {{count}} lingue in tutto il mondo"
@@ -330,17 +318,17 @@
     "colSupport": "Sostieni",
     "linkRoadmap": "Roadmap",
     "linkIssues": "Segnalazioni",
-    "linkEmail": "Email",
     "linkCoffee": "Offrici un caffè",
-    "subTitle": "Note di rilascio via email",
-    "subBody": "Note di rilascio occasionali. Niente marketing, disiscriviti quando vuoi.",
+    "subTitle": "Novità e aggiornamenti via email",
+    "subBody": "Novità e aggiornamenti sul prodotto, di tanto in tanto. Niente spam, disiscriviti quando vuoi.",
     "subSubmit": "Iscriviti",
     "rights": "Tutti i diritti riservati.",
     "linkLicence": "Licenza MIT",
-    "tagline": "Un sistema aperto per organizzare vita e lavoro. Ospitato da noi, o sul tuo server.",
+    "tagline": "Un sistema calmo e completo per organizzare vita e lavoro.",
     "linkTerms": "Termini",
     "linkPrivacy": "Privacy",
-    "linkRefunds": "Rimborsi"
+    "linkRefunds": "Rimborsi",
+    "linkContact": "Contatti"
   },
   "js": {
     "showFewer": "Mostra meno",
@@ -350,7 +338,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "No. Cloud costa {{monthly}} al mese o {{price}} all'anno, e questo è tutto il listino: nessun piano gratuito, nessun orologio di prova, nessuna carta addebitata per qualcosa che inizia silenziosamente a fatturare più avanti. C'è una garanzia di rimborso di 30 giorni se scopri che non ti si adatta, e c'è una demo dal vivo su questa pagina se vuoi prima dare un'occhiata. Il modo gratuito di usare tududi è farlo funzionare sul tuo server, che è la stessa applicazione.",
+        "a": "No. Cloud costa {{monthly}} al mese o {{price}} all'anno, e questo è tutto il listino: nessun piano gratuito, nessun orologio di prova, nessuna carta addebitata per qualcosa che inizia silenziosamente a fatturare più avanti. C'è una garanzia di rimborso di 14 giorni se scopri che non ti si adatta, e c'è una demo dal vivo su questa pagina se vuoi prima dare un'occhiata. Il modo gratuito di usare tududi è farlo funzionare sul tuo server, che è la stessa applicazione.",
         "q": "C'è un piano gratuito o una prova su tududi Cloud?"
       },
       "leaving": {
@@ -369,10 +357,6 @@
         "a": "Sì, e non devi comprare nulla prima. La licenza MIT permette l'uso commerciale, anche all'interno di un'azienda e in un prodotto commerciale, senza soglia di fatturato e senza nulla da dichiarare. Se il tuo ufficio contabilità ha bisogno di una fattura, un abbonamento Cloud viene fatturato tramite il nostro fornitore di pagamenti e ne produce una. Niente in questa pagina vende un permesso, perché quel permesso è già tuo.",
         "q": "Posso usare tududi al lavoro, o nella mia azienda?"
       },
-      "dataLocation": {
-        "a": "Tutto vive in un unico file di database SQLite dentro il volume che hai montato. Fare il backup significa copiare quel file in un posto sicuro, e ripristinarlo significa copiarlo indietro. tududi crea anche automaticamente uno snapshot del database prima di applicare le migrazioni, conservando copie recenti. Non c'è un formato proprietario né un passaggio di export tra te e i tuoi dati.",
-        "q": "Dove sono i miei dati, e come li salvo?"
-      },
       "licence": {
         "a": "L'applicazione è open source con licenza MIT, quindi puoi farla funzionare sul tuo server gratis, modificarla e costruirci sopra senza pagare nessuno. Non ci sono limiti di posti né funzioni tenute indietro: la versione self-hosted è il prodotto completo. tududi Cloud è un servizio a pagamento, perché hosting, backup ed email costano soldi da gestire. Paghi il lavoro operativo, mai l'accesso al software.",
         "q": "tududi è davvero gratuito?"
@@ -386,23 +370,6 @@
         "a": "MCP è il Model Context Protocol, uno standard aperto per collegare agenti IA a sistemi reali. tududi include un server MCP che espone {{tools}} strumenti su attività, progetti, aree, obiettivi, abitudini, note, persone, tag, viste, posta in arrivo, ricerca e metriche, così un agente può catturare, trovare, aggiornare e completare lavoro invece di parlarne soltanto. È opzionale, è incluso con Cloud e con ogni istanza self-hosted, e funziona con Claude Desktop, Cursor, Windsurf, Cline o qualsiasi altro client MCP.",
         "q": "Cos'è MCP, e cosa può davvero fare un agente?"
       },
-      "mobile": {
-        "a": "tududi si installa come PWA invece che come app nativa. Aggiungila alla schermata home su Android o iOS, o installala su desktop, e si comporta come un'app: legge dalla cache quando sei offline e sincronizza le tue modifiche alla riconnessione. Non c'è nulla da scaricare dall'App Store o dal Play Store.",
-        "q": "C'è un'app mobile?"
-      },
-      "multiUser": {
-        "a": "Sì. Un'unica istanza può ospitare più utenti, e i progetti possono essere condivisi con accesso di sola lettura o lettura-scrittura, che le attività e le note al loro interno ereditano. L'autoregistrazione è disattivata di default, quindi un admin crea gli account o apre deliberatamente le iscrizioni. Nessuno entra perché hai dimenticato di chiudere una porta.",
-        "q": "Più persone possono condividere un'istanza?"
-      },
-      "requirements": {
-        "a": "Docker, un posto persistente per salvare il database, un reverse proxy con TLS davanti, e la disciplina di applicare gli aggiornamenti e mantenere i backup. È comodo su un piccolo VPS o una macchina della tua rete, e i comandi sono nella sezione Self-Host e nella documentazione. La maggior parte delle persone è servita meglio da Cloud, che è la stessa applicazione senza tutto questo lavoro.",
-        "linkLabel": "Leggi la documentazione",
-        "q": "Cosa serve per gestirlo da solo?"
-      },
-      "reverseProxy": {
-        "a": "Sì, ed è il modo normale di farlo funzionare. Imposta TUDUDI_TRUST_PROXY perché l'app si fidi degli header inoltrati da nginx, Caddy o Traefik. Se lo salti, gli accessi e il logging degli IP si comportano in modo strano e difficile da diagnosticare, quindi l'app genera un errore specifico invece di fallire silenziosamente. I valori accettati sono documentati nel README.",
-        "q": "Funziona dietro un reverse proxy?"
-      },
       "shutdown": {
         "a": "L'app ha licenza MIT e il codice sorgente è pubblico, quindi non può esserti tolta. Chiunque può continuare a farla funzionare, e puoi forkarla. Su tududi Cloud i tuoi dati vivono in un database tududi standard invece di un formato proprietario, quindi se il servizio dovesse mai chiudere, otterresti i tuoi dati e una guida per trasferirli sul tuo server.",
         "q": "Cosa succede ai miei dati se tududi scompare?"
@@ -415,8 +382,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "IA, MCP e Cloud",
-      "project": "Licenza e progetto",
-      "selfHost": "Self-hosting e dati"
+      "project": "Licenza e progetto"
     },
     "permalink": "Link a questa risposta",
     "sub": "La licenza, l'IA, e cosa succede ai tuoi dati. Se manca qualcosa, chiedi su Discord.",
@@ -477,8 +443,18 @@
     "primary": "Inizia",
     "secondary": "Vedi i prezzi",
     "selfHostLink": "Leggi la guida.",
-    "selfHostPrefix": "Preferisci farlo funzionare sul tuo server?",
-    "sub": "Gestiamo noi il server, gli aggiornamenti e i backup. Tu hai il sistema, e una garanzia di rimborso di 30 giorni se non è per te.",
+    "sub": "Gestiamo noi il server, gli aggiornamenti e i backup. Tu hai il sistema, e una garanzia di rimborso di 14 giorni se non è per te.",
     "title": "Organizzati in un minuto"
+  },
+  "contact": {
+    "title": "Contattaci",
+    "lede": "Domande su tududi Cloud, la fatturazione o il tuo account? Scrivici un messaggio e ti risponderemo via email.",
+    "name": "Nome",
+    "email": "Email",
+    "message": "Messaggio",
+    "submit": "Invia messaggio",
+    "sent": "Grazie, il tuo messaggio è in viaggio. Ti risponderemo via email.",
+    "invalid": "Inserisci il tuo nome, un indirizzo email valido e un messaggio.",
+    "failed": "Non è stato possibile inviare il messaggio in questo momento. Scrivici a"
   }
 }

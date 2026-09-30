@@ -14,8 +14,7 @@
     "docs": "Docs",
     "changelog": "Nouveautés",
     "signIn": "Se connecter",
-    "toggle": "Afficher le menu",
-    "selfHostGuide": "Guide d'auto-hébergement"
+    "toggle": "Afficher le menu"
   },
   "hero": {
     "badgeStars": "étoiles sur GitHub",
@@ -226,20 +225,6 @@
     },
     "sub": "tududi combine objectifs, projets, tâches, notes et vues intelligentes en un seul système calme et concentré. Laissez-nous le gérer pour vous, ou gérez-le vous-même si vous préférez."
   },
-  "selfHost": {
-    "eyebrow": "Auto-hébergement",
-    "title": "Installez-le sur votre propre serveur",
-    "cardTitle": "Installation Docker",
-    "step1": "Récupérez l'image Docker",
-    "step2": "Lancez le conteneur",
-    "step3Prefix": "Accédez-y sur",
-    "linkGithub": "Voir sur GitHub",
-    "cardSub": "Pour les personnes qui utilisent déjà Docker",
-    "ctaCloud": "Commencer sur Cloud",
-    "linkDocs": "Lire le guide d'auto-hébergement",
-    "showCommands": "Afficher les commandes d'installation",
-    "sub": "L'auto-hébergement est fait pour les personnes qui utilisent déjà Docker et un reverse proxy. Si vous voulez tududi sans devenir l'administrateur système, utilisez Cloud."
-  },
   "pricing": {
     "eyebrow": "Tarifs",
     "title": "Choisissez comment utiliser tududi",
@@ -274,7 +259,7 @@
         "priceNote": "Tout est inclus. Résiliez à tout moment."
       }
     },
-    "fineprint": "Annulez à tout moment et exportez tout. Si tududi Cloud devait fermer, vous recevez vos données et un guide de migration vers l'auto-hébergement. Usage raisonnable pour le stockage et le volume d'API. Garantie satisfait ou remboursé 30 jours, sans question.",
+    "fineprint": "Annulez à tout moment et exportez tout. Si tududi Cloud devait fermer, vous recevez vos données et un guide de migration vers l'auto-hébergement. Usage raisonnable pour le stockage et le volume d'API. Garantie satisfait ou remboursé 14 jours, sans question.",
     "perMonth": "/mois",
     "sub": "Un forfait hébergé, ou faites tourner le serveur vous-même si vous préférez gérer l'exploitation."
   },
@@ -294,7 +279,8 @@
       "proFeatures": "Assistant IA, MCP, CalDAV, Telegram",
       "startMinute": "Démarrez en une minute",
       "storage": "Stockage des pièces jointes",
-      "support": "Support"
+      "support": "Support",
+      "aiCredits": "Crédits IA"
     },
     "values": {
       "community": "Communauté",
@@ -302,7 +288,9 @@
       "gigabytes": "{{count}} Go",
       "perMonthOrYear": "{{monthly}}/mois ou {{price}}/an",
       "selfCost": "Gratuit, plus votre hébergement",
-      "yourDisk": "Votre propre disque"
+      "yourDisk": "Votre propre disque",
+      "aiCredits": "{{count}} offerts chaque mois",
+      "ownAiKey": "Votre propre clé de fournisseur"
     },
     "colCloud": "tududi Cloud",
     "colSelf": "Auto-hébergement",
@@ -313,8 +301,8 @@
     "inputLabel": "Adresse e-mail"
   },
   "signup": {
-    "note": "Nous conservons votre adresse et la date à laquelle vous nous l'avez donnée, uniquement pour vous envoyer les notes de version. Nous ne la partageons jamais.",
-    "joined": "Vous êtes inscrit. Les notes de version arriveront par e-mail."
+    "note": "Nous conservons votre adresse et la date à laquelle vous l’avez donnée, uniquement pour vous envoyer des actualités et nouveautés. Nous ne la partageons jamais.",
+    "joined": "Vous êtes inscrit. Les actualités et nouveautés arriveront par e-mail."
   },
   "langs": {
     "heading": "L'application tududi est disponible en {{count}} langues dans le monde"
@@ -330,17 +318,17 @@
     "colSupport": "Soutenir",
     "linkRoadmap": "Feuille de route",
     "linkIssues": "Tickets",
-    "linkEmail": "E-mail",
     "linkCoffee": "Offrir un café",
-    "subTitle": "Notes de version par e-mail",
-    "subBody": "Des notes de version occasionnelles. Pas de marketing, désinscription à tout moment.",
+    "subTitle": "Actualités et nouveautés par e-mail",
+    "subBody": "Des actualités et nouveautés produit de temps en temps. Pas de spam, désinscription à tout moment.",
     "subSubmit": "Je m'inscris",
     "rights": "Tous droits réservés.",
     "linkLicence": "Licence MIT",
-    "tagline": "Un système ouvert pour organiser sa vie et son travail. Hébergé par nous, ou sur votre propre serveur.",
+    "tagline": "Un système calme et complet pour organiser la vie et le travail.",
     "linkTerms": "Conditions",
     "linkPrivacy": "Confidentialité",
-    "linkRefunds": "Remboursements"
+    "linkRefunds": "Remboursements",
+    "linkContact": "Contact"
   },
   "js": {
     "showFewer": "Afficher moins",
@@ -350,7 +338,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Non. Cloud coûte {{monthly}} par mois ou {{price}} par an, et c'est toute la grille tarifaire : pas de forfait gratuit, pas de compte à rebours d'essai, pas de carte prélevée pour quelque chose qui commence discrètement à facturer plus tard. Il y a une garantie de remboursement de 30 jours si cela ne vous convient pas, et une démo en direct sur cette page si vous voulez d'abord jeter un œil. La façon gratuite d'utiliser tududi est de le faire tourner sur votre propre serveur, qui est la même application.",
+        "a": "Non. Cloud coûte {{monthly}} par mois ou {{price}} par an, et c'est toute la grille tarifaire : pas de forfait gratuit, pas de compte à rebours d'essai, pas de carte prélevée pour quelque chose qui commence discrètement à facturer plus tard. Il y a une garantie de remboursement de 14 jours si cela ne vous convient pas, et une démo en direct sur cette page si vous voulez d'abord jeter un œil. La façon gratuite d'utiliser tududi est de le faire tourner sur votre propre serveur, qui est la même application.",
         "q": "Y a-t-il un forfait gratuit ou un essai sur tududi Cloud ?"
       },
       "leaving": {
@@ -369,10 +357,6 @@
         "a": "Oui, et vous n'avez rien à acheter au préalable. La licence MIT autorise l'usage commercial, y compris dans une entreprise et dans un produit commercial, sans seuil de revenu et sans rien à déclarer. Si votre service comptable a besoin d'une facture, un abonnement Cloud est facturé via notre prestataire de paiement et en produit une. Rien sur cette page ne vend une permission, parce que cette permission est déjà la vôtre.",
         "q": "Puis-je utiliser tududi au travail, ou dans mon entreprise ?"
       },
-      "dataLocation": {
-        "a": "Tout est stocké dans un unique fichier de base de données SQLite, à l'intérieur du volume que vous avez monté. Le sauvegarder consiste à copier ce fichier en lieu sûr, et le restaurer consiste à le recopier. tududi prend aussi automatiquement un instantané de la base avant d'appliquer des migrations, en conservant les copies récentes. Il n'y a pas de format propriétaire ni d'étape d'export entre vous et vos propres données.",
-        "q": "Où sont mes données, et comment les sauvegarder ?"
-      },
       "licence": {
         "a": "L'application est open source sous licence MIT, vous pouvez donc la faire tourner sur votre propre serveur gratuitement, la modifier et construire dessus sans payer personne. Il n'y a ni nombre de sièges ni fonctionnalités retenues : la version auto-hébergée est le produit complet. tududi Cloud est un service payant, car l'hébergement, les sauvegardes et les e-mails coûtent de l'argent à faire tourner. Vous payez pour le travail d'exploitation, jamais pour l'accès au logiciel.",
         "q": "tududi est-il vraiment gratuit ?"
@@ -386,23 +370,6 @@
         "a": "MCP est le Model Context Protocol, un standard ouvert pour connecter des agents IA à de vrais systèmes. tududi propose un serveur MCP exposant {{tools}} outils couvrant les tâches, projets, domaines, objectifs, habitudes, notes, personnes, tags, vues, la boîte de réception, la recherche et les métriques, pour qu'un agent puisse capturer, retrouver, mettre à jour et terminer du travail plutôt que simplement en parler. C'est optionnel, c'est inclus avec Cloud et avec chaque instance auto-hébergée, et cela fonctionne avec Claude Desktop, Cursor, Windsurf, Cline, ou tout autre client MCP.",
         "q": "Qu'est-ce que MCP, et que peut réellement faire un agent ?"
       },
-      "mobile": {
-        "a": "tududi s'installe comme une PWA plutôt qu'une application native. Ajoutez-la à votre écran d'accueil sur Android ou iOS, ou installez-la sur un ordinateur, et elle se comporte comme une application : elle lit depuis le cache hors ligne et synchronise vos modifications à la reconnexion. Il n'y a rien à télécharger sur l'App Store ou le Play Store.",
-        "q": "Y a-t-il une application mobile ?"
-      },
-      "multiUser": {
-        "a": "Oui. Une seule instance peut héberger plusieurs utilisateurs, et les projets peuvent être partagés avec un accès en lecture seule ou en lecture-écriture, que les tâches et notes qu'ils contiennent héritent. L'auto-inscription est désactivée par défaut, donc un administrateur crée les comptes ou ouvre délibérément les inscriptions. Personne n'entre parce que vous avez oublié de fermer une porte.",
-        "q": "Plusieurs personnes peuvent-elles partager une même instance ?"
-      },
-      "requirements": {
-        "a": "Docker, un endroit persistant pour stocker la base de données, un reverse proxy avec TLS devant, et la discipline d'appliquer les mises à jour et de garder des sauvegardes. C'est confortable sur un petit VPS ou une machine de votre propre réseau, et les commandes se trouvent dans la section Auto-hébergement et la documentation. La plupart des gens sont mieux servis par Cloud, qui est la même application sans tout ce travail.",
-        "linkLabel": "Lire la documentation",
-        "q": "De quoi ai-je besoin pour l'héberger moi-même ?"
-      },
-      "reverseProxy": {
-        "a": "Oui, et c'est la façon normale de le faire tourner. Définissez TUDUDI_TRUST_PROXY pour que l'application fasse confiance aux en-têtes transmis par nginx, Caddy ou Traefik. Si vous l'omettez, les connexions et la journalisation des IP se comportent bizarrement, de façon difficile à diagnostiquer, donc l'application lève une erreur précise plutôt que d'échouer silencieusement. Les valeurs acceptées sont documentées dans le README.",
-        "q": "Cela fonctionne-t-il derrière un reverse proxy ?"
-      },
       "shutdown": {
         "a": "L'application est sous licence MIT et le code source est public, elle ne peut donc pas vous être retirée. Chacun peut continuer à la faire tourner, et vous pouvez la forker. Sur tududi Cloud, vos données vivent dans une base tududi standard plutôt qu'un format propriétaire, donc si le service devait fermer un jour, vous récupéreriez vos données et un guide pour les faire migrer sur votre propre serveur.",
         "q": "Qu'advient-il de mes données si tududi disparaît ?"
@@ -415,8 +382,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "IA, MCP et Cloud",
-      "project": "Licence et projet",
-      "selfHost": "Auto-hébergement et données"
+      "project": "Licence et projet"
     },
     "permalink": "Lien vers cette réponse",
     "sub": "La licence, l'IA, et ce qu'il advient de vos données. S'il manque quelque chose, demandez sur Discord.",
@@ -477,8 +443,18 @@
     "primary": "Commencer",
     "secondary": "Voir les prix",
     "selfHostLink": "Lire le guide.",
-    "selfHostPrefix": "Vous préférez le faire tourner sur votre propre serveur ?",
-    "sub": "Nous gérons le serveur, les mises à jour et les sauvegardes. Vous avez le système, et une garantie de remboursement de 30 jours si cela ne vous convient pas.",
+    "sub": "Nous gérons le serveur, les mises à jour et les sauvegardes. Vous avez le système, et une garantie de remboursement de 14 jours si cela ne vous convient pas.",
     "title": "Organisez-vous en une minute"
+  },
+  "contact": {
+    "title": "Nous contacter",
+    "lede": "Des questions sur tududi Cloud, la facturation ou votre compte ? Envoyez-nous un message et nous vous répondrons par e-mail.",
+    "name": "Nom",
+    "email": "E-mail",
+    "message": "Message",
+    "submit": "Envoyer le message",
+    "sent": "Merci, votre message est en route. Nous vous répondrons par e-mail.",
+    "invalid": "Veuillez indiquer votre nom, une adresse e-mail valide et un message.",
+    "failed": "Votre message n’a pas pu être envoyé pour le moment. Écrivez-nous à"
   }
 }

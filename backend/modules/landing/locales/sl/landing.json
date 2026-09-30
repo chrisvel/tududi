@@ -14,8 +14,7 @@
     "docs": "Dokumentacija",
     "changelog": "Spremembe",
     "signIn": "Prijava",
-    "toggle": "Odpri meni",
-    "selfHostGuide": "Vodnik za samostojno gostovanje"
+    "toggle": "Odpri meni"
   },
   "hero": {
     "badgeStars": "zvezdic na GitHubu",
@@ -226,20 +225,6 @@
     },
     "sub": "tududi združuje cilje, projekte, naloge, opombe in pametne prikaze v en umirjen, osredotočen sistem. Prepustite upravljanje nam, ali upravljajte sami, če to raje."
   },
-  "selfHost": {
-    "eyebrow": "Lastni strežnik",
-    "title": "Poženite ga na lastnem strežniku",
-    "cardTitle": "Namestitev z Dockerjem",
-    "step1": "Prenesite sliko Docker",
-    "step2": "Zaženite vsebnik",
-    "step3Prefix": "Dostopajte na",
-    "linkGithub": "Oglejte si na GitHubu",
-    "cardSub": "Za tiste, ki že uporabljajo Docker",
-    "ctaCloud": "Začni na Cloud",
-    "linkDocs": "Preberi vodnik za samostojno gostovanje",
-    "showCommands": "Pokaži namestitvene ukaze",
-    "sub": "Samostojno gostovanje je za tiste, ki že uporabljajo Docker in reverse proxy. Če želite tududi brez da postanete skrbnik sistema, uporabite Cloud."
-  },
   "pricing": {
     "eyebrow": "Cene",
     "title": "Izberite, kako boste uporabljali tududi",
@@ -274,7 +259,7 @@
         "priceNote": "Vse vključeno. Prekličite kadarkoli."
       }
     },
-    "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 30-dnevna garancija vračila denarja, brez vprašanj.",
+    "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 14-dnevna garancija vračila denarja, brez vprašanj.",
     "perMonth": "/mesec",
     "sub": "En gostovan paket, ali ga zaženite sami, če raje skrbite za delovanje."
   },
@@ -294,7 +279,8 @@
       "proFeatures": "AI asistent, MCP, CalDAV, Telegram",
       "startMinute": "Začnite v minuti",
       "storage": "Prostor za priloge",
-      "support": "Podpora"
+      "support": "Podpora",
+      "aiCredits": "Krediti AI"
     },
     "values": {
       "community": "Skupnost",
@@ -302,7 +288,9 @@
       "gigabytes": "{{count}} GB",
       "perMonthOrYear": "{{monthly}}/mes ali {{price}}/leto",
       "selfCost": "Brezplačno, plus vaše gostovanje",
-      "yourDisk": "Vaš lastni disk"
+      "yourDisk": "Vaš lastni disk",
+      "aiCredits": "{{count}} brezplačno vsak mesec",
+      "ownAiKey": "Vaš lastni ključ ponudnika"
     },
     "colCloud": "tududi Cloud",
     "colSelf": "Samostojno gostovanje",
@@ -313,8 +301,8 @@
     "inputLabel": "E-poštni naslov"
   },
   "signup": {
-    "note": "Shranimo vaš naslov in datum, ko ste nam ga dali, da vam pošiljamo opombe ob izdajah in nič drugega. Nikoli ga ne delimo naprej.",
-    "joined": "Naročeni ste. Opombe ob izdaji bodo prihajale po e-pošti."
+    "note": "Vaš naslov in datum, ko ste ga podali, hranimo le za pošiljanje novic in posodobitev. Nikoli ga ne delimo.",
+    "joined": "Naročeni ste. Novice in posodobitve bodo prispele po e-pošti."
   },
   "langs": {
     "heading": "Na voljo v {{count}} jezikih po vsem svetu"
@@ -330,17 +318,17 @@
     "colSupport": "Podprite",
     "linkRoadmap": "Načrt razvoja",
     "linkIssues": "Prijave",
-    "linkEmail": "E-pošta",
     "linkCoffee": "Kupite nam kavo",
-    "subTitle": "Opombe ob izdajah po e-pošti",
-    "subBody": "Občasne opombe ob izdajah. Brez trženja, odjava kadar koli.",
+    "subTitle": "Novice in posodobitve po e-pošti",
+    "subBody": "Občasne novice in posodobitve izdelka. Brez neželene pošte, odjava kadar koli.",
     "subSubmit": "Prijavi me",
     "rights": "Vse pravice pridržane.",
     "linkLicence": "Licenca MIT",
-    "tagline": "Odprt sistem za organiziranje življenja in dela. Gostovan pri nas, ali na vašem lastnem strežniku.",
+    "tagline": "Miren, celovit sistem za organizacijo življenja in dela.",
     "linkTerms": "Pogoji",
     "linkPrivacy": "Zasebnost",
-    "linkRefunds": "Vračila"
+    "linkRefunds": "Vračila",
+    "linkContact": "Kontakt"
   },
   "js": {
     "showFewer": "Pokaži manj",
@@ -350,7 +338,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Ne. Cloud stane {{monthly}} na mesec ali {{price}} na leto, in to je celoten cenik: brez brezplačne stopnje, brez preizkusne ure, brez kartice, obremenjene za nekaj, kar se tiho začne zaračunavati kasneje. Obstaja 30-dnevna garancija vračila denarja, če se izkaže, da vam ne ustreza, in obstaja živa predstavitev na tej strani, če želite najprej pogledati. Brezplačen način uporabe tududi je zagon na vašem lastnem strežniku, kar je enaka aplikacija.",
+        "a": "Ne. Cloud stane {{monthly}} na mesec ali {{price}} na leto, in to je celoten cenik: brez brezplačne stopnje, brez preizkusne ure, brez kartice, obremenjene za nekaj, kar se tiho začne zaračunavati kasneje. Obstaja 14-dnevna garancija vračila denarja, če se izkaže, da vam ne ustreza, in obstaja živa predstavitev na tej strani, če želite najprej pogledati. Brezplačen način uporabe tududi je zagon na vašem lastnem strežniku, kar je enaka aplikacija.",
         "q": "Ali obstaja brezplačen paket ali preizkusna doba na tududi Cloud?"
       },
       "leaving": {
@@ -369,10 +357,6 @@
         "a": "Da, in vam ni treba ničesar kupiti vnaprej. Licenca MIT dovoljuje komercialno uporabo, tudi znotraj podjetja in v komercialnem izdelku, brez mejnega prihodka in brez česarkoli za poročanje. Če vaš finančni oddelek potrebuje račun, se naročnina Cloud zaračuna preko našega ponudnika plačil in ustvari enega. Nič na tej strani ne prodaja dovoljenja, ker je to dovoljenje že vaše.",
         "q": "Lahko uporabljam tududi na delu, ali v svojem podjetju?"
       },
-      "dataLocation": {
-        "a": "Vse živi v eni sami datoteki podatkovne baze SQLite znotraj priklopljenega volumna. Varnostno kopiranje pomeni kopiranje te datoteke nekam varno, in obnovitev pomeni kopiranje nazaj. tududi tudi samodejno posname posnetek podatkovne baze pred izvajanjem migracij, ohranjajoč nedavne kopije. Med vami in vašimi lastnimi podatki ni lastniškega formata in nobenega izvoznega koraka.",
-        "q": "Kje so moji podatki, in kako jih varnostno kopiram?"
-      },
       "licence": {
         "a": "Aplikacija je odprtokodna pod licenco MIT, tako da jo lahko zaganjate na svojem lastnem strežniku brezplačno, jo spreminjate in gradite na njej, ne da bi komu plačali. Ni omejitve mest in nobenih zadržanih funkcij: samostojno gostovana različica je celoten izdelek. tududi Cloud je plačljiva storitev, ker gostovanje, varnostne kopije in e-pošta stanejo denar za vzdrževanje. Plačate za operativno delo, nikoli za dostop do programske opreme.",
         "q": "Je tududi res brezplačen?"
@@ -386,23 +370,6 @@
         "a": "MCP je Model Context Protocol, odprt standard za povezovanje agentov AI s resničnimi sistemi. tududi vključuje strežnik MCP, ki izpostavlja {{tools}} orodij za naloge, projekte, področja, cilje, navade, opombe, osebe, oznake, prikaze, prejeto pošto, iskanje in metrike, tako da lahko agent zajame, najde, posodobi in dokonča delo, namesto da le govori o njem. Je opcijski, vključen je v Cloud in v vsako samostojno gostovano instanco, in deluje s Claude Desktop, Cursor, Windsurf, Cline, ali katerimkoli drugim odjemalcem MCP.",
         "q": "Kaj je MCP, in kaj lahko agent dejansko naredi?"
       },
-      "mobile": {
-        "a": "tududi se namesti kot PWA namesto kot izvirna aplikacija. Dodajte jo na začetni zaslon na Androidu ali iOS-u, ali jo namestite na namizje, in obnaša se kot aplikacija: bere iz predpomnilnika, ko ste offline, in sinhronizira vaše spremembe ob ponovni povezavi. Ni ničesar za prenos iz App Store ali Play Store.",
-        "q": "Obstaja mobilna aplikacija?"
-      },
-      "multiUser": {
-        "a": "Da. Ena instanca lahko gosti več uporabnikov, in projekte je mogoče deliti z dostopom samo za branje ali branje-pisanje, ki ga podedujejo naloge in opombe znotraj njih. Samoregistracija je privzeto izklopljena, tako da administrator ali ustvari račune ali namerno odpre registracije. Nihče ne pride notri, ker ste pozabili zapreti vrata.",
-        "q": "Lahko več oseb deli eno instanco?"
-      },
-      "requirements": {
-        "a": "Docker, trajno mesto za shranjevanje podatkovne baze, reverse proxy s TLS pred njim, in disciplina za izvajanje posodobitev in ohranjanje varnostnih kopij. Deluje udobno na majhnem VPS-ju ali stroju v vašem lastnem omrežju, in ukazi so v razdelku Samostojno gostovanje in v dokumentaciji. Večini ljudi bolje ustreza Cloud, ki je enaka aplikacija brez vsega tega dela.",
-        "linkLabel": "Preberite dokumentacijo",
-        "q": "Kaj potrebujem, da to gostim sam?"
-      },
-      "reverseProxy": {
-        "a": "Da, in to je običajen način zagona. Nastavite TUDUDI_TRUST_PROXY, tako da aplikacija zaupa glavam, ki jih posreduje nginx, Caddy ali Traefik. Če to izpustite, se prijave in beleženje IP obnašajo nenavadno na način, ki ga je težko diagnosticirati, tako da aplikacija vrne specifično napako namesto tihega odpovedovanja. Sprejete vrednosti so dokumentirane v README.",
-        "q": "Deluje za reverse proxyem?"
-      },
       "shutdown": {
         "a": "Aplikacija je z licenco MIT, in izvorna koda je javna, tako da vam je ni mogoče odvzeti. Kdorkoli jo lahko še naprej zaganja, in lahko jo forkate. V tududi Cloud vaši podatki živijo v standardni podatkovni bazi tududi namesto v lastniškem formatu, tako da če bi storitev kdaj zaprli, bi prejeli svoje podatke in vodnik za premikanje na vaš lastni strežnik.",
         "q": "Kaj se zgodi z mojimi podatki, če tududi izgine?"
@@ -415,8 +382,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "AI, MCP in Cloud",
-      "project": "Licenca in projekt",
-      "selfHost": "Samostojno gostovanje in podatki"
+      "project": "Licenca in projekt"
     },
     "permalink": "Povezava do tega odgovora",
     "sub": "Licenca, AI, in kaj se zgodi z vašimi podatki. Če kaj manjka, vprašajte na Discordu.",
@@ -477,8 +443,18 @@
     "primary": "Začni",
     "secondary": "Poglej cene",
     "selfHostLink": "Preberi vodnik.",
-    "selfHostPrefix": "Raje zaganjate na svojem lastnem strežniku?",
-    "sub": "Mi upravljamo strežnik, posodobitve in varnostne kopije. Vi dobite sistem, in 30-dnevno garancijo vračila denarja, če ni za vas.",
+    "sub": "Mi upravljamo strežnik, posodobitve in varnostne kopije. Vi dobite sistem, in 14-dnevno garancijo vračila denarja, če ni za vas.",
     "title": "Organizirajte se v minuti"
+  },
+  "contact": {
+    "title": "Pišite nam",
+    "lede": "Vprašanja o tududi Cloud, plačilih ali vašem računu? Pošljite nam sporočilo in odgovorili bomo po e-pošti.",
+    "name": "Ime",
+    "email": "E-pošta",
+    "message": "Sporočilo",
+    "submit": "Pošlji sporočilo",
+    "sent": "Hvala, vaše sporočilo je na poti. Odgovorili bomo po e-pošti.",
+    "invalid": "Vpišite ime, veljaven e-poštni naslov in sporočilo.",
+    "failed": "Sporočila trenutno ni bilo mogoče poslati. Pišite nam na"
   }
 }
