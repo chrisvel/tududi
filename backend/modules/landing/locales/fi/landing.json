@@ -63,16 +63,11 @@
         "body": "Rakennettu avoimen Model Context Protocolin päälle. Toimii Clauden ja muiden MCP-asiakasohjelmien kanssa."
       }
     },
-    "configTitle": "Yhdistä se Claude Desktopiin",
     "footnoteClients": "Sama toimii Cursorin, Windsurfin, Clinen ja minkä tahansa muun MCP-asiakkaan kanssa.",
     "footnoteDocsLink": "Lue MCP-dokumentaatio →",
     "assistantTitle": "Tekoälyavustaja",
     "assistantLede": "Erillinen, valinnainen kerros, joka lukee tietosi ja kirjoittaa niistä yhteenvedot selkokielellä. Toimii minkä tahansa OpenAI-yhteensopivan palveluntarjoajan kanssa, myös itse ylläpidettyjen kuten Ollaman.",
     "assistantCards": {
-      "daily": {
-        "title": "Aamukatsaus",
-        "body": "Aamuinen yhteenveto tärkeimmästä tehtävästäsi ja riskeistä, jotka kannattaa tietää."
-      },
       "task": {
         "title": "Tehtäväanalyysi",
         "body": "Ehdotetut seuraavat askeleet tietylle tehtävälle, luodaan pyynnöstä."
@@ -90,9 +85,6 @@
         "body": "Päivän päätteeksi: mitä tehtiin, huomionarvoinen kuvio ja mitä viedään huomiseen."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Osoita TUDUDI_URL sen sijaan omaan instanssiisi. Kaikki muu on identtistä.",
-    "configSelfHostTab": "Ylläpidätkö sitä itse?",
     "demo": {
       "answer1Html": "Aloita <strong>Laskutusmigraation julkaisemisesta</strong>. Se erääntyy tänään, ja kolme tehtävää kohteessa <strong>Maksut</strong> odottaa sen jälkeen.",
       "answer2Html": "Valmis. <strong>Tarkista uudelleensuunnittelun luonnos</strong> erääntyy nyt perjantaina, ja <strong>Poista Maksut-jonon esto</strong> on Maksut-projektissa, erääntyy tänään.",
@@ -274,7 +266,7 @@
         "features": [
           "Käynnissä minuutissa, ei palvelinta pystytettäväksi",
           "Rajattomat tehtävät, projektit ja muistiinpanot, plus liitteet",
-          "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
+          "Päivän suunnittelu tekoälyllä, {{aiCredits}} tekoälykrediittiä kuussa, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
           "Päivitykset ja päivittäiset varmuuskopiot hoidettuna puolestasi, ja {{proStorageGb}} GB tallennustilaa",
           "Vie kaikki milloin tahansa, poista tilisi itse"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Nopea vertailu",
+    "sub": "Näin tududi Cloud vertautuu sovelluksiin, joihin sitä useimmiten verrataan, henkilökohtaisilla tilauksilla.",
+    "footnote": "Todoist Pro, TickTick Premium ja Notion Plus niiden julkisilta hintasivuilta syyskuussa 2026. Tarkista ajantasaiset hinnat niiden sivuilta. Niiden hinnat ovat Yhdysvaltain listahintoja dollareissa.",
     "rows": {
-      "openSource": "Avoimen lähdekoodin ydin",
-      "commercialUse": "Kaupallinen käyttö",
-      "infraControl": "Täysi hallinta infrastruktuurista",
-      "dataOnHardware": "Tiedot pysyvät omalla laitteistollasi",
-      "noRecurring": "Ei toistuvia kuluja",
-      "noSetup": "Ei palvelimen pystytystä",
-      "managedUpdates": "Hallitut päivitykset",
-      "autoBackups": "Automaattiset varmuuskopiot",
-      "pricing": "Hinta",
-      "exportAnytime": "Vie kaikki milloin tahansa",
-      "proFeatures": "AI-avustaja, MCP, CalDAV, Telegram",
-      "startMinute": "Aloita minuutissa",
-      "storage": "Liitetiedostojen tallennustila",
-      "support": "Tuki",
-      "aiCredits": "AI-krediitit"
+      "price": "Hinta, vuosilaskutus",
+      "aiIncluded": "Tekoäly mukana",
+      "dayPlanner": "Päivän suunnittelu kalenterin mukaan",
+      "habits": "Tapojen seuranta",
+      "goals": "Tavoitteet, alueet ja projektit",
+      "mcp": "MCP-palvelin tekoälyagenteille",
+      "openSource": "Avoin lähdekoodi, toimii omalla palvelimella"
     },
     "values": {
-      "community": "Yhteisö",
-      "email": "Sähköposti",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/kk tai {{price}}/vuosi",
-      "selfCost": "Ilmainen, plus omat isännöintikustannuksesi",
-      "yourDisk": "Oma levysi",
-      "aiCredits": "{{count}} ilmaiseksi joka kuukausi",
-      "ownAiKey": "Oma palveluntarjoajan avaimesi"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Itse ylläpidetty",
-    "sub": "Samat sovellus molemmissa tapauksissa. Se, mikä eroaa, on kuka sitä ylläpitää ja mitä se maksaa sinulle."
+      "perYear": "{{price}}/v",
+      "aiCredits": "{{count}} tekoälykrediittiä kuussa",
+      "businessOnly": "Vain Business-tilaus",
+      "separateApp": "Erillinen sovellus",
+      "diy": "Rakenna itse"
+    }
   },
   "waitlist": {
     "placeholder": "sina@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Rajattomat tehtävät, projektit ja muistiinpanot",
       "Liitteet ja tiedostojen lataus",
-      "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
+      "Päivän suunnittelu tekoälyllä, {{aiCredits}} tekoälykrediittiä kuussa, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
       "Päivittäiset varmuuskopiot ja hallitut päivitykset",
       "Tuki sähköpostitse",
       "Vie kaikki, milloin tahansa"
@@ -496,7 +476,7 @@
         "alt": "Lisäysruutu muuttaa lauseen toistuvaksi tehtäväksi tunnisteineen ja projekteineen"
       },
       "plan": {
-        "title": "Suunnittele päivä tekoälyn kanssa",
+        "title": "Suunnittele päivä tekoälyn kanssa (tai ilman)",
         "body": "Suunnittelija näyttää, mitä tänään mahtuu, valitsemassasi järjestyksessä. Anna tehtäville kesto ja sijoita ne tapaamisten väliseen vapaaseen aikaan, tai anna tekoälyn luonnostella koko päivä.",
         "points": [
           "Järjestetyt ehdotukset: myöhässä, tänään erääntyvät, käynnissä, sitten muut",

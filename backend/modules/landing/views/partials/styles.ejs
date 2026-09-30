@@ -910,48 +910,6 @@
             margin: 0 auto 48px;
         }
 
-        /* Shares .setup-pre / .setup-steps pre with the self-host block, so the
-           copy button script picks this code sample up for free. */
-        .mcp-config {
-            background: #161f2e;
-            border: 1px solid #232d3f;
-            border-radius: 18px;
-            padding: 22px;
-            margin-bottom: 20px;
-        }
-        .mcp-config-head {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-        .mcp-config-tab {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            margin: 0 0 10px;
-            font-size: 12.5px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: #60bffa;
-        }
-        .mcp-config-alt { margin-top: 16px; }
-        .mcp-config-alt > summary {
-            cursor: pointer;
-            list-style: none;
-            font-size: 14px;
-            color: #8b93a3;
-            text-decoration: underline;
-            text-underline-offset: 3px;
-        }
-        .mcp-config-alt > summary::-webkit-details-marker { display: none; }
-        .mcp-config-alt > summary:hover { color: #cbd5e1; }
-        .mcp-config-alt p { margin: 12px 0; font-size: 14px; color: #8b93a3; line-height: 1.6; }
-        .mcp-config-head h4 { margin: 0; font-size: 15px; font-weight: 600; color: #fff; }
-        .mcp-config-head span { font-size: 12.5px; color: #8b93a3; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
         .ai-divider { border-top: 1px solid #232d3f; padding-top: 48px; }
         .ai-sub-title { font-size: 23px; font-weight: 700; text-align: center; margin: 0 0 10px; letter-spacing: -0.01em; }
         .ai-sub-lede {
@@ -1343,7 +1301,7 @@
             flex-shrink: 0;
         }
         .setup-step-head h4 { margin: 0; font-weight: 600; color: #fff; font-size: 15px; }
-        .setup-steps pre, .mcp-config pre {
+        .setup-steps pre {
             background: #0b111c;
             border: 1px solid #232d3f;
             padding: 16px 92px 16px 16px;
@@ -1454,6 +1412,11 @@
         .compare-cell .yes { color: #1e86e5; }
         .compare-cell .no { color: #d1d5db; }
         .compare-cell .text { color: #6b7280; font-size: 14px; }
+        .compare-vendors { min-width: 720px; }
+        .compare-vendors .compare-row { grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(0, 1fr)); }
+        .compare-vendors .compare-row > .compare-us { background: #f2f8fe; }
+        .compare-vendors .compare-head > .compare-us { background: #e6f1fc; color: #1e86e5; }
+        .compare-footnote { margin: 14px 0 0; font-size: 13px; color: #8b93a3; text-align: center; line-height: 1.5; }
 
         /* ---------- vs-Competitors ----------
            Same scroll/fade/box mechanics as .compare (reused: .compare,
@@ -1717,7 +1680,6 @@
         [dir="rtl"] .hero-note i { margin-right: 0; margin-left: 4px; }
         [dir="rtl"] .nav-demo { margin-left: 0; margin-right: 8px; }
         [dir="rtl"] .setup-pre,
-        [dir="rtl"] .mcp-config { direction: ltr; text-align: left; }
         <%# The FAQ needs only this: the panels are flex with symmetric padding,
             the permalink uses margin-inline-start, and the chevron rotates 180
             degrees, which is direction-agnostic. Only the arrow glyph mirrors. %>

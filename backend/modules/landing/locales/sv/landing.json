@@ -63,16 +63,11 @@
         "body": "Byggt på det öppna Model Context Protocol. Fungerar med Claude och andra MCP-klienter."
       }
     },
-    "configTitle": "Koppla det till Claude Desktop",
     "footnoteClients": "Samma sak fungerar med Cursor, Windsurf, Cline och alla andra MCP-klienter.",
     "footnoteDocsLink": "Läs MCP-dokumentationen →",
     "assistantTitle": "AI-assistent",
     "assistantLede": "Ett separat, valfritt lager som läser dina data och skriver tillbaka sammanfattningar på vanlig svenska. Fungerar med alla OpenAI-kompatibla leverantörer, även egenhostade som Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Morgonbrief",
-        "body": "En sammanfattning på morgonen med din viktigaste uppgift och de riskflaggor som är värda att känna till."
-      },
       "task": {
         "title": "Uppgiftsinsikter",
         "body": "Föreslagna nästa steg för en specifik uppgift, framtagna när du ber om dem."
@@ -90,9 +85,6 @@
         "body": "I slutet av dagen: vad som blev gjort, ett mönster att notera och vad som ska med till i morgon."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Peka istället TUDUDI_URL mot din egen instans. Allt annat är identiskt.",
-    "configSelfHostTab": "Driver du det själv?",
     "demo": {
       "answer1Html": "Börja med <strong>Släpp faktureringsmigreringen</strong>. Den ska vara klar idag, och tre uppgifter i <strong>Betalningar</strong> väntar bakom den.",
       "answer2Html": "Klart. <strong>Granska omdesign-utkast</strong> ska nu vara klart på fredag, och <strong>Lås upp Betalningar-kön</strong> ligger i projektet Betalningar, klart idag.",
@@ -274,7 +266,7 @@
         "features": [
           "Igång på en minut, utan server att sätta upp",
           "Obegränsat med uppgifter, projekt och anteckningar, plus bilagor",
-          "Dagsplanering med AI, MCP, kalenderflöden, CalDAV och Telegram-boten",
+          "Dagsplanering med AI med {{aiCredits}} AI-krediter i månaden, MCP, kalenderflöden, CalDAV och Telegram-boten",
           "Uppdateringar och dagliga säkerhetskopior skötta för dig, med {{proStorageGb}} GB lagring",
           "Exportera allt när du vill, ta bort ditt konto själv"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Snabb jämförelse",
+    "sub": "Så står sig tududi Cloud mot apparna den oftast jämförs med, på deras personliga abonnemang.",
+    "footnote": "Todoist Pro, TickTick Premium och Notion Plus, från deras offentliga prissidor i september 2026. Kolla deras webbplatser för aktuella priser. Deras priser är amerikanska listpriser i dollar.",
     "rows": {
-      "openSource": "Öppen kärna",
-      "commercialUse": "Kommersiell användning",
-      "infraControl": "Full kontroll över infrastrukturen",
-      "dataOnHardware": "Data stannar på din hårdvara",
-      "noRecurring": "Ingen löpande kostnad",
-      "noSetup": "Ingen serveruppsättning krävs",
-      "managedUpdates": "Hanterade uppdateringar",
-      "autoBackups": "Automatiska säkerhetskopior",
-      "pricing": "Pris",
-      "exportAnytime": "Exportera allt när du vill",
-      "proFeatures": "AI-assistent, MCP, CalDAV, Telegram",
-      "startMinute": "Kom igång på en minut",
-      "storage": "Lagring för bilagor",
-      "support": "Support",
-      "aiCredits": "AI-krediter"
+      "price": "Pris, årsvis",
+      "aiIncluded": "AI ingår",
+      "dayPlanner": "Planera dagen runt kalendern",
+      "habits": "Vanespårning",
+      "goals": "Mål, områden och projekt",
+      "mcp": "MCP-server för AI-agenter",
+      "openSource": "Öppen källkod, körs på egen server"
     },
     "values": {
-      "community": "Community",
-      "email": "E-post",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/mån eller {{price}}/år",
-      "selfCost": "Gratis, plus din hosting",
-      "yourDisk": "Din egen disk",
-      "aiCredits": "{{count}} gratis varje månad",
-      "ownAiKey": "Din egen leverantörsnyckel"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Självhosta",
-    "sub": "Samma applikation i båda fallen. Vad som skiljer är vem som driver den, och vad det kostar dig."
+      "perYear": "{{price}}/år",
+      "aiCredits": "{{count}} AI-krediter i månaden",
+      "businessOnly": "Endast Business-abonnemang",
+      "separateApp": "Separat app",
+      "diy": "Bygg själv"
+    }
   },
   "waitlist": {
     "placeholder": "du@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Obegränsat med uppgifter, projekt och anteckningar",
       "Bilagor och filuppladdningar",
-      "Dagsplanering med AI, MCP, kalenderflöden, CalDAV och Telegram-boten",
+      "Dagsplanering med AI med {{aiCredits}} AI-krediter i månaden, MCP, kalenderflöden, CalDAV och Telegram-boten",
       "Dagliga säkerhetskopior och hanterade uppdateringar",
       "Support via e-post",
       "Exportera allt, när du vill"
@@ -496,7 +476,7 @@
         "alt": "Lägg till-rutan gör en mening till en återkommande uppgift med tagg och projekt"
       },
       "plan": {
-        "title": "Planera dagen, med AI",
+        "title": "Planera dagen, med AI (eller inte)",
         "body": "Planeraren visar vad som får plats i dag, i den ordning du väljer. Ge varje uppgift en längd och lägg den i ledig tid mellan möten, eller låt AI göra ett utkast till hela dagen.",
         "points": [
           "Rangordnade förslag: försenat, förfaller i dag, pågår, sedan resten",

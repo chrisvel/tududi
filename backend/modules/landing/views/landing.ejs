@@ -77,6 +77,7 @@
         price: money(personalPrice),
         monthly: money(pricing.monthly),
         proStorageGb: plans.proStorageGb,
+        aiCredits: plans.aiCredits,
     };
 
     // camelCase id -> kebab fragment, so #faq-commercial-use is something a
@@ -232,36 +233,29 @@
     // page counts it, rather than repeating a number that goes stale.
     const languageCount = locales.length;
 
-    // Runtimes, not tiers. There is one Cloud plan and it is paid, so the
-    // table compares the two ways to run tududi and nothing else.
-    //
-    // Ordered so the rows Cloud wins come first, then the parity rows - which
-    // are the point of the whole section, since they say the self-hosted build
-    // is not crippled - then the three rows self-hosting genuinely wins.
-    //
-    // Ticks and crosses are product claims, not copy, so they stay here where
-    // no translation pass can flip one: only the row label and the two text
-    // cells are localized, by id.
+    // tududi Cloud against the three apps people most often weigh it
+    // against, on their individual plans. Vendor names, prices and ticks are
+    // claims about other companies, taken from their public pricing pages
+    // (see compare.footnote for the date), so they live here rather than in
+    // the locales: re-check them before changing any. Only labels and the
+    // text cells are translated. Cells are 'yes', 'no', or a string.
+    const compareVendors = ['tududi Cloud', 'Todoist Pro', 'TickTick Premium', 'Notion Plus'];
     const comparisonRows = [
-        { id: 'noSetup',         cloudCheck: true, selfX: true },
-        { id: 'startMinute',     cloudCheck: true, selfX: true },
-        { id: 'managedUpdates',  cloudCheck: true, selfX: true },
-        { id: 'autoBackups',     cloudCheck: true, selfX: true },
-        { id: 'support',         cloudText: t('compare.values.email'),
-                                 selfText:  t('compare.values.community') },
-        { id: 'storage',         cloudText: t('compare.values.gigabytes', { count: plans.proStorageGb }),
-                                 selfText:  t('compare.values.yourDisk') },
-        { id: 'aiCredits',       cloudText: t('compare.values.aiCredits', { count: plans.aiCredits }),
-                                 selfText:  t('compare.values.ownAiKey') },
-        { id: 'proFeatures',     cloudCheck: true, selfCheck: true },
-        { id: 'openSource',      cloudCheck: true, selfCheck: true },
-        { id: 'commercialUse',   cloudCheck: true, selfCheck: true },
-        { id: 'exportAnytime',   cloudCheck: true, selfCheck: true },
-        { id: 'dataOnHardware',  cloudX: true,     selfCheck: true },
-        { id: 'infraControl',    cloudX: true,     selfCheck: true },
-        { id: 'noRecurring',     cloudX: true,     selfCheck: true },
-        { id: 'pricing',         cloudText: t('compare.values.perMonthOrYear', { monthly: money(pricing.monthly), price: money(personalPrice) }),
-                                 selfText:  t('compare.values.selfCost') },
+        { id: 'price',      cells: [
+            t('compare.values.perYear', { price: money(personalPrice) }),
+            t('compare.values.perYear', { price: '$60' }),
+            t('compare.values.perYear', { price: '$49.99' }),
+            t('compare.values.perYear', { price: '$120' }),
+        ]},
+        { id: 'aiIncluded', cells: [
+            t('compare.values.aiCredits', { count: plans.aiCredits }), 'yes', 'yes',
+            t('compare.values.businessOnly'),
+        ]},
+        { id: 'dayPlanner', cells: ['yes', 'yes', 'yes', t('compare.values.separateApp')] },
+        { id: 'habits',     cells: ['yes', 'no', 'yes', 'no'] },
+        { id: 'goals',      cells: ['yes', 'no', 'no', t('compare.values.diy')] },
+        { id: 'mcp',        cells: ['yes', 'yes', 'yes', 'yes'] },
+        { id: 'openSource', cells: ['yes', 'no', 'no', 'no'] },
     ];
 %>
 
@@ -602,37 +596,6 @@
                 </div>
             </div>
 
-            <%# The snippet is the one the dashboard hands real users (see
-                views/dashboard/index.ejs) with the token left as a placeholder.
-                Keep the two in step if the env vars ever change. %>
-            <div class="mcp-config">
-                <div class="mcp-config-head">
-                    <h4><%= t('ai.configTitle') %></h4>
-                    <span>claude_desktop_config.json</span>
-                </div>
-                <%# Cloud is the default example because it is the instance most
-                    readers will have. The self-hosted URL is the same snippet
-                    with one line changed, so it is a disclosure rather than a
-                    second block competing for attention. %>
-                <p class="mcp-config-tab"><i class="fas fa-cloud"></i><%= t('ai.configCloudTab') %></p>
-                <div class="setup-pre"><pre><code>{
-  "mcpServers": {
-    "tududi": {
-      "command": "npx",
-      "args": ["-y", "tududi-mcp"],
-      "env": {
-        "TUDUDI_URL": "<%= appUrl %>",
-        "TUDUDI_API_TOKEN": "your-personal-access-token"
-      }
-    }
-  }
-}</code></pre></div>
-                <details class="mcp-config-alt">
-                    <summary><%= t('ai.configSelfHostTab') %></summary>
-                    <p><%= t('ai.configSelfHostNote') %></p>
-                    <div class="setup-pre"><pre><code>"TUDUDI_URL": "http://localhost:3002"</code></pre></div>
-                </details>
-            </div>
             <p class="ai-footnote" style="margin-bottom:20px;">
                 <%= t('ai.footnoteClients') %>
                 <a href="https://docs.tududi.com" class="ai-footnote-link"><%= t('ai.footnoteDocsLink') %></a>
@@ -646,11 +609,6 @@
                     <%= t('ai.assistantLede') %>
                 </p>
                 <div class="auto-grid">
-                    <div class="dark-card">
-                        <i class="fas fa-sun"></i>
-                        <h4><%= t('ai.assistantCards.daily.title') %></h4>
-                        <p><%= t('ai.assistantCards.daily.body') %></p>
-                    </div>
                     <div class="dark-card">
                         <i class="fas fa-lightbulb"></i>
                         <h4><%= t('ai.assistantCards.task.title') %></h4>
@@ -813,30 +771,27 @@
 
             <div class="compare-scroll-wrap">
             <div class="compare-scroll" tabindex="0" role="region" aria-label="<%= t('compare.title') %>">
-                <div class="compare">
+                <div class="compare compare-vendors">
                     <div class="compare-row compare-head">
                         <div></div>
-                        <div><%= t('compare.colCloud') %></div>
-                        <div><%= t('compare.colSelf') %></div>
+                        <% compareVendors.forEach(function (vendor, i) { %>
+                        <div<%- i === 0 ? ' class="compare-us"' : '' %>><%= vendor %></div>
+                        <% }); %>
                     </div>
                     <% comparisonRows.forEach(function (row) { %>
                     <div class="compare-row">
                         <div class="compare-label"><%= t('compare.rows.' + row.id) %></div>
-                        <div class="compare-cell">
-                            <% if (row.cloudText) { %><span class="text"><%= row.cloudText %></span><% } %>
-                            <% if (row.cloudCheck) { %><i class="fas fa-check yes"></i><% } %>
-                            <% if (row.cloudX) { %><i class="fas fa-times no"></i><% } %>
+                        <% row.cells.forEach(function (cell, i) { %>
+                        <div class="compare-cell<%= i === 0 ? ' compare-us' : '' %>">
+                            <% if (cell === 'yes') { %><i class="fas fa-check yes" aria-label="✓"></i><% } else if (cell === 'no') { %><i class="fas fa-times no" aria-label="✗"></i><% } else { %><span class="text"><%= cell %></span><% } %>
                         </div>
-                        <div class="compare-cell">
-                            <% if (row.selfText) { %><span class="text"><%= row.selfText %></span><% } %>
-                            <% if (row.selfCheck) { %><i class="fas fa-check yes"></i><% } %>
-                            <% if (row.selfX) { %><i class="fas fa-times no"></i><% } %>
-                        </div>
+                        <% }); %>
                     </div>
                     <% }); %>
                 </div>
             </div>
             </div>
+            <p class="compare-footnote"><%= t('compare.footnote') %></p>
 
         </div>
     </section>

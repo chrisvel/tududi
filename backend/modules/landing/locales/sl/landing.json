@@ -63,16 +63,11 @@
         "body": "Zgrajeno na odprtem Model Context Protocol. Deluje s Claudom in drugimi odjemalci MCP."
       }
     },
-    "configTitle": "Povežite ga s Claude Desktop",
     "footnoteClients": "Enako deluje s Cursorjem, Windsurfom, Clineom in katerim koli drugim odjemalcem MCP.",
     "footnoteDocsLink": "Preberite dokumentacijo MCP →",
     "assistantTitle": "Pomočnik UI",
     "assistantLede": "Ločena, izbirna plast, ki prebere vaše podatke in vrne povzetke v razumljivem jeziku. Deluje s katerim koli ponudnikom, združljivim z OpenAI, tudi z lastnim, kot je Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Jutranji pregled",
-        "body": "Jutranji povzetek z vašim glavnim opravilom in opozorili, ki jih je vredno poznati."
-      },
       "task": {
         "title": "Vpogled v opravilo",
         "body": "Predlagani naslednji koraki za določeno opravilo, ustvarjeni na zahtevo."
@@ -90,9 +85,6 @@
         "body": "Ob koncu dneva: kaj je opravljeno, vzorec, vreden pozornosti, in kaj prenesti na jutri."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Namesto tega usmerite TUDUDI_URL na svojo lastno instanco. Vse drugo je enako.",
-    "configSelfHostTab": "Gostite sami?",
     "demo": {
       "answer1Html": "Začnite z <strong>Objavo migracije zaračunavanja</strong>. Rok je danes, in tri naloge v <strong>Plačilih</strong> čakajo za njo.",
       "answer2Html": "Opravljeno. <strong>Preglej osnutek redizajna</strong> je zdaj rok petek, in <strong>Odblokiraj čakalno vrsto Plačila</strong> je v projektu Plačila, rok danes.",
@@ -274,7 +266,7 @@
         "features": [
           "Deluje v minuti, brez strežnika za namestitev",
           "Neomejene naloge, projekti in opombe, plus priloge",
-          "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
+          "Načrtovanje dneva z UI in {{aiCredits}} kreditov UI na mesec, MCP, koledarski viri, CalDAV in Telegram bot",
           "Posodobitve in dnevne varnostne kopije, poskrbljene za vas, z {{proStorageGb}} GB prostora",
           "Izvozite vse kadarkoli, izbrišite svoj račun sami"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Hitra primerjava",
+    "sub": "Kako se tududi Cloud primerja z aplikacijami, s katerimi ga najpogosteje primerjajo, pri osebnih paketih.",
+    "footnote": "Todoist Pro, TickTick Premium in Notion Plus po njihovih javnih ceniki septembra 2026. Aktualne cene preverite na njihovih straneh. Njihove cene so ameriške cene v dolarjih.",
     "rows": {
-      "openSource": "Odprtokodno jedro",
-      "commercialUse": "Komercialna uporaba",
-      "infraControl": "Popoln nadzor nad infrastrukturo",
-      "dataOnHardware": "Podatki ostanejo na vaši strojni opremi",
-      "noRecurring": "Brez ponavljajočih se stroškov",
-      "noSetup": "Brez postavljanja strežnika",
-      "managedUpdates": "Upravljane posodobitve",
-      "autoBackups": "Samodejne varnostne kopije",
-      "pricing": "Cena",
-      "exportAnytime": "Izvozite vse kadarkoli",
-      "proFeatures": "AI asistent, MCP, CalDAV, Telegram",
-      "startMinute": "Začnite v minuti",
-      "storage": "Prostor za priloge",
-      "support": "Podpora",
-      "aiCredits": "Krediti AI"
+      "price": "Cena, letno plačilo",
+      "aiIncluded": "UI vključena",
+      "dayPlanner": "Načrtovanje dneva okoli koledarja",
+      "habits": "Sledenje navadam",
+      "goals": "Cilji, področja in projekti",
+      "mcp": "Strežnik MCP za agente UI",
+      "openSource": "Odprta koda, teče na lastnem strežniku"
     },
     "values": {
-      "community": "Skupnost",
-      "email": "E-pošta",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/mes ali {{price}}/leto",
-      "selfCost": "Brezplačno, plus vaše gostovanje",
-      "yourDisk": "Vaš lastni disk",
-      "aiCredits": "{{count}} brezplačno vsak mesec",
-      "ownAiKey": "Vaš lastni ključ ponudnika"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Samostojno gostovanje",
-    "sub": "Enaka aplikacija v obeh primerih. Razlikuje se, kdo jo upravlja, in koliko vas to stane."
+      "perYear": "{{price}}/leto",
+      "aiCredits": "{{count}} kreditov UI na mesec",
+      "businessOnly": "Samo paket Business",
+      "separateApp": "Ločena aplikacija",
+      "diy": "Naredite sami"
+    }
   },
   "waitlist": {
     "placeholder": "vi@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Neomejene naloge, projekti in opombe",
       "Priloge in nalaganje datotek",
-      "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
+      "Načrtovanje dneva z UI in {{aiCredits}} kreditov UI na mesec, MCP, koledarski viri, CalDAV in Telegram bot",
       "Dnevne varnostne kopije in upravljane posodobitve",
       "Podpora po e-pošti",
       "Izvozite vse, kadarkoli"
@@ -496,7 +476,7 @@
         "alt": "Polje za dodajanje spremeni stavek v ponavljajoče se opravilo z oznako in projektom"
       },
       "plan": {
-        "title": "Načrtuj dan z UI",
+        "title": "Načrtuj dan z UI (ali brez)",
         "body": "Načrtovalnik pokaže, kaj gre danes, v vrstnem redu, ki ga izberete. Opravilom določite trajanje in jih postavite v prosti čas med sestanki ali pa naj UI pripravi osnutek celega dne.",
         "points": [
           "Razvrščeni predlogi: zamujeno, danes, v teku, nato ostalo",

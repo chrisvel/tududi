@@ -63,16 +63,11 @@
         "body": "Gebouwd op het open Model Context Protocol. Werkt met Claude en andere MCP-clients."
       }
     },
-    "configTitle": "Koppel het aan Claude Desktop",
     "footnoteClients": "Hetzelfde werkt met Cursor, Windsurf, Cline en elke andere MCP-client.",
     "footnoteDocsLink": "Lees de MCP-documentatie →",
     "assistantTitle": "AI-assistent",
     "assistantLede": "Een aparte, optionele laag die je data leest en er samenvattingen in gewone taal van maakt. Werkt met elke OpenAI-compatibele provider, ook zelfgehost zoals Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Dagelijkse briefing",
-        "body": "Een samenvatting in de ochtend met je belangrijkste taak en de risicosignalen die je moet kennen."
-      },
       "task": {
         "title": "Taakinzichten",
         "body": "Voorgestelde vervolgstappen voor een specifieke taak, op aanvraag gegenereerd."
@@ -90,9 +85,6 @@
         "body": "Aan het eind van de dag: wat klaar is, een patroon om op te letten en wat mee moet naar morgen."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Wijs TUDUDI_URL in plaats daarvan naar je eigen instantie. Al het andere is identiek.",
-    "configSelfHostTab": "Host je het zelf?",
     "demo": {
       "answer1Html": "Begin met <strong>Factureringsmigratie uitbrengen</strong>. Die is vandaag verschuldigd, en drie taken in <strong>Betalingen</strong> wachten erachter.",
       "answer2Html": "Gedaan. <strong>Herontwerp-concept beoordelen</strong> is nu verschuldigd op vrijdag, en <strong>Betalingenwachtrij deblokkeren</strong> staat in het project Betalingen, verschuldigd vandaag.",
@@ -274,7 +266,7 @@
         "features": [
           "Binnen een minuut draaiend, zonder server om op te zetten",
           "Onbeperkte taken, projecten en notities, plus bijlagen",
-          "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
+          "Dagplanning met AI met {{aiCredits}} AI-credits per maand, MCP, agendafeeds, CalDAV en de Telegram-bot",
           "Updates en dagelijkse backups voor je verzorgd, met {{proStorageGb}} GB opslag",
           "Exporteer alles op elk moment, verwijder je account zelf"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Snelle vergelijking",
+    "sub": "Hoe tududi Cloud zich verhoudt tot de apps waarmee het meestal wordt vergeleken, op hun individuele abonnementen.",
+    "footnote": "Todoist Pro, TickTick Premium en Notion Plus, volgens hun openbare prijspagina’s in september 2026. Kijk op hun sites voor actuele prijzen. Hun prijzen zijn Amerikaanse lijstprijzen in dollars.",
     "rows": {
-      "openSource": "Open source kern",
-      "commercialUse": "Commercieel gebruik",
-      "infraControl": "Volledige controle over de infrastructuur",
-      "dataOnHardware": "Data blijft op je eigen hardware",
-      "noRecurring": "Geen terugkerende kosten",
-      "noSetup": "Geen serverinstallatie nodig",
-      "managedUpdates": "Beheerde updates",
-      "autoBackups": "Automatische back-ups",
-      "pricing": "Prijs",
-      "exportAnytime": "Exporteer alles op elk moment",
-      "proFeatures": "AI-assistent, MCP, CalDAV, Telegram",
-      "startMinute": "Begin in een minuut",
-      "storage": "Opslag voor bijlagen",
-      "support": "Support",
-      "aiCredits": "AI-credits"
+      "price": "Prijs, jaarlijks",
+      "aiIncluded": "AI inbegrepen",
+      "dayPlanner": "Plan je dag rond je agenda",
+      "habits": "Gewoontes bijhouden",
+      "goals": "Doelen, gebieden en projecten",
+      "mcp": "MCP-server voor AI-agents",
+      "openSource": "Open source, draait op je eigen server"
     },
     "values": {
-      "community": "Community",
-      "email": "E-mail",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/mnd of {{price}}/jaar",
-      "selfCost": "Gratis, plus je hosting",
-      "yourDisk": "Je eigen schijf",
-      "aiCredits": "{{count}} gratis per maand",
-      "ownAiKey": "Je eigen providersleutel"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Zelfhosten",
-    "sub": "Dezelfde applicatie in beide gevallen. Wat verschilt, is wie hem beheert, en wat je dat kost."
+      "perYear": "{{price}}/jaar",
+      "aiCredits": "{{count}} AI-credits per maand",
+      "businessOnly": "Alleen Business-abonnement",
+      "separateApp": "Aparte app",
+      "diy": "Zelf bouwen"
+    }
   },
   "waitlist": {
     "placeholder": "jij@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Onbeperkte taken, projecten en notities",
       "Bijlagen en bestandsuploads",
-      "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
+      "Dagplanning met AI met {{aiCredits}} AI-credits per maand, MCP, agendafeeds, CalDAV en de Telegram-bot",
       "Dagelijkse backups en beheerde updates",
       "Support via e-mail",
       "Exporteer alles, op elk moment"
@@ -496,7 +476,7 @@
         "alt": "Het invoervak maakt van een zin een terugkerende taak met tag en project"
       },
       "plan": {
-        "title": "Plan je dag, met AI",
+        "title": "Plan je dag, met AI (of zonder)",
         "body": "De planner laat zien wat vandaag past, in de volgorde die jij kiest. Geef elke taak een duur en zet hem in de vrije tijd tussen afspraken, of laat AI de hele dag opzetten.",
         "points": [
           "Gerangschikte suggesties: te laat, vandaag, bezig, dan de rest",

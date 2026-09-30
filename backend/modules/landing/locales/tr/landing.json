@@ -63,16 +63,11 @@
         "body": "Açık Model Context Protocol üzerine kurulu. Claude ve diğer MCP istemcileriyle çalışır."
       }
     },
-    "configTitle": "Claude Desktop'a bağlayın",
     "footnoteClients": "Aynısı Cursor, Windsurf, Cline ve diğer tüm MCP istemcileriyle de geçerli.",
     "footnoteDocsLink": "MCP belgelerini okuyun →",
     "assistantTitle": "Yapay zekâ asistanı",
     "assistantLede": "Verilerinizi okuyup sade bir dille özet döndüren, ayrı ve isteğe bağlı bir katman. Ollama gibi kendi sunucunuzda çalışanlar dahil, OpenAI uyumlu her sağlayıcıyla çalışır.",
     "assistantCards": {
-      "daily": {
-        "title": "Günlük özet",
-        "body": "Odaklanacağınız görevi ve bilmeye değer risk işaretlerini içeren bir sabah özeti."
-      },
       "task": {
         "title": "Görev analizi",
         "body": "Belirli bir görev için, istediğinizde üretilen sonraki adım önerileri."
@@ -90,9 +85,6 @@
         "body": "Gün sonunda: neler yapıldı, dikkat çeken bir örüntü ve yarına ne kalacağı."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Bunun yerine TUDUDI_URL'yi kendi örneğinize yönlendirin. Diğer her şey aynıdır.",
-    "configSelfHostTab": "Kendiniz mi barındırıyorsunuz?",
     "demo": {
       "answer1Html": "<strong>Faturalama geçişini yayınla</strong> ile başlayın. Bugün son tarih, ve <strong>Ödemeler</strong>'de üç görev onun ardından bekliyor.",
       "answer2Html": "Tamamlandı. <strong>Yeniden tasarım taslağını gözden geçir</strong> artık Cuma günü son tarihte, ve <strong>Ödemeler kuyruğunun engelini kaldır</strong> Ödemeler projesinde, bugün son tarihte.",
@@ -274,7 +266,7 @@
         "features": [
           "Kurulacak sunucu olmadan bir dakikada çalışır",
           "Sınırsız görev, proje ve not, ayrıca ekler",
-          "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
+          "Ayda {{aiCredits}} yapay zekâ kredisiyle gün planlama, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
           "Sizin için halledilmiş güncellemeler ve günlük yedeklemeler, {{proStorageGb}} GB depolama ile",
           "Her şeyi istediğiniz zaman dışa aktarın, hesabınızı kendiniz silin"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Hızlı karşılaştırma",
+    "sub": "tududi Cloud en sık karşılaştırıldığı uygulamalarla bireysel planlarda nasıl kıyaslanıyor.",
+    "footnote": "Todoist Pro, TickTick Premium ve Notion Plus, Eylül 2026 itibarıyla herkese açık fiyat sayfalarından. Güncel fiyatlar için sitelerine bakın. Fiyatları dolar cinsinden ABD liste fiyatlarıdır.",
     "rows": {
-      "openSource": "Açık kaynak çekirdek",
-      "commercialUse": "Ticari kullanım",
-      "infraControl": "Altyapı üzerinde tam denetim",
-      "dataOnHardware": "Veriler kendi donanımınızda kalır",
-      "noRecurring": "Yinelenen maliyet yok",
-      "noSetup": "Sunucu kurulumu gerekmez",
-      "managedUpdates": "Yönetilen güncellemeler",
-      "autoBackups": "Otomatik yedeklemeler",
-      "pricing": "Fiyat",
-      "exportAnytime": "Her şeyi istediğiniz zaman dışa aktarın",
-      "proFeatures": "AI asistanı, MCP, CalDAV, Telegram",
-      "startMinute": "Bir dakikada başlayın",
-      "storage": "Ek depolama alanı",
-      "support": "Destek",
-      "aiCredits": "Yapay zeka kredisi"
+      "price": "Fiyat, yıllık ödeme",
+      "aiIncluded": "Yapay zekâ dahil",
+      "dayPlanner": "Günü takvime göre planlama",
+      "habits": "Alışkanlık takibi",
+      "goals": "Hedefler, alanlar ve projeler",
+      "mcp": "Yapay zekâ ajanları için MCP sunucusu",
+      "openSource": "Açık kaynak, kendi sunucunda çalışır"
     },
     "values": {
-      "community": "Topluluk",
-      "email": "E-posta",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/ay veya {{price}}/yıl",
-      "selfCost": "Ücretsiz, ayrıca kendi barındırma maliyetiniz",
-      "yourDisk": "Kendi diskiniz",
-      "aiCredits": "Her ay {{count}} ücretsiz",
-      "ownAiKey": "Kendi sağlayıcı anahtarın"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Kendi kendine barındırma",
-    "sub": "Her iki durumda da aynı uygulama. Farklı olan, onu kimin işlettiği, ve bunun size ne kadara mal olduğu."
+      "perYear": "{{price}}/yıl",
+      "aiCredits": "Ayda {{count}} yapay zekâ kredisi",
+      "businessOnly": "Yalnızca Business planı",
+      "separateApp": "Ayrı uygulama",
+      "diy": "Kendin kur"
+    }
   },
   "waitlist": {
     "placeholder": "siz@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Sınırsız görev, proje ve not",
       "Ekler ve dosya yüklemeleri",
-      "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
+      "Ayda {{aiCredits}} yapay zekâ kredisiyle gün planlama, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
       "Günlük yedeklemeler ve yönetilen güncellemeler",
       "E-posta ile destek",
       "Her şeyi istediğiniz zaman dışa aktarın"
@@ -496,7 +476,7 @@
         "alt": "Ekleme kutusu bir cümleyi etiketli ve projeli tekrarlayan bir göreve çeviriyor"
       },
       "plan": {
-        "title": "Gününü yapay zekâyla planla",
+        "title": "Gününü yapay zekâyla planla (ya da onsuz)",
         "body": "Planlayıcı bugün nelerin sığabileceğini senin seçtiğin sırayla gösterir. Her göreve süre ver ve toplantılar arasındaki boş zamana yerleştir ya da tüm günü yapay zekâ taslaklasın.",
         "points": [
           "Sıralı öneriler: gecikenler, bugün bitecekler, sürenler, sonra diğerleri",

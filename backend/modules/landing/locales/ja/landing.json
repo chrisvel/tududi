@@ -63,16 +63,11 @@
         "body": "オープンなModel Context Protocolの上に構築。Claudeやその他のMCPクライアントで動作します。"
       }
     },
-    "configTitle": "Claude Desktopに接続する",
     "footnoteClients": "Cursor、Windsurf、Cline、その他のMCPクライアントでも同様に動作します。",
     "footnoteDocsLink": "MCPのドキュメントを読む →",
     "assistantTitle": "AIアシスタント",
     "assistantLede": "データを読み取り、平易な言葉の要約を書き戻す、独立した任意のレイヤーです。Ollamaのようなセルフホスト型を含め、OpenAI互換のあらゆるプロバイダーで動作します。",
     "assistantCards": {
-      "daily": {
-        "title": "デイリーブリーフ",
-        "body": "その日の重点タスクと、知っておくべきリスクをまとめた朝のサマリー。"
-      },
       "task": {
         "title": "タスクの分析",
         "body": "特定のタスクについて、必要なときに次の一手を提案します。"
@@ -90,9 +85,6 @@
         "body": "1日の終わりに:できたこと、気づくべき傾向、明日に回すこと。"
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "代わりにTUDUDI_URLを自分のインスタンスに向けてください。他はすべて同じです。",
-    "configSelfHostTab": "自分でホストしていますか？",
     "demo": {
       "answer1Html": "まず<strong>請求移行を公開する</strong>から始めましょう。今日が期限で、<strong>支払い</strong>の3つのタスクがその後ろで待っています。",
       "answer2Html": "完了しました。<strong>リデザイン草案のレビュー</strong>は今、金曜日が期限になりました。<strong>支払いキューのブロック解除</strong>は支払いプロジェクトにあり、今日が期限です。",
@@ -274,7 +266,7 @@
         "features": [
           "設定するサーバーなしで1分で稼働",
           "無制限のタスク、プロジェクト、ノート、さらに添付ファイル",
-          "AIによる1日の計画、MCP、カレンダーフィード、CalDAV、Telegramボット",
+          "AIによる1日の計画(毎月{{aiCredits}} AIクレジット)、MCP、カレンダーフィード、CalDAV、Telegramボット",
           "あなたの代わりに処理される更新と毎日のバックアップ、{{proStorageGb}} GBのストレージ付き",
           "いつでもすべてをエクスポート、自分でアカウントを削除"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "かんたん比較",
+    "sub": "tududi Cloudと、よく比較されるアプリを個人向けプランで比べました。",
+    "footnote": "Todoist Pro、TickTick Premium、Notion Plusは2026年9月時点の各社公開料金ページより。最新の価格は各社サイトでご確認ください。 各社の価格は米国での定価(米ドル)です。",
     "rows": {
-      "openSource": "オープンソースのコア",
-      "commercialUse": "商用利用",
-      "infraControl": "インフラの完全なコントロール",
-      "dataOnHardware": "データは自分のハードウェア上に",
-      "noRecurring": "継続的な費用なし",
-      "noSetup": "サーバー構築が不要",
-      "managedUpdates": "管理されたアップデート",
-      "autoBackups": "自動バックアップ",
-      "pricing": "料金",
-      "exportAnytime": "いつでもすべてをエクスポート",
-      "proFeatures": "AIアシスタント、MCP、CalDAV、Telegram",
-      "startMinute": "1分で始める",
-      "storage": "添付ファイルのストレージ",
-      "support": "サポート",
-      "aiCredits": "AIクレジット"
+      "price": "年額料金",
+      "aiIncluded": "AI込み",
+      "dayPlanner": "カレンダーに合わせた1日の計画",
+      "habits": "習慣トラッキング",
+      "goals": "目標、エリア、プロジェクト",
+      "mcp": "AIエージェント向けMCPサーバー",
+      "openSource": "オープンソース、自分のサーバーで動作"
     },
     "values": {
-      "community": "コミュニティ",
-      "email": "メール",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "月額{{monthly}}または年額{{price}}",
-      "selfCost": "無料、それにあなたのホスティング費用",
-      "yourDisk": "あなた自身のディスク",
-      "aiCredits": "毎月{{count}}クレジット無料",
-      "ownAiKey": "ご自身のプロバイダーキー"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "セルフホスト",
-    "sub": "どちらでも同じアプリケーションです。異なるのは誰が運用するか、そしてそれがあなたにどれだけかかるかです。"
+      "perYear": "{{price}}/年",
+      "aiCredits": "毎月{{count}} AIクレジット",
+      "businessOnly": "Businessプランのみ",
+      "separateApp": "別アプリ",
+      "diy": "自分で構築"
+    }
   },
   "waitlist": {
     "placeholder": "you@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "無制限のタスク、プロジェクト、ノート",
       "添付ファイルとファイルアップロード",
-      "AIによる1日の計画、MCP、カレンダーフィード、CalDAV、Telegramボット",
+      "AIによる1日の計画(毎月{{aiCredits}} AIクレジット)、MCP、カレンダーフィード、CalDAV、Telegramボット",
       "毎日のバックアップと管理された更新",
       "メールによるサポート",
       "いつでもすべてをエクスポート"
@@ -496,7 +476,7 @@
         "alt": "追加ボックスが一文をタグとプロジェクト付きの繰り返しタスクに変換"
       },
       "plan": {
-        "title": "AIで1日を計画",
+        "title": "AIで1日を計画(使わなくてもOK)",
         "body": "プランナーは今日こなせそうなものを、あなたが決めた順に表示します。各タスクに所要時間を付けて会議の間の空き時間に置くか、AIに1日全体の下書きを任せましょう。",
         "points": [
           "並べ替えられた候補:期限切れ、今日期限、進行中、その他",

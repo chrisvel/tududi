@@ -63,16 +63,11 @@
         "body": "Costruito sul Model Context Protocol aperto. Funziona con Claude e con gli altri client MCP."
       }
     },
-    "configTitle": "Collegalo a Claude Desktop",
     "footnoteClients": "Funziona allo stesso modo con Cursor, Windsurf, Cline e qualsiasi altro client MCP.",
     "footnoteDocsLink": "Leggi la documentazione MCP →",
     "assistantTitle": "Assistente IA",
     "assistantLede": "Uno strato separato e facoltativo che legge i tuoi dati e ti restituisce riepiloghi in linguaggio naturale. Funziona con qualsiasi provider compatibile con OpenAI, anche self-hosted come Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Riepilogo del mattino",
-        "body": "Un riepilogo mattutino con l'attività su cui concentrarti e gli eventuali segnali di rischio da tenere d'occhio."
-      },
       "task": {
         "title": "Analisi delle attività",
         "body": "Prossimi passi suggeriti per una specifica attività, generati su richiesta."
@@ -90,9 +85,6 @@
         "body": "A fine giornata: cosa è fatto, un andamento da notare e cosa portare a domani."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Punta invece TUDUDI_URL alla tua istanza. Tutto il resto è identico.",
-    "configSelfHostTab": "Lo gestisci tu stesso?",
     "demo": {
       "answer1Html": "Inizia con <strong>Pubblicare la migrazione di fatturazione</strong>. Scade oggi, e tre attività in <strong>Pagamenti</strong> aspettano dietro di essa.",
       "answer2Html": "Fatto. <strong>Rivedere la bozza del redesign</strong> ora scade venerdì, e <strong>Sbloccare la coda Pagamenti</strong> è nel progetto Pagamenti, scade oggi.",
@@ -274,7 +266,7 @@
         "features": [
           "Operativo in un minuto, senza server da configurare",
           "Attività, progetti e note illimitati, più allegati",
-          "Pianificazione con IA, MCP, calendari, CalDAV e il bot Telegram",
+          "Pianificazione con IA con {{aiCredits}} crediti IA al mese, MCP, calendari, CalDAV e il bot Telegram",
           "Aggiornamenti e backup giornalieri gestiti per te, con {{proStorageGb}} GB di spazio",
           "Esporta tutto in qualsiasi momento, elimina l'account da solo"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Confronto rapido",
+    "sub": "Come si confronta tududi Cloud con le app con cui viene più spesso paragonato, sui piani individuali.",
+    "footnote": "Todoist Pro, TickTick Premium e Notion Plus, dalle loro pagine prezzi pubbliche a settembre 2026. Controlla i loro siti per i prezzi attuali. I loro prezzi sono i listini USA in dollari.",
     "rows": {
-      "openSource": "Nucleo open source",
-      "commercialUse": "Uso commerciale",
-      "infraControl": "Controllo totale dell'infrastruttura",
-      "dataOnHardware": "I dati restano sul tuo hardware",
-      "noRecurring": "Nessun costo ricorrente",
-      "noSetup": "Nessuna configurazione del server",
-      "managedUpdates": "Aggiornamenti gestiti",
-      "autoBackups": "Backup automatici",
-      "pricing": "Prezzo",
-      "exportAnytime": "Esporta tutto in qualsiasi momento",
-      "proFeatures": "Assistente IA, MCP, CalDAV, Telegram",
-      "startMinute": "Inizia in un minuto",
-      "storage": "Spazio per gli allegati",
-      "support": "Supporto",
-      "aiCredits": "Crediti IA"
+      "price": "Prezzo, fatturazione annuale",
+      "aiIncluded": "IA inclusa",
+      "dayPlanner": "Pianifica la giornata col calendario",
+      "habits": "Monitoraggio abitudini",
+      "goals": "Obiettivi, aree e progetti",
+      "mcp": "Server MCP per agenti IA",
+      "openSource": "Open source, gira sul tuo server"
     },
     "values": {
-      "community": "Community",
-      "email": "Email",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/mese o {{price}}/anno",
-      "selfCost": "Gratis, più il tuo hosting",
-      "yourDisk": "Il tuo disco",
-      "aiCredits": "{{count}} gratis ogni mese",
-      "ownAiKey": "La tua chiave del provider"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Self-hosting",
-    "sub": "La stessa applicazione in entrambi i casi. Cambia chi la gestisce, e quanto ti costa."
+      "perYear": "{{price}}/anno",
+      "aiCredits": "{{count}} crediti IA al mese",
+      "businessOnly": "Solo piano Business",
+      "separateApp": "App separata",
+      "diy": "Da costruire da sé"
+    }
   },
   "waitlist": {
     "placeholder": "tu@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Attività, progetti e note illimitati",
       "Allegati e caricamento file",
-      "Pianificazione con IA, MCP, calendari, CalDAV e il bot Telegram",
+      "Pianificazione con IA con {{aiCredits}} crediti IA al mese, MCP, calendari, CalDAV e il bot Telegram",
       "Backup giornalieri e aggiornamenti gestiti",
       "Supporto via email",
       "Esporta tutto, in qualsiasi momento"
@@ -496,7 +476,7 @@
         "alt": "Il riquadro Aggiungi trasforma una frase in un’attività ricorrente con tag e progetto"
       },
       "plan": {
-        "title": "Pianifica la giornata, con l’IA",
+        "title": "Pianifica la giornata, con l’IA (o senza)",
         "body": "Il pianificatore mostra cosa può stare oggi, nell’ordine che scegli. Dai una durata a ogni attività e mettila nel tempo libero tra le riunioni, o lascia che l’IA prepari l’intera giornata.",
         "points": [
           "Suggerimenti ordinati: scadute, in scadenza oggi, in corso, poi il resto",

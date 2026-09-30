@@ -197,8 +197,12 @@ describe('Landing page', () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         expect(res.text).toContain('14-day money-back guarantee');
         expect(res.text).not.toContain('30-day');
-        expect(res.text).toContain('AI credits');
-        expect(res.text).toContain('50 free every month');
+        expect(res.text).toContain('50 AI credits a month');
+        const pricing = res.text.slice(
+            res.text.indexOf('id="pricing"'),
+            res.text.indexOf('class="compare')
+        );
+        expect(pricing).toContain('AI day planning with 50 AI credits a month');
     });
 
     it('walks through capture, planning and Today before the feature grid', async () => {
@@ -266,6 +270,31 @@ describe('Landing page', () => {
                 .set('Host', 'tududi.com');
             expect(res.status).toBe(200);
         }
+    });
+
+    it('compares Cloud with Todoist, TickTick and Notion, not self-hosting', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const at = res.text.indexOf('class="compare compare-vendors"');
+        expect(at).toBeGreaterThan(-1);
+        const table = res.text.slice(
+            at,
+            res.text.indexOf('compare-footnote', at)
+        );
+        [
+            'tududi Cloud',
+            'Todoist Pro',
+            'TickTick Premium',
+            'Notion Plus',
+        ].forEach((vendor) => expect(table).toContain(vendor));
+        expect(table).not.toContain('Self-host');
+        expect(res.text).toContain('from their public pricing pages');
+    });
+
+    it('shows no MCP config code and no Daily Brief', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('mcpServers');
+        expect(res.text).not.toContain('claude_desktop_config.json');
+        expect(res.text).not.toContain('Daily Brief');
     });
 
     it('keeps the footer brand free of open source wording', async () => {

@@ -111,7 +111,7 @@
                         <div class="plan-price-note"><%= t('cloud.priceNote') %></div>
                     </div>
                     <ul class="plan-features">
-                        <% i18n.tList('cloud.includes').forEach(function (feature) { %>
+                        <% i18n.tList('cloud.includes', { aiCredits: plans.aiCredits }).forEach(function (feature) { %>
                         <li><i class="fas fa-check"></i><%= feature %></li>
                         <% }); %>
                     </ul>

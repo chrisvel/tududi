@@ -92,17 +92,12 @@
         "body": "Built on the open Model Context Protocol. Works with Claude and other MCP clients."
       }
     },
-    "configTitle": "Connect it to Claude Desktop",
     "footnoteClients": "The same works with Cursor, Windsurf, Cline, and any other MCP client.",
     "footnoteDocsLink": "Read the MCP docs →",
     "footnoteIncluded": "MCP comes with tududi Cloud, and with every self-hosted instance.",
     "assistantTitle": "AI Assistant",
     "assistantLede": "A separate, optional layer that reads your data and writes back plain-language summaries. Works with any OpenAI-compatible provider, including self-hosted ones like Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Daily Brief",
-        "body": "A morning summary with your focus task and any risk flags worth knowing about."
-      },
       "task": {
         "title": "Task Insights",
         "body": "Suggested next steps for a specific task, generated on demand."
@@ -119,10 +114,7 @@
         "title": "Day wrap-up",
         "body": "At the end of the day: what got done, a pattern worth noticing, and what to carry into tomorrow."
       }
-    },
-    "configCloudTab": "Cloud",
-    "configSelfHostTab": "Running it yourself?",
-    "configSelfHostNote": "Point TUDUDI_URL at your own instance instead. Everything else is identical."
+    }
   },
   "features": {
     "eyebrow": "Features",
@@ -275,7 +267,7 @@
         "features": [
           "Running in a minute, with no server to set up",
           "Unlimited tasks, projects and notes, plus attachments",
-          "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
+          "AI day planning with {{aiCredits}} AI credits a month, MCP, calendar feeds, CalDAV and the Telegram bot",
           "Updates and daily backups handled for you, with {{proStorageGb}} GB of storage",
           "Export everything any time, delete your account yourself"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Quick Comparison",
-    "sub": "The same application either way. What differs is who runs it, and what that costs you.",
-    "colSelf": "Self-host",
+    "sub": "How tududi Cloud compares with the apps people usually weigh it against, on their individual plans.",
+    "footnote": "Todoist Pro, TickTick Premium and Notion Plus, from their public pricing pages in September 2026. Check their sites for current prices. Their prices are US list prices in dollars.",
     "rows": {
-      "openSource": "Open source core",
-      "commercialUse": "Commercial use",
-      "infraControl": "Full infrastructure control",
-      "dataOnHardware": "Data stays on your hardware",
-      "noRecurring": "No recurring cost",
-      "noSetup": "No server setup required",
-      "managedUpdates": "Managed updates",
-      "autoBackups": "Automatic backups",
-      "pricing": "Pricing",
-      "startMinute": "Start in a minute",
-      "exportAnytime": "Export everything any time",
-      "proFeatures": "AI Assistant, MCP, CalDAV, Telegram",
-      "storage": "Attachment storage",
-      "support": "Support",
-      "aiCredits": "AI credits"
+      "price": "Price, billed yearly",
+      "aiIncluded": "AI included",
+      "dayPlanner": "Plan your day around your calendar",
+      "habits": "Habit tracking",
+      "goals": "Goals, areas and projects",
+      "mcp": "MCP server for AI agents",
+      "openSource": "Open source, runs on your own server"
     },
     "values": {
-      "community": "Community",
-      "email": "Email",
-      "gigabytes": "{{count}} GB",
-      "yourDisk": "Your own disk",
-      "perMonthOrYear": "{{monthly}}/mo or {{price}}/yr",
-      "selfCost": "Free, plus your hosting",
-      "aiCredits": "{{count}} free every month",
-      "ownAiKey": "Your own provider key"
-    },
-    "colCloud": "tududi Cloud"
+      "perYear": "{{price}}/yr",
+      "aiCredits": "{{count}} AI credits a month",
+      "businessOnly": "Business plan only",
+      "separateApp": "Separate app",
+      "diy": "Build it yourself"
+    }
   },
   "faq": {
     "eyebrow": "FAQ",
@@ -454,7 +434,7 @@
     "includes": [
       "Unlimited tasks, projects and notes",
       "Attachments and file uploads",
-      "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
+      "AI day planning with {{aiCredits}} AI credits a month, MCP, calendar feeds, CalDAV and the Telegram bot",
       "Daily backups and managed updates",
       "Support by email",
       "Export everything at any time"
@@ -496,7 +476,7 @@
         "alt": "The Add box turning a sentence into a recurring task with a tag and a project"
       },
       "plan": {
-        "title": "Plan my day, with AI",
+        "title": "Plan my day, with AI (or not)",
         "body": "The planner shows what could fit today, in the order you choose. Give each task a length and place it in the free time between meetings, or let AI draft the whole day.",
         "points": [
           "Ranked suggestions: overdue, due today, in progress, then the rest",

@@ -63,16 +63,11 @@
         "body": "Basiert auf dem offenen Model Context Protocol. Funktioniert mit Claude und anderen MCP-Clients."
       }
     },
-    "configTitle": "Mit Claude Desktop verbinden",
     "footnoteClients": "Genauso funktioniert es mit Cursor, Windsurf, Cline und jedem anderen MCP-Client.",
     "footnoteDocsLink": "MCP-Doku lesen →",
     "assistantTitle": "KI-Assistent",
     "assistantLede": "Eine separate, optionale Schicht, die deine Daten liest und Zusammenfassungen in verständlicher Sprache zurückschreibt. Funktioniert mit jedem OpenAI-kompatiblen Anbieter, auch selbstgehostet wie Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Tagesbriefing",
-        "body": "Eine Zusammenfassung am Morgen mit deiner wichtigsten Aufgabe und allen Warnsignalen, die du kennen solltest."
-      },
       "task": {
         "title": "Aufgaben-Analyse",
         "body": "Vorgeschlagene nächste Schritte für eine bestimmte Aufgabe, auf Abruf erzeugt."
@@ -90,9 +85,6 @@
         "body": "Am Ende des Tages: was erledigt ist, ein Muster, das auffällt, und was in den nächsten Tag geht."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Zeige TUDUDI_URL stattdessen auf deine eigene Instanz. Alles andere ist identisch.",
-    "configSelfHostTab": "Betreibst du es selbst?",
     "demo": {
       "answer1Html": "Beginne mit <strong>Billing-Migration veröffentlichen</strong>. Sie ist heute fällig, und drei Aufgaben in <strong>Zahlungen</strong> warten dahinter.",
       "answer2Html": "Erledigt. <strong>Redesign-Entwurf prüfen</strong> ist jetzt bis Freitag fällig, und <strong>Payments-Warteschlange freigeben</strong> liegt im Projekt Zahlungen und ist heute fällig.",
@@ -274,7 +266,7 @@
         "features": [
           "In einer Minute startklar, ohne Server einzurichten",
           "Unbegrenzte Aufgaben, Projekte und Notizen, plus Anhänge",
-          "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
+          "KI-Tagesplanung mit {{aiCredits}} KI-Credits pro Monat, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
           "Updates und tägliche Backups für dich erledigt, mit {{proStorageGb}} GB Speicher",
           "Exportiere jederzeit alles, lösche dein Konto selbst"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Kurzer Vergleich",
+    "sub": "So schlägt sich tududi Cloud gegen die Apps, mit denen es meist verglichen wird, jeweils im Einzeltarif.",
+    "footnote": "Todoist Pro, TickTick Premium und Notion Plus, laut ihren öffentlichen Preisseiten im September 2026. Aktuelle Preise auf deren Websites prüfen. Ihre Preise sind US-Listenpreise in Dollar.",
     "rows": {
-      "openSource": "Open-Source-Kern",
-      "commercialUse": "Kommerzielle Nutzung",
-      "infraControl": "Volle Kontrolle über die Infrastruktur",
-      "dataOnHardware": "Daten bleiben auf deiner Hardware",
-      "noRecurring": "Keine laufenden Kosten",
-      "noSetup": "Keine Servereinrichtung nötig",
-      "managedUpdates": "Verwaltete Updates",
-      "autoBackups": "Automatische Backups",
-      "pricing": "Preis",
-      "exportAnytime": "Exportiere jederzeit alles",
-      "proFeatures": "KI-Assistent, MCP, CalDAV, Telegram",
-      "startMinute": "Starte in einer Minute",
-      "storage": "Anhang-Speicher",
-      "support": "Support",
-      "aiCredits": "KI-Guthaben"
+      "price": "Preis, jährlich",
+      "aiIncluded": "KI inklusive",
+      "dayPlanner": "Tag rund um den Kalender planen",
+      "habits": "Gewohnheiten",
+      "goals": "Ziele, Bereiche und Projekte",
+      "mcp": "MCP-Server für KI-Agenten",
+      "openSource": "Open Source, läuft auf eigenem Server"
     },
     "values": {
-      "community": "Community",
-      "email": "E-Mail",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/Monat oder {{price}}/Jahr",
-      "selfCost": "Kostenlos, plus dein Hosting",
-      "yourDisk": "Deine eigene Festplatte",
-      "aiCredits": "{{count}} kostenlos jeden Monat",
-      "ownAiKey": "Dein eigener Anbieter-Schlüssel"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Self-Hosting",
-    "sub": "Dieselbe Anwendung in beiden Fällen. Was sich unterscheidet, ist, wer sie betreibt, und was dich das kostet."
+      "perYear": "{{price}}/Jahr",
+      "aiCredits": "{{count}} KI-Credits pro Monat",
+      "businessOnly": "Nur im Business-Tarif",
+      "separateApp": "Separate App",
+      "diy": "Selbst bauen"
+    }
   },
   "waitlist": {
     "placeholder": "du@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Unbegrenzte Aufgaben, Projekte und Notizen",
       "Anhänge und Datei-Uploads",
-      "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
+      "KI-Tagesplanung mit {{aiCredits}} KI-Credits pro Monat, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
       "Tägliche Backups und verwaltete Updates",
       "Support per E-Mail",
       "Exportiere jederzeit alles"
@@ -496,7 +476,7 @@
         "alt": "Das Hinzufügen-Feld macht aus einem Satz eine wiederkehrende Aufgabe mit Tag und Projekt"
       },
       "plan": {
-        "title": "Tag planen, mit KI",
+        "title": "Tag planen, mit KI (oder ohne)",
         "body": "Der Planer zeigt, was heute passen könnte, in deiner Reihenfolge. Gib jeder Aufgabe eine Dauer und leg sie in die freie Zeit zwischen Terminen, oder lass die KI den ganzen Tag entwerfen.",
         "points": [
           "Sortierte Vorschläge: überfällig, heute fällig, in Arbeit, dann der Rest",

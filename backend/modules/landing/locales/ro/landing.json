@@ -63,16 +63,11 @@
         "body": "Construit pe Model Context Protocol, deschis. Funcționează cu Claude și cu alți clienți MCP."
       }
     },
-    "configTitle": "Conectează-l la Claude Desktop",
     "footnoteClients": "La fel funcționează cu Cursor, Windsurf, Cline și orice alt client MCP.",
     "footnoteDocsLink": "Citește documentația MCP →",
     "assistantTitle": "Asistent IA",
     "assistantLede": "Un strat separat și opțional care îți citește datele și îți întoarce rezumate în limbaj obișnuit. Funcționează cu orice furnizor compatibil OpenAI, inclusiv găzduit de tine, precum Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Rezumatul dimineții",
-        "body": "Un rezumat matinal cu sarcina ta principală și semnalele de risc pe care merită să le știi."
-      },
       "task": {
         "title": "Analiza sarcinii",
         "body": "Pași următori sugerați pentru o anumită sarcină, generați la cerere."
@@ -90,9 +85,6 @@
         "body": "La final de zi: ce s-a făcut, un tipar de reținut și ce trece pe mâine."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Îndreaptă TUDUDI_URL către propria ta instanță în schimb. Restul este identic.",
-    "configSelfHostTab": "Îl găzduiești tu însuți?",
     "demo": {
       "answer1Html": "Începe cu <strong>Publică migrarea de facturare</strong>. Este scadentă azi, iar trei sarcini din <strong>Plăți</strong> așteaptă în urma ei.",
       "answer2Html": "Făcut. <strong>Revizuiește schița de redesign</strong> este acum scadentă vineri, iar <strong>Deblochează coada Plăți</strong> se află în proiectul Plăți, scadentă azi.",
@@ -274,7 +266,7 @@
         "features": [
           "Funcțional într-un minut, fără server de configurat",
           "Sarcini, proiecte și notițe nelimitate, plus atașamente",
-          "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
+          "Planificarea zilei cu AI cu {{aiCredits}} credite AI pe lună, MCP, calendare, CalDAV și botul Telegram",
           "Actualizări și backupuri zilnice gestionate pentru tine, cu {{proStorageGb}} GB de spațiu",
           "Exportă totul oricând, șterge-ți contul singur"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Comparație rapidă",
+    "sub": "Cum se compară tududi Cloud cu aplicațiile cu care este comparat cel mai des, pe planurile individuale.",
+    "footnote": "Todoist Pro, TickTick Premium și Notion Plus, din paginile lor publice de prețuri în septembrie 2026. Verifică site-urile lor pentru prețurile actuale. Prețurile lor sunt prețurile de listă din SUA, în dolari.",
     "rows": {
-      "openSource": "Nucleu cu sursă deschisă",
-      "commercialUse": "Uz comercial",
-      "infraControl": "Control deplin asupra infrastructurii",
-      "dataOnHardware": "Datele rămân pe hardware-ul tău",
-      "noRecurring": "Fără cost recurent",
-      "noSetup": "Fără configurare de server",
-      "managedUpdates": "Actualizări administrate",
-      "autoBackups": "Copii de siguranță automate",
-      "pricing": "Preț",
-      "exportAnytime": "Exportă totul oricând",
-      "proFeatures": "Asistent AI, MCP, CalDAV, Telegram",
-      "startMinute": "Începe într-un minut",
-      "storage": "Spațiu pentru atașamente",
-      "support": "Suport",
-      "aiCredits": "Credite AI"
+      "price": "Preț, facturare anuală",
+      "aiIncluded": "AI inclus",
+      "dayPlanner": "Planifică ziua după calendar",
+      "habits": "Urmărirea obiceiurilor",
+      "goals": "Obiective, arii și proiecte",
+      "mcp": "Server MCP pentru agenți AI",
+      "openSource": "Open source, rulează pe serverul tău"
     },
     "values": {
-      "community": "Comunitate",
-      "email": "E-mail",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/lună sau {{price}}/an",
-      "selfCost": "Gratuit, plus găzduirea ta",
-      "yourDisk": "Propriul tău disc",
-      "aiCredits": "{{count}} gratuite în fiecare lună",
-      "ownAiKey": "Propria cheie de furnizor"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Auto-hostare",
-    "sub": "Aceeași aplicație în ambele cazuri. Ce diferă este cine o administrează, și cât te costă asta."
+      "perYear": "{{price}}/an",
+      "aiCredits": "{{count}} credite AI pe lună",
+      "businessOnly": "Doar planul Business",
+      "separateApp": "Aplicație separată",
+      "diy": "Construiești singur"
+    }
   },
   "waitlist": {
     "placeholder": "tu@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Sarcini, proiecte și notițe nelimitate",
       "Atașamente și încărcare de fișiere",
-      "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
+      "Planificarea zilei cu AI cu {{aiCredits}} credite AI pe lună, MCP, calendare, CalDAV și botul Telegram",
       "Backupuri zilnice și actualizări administrate",
       "Suport prin e-mail",
       "Exportă totul, oricând"
@@ -496,7 +476,7 @@
         "alt": "Caseta de adăugare transformă o frază într-o sarcină recurentă cu etichetă și proiect"
       },
       "plan": {
-        "title": "Planifică-ți ziua, cu AI",
+        "title": "Planifică-ți ziua, cu AI (sau fără)",
         "body": "Planificatorul arată ce încape azi, în ordinea aleasă de tine. Dă fiecărei sarcini o durată și pune-o în timpul liber dintre întâlniri sau lasă AI să schițeze toată ziua.",
         "points": [
           "Sugestii ordonate: întârziate, scadente azi, în lucru, apoi restul",

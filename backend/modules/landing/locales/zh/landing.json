@@ -63,16 +63,11 @@
         "body": "基于开放的 Model Context Protocol 构建，可配合 Claude 及其他 MCP 客户端使用。"
       }
     },
-    "configTitle": "接入 Claude Desktop",
     "footnoteClients": "Cursor、Windsurf、Cline 以及其他任何 MCP 客户端都同样适用。",
     "footnoteDocsLink": "阅读 MCP 文档 →",
     "assistantTitle": "AI 助手",
     "assistantLede": "一层独立且可选的能力，读取你的数据并用平实的语言写回摘要。支持任何兼容 OpenAI 的服务商，也包括 Ollama 这类自托管方案。",
     "assistantCards": {
-      "daily": {
-        "title": "每日简报",
-        "body": "早晨的一份摘要，列出你的重点任务和值得留意的风险提示。"
-      },
       "task": {
         "title": "任务洞察",
         "body": "针对某个具体任务，按需生成建议的下一步。"
@@ -90,9 +85,6 @@
         "body": "一天结束时：完成了什么、值得注意的规律，以及要带到明天的事。"
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "改为将 TUDUDI_URL 指向您自己的实例。其他一切都相同。",
-    "configSelfHostTab": "您自己托管吗？",
     "demo": {
       "answer1Html": "从<strong>发布账单迁移</strong>开始。它今天到期，<strong>付款</strong>中还有三项任务排在它后面。",
       "answer2Html": "完成了。<strong>审查重新设计草稿</strong>现在的到期日是星期五，<strong>解除付款队列的阻塞</strong>在付款项目中，今天到期。",
@@ -274,7 +266,7 @@
         "features": [
           "一分钟内运行起来，无需搭建服务器",
           "无限任务、项目和笔记，加上附件",
-          "AI 每日规划、MCP、日历订阅、CalDAV 和 Telegram 机器人",
+          "AI 每日规划，每月 {{aiCredits}} 个 AI 额度，MCP、日历订阅、CalDAV 和 Telegram 机器人",
           "为您处理的更新和每日备份，附带 {{proStorageGb}} GB 存储空间",
           "随时导出所有内容，自行删除您的账户"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "快速对比",
+    "sub": "tududi Cloud 与最常被拿来比较的应用在个人方案上的对比。",
+    "footnote": "Todoist Pro、TickTick Premium 和 Notion Plus 的信息来自其 2026 年 9 月的公开价格页。当前价格请以各自网站为准。 其价格为美国标价（美元）。",
     "rows": {
-      "openSource": "开源内核",
-      "commercialUse": "商业使用",
-      "infraControl": "完全掌控基础设施",
-      "dataOnHardware": "数据留在你自己的硬件上",
-      "noRecurring": "无持续费用",
-      "noSetup": "无需搭建服务器",
-      "managedUpdates": "托管式更新",
-      "autoBackups": "自动备份",
-      "pricing": "价格",
-      "exportAnytime": "随时导出所有内容",
-      "proFeatures": "AI 助手、MCP、CalDAV、Telegram",
-      "startMinute": "一分钟内开始",
-      "storage": "附件存储",
-      "support": "支持",
-      "aiCredits": "AI 额度"
+      "price": "年付价格",
+      "aiIncluded": "包含 AI",
+      "dayPlanner": "围绕日历规划一天",
+      "habits": "习惯追踪",
+      "goals": "目标、领域和项目",
+      "mcp": "面向 AI 代理的 MCP 服务器",
+      "openSource": "开源，可在自己的服务器上运行"
     },
     "values": {
-      "community": "社区",
-      "email": "邮件",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "每月 {{monthly}} 或每年 {{price}}",
-      "selfCost": "免费，加上您的托管费用",
-      "yourDisk": "您自己的磁盘",
-      "aiCredits": "每月免费 {{count}} 个",
-      "ownAiKey": "您自己的服务商密钥"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "自托管",
-    "sub": "无论哪种方式都是同一个应用程序。不同的是谁来运营它，以及这会花费您多少。"
+      "perYear": "{{price}}/年",
+      "aiCredits": "每月 {{count}} 个 AI 额度",
+      "businessOnly": "仅 Business 方案",
+      "separateApp": "独立应用",
+      "diy": "需自行搭建"
+    }
   },
   "waitlist": {
     "placeholder": "you@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "无限任务、项目和笔记",
       "附件和文件上传",
-      "AI 每日规划、MCP、日历订阅、CalDAV 和 Telegram 机器人",
+      "AI 每日规划，每月 {{aiCredits}} 个 AI 额度，MCP、日历订阅、CalDAV 和 Telegram 机器人",
       "每日备份和托管更新",
       "电子邮件支持",
       "随时导出所有内容"
@@ -496,7 +476,7 @@
         "alt": "添加框把一句话变成带标签和项目的重复任务"
       },
       "plan": {
-        "title": "用 AI 规划一天",
+        "title": "用 AI 规划一天(也可以不用)",
         "body": "规划器按你选择的顺序显示今天可以做的事。给每个任务设定时长，放进会议之间的空闲时间，或让 AI 起草一整天。",
         "points": [
           "排序建议：已逾期、今天到期、进行中，然后是其他",

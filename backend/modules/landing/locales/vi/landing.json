@@ -63,16 +63,11 @@
         "body": "Xây trên Model Context Protocol mở. Hoạt động với Claude và các máy khách MCP khác."
       }
     },
-    "configTitle": "Kết nối với Claude Desktop",
     "footnoteClients": "Cách làm tương tự áp dụng cho Cursor, Windsurf, Cline và mọi máy khách MCP khác.",
     "footnoteDocsLink": "Đọc tài liệu MCP →",
     "assistantTitle": "Trợ lý AI",
     "assistantLede": "Một lớp riêng biệt và tùy chọn, đọc dữ liệu của bạn rồi trả lại các bản tóm tắt bằng ngôn ngữ dễ hiểu. Hoạt động với mọi nhà cung cấp tương thích OpenAI, kể cả loại bạn tự vận hành như Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Bản tin buổi sáng",
-        "body": "Bản tóm tắt buổi sáng với công việc trọng tâm và những dấu hiệu rủi ro đáng lưu ý."
-      },
       "task": {
         "title": "Phân tích công việc",
         "body": "Gợi ý các bước tiếp theo cho một công việc cụ thể, tạo ra khi bạn cần."
@@ -90,9 +85,6 @@
         "body": "Cuối ngày: những gì đã xong, một khuôn mẫu đáng chú ý và việc cần chuyển sang ngày mai."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Hãy hướng TUDUDI_URL đến phiên bản riêng của bạn thay vào đó. Mọi thứ khác đều giống nhau.",
-    "configSelfHostTab": "Bạn tự lưu trữ chứ?",
     "demo": {
       "answer1Html": "Hãy bắt đầu với <strong>Phát hành migration hóa đơn</strong>. Nó hết hạn hôm nay, và ba nhiệm vụ trong <strong>Thanh toán</strong> đang chờ sau nó.",
       "answer2Html": "Xong. <strong>Xem lại bản thiết kế lại</strong> giờ hết hạn vào thứ Sáu, và <strong>Bỏ chặn hàng đợi Thanh toán</strong> nằm trong dự án Thanh toán, hết hạn hôm nay.",
@@ -274,7 +266,7 @@
         "features": [
           "Hoạt động trong một phút, không cần máy chủ để thiết lập",
           "Nhiệm vụ, dự án và ghi chú không giới hạn, cộng với tệp đính kèm",
-          "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
+          "Lập kế hoạch ngày bằng AI với {{aiCredits}} tín dụng AI mỗi tháng, MCP, lịch, CalDAV và bot Telegram",
           "Các bản cập nhật và sao lưu hàng ngày được xử lý cho bạn, với {{proStorageGb}} GB dung lượng lưu trữ",
           "Xuất mọi thứ bất cứ lúc nào, tự xóa tài khoản của mình"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "So sánh nhanh",
+    "sub": "tududi Cloud so với các ứng dụng thường được đem ra so sánh nhất, ở gói cá nhân của họ.",
+    "footnote": "Todoist Pro, TickTick Premium và Notion Plus, theo trang giá công khai của họ vào tháng 9/2026. Hãy xem trang của họ để biết giá hiện tại. Giá của họ là giá niêm yết tại Mỹ, tính bằng đô la.",
     "rows": {
-      "openSource": "Lõi mã nguồn mở",
-      "commercialUse": "Sử dụng thương mại",
-      "infraControl": "Toàn quyền kiểm soát hạ tầng",
-      "dataOnHardware": "Dữ liệu nằm trên phần cứng của bạn",
-      "noRecurring": "Không có chi phí định kỳ",
-      "noSetup": "Không cần dựng máy chủ",
-      "managedUpdates": "Cập nhật được quản lý",
-      "autoBackups": "Sao lưu tự động",
-      "pricing": "Giá",
-      "exportAnytime": "Xuất mọi thứ bất cứ lúc nào",
-      "proFeatures": "Trợ lý AI, MCP, CalDAV, Telegram",
-      "startMinute": "Bắt đầu trong một phút",
-      "storage": "Dung lượng lưu trữ tệp đính kèm",
-      "support": "Hỗ trợ",
-      "aiCredits": "Tín dụng AI"
+      "price": "Giá, trả theo năm",
+      "aiIncluded": "Có sẵn AI",
+      "dayPlanner": "Lên kế hoạch ngày theo lịch",
+      "habits": "Theo dõi thói quen",
+      "goals": "Mục tiêu, lĩnh vực và dự án",
+      "mcp": "Máy chủ MCP cho tác tử AI",
+      "openSource": "Mã nguồn mở, chạy trên máy chủ riêng"
     },
     "values": {
-      "community": "Cộng đồng",
-      "email": "Email",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/tháng hoặc {{price}}/năm",
-      "selfCost": "Miễn phí, cộng với chi phí lưu trữ của bạn",
-      "yourDisk": "Ổ đĩa riêng của bạn",
-      "aiCredits": "{{count}} miễn phí mỗi tháng",
-      "ownAiKey": "Khóa nhà cung cấp của riêng bạn"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Tự lưu trữ",
-    "sub": "Cùng một ứng dụng trong cả hai trường hợp. Điều khác biệt là ai điều hành nó, và nó khiến bạn phải trả bao nhiêu."
+      "perYear": "{{price}}/năm",
+      "aiCredits": "{{count}} tín dụng AI mỗi tháng",
+      "businessOnly": "Chỉ gói Business",
+      "separateApp": "Ứng dụng riêng",
+      "diy": "Tự dựng"
+    }
   },
   "waitlist": {
     "placeholder": "ban@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Nhiệm vụ, dự án và ghi chú không giới hạn",
       "Tệp đính kèm và tải lên tệp",
-      "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
+      "Lập kế hoạch ngày bằng AI với {{aiCredits}} tín dụng AI mỗi tháng, MCP, lịch, CalDAV và bot Telegram",
       "Sao lưu hàng ngày và cập nhật được quản lý",
       "Hỗ trợ qua email",
       "Xuất mọi thứ, bất cứ lúc nào"
@@ -496,7 +476,7 @@
         "alt": "Ô Thêm biến một câu thành công việc lặp lại có thẻ và dự án"
       },
       "plan": {
-        "title": "Lên kế hoạch ngày với AI",
+        "title": "Lên kế hoạch ngày với AI (hoặc không)",
         "body": "Trình lập kế hoạch cho thấy những gì vừa với hôm nay, theo thứ tự bạn chọn. Đặt thời lượng cho từng việc và xếp vào thời gian trống giữa các cuộc họp, hoặc để AI soạn cả ngày.",
         "points": [
           "Gợi ý theo thứ tự: quá hạn, đến hạn hôm nay, đang làm, rồi phần còn lại",

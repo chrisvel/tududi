@@ -63,16 +63,11 @@
         "body": "Dibangun di atas Model Context Protocol yang terbuka. Bekerja dengan Claude dan klien MCP lainnya."
       }
     },
-    "configTitle": "Hubungkan ke Claude Desktop",
     "footnoteClients": "Hal yang sama berlaku untuk Cursor, Windsurf, Cline, dan klien MCP lainnya.",
     "footnoteDocsLink": "Baca dokumentasi MCP →",
     "assistantTitle": "Asisten AI",
     "assistantLede": "Lapisan terpisah dan opsional yang membaca data Anda lalu mengembalikan ringkasan dalam bahasa sehari-hari. Bekerja dengan penyedia apa pun yang kompatibel dengan OpenAI, termasuk yang Anda hosting sendiri seperti Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Ringkasan harian",
-        "body": "Rangkuman pagi berisi tugas utama Anda dan tanda risiko yang perlu diketahui."
-      },
       "task": {
         "title": "Wawasan tugas",
         "body": "Saran langkah berikutnya untuk suatu tugas, dibuat saat Anda meminta."
@@ -90,9 +85,6 @@
         "body": "Di akhir hari: apa yang selesai, pola yang patut dicatat, dan apa yang dibawa ke besok."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Arahkan TUDUDI_URL ke instans Anda sendiri sebagai gantinya. Semua yang lain identik.",
-    "configSelfHostTab": "Anda menghostingnya sendiri?",
     "demo": {
       "answer1Html": "Mulailah dengan <strong>Rilis migrasi penagihan</strong>. Ini jatuh tempo hari ini, dan tiga tugas di <strong>Pembayaran</strong> menunggu di belakangnya.",
       "answer2Html": "Selesai. <strong>Tinjau draf desain ulang</strong> sekarang jatuh tempo Jumat, dan <strong>Buka blokir antrean Pembayaran</strong> ada di proyek Pembayaran, jatuh tempo hari ini.",
@@ -274,7 +266,7 @@
         "features": [
           "Berjalan dalam satu menit, tanpa server yang perlu disiapkan",
           "Tugas, proyek, dan catatan tak terbatas, plus lampiran",
-          "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
+          "Perencanaan hari dengan AI dan {{aiCredits}} kredit AI per bulan, MCP, kalender, CalDAV, dan bot Telegram",
           "Pembaruan dan cadangan harian yang diurus untuk Anda, dengan {{proStorageGb}} GB penyimpanan",
           "Ekspor semuanya kapan saja, hapus akun Anda sendiri"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Perbandingan singkat",
+    "sub": "Perbandingan tududi Cloud dengan aplikasi yang paling sering dibandingkan, pada paket individunya.",
+    "footnote": "Todoist Pro, TickTick Premium, dan Notion Plus, dari halaman harga publik mereka pada September 2026. Cek situs mereka untuk harga terbaru. Harga mereka adalah harga daftar AS dalam dolar.",
     "rows": {
-      "openSource": "Inti sumber terbuka",
-      "commercialUse": "Penggunaan komersial",
-      "infraControl": "Kendali penuh atas infrastruktur",
-      "dataOnHardware": "Data tetap di perangkat keras Anda",
-      "noRecurring": "Tanpa biaya berulang",
-      "noSetup": "Tanpa perlu menyiapkan server",
-      "managedUpdates": "Pembaruan terkelola",
-      "autoBackups": "Pencadangan otomatis",
-      "pricing": "Harga",
-      "exportAnytime": "Ekspor semuanya kapan saja",
-      "proFeatures": "Asisten AI, MCP, CalDAV, Telegram",
-      "startMinute": "Mulai dalam satu menit",
-      "storage": "Penyimpanan lampiran",
-      "support": "Dukungan",
-      "aiCredits": "Kredit AI"
+      "price": "Harga, tagihan tahunan",
+      "aiIncluded": "AI termasuk",
+      "dayPlanner": "Rencanakan hari sesuai kalender",
+      "habits": "Pelacakan kebiasaan",
+      "goals": "Tujuan, area, dan proyek",
+      "mcp": "Server MCP untuk agen AI",
+      "openSource": "Sumber terbuka, jalan di server sendiri"
     },
     "values": {
-      "community": "Komunitas",
-      "email": "Email",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/bln atau {{price}}/thn",
-      "selfCost": "Gratis, ditambah hosting Anda",
-      "yourDisk": "Disk Anda sendiri",
-      "aiCredits": "{{count}} gratis setiap bulan",
-      "ownAiKey": "Kunci penyedia Anda sendiri"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Hosting sendiri",
-    "sub": "Aplikasi yang sama pada kedua kasus. Yang berbeda adalah siapa yang menjalankannya, dan berapa biayanya bagi Anda."
+      "perYear": "{{price}}/thn",
+      "aiCredits": "{{count}} kredit AI per bulan",
+      "businessOnly": "Hanya paket Business",
+      "separateApp": "Aplikasi terpisah",
+      "diy": "Bangun sendiri"
+    }
   },
   "waitlist": {
     "placeholder": "kamu@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Tugas, proyek, dan catatan tak terbatas",
       "Lampiran dan unggahan file",
-      "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
+      "Perencanaan hari dengan AI dan {{aiCredits}} kredit AI per bulan, MCP, kalender, CalDAV, dan bot Telegram",
       "Cadangan harian dan pembaruan yang dikelola",
       "Dukungan melalui email",
       "Ekspor semuanya, kapan saja"
@@ -496,7 +476,7 @@
         "alt": "Kotak Tambah mengubah kalimat menjadi tugas berulang dengan tag dan proyek"
       },
       "plan": {
-        "title": "Rencanakan harimu dengan AI",
+        "title": "Rencanakan harimu dengan AI (atau tanpa)",
         "body": "Perencana menampilkan apa yang muat hari ini, sesuai urutan pilihan Anda. Beri durasi tiap tugas dan taruh di waktu luang di antara rapat, atau biarkan AI menyusun seluruh hari.",
         "points": [
           "Saran berurutan: terlambat, jatuh tempo hari ini, sedang berjalan, lalu sisanya",

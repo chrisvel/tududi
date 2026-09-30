@@ -63,16 +63,11 @@
         "body": "Bygget på det åpne Model Context Protocol. Fungerer med Claude og andre MCP-klienter."
       }
     },
-    "configTitle": "Koble det til Claude Desktop",
     "footnoteClients": "Det samme fungerer med Cursor, Windsurf, Cline og alle andre MCP-klienter.",
     "footnoteDocsLink": "Les MCP-dokumentasjonen →",
     "assistantTitle": "KI-assistent",
     "assistantLede": "Et separat, valgfritt lag som leser dataene dine og skriver tilbake oppsummeringer i klarspråk. Fungerer med enhver OpenAI-kompatibel leverandør, også selvhostede som Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Morgenbrief",
-        "body": "En oppsummering om morgenen med den viktigste oppgaven din og eventuelle faresignaler verdt å kjenne til."
-      },
       "task": {
         "title": "Oppgaveinnsikt",
         "body": "Forslag til neste steg for en bestemt oppgave, generert når du ber om det."
@@ -90,9 +85,6 @@
         "body": "På slutten av dagen: hva som ble gjort, et mønster verdt å merke seg, og hva som skal med til i morgen."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Pek TUDUDI_URL mot din egen instans i stedet. Alt annet er identisk.",
-    "configSelfHostTab": "Driver du det selv?",
     "demo": {
       "answer1Html": "Begynn med <strong>Publiser fakturamigreringen</strong>. Den forfaller i dag, og tre oppgaver i <strong>Betalinger</strong> venter bak den.",
       "answer2Html": "Gjort. <strong>Se gjennom redesign-utkast</strong> forfaller nå fredag, og <strong>Fjern blokkering av Betalinger-køen</strong> ligger i prosjektet Betalinger, forfaller i dag.",
@@ -274,7 +266,7 @@
         "features": [
           "I gang på ett minutt, uten server å sette opp",
           "Ubegrenset med oppgaver, prosjekter og notater, pluss vedlegg",
-          "Dagsplanlegging med AI, MCP, kalenderfeeder, CalDAV og Telegram-boten",
+          "Dagsplanlegging med AI med {{aiCredits}} AI-kreditter i måneden, MCP, kalenderfeeder, CalDAV og Telegram-boten",
           "Oppdateringer og daglige sikkerhetskopier tatt hånd om for deg, med {{proStorageGb}} GB lagring",
           "Eksporter alt når som helst, slett kontoen din selv"
         ],
@@ -287,36 +279,24 @@
   },
   "compare": {
     "title": "Rask sammenligning",
+    "sub": "Slik står tududi Cloud seg mot appene den oftest sammenlignes med, på deres personlige abonnementer.",
+    "footnote": "Todoist Pro, TickTick Premium og Notion Plus, fra deres offentlige prissider i september 2026. Sjekk nettsidene deres for gjeldende priser. Prisene deres er amerikanske listepriser i dollar.",
     "rows": {
-      "openSource": "Kjerne med åpen kildekode",
-      "commercialUse": "Kommersiell bruk",
-      "infraControl": "Full kontroll over infrastrukturen",
-      "dataOnHardware": "Dataene blir på din egen maskinvare",
-      "noRecurring": "Ingen løpende kostnad",
-      "noSetup": "Ingen serveroppsett nødvendig",
-      "managedUpdates": "Håndterte oppdateringer",
-      "autoBackups": "Automatiske sikkerhetskopier",
-      "pricing": "Pris",
-      "exportAnytime": "Eksporter alt når som helst",
-      "proFeatures": "AI-assistent, MCP, CalDAV, Telegram",
-      "startMinute": "Kom i gang på ett minutt",
-      "storage": "Lagring for vedlegg",
-      "support": "Support",
-      "aiCredits": "AI-kreditter"
+      "price": "Pris, årlig betaling",
+      "aiIncluded": "AI inkludert",
+      "dayPlanner": "Planlegg dagen rundt kalenderen",
+      "habits": "Vanesporing",
+      "goals": "Mål, områder og prosjekter",
+      "mcp": "MCP-server for AI-agenter",
+      "openSource": "Åpen kildekode, kjører på egen server"
     },
     "values": {
-      "community": "Fellesskap",
-      "email": "E-post",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/mnd eller {{price}}/år",
-      "selfCost": "Gratis, pluss din hosting",
-      "yourDisk": "Din egen disk",
-      "aiCredits": "{{count}} gratis hver måned",
-      "ownAiKey": "Din egen leverandørnøkkel"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Selvhosting",
-    "sub": "Samme applikasjon begge veier. Det som skiller er hvem som drifter den, og hva det koster deg."
+      "perYear": "{{price}}/år",
+      "aiCredits": "{{count}} AI-kreditter i måneden",
+      "businessOnly": "Kun Business-abonnement",
+      "separateApp": "Egen app",
+      "diy": "Bygg det selv"
+    }
   },
   "waitlist": {
     "placeholder": "du@email.com",
@@ -416,7 +396,7 @@
     "includes": [
       "Ubegrenset med oppgaver, prosjekter og notater",
       "Vedlegg og filopplasting",
-      "Dagsplanlegging med AI, MCP, kalenderfeeder, CalDAV og Telegram-boten",
+      "Dagsplanlegging med AI med {{aiCredits}} AI-kreditter i måneden, MCP, kalenderfeeder, CalDAV og Telegram-boten",
       "Daglige sikkerhetskopier og administrerte oppdateringer",
       "Support via e-post",
       "Eksporter alt, når du vil"
@@ -496,7 +476,7 @@
         "alt": "Legg til-boksen gjør en setning om til en gjentakende oppgave med tagg og prosjekt"
       },
       "plan": {
-        "title": "Planlegg dagen, med AI",
+        "title": "Planlegg dagen, med AI (eller ikke)",
         "body": "Planleggeren viser hva som kan passe i dag, i rekkefølgen du velger. Gi hver oppgave en varighet og legg den i ledig tid mellom møter, eller la AI lage et utkast til hele dagen.",
         "points": [
           "Rangerte forslag: forfalt, forfaller i dag, pågår, så resten",
