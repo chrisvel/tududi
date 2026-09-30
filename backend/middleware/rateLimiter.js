@@ -325,6 +325,7 @@ const uploadsLimiter = rateLimit({
 // CalDAV clients authenticate with Basic auth on every request, outside the
 // /api limiters. Keyed by IP plus the attempted username so a password
 // guess against one account is throttled without blocking a whole office.
+// Only failed attempts count so normal sync traffic does not lock users out.
 const caldavAuthLimiter = rateLimit({
     store: createRateLimitStore('caldav-auth'),
     windowMs: rateLimitConfig.auth.windowMs,
@@ -332,6 +333,7 @@ const caldavAuthLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skip: skipInTest,
+    skipSuccessfulRequests: true,
     keyGenerator: (req) => {
         const username = (req.caldavUsername || '').trim().toLowerCase();
         return `${ipKeyGenerator(req.ip)}|${username}`;
