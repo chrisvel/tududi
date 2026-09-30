@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Dili değiştir",
     "langSwitcherCurrent": "Dil: {{name}}",
-    "description": "Alanlar, hedefler, projeler ve görevler, ayrıca notlar ve alışkanlıklar, bir sistemde. Bir dakikada bir tududi Cloud hesabı kurun. {{tools}} araç sunan bir MCP sunucusu, AI aracılarının listenizde çalışmasını sağlar. Sunucuyu kendiniz çalıştırmayı tercih ederseniz kendi kendine barındırma orada.",
+    "description": "Her şeyi yakala, günü yapay zekâyla takviminin etrafında planla; alanlar, hedefler, projeler, notlar ve alışkanlıklar tek sistemde. {{tools}} araçlı bir MCP sunucusu yapay zekâ ajanlarının listen üzerinde çalışmasını sağlar. tududi Cloud hesabı bir dakikada hazır.",
     "title": "tududi: görev yöneticisi ve yaşam yönetim sistemi, AI aracıları için MCP ile"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Belgeler",
     "changelog": "Değişiklikler",
     "signIn": "Giriş yap",
-    "toggle": "Menüyü aç"
+    "toggle": "Menüyü aç",
+    "plan": "Gününü planla"
   },
   "hero": {
     "badgeStars": "GitHub yıldızı",
@@ -26,7 +27,7 @@
     "screenshotAlt": "tududi arayüzü; Bugün görünümü ve planlanmış görevler",
     "cloudNote": "Kurulacak sunucu yok. Aylık veya yıllık, ve istediğiniz zaman iptal edebilirsiniz.",
     "ctaPrimary": "tududi Cloud'da başlayın",
-    "lede": "Alanlar, hedefler, projeler, görevler, notlar ve alışkanlıklar, bir sistemde. Bir dakikada bir Cloud hesabı oluşturun.",
+    "lede": "Her şeyi yakala, günü yapay zekâyla takviminin etrafında planla; alanlar, hedefler, projeler, notlar ve alışkanlıklar tek sistemde. Bir dakikada Cloud hesabı aç.",
     "titleLine1": "Basitleştirilmiş verimlilik",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Proje analizi",
         "body": "Bir projenin durumuna hızlı bakış: ne ilerliyor, ne takılmış."
+      },
+      "plan": {
+        "title": "Gününü planla",
+        "body": "Gününü toplantıların etrafındaki boş zamana yayar ve her bloğun nedenini söyler."
+      },
+      "wrapUp": {
+        "title": "Gün sonu özeti",
+        "body": "Gün sonunda: neler yapıldı, dikkat çeken bir örüntü ve yarına ne kalacağı."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Düzenli bir yaşam için eksiksiz bir sistem",
     "showAll": "{{count}} özelliğin tamamını göster",
     "groups": {
+      "planDay": "Yakala ve planla",
       "planFocus": "Planla ve odaklan",
       "tasksProjects": "Görevler ve projeler",
       "accessAnywhere": "Her yerden erişim",
       "privacyCollab": "Gizlilik ve iş birliği"
     },
     "cards": {
+      "capture": {
+        "title": "Her şey için tek kutu",
+        "body": "Her yerden gelen kutusu öğesi, görev, not ya da proje ekle, dosyalarıyla. Yapıştırılan ekran görüntüsü öğenin kendisi olur."
+      },
+      "nlpDates": {
+        "title": "Günlük dille tarihler",
+        "body": "“tomorrow”, “next fri”, “every weekday”: tarihler ve tekrarlar yazarken okunur; #etiketler, +Proje ve @kişi de."
+      },
+      "planMyDay": {
+        "title": "Gününü planla",
+        "body": "Görevleri toplantılarının etrafındaki boş zamana yerleştiren, süreli, sıralı öneriler ve ipuçları sunan bir planlayıcı."
+      },
+      "todayCalendar": {
+        "title": "Takvimle Bugün",
+        "body": "Google, Apple ya da Outlook takvimlerini bağla, toplantıları görevlerinin yanında gör, şu anki blok en üstte."
+      },
+      "aiPlanning": {
+        "title": "Yapay zekâyla gün planı",
+        "body": "Günü yapay zekâyla taslakla, görev süresi tahminleri al ve yarım kalanları taşıyan bir gün sonu özeti."
+      },
       "goals": {
         "title": "Hedefler",
         "body": "Bir sezon ya da bir yıl için sonuçlar belirleyin, hangi Alanların ve Projelerin bunları gerçekten ilerlettiğini görün."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Eisenhower Matrisi ve Kanban",
         "body": "Soru yalnızca «şimdi ne yapayım» olduğunda Eisenhower Matrisi'ne ya da Kanban panosuna geçin."
-      },
-      "dueDates": {
-        "title": "Akıllı son tarihler",
-        "body": "Otomatik sınıflandırma: bugünün öncelikleri, yaklaşan son tarihler ve bir gün yapılacak görevler."
       },
       "insights": {
         "title": "Verimlilik analizleri",
@@ -210,10 +236,6 @@
         "title": "API erişimi ve Swagger",
         "body": "Sürümlenmiş Swagger belgeleri ve özel entegrasyonlar için kişisel erişim anahtarları."
       },
-      "responsive": {
-        "title": "Duyarlı tasarım",
-        "body": "Geniş masaüstü ekrandan cebinizdeki telefona kadar temiz biçimde uyum sağlayan bir düzen."
-      },
       "privacy": {
         "title": "Gizlilik ve denetim",
         "body": "Verilerinizi kendinize saklayın. Tam denetim için kendiniz barındırın ya da şifreli yedeklemeli Yönetilen bir örnek kullanın."
@@ -252,7 +274,7 @@
         "features": [
           "Kurulacak sunucu olmadan bir dakikada çalışır",
           "Sınırsız görev, proje ve not, ayrıca ekler",
-          "AI asistanı, MCP, CalDAV senkronizasyonu ve Telegram botu",
+          "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
           "Sizin için halledilmiş güncellemeler ve günlük yedeklemeler, {{proStorageGb}} GB depolama ile",
           "Her şeyi istediğiniz zaman dışa aktarın, hesabınızı kendiniz silin"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Sınırsız görev, proje ve not",
       "Ekler ve dosya yüklemeleri",
-      "AI asistanı, MCP, CalDAV senkronizasyonu ve Telegram botu",
+      "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
       "Günlük yedeklemeler ve yönetilen güncellemeler",
       "E-posta ile destek",
       "Her şeyi istediğiniz zaman dışa aktarın"
@@ -456,5 +478,43 @@
     "sent": "Teşekkürler, mesajın yolda. E-postayla yanıt vereceğiz.",
     "invalid": "Lütfen adını, geçerli bir e-posta adresini ve bir mesaj yaz.",
     "failed": "Mesajın şu anda gönderilemedi. Lütfen bize şu adresten yaz:"
+  },
+  "plan": {
+    "eyebrow": "Gününü planla",
+    "title": "Aklından geçen bir fikirden bitmiş bir güne",
+    "sub": "Aklına geldiği anda not al, günü toplantılarının etrafında yapay zekâyla planla, sonra blok blok ilerle.",
+    "stepLabel": "Adım {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Her şeyi kendi kelimelerinle yakala",
+        "body": "Gelen kutusu, görevler, notlar ve projeler için tek ekleme kutusu, uygulamanın her yerinde. Düşündüğün gibi yaz, gerisini tududi tamamlar.",
+        "points": [
+          "“next fri”, “in 3 days” ya da “every first monday” tarihi veya tekrarı ayarlar",
+          "#etiketler, +Proje ve @kişi yazarken algılanır",
+          "Ekran görüntüsü yapıştır ya da dosya bırak, onlar da eklenir"
+        ],
+        "alt": "Ekleme kutusu bir cümleyi etiketli ve projeli tekrarlayan bir göreve çeviriyor"
+      },
+      "plan": {
+        "title": "Gününü yapay zekâyla planla",
+        "body": "Planlayıcı bugün nelerin sığabileceğini senin seçtiğin sırayla gösterir. Her göreve süre ver ve toplantılar arasındaki boş zamana yerleştir ya da tüm günü yapay zekâ taslaklasın.",
+        "points": [
+          "Sıralı öneriler: gecikenler, bugün bitecekler, sürenler, sonra diğerleri",
+          "Yapay zekâ taslağı toplantılar etrafındaki boş zamanı doldurur, Geri al eski hale getirir",
+          "İpuçları aşırı dolu bir günü ve bir görevin sığacağı boşlukları gösterir"
+        ],
+        "alt": "Görevler ve toplantılar aynı zaman çizelgesinde, günlük planlayıcı"
+      },
+      "today": {
+        "title": "Bugün, takviminle birlikte",
+        "body": "Güne başla; Bugün yalnızca söz verdiklerini gösterir: şu anki blok, ardından gündem, arada Google, Apple ya da Outlook toplantıların.",
+        "points": [
+          "Şimdi kartından tamamla ya da ertele",
+          "Salt okunur takvim beslemeleri, şifreli saklanır",
+          "Gün sonunda yapay zekâ özeti yarım kalanları yarına taşır"
+        ],
+        "alt": "Sıradaki görev, gündem ve iki takvimden toplantılarla Bugün"
+      }
+    }
   }
 }

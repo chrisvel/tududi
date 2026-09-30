@@ -141,13 +141,19 @@
     // "Show all N features" count and the eight-card hero grid drift apart
     // between locales, and a translation pass can silently drop a card.
     const featureGroups = [
+        { id: 'planDay', cards: [
+            { id: 'capture',       icon: 'fas fa-bolt',                 featured: true },
+            { id: 'nlpDates',      icon: 'fas fa-calendar-check',       featured: true },
+            { id: 'planMyDay',     icon: 'fas fa-wand-magic-sparkles',  featured: true },
+            { id: 'todayCalendar', icon: 'fas fa-calendar-day',         featured: true },
+            { id: 'aiPlanning',    icon: 'fas fa-robot',                featured: true },
+        ]},
         { id: 'planFocus', cards: [
             { id: 'goals',        icon: 'fas fa-bullseye',        featured: true },
-            { id: 'hierarchy',    icon: 'fas fa-project-diagram', featured: true },
+            { id: 'hierarchy',    icon: 'fas fa-project-diagram' },
             { id: 'lifeAreas',    icon: 'fas fa-layer-group' },
-            { id: 'views',        icon: 'fas fa-filter',          featured: true },
+            { id: 'views',        icon: 'fas fa-filter' },
             { id: 'matrixKanban', icon: 'fas fa-th-large' },
-            { id: 'dueDates',     icon: 'fas fa-calendar-check' },
             { id: 'insights',     icon: 'fas fa-chart-line' },
         ]},
         { id: 'tasksProjects', cards: [
@@ -155,9 +161,9 @@
             { id: 'habits',    icon: 'fas fa-redo-alt' },
             { id: 'recurring', icon: 'fas fa-sync-alt',   featured: true },
             { id: 'richTasks', icon: 'fas fa-tasks' },
-            { id: 'subtasks',  icon: 'fas fa-list-ul',    featured: true },
+            { id: 'subtasks',  icon: 'fas fa-list-ul' },
             { id: 'notes',     icon: 'fas fa-sticky-note' },
-            { id: 'tags',      icon: 'fas fa-tag',        featured: true },
+            { id: 'tags',      icon: 'fas fa-tag' },
             { id: 'search',    icon: 'fas fa-search' },
         ]},
         { id: 'accessAnywhere', cards: [
@@ -167,10 +173,9 @@
             { id: 'telegram',   icon: 'fas fa-paper-plane', featured: true },
             { id: 'caldav',     icon: 'fas fa-calendar-alt' },
             { id: 'api',        icon: 'fas fa-code' },
-            { id: 'responsive', icon: 'fas fa-mobile-alt' },
         ]},
         { id: 'privacyCollab', cards: [
-            { id: 'privacy', icon: 'fas fa-shield-alt', featured: true },
+            { id: 'privacy', icon: 'fas fa-shield-alt' },
             { id: 'collab',  icon: 'fas fa-user-friends' },
         ]},
     ];
@@ -325,7 +330,7 @@
                 <span style="background:#e5b95c;"></span>
                 <span style="background:#61c454;"></span>
             </div>
-            <img src="/landing-assets/screenshots/all-light.png" alt="<%= t('hero.screenshotAlt') %>">
+            <img src="/landing-assets/screenshots/hero-light.png" alt="<%= t('hero.screenshotAlt') %>">
         </div>
     </section>
 
@@ -364,7 +369,50 @@
     </section>
 
     <!--
-        Features. Eight cards carry the page; the other sixteen stay in the DOM
+        Plan your day. The loop the product is built around, in the order a
+        day runs: capture, plan, do. Screenshots come from a seeded account,
+        so every name in them is sample data. Step ids double as locale keys
+        and image names; the images live next to the hero shot.
+    -->
+    <% const planSteps = [
+        { id: 'capture', icon: 'fas fa-bolt',          img: 'capture-light.png' },
+        { id: 'plan',    icon: 'fas fa-wand-magic-sparkles', img: 'plan-light.png' },
+        { id: 'today',   icon: 'fas fa-calendar-day',  img: 'today-light.png' },
+    ]; %>
+    <section id="plan" class="section plan-day">
+        <div class="container">
+            <div class="section-head">
+                <span class="eyebrow"><%= t('plan.eyebrow') %></span>
+                <h2 class="section-title"><%= t('plan.title') %></h2>
+                <p class="section-sub" style="max-width:720px; margin:0 auto;"><%= t('plan.sub') %></p>
+            </div>
+            <% planSteps.forEach(function (step, i) { %>
+            <div class="plan-step<%= i % 2 ? ' plan-step-flip' : '' %>">
+                <div class="plan-step-text">
+                    <span class="plan-step-num"><i class="<%= step.icon %>"></i><%= t('plan.stepLabel', { n: i + 1 }) %></span>
+                    <h3><%= t('plan.steps.' + step.id + '.title') %></h3>
+                    <p><%= t('plan.steps.' + step.id + '.body') %></p>
+                    <ul>
+                        <% i18n.tList('plan.steps.' + step.id + '.points').forEach(function (point) { %>
+                        <li><i class="fas fa-check"></i><%= point %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+                <div class="browser-frame plan-step-shot">
+                    <div class="browser-dots">
+                        <span style="background:#e0645c;"></span>
+                        <span style="background:#e5b95c;"></span>
+                        <span style="background:#61c454;"></span>
+                    </div>
+                    <img src="/landing-assets/screenshots/<%= step.img %>" alt="<%= t('plan.steps.' + step.id + '.alt') %>" loading="lazy">
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </section>
+
+    <!--
+        Features. Eight cards carry the page; the rest stay in the DOM
         behind a toggle so crawlers still see the full copy without the grid
         eating a quarter of the page height.
     -->
@@ -590,6 +638,16 @@
                         <i class="fas fa-lightbulb"></i>
                         <h4><%= t('ai.assistantCards.task.title') %></h4>
                         <p><%= t('ai.assistantCards.task.body') %></p>
+                    </div>
+                    <div class="dark-card">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        <h4><%= t('ai.assistantCards.plan.title') %></h4>
+                        <p><%= t('ai.assistantCards.plan.body') %></p>
+                    </div>
+                    <div class="dark-card">
+                        <i class="fas fa-flag-checkered"></i>
+                        <h4><%= t('ai.assistantCards.wrapUp.title') %></h4>
+                        <p><%= t('ai.assistantCards.wrapUp.body') %></p>
                     </div>
                     <div class="dark-card">
                         <i class="fas fa-heartbeat"></i>

@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Byt språk",
     "langSwitcherCurrent": "Språk: {{name}}",
-    "description": "Områden, mål, projekt och uppgifter, plus anteckningar och vanor, i ett system. Sätt upp ett tududi Cloud-konto på en minut. En MCP-server som exponerar {{tools}} verktyg låter AI-agenter arbeta med din lista. Självhosting finns om du föredrar att köra servern själv.",
+    "description": "Fånga allt, planera dagen med AI runt din kalender och håll områden, mål, projekt, anteckningar och vanor i ett system. En MCP-server med {{tools}} verktyg låter AI-agenter jobba med din lista. Ett tududi Cloud-konto är klart på en minut.",
     "title": "tududi: uppgiftshanterare och livshanteringssystem, med MCP för AI-agenter"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Dokumentation",
     "changelog": "Ändringar",
     "signIn": "Logga in",
-    "toggle": "Öppna menyn"
+    "toggle": "Öppna menyn",
+    "plan": "Planera dagen"
   },
   "hero": {
     "badgeStars": "stjärnor på GitHub",
@@ -26,7 +27,7 @@
     "screenshotAlt": "tududis gränssnitt med vyn Idag och de planerade uppgifterna",
     "cloudNote": "Ingen server att sätta upp. Månadsvis eller årsvis, och du kan avsluta när du vill.",
     "ctaPrimary": "Kom igång på tududi Cloud",
-    "lede": "Områden, mål, projekt, uppgifter, anteckningar och vanor, i ett system. Skapa ett Cloud-konto på en minut.",
+    "lede": "Fånga allt, planera dagen med AI runt din kalender och håll områden, mål, projekt, anteckningar och vanor i ett system. Skapa ett Cloud-konto på en minut.",
     "titleLine1": "Produktivitet gjort enkel",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Projektinsikter",
         "body": "En snabb bedömning av ett projekts hälsa: vad som rör sig och vad som står stilla."
+      },
+      "plan": {
+        "title": "Planera dagen",
+        "body": "Fördelar din dag i ledig tid runt mötena, med ett skäl för varje block."
+      },
+      "wrapUp": {
+        "title": "Dagens sammanfattning",
+        "body": "I slutet av dagen: vad som blev gjort, ett mönster att notera och vad som ska med till i morgon."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Ett komplett system för ett organiserat liv",
     "showAll": "Visa alla {{count}} funktioner",
     "groups": {
+      "planDay": "Fånga & planera",
       "planFocus": "Planera & fokusera",
       "tasksProjects": "Uppgifter & projekt",
       "accessAnywhere": "Åtkomst överallt",
       "privacyCollab": "Integritet & samarbete"
     },
     "cards": {
+      "capture": {
+        "title": "En ruta för allt",
+        "body": "Lägg till inkorgsobjekt, uppgifter, anteckningar eller projekt var som helst ifrån, med filer. En inklistrad skärmbild blir själva objektet."
+      },
+      "nlpDates": {
+        "title": "Datum med vanliga ord",
+        "body": "“tomorrow”, “next fri”, “every weekday”: datum och upprepningar läses medan du skriver, tillsammans med #taggar, +Projekt och @person."
+      },
+      "planMyDay": {
+        "title": "Planera dagen",
+        "body": "En planerare som lägger uppgifter i ledig tid runt dina möten, med längd, rangordnade förslag och tips."
+      },
+      "todayCalendar": {
+        "title": "I dag med din kalender",
+        "body": "Anslut Google-, Apple- eller Outlook-kalendrar och se möten bredvid dina uppgifter, med aktuellt block överst."
+      },
+      "aiPlanning": {
+        "title": "Dagsplanering med AI",
+        "body": "Gör ett utkast till dagen med AI, få uppskattade längder och en kvällssammanfattning som tar med det ofärdiga."
+      },
       "goals": {
         "title": "Mål",
         "body": "Sätt resultat för en säsong eller ett år, och se vilka Områden och Projekt som faktiskt för dem framåt."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Eisenhower-matris & Kanban",
         "body": "Växla till en Eisenhower-matris eller en Kanban-tavla när frågan helt enkelt är: vad gör jag just nu."
-      },
-      "dueDates": {
-        "title": "Smarta förfallodatum",
-        "body": "Automatisk indelning: dagens prioriteringar, kommande deadlines och uppgifter för någon gång."
       },
       "insights": {
         "title": "Produktivitetsinsikter",
@@ -210,10 +236,6 @@
         "title": "API-åtkomst & Swagger",
         "body": "Versionerad Swagger-dokumentation och personliga åtkomsttoken för egna integrationer."
       },
-      "responsive": {
-        "title": "Responsiv design",
-        "body": "En layout som anpassar sig snyggt från bred skrivbordsskärm till telefonen i fickan."
-      },
       "privacy": {
         "title": "Integritet och kontroll",
         "body": "Håll dina data privata. Hosta själv för full kontroll, eller välj en Managed-instans med krypterade säkerhetskopior."
@@ -252,7 +274,7 @@
         "features": [
           "Igång på en minut, utan server att sätta upp",
           "Obegränsat med uppgifter, projekt och anteckningar, plus bilagor",
-          "AI-assistent, MCP, CalDAV-synk och Telegram-boten",
+          "Dagsplanering med AI, MCP, kalenderflöden, CalDAV och Telegram-boten",
           "Uppdateringar och dagliga säkerhetskopior skötta för dig, med {{proStorageGb}} GB lagring",
           "Exportera allt när du vill, ta bort ditt konto själv"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Obegränsat med uppgifter, projekt och anteckningar",
       "Bilagor och filuppladdningar",
-      "AI-assistent, MCP, CalDAV-synk och Telegram-boten",
+      "Dagsplanering med AI, MCP, kalenderflöden, CalDAV och Telegram-boten",
       "Dagliga säkerhetskopior och hanterade uppdateringar",
       "Support via e-post",
       "Exportera allt, när du vill"
@@ -456,5 +478,43 @@
     "sent": "Tack, ditt meddelande är på väg. Vi svarar via e-post.",
     "invalid": "Fyll i ditt namn, en giltig e-postadress och ett meddelande.",
     "failed": "Meddelandet kunde inte skickas just nu. Mejla oss på"
+  },
+  "plan": {
+    "eyebrow": "Planera dagen",
+    "title": "Från en flyktig tanke till en färdig dag",
+    "sub": "Fånga saker när de dyker upp, planera dagen runt dina möten med AI och ta den ett block i taget.",
+    "stepLabel": "Steg {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Fånga allt, med vanliga ord",
+        "body": "En lägg till-ruta för inkorg, uppgifter, anteckningar och projekt, överallt i appen. Skriv som du tänker så fyller tududi i resten.",
+        "points": [
+          "“next fri”, “in 3 days” eller “every first monday” sätter datum eller upprepning",
+          "#taggar, +Projekt och @person fångas upp medan du skriver",
+          "Klistra in en skärmbild eller släpp filer så följer de med"
+        ],
+        "alt": "Lägg till-rutan gör en mening till en återkommande uppgift med tagg och projekt"
+      },
+      "plan": {
+        "title": "Planera dagen, med AI",
+        "body": "Planeraren visar vad som får plats i dag, i den ordning du väljer. Ge varje uppgift en längd och lägg den i ledig tid mellan möten, eller låt AI göra ett utkast till hela dagen.",
+        "points": [
+          "Rangordnade förslag: försenat, förfaller i dag, pågår, sedan resten",
+          "Utkast med AI fyller ledig tid runt möten, och Ångra återställer",
+          "Tips varnar för en överbokad dag och luckor där en uppgift passar"
+        ],
+        "alt": "Dagsplaneraren med uppgifter och möten på en tidslinje"
+      },
+      "today": {
+        "title": "I dag, med din kalender",
+        "body": "Starta dagen så visar I dag bara det du bestämt: blocket du ska vara på nu, sedan agendan, med dina Google-, Apple- eller Outlook-möten emellan.",
+        "points": [
+          "Markera klar eller skjut upp från Nu-kortet",
+          "Kalenderflöden som bara läses, lagrade krypterat",
+          "En AI-sammanfattning på kvällen flyttar det ofärdiga till i morgon"
+        ],
+        "alt": "I dag med nästa uppgift, agendan och möten från två kalendrar"
+      }
+    }
   }
 }

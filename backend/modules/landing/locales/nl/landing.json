@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Taal wijzigen",
     "langSwitcherCurrent": "Taal: {{name}}",
-    "description": "Gebieden, doelen, projecten en taken, plus notities en gewoontes, in één systeem. Zet een tududi Cloud-account op in een minuut. Een MCP-server met {{tools}} tools laat AI-agenten aan je lijst werken. Zelfhosten kan als je liever zelf de server draait.",
+    "description": "Leg alles vast, plan je dag met AI rond je agenda en houd gebieden, doelen, projecten, notities en gewoonten in één systeem. Een MCP-server met {{tools}} tools laat AI-agents met je lijst werken. Een tududi Cloud-account staat in een minuut klaar.",
     "title": "tududi: taakbeheer en levensbeheersysteem, met MCP voor AI-agenten"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Documentatie",
     "changelog": "Wijzigingen",
     "signIn": "Inloggen",
-    "toggle": "Menu openen"
+    "toggle": "Menu openen",
+    "plan": "Plan je dag"
   },
   "hero": {
     "badgeStars": "sterren op GitHub",
@@ -26,7 +27,7 @@
     "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken",
     "cloudNote": "Geen server om op te zetten. Maandelijks of jaarlijks, en je kunt op elk moment opzeggen.",
     "ctaPrimary": "Begin op tududi Cloud",
-    "lede": "Gebieden, doelen, projecten, taken, notities en gewoontes, in één systeem. Maak een Cloud-account in een minuut.",
+    "lede": "Leg alles vast, plan je dag met AI rond je agenda en houd gebieden, doelen, projecten, notities en gewoonten in één systeem. Maak in een minuut een Cloud-account.",
     "titleLine1": "Productiviteit eenvoudig gemaakt",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Projectinzichten",
         "body": "Een snelle inschatting van de gezondheid van een project: wat loopt en wat vastzit."
+      },
+      "plan": {
+        "title": "Plan je dag",
+        "body": "Verdeelt je dag over de vrije tijd rond je afspraken, met een reden voor elk blok."
+      },
+      "wrapUp": {
+        "title": "Dagafsluiting",
+        "body": "Aan het eind van de dag: wat klaar is, een patroon om op te letten en wat mee moet naar morgen."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Een compleet systeem voor een geordend leven",
     "showAll": "Alle {{count}} functies tonen",
     "groups": {
+      "planDay": "Vastleggen & plannen",
       "planFocus": "Plannen & focussen",
       "tasksProjects": "Taken & projecten",
       "accessAnywhere": "Overal toegang",
       "privacyCollab": "Privacy & samenwerking"
     },
     "cards": {
+      "capture": {
+        "title": "Eén vak voor alles",
+        "body": "Voeg inbox-items, taken, notities of projecten toe van overal, met bestanden. Een geplakte screenshot wordt het item."
+      },
+      "nlpDates": {
+        "title": "Datums in gewone woorden",
+        "body": "“tomorrow”, “next fri”, “every weekday”: datums en herhalingen worden gelezen terwijl je typt, samen met #tags, +Project en @persoon."
+      },
+      "planMyDay": {
+        "title": "Plan je dag",
+        "body": "Een planner die taken in de vrije tijd rond je afspraken zet, met duur, gerangschikte suggesties en tips."
+      },
+      "todayCalendar": {
+        "title": "Vandaag met je agenda",
+        "body": "Koppel Google-, Apple- of Outlook-agenda’s en zie afspraken naast je taken, met het huidige blok bovenaan."
+      },
+      "aiPlanning": {
+        "title": "Dagplanning met AI",
+        "body": "Zet de dag op met AI, krijg geschatte duur voor taken en een dagafsluiting die onafgemaakt werk meeneemt."
+      },
       "goals": {
         "title": "Doelen",
         "body": "Leg resultaten vast voor een seizoen of een jaar, en zie welke Gebieden en Projecten ze werkelijk vooruithelpen."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Eisenhower-matrix & Kanban",
         "body": "Schakel over naar een Eisenhower-matrix of een Kanban-bord wanneer de vraag simpelweg is: wat doe ik nu."
-      },
-      "dueDates": {
-        "title": "Slimme vervaldatums",
-        "body": "Automatische indeling: de prioriteiten van vandaag, naderende deadlines en taken voor ooit."
       },
       "insights": {
         "title": "Productiviteitsinzichten",
@@ -210,10 +236,6 @@
         "title": "API-toegang & Swagger",
         "body": "Swagger-documentatie met versies en persoonlijke toegangstokens voor eigen integraties."
       },
-      "responsive": {
-        "title": "Responsief ontwerp",
-        "body": "Een indeling die netjes meeschaalt van een breedbeeldscherm tot de telefoon in je zak."
-      },
       "privacy": {
         "title": "Privacy en controle",
         "body": "Houd je data privé. Zelf hosten voor volledige controle, of een Managed instantie met versleutelde back-ups."
@@ -252,7 +274,7 @@
         "features": [
           "Binnen een minuut draaiend, zonder server om op te zetten",
           "Onbeperkte taken, projecten en notities, plus bijlagen",
-          "AI-assistent, MCP, CalDAV-synchronisatie en de Telegram-bot",
+          "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
           "Updates en dagelijkse backups voor je verzorgd, met {{proStorageGb}} GB opslag",
           "Exporteer alles op elk moment, verwijder je account zelf"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Onbeperkte taken, projecten en notities",
       "Bijlagen en bestandsuploads",
-      "AI-assistent, MCP, CalDAV-synchronisatie en de Telegram-bot",
+      "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
       "Dagelijkse backups en beheerde updates",
       "Support via e-mail",
       "Exporteer alles, op elk moment"
@@ -456,5 +478,43 @@
     "sent": "Bedankt, je bericht is onderweg. We antwoorden per e-mail.",
     "invalid": "Vul je naam, een geldig e-mailadres en een bericht in.",
     "failed": "Je bericht kon nu niet worden verstuurd. Mail ons op"
+  },
+  "plan": {
+    "eyebrow": "Plan je dag",
+    "title": "Van een losse gedachte naar een afgeronde dag",
+    "sub": "Leg dingen vast zodra ze opkomen, plan de dag met AI rond je afspraken en werk hem blok voor blok af.",
+    "stepLabel": "Stap {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Leg alles vast, in gewone woorden",
+        "body": "Eén invoervak voor inbox, taken, notities en projecten, overal in de app. Schrijf zoals je denkt, tududi vult de rest in.",
+        "points": [
+          "“next fri”, “in 3 days” of “every first monday” zet de datum of herhaling",
+          "#tags, +Project en @persoon worden herkend terwijl je typt",
+          "Plak een screenshot of sleep bestanden erin, ze gaan mee"
+        ],
+        "alt": "Het invoervak maakt van een zin een terugkerende taak met tag en project"
+      },
+      "plan": {
+        "title": "Plan je dag, met AI",
+        "body": "De planner laat zien wat vandaag past, in de volgorde die jij kiest. Geef elke taak een duur en zet hem in de vrije tijd tussen afspraken, of laat AI de hele dag opzetten.",
+        "points": [
+          "Gerangschikte suggesties: te laat, vandaag, bezig, dan de rest",
+          "Opzetten met AI vult de vrije tijd rond afspraken, Ongedaan maken zet het terug",
+          "Tips melden een overvolle dag en gaten waar een taak in past"
+        ],
+        "alt": "De dagplanner met taken en afspraken op één tijdlijn"
+      },
+      "today": {
+        "title": "Vandaag, met je agenda",
+        "body": "Start de dag en Vandaag toont alleen wat je je voornam: het huidige blok, dan de agenda, met je Google-, Apple- of Outlook-afspraken ertussen.",
+        "points": [
+          "Afvinken of uitstellen vanaf de Nu-kaart",
+          "Agendafeeds alleen-lezen, versleuteld opgeslagen",
+          "Een AI-dagafsluiting neemt onafgemaakt werk mee naar morgen"
+        ],
+        "alt": "Vandaag met de volgende taak, de agenda en afspraken uit twee agenda’s"
+      }
+    }
   }
 }

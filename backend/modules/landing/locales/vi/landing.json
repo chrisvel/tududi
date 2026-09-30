@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Đổi ngôn ngữ",
     "langSwitcherCurrent": "Ngôn ngữ: {{name}}",
-    "description": "Lĩnh vực, mục tiêu, dự án và nhiệm vụ, cùng với ghi chú và thói quen, trong một hệ thống. Thiết lập tài khoản tududi Cloud trong một phút. Một máy chủ MCP hiển thị {{tools}} công cụ cho phép các trợ lý AI làm việc trên danh sách của bạn. Tự lưu trữ luôn có sẵn nếu bạn thích tự chạy máy chủ hơn.",
+    "description": "Ghi lại mọi thứ, lên kế hoạch ngày bằng AI quanh lịch của bạn, và giữ lĩnh vực, mục tiêu, dự án, ghi chú, thói quen trong một hệ thống. Máy chủ MCP với {{tools}} công cụ cho phép tác tử AI làm việc với danh sách của bạn. Tài khoản tududi Cloud sẵn sàng trong một phút.",
     "title": "tududi: trình quản lý nhiệm vụ và hệ thống quản lý cuộc sống, với MCP cho các trợ lý AI"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Tài liệu",
     "changelog": "Thay đổi",
     "signIn": "Đăng nhập",
-    "toggle": "Mở menu"
+    "toggle": "Mở menu",
+    "plan": "Lên kế hoạch ngày"
   },
   "hero": {
     "badgeStars": "sao trên GitHub",
@@ -26,7 +27,7 @@
     "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch",
     "cloudNote": "Không có máy chủ nào cần thiết lập. Hàng tháng hoặc hàng năm, và bạn có thể hủy bất cứ lúc nào.",
     "ctaPrimary": "Bắt đầu trên tududi Cloud",
-    "lede": "Lĩnh vực, mục tiêu, dự án, nhiệm vụ, ghi chú và thói quen, trong một hệ thống. Tạo một tài khoản Cloud trong một phút.",
+    "lede": "Ghi lại mọi thứ, lên kế hoạch ngày bằng AI quanh lịch của bạn, và giữ lĩnh vực, mục tiêu, dự án, ghi chú, thói quen trong một hệ thống. Tạo tài khoản Cloud trong một phút.",
     "titleLine1": "Năng suất được đơn giản hóa",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Phân tích dự án",
         "body": "Đánh giá nhanh tình trạng một dự án: điều gì đang tiến triển, điều gì đang tắc."
+      },
+      "plan": {
+        "title": "Lên kế hoạch ngày",
+        "body": "Sắp xếp ngày của bạn vào thời gian trống quanh cuộc họp, kèm lý do cho từng khối."
+      },
+      "wrapUp": {
+        "title": "Tổng kết ngày",
+        "body": "Cuối ngày: những gì đã xong, một khuôn mẫu đáng chú ý và việc cần chuyển sang ngày mai."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Một hệ thống trọn vẹn cho cuộc sống ngăn nắp",
     "showAll": "Xem tất cả {{count}} tính năng",
     "groups": {
+      "planDay": "Ghi lại & lên kế hoạch",
       "planFocus": "Lập kế hoạch và tập trung",
       "tasksProjects": "Công việc và dự án",
       "accessAnywhere": "Truy cập mọi nơi",
       "privacyCollab": "Riêng tư và cộng tác"
     },
     "cards": {
+      "capture": {
+        "title": "Một ô cho mọi thứ",
+        "body": "Thêm mục hộp thư đến, công việc, ghi chú hoặc dự án từ bất cứ đâu, kèm tệp. Ảnh chụp màn hình được dán sẽ trở thành chính mục đó."
+      },
+      "nlpDates": {
+        "title": "Ngày tháng bằng lời thường",
+        "body": "“tomorrow”, “next fri”, “every weekday”: ngày và lặp lại được đọc khi gõ, cùng với #thẻ, +Dự án và @người."
+      },
+      "planMyDay": {
+        "title": "Lên kế hoạch ngày",
+        "body": "Trình lập kế hoạch xếp công việc vào thời gian trống quanh cuộc họp, với thời lượng, gợi ý theo thứ tự và mẹo."
+      },
+      "todayCalendar": {
+        "title": "Hôm nay cùng lịch",
+        "body": "Kết nối lịch Google, Apple hoặc Outlook và thấy cuộc họp bên cạnh công việc, khối hiện tại ở trên cùng."
+      },
+      "aiPlanning": {
+        "title": "Lập kế hoạch ngày bằng AI",
+        "body": "Soạn ngày bằng AI, nhận ước tính thời lượng và bản tổng kết cuối ngày chuyển tiếp việc dang dở."
+      },
       "goals": {
         "title": "Mục tiêu",
         "body": "Đặt kết quả cho một mùa hay một năm, rồi xem Lĩnh vực và Dự án nào thực sự đang đẩy chúng tiến lên."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Ma trận Eisenhower và Kanban",
         "body": "Chuyển sang ma trận Eisenhower hoặc bảng Kanban khi câu hỏi chỉ đơn giản là: giờ tôi làm gì."
-      },
-      "dueDates": {
-        "title": "Hạn chót thông minh",
-        "body": "Tự động phân loại: ưu tiên hôm nay, hạn chót sắp tới và những việc để dành sau."
       },
       "insights": {
         "title": "Thống kê năng suất",
@@ -210,10 +236,6 @@
         "title": "Truy cập API và Swagger",
         "body": "Tài liệu Swagger có phiên bản và mã truy cập cá nhân cho các tích hợp riêng."
       },
-      "responsive": {
-        "title": "Thiết kế đáp ứng",
-        "body": "Bố cục thích ứng gọn gàng từ màn hình rộng cho tới chiếc điện thoại trong túi bạn."
-      },
       "privacy": {
         "title": "Riêng tư và quyền kiểm soát",
         "body": "Giữ dữ liệu là của riêng bạn. Tự vận hành để toàn quyền kiểm soát, hoặc dùng bản Được quản lý với sao lưu mã hóa."
@@ -252,7 +274,7 @@
         "features": [
           "Hoạt động trong một phút, không cần máy chủ để thiết lập",
           "Nhiệm vụ, dự án và ghi chú không giới hạn, cộng với tệp đính kèm",
-          "Trợ lý AI, MCP, đồng bộ CalDAV và bot Telegram",
+          "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
           "Các bản cập nhật và sao lưu hàng ngày được xử lý cho bạn, với {{proStorageGb}} GB dung lượng lưu trữ",
           "Xuất mọi thứ bất cứ lúc nào, tự xóa tài khoản của mình"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Nhiệm vụ, dự án và ghi chú không giới hạn",
       "Tệp đính kèm và tải lên tệp",
-      "Trợ lý AI, MCP, đồng bộ CalDAV và bot Telegram",
+      "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
       "Sao lưu hàng ngày và cập nhật được quản lý",
       "Hỗ trợ qua email",
       "Xuất mọi thứ, bất cứ lúc nào"
@@ -456,5 +478,43 @@
     "sent": "Cảm ơn, tin nhắn của bạn đã được gửi. Chúng tôi sẽ trả lời qua email.",
     "invalid": "Vui lòng nhập tên, địa chỉ email hợp lệ và nội dung tin nhắn.",
     "failed": "Hiện không thể gửi tin nhắn. Vui lòng email cho chúng tôi tại"
+  },
+  "plan": {
+    "eyebrow": "Lên kế hoạch ngày",
+    "title": "Từ một ý nghĩ thoáng qua đến một ngày trọn vẹn",
+    "sub": "Ghi lại mọi thứ ngay khi nảy ra, lên kế hoạch ngày quanh các cuộc họp với AI, rồi làm từng khối một.",
+    "stepLabel": "Bước {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Ghi lại mọi thứ bằng lời thường",
+        "body": "Một ô Thêm cho hộp thư đến, công việc, ghi chú và dự án, ở mọi nơi trong ứng dụng. Viết như bạn nghĩ, tududi lo phần còn lại.",
+        "points": [
+          "“next fri”, “in 3 days” hay “every first monday” đặt ngày hoặc lặp lại",
+          "#thẻ, +Dự án và @người được nhận ra khi gõ",
+          "Dán ảnh chụp màn hình hoặc thả tệp, chúng đi kèm luôn"
+        ],
+        "alt": "Ô Thêm biến một câu thành công việc lặp lại có thẻ và dự án"
+      },
+      "plan": {
+        "title": "Lên kế hoạch ngày với AI",
+        "body": "Trình lập kế hoạch cho thấy những gì vừa với hôm nay, theo thứ tự bạn chọn. Đặt thời lượng cho từng việc và xếp vào thời gian trống giữa các cuộc họp, hoặc để AI soạn cả ngày.",
+        "points": [
+          "Gợi ý theo thứ tự: quá hạn, đến hạn hôm nay, đang làm, rồi phần còn lại",
+          "Soạn bằng AI lấp thời gian trống quanh cuộc họp, Hoàn tác đưa về như cũ",
+          "Mẹo cảnh báo ngày quá tải và khoảng trống vừa cho một việc"
+        ],
+        "alt": "Trình lập kế hoạch ngày với công việc và cuộc họp trên cùng dòng thời gian"
+      },
+      "today": {
+        "title": "Hôm nay, cùng lịch của bạn",
+        "body": "Bắt đầu ngày và Hôm nay chỉ hiện những gì bạn đã cam kết: khối hiện tại, rồi lịch trình, xen giữa là cuộc họp từ Google, Apple hoặc Outlook.",
+        "points": [
+          "Đánh dấu xong hoặc dời lại từ thẻ Bây giờ",
+          "Lịch chỉ đọc, lưu trữ được mã hóa",
+          "Bản tổng kết AI cuối ngày chuyển việc dang dở sang ngày mai"
+        ],
+        "alt": "Hôm nay với việc tiếp theo, lịch trình và cuộc họp từ hai lịch"
+      }
+    }
   }
 }

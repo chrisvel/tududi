@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Cambia lingua",
     "langSwitcherCurrent": "Lingua: {{name}}",
-    "description": "Aree, obiettivi, progetti e attività, più note e abitudini, in un unico sistema. Configura un account tududi Cloud in un minuto. Un server MCP che espone {{tools}} strumenti permette agli agenti IA di lavorare sulla tua lista. Il self-hosting è disponibile se preferisci gestire il server da solo.",
+    "description": "Annota tutto, pianifica la giornata con l’IA attorno al calendario e tieni aree, obiettivi, progetti, note e abitudini in un unico sistema. Un server MCP con {{tools}} strumenti fa lavorare gli agenti IA sulla tua lista. Un account tududi Cloud si crea in un minuto.",
     "title": "tududi: gestore di attività e sistema di gestione della vita, con MCP per agenti IA"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Documentazione",
     "changelog": "Novità",
     "signIn": "Accedi",
-    "toggle": "Apri il menu"
+    "toggle": "Apri il menu",
+    "plan": "Pianifica la giornata"
   },
   "hero": {
     "badgeStars": "stelle su GitHub",
@@ -26,7 +27,7 @@
     "screenshotAlt": "L'interfaccia di tududi, con la vista Oggi e le attività pianificate",
     "cloudNote": "Nessun server da configurare. Mensile o annuale, e puoi cancellare in qualsiasi momento.",
     "ctaPrimary": "Inizia su tududi Cloud",
-    "lede": "Aree, obiettivi, progetti, attività, note e abitudini, in un unico sistema. Crea un account Cloud in un minuto.",
+    "lede": "Annota tutto, pianifica la giornata con l’IA attorno al calendario e tieni aree, obiettivi, progetti, note e abitudini in un unico sistema. Crea un account Cloud in un minuto.",
     "titleLine1": "Produttività resa semplice",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Analisi dei progetti",
         "body": "Una valutazione rapida dello stato di un progetto: cosa avanza e cosa è fermo."
+      },
+      "plan": {
+        "title": "Pianifica la giornata",
+        "body": "Distribuisce la giornata nel tempo libero attorno alle riunioni, con un motivo per ogni blocco."
+      },
+      "wrapUp": {
+        "title": "Riepilogo della giornata",
+        "body": "A fine giornata: cosa è fatto, un andamento da notare e cosa portare a domani."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Un sistema completo per una vita organizzata",
     "showAll": "Mostra tutte le {{count}} funzionalità",
     "groups": {
+      "planDay": "Annota e pianifica",
       "planFocus": "Pianifica e concentrati",
       "tasksProjects": "Attività e progetti",
       "accessAnywhere": "Accesso ovunque",
       "privacyCollab": "Privacy e collaborazione"
     },
     "cards": {
+      "capture": {
+        "title": "Un riquadro per tutto",
+        "body": "Aggiungi elementi in arrivo, attività, note o progetti da ovunque, con file. Uno screenshot incollato diventa l’elemento."
+      },
+      "nlpDates": {
+        "title": "Date in parole semplici",
+        "body": "“tomorrow”, “next fri”, “every weekday”: date e ripetizioni vengono lette mentre scrivi, insieme a #tag, +Progetto e @persona."
+      },
+      "planMyDay": {
+        "title": "Pianifica la giornata",
+        "body": "Un pianificatore che mette le attività nel tempo libero attorno alle riunioni, con durate, suggerimenti ordinati e consigli."
+      },
+      "todayCalendar": {
+        "title": "Oggi con il tuo calendario",
+        "body": "Collega calendari Google, Apple o Outlook e vedi le riunioni accanto alle attività, con il blocco attuale in cima."
+      },
+      "aiPlanning": {
+        "title": "Pianificazione con IA",
+        "body": "Prepara la giornata con l’IA, ottieni durate stimate e un riepilogo serale che riporta ciò che resta."
+      },
       "goals": {
         "title": "Obiettivi",
         "body": "Definisci i risultati per una stagione o per un anno, e scopri quali Aree e Progetti li stanno davvero facendo avanzare."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Matrice di Eisenhower e Kanban",
         "body": "Passa a una matrice di Eisenhower o a una bacheca Kanban quando la domanda è semplicemente: cosa faccio adesso."
-      },
-      "dueDates": {
-        "title": "Scadenze intelligenti",
-        "body": "Classificazione automatica: le priorità di oggi, le scadenze imminenti e le attività per prima o poi."
       },
       "insights": {
         "title": "Analisi della produttività",
@@ -210,10 +236,6 @@
         "title": "Accesso API e Swagger",
         "body": "Documentazione Swagger versionata e token di accesso personali per integrazioni su misura."
       },
-      "responsive": {
-        "title": "Design responsive",
-        "body": "Un layout che si adatta con eleganza dal desktop widescreen al telefono in tasca."
-      },
       "privacy": {
         "title": "Privacy e controllo",
         "body": "Tieni privati i tuoi dati. Fai self-hosting per il controllo totale, oppure scegli un'istanza Gestita con backup cifrati."
@@ -252,7 +274,7 @@
         "features": [
           "Operativo in un minuto, senza server da configurare",
           "Attività, progetti e note illimitati, più allegati",
-          "Assistente IA, MCP, sincronizzazione CalDAV e il bot Telegram",
+          "Pianificazione con IA, MCP, calendari, CalDAV e il bot Telegram",
           "Aggiornamenti e backup giornalieri gestiti per te, con {{proStorageGb}} GB di spazio",
           "Esporta tutto in qualsiasi momento, elimina l'account da solo"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Attività, progetti e note illimitati",
       "Allegati e caricamento file",
-      "Assistente IA, MCP, sincronizzazione CalDAV e il bot Telegram",
+      "Pianificazione con IA, MCP, calendari, CalDAV e il bot Telegram",
       "Backup giornalieri e aggiornamenti gestiti",
       "Supporto via email",
       "Esporta tutto, in qualsiasi momento"
@@ -456,5 +478,43 @@
     "sent": "Grazie, il tuo messaggio è in viaggio. Ti risponderemo via email.",
     "invalid": "Inserisci il tuo nome, un indirizzo email valido e un messaggio.",
     "failed": "Non è stato possibile inviare il messaggio in questo momento. Scrivici a"
+  },
+  "plan": {
+    "eyebrow": "Pianifica la giornata",
+    "title": "Da un’idea al volo a una giornata chiusa",
+    "sub": "Annota le cose appena arrivano, pianifica la giornata attorno alle riunioni con l’IA, poi procedi un blocco alla volta.",
+    "stepLabel": "Passo {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Annota tutto, con parole tue",
+        "body": "Un solo riquadro per posta in arrivo, attività, note e progetti, ovunque nell’app. Scrivi come pensi e tududi completa il resto.",
+        "points": [
+          "“next fri”, “in 3 days” o “every first monday” imposta data o ripetizione",
+          "#tag, +Progetto e @persona vengono riconosciuti mentre scrivi",
+          "Incolla uno screenshot o trascina file e vengono allegati"
+        ],
+        "alt": "Il riquadro Aggiungi trasforma una frase in un’attività ricorrente con tag e progetto"
+      },
+      "plan": {
+        "title": "Pianifica la giornata, con l’IA",
+        "body": "Il pianificatore mostra cosa può stare oggi, nell’ordine che scegli. Dai una durata a ogni attività e mettila nel tempo libero tra le riunioni, o lascia che l’IA prepari l’intera giornata.",
+        "points": [
+          "Suggerimenti ordinati: scadute, in scadenza oggi, in corso, poi il resto",
+          "Bozza con IA riempie il tempo libero attorno alle riunioni, Annulla ripristina",
+          "I consigli segnalano una giornata troppo piena e i buchi in cui sta un’attività"
+        ],
+        "alt": "Il pianificatore con attività e riunioni su un’unica linea temporale"
+      },
+      "today": {
+        "title": "Oggi, con il tuo calendario",
+        "body": "Avvia la giornata e Oggi mostra solo ciò che hai deciso: il blocco attuale, poi l’agenda, con le riunioni di Google, Apple o Outlook in mezzo.",
+        "points": [
+          "Completa o rimanda dalla scheda Adesso",
+          "Calendari in sola lettura, salvati cifrati",
+          "Un riepilogo IA a fine giornata porta a domani il lavoro rimasto"
+        ],
+        "alt": "Oggi con la prossima attività, l’agenda e le riunioni di due calendari"
+      }
+    }
   }
 }

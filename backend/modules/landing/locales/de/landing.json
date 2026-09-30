@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Sprache wechseln",
     "langSwitcherCurrent": "Sprache: {{name}}",
-    "description": "Bereiche, Ziele, Projekte und Aufgaben, dazu Notizen und Gewohnheiten, in einem System. Richte in einer Minute ein tududi-Cloud-Konto ein. Ein MCP-Server mit {{tools}} Tools lässt KI-Agenten an deiner Liste arbeiten. Self-Hosting steht bereit, wenn du den Server lieber selbst betreiben möchtest.",
+    "description": "Alles festhalten, den Tag mit KI rund um deinen Kalender planen und Bereiche, Ziele, Projekte, Notizen und Gewohnheiten in einem System. Ein MCP-Server mit {{tools}} Werkzeugen lässt KI-Agenten mit deiner Liste arbeiten. Ein tududi-Cloud-Konto ist in einer Minute eingerichtet.",
     "title": "tududi: Aufgabenverwaltung und Lebensorganisationssystem, mit MCP für KI-Agenten"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Doku",
     "changelog": "Änderungen",
     "signIn": "Anmelden",
-    "toggle": "Navigation umschalten"
+    "toggle": "Navigation umschalten",
+    "plan": "Tag planen"
   },
   "hero": {
     "badgeStars": "Sterne auf GitHub",
@@ -26,7 +27,7 @@
     "screenshotAlt": "Die Oberfläche von tududi mit der Heute-Ansicht und den geplanten Aufgaben",
     "cloudNote": "Kein Server einzurichten. Monatlich oder jährlich, und du kannst jederzeit kündigen.",
     "ctaPrimary": "Auf tududi Cloud starten",
-    "lede": "Bereiche, Ziele, Projekte, Aufgaben, Notizen und Gewohnheiten in einem System. Erstelle in einer Minute ein Cloud-Konto.",
+    "lede": "Alles festhalten, den Tag mit KI rund um deinen Kalender planen und Bereiche, Ziele, Projekte, Notizen und Gewohnheiten in einem System. In einer Minute ein Cloud-Konto anlegen.",
     "titleLine1": "Produktivität ganz einfach",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Projekt-Analyse",
         "body": "Eine schnelle Einschätzung zum Zustand eines Projekts: was läuft, was hängt."
+      },
+      "plan": {
+        "title": "Tag planen",
+        "body": "Plant deinen Tag in die freie Zeit um deine Termine, mit einer Begründung für jeden Block."
+      },
+      "wrapUp": {
+        "title": "Tagesabschluss",
+        "body": "Am Ende des Tages: was erledigt ist, ein Muster, das auffällt, und was in den nächsten Tag geht."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Ein vollständiges System für ein geordnetes Leben",
     "showAll": "Alle {{count}} Funktionen anzeigen",
     "groups": {
+      "planDay": "Erfassen & Planen",
       "planFocus": "Planen & fokussieren",
       "tasksProjects": "Aufgaben & Projekte",
       "accessAnywhere": "Überall zugänglich",
       "privacyCollab": "Privatsphäre & Zusammenarbeit"
     },
     "cards": {
+      "capture": {
+        "title": "Ein Feld für alles",
+        "body": "Eingang, Aufgaben, Notizen oder Projekte von überall hinzufügen, mit Dateien. Ein eingefügter Screenshot wird selbst zum Eintrag."
+      },
+      "nlpDates": {
+        "title": "Daten in normalen Worten",
+        "body": "„tomorrow“, „next fri“, „every weekday“: Daten und Wiederholungen werden beim Tippen erkannt, dazu #Tags, +Projekt und @Person."
+      },
+      "planMyDay": {
+        "title": "Tag planen",
+        "body": "Ein Planer, der Aufgaben in die freie Zeit um deine Termine legt, mit Dauer, sortierten Vorschlägen und Planungstipps."
+      },
+      "todayCalendar": {
+        "title": "Heute mit deinem Kalender",
+        "body": "Verbinde Google-, Apple- oder Outlook-Kalender und sieh Termine neben deinen Aufgaben, den aktuellen Block oben."
+      },
+      "aiPlanning": {
+        "title": "KI-Tagesplanung",
+        "body": "Den Tag mit KI entwerfen, Dauer für Aufgaben schätzen lassen und ein Tagesabschluss, der Unerledigtes mitnimmt."
+      },
       "goals": {
         "title": "Ziele",
         "body": "Lege Ergebnisse für eine Saison oder ein Jahr fest und sieh, welche Bereiche und Projekte sie tatsächlich voranbringen."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Eisenhower-Matrix & Kanban",
         "body": "Wechsle zur Eisenhower-Matrix oder zum Kanban-Board, wenn die Frage schlicht lautet: was mache ich jetzt."
-      },
-      "dueDates": {
-        "title": "Intelligente Fälligkeiten",
-        "body": "Automatische Einordnung: die Prioritäten von heute, anstehende Fristen und Aufgaben für irgendwann."
       },
       "insights": {
         "title": "Produktivitäts-Auswertungen",
@@ -210,10 +236,6 @@
         "title": "API-Zugriff & Swagger",
         "body": "Versionierte Swagger-Doku und persönliche Zugriffstoken für eigene Integrationen."
       },
-      "responsive": {
-        "title": "Responsives Design",
-        "body": "Ein Layout, das sich sauber vom breiten Desktop bis zum Handy in deiner Tasche anpasst."
-      },
       "privacy": {
         "title": "Privatsphäre und Kontrolle",
         "body": "Halte deine Daten privat. Selbst hosten für volle Kontrolle, oder eine Managed-Instanz mit verschlüsselten Backups nutzen."
@@ -252,7 +274,7 @@
         "features": [
           "In einer Minute startklar, ohne Server einzurichten",
           "Unbegrenzte Aufgaben, Projekte und Notizen, plus Anhänge",
-          "KI-Assistent, MCP, CalDAV-Sync und der Telegram-Bot",
+          "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
           "Updates und tägliche Backups für dich erledigt, mit {{proStorageGb}} GB Speicher",
           "Exportiere jederzeit alles, lösche dein Konto selbst"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Unbegrenzte Aufgaben, Projekte und Notizen",
       "Anhänge und Datei-Uploads",
-      "KI-Assistent, MCP, CalDAV-Sync und der Telegram-Bot",
+      "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
       "Tägliche Backups und verwaltete Updates",
       "Support per E-Mail",
       "Exportiere jederzeit alles"
@@ -456,5 +478,43 @@
     "sent": "Danke, deine Nachricht ist unterwegs. Wir antworten per E-Mail.",
     "invalid": "Bitte gib deinen Namen, eine gültige E-Mail-Adresse und eine Nachricht ein.",
     "failed": "Deine Nachricht konnte gerade nicht gesendet werden. Schreib uns bitte an"
+  },
+  "plan": {
+    "eyebrow": "Tag planen",
+    "title": "Vom flüchtigen Gedanken zum erledigten Tag",
+    "sub": "Halte Dinge fest, sobald sie auftauchen, plane den Tag mit KI rund um deine Termine und arbeite ihn Block für Block ab.",
+    "stepLabel": "Schritt {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Alles festhalten, in normalen Worten",
+        "body": "Ein Hinzufügen-Feld für Eingang, Aufgaben, Notizen und Projekte, überall in der App. Schreib, wie du denkst, tududi erledigt den Rest.",
+        "points": [
+          "„next fri“, „in 3 days“ oder „every first monday“ setzt Datum oder Wiederholung",
+          "#Tags, +Projekt und @Person werden beim Tippen erkannt",
+          "Screenshot einfügen oder Dateien ablegen, sie kommen mit"
+        ],
+        "alt": "Das Hinzufügen-Feld macht aus einem Satz eine wiederkehrende Aufgabe mit Tag und Projekt"
+      },
+      "plan": {
+        "title": "Tag planen, mit KI",
+        "body": "Der Planer zeigt, was heute passen könnte, in deiner Reihenfolge. Gib jeder Aufgabe eine Dauer und leg sie in die freie Zeit zwischen Terminen, oder lass die KI den ganzen Tag entwerfen.",
+        "points": [
+          "Sortierte Vorschläge: überfällig, heute fällig, in Arbeit, dann der Rest",
+          "Mit KI entwerfen füllt die freie Zeit um Termine, Rückgängig stellt alles wieder her",
+          "Hinweise zeigen einen überbuchten Tag und Lücken, in die eine Aufgabe passt"
+        ],
+        "alt": "Der Tagesplaner mit Aufgaben und Kalenderterminen auf einer Zeitleiste"
+      },
+      "today": {
+        "title": "Heute, mit deinem Kalender",
+        "body": "Starte den Tag und Heute zeigt nur, was du dir vorgenommen hast: den aktuellen Block, dann die Agenda, mit deinen Google-, Apple- oder Outlook-Terminen dazwischen.",
+        "points": [
+          "Über die Jetzt-Karte erledigen oder verschieben",
+          "Kalender-Feeds nur lesend, verschlüsselt gespeichert",
+          "Ein KI-Tagesabschluss nimmt Unerledigtes mit in den nächsten Tag"
+        ],
+        "alt": "Heute mit der nächsten Aufgabe, der Agenda und Terminen aus zwei Kalendern"
+      }
+    }
   }
 }

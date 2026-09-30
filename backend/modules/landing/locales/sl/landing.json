@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Zamenjaj jezik",
     "langSwitcherCurrent": "Jezik: {{name}}",
-    "description": "Področja, cilji, projekti in naloge, plus opombe in navade, v enem sistemu. Nastavite račun tududi Cloud v minuti. Strežnik MCP, ki izpostavlja {{tools}} orodij, omogoča agentom AI, da delajo na vašem seznamu. Samostojno gostovanje je na voljo, če raje zaganjate strežnik sami.",
+    "description": "Zapišite vse, z UI načrtujte dan okoli koledarja in imejte področja, cilje, projekte, zapiske in navade v enem sistemu. Strežnik MCP z {{tools}} orodji omogoča agentom UI, da delajo z vašim seznamom. Račun tududi Cloud je pripravljen v minuti.",
     "title": "tududi: upravljalnik nalog in sistem za upravljanje življenja, z MCP za agente AI"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Dokumentacija",
     "changelog": "Spremembe",
     "signIn": "Prijava",
-    "toggle": "Odpri meni"
+    "toggle": "Odpri meni",
+    "plan": "Načrtuj dan"
   },
   "hero": {
     "badgeStars": "zvezdic na GitHubu",
@@ -26,7 +27,7 @@
     "screenshotAlt": "Vmesnik tududi s pogledom Danes in načrtovanimi opravili",
     "cloudNote": "Brez strežnika za namestitev. Mesečno ali letno, in lahko prekličete kadarkoli.",
     "ctaPrimary": "Začni na tududi Cloud",
-    "lede": "Področja, cilji, projekti, naloge, opombe in navade, v enem sistemu. Ustvarite račun Cloud v minuti.",
+    "lede": "Zapišite vse, z UI načrtujte dan okoli koledarja in imejte področja, cilje, projekte, zapiske in navade v enem sistemu. Račun Cloud ustvarite v minuti.",
     "titleLine1": "Produktivnost, preprosto narejena",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Vpogled v projekt",
         "body": "Hitra ocena stanja projekta: kaj se premika in kaj obtiči."
+      },
+      "plan": {
+        "title": "Načrtuj dan",
+        "body": "Razporedi vaš dan v prosti čas okoli sestankov in utemelji vsak blok."
+      },
+      "wrapUp": {
+        "title": "Povzetek dneva",
+        "body": "Ob koncu dneva: kaj je opravljeno, vzorec, vreden pozornosti, in kaj prenesti na jutri."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Celovit sistem za urejeno življenje",
     "showAll": "Pokaži vseh {{count}} funkcij",
     "groups": {
+      "planDay": "Zapiši in načrtuj",
       "planFocus": "Načrtovanje in osredotočenost",
       "tasksProjects": "Opravila in projekti",
       "accessAnywhere": "Dostop od koder koli",
       "privacyCollab": "Zasebnost in sodelovanje"
     },
     "cards": {
+      "capture": {
+        "title": "Eno polje za vse",
+        "body": "Dodajajte prejeto, opravila, zapiske ali projekte od koder koli, z datotekami. Prilepljen posnetek zaslona postane element."
+      },
+      "nlpDates": {
+        "title": "Datumi z običajnimi besedami",
+        "body": "»tomorrow«, »next fri«, »every weekday«: datumi in ponavljanja se preberejo med tipkanjem, skupaj z #oznakami, +Projektom in @osebo."
+      },
+      "planMyDay": {
+        "title": "Načrtuj dan",
+        "body": "Načrtovalnik, ki opravila postavi v prosti čas okoli sestankov, s trajanjem, razvrščenimi predlogi in nasveti."
+      },
+      "todayCalendar": {
+        "title": "Danes s koledarjem",
+        "body": "Povežite koledarje Google, Apple ali Outlook in vidite sestanke ob opravilih, trenutni blok na vrhu."
+      },
+      "aiPlanning": {
+        "title": "Načrtovanje dneva z UI",
+        "body": "Osnutek dneva z UI, ocene trajanja opravil in povzetek dneva, ki prenese nedokončano."
+      },
       "goals": {
         "title": "Cilji",
         "body": "Določite rezultate za sezono ali leto in poglejte, katera Področja in Projekti jih dejansko premikajo naprej."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Eisenhowerjeva matrika in Kanban",
         "body": "Preklopite na Eisenhowerjevo matriko ali tablo Kanban, ko je vprašanje preprosto: kaj naj naredim zdaj."
-      },
-      "dueDates": {
-        "title": "Pametni roki",
-        "body": "Samodejno razvrščanje: današnje prioritete, bližajoči se roki in opravila za nekoč."
       },
       "insights": {
         "title": "Vpogledi v produktivnost",
@@ -210,10 +236,6 @@
         "title": "Dostop do API in Swagger",
         "body": "Različicam prilagojena dokumentacija Swagger in osebni žetoni za dostop za lastne povezave."
       },
-      "responsive": {
-        "title": "Odzivna zasnova",
-        "body": "Postavitev, ki se čisto prilagodi od širokega namiznega zaslona do telefona v žepu."
-      },
       "privacy": {
         "title": "Zasebnost in nadzor",
         "body": "Obdržite podatke zase. Gostujte sami za popoln nadzor ali izberite Upravljano namestitev s šifriranimi varnostnimi kopijami."
@@ -252,7 +274,7 @@
         "features": [
           "Deluje v minuti, brez strežnika za namestitev",
           "Neomejene naloge, projekti in opombe, plus priloge",
-          "AI asistent, MCP, sinhronizacija CalDAV in bot za Telegram",
+          "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
           "Posodobitve in dnevne varnostne kopije, poskrbljene za vas, z {{proStorageGb}} GB prostora",
           "Izvozite vse kadarkoli, izbrišite svoj račun sami"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Neomejene naloge, projekti in opombe",
       "Priloge in nalaganje datotek",
-      "AI asistent, MCP, sinhronizacija CalDAV in bot za Telegram",
+      "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
       "Dnevne varnostne kopije in upravljane posodobitve",
       "Podpora po e-pošti",
       "Izvozite vse, kadarkoli"
@@ -456,5 +478,43 @@
     "sent": "Hvala, vaše sporočilo je na poti. Odgovorili bomo po e-pošti.",
     "invalid": "Vpišite ime, veljaven e-poštni naslov in sporočilo.",
     "failed": "Sporočila trenutno ni bilo mogoče poslati. Pišite nam na"
+  },
+  "plan": {
+    "eyebrow": "Načrtuj dan",
+    "title": "Od bežne misli do zaključenega dneva",
+    "sub": "Zapišite stvari takoj, ko se pojavijo, z UI načrtujte dan okoli sestankov in ga opravite blok za blokom.",
+    "stepLabel": "Korak {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Zapišite vse, z običajnimi besedami",
+        "body": "Eno polje za dodajanje za prejeto, opravila, zapiske in projekte, povsod v aplikaciji. Pišite, kot razmišljate, tududi dopolni ostalo.",
+        "points": [
+          "»next fri«, »in 3 days« ali »every first monday« nastavi datum ali ponavljanje",
+          "#oznake, +Projekt in @oseba se prepoznajo med tipkanjem",
+          "Prilepite posnetek zaslona ali spustite datoteke in gredo zraven"
+        ],
+        "alt": "Polje za dodajanje spremeni stavek v ponavljajoče se opravilo z oznako in projektom"
+      },
+      "plan": {
+        "title": "Načrtuj dan z UI",
+        "body": "Načrtovalnik pokaže, kaj gre danes, v vrstnem redu, ki ga izberete. Opravilom določite trajanje in jih postavite v prosti čas med sestanki ali pa naj UI pripravi osnutek celega dne.",
+        "points": [
+          "Razvrščeni predlogi: zamujeno, danes, v teku, nato ostalo",
+          "Osnutek z UI zapolni prosti čas okoli sestankov, Razveljavi pa ga povrne",
+          "Nasveti opozorijo na prezaseden dan in vrzeli, kamor gre opravilo"
+        ],
+        "alt": "Dnevni načrtovalnik z opravili in sestanki na eni časovnici"
+      },
+      "today": {
+        "title": "Danes, z vašim koledarjem",
+        "body": "Začnite dan in Danes pokaže le to, kar ste si zadali: trenutni blok, nato dnevni red, vmes pa sestanke iz Googla, Appla ali Outlooka.",
+        "points": [
+          "Označite kot opravljeno ali preložite s kartice Zdaj",
+          "Koledarski viri samo za branje, shranjeni šifrirano",
+          "UI povzetek ob koncu dneva prenese nedokončano na jutri"
+        ],
+        "alt": "Danes z naslednjim opravilom, dnevnim redom in sestanki iz dveh koledarjev"
+      }
+    }
   }
 }

@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Schimbă limba",
     "langSwitcherCurrent": "Limba: {{name}}",
-    "description": "Arii, obiective, proiecte și sarcini, plus notițe și obiceiuri, într-un singur sistem. Configurează un cont tududi Cloud într-un minut. Un server MCP care expune {{tools}} unelte permite agenților AI să lucreze pe lista ta. Auto-hostarea e disponibilă dacă preferi să rulezi serverul tu însuți.",
+    "description": "Notează orice, planifică ziua cu AI în jurul calendarului și ține ariile, obiectivele, proiectele, notele și obiceiurile într-un singur sistem. Un server MCP cu {{tools}} instrumente le permite agenților AI să lucreze cu lista ta. Un cont tududi Cloud se creează într-un minut.",
     "title": "tududi: manager de sarcini și sistem de gestionare a vieții, cu MCP pentru agenți AI"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Documentație",
     "changelog": "Modificări",
     "signIn": "Autentificare",
-    "toggle": "Deschide meniul"
+    "toggle": "Deschide meniul",
+    "plan": "Planifică-ți ziua"
   },
   "hero": {
     "badgeStars": "stele pe GitHub",
@@ -26,7 +27,7 @@
     "screenshotAlt": "Interfața tududi, cu vizualizarea Astăzi și sarcinile planificate",
     "cloudNote": "Niciun server de configurat. Lunar sau anual, și poți anula oricând.",
     "ctaPrimary": "Începe pe tududi Cloud",
-    "lede": "Arii, obiective, proiecte, sarcini, notițe și obiceiuri, într-un singur sistem. Creează un cont Cloud într-un minut.",
+    "lede": "Notează orice, planifică ziua cu AI în jurul calendarului și ține ariile, obiectivele, proiectele, notele și obiceiurile într-un singur sistem. Creează un cont Cloud într-un minut.",
     "titleLine1": "Productivitate simplificată",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Analiza proiectului",
         "body": "O evaluare rapidă a stării unui proiect: ce avansează și ce s-a blocat."
+      },
+      "plan": {
+        "title": "Planifică-ți ziua",
+        "body": "Îți împarte ziua în timpul liber din jurul întâlnirilor, cu un motiv pentru fiecare bloc."
+      },
+      "wrapUp": {
+        "title": "Rezumatul zilei",
+        "body": "La final de zi: ce s-a făcut, un tipar de reținut și ce trece pe mâine."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Un sistem complet pentru o viață organizată",
     "showAll": "Arată toate cele {{count}} funcții",
     "groups": {
+      "planDay": "Notează și planifică",
       "planFocus": "Planificare și concentrare",
       "tasksProjects": "Sarcini și proiecte",
       "accessAnywhere": "Acces de oriunde",
       "privacyCollab": "Confidențialitate și colaborare"
     },
     "cards": {
+      "capture": {
+        "title": "O casetă pentru tot",
+        "body": "Adaugă elemente în inbox, sarcini, note sau proiecte de oriunde, cu fișiere. O captură lipită devine chiar elementul."
+      },
+      "nlpDates": {
+        "title": "Date în cuvinte simple",
+        "body": "„tomorrow”, „next fri”, „every weekday”: datele și repetările sunt citite în timp ce scrii, alături de #etichete, +Proiect și @persoană."
+      },
+      "planMyDay": {
+        "title": "Planifică-ți ziua",
+        "body": "Un planificator care pune sarcinile în timpul liber din jurul întâlnirilor, cu durate, sugestii ordonate și sfaturi."
+      },
+      "todayCalendar": {
+        "title": "Azi cu calendarul tău",
+        "body": "Conectează calendare Google, Apple sau Outlook și vezi întâlnirile lângă sarcini, cu blocul curent sus."
+      },
+      "aiPlanning": {
+        "title": "Planificarea zilei cu AI",
+        "body": "Schițează ziua cu AI, primește estimări de durată și un rezumat de seară care duce mai departe ce a rămas."
+      },
       "goals": {
         "title": "Obiective",
         "body": "Stabilește rezultate pentru un sezon sau un an și vezi ce Domenii și Proiecte le duc cu adevărat înainte."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Matricea Eisenhower și Kanban",
         "body": "Treci la o matrice Eisenhower sau la o tablă Kanban când întrebarea este pur și simplu: ce fac acum."
-      },
-      "dueDates": {
-        "title": "Termene inteligente",
-        "body": "Clasificare automată: prioritățile de azi, termenele care se apropie și sarcinile pentru cândva."
       },
       "insights": {
         "title": "Statistici de productivitate",
@@ -210,10 +236,6 @@
         "title": "Acces API și Swagger",
         "body": "Documentație Swagger cu versiuni și jetoane personale de acces pentru integrări proprii."
       },
-      "responsive": {
-        "title": "Design adaptabil",
-        "body": "Un aranjament care se adaptează curat de la un ecran lat de birou până la telefonul din buzunar."
-      },
       "privacy": {
         "title": "Confidențialitate și control",
         "body": "Păstrează-ți datele private. Găzduiește singur pentru control deplin sau alege o instanță Administrată cu copii de siguranță criptate."
@@ -252,7 +274,7 @@
         "features": [
           "Funcțional într-un minut, fără server de configurat",
           "Sarcini, proiecte și notițe nelimitate, plus atașamente",
-          "Asistent AI, MCP, sincronizare CalDAV și botul de Telegram",
+          "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
           "Actualizări și backupuri zilnice gestionate pentru tine, cu {{proStorageGb}} GB de spațiu",
           "Exportă totul oricând, șterge-ți contul singur"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Sarcini, proiecte și notițe nelimitate",
       "Atașamente și încărcare de fișiere",
-      "Asistent AI, MCP, sincronizare CalDAV și botul de Telegram",
+      "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
       "Backupuri zilnice și actualizări administrate",
       "Suport prin e-mail",
       "Exportă totul, oricând"
@@ -456,5 +478,43 @@
     "sent": "Mulțumim, mesajul tău e pe drum. Îți răspundem pe e-mail.",
     "invalid": "Completează numele, o adresă de e-mail validă și un mesaj.",
     "failed": "Mesajul nu a putut fi trimis acum. Scrie-ne la"
+  },
+  "plan": {
+    "eyebrow": "Planifică-ți ziua",
+    "title": "De la un gând trecător la o zi încheiată",
+    "sub": "Notează lucrurile imediat ce apar, planifică ziua în jurul întâlnirilor cu AI și parcurge-o bloc cu bloc.",
+    "stepLabel": "Pasul {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Notează orice, cu vorbele tale",
+        "body": "O singură casetă de adăugare pentru inbox, sarcini, note și proiecte, peste tot în aplicație. Scrie cum gândești și tududi completează restul.",
+        "points": [
+          "„next fri”, „in 3 days” sau „every first monday” stabilește data sau repetarea",
+          "#etichete, +Proiect și @persoană sunt recunoscute în timp ce scrii",
+          "Lipește o captură de ecran sau trage fișiere și merg odată cu ea"
+        ],
+        "alt": "Caseta de adăugare transformă o frază într-o sarcină recurentă cu etichetă și proiect"
+      },
+      "plan": {
+        "title": "Planifică-ți ziua, cu AI",
+        "body": "Planificatorul arată ce încape azi, în ordinea aleasă de tine. Dă fiecărei sarcini o durată și pune-o în timpul liber dintre întâlniri sau lasă AI să schițeze toată ziua.",
+        "points": [
+          "Sugestii ordonate: întârziate, scadente azi, în lucru, apoi restul",
+          "Schița cu AI umple timpul liber din jurul întâlnirilor, iar Anulează revine",
+          "Sfaturile semnalează o zi supraîncărcată și golurile în care încape o sarcină"
+        ],
+        "alt": "Planificatorul zilei cu sarcini și întâlniri pe aceeași axă a timpului"
+      },
+      "today": {
+        "title": "Azi, cu calendarul tău",
+        "body": "Pornește ziua și Azi arată doar ce ți-ai propus: blocul curent, apoi agenda, cu întâlnirile din Google, Apple sau Outlook între ele.",
+        "points": [
+          "Marchează ca făcut sau amână din cardul Acum",
+          "Calendare doar în citire, stocate criptat",
+          "Un rezumat AI la final de zi mută ce a rămas pe mâine"
+        ],
+        "alt": "Azi cu următoarea sarcină, agenda și întâlniri din două calendare"
+      }
+    }
   }
 }

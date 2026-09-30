@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Mudar de idioma",
     "langSwitcherCurrent": "Idioma: {{name}}",
-    "description": "Áreas, metas, projetos e tarefas, além de notas e hábitos, em um sistema só. Configure uma conta tududi Cloud em um minuto. Um servidor MCP que expõe {{tools}} ferramentas permite que agentes de IA trabalhem na sua lista. O autoalojamento está lá se você preferir rodar o servidor você mesmo.",
+    "description": "Anote tudo, planeje o dia com IA em torno do seu calendário e mantenha áreas, metas, projetos, notas e hábitos num só sistema. Um servidor MCP com {{tools}} ferramentas deixa agentes de IA trabalharem na sua lista. Crie uma conta tududi Cloud em um minuto.",
     "title": "tududi: gerenciador de tarefas e sistema de organização de vida, com MCP para agentes de IA"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Documentação",
     "changelog": "Novidades",
     "signIn": "Entrar",
-    "toggle": "Abrir o menu"
+    "toggle": "Abrir o menu",
+    "plan": "Planeje seu dia"
   },
   "hero": {
     "badgeStars": "estrelas no GitHub",
@@ -26,7 +27,7 @@
     "screenshotAlt": "A interface do tududi, com a vista Hoje e as tarefas planeadas",
     "cloudNote": "Nenhum servidor para configurar. Mensal ou anual, e você pode cancelar quando quiser.",
     "ctaPrimary": "Começar no tududi Cloud",
-    "lede": "Áreas, metas, projetos, tarefas, notas e hábitos, em um sistema só. Crie uma conta Cloud em um minuto.",
+    "lede": "Anote tudo, planeje o dia com IA em torno do seu calendário e mantenha áreas, metas, projetos, notas e hábitos num só sistema. Crie uma conta Cloud em um minuto.",
     "titleLine1": "Produtividade feita simples",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Análise de projetos",
         "body": "Uma avaliação rápida do estado de um projeto: o que avança e o que está parado."
+      },
+      "plan": {
+        "title": "Planeje seu dia",
+        "body": "Distribui seu dia no tempo livre entre as reuniões, com um motivo para cada bloco."
+      },
+      "wrapUp": {
+        "title": "Resumo do dia",
+        "body": "No fim do dia: o que foi feito, um padrão a notar e o que levar para amanhã."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Um sistema completo para uma vida organizada",
     "showAll": "Ver as {{count}} funcionalidades",
     "groups": {
+      "planDay": "Anote e planeje",
       "planFocus": "Planear e focar",
       "tasksProjects": "Tarefas e projetos",
       "accessAnywhere": "Acesso em qualquer lugar",
       "privacyCollab": "Privacidade e colaboração"
     },
     "cards": {
+      "capture": {
+        "title": "Uma caixa para tudo",
+        "body": "Adicione itens à caixa de entrada, tarefas, notas ou projetos de qualquer lugar, com arquivos. Uma captura colada vira o item."
+      },
+      "nlpDates": {
+        "title": "Datas em palavras simples",
+        "body": "“tomorrow”, “next fri”, “every weekday”: datas e repetições são lidas enquanto você digita, junto com #tags, +Projeto e @pessoa."
+      },
+      "planMyDay": {
+        "title": "Planeje seu dia",
+        "body": "Um planejador que encaixa tarefas no tempo livre entre reuniões, com durações, sugestões ordenadas e dicas."
+      },
+      "todayCalendar": {
+        "title": "Hoje com seu calendário",
+        "body": "Conecte calendários Google, Apple ou Outlook e veja reuniões ao lado das tarefas, com o bloco atual no topo."
+      },
+      "aiPlanning": {
+        "title": "Planejamento com IA",
+        "body": "Monte o dia com IA, receba estimativas de duração e um resumo no fim do dia que leva o que ficou."
+      },
       "goals": {
         "title": "Objetivos",
         "body": "Defina resultados para uma estação ou para um ano, e veja que Áreas e Projetos os fazem mesmo avançar."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Matriz de Eisenhower e Kanban",
         "body": "Mude para uma matriz de Eisenhower ou um quadro Kanban quando a pergunta é apenas: o que faço agora."
-      },
-      "dueDates": {
-        "title": "Prazos inteligentes",
-        "body": "Categorização automática: as prioridades de hoje, os prazos que se aproximam e as tarefas para um dia."
       },
       "insights": {
         "title": "Indicadores de produtividade",
@@ -210,10 +236,6 @@
         "title": "Acesso à API e Swagger",
         "body": "Documentação Swagger com versões e tokens de acesso pessoais para integrações à medida."
       },
-      "responsive": {
-        "title": "Design adaptável",
-        "body": "Um layout que se adapta com clareza do ecrã panorâmico ao telemóvel no seu bolso."
-      },
       "privacy": {
         "title": "Privacidade e controlo",
         "body": "Mantenha os seus dados privados. Aloje por si para ter controlo total, ou use uma instância Gerida com cópias de segurança cifradas."
@@ -252,7 +274,7 @@
         "features": [
           "Funcionando em um minuto, sem servidor para configurar",
           "Tarefas, projetos e notas ilimitados, mais anexos",
-          "Assistente de IA, MCP, sincronização CalDAV e o bot do Telegram",
+          "Planejamento com IA, MCP, calendários, CalDAV e o bot do Telegram",
           "Atualizações e backups diários cuidados para você, com {{proStorageGb}} GB de armazenamento",
           "Exporte tudo a qualquer momento, exclua a sua conta você mesmo"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Tarefas, projetos e notas ilimitados",
       "Anexos e envio de arquivos",
-      "Assistente de IA, MCP, sincronização CalDAV e o bot do Telegram",
+      "Planejamento com IA, MCP, calendários, CalDAV e o bot do Telegram",
       "Backups diários e atualizações gerenciadas",
       "Suporte por e-mail",
       "Exporte tudo, a qualquer momento"
@@ -456,5 +478,43 @@
     "sent": "Obrigado, sua mensagem está a caminho. Responderemos por e-mail.",
     "invalid": "Preencha seu nome, um e-mail válido e uma mensagem.",
     "failed": "Não foi possível enviar sua mensagem agora. Escreva para"
+  },
+  "plan": {
+    "eyebrow": "Planeje seu dia",
+    "title": "De uma ideia solta a um dia concluído",
+    "sub": "Anote as coisas assim que surgem, planeje o dia em torno das reuniões com IA e avance bloco a bloco.",
+    "stepLabel": "Passo {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Anote tudo, com suas palavras",
+        "body": "Uma caixa só para caixa de entrada, tarefas, notas e projetos, em todo o app. Escreva como pensa e o tududi completa o resto.",
+        "points": [
+          "“next fri”, “in 3 days” ou “every first monday” define a data ou a repetição",
+          "#tags, +Projeto e @pessoa são reconhecidos enquanto você digita",
+          "Cole uma captura de tela ou solte arquivos e eles vão junto"
+        ],
+        "alt": "A caixa Adicionar transformando uma frase em tarefa recorrente com tag e projeto"
+      },
+      "plan": {
+        "title": "Planeje seu dia, com IA",
+        "body": "O planejador mostra o que cabe hoje, na ordem que você escolher. Dê uma duração a cada tarefa e encaixe entre as reuniões, ou deixe a IA montar o dia inteiro.",
+        "points": [
+          "Sugestões ordenadas: atrasadas, para hoje, em andamento e o resto",
+          "Montar com IA preenche o tempo livre entre reuniões, e Desfazer volta atrás",
+          "Dicas avisam de um dia lotado e de brechas onde cabe uma tarefa"
+        ],
+        "alt": "O planejador com tarefas e reuniões na mesma linha do tempo"
+      },
+      "today": {
+        "title": "Hoje, com seu calendário",
+        "body": "Comece o dia e Hoje mostra só o que você assumiu: o bloco atual, depois a agenda, com reuniões do Google, Apple ou Outlook no meio.",
+        "points": [
+          "Conclua ou adie pelo cartão Agora",
+          "Calendários somente leitura, guardados criptografados",
+          "Um resumo com IA no fim do dia leva o que ficou para amanhã"
+        ],
+        "alt": "Hoje com a próxima tarefa, a agenda e reuniões de dois calendários"
+      }
+    }
   }
 }

@@ -604,6 +604,28 @@
         .browser-dots span { width: 11px; height: 11px; border-radius: 50%; }
         .browser-frame img { width: 100%; height: auto; display: block; border-radius: 10px 10px 0 0; }
 
+        /* ---------- Plan your day ----------
+           Text and screenshot side by side, alternating sides, stacked on
+           phones with the text first. */
+        .plan-day { background: #f7f6f3; }
+        .plan-step { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
+        .plan-step + .plan-step { margin-top: 96px; }
+        .plan-step-flip .plan-step-text { order: 2; }
+        .plan-step-num { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1e86e5; margin-bottom: 14px; }
+        .plan-step h3 { font-family: 'Manrope', 'Inter', sans-serif; font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #111827; margin: 0 0 14px; }
+        .plan-step p { font-size: 17px; color: #4b5563; line-height: 1.65; margin: 0 0 18px; }
+        .plan-step ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+        .plan-step li { display: flex; gap: 10px; font-size: 15px; color: #374151; line-height: 1.5; }
+        .plan-step li i { color: #1e86e5; margin-top: 4px; font-size: 13px; }
+        .plan-step-shot { margin: 0; padding-bottom: 10px; box-shadow: 0 30px 60px -24px rgba(17, 24, 39, 0.28); }
+        .plan-step-shot img { border-radius: 10px; }
+        @media (max-width: 900px) {
+            .plan-step { grid-template-columns: 1fr; gap: 28px; }
+            .plan-step-flip .plan-step-text { order: 0; }
+            .plan-step + .plan-step { margin-top: 64px; }
+            .plan-step h3 { font-size: 25px; }
+        }
+
         /* ---------- Dark sections ---------- */
         .section-dark { background: #0d1420; color: #ffffff; }
         .section-dark .section-title { color: #fff; }

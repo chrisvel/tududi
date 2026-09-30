@@ -201,6 +201,57 @@ describe('Landing page', () => {
         expect(res.text).toContain('50 free every month');
     });
 
+    it('walks through capture, planning and Today before the feature grid', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const planAt = res.text.indexOf('id="plan"');
+        expect(planAt).toBeGreaterThan(-1);
+        expect(planAt).toBeLessThan(res.text.indexOf('id="features"'));
+
+        const section = res.text.slice(
+            planAt,
+            res.text.indexOf('</section>', planAt)
+        );
+        ['capture-light.png', 'plan-light.png', 'today-light.png'].forEach(
+            (img) =>
+                expect(section).toContain(`/landing-assets/screenshots/${img}`)
+        );
+        expect(section).toContain('Plan my day, with AI');
+
+        const nav = res.text.slice(
+            res.text.indexOf('<div class="nav-wrap">'),
+            res.text.indexOf('<section class="hero"')
+        );
+        const desktop = nav.slice(0, nav.indexOf('id="nav-mobile"'));
+        const mobile = nav.slice(nav.indexOf('id="nav-mobile"'));
+        expect(desktop.match(/href="#plan"/g)).toHaveLength(1);
+        expect(mobile.match(/href="#plan"/g)).toHaveLength(1);
+    });
+
+    it('leads the featured cards with capture and planning', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const grid = res.text.slice(
+            res.text.indexOf('<div class="feature-grid">'),
+            res.text.indexOf('id="feature-rest"')
+        );
+        expect(grid.match(/class="feature-card"/g)).toHaveLength(8);
+        expect(grid).toContain('One box for everything');
+        expect(grid).toContain('Plan my day');
+        expect(grid).toContain('Today with your calendar');
+    });
+
+    it('serves the new screenshots', async () => {
+        for (const img of [
+            'capture-light.png',
+            'plan-light.png',
+            'today-light.png',
+        ]) {
+            const res = await request(app)
+                .get(`/landing-assets/screenshots/${img}`)
+                .set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+        }
+    });
+
     it('keeps the footer brand free of open source wording', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         const brandStart = res.text.indexOf('<div class="footer-brand">');
@@ -695,6 +746,13 @@ describe('Landing page', () => {
             expect(i18n.t('faq.items.freePlan.q')).not.toBe(
                 'faq.items.freePlan.q'
             );
+            ['capture', 'plan', 'today'].forEach((step) => {
+                expect(catalog.plan.steps[step].title).toBeTruthy();
+                expect(catalog.plan.steps[step].points).toHaveLength(3);
+            });
+            expect(catalog.plan.stepLabel).toContain('{{n}}');
+            expect(catalog.features.cards.planMyDay.title).toBeTruthy();
+            expect(catalog.features.cards.dueDates).toBeUndefined();
         });
     });
 });

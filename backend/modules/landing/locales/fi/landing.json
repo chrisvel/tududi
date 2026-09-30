@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Vaihda kieltä",
     "langSwitcherCurrent": "Kieli: {{name}}",
-    "description": "Alueet, tavoitteet, projektit ja tehtävät, sekä muistiinpanot ja tavat, yhdessä järjestelmässä. Ota tududi Cloud -tili käyttöön minuutissa. MCP-palvelin, joka tarjoaa {{tools}} työkalua, antaa AI-agenttien työskennellä listasi kanssa. Itse ylläpito on tarjolla, jos haluat mieluummin ajaa palvelinta itse.",
+    "description": "Kirjaa kaikki, suunnittele päivä tekoälyllä kalenterisi ympärille ja pidä alueet, tavoitteet, projektit, muistiinpanot ja tavat yhdessä järjestelmässä. MCP-palvelin, jossa on {{tools}} työkalua, antaa tekoälyagenttien käsitellä listaasi. tududi Cloud -tili on valmis minuutissa.",
     "title": "tududi: tehtävienhallinta ja elämänhallintajärjestelmä, MCP:llä AI-agenteille"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Dokumentaatio",
     "changelog": "Muutokset",
     "signIn": "Kirjaudu sisään",
-    "toggle": "Avaa valikko"
+    "toggle": "Avaa valikko",
+    "plan": "Suunnittele päivä"
   },
   "hero": {
     "badgeStars": "tähteä GitHubissa",
@@ -26,7 +27,7 @@
     "screenshotAlt": "tududin käyttöliittymä, jossa näkyy Tänään-näkymä ja suunnitellut tehtävät",
     "cloudNote": "Ei palvelinta pystytettäväksi. Kuukausittain tai vuosittain, ja voit peruuttaa milloin tahansa.",
     "ctaPrimary": "Aloita tududi Cloudissa",
-    "lede": "Alueet, tavoitteet, projektit, tehtävät, muistiinpanot ja tavat, yhdessä järjestelmässä. Luo Cloud-tili minuutissa.",
+    "lede": "Kirjaa kaikki, suunnittele päivä tekoälyllä kalenterisi ympärille ja pidä alueet, tavoitteet, projektit, muistiinpanot ja tavat yhdessä järjestelmässä. Luo Cloud-tili minuutissa.",
     "titleLine1": "Tuottavuus tehty yksinkertaiseksi",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Projektianalyysi",
         "body": "Nopea arvio projektin tilasta: mikä etenee ja mikä on jumissa."
+      },
+      "plan": {
+        "title": "Suunnittele päivä",
+        "body": "Jakaa päiväsi tapaamisten ympärille vapaaseen aikaan ja perustelee jokaisen lohkon."
+      },
+      "wrapUp": {
+        "title": "Päiväkooste",
+        "body": "Päivän päätteeksi: mitä tehtiin, huomionarvoinen kuvio ja mitä viedään huomiseen."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Täydellinen järjestelmä järjestäytyneeseen elämään",
     "showAll": "Näytä kaikki {{count}} ominaisuutta",
     "groups": {
+      "planDay": "Kirjaa & suunnittele",
       "planFocus": "Suunnittele & keskity",
       "tasksProjects": "Tehtävät & projektit",
       "accessAnywhere": "Käytettävissä kaikkialla",
       "privacyCollab": "Yksityisyys & yhteistyö"
     },
     "cards": {
+      "capture": {
+        "title": "Yksi ruutu kaikelle",
+        "body": "Lisää saapuneita, tehtäviä, muistiinpanoja tai projekteja mistä tahansa, tiedostoineen. Liitetystä kuvakaappauksesta tulee itse kohde."
+      },
+      "nlpDates": {
+        "title": "Päivämäärät tavallisin sanoin",
+        "body": "“tomorrow”, “next fri”, “every weekday”: päivät ja toistot luetaan kirjoittaessa, samoin #tunnisteet, +Projekti ja @henkilö."
+      },
+      "planMyDay": {
+        "title": "Suunnittele päivä",
+        "body": "Suunnittelija, joka sijoittaa tehtävät tapaamisten ympärille vapaaseen aikaan, kestoineen, järjestettyine ehdotuksineen ja vinkkeineen."
+      },
+      "todayCalendar": {
+        "title": "Tänään kalenterisi kanssa",
+        "body": "Yhdistä Google-, Apple- tai Outlook-kalenterit ja näe tapaamiset tehtävien vieressä, nykyinen lohko ylimpänä."
+      },
+      "aiPlanning": {
+        "title": "Päivän suunnittelu tekoälyllä",
+        "body": "Luonnostele päivä tekoälyllä, saa kestoarviot tehtäville ja päiväkooste, joka siirtää keskeneräiset eteenpäin."
+      },
       "goals": {
         "title": "Tavoitteet",
         "body": "Aseta tulokset kaudelle tai vuodelle, ja näe mitkä Osa-alueet ja Projektit oikeasti vievät niitä eteenpäin."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Eisenhower-matriisi & Kanban",
         "body": "Vaihda Eisenhower-matriisiin tai Kanban-tauluun, kun kysymys on yksinkertaisesti: mitä teen juuri nyt."
-      },
-      "dueDates": {
-        "title": "Älykkäät eräpäivät",
-        "body": "Automaattinen luokittelu: tämän päivän prioriteetit, lähestyvät määräajat ja joskus-tehtävät."
       },
       "insights": {
         "title": "Tuottavuusnäkymät",
@@ -210,10 +236,6 @@
         "title": "API-käyttö & Swagger",
         "body": "Versioitu Swagger-dokumentaatio ja henkilökohtaiset käyttötunnisteet omiin integraatioihin."
       },
-      "responsive": {
-        "title": "Responsiivinen ulkoasu",
-        "body": "Asettelu, joka mukautuu siististi laajasta työpöytänäytöstä taskussa olevaan puhelimeen."
-      },
       "privacy": {
         "title": "Yksityisyys ja hallinta",
         "body": "Pidä tietosi yksityisinä. Ylläpidä itse täydellä hallinnalla, tai käytä Hallittua instanssia salatuin varmuuskopioin."
@@ -252,7 +274,7 @@
         "features": [
           "Käynnissä minuutissa, ei palvelinta pystytettäväksi",
           "Rajattomat tehtävät, projektit ja muistiinpanot, plus liitteet",
-          "AI-avustaja, MCP, CalDAV-synkronointi ja Telegram-botti",
+          "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
           "Päivitykset ja päivittäiset varmuuskopiot hoidettuna puolestasi, ja {{proStorageGb}} GB tallennustilaa",
           "Vie kaikki milloin tahansa, poista tilisi itse"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Rajattomat tehtävät, projektit ja muistiinpanot",
       "Liitteet ja tiedostojen lataus",
-      "AI-avustaja, MCP, CalDAV-synkronointi ja Telegram-botti",
+      "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
       "Päivittäiset varmuuskopiot ja hallitut päivitykset",
       "Tuki sähköpostitse",
       "Vie kaikki, milloin tahansa"
@@ -456,5 +478,43 @@
     "sent": "Kiitos, viestisi on matkalla. Vastaamme sähköpostitse.",
     "invalid": "Täytä nimesi, kelvollinen sähköpostiosoite ja viesti.",
     "failed": "Viestiäsi ei voitu lähettää juuri nyt. Lähetä meille sähköpostia osoitteeseen"
+  },
+  "plan": {
+    "eyebrow": "Suunnittele päivä",
+    "title": "Ohimenevästä ajatuksesta valmiiksi päiväksi",
+    "sub": "Kirjaa asiat heti kun ne tulevat mieleen, suunnittele päivä tapaamisten ympärille tekoälyn avulla ja etene lohko kerrallaan.",
+    "stepLabel": "Vaihe {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Kirjaa kaikki omin sanoin",
+        "body": "Yksi lisäysruutu saapuneille, tehtäville, muistiinpanoille ja projekteille, kaikkialla sovelluksessa. Kirjoita kuten ajattelet, tududi hoitaa loput.",
+        "points": [
+          "“next fri”, “in 3 days” tai “every first monday” asettaa päivän tai toiston",
+          "#tunnisteet, +Projekti ja @henkilö tunnistetaan kirjoittaessa",
+          "Liitä kuvakaappaus tai pudota tiedostoja, ne kulkevat mukana"
+        ],
+        "alt": "Lisäysruutu muuttaa lauseen toistuvaksi tehtäväksi tunnisteineen ja projekteineen"
+      },
+      "plan": {
+        "title": "Suunnittele päivä tekoälyn kanssa",
+        "body": "Suunnittelija näyttää, mitä tänään mahtuu, valitsemassasi järjestyksessä. Anna tehtäville kesto ja sijoita ne tapaamisten väliseen vapaaseen aikaan, tai anna tekoälyn luonnostella koko päivä.",
+        "points": [
+          "Järjestetyt ehdotukset: myöhässä, tänään erääntyvät, käynnissä, sitten muut",
+          "Luonnos tekoälyllä täyttää vapaan ajan tapaamisten ympäriltä, Kumoa palauttaa",
+          "Vinkit varoittavat ylibuukatusta päivästä ja kertovat, mihin tehtävä mahtuu"
+        ],
+        "alt": "Päiväsuunnittelija, jossa tehtävät ja tapaamiset ovat samalla aikajanalla"
+      },
+      "today": {
+        "title": "Tänään, kalenterisi kanssa",
+        "body": "Aloita päivä, niin Tänään näyttää vain sen, mihin sitouduit: nykyisen lohkon ja sitten agendan, Google-, Apple- tai Outlook-tapaamiset välissä.",
+        "points": [
+          "Merkitse valmiiksi tai siirrä Nyt-kortista",
+          "Kalenterisyötteet vain luettavina, tallennettu salattuna",
+          "Tekoälyn päiväkooste siirtää keskeneräiset huomiselle"
+        ],
+        "alt": "Tänään-näkymä, jossa seuraava tehtävä, agenda ja kahden kalenterin tapaamiset"
+      }
+    }
   }
 }

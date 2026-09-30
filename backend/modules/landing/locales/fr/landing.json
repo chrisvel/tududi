@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Changer de langue",
     "langSwitcherCurrent": "Langue : {{name}}",
-    "description": "Domaines, objectifs, projets et tâches, ainsi que notes et habitudes, dans un seul système. Configurez un compte tududi Cloud en une minute. Un serveur MCP exposant {{tools}} outils permet aux agents IA de gérer votre liste. L'auto-hébergement est disponible si vous préférez faire tourner le serveur vous-même.",
+    "description": "Notez tout, planifiez la journée avec l’IA autour de votre agenda, et gardez domaines, objectifs, projets, notes et habitudes dans un seul système. Un serveur MCP exposant {{tools}} outils laisse les agents IA travailler sur votre liste. Un compte tududi Cloud se crée en une minute.",
     "title": "tududi : gestionnaire de tâches et système de gestion de vie, avec MCP pour les agents IA"
   },
   "nav": {
@@ -14,7 +14,8 @@
     "docs": "Docs",
     "changelog": "Nouveautés",
     "signIn": "Se connecter",
-    "toggle": "Afficher le menu"
+    "toggle": "Afficher le menu",
+    "plan": "Planifier la journée"
   },
   "hero": {
     "badgeStars": "étoiles sur GitHub",
@@ -26,7 +27,7 @@
     "screenshotAlt": "L'interface de tududi, affichant la vue Aujourd'hui et ses tâches planifiées",
     "cloudNote": "Aucun serveur à configurer. Mensuel ou annuel, résiliable à tout moment.",
     "ctaPrimary": "Démarrer sur tududi Cloud",
-    "lede": "Domaines, objectifs, projets, tâches, notes et habitudes, dans un seul système. Créez un compte Cloud en une minute.",
+    "lede": "Notez tout, planifiez la journée avec l’IA autour de votre agenda, et gardez domaines, objectifs, projets, notes et habitudes dans un seul système. Créez un compte Cloud en une minute.",
     "titleLine1": "La productivité en toute simplicité",
     "titleLine2": ""
   },
@@ -79,6 +80,14 @@
       "project": {
         "title": "Analyse de projet",
         "body": "Un diagnostic rapide de l'état d'un projet : ce qui avance, ce qui bloque."
+      },
+      "plan": {
+        "title": "Planifier la journée",
+        "body": "Répartit votre journée dans le temps libre autour de vos réunions, avec une raison pour chaque bloc."
+      },
+      "wrapUp": {
+        "title": "Bilan de la journée",
+        "body": "En fin de journée : ce qui est fait, une tendance à noter et ce qu’il faut reporter à demain."
       }
     },
     "configCloudTab": "Cloud",
@@ -120,12 +129,33 @@
     "title": "Un système complet pour une vie organisée",
     "showAll": "Afficher les {{count}} fonctionnalités",
     "groups": {
+      "planDay": "Noter & planifier",
       "planFocus": "Planifier & se concentrer",
       "tasksProjects": "Tâches & projets",
       "accessAnywhere": "Accès partout",
       "privacyCollab": "Confidentialité & collaboration"
     },
     "cards": {
+      "capture": {
+        "title": "Une zone pour tout",
+        "body": "Ajoutez éléments de boîte de réception, tâches, notes ou projets de partout, avec fichiers. Une capture collée devient l’élément."
+      },
+      "nlpDates": {
+        "title": "Des dates en mots simples",
+        "body": "« tomorrow », « next fri », « every weekday » : dates et répétitions sont lues pendant la saisie, avec #tags, +Projet et @personne."
+      },
+      "planMyDay": {
+        "title": "Planifier la journée",
+        "body": "Un planificateur qui place les tâches dans le temps libre autour de vos réunions, avec durées, suggestions classées et conseils."
+      },
+      "todayCalendar": {
+        "title": "Aujourd’hui avec votre agenda",
+        "body": "Connectez Google, Apple ou Outlook et voyez vos réunions à côté de vos tâches, le bloc en cours en haut."
+      },
+      "aiPlanning": {
+        "title": "Planification par IA",
+        "body": "Esquissez la journée avec l’IA, obtenez des durées estimées et un bilan du soir qui reporte l’inachevé."
+      },
       "goals": {
         "title": "Objectifs",
         "body": "Définissez des résultats pour une saison ou une année, et voyez quels Domaines et Projets les font réellement avancer."
@@ -145,10 +175,6 @@
       "matrixKanban": {
         "title": "Matrice d'Eisenhower & Kanban",
         "body": "Basculez vers une matrice d'Eisenhower ou un tableau Kanban quand la question est simplement : que fais-je maintenant."
-      },
-      "dueDates": {
-        "title": "Échéances intelligentes",
-        "body": "Classement automatique : les priorités du jour, les échéances à venir et les tâches pour plus tard."
       },
       "insights": {
         "title": "Analyses de productivité",
@@ -210,10 +236,6 @@
         "title": "Accès API & Swagger",
         "body": "Une documentation Swagger versionnée et des jetons d'accès personnels pour vos intégrations sur mesure."
       },
-      "responsive": {
-        "title": "Design adaptatif",
-        "body": "Une mise en page qui s'adapte proprement d'un grand écran de bureau au téléphone dans votre poche."
-      },
       "privacy": {
         "title": "Confidentialité et contrôle",
         "body": "Gardez vos données privées. Auto-hébergez pour un contrôle total, ou choisissez une instance Infogérée avec sauvegardes chiffrées."
@@ -252,7 +274,7 @@
         "features": [
           "Opérationnel en une minute, sans serveur à configurer",
           "Tâches, projets et notes illimités, plus les pièces jointes",
-          "Assistant IA, MCP, synchronisation CalDAV et le bot Telegram",
+          "Planification par IA, MCP, flux d’agenda, CalDAV et le bot Telegram",
           "Mises à jour et sauvegardes quotidiennes prises en charge pour vous, avec {{proStorageGb}} Go de stockage",
           "Exportez tout à tout moment, supprimez votre compte vous-même"
         ],
@@ -394,7 +416,7 @@
     "includes": [
       "Tâches, projets et notes illimités",
       "Pièces jointes et envoi de fichiers",
-      "Assistant IA, MCP, synchronisation CalDAV et le bot Telegram",
+      "Planification par IA, MCP, flux d’agenda, CalDAV et le bot Telegram",
       "Sauvegardes quotidiennes et mises à jour gérées",
       "Support par e-mail",
       "Exportez tout, à tout moment"
@@ -456,5 +478,43 @@
     "sent": "Merci, votre message est en route. Nous vous répondrons par e-mail.",
     "invalid": "Veuillez indiquer votre nom, une adresse e-mail valide et un message.",
     "failed": "Votre message n’a pas pu être envoyé pour le moment. Écrivez-nous à"
+  },
+  "plan": {
+    "eyebrow": "Planifier la journée",
+    "title": "D’une idée qui passe à une journée bouclée",
+    "sub": "Notez les choses dès qu’elles surgissent, planifiez la journée autour de vos réunions avec l’IA, puis avancez bloc par bloc.",
+    "stepLabel": "Étape {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Tout noter, avec vos mots",
+        "body": "Une seule zone d’ajout pour la boîte de réception, les tâches, les notes et les projets, partout dans l’app. Écrivez comme vous pensez, tududi complète le reste.",
+        "points": [
+          "« next fri », « in 3 days » ou « every first monday » fixe la date ou la répétition",
+          "#tags, +Projet et @personne sont reconnus pendant la saisie",
+          "Collez une capture ou déposez des fichiers, ils suivent"
+        ],
+        "alt": "La zone d’ajout transforme une phrase en tâche récurrente avec un tag et un projet"
+      },
+      "plan": {
+        "title": "Planifier la journée, avec l’IA",
+        "body": "Le planificateur montre ce qui peut tenir aujourd’hui, dans l’ordre que vous choisissez. Donnez une durée à chaque tâche et placez-la entre vos réunions, ou laissez l’IA esquisser toute la journée.",
+        "points": [
+          "Suggestions classées : en retard, dues aujourd’hui, en cours, puis le reste",
+          "Esquisser avec l’IA remplit le temps libre autour des réunions, Annuler rétablit tout",
+          "Des conseils signalent une journée surchargée et les créneaux où une tâche tient"
+        ],
+        "alt": "Le planificateur avec tâches et réunions sur une même frise"
+      },
+      "today": {
+        "title": "Aujourd’hui, avec votre agenda",
+        "body": "Lancez la journée et Aujourd’hui ne montre que vos engagements : le bloc en cours, puis l’agenda, avec vos réunions Google, Apple ou Outlook entre les deux.",
+        "points": [
+          "Terminer ou reporter depuis la carte Maintenant",
+          "Flux d’agenda en lecture seule, stockés chiffrés",
+          "Un bilan IA en fin de journée reporte le travail inachevé au lendemain"
+        ],
+        "alt": "Aujourd’hui avec la tâche suivante, l’agenda et les réunions de deux agendas"
+      }
+    }
   }
 }
