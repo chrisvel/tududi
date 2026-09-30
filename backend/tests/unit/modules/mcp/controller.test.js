@@ -107,10 +107,11 @@ describe('MCP Controller', () => {
             await controller.listMcpTools({}, res);
 
             const result = res.json.mock.calls[0][0];
-            expect(result.tools).toHaveLength(8);
+            expect(result.tools).toHaveLength(9);
 
             const categories = result.tools.map((t) => t.category);
             expect(categories).toContain('Tasks');
+            expect(categories).toContain('Comments');
             expect(categories).toContain('Projects');
             expect(categories).toContain('Areas');
             expect(categories).toContain('Habits');
@@ -139,6 +140,21 @@ describe('MCP Controller', () => {
             expect(taskCategory.tools).toContain('delete_task');
             expect(taskCategory.tools).toContain('add_subtask');
             expect(taskCategory.tools).toContain('get_task_metrics');
+        });
+
+        it('should list comment tools', async () => {
+            const res = { json: jest.fn() };
+            await controller.listMcpTools({}, res);
+
+            const result = res.json.mock.calls[0][0];
+            const commentCategory = result.tools.find(
+                (t) => t.category === 'Comments'
+            );
+
+            expect(commentCategory).toBeDefined();
+            expect(commentCategory.count).toBe(2);
+            expect(commentCategory.tools).toContain('list_task_comments');
+            expect(commentCategory.tools).toContain('add_task_comment');
         });
 
         it('should list project tools', async () => {
