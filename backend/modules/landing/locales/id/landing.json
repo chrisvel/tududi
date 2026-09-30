@@ -11,8 +11,6 @@
     "ai": "AI & MCP",
     "pricing": "Harga",
     "faq": "FAQ",
-    "docs": "Dokumentasi",
-    "changelog": "Perubahan",
     "signIn": "Masuk",
     "toggle": "Buka menu",
     "plan": "Rencanakan harimu"
@@ -120,6 +118,8 @@
     "eyebrow": "Fitur",
     "title": "Sistem lengkap untuk hidup yang tertata",
     "showAll": "Tampilkan semua {{count}} fitur",
+    "preview": "Pratinjau",
+    "closePreview": "Tutup pratinjau",
     "groups": {
       "planDay": "Catat & rencanakan",
       "planFocus": "Merencanakan & fokus",
@@ -287,8 +287,14 @@
       "dayPlanner": "Rencanakan hari sesuai kalender",
       "habits": "Pelacakan kebiasaan",
       "goals": "Tujuan, area, dan proyek",
-      "mcp": "Server MCP untuk agen AI",
-      "openSource": "Sumber terbuka, jalan di server sendiri"
+      "notes": "Catatan di samping tugas",
+      "matrix": "Matriks Eisenhower",
+      "kanban": "Papan Kanban",
+      "views": "Tampilan pintar tersimpan",
+      "people": "Tugaskan ke orang lain",
+      "telegram": "Tangkap dari Telegram",
+      "caldav": "Sinkronisasi tugas CalDAV",
+      "mcp": "Server MCP untuk agen AI"
     },
     "values": {
       "perYear": "{{price}}/thn",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Produk",
-    "colResources": "Sumber daya",
     "colCommunity": "Komunitas & dukungan",
     "colSupport": "Dukung",
-    "linkRoadmap": "Peta jalan",
-    "linkIssues": "Laporan masalah",
     "linkCoffee": "Traktir kopi",
     "subTitle": "Berita dan pembaruan lewat email",
     "subBody": "Berita dan pembaruan produk sesekali. Tanpa spam, berhenti berlangganan kapan saja.",
     "subSubmit": "Daftar",
     "rights": "Hak cipta dilindungi undang-undang.",
-    "linkLicence": "Lisensi MIT",
     "tagline": "Sistem yang tenang dan lengkap untuk mengatur hidup dan pekerjaan.",
     "linkTerms": "Ketentuan",
     "linkPrivacy": "Privasi",

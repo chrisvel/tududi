@@ -11,8 +11,6 @@
     "ai": "KI & MCP",
     "pricing": "Priser",
     "faq": "FAQ",
-    "docs": "Dokumentasjon",
-    "changelog": "Endringer",
     "signIn": "Logg inn",
     "toggle": "Åpne menyen",
     "plan": "Planlegg dagen"
@@ -120,6 +118,8 @@
     "eyebrow": "Funksjoner",
     "title": "Et komplett system for et organisert liv",
     "showAll": "Vis alle {{count}} funksjoner",
+    "preview": "Forhåndsvis",
+    "closePreview": "Lukk forhåndsvisning",
     "groups": {
       "planDay": "Fang & planlegg",
       "planFocus": "Planlegg & fokusér",
@@ -287,8 +287,14 @@
       "dayPlanner": "Planlegg dagen rundt kalenderen",
       "habits": "Vanesporing",
       "goals": "Mål, områder og prosjekter",
-      "mcp": "MCP-server for AI-agenter",
-      "openSource": "Åpen kildekode, kjører på egen server"
+      "notes": "Notater ved siden av oppgavene",
+      "matrix": "Eisenhower-matrise",
+      "kanban": "Kanban-tavler",
+      "views": "Lagrede smarte visninger",
+      "people": "Tildel oppgaver til personer",
+      "telegram": "Legg inn fra Telegram",
+      "caldav": "Oppgavesynkronisering via CalDAV",
+      "mcp": "MCP-server for AI-agenter"
     },
     "values": {
       "perYear": "{{price}}/år",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Produkt",
-    "colResources": "Ressurser",
     "colCommunity": "Fellesskap & støtte",
     "colSupport": "Støtt",
-    "linkRoadmap": "Veikart",
-    "linkIssues": "Saker",
     "linkCoffee": "Spander en kaffe",
     "subTitle": "Nyheter og oppdateringer på e-post",
     "subBody": "Nyheter og oppdateringer om produktet innimellom. Ingen spam, meld deg av når som helst.",
     "subSubmit": "Meld meg på",
     "rights": "Med enerett.",
-    "linkLicence": "MIT-lisens",
     "tagline": "Et rolig og komplett system for å organisere liv og arbeid.",
     "linkTerms": "Vilkår",
     "linkPrivacy": "Personvern",

@@ -11,8 +11,6 @@
     "ai": "AI 및 MCP",
     "pricing": "요금",
     "faq": "자주 묻는 질문",
-    "docs": "문서",
-    "changelog": "변경 내역",
     "signIn": "로그인",
     "toggle": "메뉴 열기",
     "plan": "하루 계획"
@@ -120,6 +118,8 @@
     "eyebrow": "기능",
     "title": "정돈된 삶을 위한 완결된 시스템",
     "showAll": "{{count}}개 기능 모두 보기",
+    "preview": "미리 보기",
+    "closePreview": "미리 보기 닫기",
     "groups": {
       "planDay": "기록과 계획",
       "planFocus": "계획과 집중",
@@ -287,8 +287,14 @@
       "dayPlanner": "캘린더에 맞춘 하루 계획",
       "habits": "습관 추적",
       "goals": "목표, 영역, 프로젝트",
-      "mcp": "AI 에이전트용 MCP 서버",
-      "openSource": "오픈 소스, 내 서버에서 실행"
+      "notes": "작업 옆의 노트",
+      "matrix": "아이젠하워 매트릭스",
+      "kanban": "칸반 보드",
+      "views": "저장된 스마트 보기",
+      "people": "사람에게 작업 할당",
+      "telegram": "Telegram으로 기록",
+      "caldav": "CalDAV 작업 동기화",
+      "mcp": "AI 에이전트용 MCP 서버"
     },
     "values": {
       "perYear": "연 {{price}}",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "제품",
-    "colResources": "자료",
     "colCommunity": "커뮤니티 및 지원",
     "colSupport": "후원",
-    "linkRoadmap": "로드맵",
-    "linkIssues": "이슈",
     "linkCoffee": "커피 한 잔 사주기",
     "subTitle": "이메일로 받는 소식과 업데이트",
     "subBody": "가끔 보내드리는 제품 소식과 업데이트. 스팸 없이, 언제든 구독 해지할 수 있습니다.",
     "subSubmit": "구독",
     "rights": "All rights reserved.",
-    "linkLicence": "MIT 라이선스",
     "tagline": "삶과 일을 정리하는 차분하고 완전한 시스템.",
     "linkTerms": "이용약관",
     "linkPrivacy": "개인정보",

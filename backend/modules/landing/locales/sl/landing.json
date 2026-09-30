@@ -11,8 +11,6 @@
     "ai": "UI in MCP",
     "pricing": "Cene",
     "faq": "Pogosta vprašanja",
-    "docs": "Dokumentacija",
-    "changelog": "Spremembe",
     "signIn": "Prijava",
     "toggle": "Odpri meni",
     "plan": "Načrtuj dan"
@@ -120,6 +118,8 @@
     "eyebrow": "Funkcije",
     "title": "Celovit sistem za urejeno življenje",
     "showAll": "Pokaži vseh {{count}} funkcij",
+    "preview": "Predogled",
+    "closePreview": "Zapri predogled",
     "groups": {
       "planDay": "Zapiši in načrtuj",
       "planFocus": "Načrtovanje in osredotočenost",
@@ -287,8 +287,14 @@
       "dayPlanner": "Načrtovanje dneva okoli koledarja",
       "habits": "Sledenje navadam",
       "goals": "Cilji, področja in projekti",
-      "mcp": "Strežnik MCP za agente UI",
-      "openSource": "Odprta koda, teče na lastnem strežniku"
+      "notes": "Zapiski ob opravilih",
+      "matrix": "Eisenhowerjeva matrika",
+      "kanban": "Kanban table",
+      "views": "Shranjeni pametni pogledi",
+      "people": "Dodeljevanje opravil osebam",
+      "telegram": "Zajem iz Telegrama",
+      "caldav": "Sinhronizacija opravil prek CalDAV",
+      "mcp": "Strežnik MCP za agente UI"
     },
     "values": {
       "perYear": "{{price}}/leto",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Izdelek",
-    "colResources": "Viri",
     "colCommunity": "Skupnost in podpora",
     "colSupport": "Podprite",
-    "linkRoadmap": "Načrt razvoja",
-    "linkIssues": "Prijave",
     "linkCoffee": "Kupite nam kavo",
     "subTitle": "Novice in posodobitve po e-pošti",
     "subBody": "Občasne novice in posodobitve izdelka. Brez neželene pošte, odjava kadar koli.",
     "subSubmit": "Prijavi me",
     "rights": "Vse pravice pridržane.",
-    "linkLicence": "Licenca MIT",
     "tagline": "Miren, celovit sistem za organizacijo življenja in dela.",
     "linkTerms": "Pogoji",
     "linkPrivacy": "Zasebnost",

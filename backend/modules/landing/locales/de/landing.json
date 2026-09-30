@@ -11,8 +11,6 @@
     "ai": "KI & MCP",
     "pricing": "Preise",
     "faq": "FAQ",
-    "docs": "Doku",
-    "changelog": "Änderungen",
     "signIn": "Anmelden",
     "toggle": "Navigation umschalten",
     "plan": "Tag planen"
@@ -120,6 +118,8 @@
     "eyebrow": "Funktionen",
     "title": "Ein vollständiges System für ein geordnetes Leben",
     "showAll": "Alle {{count}} Funktionen anzeigen",
+    "preview": "Vorschau",
+    "closePreview": "Vorschau schließen",
     "groups": {
       "planDay": "Erfassen & Planen",
       "planFocus": "Planen & fokussieren",
@@ -287,8 +287,14 @@
       "dayPlanner": "Tag rund um den Kalender planen",
       "habits": "Gewohnheiten",
       "goals": "Ziele, Bereiche und Projekte",
-      "mcp": "MCP-Server für KI-Agenten",
-      "openSource": "Open Source, läuft auf eigenem Server"
+      "notes": "Notizen neben den Aufgaben",
+      "matrix": "Eisenhower-Matrix",
+      "kanban": "Kanban-Boards",
+      "views": "Gespeicherte smarte Ansichten",
+      "people": "Aufgaben an Personen zuweisen",
+      "telegram": "Erfassen über Telegram",
+      "caldav": "Aufgaben-Sync per CalDAV",
+      "mcp": "MCP-Server für KI-Agenten"
     },
     "values": {
       "perYear": "{{price}}/Jahr",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Produkt",
-    "colResources": "Ressourcen",
     "colCommunity": "Community & Support",
     "colSupport": "Unterstützen",
-    "linkRoadmap": "Roadmap",
-    "linkIssues": "Issues",
     "linkCoffee": "Einen Kaffee spendieren",
     "subTitle": "Neuigkeiten und Updates per E-Mail",
     "subBody": "Gelegentliche Produktneuigkeiten und Updates. Kein Spam, jederzeit abbestellbar.",
     "subSubmit": "Eintragen",
     "rights": "Alle Rechte vorbehalten.",
-    "linkLicence": "MIT-Lizenz",
     "tagline": "Ein ruhiges, vollständiges System, um Leben und Arbeit zu organisieren.",
     "linkTerms": "AGB",
     "linkPrivacy": "Datenschutz",

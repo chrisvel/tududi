@@ -253,8 +253,14 @@
         { id: 'dayPlanner', cells: ['yes', 'yes', 'yes', t('compare.values.separateApp')] },
         { id: 'habits',     cells: ['yes', 'no', 'yes', 'no'] },
         { id: 'goals',      cells: ['yes', 'no', 'no', t('compare.values.diy')] },
-        { id: 'mcp',        cells: ['yes', 'yes', 'yes', 'yes'] },
-        { id: 'openSource', cells: ['yes', 'no', 'no', 'no'] },
+        { id: 'notes',      cells: ['yes', 'no', 'yes', 'yes'] },
+        { id: 'matrix',     cells: ['yes', 'no', 'yes', t('compare.values.diy')] },
+        { id: 'kanban',     cells: ['yes', 'yes', 'yes', 'yes'] },
+        { id: 'views',      cells: ['yes', 'yes', 'yes', 'yes'] },
+        { id: 'people',     cells: ['yes', 'yes', 'yes', 'yes'] },
+        { id: 'telegram',   cells: ['yes', 'no', 'no', 'no'] },
+        { id: 'caldav',     cells: ['yes', 'no', 'no', 'no'] },
+        { id: 'mcp',       cells: ['yes', 'yes', 'yes', 'yes'] },
     ];
 %>
 
@@ -439,21 +445,29 @@
             <%# Only one card body has a placeholder, but passing count to all of
                 them is free: interpolate() is a no-op on a string without one. %>
             <% const cardVars = { count: languageCount }; %>
+            <%# Every card leads with its icon, so a card with a screenshot and one
+                without read as the same set. The screenshot sits behind a quiet
+                link: a real href to the image, so it still opens with JS off,
+                and the script below turns it into the preview dialog. %>
+            <% function featureCard(card) {
+                const title = t('features.cards.' + card.id + '.title', cardVars); %>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
+                    <h4><%= title %></h4>
+                    <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
+                    <% if (card.shot) { %>
+                    <a class="feature-peek" href="/landing-assets/screenshots/features/<%= card.id %>.webp" data-title="<%= title %>"><i class="far fa-image" aria-hidden="true"></i><%= t('features.preview') %></a>
+                    <% } %>
+                </div>
+            <% } %>
             <% const featuredCards = featureGroups.flatMap(function (g) { return g.cards.filter(function (c) { return c.featured; }); }); %>
             <div class="feature-grid">
-                <% featuredCards.forEach(function (card) { %>
-                <div class="feature-card<%= card.shot ? ' has-shot' : '' %>">
-                    <% if (card.shot) { %><img class="feature-shot" src="/landing-assets/screenshots/features/<%= card.id %>.webp" alt="<%= t('features.cards.' + card.id + '.title', cardVars) %>" width="1120" height="700" loading="lazy"><% } else { %><div class="feature-icon"><i class="<%= card.icon %>"></i></div><% } %>
-                    <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
-                    <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
-                </div>
-                <% }); %>
+                <% featuredCards.forEach(featureCard); %>
             </div>
 
             <div id="feature-rest" hidden>
                 <% featureGroups.forEach(function (group) { %>
-                <%# Screenshot cards first, so rows of pictures and rows of icons do not mix. %>
-                <% const rest = group.cards.filter(function (c) { return !c.featured; }).sort(function (a, b) { return (b.shot ? 1 : 0) - (a.shot ? 1 : 0); }); %>
+                <% const rest = group.cards.filter(function (c) { return !c.featured; }); %>
                 <% if (rest.length) { %>
                 <div class="feature-group">
                     <div class="feature-group-label">
@@ -461,13 +475,7 @@
                         <h3><%= t('features.groups.' + group.id) %></h3>
                     </div>
                     <div class="feature-grid">
-                        <% rest.forEach(function (card) { %>
-                        <div class="feature-card<%= card.shot ? ' has-shot' : '' %>">
-                            <% if (card.shot) { %><img class="feature-shot" src="/landing-assets/screenshots/features/<%= card.id %>.webp" alt="<%= t('features.cards.' + card.id + '.title', cardVars) %>" width="1120" height="700" loading="lazy"><% } else { %><div class="feature-icon"><i class="<%= card.icon %>"></i></div><% } %>
-                            <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
-                            <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
-                        </div>
-                        <% }); %>
+                        <% rest.forEach(featureCard); %>
                     </div>
                 </div>
                 <% } %>
@@ -480,6 +488,14 @@
                     <i class="fas fa-plus"></i><span><%= t('features.showAll', { count: featureTotal }) %></span>
                 </button>
             </div>
+
+            <dialog id="feature-preview" class="feature-preview" aria-labelledby="feature-preview-title">
+                <div class="feature-preview-head">
+                    <h4 id="feature-preview-title"></h4>
+                    <button type="button" class="feature-preview-close" aria-label="<%= t('features.closePreview') %>"><i class="fas fa-times" aria-hidden="true"></i></button>
+                </div>
+                <img alt="" width="1120" height="700">
+            </dialog>
         </div>
     </section>
 
@@ -1053,16 +1069,6 @@
 
         const navDropdowns = Array.from(document.querySelectorAll('.nav-dd'));
 
-        // Opening one closes the rest. <details> has no notion of siblings, and
-        // Resources sits close enough to the language menu that two open at once
-        // overlap each other.
-        navDropdowns.forEach(dd => {
-            dd.addEventListener('toggle', () => {
-                if (!dd.open) return;
-                navDropdowns.forEach(other => { if (other !== dd) other.open = false; });
-            });
-        });
-
         document.addEventListener('click', (e) => {
             navDropdowns.forEach(dd => {
                 if (dd.open && !dd.contains(e.target)) dd.open = false;
@@ -1153,6 +1159,29 @@
                 label.textContent = opening ? (T.showFewer || 'Show fewer') : showAll;
                 icon.className = opening ? 'fas fa-minus' : 'fas fa-plus';
             });
+        })();
+
+        // Feature screenshots open in a small dialog instead of navigating to
+        // the bare image. Without <dialog> support the link still just works.
+        (function featurePreview() {
+            const dialog = document.getElementById('feature-preview');
+            if (!dialog || typeof dialog.showModal !== 'function') return;
+            const title = dialog.querySelector('h4');
+            const img = dialog.querySelector('img');
+
+            document.querySelectorAll('.feature-peek').forEach((link) => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    title.textContent = link.dataset.title;
+                    img.src = link.getAttribute('href');
+                    img.alt = link.dataset.title;
+                    dialog.showModal();
+                });
+            });
+
+            dialog.querySelector('.feature-preview-close').addEventListener('click', () => dialog.close());
+            // A click on the backdrop lands on the dialog element itself.
+            dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
         })();
 
         // Copy buttons on the code blocks: the docker commands and the MCP

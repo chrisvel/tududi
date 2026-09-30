@@ -11,8 +11,6 @@
     "ai": "AIとMCP",
     "pricing": "料金",
     "faq": "よくある質問",
-    "docs": "ドキュメント",
-    "changelog": "更新履歴",
     "signIn": "ログイン",
     "toggle": "メニューを開く",
     "plan": "1日を計画"
@@ -120,6 +118,8 @@
     "eyebrow": "機能",
     "title": "整った暮らしのための、完成されたシステム",
     "showAll": "{{count}}件すべての機能を表示",
+    "preview": "プレビュー",
+    "closePreview": "プレビューを閉じる",
     "groups": {
       "planDay": "記録と計画",
       "planFocus": "計画と集中",
@@ -287,8 +287,14 @@
       "dayPlanner": "カレンダーに合わせた1日の計画",
       "habits": "習慣トラッキング",
       "goals": "目標、エリア、プロジェクト",
-      "mcp": "AIエージェント向けMCPサーバー",
-      "openSource": "オープンソース、自分のサーバーで動作"
+      "notes": "タスクと並ぶノート",
+      "matrix": "アイゼンハワー・マトリクス",
+      "kanban": "カンバンボード",
+      "views": "保存したスマートビュー",
+      "people": "タスクを人に割り当て",
+      "telegram": "Telegram から登録",
+      "caldav": "CalDAV でタスク同期",
+      "mcp": "AIエージェント向けMCPサーバー"
     },
     "values": {
       "perYear": "{{price}}/年",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "製品",
-    "colResources": "リソース",
     "colCommunity": "コミュニティとサポート",
     "colSupport": "支援する",
-    "linkRoadmap": "ロードマップ",
-    "linkIssues": "課題",
     "linkCoffee": "コーヒーを贈る",
     "subTitle": "ニュースとアップデートをメールで",
     "subBody": "製品のニュースやアップデートをときどきお届けします。スパムなし、いつでも配信停止できます。",
     "subSubmit": "登録",
     "rights": "All rights reserved.",
-    "linkLicence": "MITライセンス",
     "tagline": "暮らしと仕事を整理する、穏やかで完結したシステム。",
     "linkTerms": "利用規約",
     "linkPrivacy": "プライバシー",

@@ -254,18 +254,6 @@
         }
         .nav-mobile.open { display: flex; }
         .nav-mobile .nav-link { padding: 11px 14px; border-radius: 12px; }
-        /* Label, not a link: quiet enough that the tappable rows below it stay
-           the thing the eye lands on. Same grouping the footer uses. */
-        .nav-mobile-heading {
-            margin: 10px 0 2px;
-            padding: 0 14px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.09em;
-            color: #9aa1ad;
-        }
-        .nav-mobile-heading:first-child { margin-top: 2px; }
         .nav-mobile .nav-cta { margin: 6px 0 0; text-align: center; padding: 12px 20px; }
 
         /* ---------- Layout primitives ---------- */
@@ -1151,9 +1139,47 @@
             letter-spacing: -0.01em;
         }
         .feature-card p { font-size: 14.5px; color: #5b6472; margin: 0; line-height: 1.6; }
-        /* Screenshots are 1120x700 crops of the app's main column, so they
-           share one aspect ratio and read as a set. */
-        .feature-shot { display: block; width: 100%; height: auto; aspect-ratio: 1120 / 700; object-fit: cover; object-position: top left; border-radius: 12px; background: #f3f4f6; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06), 0 8px 20px -12px rgba(17, 24, 39, 0.18); }
+        .feature-card { display: flex; flex-direction: column; }
+        /* Quiet on purpose: the card is the icon and the words, the
+           screenshot is there for whoever wants a look. */
+        .feature-peek {
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: auto;
+            padding-top: 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #9aa1ad;
+            text-decoration: none;
+            transition: color .2s;
+        }
+        .feature-peek:hover, .feature-peek:focus-visible { color: #1e86e5; }
+        .feature-preview {
+            width: min(640px, calc(100vw - 32px));
+            padding: 16px;
+            border: 0;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 24px 60px rgba(17, 24, 39, 0.25);
+        }
+        .feature-preview::backdrop { background: rgba(17, 24, 39, 0.45); }
+        .feature-preview-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 4px 12px; }
+        .feature-preview-head h4 { margin: 0; font-size: 16px; font-weight: 700; color: #111827; }
+        .feature-preview-close {
+            border: 0;
+            background: #f4f1ec;
+            color: #5b6472;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .feature-preview-close:hover { color: #111827; }
+        /* Screenshots are 1120x700 crops of the app's main column. */
+        .feature-preview img { display: block; width: 100%; height: auto; aspect-ratio: 1120 / 700; object-fit: cover; object-position: top left; border-radius: 12px; background: #f3f4f6; }
         .feature-more { text-align: center; margin-top: 40px; }
         .feature-toggle {
             display: inline-flex;

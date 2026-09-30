@@ -11,8 +11,6 @@
     "ai": "AI và MCP",
     "pricing": "Giá",
     "faq": "Câu hỏi thường gặp",
-    "docs": "Tài liệu",
-    "changelog": "Thay đổi",
     "signIn": "Đăng nhập",
     "toggle": "Mở menu",
     "plan": "Lên kế hoạch ngày"
@@ -120,6 +118,8 @@
     "eyebrow": "Tính năng",
     "title": "Một hệ thống trọn vẹn cho cuộc sống ngăn nắp",
     "showAll": "Xem tất cả {{count}} tính năng",
+    "preview": "Xem trước",
+    "closePreview": "Đóng xem trước",
     "groups": {
       "planDay": "Ghi lại & lên kế hoạch",
       "planFocus": "Lập kế hoạch và tập trung",
@@ -287,8 +287,14 @@
       "dayPlanner": "Lên kế hoạch ngày theo lịch",
       "habits": "Theo dõi thói quen",
       "goals": "Mục tiêu, lĩnh vực và dự án",
-      "mcp": "Máy chủ MCP cho tác tử AI",
-      "openSource": "Mã nguồn mở, chạy trên máy chủ riêng"
+      "notes": "Ghi chú cạnh công việc",
+      "matrix": "Ma trận Eisenhower",
+      "kanban": "Bảng Kanban",
+      "views": "Chế độ xem thông minh đã lưu",
+      "people": "Giao việc cho người khác",
+      "telegram": "Ghi nhanh từ Telegram",
+      "caldav": "Đồng bộ công việc qua CalDAV",
+      "mcp": "Máy chủ MCP cho tác tử AI"
     },
     "values": {
       "perYear": "{{price}}/năm",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Sản phẩm",
-    "colResources": "Tài nguyên",
     "colCommunity": "Cộng đồng và hỗ trợ",
     "colSupport": "Ủng hộ",
-    "linkRoadmap": "Lộ trình",
-    "linkIssues": "Báo lỗi",
     "linkCoffee": "Mời một ly cà phê",
     "subTitle": "Tin tức và cập nhật qua email",
     "subBody": "Thỉnh thoảng gửi tin tức và cập nhật sản phẩm. Không spam, hủy đăng ký bất cứ lúc nào.",
     "subSubmit": "Đăng ký",
     "rights": "Bảo lưu mọi quyền.",
-    "linkLicence": "Bản quyền MIT",
     "tagline": "Một hệ thống điềm tĩnh, trọn vẹn để sắp xếp cuộc sống và công việc.",
     "linkTerms": "Điều khoản",
     "linkPrivacy": "Quyền riêng tư",

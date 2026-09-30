@@ -11,8 +11,6 @@
     "ai": "Yapay zekâ ve MCP",
     "pricing": "Fiyatlar",
     "faq": "SSS",
-    "docs": "Belgeler",
-    "changelog": "Değişiklikler",
     "signIn": "Giriş yap",
     "toggle": "Menüyü aç",
     "plan": "Gününü planla"
@@ -120,6 +118,8 @@
     "eyebrow": "Özellikler",
     "title": "Düzenli bir yaşam için eksiksiz bir sistem",
     "showAll": "{{count}} özelliğin tamamını göster",
+    "preview": "Önizle",
+    "closePreview": "Önizlemeyi kapat",
     "groups": {
       "planDay": "Yakala ve planla",
       "planFocus": "Planla ve odaklan",
@@ -287,8 +287,14 @@
       "dayPlanner": "Günü takvime göre planlama",
       "habits": "Alışkanlık takibi",
       "goals": "Hedefler, alanlar ve projeler",
-      "mcp": "Yapay zekâ ajanları için MCP sunucusu",
-      "openSource": "Açık kaynak, kendi sunucunda çalışır"
+      "notes": "Görevlerin yanında notlar",
+      "matrix": "Eisenhower matrisi",
+      "kanban": "Kanban panoları",
+      "views": "Kayıtlı akıllı görünümler",
+      "people": "Görevleri kişilere atama",
+      "telegram": "Telegram'dan ekleme",
+      "caldav": "CalDAV ile görev senkronizasyonu",
+      "mcp": "Yapay zekâ ajanları için MCP sunucusu"
     },
     "values": {
       "perYear": "{{price}}/yıl",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Ürün",
-    "colResources": "Kaynaklar",
     "colCommunity": "Topluluk ve destek",
     "colSupport": "Destek olun",
-    "linkRoadmap": "Yol haritası",
-    "linkIssues": "Sorunlar",
     "linkCoffee": "Bir kahve ısmarlayın",
     "subTitle": "E-postayla haberler ve güncellemeler",
     "subBody": "Ara sıra ürün haberleri ve güncellemeleri. Spam yok, istediğin zaman abonelikten çık.",
     "subSubmit": "Katıl",
     "rights": "Tüm hakları saklıdır.",
-    "linkLicence": "MIT lisansı",
     "tagline": "Hayatı ve işi düzenlemek için sakin ve eksiksiz bir sistem.",
     "linkTerms": "Koşullar",
     "linkPrivacy": "Gizlilik",

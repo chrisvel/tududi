@@ -11,8 +11,6 @@
     "ai": "AI 与 MCP",
     "pricing": "价格",
     "faq": "常见问题",
-    "docs": "文档",
-    "changelog": "更新日志",
     "signIn": "登录",
     "toggle": "打开菜单",
     "plan": "规划一天"
@@ -120,6 +118,8 @@
     "eyebrow": "功能",
     "title": "让生活井然有序的完整系统",
     "showAll": "显示全部 {{count}} 项功能",
+    "preview": "预览",
+    "closePreview": "关闭预览",
     "groups": {
       "planDay": "记录与规划",
       "planFocus": "规划与专注",
@@ -287,8 +287,14 @@
       "dayPlanner": "围绕日历规划一天",
       "habits": "习惯追踪",
       "goals": "目标、领域和项目",
-      "mcp": "面向 AI 代理的 MCP 服务器",
-      "openSource": "开源，可在自己的服务器上运行"
+      "notes": "任务旁的笔记",
+      "matrix": "艾森豪威尔矩阵",
+      "kanban": "看板",
+      "views": "已保存的智能视图",
+      "people": "将任务分配给他人",
+      "telegram": "从 Telegram 记录",
+      "caldav": "CalDAV 任务同步",
+      "mcp": "面向 AI 代理的 MCP 服务器"
     },
     "values": {
       "perYear": "{{price}}/年",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "产品",
-    "colResources": "资源",
     "colCommunity": "社区与支持",
     "colSupport": "支持我们",
-    "linkRoadmap": "路线图",
-    "linkIssues": "问题反馈",
     "linkCoffee": "请我们喝杯咖啡",
     "subTitle": "通过邮件接收新闻与更新",
     "subBody": "不定期发送产品新闻与更新。没有垃圾邮件，随时可以退订。",
     "subSubmit": "订阅",
     "rights": "保留所有权利。",
-    "linkLicence": "MIT 许可证",
     "tagline": "一个从容、完整的生活与工作整理系统。",
     "linkTerms": "条款",
     "linkPrivacy": "隐私",

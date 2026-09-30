@@ -11,8 +11,6 @@
     "ai": "IA y MCP",
     "pricing": "Precios",
     "faq": "FAQ",
-    "docs": "Documentación",
-    "changelog": "Novedades",
     "signIn": "Iniciar sesión",
     "toggle": "Abrir el menú",
     "plan": "Planifica tu día"
@@ -120,6 +118,8 @@
     "eyebrow": "Funciones",
     "title": "Un sistema completo para una vida organizada",
     "showAll": "Ver las {{count}} funciones",
+    "preview": "Vista previa",
+    "closePreview": "Cerrar vista previa",
     "groups": {
       "planDay": "Captura y planifica",
       "planFocus": "Planificar y enfocarse",
@@ -287,8 +287,14 @@
       "dayPlanner": "Planifica el día según tu calendario",
       "habits": "Seguimiento de hábitos",
       "goals": "Objetivos, áreas y proyectos",
-      "mcp": "Servidor MCP para agentes de IA",
-      "openSource": "Código abierto, funciona en tu servidor"
+      "notes": "Notas junto a las tareas",
+      "matrix": "Matriz de Eisenhower",
+      "kanban": "Tableros Kanban",
+      "views": "Vistas inteligentes guardadas",
+      "people": "Asignar tareas a personas",
+      "telegram": "Captura desde Telegram",
+      "caldav": "Sincronización de tareas por CalDAV",
+      "mcp": "Servidor MCP para agentes de IA"
     },
     "values": {
       "perYear": "{{price}}/año",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Producto",
-    "colResources": "Recursos",
     "colCommunity": "Comunidad y soporte",
     "colSupport": "Apoyar",
-    "linkRoadmap": "Hoja de ruta",
-    "linkIssues": "Incidencias",
     "linkCoffee": "Invítanos a un café",
     "subTitle": "Noticias y novedades por correo",
     "subBody": "Noticias y novedades del producto de vez en cuando. Sin spam, date de baja cuando quieras.",
     "subSubmit": "Apuntarme",
     "rights": "Todos los derechos reservados.",
-    "linkLicence": "Licencia MIT",
     "tagline": "Un sistema tranquilo y completo para organizar la vida y el trabajo.",
     "linkTerms": "Términos",
     "linkPrivacy": "Privacidad",

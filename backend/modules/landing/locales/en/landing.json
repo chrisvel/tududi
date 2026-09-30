@@ -11,8 +11,6 @@
     "ai": "AI & MCP",
     "pricing": "Pricing",
     "faq": "FAQ",
-    "docs": "Docs",
-    "changelog": "Changelog",
     "signIn": "Sign in",
     "toggle": "Toggle navigation",
     "plan": "Plan your day"
@@ -121,6 +119,8 @@
     "title": "A complete system for organized living",
     "sub": "tududi combines goals, projects, tasks, notes, and smart views into one calm, focused system. Let us run it for you, or run it yourself if you prefer.",
     "showAll": "Show all {{count}} features",
+    "preview": "Preview",
+    "closePreview": "Close preview",
     "groups": {
       "planDay": "Capture & Plan",
       "planFocus": "Plan & Focus",
@@ -287,8 +287,14 @@
       "dayPlanner": "Plan your day around your calendar",
       "habits": "Habit tracking",
       "goals": "Goals, areas and projects",
-      "mcp": "MCP server for AI agents",
-      "openSource": "Open source, runs on your own server"
+      "notes": "Notes alongside tasks",
+      "matrix": "Eisenhower matrix",
+      "kanban": "Kanban boards",
+      "views": "Saved smart views",
+      "people": "Assign tasks to people",
+      "telegram": "Capture from Telegram",
+      "caldav": "CalDAV task sync",
+      "mcp": "MCP server for AI agents"
     },
     "values": {
       "perYear": "{{price}}/yr",
@@ -368,17 +374,13 @@
   "footer": {
     "tagline": "A calm, complete system for organizing life and work.",
     "colProduct": "Product",
-    "colResources": "Resources",
     "colCommunity": "Community & Support",
     "colSupport": "Support",
-    "linkRoadmap": "Roadmap",
-    "linkIssues": "Issues",
     "linkCoffee": "Buy a Coffee",
     "subTitle": "News and updates by email",
     "subBody": "Occasional product news and updates. No spam, unsubscribe any time.",
     "subSubmit": "Join",
     "rights": "All rights reserved.",
-    "linkLicence": "MIT licence",
     "linkTerms": "Terms",
     "linkPrivacy": "Privacy",
     "linkRefunds": "Refunds",

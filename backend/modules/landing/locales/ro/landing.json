@@ -11,8 +11,6 @@
     "ai": "IA și MCP",
     "pricing": "Prețuri",
     "faq": "FAQ",
-    "docs": "Documentație",
-    "changelog": "Modificări",
     "signIn": "Autentificare",
     "toggle": "Deschide meniul",
     "plan": "Planifică-ți ziua"
@@ -120,6 +118,8 @@
     "eyebrow": "Funcții",
     "title": "Un sistem complet pentru o viață organizată",
     "showAll": "Arată toate cele {{count}} funcții",
+    "preview": "Previzualizare",
+    "closePreview": "Închide previzualizarea",
     "groups": {
       "planDay": "Notează și planifică",
       "planFocus": "Planificare și concentrare",
@@ -287,8 +287,14 @@
       "dayPlanner": "Planifică ziua după calendar",
       "habits": "Urmărirea obiceiurilor",
       "goals": "Obiective, arii și proiecte",
-      "mcp": "Server MCP pentru agenți AI",
-      "openSource": "Open source, rulează pe serverul tău"
+      "notes": "Notițe lângă sarcini",
+      "matrix": "Matricea Eisenhower",
+      "kanban": "Panouri Kanban",
+      "views": "Vizualizări inteligente salvate",
+      "people": "Atribuirea sarcinilor persoanelor",
+      "telegram": "Captură din Telegram",
+      "caldav": "Sincronizare sarcini prin CalDAV",
+      "mcp": "Server MCP pentru agenți AI"
     },
     "values": {
       "perYear": "{{price}}/an",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Produs",
-    "colResources": "Resurse",
     "colCommunity": "Comunitate și suport",
     "colSupport": "Susține",
-    "linkRoadmap": "Plan de dezvoltare",
-    "linkIssues": "Sesizări",
     "linkCoffee": "Oferă-ne o cafea",
     "subTitle": "Noutăți și actualizări pe e-mail",
     "subBody": "Noutăți și actualizări ocazionale despre produs. Fără spam, dezabonare oricând.",
     "subSubmit": "Mă înscriu",
     "rights": "Toate drepturile rezervate.",
-    "linkLicence": "Licență MIT",
     "tagline": "Un sistem calm și complet pentru organizarea vieții și a muncii.",
     "linkTerms": "Termeni",
     "linkPrivacy": "Confidențialitate",

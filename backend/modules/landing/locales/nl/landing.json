@@ -11,8 +11,6 @@
     "ai": "AI & MCP",
     "pricing": "Prijzen",
     "faq": "FAQ",
-    "docs": "Documentatie",
-    "changelog": "Wijzigingen",
     "signIn": "Inloggen",
     "toggle": "Menu openen",
     "plan": "Plan je dag"
@@ -120,6 +118,8 @@
     "eyebrow": "Functies",
     "title": "Een compleet systeem voor een geordend leven",
     "showAll": "Alle {{count}} functies tonen",
+    "preview": "Voorbeeld",
+    "closePreview": "Voorbeeld sluiten",
     "groups": {
       "planDay": "Vastleggen & plannen",
       "planFocus": "Plannen & focussen",
@@ -287,8 +287,14 @@
       "dayPlanner": "Plan je dag rond je agenda",
       "habits": "Gewoontes bijhouden",
       "goals": "Doelen, gebieden en projecten",
-      "mcp": "MCP-server voor AI-agents",
-      "openSource": "Open source, draait op je eigen server"
+      "notes": "Notities naast je taken",
+      "matrix": "Eisenhower-matrix",
+      "kanban": "Kanbanborden",
+      "views": "Opgeslagen slimme weergaven",
+      "people": "Taken toewijzen aan personen",
+      "telegram": "Vastleggen via Telegram",
+      "caldav": "Taaksynchronisatie via CalDAV",
+      "mcp": "MCP-server voor AI-agents"
     },
     "values": {
       "perYear": "{{price}}/jaar",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Product",
-    "colResources": "Bronnen",
     "colCommunity": "Community & ondersteuning",
     "colSupport": "Steunen",
-    "linkRoadmap": "Roadmap",
-    "linkIssues": "Issues",
     "linkCoffee": "Trakteer op koffie",
     "subTitle": "Nieuws en updates per e-mail",
     "subBody": "Af en toe productnieuws en updates. Geen spam, altijd af te melden.",
     "subSubmit": "Aanmelden",
     "rights": "Alle rechten voorbehouden.",
-    "linkLicence": "MIT-licentie",
     "tagline": "Een rustig, compleet systeem om leven en werk te organiseren.",
     "linkTerms": "Voorwaarden",
     "linkPrivacy": "Privacy",

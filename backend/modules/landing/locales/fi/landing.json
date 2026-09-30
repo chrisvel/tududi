@@ -11,8 +11,6 @@
     "ai": "Tekoäly & MCP",
     "pricing": "Hinnat",
     "faq": "UKK",
-    "docs": "Dokumentaatio",
-    "changelog": "Muutokset",
     "signIn": "Kirjaudu sisään",
     "toggle": "Avaa valikko",
     "plan": "Suunnittele päivä"
@@ -120,6 +118,8 @@
     "eyebrow": "Ominaisuudet",
     "title": "Täydellinen järjestelmä järjestäytyneeseen elämään",
     "showAll": "Näytä kaikki {{count}} ominaisuutta",
+    "preview": "Esikatselu",
+    "closePreview": "Sulje esikatselu",
     "groups": {
       "planDay": "Kirjaa & suunnittele",
       "planFocus": "Suunnittele & keskity",
@@ -287,8 +287,14 @@
       "dayPlanner": "Päivän suunnittelu kalenterin mukaan",
       "habits": "Tapojen seuranta",
       "goals": "Tavoitteet, alueet ja projektit",
-      "mcp": "MCP-palvelin tekoälyagenteille",
-      "openSource": "Avoin lähdekoodi, toimii omalla palvelimella"
+      "notes": "Muistiinpanot tehtävien rinnalla",
+      "matrix": "Eisenhowerin matriisi",
+      "kanban": "Kanban-taulut",
+      "views": "Tallennetut älynäkymät",
+      "people": "Tehtävien osoittaminen henkilöille",
+      "telegram": "Kirjaus Telegramista",
+      "caldav": "Tehtävien CalDAV-synkronointi",
+      "mcp": "MCP-palvelin tekoälyagenteille"
     },
     "values": {
       "perYear": "{{price}}/v",
@@ -314,17 +320,13 @@
   },
   "footer": {
     "colProduct": "Tuote",
-    "colResources": "Resurssit",
     "colCommunity": "Yhteisö & tuki",
     "colSupport": "Tue",
-    "linkRoadmap": "Tiekartta",
-    "linkIssues": "Ongelmat",
     "linkCoffee": "Tarjoa kahvit",
     "subTitle": "Uutiset ja päivitykset sähköpostiin",
     "subBody": "Satunnaisia tuoteuutisia ja päivityksiä. Ei roskapostia, peru tilaus milloin tahansa.",
     "subSubmit": "Liity",
     "rights": "Kaikki oikeudet pidätetään.",
-    "linkLicence": "MIT-lisenssi",
     "tagline": "Rauhallinen ja kattava järjestelmä elämän ja työn järjestämiseen.",
     "linkTerms": "Ehdot",
     "linkPrivacy": "Tietosuoja",
