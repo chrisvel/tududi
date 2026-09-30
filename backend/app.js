@@ -37,6 +37,17 @@ const sessionStore = new SequelizeStore({
     db: sequelize,
 });
 
+// Browsers read a backslash in an http(s) URL as a slash, so a path like
+// /\evil.example can come back in a redirect as a link to another host
+// (GHSA-m2j3-rgfr-57pq). No route uses one, so refuse them outright.
+app.use((req, res, next) => {
+    const pathname = req.originalUrl.split('?')[0];
+    if (/\\|%5c/i.test(pathname)) {
+        return res.status(400).send('Bad Request');
+    }
+    return next();
+});
+
 // Middlewares
 app.use(
     helmet({
@@ -262,6 +273,7 @@ if (serveFromDist) {
     app.use(
         express.static(path.join(__dirname, 'dist'), {
             index: false,
+            redirect: false,
             maxAge: '1y',
             immutable: true,
             setHeaders: (res, filePath) => {
@@ -273,16 +285,23 @@ if (serveFromDist) {
         })
     );
 } else {
-    app.use(express.static('public'));
+    app.use(express.static('public', { redirect: false }));
 }
 
 // Serve locales
 if (serveFromDist) {
-    app.use('/locales', express.static(path.join(__dirname, 'dist/locales')));
+    app.use(
+        '/locales',
+        express.static(path.join(__dirname, 'dist/locales'), {
+            redirect: false,
+        })
+    );
 } else {
     app.use(
         '/locales',
-        express.static(path.join(__dirname, '../public/locales'))
+        express.static(path.join(__dirname, '../public/locales'), {
+            redirect: false,
+        })
     );
 }
 
@@ -312,6 +331,7 @@ const registerUploadsStatic = (basePath) => {
         uploadsLimiter,
         uploadsAccessControl,
         express.static(config.uploadPath, {
+            redirect: false,
             setHeaders: (res, filePath) => {
                 res.setHeader('X-Content-Type-Options', 'nosniff');
                 const ext = path.extname(filePath).toLowerCase();

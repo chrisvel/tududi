@@ -585,7 +585,7 @@ describe('GET /api/uploads/:category/:filename', () => {
             async (_label, suffix) => {
                 const response = await rawGet(`/api/uploads/tasks/${suffix}`);
 
-                expect(response.status).toBe(403);
+                expect([400, 403]).toContain(response.status);
                 expect(response.text).not.toContain('victim private content');
             }
         );
