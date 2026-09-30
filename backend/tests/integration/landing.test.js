@@ -259,23 +259,40 @@ describe('Landing page', () => {
         expect(video.headers['content-type']).toMatch(/video\/mp4/);
     });
 
-    it('shows a screenshot on every featured card, and serves them all', async () => {
+    it('leads every card with an icon and puts screenshots behind a preview link', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         const grid = res.text.slice(
             res.text.indexOf('<div class="feature-grid">'),
             res.text.indexOf('id="feature-rest"')
         );
-        expect(grid.match(/class="feature-shot"/g)).toHaveLength(8);
-        const srcs = [
+        expect(grid.match(/class="feature-icon"/g)).toHaveLength(8);
+        expect(grid.match(/class="feature-peek"/g)).toHaveLength(8);
+        expect(res.text).not.toContain('class="feature-shot"');
+        expect(res.text).toContain('id="feature-preview"');
+
+        const cards = res.text.match(/class="feature-card"/g);
+        const icons = res.text.match(/class="feature-icon"/g);
+        expect(icons).toHaveLength(cards.length);
+
+        const hrefs = [
             ...res.text.matchAll(
-                /src="(\/landing-assets\/screenshots\/features\/[^"]+)"/g
+                /href="(\/landing-assets\/screenshots\/features\/[^"]+)"/g
             ),
         ].map((m) => m[1]);
-        expect(srcs.length).toBeGreaterThanOrEqual(18);
-        for (const src of new Set(srcs)) {
-            const img = await request(app).get(src).set('Host', 'tududi.com');
+        expect(hrefs.length).toBeGreaterThanOrEqual(18);
+        for (const href of new Set(hrefs)) {
+            const img = await request(app).get(href).set('Host', 'tududi.com');
             expect(img.status).toBe(200);
         }
+    });
+
+    it('has no Resources menu in the nav or the footer', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('>Resources<');
+        expect(res.text).not.toContain(
+            'https://docs.tududi.com" class="nav-link"'
+        );
+        expect(res.text).not.toContain('github.com/users/chrisvel/projects/2');
     });
 
     it('serves the new screenshots', async () => {
@@ -306,6 +323,11 @@ describe('Landing page', () => {
             'Notion Plus',
         ].forEach((vendor) => expect(table).toContain(vendor));
         expect(table).not.toContain('Self-host');
+        [
+            'Eisenhower matrix',
+            'Capture from Telegram',
+            'CalDAV task sync',
+        ].forEach((row) => expect(table).toContain(row));
         expect(res.text).toContain('from their public pricing pages');
     });
 
