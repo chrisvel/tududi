@@ -2175,7 +2175,10 @@
     "validationErrors": "Kesalahan validasi:",
     "versionIncompatible": "Versi Tidak Kompatibel",
     "backupVersion": "Versi cadangan",
-    "restoreButton": "Pulihkan"
+    "restoreButton": "Pulihkan",
+    "adminInstanceNote": "Sebagai admin, cadanganmu berisi setiap akun di instans ini, beserta data dan hash kata sandinya. Memulihkannya di instalasi baru mengembalikan semuanya. Simpan file ini seaman basis data.",
+    "accountsCount_one": "{{count}} akun lain",
+    "accountsCount_other": "{{count}} akun lain"
   },
   "notifications": {
     "table": {

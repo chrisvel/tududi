@@ -23,6 +23,7 @@ import {
 
 interface BackupRestoreProps {
     onImportSuccess?: () => void;
+    isAdmin?: boolean;
 }
 
 type TabType = 'export' | 'import';
@@ -35,7 +36,10 @@ interface ConfirmDialogState {
     confirmButtonText?: string;
 }
 
-const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
+const BackupRestore: React.FC<BackupRestoreProps> = ({
+    onImportSuccess,
+    isAdmin = false,
+}) => {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<TabType>('export');
     const [isExporting, setIsExporting] = useState(false);
@@ -280,6 +284,14 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                             'Create backups or restore from previous backups. Your last 5 backups are automatically saved.'
                         )}
                     </p>
+                    {isAdmin && (
+                        <p className="mt-3 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+                            {t(
+                                'backup.adminInstanceNote',
+                                'As an admin, your backup includes every account on this instance, with their data and password hashes. Restoring it on a new install brings everyone back. Keep the file as safe as the database.'
+                            )}
+                        </p>
+                    )}
                 </div>
 
                 {/* Tabs */}
@@ -504,6 +516,21 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                                                                             }{' '}
                                                                             notes
                                                                         </span>
+                                                                        {backup
+                                                                            .item_counts
+                                                                            .accounts ? (
+                                                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                                                                                {t(
+                                                                                    'backup.accountsCount',
+                                                                                    '{{count}} other accounts',
+                                                                                    {
+                                                                                        count: backup
+                                                                                            .item_counts
+                                                                                            .accounts,
+                                                                                    }
+                                                                                )}
+                                                                            </span>
+                                                                        ) : null}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

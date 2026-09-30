@@ -2175,7 +2175,10 @@
     "validationErrors": "Lỗi xác thực:",
     "versionIncompatible": "Phiên bản không tương thích",
     "backupVersion": "Phiên bản bản sao lưu",
-    "restoreButton": "Khôi phục"
+    "restoreButton": "Khôi phục",
+    "adminInstanceNote": "Là quản trị viên, bản sao lưu của bạn chứa mọi tài khoản trên phiên bản này, kèm dữ liệu và mã băm mật khẩu. Khôi phục nó trên bản cài mới sẽ đưa mọi người trở lại. Hãy giữ tệp này cẩn thận như cơ sở dữ liệu.",
+    "accountsCount_one": "{{count}} tài khoản khác",
+    "accountsCount_other": "{{count}} tài khoản khác"
   },
   "notifications": {
     "table": {

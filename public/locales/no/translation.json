@@ -2176,7 +2176,10 @@
     "validationErrors": "Valideringsfeil:",
     "versionIncompatible": "Versjon inkompatibel",
     "backupVersion": "Sikkerhetskopiversjon",
-    "restoreButton": "Gjenopprett"
+    "restoreButton": "Gjenopprett",
+    "adminInstanceNote": "Som administrator inneholder sikkerhetskopien din alle kontoer på denne instansen, med data og passord-hasher. Gjenoppretter du den på en ny installasjon, kommer alle tilbake. Oppbevar filen like trygt som databasen.",
+    "accountsCount_one": "{{count}} annen konto",
+    "accountsCount_other": "{{count}} andre kontoer"
   },
   "notifications": {
     "table": {

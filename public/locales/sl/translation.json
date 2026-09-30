@@ -2177,7 +2177,10 @@
     "validationErrors": "Napake pri preverjanju:",
     "versionIncompatible": "Različica ni združljiva",
     "backupVersion": "Različica varnostne kopije",
-    "restoreButton": "Obnovi"
+    "restoreButton": "Obnovi",
+    "adminInstanceNote": "Kot skrbnik tvoja varnostna kopija vsebuje vse račune na tej namestitvi, z njihovimi podatki in zgoščenimi gesli. Obnova na novi namestitvi vrne vse. Datoteko hrani enako varno kot podatkovno bazo.",
+    "accountsCount_one": "Drugi računi: {{count}}",
+    "accountsCount_other": "Drugi računi: {{count}}"
   },
   "notifications": {
     "table": {

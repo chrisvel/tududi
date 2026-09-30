@@ -2179,7 +2179,10 @@
     "validationErrors": "أخطاء التحقق:",
     "versionIncompatible": "الإصدار غير متوافق",
     "backupVersion": "إصدار النسخة الاحتياطية",
-    "restoreButton": "استعادة"
+    "restoreButton": "استعادة",
+    "adminInstanceNote": "بصفتك مسؤولًا، تتضمن نسختك الاحتياطية كل حساب على هذه النسخة، مع بياناته وتجزئات كلمات المرور. استعادتها على تثبيت جديد تعيد الجميع. احفظ الملف بعناية كما تحفظ قاعدة البيانات.",
+    "accountsCount_one": "حسابات أخرى: {{count}}",
+    "accountsCount_other": "حسابات أخرى: {{count}}"
   },
   "notifications": {
     "table": {

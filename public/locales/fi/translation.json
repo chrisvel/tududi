@@ -2175,7 +2175,10 @@
     "validationErrors": "Validointivirheet:",
     "versionIncompatible": "Versio yhteensopimaton",
     "backupVersion": "Varmuuskopion versio",
-    "restoreButton": "Palauta"
+    "restoreButton": "Palauta",
+    "adminInstanceNote": "Ylläpitäjänä varmuuskopiosi sisältää tämän instanssin kaikki tilit tietoineen ja salasanatiivisteineen. Kun palautat sen uuteen asennukseen, kaikki palaavat. Säilytä tiedosto yhtä huolellisesti kuin tietokanta.",
+    "accountsCount_one": "{{count}} muu tili",
+    "accountsCount_other": "{{count}} muuta tiliä"
   },
   "notifications": {
     "table": {

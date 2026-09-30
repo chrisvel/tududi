@@ -2175,7 +2175,10 @@
     "validationErrors": "Valideringsfejl:",
     "versionIncompatible": "Version inkompatibel",
     "backupVersion": "Backup version",
-    "restoreButton": "Gendan"
+    "restoreButton": "Gendan",
+    "adminInstanceNote": "Som administrator indeholder din backup alle konti på denne instans med deres data og adgangskode-hashes. Gendannes den på en ny installation, kommer alle tilbage. Opbevar filen lige så sikkert som databasen.",
+    "accountsCount_one": "{{count}} anden konto",
+    "accountsCount_other": "{{count}} andre konti"
   },
   "notifications": {
     "table": {

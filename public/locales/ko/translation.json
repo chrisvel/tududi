@@ -2175,7 +2175,10 @@
     "validationErrors": "유효성 검사 오류:",
     "versionIncompatible": "버전 호환성 없음",
     "backupVersion": "백업 버전",
-    "restoreButton": "복원"
+    "restoreButton": "복원",
+    "adminInstanceNote": "관리자의 백업에는 이 인스턴스의 모든 계정이 데이터와 비밀번호 해시와 함께 포함됩니다. 새 설치에 복원하면 모두 돌아옵니다. 파일을 데이터베이스만큼 안전하게 보관하세요.",
+    "accountsCount_one": "다른 계정 {{count}}개",
+    "accountsCount_other": "다른 계정 {{count}}개"
   },
   "notifications": {
     "table": {

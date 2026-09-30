@@ -2175,7 +2175,10 @@
     "validationErrors": "Doğrulama hataları:",
     "versionIncompatible": "Sürüm Uyuşmaz",
     "backupVersion": "Yedek sürümü",
-    "restoreButton": "Geri Yükle"
+    "restoreButton": "Geri Yükle",
+    "adminInstanceNote": "Yönetici olarak yedeğin bu kurulumdaki tüm hesapları, verileri ve parola özetleriyle birlikte içerir. Yeni bir kuruluma geri yüklemek herkesi geri getirir. Dosyayı veritabanı kadar güvenli sakla.",
+    "accountsCount_one": "{{count}} diğer hesap",
+    "accountsCount_other": "{{count}} diğer hesap"
   },
   "notifications": {
     "table": {

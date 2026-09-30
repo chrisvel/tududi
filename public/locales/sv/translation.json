@@ -2175,7 +2175,10 @@
     "validationErrors": "Valideringsfel:",
     "versionIncompatible": "Version inkompatibel",
     "backupVersion": "Backupversion",
-    "restoreButton": "Återställ"
+    "restoreButton": "Återställ",
+    "adminInstanceNote": "Som administratör innehåller din säkerhetskopia alla konton på den här instansen, med deras data och lösenordshashar. Återställer du den på en ny installation kommer alla tillbaka. Förvara filen lika säkert som databasen.",
+    "accountsCount_one": "{{count}} annat konto",
+    "accountsCount_other": "{{count}} andra konton"
   },
   "notifications": {
     "table": {

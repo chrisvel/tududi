@@ -2178,7 +2178,10 @@
     "clickToUpload": "Click pentru a naviga la fișiere",
     "restoreBackup": "Restaurare Backup",
     "importing": "Importare...",
-    "restoreButton": "Restaurare"
+    "restoreButton": "Restaurare",
+    "adminInstanceNote": "Ca administrator, copia ta de rezervă include fiecare cont de pe această instanță, cu datele și hash-urile parolelor. Restaurarea ei pe o instalare nouă îi aduce pe toți înapoi. Păstrează fișierul la fel de sigur ca baza de date.",
+    "accountsCount_one": "Alte conturi: {{count}}",
+    "accountsCount_other": "Alte conturi: {{count}}"
   },
   "notifications": {
     "table": {

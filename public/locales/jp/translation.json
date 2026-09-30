@@ -2175,7 +2175,10 @@
     "validationErrors": "検証エラー:",
     "versionIncompatible": "バージョンが互換性がありません",
     "backupVersion": "バックアップバージョン",
-    "restoreButton": "復元"
+    "restoreButton": "復元",
+    "adminInstanceNote": "管理者のバックアップには、このインスタンスのすべてのアカウントが、そのデータとパスワードハッシュとともに含まれます。新しい環境に復元すると全員が戻ります。ファイルはデータベースと同じように大切に保管してください。",
+    "accountsCount_one": "ほかのアカウント {{count}}件",
+    "accountsCount_other": "ほかのアカウント {{count}}件"
   },
   "notifications": {
     "table": {

@@ -2176,7 +2176,10 @@
     "validationErrors": "Errori di convalida:",
     "versionIncompatible": "Versione incompatibile",
     "backupVersion": "Versione del backup",
-    "restoreButton": "Ripristina"
+    "restoreButton": "Ripristina",
+    "adminInstanceNote": "Come amministratore, il tuo backup include tutti gli account di questa istanza, con i loro dati e gli hash delle password. Ripristinarlo su una nuova installazione riporta tutti. Conserva il file con la stessa cura del database.",
+    "accountsCount_one": "{{count}} altro account",
+    "accountsCount_other": "{{count}} altri account"
   },
   "notifications": {
     "table": {
