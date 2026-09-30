@@ -143,35 +143,35 @@
     // between locales, and a translation pass can silently drop a card.
     const featureGroups = [
         { id: 'planDay', cards: [
-            { id: 'capture',       icon: 'fas fa-bolt',                 featured: true },
-            { id: 'nlpDates',      icon: 'fas fa-calendar-check',       featured: true },
-            { id: 'planMyDay',     icon: 'fas fa-wand-magic-sparkles',  featured: true },
-            { id: 'todayCalendar', icon: 'fas fa-calendar-day',         featured: true },
-            { id: 'aiPlanning',    icon: 'fas fa-robot',                featured: true },
+            { id: 'capture',       icon: 'fas fa-bolt',                 featured: true, shot: true },
+            { id: 'nlpDates',      icon: 'fas fa-calendar-check',       featured: true, shot: true },
+            { id: 'planMyDay',     icon: 'fas fa-wand-magic-sparkles',  featured: true, shot: true },
+            { id: 'todayCalendar', icon: 'fas fa-calendar-day',         featured: true, shot: true },
+            { id: 'aiPlanning',    icon: 'fas fa-robot',                featured: true, shot: true },
         ]},
         { id: 'planFocus', cards: [
-            { id: 'goals',        icon: 'fas fa-bullseye',        featured: true },
-            { id: 'hierarchy',    icon: 'fas fa-project-diagram' },
-            { id: 'lifeAreas',    icon: 'fas fa-layer-group' },
-            { id: 'views',        icon: 'fas fa-filter' },
-            { id: 'matrixKanban', icon: 'fas fa-th-large' },
+            { id: 'goals',        icon: 'fas fa-bullseye',        featured: true, shot: true },
+            { id: 'hierarchy',    icon: 'fas fa-project-diagram', shot: true },
+            { id: 'lifeAreas',    icon: 'fas fa-layer-group', shot: true },
+            { id: 'views',        icon: 'fas fa-filter', shot: true },
+            { id: 'matrixKanban', icon: 'fas fa-th-large',        featured: true, shot: true },
             { id: 'insights',     icon: 'fas fa-chart-line' },
         ]},
         { id: 'tasksProjects', cards: [
-            { id: 'people',    icon: 'fas fa-user-friends' },
-            { id: 'habits',    icon: 'fas fa-redo-alt' },
-            { id: 'recurring', icon: 'fas fa-sync-alt',   featured: true },
-            { id: 'richTasks', icon: 'fas fa-tasks' },
-            { id: 'subtasks',  icon: 'fas fa-list-ul' },
-            { id: 'notes',     icon: 'fas fa-sticky-note' },
-            { id: 'tags',      icon: 'fas fa-tag' },
-            { id: 'search',    icon: 'fas fa-search' },
+            { id: 'people',    icon: 'fas fa-user-friends', shot: true },
+            { id: 'habits',    icon: 'fas fa-redo-alt',   featured: true, shot: true },
+            { id: 'recurring', icon: 'fas fa-sync-alt' },
+            { id: 'richTasks', icon: 'fas fa-tasks', shot: true },
+            { id: 'subtasks',  icon: 'fas fa-list-ul', shot: true },
+            { id: 'notes',     icon: 'fas fa-sticky-note', shot: true },
+            { id: 'tags',      icon: 'fas fa-tag', shot: true },
+            { id: 'search',    icon: 'fas fa-search', shot: true },
         ]},
         { id: 'accessAnywhere', cards: [
-            { id: 'pwa',        icon: 'fas fa-mobile-alt' },
+            { id: 'pwa',        icon: 'fas fa-mobile-alt', shot: true },
             { id: 'oidc',       icon: 'fas fa-id-badge' },
             { id: 'i18n',       icon: 'fas fa-language' },
-            { id: 'telegram',   icon: 'fas fa-paper-plane', featured: true },
+            { id: 'telegram',   icon: 'fas fa-paper-plane' },
             { id: 'caldav',     icon: 'fas fa-calendar-alt' },
             { id: 'api',        icon: 'fas fa-code' },
         ]},
@@ -443,8 +443,8 @@
             <% const featuredCards = featureGroups.flatMap(function (g) { return g.cards.filter(function (c) { return c.featured; }); }); %>
             <div class="feature-grid">
                 <% featuredCards.forEach(function (card) { %>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
+                <div class="feature-card<%= card.shot ? ' has-shot' : '' %>">
+                    <% if (card.shot) { %><img class="feature-shot" src="/landing-assets/screenshots/features/<%= card.id %>.webp" alt="<%= t('features.cards.' + card.id + '.title', cardVars) %>" width="1120" height="700" loading="lazy"><% } else { %><div class="feature-icon"><i class="<%= card.icon %>"></i></div><% } %>
                     <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
                     <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
                 </div>
@@ -453,7 +453,8 @@
 
             <div id="feature-rest" hidden>
                 <% featureGroups.forEach(function (group) { %>
-                <% const rest = group.cards.filter(function (c) { return !c.featured; }); %>
+                <%# Screenshot cards first, so rows of pictures and rows of icons do not mix. %>
+                <% const rest = group.cards.filter(function (c) { return !c.featured; }).sort(function (a, b) { return (b.shot ? 1 : 0) - (a.shot ? 1 : 0); }); %>
                 <% if (rest.length) { %>
                 <div class="feature-group">
                     <div class="feature-group-label">
@@ -462,8 +463,8 @@
                     </div>
                     <div class="feature-grid">
                         <% rest.forEach(function (card) { %>
-                        <div class="feature-card">
-                            <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
+                        <div class="feature-card<%= card.shot ? ' has-shot' : '' %>">
+                            <% if (card.shot) { %><img class="feature-shot" src="/landing-assets/screenshots/features/<%= card.id %>.webp" alt="<%= t('features.cards.' + card.id + '.title', cardVars) %>" width="1120" height="700" loading="lazy"><% } else { %><div class="feature-icon"><i class="<%= card.icon %>"></i></div><% } %>
                             <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
                             <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
                         </div>

@@ -1151,6 +1151,9 @@
             letter-spacing: -0.01em;
         }
         .feature-card p { font-size: 14.5px; color: #5b6472; margin: 0; line-height: 1.6; }
+        /* Screenshots are 1120x700 crops of the app's main column, so they
+           share one aspect ratio and read as a set. */
+        .feature-shot { display: block; width: 100%; height: auto; aspect-ratio: 1120 / 700; object-fit: cover; object-position: top left; border-radius: 12px; background: #f3f4f6; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06), 0 8px 20px -12px rgba(17, 24, 39, 0.18); }
         .feature-more { text-align: center; margin-top: 40px; }
         .feature-toggle {
             display: inline-flex;

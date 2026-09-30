@@ -237,7 +237,7 @@ describe('Landing page', () => {
             res.text.indexOf('<div class="feature-grid">'),
             res.text.indexOf('id="feature-rest"')
         );
-        expect(grid.match(/class="feature-card"/g)).toHaveLength(8);
+        expect(grid.match(/class="feature-card[ "]/g)).toHaveLength(8);
         expect(grid).toContain('One box for everything');
         expect(grid).toContain('Plan my day');
         expect(grid).toContain('Today with your calendar');
@@ -257,6 +257,25 @@ describe('Landing page', () => {
             .set('Host', 'tududi.com');
         expect(video.status).toBe(200);
         expect(video.headers['content-type']).toMatch(/video\/mp4/);
+    });
+
+    it('shows a screenshot on every featured card, and serves them all', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const grid = res.text.slice(
+            res.text.indexOf('<div class="feature-grid">'),
+            res.text.indexOf('id="feature-rest"')
+        );
+        expect(grid.match(/class="feature-shot"/g)).toHaveLength(8);
+        const srcs = [
+            ...res.text.matchAll(
+                /src="(\/landing-assets\/screenshots\/features\/[^"]+)"/g
+            ),
+        ].map((m) => m[1]);
+        expect(srcs.length).toBeGreaterThanOrEqual(18);
+        for (const src of new Set(srcs)) {
+            const img = await request(app).get(src).set('Host', 'tududi.com');
+            expect(img.status).toBe(200);
+        }
     });
 
     it('serves the new screenshots', async () => {
