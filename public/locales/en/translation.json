@@ -783,6 +783,14 @@
     "contentBackground": "Background",
     "contentBackgroundDescription": "Show a photo behind the main content area. Photos come from Unsplash and are credited to their photographers.",
     "contentBackgroundNone": "None",
+    "backgroundCategories": {
+      "abstract": "Abstract",
+      "artistic": "Artistic",
+      "modern": "Modern",
+      "cyberpunk": "Cyberpunk",
+      "scenery": "Scenery",
+      "objects": "Objects"
+    },
     "photoBy": "Photo by",
     "photoOn": "on",
     "connected": {
