@@ -85,6 +85,12 @@ const registrationConfig = {
     tokenExpiryHours: process.env.REGISTRATION_TOKEN_EXPIRY_HOURS
         ? parseInt(process.env.REGISTRATION_TOKEN_EXPIRY_HOURS, 10)
         : 24,
+    // Whether a new account's email domain must be able to receive mail (an
+    // MX lookup that fails open when DNS is unreachable). Off under test so
+    // the suite never touches the network.
+    mxCheck: process.env.REGISTRATION_MX_CHECK
+        ? process.env.REGISTRATION_MX_CHECK === 'true'
+        : environment !== 'test',
 };
 
 const passwordResetConfig = {

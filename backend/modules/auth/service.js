@@ -9,6 +9,7 @@ const { isPasswordAuthEnabled } = require('../../config/authConfig');
 const {
     isRegistrationEnabled,
     createUnverifiedUser,
+    checkSignupEmailDomain,
     sendVerificationEmail,
     verifyUserEmail,
     resendVerificationEmail,
@@ -46,26 +47,30 @@ class AuthService {
     }
 
     async register(email, password) {
+        if (!isPasswordAuthEnabled()) {
+            throw new ForbiddenError(
+                'Password registration is disabled. Please use SSO to sign in.'
+            );
+        }
+
+        if (!(await isRegistrationEnabled())) {
+            throw new NotFoundError('Registration is not enabled');
+        }
+
+        if (!email || !password) {
+            throw new ValidationError('Email and password are required');
+        }
+
+        // Before the transaction opens: the domain check may wait on DNS,
+        // and nothing should hold a database connection while it does.
+        const rejection = await checkSignupEmailDomain(email);
+        if (rejection) {
+            throw new ValidationError(rejection);
+        }
+
         const transaction = await sequelize.transaction();
 
         try {
-            if (!isPasswordAuthEnabled()) {
-                await transaction.rollback();
-                throw new ForbiddenError(
-                    'Password registration is disabled. Please use SSO to sign in.'
-                );
-            }
-
-            if (!(await isRegistrationEnabled())) {
-                await transaction.rollback();
-                throw new NotFoundError('Registration is not enabled');
-            }
-
-            if (!email || !password) {
-                await transaction.rollback();
-                throw new ValidationError('Email and password are required');
-            }
-
             const { user, verificationToken } = await createUnverifiedUser(
                 email,
                 password,
