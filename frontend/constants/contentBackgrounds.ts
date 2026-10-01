@@ -126,7 +126,7 @@ export const CONTENT_BACKGROUNDS: ContentBackground[] = [
 
 // Tint laid over the photo so text that sits straight on the content area
 // (headings, task rows) stays readable in both themes.
-export const CONTENT_BACKGROUND_OVERLAY = 'bg-gray-100/30 dark:bg-gray-900/50';
+export const CONTENT_BACKGROUND_OVERLAY = 'bg-gray-300/30 dark:bg-gray-900/50';
 
 const UTM = 'utm_source=tududi&utm_medium=referral';
 
