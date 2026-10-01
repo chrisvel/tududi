@@ -780,6 +780,11 @@
     "taskItem": "Task Item",
     "showTaskContextMenu": "Show context menu button",
     "showTaskContextMenuDescription": "Display a three-dot button on each task with Edit and Delete actions",
+    "contentBackground": "Background",
+    "contentBackgroundDescription": "Show a photo behind the main content area. Photos come from Unsplash and are credited to their photographers.",
+    "contentBackgroundNone": "None",
+    "photoBy": "Photo by",
+    "photoOn": "on",
     "connected": {
       "loadError": "Failed to load connected accounts",
       "linkError": "Failed to initiate account linking",

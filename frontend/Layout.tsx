@@ -30,6 +30,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { TaskRowExpansionProvider } from './components/Task/TaskRow/TaskRowExpansionContext';
 import { getApiPath } from './config/paths';
 import { KeyboardShortcutsConfig } from './utils/keyboardShortcutsService';
+import PhotoCredit from './components/Shared/PhotoCredit';
+import {
+    CONTENT_BACKGROUND_OVERLAY,
+    contentBackgroundUrl,
+    findContentBackground,
+} from './constants/contentBackgrounds';
 
 interface LayoutProps {
     currentUser: User;
@@ -115,6 +121,9 @@ const Layout: React.FC<LayoutProps> = ({
             hasLoaded: hasTagsLoaded,
         },
     } = useStore();
+    const contentBackground = findContentBackground(
+        useStore((state) => state.userSettingsStore.contentBackground)
+    );
 
     // Task shortcuts and the sidebar's New > Task open the shared capture
     // box on Task. The navbar and phone buttons open it on Inbox.
@@ -481,9 +490,29 @@ const Layout: React.FC<LayoutProps> = ({
                 <div
                     className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col`}
                 >
-                    <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 overflow-hidden">
+                    <div className="relative flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 overflow-hidden">
+                        {contentBackground && (
+                            <>
+                                <div
+                                    aria-hidden="true"
+                                    className="absolute inset-0 bg-cover bg-center"
+                                    style={{
+                                        backgroundImage: `url(${contentBackgroundUrl(contentBackground)})`,
+                                    }}
+                                    data-testid="content-background"
+                                />
+                                <div
+                                    aria-hidden="true"
+                                    className={`absolute inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
+                                />
+                                <PhotoCredit
+                                    background={contentBackground}
+                                    className="absolute bottom-3 left-3 z-10"
+                                />
+                            </>
+                        )}
                         <div
-                            className={`flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
+                            className={`relative flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
                                 isMobileSearchOpen ? 'pt-32' : 'pt-20'
                             } md:pt-20 ${isUpcomingView ? 'md:px-6 lg:px-8' : 'md:px-4'} overflow-hidden`}
                         >
