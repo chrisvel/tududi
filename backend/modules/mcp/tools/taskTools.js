@@ -8,7 +8,10 @@ const {
 } = require('../../tasks/core/serializers');
 const { calculateInitialDueDate } = require('../../tasks/core/builders');
 const { parseEstimatedMinutes } = require('../../tasks/core/parsers');
-const { handleRecurrenceUpdate } = require('../../tasks/operations/recurring');
+const {
+    handleRecurrenceUpdate,
+    skipRecurringOccurrence,
+} = require('../../tasks/operations/recurring');
 const { handleCompletionStatus } = require('../../tasks/operations/completion');
 const { Op } = require('sequelize');
 const { Task, Project, Tag } = require('../../../models');
@@ -878,7 +881,85 @@ function registerTaskTools(server, context, tools) {
         },
     });
 
-    // 6. delete_task - Delete task (owner only)
+    // 6. skip_task_occurrence - Skip one occurrence of a recurring task
+    tools.push({
+        name: 'skip_task_occurrence',
+        description:
+            'Skip the current occurrence of a recurring task: move it to its next due date without counting it as completed',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                id: {
+                    type: ['number', 'string'],
+                    description: 'Task ID or UID',
+                },
+            },
+            required: ['id'],
+        },
+        handler: async (params) => {
+            const task = await findTaskByIdentifier(params.id);
+
+            if (!task) {
+                throw new Error(`Task not found: ${params.id}`);
+            }
+
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'task',
+                task.uid
+            );
+            const canWrite =
+                task.user_id === context.userId ||
+                access === permissionsService.ACCESS.RW ||
+                access === permissionsService.ACCESS.ADMIN;
+            if (!canWrite) {
+                throw new Error('Access denied');
+            }
+
+            const result = await skipRecurringOccurrence(
+                task,
+                context.userId,
+                context.user.timezone
+            );
+            if (result.error) {
+                throw new Error(result.error);
+            }
+
+            const reloadedTask = await taskRepository.findById(task.id, {
+                include: [
+                    { model: Project, as: 'Project' },
+                    { model: Tag, as: 'Tags' },
+                ],
+            });
+
+            const serialized = await serializeTask(
+                reloadedTask,
+                context.user.timezone,
+                { preserveOriginalName: true }
+            );
+
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify(
+                            {
+                                message: 'Occurrence skipped',
+                                skipped_due_date:
+                                    result.originalDueDate.toISOString(),
+                                next_due_date: result.nextDueDate.toISOString(),
+                                task: serialized,
+                            },
+                            null,
+                            2
+                        ),
+                    },
+                ],
+            };
+        },
+    });
+
+    // 7. delete_task - Delete task (owner only)
     tools.push({
         name: 'delete_task',
         description: 'Permanently delete a task',
@@ -923,7 +1004,7 @@ function registerTaskTools(server, context, tools) {
         },
     });
 
-    // 7. add_subtask - Add subtask to parent
+    // 8. add_subtask - Add subtask to parent
     tools.push({
         name: 'add_subtask',
         description: 'Add a subtask to an existing task',
@@ -1167,7 +1248,7 @@ function registerTaskTools(server, context, tools) {
         },
     });
 
-    // 8. get_task_metrics - Get task statistics
+    // 9. get_task_metrics - Get task statistics
     tools.push({
         name: 'get_task_metrics',
         description: 'Get task statistics and productivity metrics',

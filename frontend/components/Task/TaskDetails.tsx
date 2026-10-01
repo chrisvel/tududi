@@ -14,6 +14,7 @@ import {
     fetchSubtasks,
     TaskIteration,
     toggleTaskCompletion,
+    skipTaskOccurrence,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { fetchAttachments } from '../../utils/attachmentsService';
@@ -45,6 +46,7 @@ import {
     isTaskPastDue,
     getTodayDateString,
 } from '../../utils/dateUtils';
+import { isTaskDone } from '../../constants/taskStatus';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -1041,6 +1043,49 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleSkipOccurrence = async () => {
+        if (!task?.uid) {
+            return;
+        }
+
+        try {
+            taskModifiedRef.current = true;
+            const updatedTaskResponse = await skipTaskOccurrence(task.uid);
+            const mergedTask = {
+                ...task,
+                ...updatedTaskResponse,
+                subtasks: updatedTaskResponse.subtasks || task.subtasks || [],
+            };
+
+            if (uid) {
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = mergedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            await refreshRecurringSetup(mergedTask);
+            setTimelineRefreshKey((prev) => prev + 1);
+            showSuccessToast(t('task.occurrenceSkipped', 'Occurrence skipped'));
+        } catch (error) {
+            console.error('Error skipping occurrence:', error);
+            showErrorToast(
+                t('task.skipOccurrenceError', 'Failed to skip occurrence')
+            );
+        }
+    };
+
+    const canSkipOccurrence =
+        !!task &&
+        !!task.recurrence_type &&
+        task.recurrence_type !== 'none' &&
+        !task.recurring_parent_id &&
+        !isTaskDone(task.status);
+
     const handleStatusUpdate = async (newStatus: number) => {
         if (!task?.uid) return;
 
@@ -1477,6 +1522,9 @@ const TaskDetails: React.FC = () => {
                     onStatusUpdate={handleStatusUpdate}
                     onPriorityUpdate={handlePriorityUpdate}
                     onDelete={handleDeleteClick}
+                    onSkipOccurrence={
+                        canSkipOccurrence ? handleSkipOccurrence : undefined
+                    }
                     getProjectLink={getProjectLink}
                     getTagLink={getTagLink}
                     activePill={activePill}
