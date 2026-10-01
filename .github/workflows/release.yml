@@ -2,8 +2,8 @@ name: Release
 
 # One button for a release: cuts the version (scripts/create-version.sh),
 # publishes the image and the GitHub Release (docker-publish.yml), then asks
-# tududi/ci to deploy it to app.tududi.com, where the deploy waits for an
-# approval on the production environment.
+# tududi/ci to deploy it to app.tududi.com. There is no approval step after
+# this: starting the run, with "deploy" ticked, is the decision to ship.
 #
 #   Actions → Release → Run workflow, or
 #   gh workflow run release -f kind=stable -f bump=fix
@@ -28,10 +28,10 @@ on:
         description: Exact version instead (e.g. v1.7.0-rc.2), overrides the two above
         type: string
         required: false
-      deploy_rc:
-        description: Also deploy an rc to app.tududi.com (stable always deploys, dev never)
+      deploy:
+        description: Deploy to app.tududi.com once published (dev releases never deploy)
         type: boolean
-        default: false
+        default: true
 
 permissions:
   contents: read
@@ -107,11 +107,12 @@ jobs:
 
   deploy:
     needs: [cut, publish]
-    # Stable always, rc when asked, dev never. Decided on the version itself,
-    # so an exact version is judged the same way.
+    # Stable and rc when ticked, dev never. Decided on the version itself, so
+    # an exact version is judged the same way.
     if: >-
-      !contains(needs.cut.outputs.version, '-') ||
-      (contains(needs.cut.outputs.version, '-rc.') && inputs.deploy_rc)
+      inputs.deploy &&
+      (!contains(needs.cut.outputs.version, '-') ||
+      contains(needs.cut.outputs.version, '-rc.'))
     runs-on: ubuntu-latest
 
     steps:
@@ -124,6 +125,6 @@ jobs:
             -f event_type=deploy \
             -f "client_payload[version]=$VERSION"
           {
-            echo "Deploy of $VERSION requested. Approve it in tududi/ci:"
+            echo "Deploy of $VERSION requested, follow it in tududi/ci:"
             echo "https://github.com/tududi/ci/actions/workflows/deploy.yml"
           } >> "$GITHUB_STEP_SUMMARY"
