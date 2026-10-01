@@ -59,6 +59,8 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 10. **A member who cannot sign in is managed by the people who share their tasks.** Tasks assigned to them stay editable by whoever owns or shares the task or project.
 
+10a. **The Share dialog lists the members of your workspace by name.** Pick one to send them an invitation, including a member without an email. Members who already have access are greyed out. "Someone else, by email" invites anyone else with their exact email address, which is also all the dialog shows when your workspace has nobody else in it yet. Emails of other members are never listed (`GET /api/shares/candidates`).
+
 ### Members without an email
 
 11. **Anyone with the invite permission can add a member from the People page.** Add member asks for a name, an optional email, an optional password and a role. With an email the member is invited by email. With an email and a password they are signed up. With neither, they are added as a member with no password, who signs in with a sign-in link (rules 14c to 14g). An admin always has the permission, and can also add members in Admin > Access > Users.
@@ -118,6 +120,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 | `GET /api/people/:uid` | One person. A member of your workspace can be opened, read only |
 | `POST /api/members` | Add a member, or with `person_uid` turn one of your contacts into a member. Needs `invite_members` |
 | `GET /api/projects/:uid/assignable-people` | Who a task in this project can be assigned to |
+| `GET /api/shares/candidates` | The workspace members the Share dialog offers (`id`, `uid`, `name`). `POST /api/shares` takes one as `target_user_id`; an id outside your workspace is a `404` |
 | `POST`, `PATCH`, `DELETE /api/people[/:uid]` | Add, change or remove one of your contacts. Adding needs `create_people` |
 | `GET /api/everyone` | The Everyone board |
 | `GET /api/admin/roles` | The three roles, their default capabilities and how many accounts hold each (admin) |

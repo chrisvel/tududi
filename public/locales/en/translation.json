@@ -2230,6 +2230,12 @@
   "shares": {
     "shareProject": "Share project",
     "targetUser": "Invite by email",
+    "shareWith": "Share with",
+    "selectPerson": "Select a person",
+    "selectPersonError": "Choose a person",
+    "alreadyHasAccess": "already has access",
+    "someoneElseByEmail": "Someone else, by email",
+    "you": "you",
     "emailPlaceholder": "name@example.com",
     "inviteHint": "They will get an invitation and see the project after accepting.",
     "invitationSent": "Invitation sent.",

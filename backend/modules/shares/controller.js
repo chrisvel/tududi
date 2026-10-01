@@ -57,6 +57,22 @@ const sharesController = {
         }
     },
 
+    async listCandidates(req, res, next) {
+        try {
+            const userId = getAuthenticatedUserId(req);
+            if (!userId) {
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
+            }
+
+            const users = await sharesService.listCandidates(userId);
+            res.json({ users });
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async getAll(req, res, next) {
         try {
             const userId = getAuthenticatedUserId(req);

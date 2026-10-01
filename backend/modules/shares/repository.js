@@ -70,6 +70,15 @@ class SharesRepository {
         return User.findByPk(id, { attributes });
     }
 
+    async findCandidateUsers(ids) {
+        if (ids.length === 0) return [];
+        return User.findAll({
+            where: { id: ids },
+            attributes: ['id', 'uid', 'name', 'surname', 'email'],
+            raw: true,
+        });
+    }
+
     async findUsersByIds(ids) {
         return User.findAll({
             where: { id: ids },
