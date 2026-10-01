@@ -66,11 +66,15 @@ jest.mock('../../Task/TaskRow', () => ({
     ),
 }));
 
+let mockCalendarEnabled = true;
 jest.mock('../../../store/useStore', () => ({
     useStore: (selector: any) =>
         selector({
             projectsStore: { projects: [] },
-            userSettingsStore: { aiAssistantEnabled: false },
+            userSettingsStore: {
+                aiAssistantEnabled: false,
+                calendarEnabled: mockCalendarEnabled,
+            },
         }),
 }));
 
@@ -115,6 +119,7 @@ const candidates = {
 describe('TodayPage', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        mockCalendarEnabled = true;
         (fetchPlanCandidates as jest.Mock).mockResolvedValue(candidates);
         (fetchCalendarFeeds as jest.Mock).mockResolvedValue([]);
         (fetchCalendarEvents as jest.Mock).mockResolvedValue({
@@ -142,6 +147,42 @@ describe('TodayPage', () => {
             screen.getByText('Skip and show everything').closest('a')
         ).toHaveAttribute('href', '/today_legacy');
         await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+    });
+
+    it('offers to connect a calendar when the Calendar feature is on', async () => {
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: null,
+        });
+
+        render(<TodayPage />);
+
+        expect(
+            await screen.findByText('Connect a calendar')
+        ).toBeInTheDocument();
+    });
+
+    it('leaves calendars out when the Calendar feature is off', async () => {
+        mockCalendarEnabled = false;
+        (fetchCalendarFeeds as jest.Mock).mockResolvedValue([
+            { uid: 'f1', name: 'Work' },
+        ]);
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: null,
+        });
+
+        render(<TodayPage />);
+
+        await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+        expect(fetchCalendarFeeds).not.toHaveBeenCalled();
+        expect(fetchCalendarEvents).not.toHaveBeenCalled();
+        expect(
+            screen.queryByText('Connect a calendar')
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText('From your calendar')
+        ).not.toBeInTheDocument();
     });
 
     it('offers to continue a draft plan', async () => {

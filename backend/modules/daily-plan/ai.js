@@ -32,10 +32,7 @@ const STATUS_LABELS = {
 // AI planning follows the same per-user switch as the rest of the AI
 // assistant (Profile -> Features). The UI hides everything when it is off;
 // this keeps the API honest too.
-async function assertAiEnabled(userId) {
-    const user = await User.findByPk(userId, {
-        attributes: ['id', 'features', 'ai_profile', 'timezone', 'language'],
-    });
+function readFeatures(user) {
     let features = user?.features;
     if (typeof features === 'string') {
         try {
@@ -44,7 +41,14 @@ async function assertAiEnabled(userId) {
             features = null;
         }
     }
-    if (!features || features.ai_assistant_enabled !== true) {
+    return features || {};
+}
+
+async function assertAiEnabled(userId) {
+    const user = await User.findByPk(userId, {
+        attributes: ['id', 'features', 'ai_profile', 'timezone', 'language'],
+    });
+    if (readFeatures(user).ai_assistant_enabled !== true) {
         throw new ForbiddenError(
             'Turn on the AI assistant in Profile to get AI help with planning.'
         );
@@ -218,7 +222,10 @@ const DRAFT_SCHEMA = {
 const hhmm = (minute) =>
     `${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`;
 
+// Calendar feeds are part of the Calendar feature (Profile -> Features);
+// when it is off the AI plans as if the day had no events.
 async function loadDayEvents(user, date) {
+    if (readFeatures(user).calendar_enabled !== true) return [];
     try {
         const day = await calendarFeedsService.eventsForDay(user, date);
         return day.events;
@@ -234,7 +241,7 @@ async function draftDay(userId, { date, mode = 'fill' } = {}) {
     }
     const timezone = getSafeTimezone(user.timezone);
     const planDate = dailyPlanService.resolvePlanDate(date, timezone);
-    const fullUser = { id: userId, timezone };
+    const fullUser = { id: userId, timezone, features: user.features };
 
     const [{ plan, day_hours: hours }, candidates, events] = await Promise.all([
         dailyPlanService.getPlan(fullUser, planDate),
@@ -480,7 +487,7 @@ async function wrapUpDay(userId, date) {
     const user = await assertAiEnabled(userId);
     const timezone = getSafeTimezone(user.timezone);
     const planDate = dailyPlanService.resolvePlanDate(date, timezone);
-    const fullUser = { id: userId, timezone };
+    const fullUser = { id: userId, timezone, features: user.features };
 
     const [{ plan }, events] = await Promise.all([
         dailyPlanService.getPlan(fullUser, planDate),

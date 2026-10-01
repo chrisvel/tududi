@@ -9,6 +9,7 @@ const app = require('../../app');
 const { Task, User, DailyPlan } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 const dailyPlanAi = require('../../modules/daily-plan/ai');
+const calendarFeedsService = require('../../modules/calendar-feeds/service');
 
 const reply = (content) => ({
     choices: [{ message: { content: JSON.stringify(content) } }],
@@ -109,6 +110,67 @@ describe('Daily plan AI routes', () => {
         });
         expect(res.body.items[0].task.name).toBe('Pay invoice');
         expect(await DailyPlan.count()).toBe(0);
+    });
+
+    describe('calendar events in the draft', () => {
+        const busy = {
+            date: '2026-09-24',
+            events: [
+                {
+                    uid: 'e1',
+                    title: 'Board meeting',
+                    busy: true,
+                    all_day: false,
+                    start_minute: 600,
+                    end_minute: 660,
+                },
+            ],
+            errors: [],
+        };
+
+        beforeEach(async () => {
+            await dueToday('Pay invoice');
+            jest.spyOn(calendarFeedsService, 'eventsForDay').mockResolvedValue(
+                busy
+            );
+            mockCreate.mockResolvedValue(
+                reply({ summary: 'ok', items: [], skipped: [] })
+            );
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        const prompt = () =>
+            mockCreate.mock.calls[0][0].messages
+                .map((m) => m.content)
+                .join('\n');
+
+        it('includes calendar events while the Calendar feature is on', async () => {
+            await User.update(
+                {
+                    features: {
+                        ai_assistant_enabled: true,
+                        calendar_enabled: true,
+                    },
+                },
+                { where: { id: user.id } }
+            );
+
+            const res = await agent.post('/api/daily-plan/ai/draft').send({});
+
+            expect(res.status).toBe(200);
+            expect(prompt()).toContain('Board meeting');
+        });
+
+        it('leaves calendar events out while the Calendar feature is off', async () => {
+            const res = await agent.post('/api/daily-plan/ai/draft').send({});
+
+            expect(res.status).toBe(200);
+            expect(calendarFeedsService.eventsForDay).not.toHaveBeenCalled();
+            expect(prompt()).not.toContain('Board meeting');
+        });
     });
 
     it('estimates once and serves repeats from the cache', async () => {
