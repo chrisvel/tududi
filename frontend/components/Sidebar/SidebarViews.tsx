@@ -151,7 +151,13 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                         typeof profile.sidebar_settings === 'string'
                             ? JSON.parse(profile.sidebar_settings)
                             : profile.sidebar_settings;
-                    setSidebarSettings(settings);
+                    setSidebarSettings({
+                        pinnedViewsOrder: Array.isArray(
+                            settings?.pinnedViewsOrder
+                        )
+                            ? settings.pinnedViewsOrder
+                            : [],
+                    });
                 }
             }
         } catch (error) {

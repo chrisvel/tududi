@@ -639,15 +639,23 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({ isOpen, task, onClose, 
     };
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 w-full max-w-sm">
+        <div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+            onClick={onClose}
+        >
+            <div
+                role="dialog"
+                aria-modal="true"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 w-full max-w-sm max-h-[90vh] flex flex-col"
+                onClick={(event) => event.stopPropagation()}
+            >
                 {/* Header */}
-                <div className="flex items-start justify-between p-5 pb-4">
+                <div className="shrink-0 flex items-start justify-between p-5 pb-4">
                     <div className="flex-1 min-w-0 pr-3">
                         <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500 mb-1.5">
                             {t('calendar.task', 'Task')}
                         </p>
-                        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 leading-snug">
+                        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 leading-snug break-words line-clamp-4">
                             {task.name || `Task ${task.id}`}
                         </h3>
                     </div>
@@ -659,63 +667,65 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({ isOpen, task, onClose, 
                     </button>
                 </div>
 
-                {/* Pills row */}
-                <div className="flex items-center gap-2 px-5 pb-4 flex-wrap">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                        task.completed_at
-                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                            : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                    }`}>
-                        {task.completed_at ? t('calendar.completed', 'Completed') : t('calendar.pending', 'Pending')}
-                    </span>
-                    {task.priority && task.priority in priorityConfig && (
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${priorityConfig[task.priority as keyof typeof priorityConfig].className}`}>
-                            {priorityConfig[task.priority as keyof typeof priorityConfig].label}
+                <div className="min-h-0 overflow-y-auto">
+                    {/* Pills row */}
+                    <div className="flex items-center gap-2 px-5 pb-4 flex-wrap">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                            task.completed_at
+                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                        }`}>
+                            {task.completed_at ? t('calendar.completed', 'Completed') : t('calendar.pending', 'Pending')}
                         </span>
-                    )}
-                </div>
-
-                {/* Metadata */}
-                <div className="px-5 pb-4 space-y-3">
-                    {task.due_date && parseDateString(task.due_date) && (
-                        <div className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
-                            <CalendarDaysIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
-                            <span>{format(parseDateString(task.due_date) as Date, 'PPP', { locale })}</span>
-                        </div>
-                    )}
-                    {task.defer_until && (
-                        <div className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
-                            <ClockIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
-                            <span>{format(new Date(task.defer_until), 'PPP', { locale })}</span>
-                        </div>
-                    )}
-                    {task.Project?.name && (
-                        <div className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
-                            <FolderIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
-                            <span>{task.Project.name}</span>
-                        </div>
-                    )}
-                    {task.tags && task.tags.length > 0 && (
-                        <div className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-300">
-                            <TagIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0 mt-0.5" />
-                            <span className="flex flex-wrap gap-1">
-                                {task.tags.map((tag: any) => (
-                                    <span key={tag.id || tag.name} className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded">
-                                        {tag.name}
-                                    </span>
-                                ))}
+                        {task.priority && task.priority in priorityConfig && (
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${priorityConfig[task.priority as keyof typeof priorityConfig].className}`}>
+                                {priorityConfig[task.priority as keyof typeof priorityConfig].label}
                             </span>
-                        </div>
-                    )}
-                    {task.note && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 leading-relaxed whitespace-pre-wrap">
-                            {task.note}
-                        </p>
-                    )}
+                        )}
+                    </div>
+
+                    {/* Metadata */}
+                    <div className="px-5 pb-4 space-y-3">
+                        {task.due_date && parseDateString(task.due_date) && (
+                            <div className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
+                                <CalendarDaysIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
+                                <span>{format(parseDateString(task.due_date) as Date, 'PPP', { locale })}</span>
+                            </div>
+                        )}
+                        {task.defer_until && (
+                            <div className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
+                                <ClockIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
+                                <span>{format(new Date(task.defer_until), 'PPP', { locale })}</span>
+                            </div>
+                        )}
+                        {task.Project?.name && (
+                            <div className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-300">
+                                <FolderIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
+                                <span>{task.Project.name}</span>
+                            </div>
+                        )}
+                        {task.tags && task.tags.length > 0 && (
+                            <div className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-300">
+                                <TagIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0 mt-0.5" />
+                                <span className="flex flex-wrap gap-1">
+                                    {task.tags.map((tag: any) => (
+                                        <span key={tag.id || tag.name} className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded">
+                                            {tag.name}
+                                        </span>
+                                    ))}
+                                </span>
+                            </div>
+                        )}
+                        {task.note && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 leading-relaxed whitespace-pre-wrap break-words">
+                                {task.note}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between px-5 py-4 border-t border-gray-100 dark:border-gray-700">
+                <div className="shrink-0 flex items-center justify-between px-5 py-4 border-t border-gray-100 dark:border-gray-700">
                     <Link
                         to="/tasks"
                         className="inline-flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
