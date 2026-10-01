@@ -16,6 +16,7 @@ import { GroupSummary, fetchGroups } from '../../utils/groupsService';
 import { clearProjectShareCache } from '../../utils/projectShareCache';
 import { getCurrentUser } from '../../utils/userUtils';
 import { FORM } from '../../constants/formClasses';
+import SelectMenu from './SelectMenu';
 
 export type ShareResourceType = ShareGrantRequest['resource_type'];
 
@@ -328,42 +329,42 @@ const ShareModal: React.FC<ShareModalProps> = ({
                                     >
                                         {t('shares.shareWith', 'Share with')}
                                     </label>
-                                    <select
+                                    <SelectMenu
                                         id="share-person"
                                         value={personId}
-                                        onChange={(e) => {
-                                            setPersonId(e.target.value);
+                                        onChange={(next) => {
+                                            setPersonId(next);
                                             setError(null);
                                         }}
-                                        className={`${FORM.select} w-full`}
-                                    >
-                                        <option value="">
-                                            {t(
-                                                'shares.selectPerson',
-                                                'Select a person'
-                                            )}
-                                        </option>
-                                        {candidates.map((person) => (
-                                            <option
-                                                key={person.id}
-                                                value={person.id}
-                                                disabled={sharedUserIds.has(
+                                        placeholder={t(
+                                            'shares.selectPerson',
+                                            'Select a person'
+                                        )}
+                                        options={[
+                                            ...candidates.map((person) => ({
+                                                value: String(person.id),
+                                                label: person.name,
+                                                disabled: sharedUserIds.has(
                                                     person.id
-                                                )}
-                                            >
-                                                {person.name}
-                                                {sharedUserIds.has(person.id)
-                                                    ? ` - ${t('shares.alreadyHasAccess', 'already has access')}`
-                                                    : ''}
-                                            </option>
-                                        ))}
-                                        <option value={BY_EMAIL}>
-                                            {t(
-                                                'shares.someoneElseByEmail',
-                                                'Someone else, by email'
-                                            )}
-                                        </option>
-                                    </select>
+                                                ),
+                                                hint: sharedUserIds.has(
+                                                    person.id
+                                                )
+                                                    ? t(
+                                                          'shares.alreadyHasAccess',
+                                                          'already has access'
+                                                      )
+                                                    : undefined,
+                                            })),
+                                            {
+                                                value: BY_EMAIL,
+                                                label: t(
+                                                    'shares.someoneElseByEmail',
+                                                    'Someone else, by email'
+                                                ),
+                                            },
+                                        ]}
+                                    />
                                 </div>
                             )}
                             {byEmail && (
@@ -389,7 +390,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
                                             'shares.emailPlaceholder',
                                             'name@example.com'
                                         )}
-                                        className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className={`${FORM.input} w-full`}
                                     />
                                 </>
                             )}
@@ -408,30 +409,26 @@ const ShareModal: React.FC<ShareModalProps> = ({
                             >
                                 {t('shares.targetGroup', 'Share with a group')}
                             </label>
-                            <select
+                            <SelectMenu
                                 id="share-group"
                                 value={groupUid}
-                                onChange={(e) => setGroupUid(e.target.value)}
-                                className={`${FORM.select} w-full`}
-                            >
-                                <option value="">
-                                    {t('shares.selectGroup', 'Select a group')}
-                                </option>
-                                {groups.map((group) => (
-                                    <option
-                                        key={group.uid}
-                                        value={group.uid}
-                                        disabled={sharedGroupUids.has(
-                                            group.uid
-                                        )}
-                                    >
-                                        {group.name} ({group.member_count})
-                                        {sharedGroupUids.has(group.uid)
-                                            ? ` - ${t('shares.groupAlreadyShared', 'already shared')}`
-                                            : ''}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={setGroupUid}
+                                placeholder={t(
+                                    'shares.selectGroup',
+                                    'Select a group'
+                                )}
+                                options={groups.map((group) => ({
+                                    value: group.uid,
+                                    label: `${group.name} (${group.member_count})`,
+                                    disabled: sharedGroupUids.has(group.uid),
+                                    hint: sharedGroupUids.has(group.uid)
+                                        ? t(
+                                              'shares.groupAlreadyShared',
+                                              'already shared'
+                                          )
+                                        : undefined,
+                                }))}
+                            />
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 {t(
                                     'shares.groupHint',
@@ -441,23 +438,30 @@ const ShareModal: React.FC<ShareModalProps> = ({
                         </div>
                     )}
                     <div>
-                        <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
+                        <label
+                            htmlFor="share-access"
+                            className="block text-sm text-gray-700 dark:text-gray-300 mb-1"
+                        >
                             {t('shares.permission', 'Permission')}
                         </label>
-                        <select
+                        <SelectMenu
+                            id="share-access"
                             value={access}
-                            onChange={(e) =>
-                                setAccess(e.target.value as AccessLevel)
-                            }
-                            className={`${FORM.select} w-full`}
-                        >
-                            <option value="ro">
-                                {t('shares.readOnly', 'Read only')}
-                            </option>
-                            <option value="rw">
-                                {t('shares.readWrite', 'Read & write')}
-                            </option>
-                        </select>
+                            onChange={(next) => setAccess(next as AccessLevel)}
+                            options={[
+                                {
+                                    value: 'ro',
+                                    label: t('shares.readOnly', 'Read only'),
+                                },
+                                {
+                                    value: 'rw',
+                                    label: t(
+                                        'shares.readWrite',
+                                        'Read & write'
+                                    ),
+                                },
+                            ]}
+                        />
                     </div>
                     {error && (
                         <div className="text-sm text-red-500">{error}</div>

@@ -64,6 +64,14 @@ const renderModal = (resourceType: 'project' | 'note' = 'project') =>
 
 const emptyDetails = { shares: [owner], group_shares: [] };
 
+const openMenu = async (label: string) =>
+    fireEvent.click(await screen.findByLabelText(label));
+
+const choose = async (label: string, option: string | RegExp) => {
+    await openMenu(label);
+    fireEvent.click(screen.getByRole('option', { name: option }));
+};
+
 describe('ShareModal', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -138,6 +146,7 @@ describe('ShareModal', () => {
 
         it('offers the members in a dropdown instead of the email field', async () => {
             renderModal();
+            await openMenu('Share with');
 
             expect(
                 await screen.findByRole('option', { name: 'Emma' })
@@ -153,11 +162,7 @@ describe('ShareModal', () => {
 
         it('shares with the picked member by id', async () => {
             renderModal();
-            await screen.findByRole('option', { name: 'Leo' });
-
-            fireEvent.change(screen.getByLabelText('Share with'), {
-                target: { value: '8' },
-            });
+            await choose('Share with', 'Leo');
             fireEvent.click(screen.getByText('Share'));
 
             await waitFor(() =>
@@ -188,22 +193,24 @@ describe('ShareModal', () => {
                 group_shares: [],
             });
             renderModal();
+            await waitFor(() =>
+                expect(screen.getByText('Revoke')).toBeVisible()
+            );
+            await openMenu('Share with');
 
+            const emma = screen.getByRole('option', { name: /Emma/ });
+            expect(emma).toHaveAttribute('aria-disabled', 'true');
+            expect(emma).toHaveTextContent('already has access');
+            fireEvent.click(emma);
+            expect(screen.getByText('Share')).toBeDisabled();
             expect(
-                await screen.findByRole('option', {
-                    name: 'Emma - already has access',
-                })
-            ).toBeDisabled();
-            expect(screen.getByRole('option', { name: 'Leo' })).toBeEnabled();
+                screen.getByRole('option', { name: 'Leo' })
+            ).not.toHaveAttribute('aria-disabled');
         });
 
         it('still invites someone else by email', async () => {
             renderModal();
-            await screen.findByRole('option', { name: 'Emma' });
-
-            fireEvent.change(screen.getByLabelText('Share with'), {
-                target: { value: 'email' },
-            });
+            await choose('Share with', 'Someone else, by email');
             fireEvent.change(screen.getByLabelText('Invite by email'), {
                 target: { value: 'friend@example.com' },
             });
@@ -246,6 +253,7 @@ describe('ShareModal', () => {
 
         it('lists the groups with their sizes', async () => {
             await openGroupTab();
+            await openMenu('Share with a group');
 
             expect(
                 screen.getByRole('option', { name: 'Family (3)' })
@@ -258,12 +266,8 @@ describe('ShareModal', () => {
         it('shares with the chosen group at the chosen level', async () => {
             await openGroupTab();
 
-            fireEvent.change(screen.getByLabelText('Share with a group'), {
-                target: { value: 'g2' },
-            });
-            fireEvent.change(screen.getByDisplayValue('Read only'), {
-                target: { value: 'rw' },
-            });
+            await choose('Share with a group', 'Work (5)');
+            await choose('Permission', 'Read & write');
             fireEvent.click(screen.getByText('Share'));
 
             await waitFor(() =>
@@ -285,9 +289,7 @@ describe('ShareModal', () => {
             await openGroupTab();
 
             expect(screen.getByText('Share')).toBeDisabled();
-            fireEvent.change(screen.getByLabelText('Share with a group'), {
-                target: { value: 'g1' },
-            });
+            await choose('Share with a group', 'Family (3)');
             expect(screen.getByText('Share')).toBeEnabled();
         });
 
@@ -307,24 +309,22 @@ describe('ShareModal', () => {
                 ],
             });
             await openGroupTab();
+            await screen.findByTestId('share-group-list');
+            await openMenu('Share with a group');
 
-            expect(
-                await screen.findByRole('option', {
-                    name: 'Family (3) - already shared',
-                })
-            ).toBeDisabled();
+            const family = screen.getByRole('option', { name: /Family \(3\)/ });
+            expect(family).toHaveAttribute('aria-disabled', 'true');
+            expect(family).toHaveTextContent('already shared');
             expect(
                 screen.getByRole('option', { name: 'Work (5)' })
-            ).toBeEnabled();
+            ).not.toHaveAttribute('aria-disabled');
         });
 
         it('shows a server error from sharing with a group', async () => {
             grantShare.mockRejectedValue(new Error('Group not found'));
             await openGroupTab();
 
-            fireEvent.change(screen.getByLabelText('Share with a group'), {
-                target: { value: 'g1' },
-            });
+            await choose('Share with a group', 'Family (3)');
             fireEvent.click(screen.getByText('Share'));
 
             expect(
