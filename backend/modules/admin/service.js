@@ -279,6 +279,7 @@ class AdminService {
             Note,
             BillingAccount,
             WaitlistSubscriber,
+            Feedback,
             Setting,
         } = require('../../models');
         const { getConfig } = require('../../config/config');
@@ -301,6 +302,7 @@ class AdminService {
             waitlistWeek,
             paying,
             registrationSetting,
+            openFeedback,
         ] = await Promise.all([
             User.count(),
             Role.count({ where: { is_admin: true } }),
@@ -317,12 +319,14 @@ class AdminService {
                 where: { status: { [Op.in]: ['active', 'trialing'] } },
             }),
             Setting.findOne({ where: { key: 'registration_enabled' } }),
+            Feedback.count({ where: { resolved_at: null } }),
         ]);
 
         return {
             users: { total: users, admins, verified, last24h: newUsers },
             content: { tasks, projects, notes },
             waitlist: { total: waitlist, last7d: waitlistWeek },
+            feedback: { open: openFeedback },
             billing: {
                 paying,
                 hosted: config.hosted?.enabled === true,

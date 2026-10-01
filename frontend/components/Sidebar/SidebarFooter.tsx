@@ -10,10 +10,12 @@ import {
     Squares2X2Icon,
     TagIcon,
     InboxIcon,
+    BugAntIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import AppsGridIcon from '../Shared/Icons/AppsGridIcon';
 import AppLauncherModal from './AppLauncherModal';
+import FeedbackModal from '../Feedback/FeedbackModal';
 import { useTranslation } from 'react-i18next';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
@@ -58,6 +60,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isLauncherOpen, setIsLauncherOpen] = useState(false);
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
     const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [version, setVersion] = useState<string>('v0.86');
@@ -261,7 +264,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     </button>
                 </div>
 
-                {/* Right side: telegram + dark mode */}
+                {/* Right side: telegram + feedback + dark mode */}
                 <div className="flex items-center gap-1.5">
                     {telegramStatus !== 'none' && (
                         <div
@@ -273,6 +276,15 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                             />
                         </div>
                     )}
+                    <button
+                        onClick={() => setIsFeedbackOpen(true)}
+                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        aria-label={t('feedback.title', 'Send feedback')}
+                        title={t('feedback.title', 'Send feedback')}
+                        data-testid="feedback-button"
+                    >
+                        <BugAntIcon className="h-4 w-4" />
+                    </button>
                     <button
                         onClick={toggleDarkMode}
                         className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
@@ -293,6 +305,13 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                 onClose={() => setIsLauncherOpen(false)}
                 onSelect={handleLauncherSelect}
             />
+
+            {isFeedbackOpen && (
+                <FeedbackModal
+                    onClose={() => setIsFeedbackOpen(false)}
+                    appVersion={version}
+                />
+            )}
         </div>
     );
 };

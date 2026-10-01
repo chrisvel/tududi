@@ -105,12 +105,15 @@ const BillingAccount = require('./billing_account')(sequelize);
 const BillingEvent = require('./billing_event')(sequelize);
 const WaitlistSubscriber = require('./waitlist_subscriber')(sequelize);
 const UsageCounter = require('./usage_counter')(sequelize);
+const Feedback = require('./feedback')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
 BillingAccount.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 User.hasMany(UsageCounter, { foreignKey: 'user_id', as: 'UsageCounters' });
 UsageCounter.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+User.hasMany(Feedback, { foreignKey: 'user_id', as: 'Feedback' });
+Feedback.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -655,4 +658,5 @@ module.exports = {
     BillingEvent,
     WaitlistSubscriber,
     UsageCounter,
+    Feedback,
 };

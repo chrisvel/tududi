@@ -7,6 +7,14 @@ const mockNavigate = jest.fn();
 
 jest.mock('react-router-dom', () => ({
     useNavigate: () => mockNavigate,
+    useLocation: () => ({ pathname: '/today', search: '' }),
+}));
+
+jest.mock('../../Shared/ToastContext', () => ({
+    useToast: () => ({
+        showSuccessToast: jest.fn(),
+        showErrorToast: jest.fn(),
+    }),
 }));
 
 jest.mock('react-i18next', () => ({
@@ -96,5 +104,23 @@ describe('SidebarFooter all-entities launcher', () => {
             value: original,
             configurable: true,
         });
+    });
+});
+
+describe('SidebarFooter feedback button', () => {
+    beforeEach(() => {
+        (global as any).fetch = jest.fn().mockResolvedValue({
+            ok: true,
+            json: async () => ({ version: 'v1' }),
+        });
+    });
+
+    it('opens the feedback modal', async () => {
+        await renderFooter();
+        expect(screen.queryByTestId('feedback-modal')).toBeNull();
+
+        fireEvent.click(screen.getByTestId('feedback-button'));
+
+        expect(screen.getByTestId('feedback-modal')).toBeInTheDocument();
     });
 });

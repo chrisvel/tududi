@@ -45,6 +45,7 @@ const {
     UserTaskOrder,
     BillingAccount,
     UsageCounter,
+    Feedback,
 } = require('../models');
 const { getConfig } = require('../config/config');
 const { assertAnotherAdminRemains } = require('./rolesService');
@@ -223,6 +224,7 @@ async function eraseUserAccount(userId) {
         await OIDCIdentity.destroy(byUser);
         await AuthAuditLog.destroy(byUser);
         await UsageCounter.destroy(byUser);
+        await Feedback.destroy(byUser);
         await BillingAccount.destroy(byUser);
 
         // Accounts this one created stay, and just forget who created them.

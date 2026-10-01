@@ -2180,7 +2180,22 @@
     },
     "turnContactIntoAccount": "Turn one of your contacts into this account (optional)",
     "noContact": "(none)",
-    "turnContactNote": "The contact keeps its history, so tasks assigned to it stay assigned. Your private notes on it are not carried over."
+    "turnContactNote": "The contact keeps its history, so tasks assigned to it stay assigned. Your private notes on it are not carried over.",
+    "feedback": {
+      "title": "Feedback",
+      "open": "Open ({{count}})",
+      "resolved": "Resolved",
+      "all": "All",
+      "emptyOpen": "Nothing open. Nice.",
+      "empty": "No feedback yet.",
+      "markResolved": "Mark resolved",
+      "reopen": "Reopen",
+      "updateFailed": "Failed to update",
+      "deleted": "Feedback deleted",
+      "deleteFailed": "Failed to delete",
+      "deleteTitle": "Delete Feedback",
+      "confirmDelete": "Delete this feedback? This cannot be undone."
+    }
   },
   "billing": {
     "title": "Plan & Billing",
@@ -2958,5 +2973,15 @@
     "myTemplates": "My Templates",
     "confirmDelete": "Delete Template",
     "confirmDeleteMessage": "Delete \"{{name}}\"? Projects created from it will not be affected."
+  },
+  "feedback": {
+    "title": "Send feedback",
+    "subtitle": "Found a bug or have an idea? Let us know.",
+    "placeholder": "What happened, or what would make tududi better?",
+    "contextNote": "The page you are on and the app version are sent along with your message.",
+    "send": "Send",
+    "sending": "Sending...",
+    "sent": "Thanks! Your feedback was sent.",
+    "failed": "Could not send your feedback"
   }
 }
