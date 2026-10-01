@@ -5,6 +5,8 @@ Notable changes to tududi. Versions match the git tags and the
 
 ## Unreleased
 
+## 1.6.4
+
 ## 1.6.3
 
 ## 1.6.2
