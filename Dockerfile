@@ -45,6 +45,11 @@ RUN npm cache clean --force && \
 ####################
 FROM node:22-alpine AS production
 
+# service: Kamal (the hosted deploy) refuses images without it.
+# source: links the ghcr.io package to this repository.
+LABEL service="tududi" \
+      org.opencontainers.image.source="https://github.com/chrisvel/tududi"
+
 ENV APP_UID=1001
 ENV APP_GID=1001
 
