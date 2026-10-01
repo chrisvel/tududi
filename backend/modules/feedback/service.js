@@ -16,6 +16,13 @@ const clip = (value, max) => {
     return trimmed ? trimmed.slice(0, max) : null;
 };
 
+// Only an in-app path is kept: the admin page renders it as a link, so a
+// javascript: or off-site URL must never get stored.
+const appPath = (value) => {
+    const path = clip(value, 512);
+    return path && /^\/(?![/\\])/.test(path) ? path : null;
+};
+
 const parseId = (id) => {
     const numericId = Number(id);
     if (!Number.isInteger(numericId) || numericId <= 0) {
@@ -63,7 +70,7 @@ class FeedbackService {
         const row = await repository.create({
             user_id: userId,
             message,
-            page_url: clip(body.page_url, 512),
+            page_url: appPath(body.page_url),
             user_agent: clip(userAgent, 512),
             app_version: clip(body.app_version, 32),
         });

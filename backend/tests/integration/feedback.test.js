@@ -49,6 +49,22 @@ describe('Feedback', () => {
             expect(row.resolved_at).toBeNull();
         });
 
+        it('drops a page_url that is not an in-app path', async () => {
+            for (const page_url of [
+                'javascript:alert(1)',
+                '//evil.example.com/x',
+                '/\\evil.example.com',
+                'https://evil.example.com',
+            ]) {
+                const res = await plainAgent
+                    .post('/api/feedback')
+                    .send({ message: 'hi', page_url });
+                expect(res.status).toBe(201);
+                const row = await Feedback.findByPk(res.body.id);
+                expect(row.page_url).toBeNull();
+            }
+        });
+
         it('rejects an empty message', async () => {
             const res = await plainAgent
                 .post('/api/feedback')

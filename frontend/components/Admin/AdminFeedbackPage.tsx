@@ -19,6 +19,10 @@ import {
 
 const PAGE_SIZE = 50;
 
+// Rows written before validation existed, or by hand, still must not
+// become a javascript: or off-site link.
+const isAppPath = (url: string) => /^\/(?![/\\])/.test(url);
+
 // Everything users sent from the bug icon in the sidebar footer. Open items
 // come first; marking one resolved moves it out of the way without losing
 // it, and deleting is for spam.
@@ -203,14 +207,19 @@ const AdminFeedbackPage: React.FC = () => {
                                         entry.created_at
                                     ).toLocaleString()}
                                 </span>
-                                {entry.page_url && (
-                                    <Link
-                                        to={entry.page_url}
-                                        className="text-blue-500 hover:text-blue-600"
-                                    >
-                                        {entry.page_url}
-                                    </Link>
-                                )}
+                                {entry.page_url &&
+                                    !isAppPath(entry.page_url) && (
+                                        <span>{entry.page_url}</span>
+                                    )}
+                                {entry.page_url &&
+                                    isAppPath(entry.page_url) && (
+                                        <Link
+                                            to={entry.page_url}
+                                            className="text-blue-500 hover:text-blue-600"
+                                        >
+                                            {entry.page_url}
+                                        </Link>
+                                    )}
                                 {entry.app_version && (
                                     <span>{entry.app_version}</span>
                                 )}

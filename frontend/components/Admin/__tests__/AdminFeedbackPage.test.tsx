@@ -107,6 +107,21 @@ describe('Admin feedback page', () => {
         );
     });
 
+    it('shows a stored non-app URL as plain text, not a link', async () => {
+        fetchFeedback.mockResolvedValue({
+            total: 1,
+            open: 1,
+            feedback: [
+                { ...entry(1, 'x', null), page_url: 'javascript:alert(1)' },
+            ],
+        });
+        render(<AdminFeedbackPage />);
+
+        const text = await screen.findByText('javascript:alert(1)');
+        expect(text.tagName).toBe('SPAN');
+        expect(text).not.toHaveAttribute('href');
+    });
+
     it('says when nothing is open', async () => {
         fetchFeedback.mockResolvedValue({ total: 0, open: 0, feedback: [] });
         render(<AdminFeedbackPage />);
