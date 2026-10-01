@@ -427,6 +427,7 @@ const InboxItems: React.FC = () => {
             }
 
             const createdNote = await createNote(note);
+            useStore.getState().notesStore.addNote(createdNote);
 
             if (currentConversionItemUid !== null) {
                 await handleProcessItem(
@@ -450,6 +451,8 @@ const InboxItems: React.FC = () => {
     const handleCreateProject = async (name: string): Promise<Project> => {
         try {
             const project = await createProject({ name, status: 'planned' });
+            const { projectsStore } = useStore.getState();
+            projectsStore.setProjects([...projectsStore.projects, project]);
             showSuccessToast(t('project.createSuccess'));
             return project;
         } catch (error) {
