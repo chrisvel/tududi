@@ -55,8 +55,27 @@ const authLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skip: skipInTest,
-    // Successful OIDC/register/verify traffic must not burn the shared IP
-    // budget (NAT offices); only failed attempts count — same as loginLimiter.
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Too many authentication attempts',
+            message:
+                'You have exceeded the maximum number of login attempts. Please try again after 15 minutes.',
+            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+        });
+    },
+});
+
+// OIDC sign-in (start and callback). Same budget as authLimiter, but only
+// failed attempts count, so successful SSO from a shared office IP never
+// locks people out (#1716). authLimiter keeps counting every request because
+// it also guards registration, where a success is what needs limiting.
+const oidcLimiter = rateLimit({
+    store: createRateLimitStore('oidc'),
+    windowMs: rateLimitConfig.auth.windowMs,
+    max: rateLimitConfig.auth.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: skipInTest,
     skipSuccessfulRequests: true,
     handler: (req, res) => {
         res.status(429).json({
@@ -357,6 +376,7 @@ const caldavAuthLimiter = rateLimit({
 module.exports = {
     caldavAuthLimiter,
     authLimiter,
+    oidcLimiter,
     signInLinkLimiter,
     authEmailLimiter,
     loginLimiter,

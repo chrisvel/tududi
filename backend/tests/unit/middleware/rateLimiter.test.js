@@ -31,6 +31,7 @@ const {
     passwordConfirmLimiter,
     signInLinkLimiter,
     authLimiter,
+    oidcLimiter,
     loginLimiter,
     caldavAuthLimiter,
     requestIdentity,
@@ -307,32 +308,16 @@ describe('signInLinkLimiter', () => {
         const linkApp = buildApp(signInLinkLimiter);
         const ip = nextIp();
 
-        // authLimiter only counts failed attempts once skipSuccessfulRequests is on
-        await request(authApp)
-            .get('/protected')
-            .set('X-Forwarded-For', ip)
-            .expect(401);
-        await request(authApp)
-            .get('/protected')
-            .set('X-Forwarded-For', ip)
-            .expect(401);
-        expect(
-            (
-                await request(authApp)
-                    .get('/protected')
-                    .set('X-Forwarded-For', ip)
-            ).status
-        ).toBe(429);
+        await post(authApp, ip).expect(200);
+        await post(authApp, ip).expect(200);
+        expect((await post(authApp, ip)).status).toBe(429);
 
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(429);
-        await request(authApp)
-            .get('/protected')
-            .set('X-Forwarded-For', ip)
-            .expect(429);
+        await post(authApp, ip).expect(429);
     });
 });
 
@@ -406,9 +391,9 @@ describe('caldavAuthLimiter authenticated DAV errors', () => {
     });
 });
 
-describe('authLimiter successful OIDC traffic', () => {
+describe('oidcLimiter', () => {
     it('does not lock out after successful OIDC initiate/callback traffic', async () => {
-        const app = buildApp(authLimiter);
+        const app = buildApp(oidcLimiter);
         const ip = nextIp();
         // max=2; three successful OIDC-like responses must not 429
         await request(app).get('/oidc').set('X-Forwarded-For', ip).expect(302);
