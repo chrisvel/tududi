@@ -5,6 +5,7 @@ import ToggleSwitch from '../Shared/ToggleSwitch';
 
 export interface ProjectsListFilters {
     showSomeday: boolean;
+    showCompleted: boolean;
 }
 
 interface ProjectsListSettingsProps {
@@ -42,7 +43,7 @@ const ProjectsListSettings: React.FC<ProjectsListSettingsProps> = ({
     }, [isOpen]);
 
     // Marks the cog when a setting differs from the default.
-    const changed = value.showSomeday;
+    const changed = value.showSomeday || value.showCompleted;
     const label = t('projects.listSettings.title', 'Projects settings');
 
     return (
@@ -62,7 +63,7 @@ const ProjectsListSettings: React.FC<ProjectsListSettingsProps> = ({
                 )}
             </button>
             {isOpen && (
-                <div className="absolute right-0 mt-1 w-72 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 z-50 p-4">
+                <div className="absolute right-0 mt-1 w-72 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 z-50 p-4 space-y-4">
                     <ToggleSwitch
                         checked={value.showSomeday}
                         onChange={(checked) =>
@@ -75,6 +76,16 @@ const ProjectsListSettings: React.FC<ProjectsListSettingsProps> = ({
                         description={t(
                             'projects.listSettings.showSomedayHint',
                             'Projects tagged #someday.'
+                        )}
+                    />
+                    <ToggleSwitch
+                        checked={value.showCompleted}
+                        onChange={(checked) =>
+                            onChange({ ...value, showCompleted: checked })
+                        }
+                        label={t(
+                            'projects.listSettings.showCompleted',
+                            'Show completed projects'
                         )}
                     />
                 </div>

@@ -1474,6 +1474,7 @@
       "title": "Projects settings",
       "showSomeday": "Show someday projects",
       "showSomedayHint": "Projects tagged #someday.",
+      "showCompleted": "Show completed projects",
       "saveError": "Failed to save projects settings"
     },
     "noResults": "No projects",

@@ -103,12 +103,15 @@ const compareProjects = (a: Project, b: Project, orderBy: string) => {
 const LIST_FILTERS_KEY = 'projectsListFilters';
 
 const readCachedListFilters = (): ProjectsListFilters => {
-    const defaults = { showSomeday: false };
+    const defaults = { showSomeday: false, showCompleted: false };
     try {
         const cached = localStorage.getItem(LIST_FILTERS_KEY);
         if (cached) {
-            const { showSomeday } = JSON.parse(cached);
-            return { showSomeday: showSomeday === true };
+            const { showSomeday, showCompleted } = JSON.parse(cached);
+            return {
+                showSomeday: showSomeday === true,
+                showCompleted: showCompleted === true,
+            };
         }
         // Carry over the older someday-only toggle
         if (localStorage.getItem('projectsSomedayFilter') === '1') {
@@ -187,6 +190,7 @@ const Projects: React.FC = () => {
         readCachedListFilters
     );
     const somedayFilter = listFilters.showSomeday;
+    const completedFilter = listFilters.showCompleted;
 
     // The saved settings live on the user; the local copy only avoids a
     // flash of hidden projects before the profile loads.
@@ -194,11 +198,22 @@ const Projects: React.FC = () => {
         let cancelled = false;
         fetchProfile()
             .then((profile) => {
-                const saved = profile.ui_settings?.project?.list?.showSomeday;
-                if (cancelled || typeof saved !== 'boolean') return;
-                const next = { showSomeday: saved };
-                setListFilters(next);
-                cacheListFilters(next);
+                const saved = profile.ui_settings?.project?.list;
+                if (cancelled || !saved) return;
+                setListFilters((current) => {
+                    const next = {
+                        showSomeday:
+                            typeof saved.showSomeday === 'boolean'
+                                ? saved.showSomeday
+                                : current.showSomeday,
+                        showCompleted:
+                            typeof saved.showCompleted === 'boolean'
+                                ? saved.showCompleted
+                                : current.showCompleted,
+                    };
+                    cacheListFilters(next);
+                    return next;
+                });
             })
             .catch(() => {});
         return () => {
@@ -400,8 +415,8 @@ const Projects: React.FC = () => {
         localStorage.setItem('projectsAreaFilter', '');
         setSearchParams(params);
         setSearchQuery('');
-        if (!listFilters.showSomeday) {
-            handleListFiltersChange({ showSomeday: true });
+        if (!listFilters.showSomeday || !listFilters.showCompleted) {
+            handleListFiltersChange({ showSomeday: true, showCompleted: true });
         }
     };
 
@@ -570,6 +585,14 @@ const Projects: React.FC = () => {
             );
         }
 
+        // Hide completed projects unless the setting shows them or the
+        // status filter asks for them
+        if (!completedFilter && statusFilter !== 'done') {
+            filteredProjects = filteredProjects.filter(
+                (project) => project.status !== 'done'
+            );
+        }
+
         // Apply search filter
         if (searchQuery.trim()) {
             filteredProjects = filteredProjects.filter(
@@ -593,6 +616,7 @@ const Projects: React.FC = () => {
         statusFilter,
         actualAreaFilter,
         somedayFilter,
+        completedFilter,
         searchQuery,
         orderBy,
     ]);

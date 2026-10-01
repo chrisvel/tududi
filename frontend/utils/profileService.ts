@@ -24,6 +24,7 @@ interface Profile {
             };
             list?: {
                 showSomeday?: boolean;
+                showCompleted?: boolean;
             };
         };
         appearance?: Record<string, unknown>;
