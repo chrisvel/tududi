@@ -7,15 +7,13 @@ import {
     SwatchIcon,
     ListBulletIcon,
     PhotoIcon,
+    NoSymbolIcon,
 } from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import type { ProfileFormData } from '../types';
-import SelectMenu from '../../Shared/SelectMenu';
-import PhotoCredit from '../../Shared/PhotoCredit';
 import {
     CONTENT_BACKGROUNDS,
-    CONTENT_BACKGROUND_OVERLAY,
     contentBackgroundUrl,
-    findContentBackground,
 } from '../../../constants/contentBackgrounds';
 
 interface ToggleRowProps {
@@ -59,61 +57,58 @@ interface AppearanceTabProps {
     onContentBackgroundChange: (background: string | null) => void;
 }
 
-const NO_BACKGROUND = 'none';
-
-interface BackgroundPreviewProps {
-    backgroundId: string | null;
+interface BackgroundCardProps {
+    label: string;
+    caption?: string;
+    imageUrl?: string;
+    selected: boolean;
+    onSelect: () => void;
 }
 
-// A miniature of the content area: the photo, the same tint the app lays over
-// it, a few placeholder rows standing in for page content, and the credit.
-const BackgroundPreview: React.FC<BackgroundPreviewProps> = ({
-    backgroundId,
-}) => {
-    const background = findContentBackground(backgroundId);
-
-    return (
+const BackgroundCard: React.FC<BackgroundCardProps> = ({
+    label,
+    caption,
+    imageUrl,
+    selected,
+    onSelect,
+}) => (
+    <button
+        type="button"
+        onClick={onSelect}
+        aria-pressed={selected}
+        className="group text-left focus:outline-none"
+    >
         <div
-            className="relative mt-4 w-full max-w-md aspect-[16/10] overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800"
-            data-testid="content-background-preview"
+            className={`relative aspect-[16/10] overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 transition-shadow ${
+                selected
+                    ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900'
+                    : 'group-focus-visible:ring-2 group-focus-visible:ring-blue-400'
+            }`}
         >
-            {background && (
-                <>
-                    <img
-                        key={background.id}
-                        src={contentBackgroundUrl(background, 800)}
-                        alt=""
-                        className="absolute inset-0 h-full w-full object-cover"
-                    />
-                    <div
-                        className={`absolute inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
-                    />
-                </>
-            )}
-            <div className="relative p-5 space-y-2.5">
-                <div className="h-3 w-24 rounded bg-gray-400/60 dark:bg-gray-500/60" />
-                {[80, 64, 72].map((width) => (
-                    <div
-                        key={width}
-                        className="flex items-center gap-2 rounded-md bg-white/90 dark:bg-gray-900/80 px-3 py-2 shadow-sm"
-                    >
-                        <span className="h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-gray-600" />
-                        <span
-                            className="h-2 rounded bg-gray-300 dark:bg-gray-600"
-                            style={{ width: `${width}%` }}
-                        />
-                    </div>
-                ))}
-            </div>
-            {background && (
-                <PhotoCredit
-                    background={background}
-                    className="absolute bottom-2 left-2"
+            {imageUrl ? (
+                <img
+                    src={imageUrl}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
+            ) : (
+                <NoSymbolIcon className="absolute inset-0 m-auto h-6 w-6 text-gray-400 dark:text-gray-500" />
+            )}
+            {selected && (
+                <CheckCircleIcon className="absolute top-1.5 right-1.5 h-5 w-5 text-white drop-shadow" />
             )}
         </div>
-    );
-};
+        <p className="mt-1.5 text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+            {label}
+        </p>
+        {caption && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                {caption}
+            </p>
+        )}
+    </button>
+);
 
 const AppearanceTab: React.FC<AppearanceTabProps> = ({
     isActive,
@@ -192,33 +187,26 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
                         'Show a photo behind the main content area. Photos come from Unsplash and are credited to their photographers.'
                     )}
                 </p>
-                <div className="max-w-md">
-                    <SelectMenu
-                        id="content-background"
-                        testId="content-background-select"
-                        value={contentBackground ?? NO_BACKGROUND}
-                        options={[
-                            {
-                                value: NO_BACKGROUND,
-                                label: t(
-                                    'profile.contentBackgroundNone',
-                                    'None'
-                                ),
-                            },
-                            ...CONTENT_BACKGROUNDS.map((bg) => ({
-                                value: bg.id,
-                                label: bg.name,
-                                hint: bg.photographer,
-                            })),
-                        ]}
-                        onChange={(value) =>
-                            onContentBackgroundChange(
-                                value === NO_BACKGROUND ? null : value
-                            )
-                        }
+                <div
+                    className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4"
+                    data-testid="content-background-cards"
+                >
+                    <BackgroundCard
+                        label={t('profile.contentBackgroundNone', 'None')}
+                        selected={!contentBackground}
+                        onSelect={() => onContentBackgroundChange(null)}
                     />
+                    {CONTENT_BACKGROUNDS.map((bg) => (
+                        <BackgroundCard
+                            key={bg.id}
+                            label={bg.name}
+                            caption={bg.photographer}
+                            imageUrl={contentBackgroundUrl(bg, 480)}
+                            selected={contentBackground === bg.id}
+                            onSelect={() => onContentBackgroundChange(bg.id)}
+                        />
+                    ))}
                 </div>
-                <BackgroundPreview backgroundId={contentBackground} />
             </div>
 
             {/* Tasks */}
