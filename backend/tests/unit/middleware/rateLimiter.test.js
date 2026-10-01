@@ -73,8 +73,11 @@ const buildApp = (...limiters) => {
         if (req.headers['x-caldav-auth'] === 'bad') {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
+        const forced = Number(req.headers['x-caldav-status'] || 0);
+        if (forced) return res.status(forced).json({ ok: true });
         return res.status(207).json({ ok: true });
     });
+    app.get('/oidc', (req, res) => res.status(302).set('Location', '/ok').end());
     return app;
 };
 
@@ -302,16 +305,19 @@ describe('signInLinkLimiter', () => {
         const linkApp = buildApp(signInLinkLimiter);
         const ip = nextIp();
 
-        await post(authApp, ip).expect(200);
-        await post(authApp, ip).expect(200);
-        expect((await post(authApp, ip)).status).toBe(429);
+        // authLimiter only counts failed attempts once skipSuccessfulRequests is on
+        await request(authApp).get('/protected').set('X-Forwarded-For', ip).expect(401);
+        await request(authApp).get('/protected').set('X-Forwarded-For', ip).expect(401);
+        expect(
+            (await request(authApp).get('/protected').set('X-Forwarded-For', ip)).status
+        ).toBe(429);
 
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(429);
-        await post(authApp, ip).expect(429);
+        await request(authApp).get('/protected').set('X-Forwarded-For', ip).expect(429);
     });
 });
 
@@ -362,5 +368,37 @@ describe('caldavAuthLimiter', () => {
         await propfind(app, ip, { bad: true }).expect(401);
         await propfind(app, ip, { bad: true }).expect(401);
         await propfind(app, ip, { bad: true }).expect(429);
+    });
+});
+
+
+describe('caldavAuthLimiter authenticated DAV errors', () => {
+    const propfind = (app, ip, { user = 'dav@example.com', status } = {}) => {
+        const req = request(app)
+            .propfind('/caldav')
+            .set('X-Forwarded-For', ip)
+            .set('X-Caldav-User', user);
+        if (status) req.set('X-Caldav-Status', String(status));
+        return req.send('<?xml version="1.0"?><D:propfind xmlns:D="DAV:"/>');
+    };
+
+    it('does not count authenticated 404/412 toward the auth budget', async () => {
+        const app = buildApp(caldavAuthLimiter);
+        const ip = nextIp();
+        // max=2 in this suite; two authenticated DAV client errors must still allow a 207
+        await propfind(app, ip, { status: 404 }).expect(404);
+        await propfind(app, ip, { status: 412 }).expect(412);
+        await propfind(app, ip).expect(207);
+    });
+});
+
+describe('authLimiter successful OIDC traffic', () => {
+    it('does not lock out after successful OIDC initiate/callback traffic', async () => {
+        const app = buildApp(authLimiter);
+        const ip = nextIp();
+        // max=2; three successful OIDC-like responses must not 429
+        await request(app).get('/oidc').set('X-Forwarded-For', ip).expect(302);
+        await request(app).get('/oidc').set('X-Forwarded-For', ip).expect(302);
+        await request(app).get('/oidc').set('X-Forwarded-For', ip).expect(302);
     });
 });

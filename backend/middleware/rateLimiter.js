@@ -55,6 +55,9 @@ const authLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skip: skipInTest,
+    // Successful OIDC/register/verify traffic must not burn the shared IP
+    // budget (NAT offices); only failed attempts count — same as loginLimiter.
+    skipSuccessfulRequests: true,
     handler: (req, res) => {
         res.status(429).json({
             error: 'Too many authentication attempts',
@@ -334,6 +337,9 @@ const caldavAuthLimiter = rateLimit({
     legacyHeaders: false,
     skip: skipInTest,
     skipSuccessfulRequests: true,
+    // Only failed Basic auth (401) counts. Authenticated DAV sync often
+    // returns 404/403/409/412; those must not lock the client out (issue #1716).
+    requestWasSuccessful: (req, res) => res.statusCode !== 401,
     keyGenerator: (req) => {
         const username = (req.caldavUsername || '').trim().toLowerCase();
         return `${ipKeyGenerator(req.ip)}|${username}`;
