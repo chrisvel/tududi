@@ -12,6 +12,9 @@ const { parseCalendar, eventsForRange } = require('./icsEvents');
 const moment = require('moment-timezone');
 
 const CACHE_TTL_MS = 15 * 60 * 1000;
+// A manual refresh still reuses a copy this fresh, so repeated clicks do
+// not hammer the calendar host.
+const MIN_REFRESH_MS = 30 * 1000;
 const MAX_FEEDS_PER_USER = 10;
 const MAX_RANGE_DAYS = 62;
 const COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
@@ -141,9 +144,10 @@ async function remove(userId, uid) {
     await feed.destroy();
 }
 
-async function loadFeedEvents(feed) {
+async function loadFeedEvents(feed, refresh = false) {
     const cached = cache.get(feed.uid);
-    if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
+    const maxAge = refresh ? MIN_REFRESH_MS : CACHE_TTL_MS;
+    if (cached && Date.now() - cached.fetchedAt < maxAge) {
         return cached.events;
     }
 
@@ -172,7 +176,7 @@ function validDay(value, name) {
     return value;
 }
 
-async function eventsBetween(user, startDate, endDate) {
+async function eventsBetween(user, startDate, endDate, refresh) {
     const timezone = getSafeTimezone(user.timezone);
 
     const feeds = await CalendarFeed.findAll({
@@ -185,7 +189,7 @@ async function eventsBetween(user, startDate, endDate) {
     await Promise.all(
         feeds.map(async (feed) => {
             try {
-                const parsed = await loadFeedEvents(feed);
+                const parsed = await loadFeedEvents(feed, refresh);
                 for (const event of eventsForRange(
                     parsed,
                     startDate,
@@ -214,11 +218,11 @@ async function eventsBetween(user, startDate, endDate) {
     return { events, errors };
 }
 
-async function eventsForDay(user, date) {
+async function eventsForDay(user, date, { refresh = false } = {}) {
     const day = date
         ? validDay(date, 'date')
         : getCurrentDateInTimezone(getSafeTimezone(user.timezone));
-    const { events, errors } = await eventsBetween(user, day, day);
+    const { events, errors } = await eventsBetween(user, day, day, refresh);
     return {
         date: day,
         events: events.map(({ date: _date, ...event }) => event),
@@ -228,7 +232,12 @@ async function eventsForDay(user, date) {
 
 // Feeds hidden from the Calendar page are still returned: the page filters
 // them client-side so a toggle is instant.
-async function eventsForRangeOfDays(user, start, end) {
+async function eventsForRangeOfDays(
+    user,
+    start,
+    end,
+    { refresh = false } = {}
+) {
     validDay(start, 'start');
     validDay(end, 'end');
     const days = moment(end).diff(moment(start), 'days');
@@ -240,7 +249,7 @@ async function eventsForRangeOfDays(user, start, end) {
             `Ask for at most ${MAX_RANGE_DAYS} days at a time`
         );
     }
-    const result = await eventsBetween(user, start, end);
+    const result = await eventsBetween(user, start, end, refresh);
     return { start, end, ...result };
 }
 
