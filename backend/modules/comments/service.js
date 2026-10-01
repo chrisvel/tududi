@@ -34,18 +34,38 @@ async function resolveMentionedPeopleMap(uids) {
 
 // The author's name is linked to their People profile, which is addressed
 // by Person uid, not User uid - resolve each author's canonical self-person.
-async function resolveAuthorPersonUidMap(userIds) {
+async function resolveAuthorPersonMap(userIds) {
     if (userIds.length === 0) return new Map();
     const selfPeople = await peopleRepository.findSelfPeopleByUserIds(
         Array.from(userIds)
     );
-    return new Map(selfPeople.map((p) => [p.linked_user_id, p.uid]));
+    return new Map(selfPeople.map((p) => [p.linked_user_id, p]));
+}
+
+// Many accounts never fill in a profile name (email-only sign-ups), so fall
+// back to the surname, the author's People entry, then the email.
+function authorDisplayName(author, selfPerson) {
+    const fullName = [author.name, author.surname]
+        .map((part) => (part || '').trim())
+        .filter(Boolean)
+        .join(' ');
+    return fullName || selfPerson?.name || author.email || null;
+}
+
+function serializeAuthor(author, authorPersonByUserId) {
+    const selfPerson = authorPersonByUserId.get(author.id);
+    return {
+        uid: author.uid,
+        name: authorDisplayName(author, selfPerson),
+        email: author.email,
+        person_uid: selfPerson?.uid || null,
+    };
 }
 
 function serializeComment(
     comment,
     mentionedPeopleByUid = new Map(),
-    authorPersonUidByUserId = new Map(),
+    authorPersonByUserId = new Map(),
     reactionCountsByCommentId = {},
     myReactionByCommentId = {}
 ) {
@@ -65,13 +85,7 @@ function serializeComment(
         created_at: comment.created_at,
         deleted_at: comment.deleted_at || null,
         author: comment.Author
-            ? {
-                  uid: comment.Author.uid,
-                  name: comment.Author.name,
-                  email: comment.Author.email,
-                  person_uid:
-                      authorPersonUidByUserId.get(comment.Author.id) || null,
-              }
+            ? serializeAuthor(comment.Author, authorPersonByUserId)
             : null,
         // Populated by listComments for a top-level comment; a reply never
         // carries its own nested replies (one level of nesting only).
@@ -106,12 +120,12 @@ async function listComments(userId, taskUid) {
     const allCommentIds = comments.map((c) => c.id);
     const [
         mentionedPeopleByUid,
-        authorPersonUidByUserId,
+        authorPersonByUserId,
         reactionCountsByCommentId,
         myReactionByCommentId,
     ] = await Promise.all([
         resolveMentionedPeopleMap(allMentionedUids),
-        resolveAuthorPersonUidMap(allAuthorUserIds),
+        resolveAuthorPersonMap(allAuthorUserIds),
         commentsRepository.countReactionsByComment(allCommentIds),
         commentsRepository.findMyReactionsByComment(allCommentIds, userId),
     ]);
@@ -124,7 +138,7 @@ async function listComments(userId, taskUid) {
             ...serializeComment(
                 comment,
                 mentionedPeopleByUid,
-                authorPersonUidByUserId,
+                authorPersonByUserId,
                 reactionCountsByCommentId,
                 myReactionByCommentId
             ),
@@ -323,17 +337,17 @@ async function addComment(
     await notifyAboutComment(task, comment, userId, parentAuthorUserId);
 
     comment.Author = await User.findByPk(userId, {
-        attributes: ['id', 'uid', 'name', 'email'],
+        attributes: ['id', 'uid', 'name', 'surname', 'email'],
     });
-    const [mentionedPeopleByUid, authorPersonUidByUserId] = await Promise.all([
+    const [mentionedPeopleByUid, authorPersonByUserId] = await Promise.all([
         resolveMentionedPeopleMap(comment.mentioned_person_uids || []),
-        resolveAuthorPersonUidMap([userId]),
+        resolveAuthorPersonMap([userId]),
     ]);
     return {
         ...serializeComment(
             comment,
             mentionedPeopleByUid,
-            authorPersonUidByUserId
+            authorPersonByUserId
         ),
         is_own: true,
     };
@@ -369,9 +383,9 @@ async function removeComment(userId, commentUid) {
         deleted_at: new Date(),
     });
 
-    const authorPersonUidByUserId = await resolveAuthorPersonUidMap([userId]);
+    const authorPersonByUserId = await resolveAuthorPersonMap([userId]);
     return {
-        ...serializeComment(comment, new Map(), authorPersonUidByUserId),
+        ...serializeComment(comment, new Map(), authorPersonByUserId),
         is_own: true,
     };
 }
