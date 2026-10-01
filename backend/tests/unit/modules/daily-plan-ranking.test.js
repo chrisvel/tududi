@@ -118,6 +118,8 @@ describe('rankCandidates', () => {
 describe('normalizeOrder', () => {
     it('starts with project tasks before loose ones in each group', () => {
         expect(DEFAULT_ORDER).toEqual([
+            'tagged_today:project',
+            'tagged_today:none',
             'overdue:project',
             'overdue:none',
             'due_today:project',
@@ -138,9 +140,34 @@ describe('normalizeOrder', () => {
         expect(
             normalizeOrder(['suggested:none', 'nope', 'suggested:none'])
         ).toEqual([
+            'tagged_today:project',
+            'tagged_today:none',
             'suggested:none',
-            ...DEFAULT_ORDER.filter((key) => key !== 'suggested:none'),
+            ...DEFAULT_ORDER.filter(
+                (key) =>
+                    key !== 'suggested:none' && !key.startsWith('tagged_today:')
+            ),
         ]);
+    });
+
+    it('puts the #today buckets first in an order saved before them', () => {
+        const saved = DEFAULT_ORDER.filter(
+            (key) => !key.startsWith('tagged_today:')
+        ).reverse();
+        expect(normalizeOrder(saved)).toEqual([
+            'tagged_today:project',
+            'tagged_today:none',
+            ...saved,
+        ]);
+    });
+
+    it('keeps the #today buckets where the user moved them', () => {
+        const moved = [
+            ...DEFAULT_ORDER.filter((key) => !key.startsWith('tagged_today:')),
+            'tagged_today:none',
+            'tagged_today:project',
+        ];
+        expect(normalizeOrder(moved)).toEqual(moved);
     });
 });
 

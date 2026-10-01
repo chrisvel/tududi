@@ -302,6 +302,7 @@ const PlanMyDay: React.FC = () => {
         if (!aiEnabled || !candidates || estimatesRequested.current) return;
         estimatesRequested.current = true;
         const uids = [
+            ...(candidates.tagged_today ?? []),
             ...candidates.overdue,
             ...candidates.due_today,
             ...candidates.in_progress,
@@ -639,6 +640,7 @@ const PlanMyDay: React.FC = () => {
         () =>
             candidates
                 ? [
+                      ...(candidates.tagged_today ?? []),
                       ...candidates.overdue,
                       ...candidates.due_today,
                       ...candidates.in_progress,

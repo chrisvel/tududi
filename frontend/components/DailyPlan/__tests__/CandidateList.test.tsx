@@ -28,6 +28,7 @@ const task = (uid: string, name: string, extra = {}) =>
     ({ uid, name, status: 'not_started', ...extra }) as any;
 
 const candidates: PlanCandidates = {
+    tagged_today: [],
     overdue: [task('t-late', 'Renew insurance', { due_date: '2026-09-20' })],
     due_today: [task('t-today', 'Pay rent')],
     in_progress: [task('t-started', 'Draft report')],
@@ -84,6 +85,20 @@ describe('CandidateList', () => {
             'Draft report',
             'Pay rent',
         ]);
+    });
+
+    it('puts tasks tagged #today first, labelled as such', () => {
+        renderList({
+            ...candidates,
+            tagged_today: [task('t-tagged', 'Call the bank')],
+        });
+        const names = screen
+            .getAllByTestId(/^candidate-open-/)
+            .map((link) => link.textContent);
+        expect(names[0]).toBe('Call the bank');
+        expect(screen.getByTestId('candidate-t-tagged')).toHaveTextContent(
+            'Tagged #today'
+        );
     });
 
     it('opens the task when its name is clicked', () => {

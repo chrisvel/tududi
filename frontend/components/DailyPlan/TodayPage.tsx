@@ -291,6 +291,7 @@ const TodayPage: React.FC = () => {
                   events,
                   candidates: candidates
                       ? [
+                            ...(candidates.tagged_today ?? []),
                             ...candidates.overdue,
                             ...candidates.due_today,
                             ...candidates.in_progress,

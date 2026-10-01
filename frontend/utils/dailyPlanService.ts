@@ -66,6 +66,7 @@ export interface InboxCandidate {
 }
 
 export interface PlanCandidates {
+    tagged_today: Task[];
     in_progress: Task[];
     overdue: Task[];
     due_today: Task[];
@@ -77,7 +78,7 @@ export interface PlanCandidates {
 }
 
 export type RankingGroup =
-    'overdue' | 'due_today' | 'in_progress' | 'suggested';
+    'tagged_today' | 'overdue' | 'due_today' | 'in_progress' | 'suggested';
 export type RankingBucket = `${RankingGroup}:${'project' | 'none'}`;
 
 export interface PlanRanking {

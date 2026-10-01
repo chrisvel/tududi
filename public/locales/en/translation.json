@@ -651,6 +651,8 @@
       "description": "How \"What could you do today?\" orders your tasks when you plan your day. Drag the rows into the order you want; the same tasks always come out in the same order.",
       "orderTitle": "Order (drag to change)",
       "reset": "Reset to default",
+      "taggedToday": "Tagged #today",
+      "taggedTodayDetail": "Open tasks you tagged #today, whatever their dates.",
       "overdue": "Overdue",
       "overdueDetail": "Past their due date, including tasks you already started.",
       "dueToday": "Due today",
@@ -2637,6 +2639,7 @@
   },
   "dailyPlan": {
     "addTask": "Add task",
+    "taggedToday": "Tagged #today",
     "inProgress": "In progress",
     "overdue": "Overdue",
     "dueToday": "Due today",
@@ -2754,6 +2757,7 @@
     "browse": "Browse",
     "showMore": "Show {{count}} more",
     "countOf": {
+      "tagged_today": "{{count}} tagged #today",
       "overdue": "{{count}} overdue",
       "due_today": "{{count}} due today",
       "in_progress": "{{count}} in progress",

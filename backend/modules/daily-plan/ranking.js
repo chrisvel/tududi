@@ -3,8 +3,9 @@
 // How "What could you do today?" is ordered. Profile > Planning lets the
 // user reorder the buckets and explains the rest, so change both together.
 //
-// 1. Every task falls in one bucket: its group (overdue, due today, in
-//    progress, everything else) split by whether it sits in a project.
+// 1. Every task falls in one bucket: its group (tagged #today, overdue, due
+//    today, in progress, everything else) split by whether it sits in a
+//    project.
 // 2. Groups follow the user's order: a group sits where its first bucket
 //    does in the user's order, or DEFAULT_ORDER.
 // 3. Inside a group: higher priority first, then the bucket order (so the
@@ -14,7 +15,13 @@
 //    The task id settles any remaining tie so the order is stable.
 // Which tasks reach "everything else" at all, and how many, is decided by
 // the other settings in planningSettings.js.
-const GROUP_ORDER = ['overdue', 'due_today', 'in_progress', 'suggested'];
+const GROUP_ORDER = [
+    'tagged_today',
+    'overdue',
+    'due_today',
+    'in_progress',
+    'suggested',
+];
 
 const DEFAULT_ORDER = GROUP_ORDER.flatMap((group) => [
     `${group}:project`,
@@ -70,13 +77,21 @@ const bucketOf = (group, task) =>
 
 // Keeps known buckets once each, in the given order, and appends any the
 // saved order is missing, so an old or hand-edited setting still works.
+// The #today buckets came later as the first rule, so an order saved
+// before them gets them at the top.
 function normalizeOrder(order) {
     if (!Array.isArray(order)) return [...DEFAULT_ORDER];
     const known = order.filter(
         (key, index) =>
             DEFAULT_ORDER.includes(key) && order.indexOf(key) === index
     );
-    return [...known, ...DEFAULT_ORDER.filter((key) => !known.includes(key))];
+    const missing = DEFAULT_ORDER.filter((key) => !known.includes(key));
+    const leading = missing.filter((key) => key.startsWith('tagged_today:'));
+    return [
+        ...leading,
+        ...known,
+        ...missing.filter((key) => !leading.includes(key)),
+    ];
 }
 
 // Returns [{ group, task }] for every task in `groups`, in the order above.

@@ -32,6 +32,11 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
         tasks.filter((task) => task.uid && !plannedUids.has(task.uid));
     const groups = [
         {
+            key: 'tagged_today',
+            label: t('dailyPlan.taggedToday', 'Tagged #today'),
+            tasks: notPlanned(candidates.tagged_today ?? []),
+        },
+        {
             key: 'overdue',
             label: t('dailyPlan.overdue', 'Overdue'),
             tasks: notPlanned(candidates.overdue),
