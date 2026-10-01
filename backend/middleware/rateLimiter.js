@@ -65,6 +65,28 @@ const authLimiter = rateLimit({
     },
 });
 
+// OIDC sign-in (start and callback). Same budget as authLimiter, but only
+// failed attempts count, so successful SSO from a shared office IP never
+// locks people out (#1716). authLimiter keeps counting every request because
+// it also guards registration, where a success is what needs limiting.
+const oidcLimiter = rateLimit({
+    store: createRateLimitStore('oidc'),
+    windowMs: rateLimitConfig.auth.windowMs,
+    max: rateLimitConfig.auth.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: skipInTest,
+    skipSuccessfulRequests: true,
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Too many authentication attempts',
+            message:
+                'You have exceeded the maximum number of login attempts. Please try again after 15 minutes.',
+            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+        });
+    },
+});
+
 // The two public sign-in link routes (look at a link, use it). Each device
 // needs two requests, so a household handing links to several devices would
 // use up the strict auth limit at once. The token is 256 random bits, so this
@@ -334,6 +356,9 @@ const caldavAuthLimiter = rateLimit({
     legacyHeaders: false,
     skip: skipInTest,
     skipSuccessfulRequests: true,
+    // Only failed Basic auth (401) counts. Authenticated DAV sync often
+    // returns 404/403/409/412; those must not lock the client out (issue #1716).
+    requestWasSuccessful: (req, res) => res.statusCode !== 401,
     keyGenerator: (req) => {
         const username = (req.caldavUsername || '').trim().toLowerCase();
         return `${ipKeyGenerator(req.ip)}|${username}`;
@@ -351,6 +376,7 @@ const caldavAuthLimiter = rateLimit({
 module.exports = {
     caldavAuthLimiter,
     authLimiter,
+    oidcLimiter,
     signInLinkLimiter,
     authEmailLimiter,
     loginLimiter,
