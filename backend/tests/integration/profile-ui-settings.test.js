@@ -27,6 +27,18 @@ describe('PUT /api/profile/ui-settings', () => {
         });
     });
 
+    it('saves the projects completed setting', async () => {
+        await agent.put('/api/profile/ui-settings').send({
+            project: { list: { showSomeday: false, showCompleted: true } },
+        });
+
+        const profile = await agent.get('/api/profile');
+        expect(profile.body.ui_settings.project.list).toEqual({
+            showSomeday: false,
+            showCompleted: true,
+        });
+    });
+
     it('keeps the list filters when project details change', async () => {
         await agent
             .put('/api/profile/ui-settings')
