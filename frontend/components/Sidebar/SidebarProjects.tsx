@@ -72,11 +72,14 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
     return (
         <ul className="flex flex-col">
             <li
-                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md hover:bg-gray-100 dark:hover:bg-white/5 ${
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
                     location.pathname === '/projects'
                         ? 'bg-gray-100 dark:bg-white/5'
                         : ''
                 }`}
+                onClick={() => {
+                    if (activeProjects.length > 0) setIsExpanded((v) => !v);
+                }}
             >
                 <span
                     className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
@@ -84,7 +87,8 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                             ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.stopPropagation();
                         setIsExpanded(true);
                         handleNavClick('/projects', t('sidebar.projects'), <FolderIcon className="h-4 w-4 mr-2" />);
                     }}
