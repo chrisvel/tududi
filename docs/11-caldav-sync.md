@@ -203,6 +203,14 @@ CalDAV Expansion:
 
 ---
 
+### Shared and Assigned Tasks
+
+CalDAV clients see the same tasks as the web app:
+
+- The `tasks/` calendar holds your own tasks, tasks in projects shared with you, and tasks assigned to you.
+- With `CALDAV_PROJECTS_AS_CALENDARS=true`, a project shared with you is its own calendar and lists every task in it, whoever created it.
+- Editing a task from a client needs read-write access. A read-only share is advertised as read-only, and edits are refused with 403. An edit by a collaborator never changes who owns the task.
+
 ## Why Use CalDAV
 
 **For Mobile Users:**
@@ -266,7 +274,7 @@ npm start              # For standalone
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `CALDAV_PROJECTS_AS_CALENDARS` | No | `false` | Serve one CalDAV calendar **per project** (plus a "(No Project)" calendar) instead of a single combined `tasks/` calendar. With it on, clients such as Apple Reminders show one list per project. |
+| `CALDAV_PROJECTS_AS_CALENDARS` | No | `false` | Serve one CalDAV calendar **per project** (plus a "(No Project)" calendar) instead of a single combined `tasks/` calendar. With it on, clients such as Apple Reminders show one list per project. A project shared with you shows up as a calendar with all its tasks (read-only for a read-only share). |
 | `ENCRYPTION_KEY` | Recommended | `SECRET_KEY` | AES-256-GCM encryption key for passwords |
 | `CALDAV_ALLOW_PRIVATE_HOSTS` | No | `false` | Allow remote calendars on private, loopback or LAN addresses, and plain `http`. By default a remote calendar must use HTTPS and resolve to a public address (checked before every sync and on every redirect). |
 | `CALDAV_DEFAULT_SYNC_INTERVAL` | No | `15` | Default sync interval in minutes |

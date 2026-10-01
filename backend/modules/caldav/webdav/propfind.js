@@ -11,6 +11,7 @@ const calendarRepository = require('../repositories/calendar-repository');
 const taskRepository = require('../../tasks/repository');
 const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
+const { canReadTask, visibleTaskWhere } = require('../access');
 
 async function handlePropfind(req, res) {
     try {
@@ -44,7 +45,7 @@ async function handlePropfind(req, res) {
                 include: CALDAV_TASK_INCLUDES,
             });
 
-            if (!task || task.user_id !== userId) {
+            if (!(await canReadTask(task, userId))) {
                 return res.status(404).json({ error: 'Task not found' });
             }
 
@@ -64,12 +65,9 @@ async function handlePropfind(req, res) {
             responses.push(calendarResponse);
 
             if (depth > 0) {
-                const tasks = await taskRepository.findByUser(
-                    userId,
-                    {},
-                    {
-                        include: CALDAV_TASK_INCLUDES,
-                    }
+                const tasks = await taskRepository.findAll(
+                    await visibleTaskWhere(userId),
+                    { include: CALDAV_TASK_INCLUDES }
                 );
                 for (const task of tasks) {
                     const taskResponse = await buildTaskResponse(
@@ -96,13 +94,9 @@ async function handlePropfind(req, res) {
 
 async function buildCalendarResponse(username, userId, propfindRequest) {
     const href = buildHref(username);
-    const tasks = await taskRepository.findByUser(
-        userId,
-        {},
-        {
-            include: CALDAV_TASK_INCLUDES,
-        }
-    );
+    const tasks = await taskRepository.findAll(await visibleTaskWhere(userId), {
+        include: CALDAV_TASK_INCLUDES,
+    });
     const ctag = generateCTag(tasks);
 
     const props = {
