@@ -80,6 +80,8 @@ describe('Plan my day suggestion settings', () => {
                 'due_today:none',
                 'in_progress:project',
                 'in_progress:none',
+                'tagged_today:project',
+                'tagged_today:none',
             ];
             await agent.put('/api/daily-plan/ranking').send({ order });
 

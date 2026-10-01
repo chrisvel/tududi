@@ -359,6 +359,13 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
     }
 
     const groups: Record<RankingGroup, { title: string; detail: string }> = {
+        tagged_today: {
+            title: t('profile.planning.taggedToday', 'Tagged #today'),
+            detail: t(
+                'profile.planning.taggedTodayDetail',
+                'Open tasks you tagged #today, whatever their dates.'
+            ),
+        },
         overdue: {
             title: t('profile.planning.overdue', 'Overdue'),
             detail: t(

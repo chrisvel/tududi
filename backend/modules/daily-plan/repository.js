@@ -7,10 +7,20 @@ const {
     Task,
     InboxItem,
     Project,
+    Tag,
     User,
     sequelize,
 } = require('../../models');
 const { TASK_INCLUDES } = require('../tasks/utils/constants');
+const {
+    getTaskIncludeConfigLight,
+} = require('../tasks/queries/query-builders');
+
+const OPEN_STATUSES_EXCLUDED = [
+    Task.STATUS.DONE,
+    Task.STATUS.ARCHIVED,
+    Task.STATUS.CANCELLED,
+];
 
 class DailyPlanRepository {
     async findPlan(userId, planDate) {
@@ -106,6 +116,41 @@ class DailyPlanRepository {
             });
             await plan.destroy({ transaction });
             return true;
+        });
+    }
+
+    // Open top-level tasks the user tagged "today" (any case), with every
+    // tag loaded, not only the matching one.
+    async findTasksTaggedToday(visibleWhere) {
+        const tagged = await Task.findAll({
+            where: {
+                [Op.and]: [
+                    visibleWhere,
+                    {
+                        status: { [Op.notIn]: OPEN_STATUSES_EXCLUDED },
+                        parent_task_id: null,
+                        recurring_parent_id: null,
+                    },
+                ],
+            },
+            attributes: ['id'],
+            include: [
+                {
+                    model: Tag,
+                    attributes: [],
+                    through: { attributes: [] },
+                    required: true,
+                    where: sequelize.where(
+                        sequelize.fn('lower', sequelize.col('Tags.name')),
+                        'today'
+                    ),
+                },
+            ],
+        });
+        if (tagged.length === 0) return [];
+        return Task.findAll({
+            where: { id: { [Op.in]: tagged.map((task) => task.id) } },
+            include: getTaskIncludeConfigLight(),
         });
     }
 

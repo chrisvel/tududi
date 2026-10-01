@@ -13,7 +13,13 @@ import DurationChips from './DurationChips';
 import { DEFAULT_DURATION, formatDuration } from './planUtils';
 
 export type CandidateFilter =
-    'all' | 'in_progress' | 'overdue' | 'due_today' | 'suggested' | 'inbox';
+    | 'all'
+    | 'tagged_today'
+    | 'in_progress'
+    | 'overdue'
+    | 'due_today'
+    | 'suggested'
+    | 'inbox';
 
 type TaskGroupKey = Exclude<CandidateFilter, 'all' | 'inbox'>;
 
@@ -37,6 +43,7 @@ interface CandidateListProps {
 const PAGE_SIZE = 5;
 // Order of importance when everything is shown together.
 const GROUP_ORDER: TaskGroupKey[] = [
+    'tagged_today',
     'overdue',
     'due_today',
     'in_progress',
@@ -84,6 +91,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
     });
 
     const labels: Record<TaskGroupKey, string> = {
+        tagged_today: t('dailyPlan.taggedToday', 'Tagged #today'),
         overdue: t('dailyPlan.overdue', 'Overdue'),
         due_today: t('dailyPlan.dueToday', 'Due today'),
         in_progress: t('dailyPlan.inProgress', 'In progress'),
@@ -224,7 +232,7 @@ const CandidateList: React.FC<CandidateListProps> = ({
     // planned tasks are on the timeline, not here.
     const byUid = new Map<string, { task: Task; group: TaskGroupKey }>();
     for (const group of GROUP_ORDER) {
-        for (const task of candidates[group]) {
+        for (const task of candidates[group] ?? []) {
             if (task.uid && !byUid.has(task.uid)) {
                 byUid.set(task.uid, { task, group });
             }
@@ -250,12 +258,13 @@ const CandidateList: React.FC<CandidateListProps> = ({
         ...GROUP_ORDER.map((key) => ({
             key: key as CandidateFilter,
             label: {
+                tagged_today: t('dailyPlan.taggedToday', 'Tagged #today'),
                 overdue: t('dailyPlan.overdue', 'Overdue'),
                 due_today: t('dailyPlan.dueToday', 'Due today'),
                 in_progress: t('dailyPlan.inProgress', 'In progress'),
                 suggested: t('dailyPlan.suggested', 'Suggested'),
             }[key],
-            count: candidates[key].length,
+            count: (candidates[key] ?? []).length,
         })).filter((pill) => pill.count > 0),
         {
             key: 'inbox',

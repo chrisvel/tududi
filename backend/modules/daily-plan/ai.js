@@ -253,6 +253,7 @@ async function draftDay(userId, { date, mode = 'fill' } = {}) {
     };
     if (mode === 'replace') planned.forEach((item) => addToPool(item.task));
     [
+        candidates.tagged_today,
         candidates.overdue,
         candidates.due_today,
         candidates.in_progress,

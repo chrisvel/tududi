@@ -3,6 +3,7 @@ const moment = require('moment-timezone');
 const app = require('../../app');
 const {
     Task,
+    Tag,
     Project,
     InboxItem,
     DailyPlan,
@@ -232,6 +233,45 @@ describe('Daily plan routes', () => {
             looseHigh.uid,
             projectLow.uid,
             looseLow.uid,
+        ]);
+    });
+
+    it('lists open tasks tagged #today first, out of their other groups', async () => {
+        const tag = await Tag.create({ name: 'Today', user_id: user.id });
+        const lastWeek = moment
+            .tz('Europe/Athens')
+            .subtract(7, 'days')
+            .format('YYYY-MM-DD');
+        const late = await makeTask({
+            name: 'Late, high',
+            priority: 2,
+            due_date: lastWeek,
+        });
+        const tagged = await makeTask({ name: 'Tagged, low', priority: 0 });
+        const taggedLate = await makeTask({
+            name: 'Tagged and late',
+            priority: 2,
+            due_date: lastWeek,
+        });
+        const taggedDone = await makeTask({
+            name: 'Tagged but done',
+            status: Task.STATUS.DONE,
+        });
+        await tagged.addTag(tag);
+        await taggedLate.addTag(tag);
+        await taggedDone.addTag(tag);
+
+        const res = await agent.get('/api/daily-plan/candidates');
+
+        expect(res.status).toBe(200);
+        expect(res.body.tagged_today.map((t) => t.uid).sort()).toEqual(
+            [tagged.uid, taggedLate.uid].sort()
+        );
+        expect(res.body.overdue.map((t) => t.uid)).toEqual([late.uid]);
+        expect(res.body.ranked.slice(0, 3)).toEqual([
+            taggedLate.uid,
+            tagged.uid,
+            late.uid,
         ]);
     });
 

@@ -261,19 +261,19 @@ async function clearPlan(user, date) {
     return { date: planDate, plan: null };
 }
 
-// The planner's left column: the same lists the classic Today page shows,
-// deduplicated so a task appears in the first group it belongs to, and
-// ranked by the rules in ranking.js. The user's planning settings decide
+// The planner's left column: open tasks tagged #today plus the same lists
+// the classic Today page shows, deduplicated so a task appears in the first
+// group it belongs to, and ranked by the rules in ranking.js. The user's planning settings decide
 // which tasks count as suggested and how many are shown.
 async function getCandidates(user) {
     const timezone = getSafeTimezone(user.timezone);
     const { order, suggestions } = await getPlanningSettings(user);
-    const metrics = await computeTaskMetrics(
-        user.id,
-        timezone,
-        null,
-        suggestions
-    );
+    const [metrics, taggedToday] = await Promise.all([
+        computeTaskMetrics(user.id, timezone, null, suggestions),
+        repository.findTasksTaggedToday(
+            await permissionsService.ownershipOrPermissionWhere('task', user.id)
+        ),
+    ]);
 
     // Groups follow the task's own due date, as Profile > Planning
     // describes them. The Today page lists also count a late or due-today
@@ -298,7 +298,9 @@ async function getCandidates(user) {
         ...metrics.tasks_due_today,
     ].filter((task) => !isLate(task) && !isDueToday(task));
 
+    // Tasks tagged #today come first by default and leave the other groups.
     const groupTasks = {
+        tagged_today: taggedToday,
         overdue: [
             ...metrics.tasks_overdue.filter(isLate),
             ...metrics.tasks_due_today.filter(isLate),

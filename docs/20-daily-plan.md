@@ -39,12 +39,12 @@ The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics
 
 The order comes from `backend/modules/daily-plan/ranking.js` and each user sets it in **Profile > Planning**.
 
-1. Every candidate falls in one of eight buckets: its group (overdue, including started tasks past their due date; due today; in progress; everything else) split into tasks in a project and tasks without one.
+1. Every candidate falls in one of ten buckets: its group (tagged #today, any open top-level task with a tag named `today` in any case, whatever its dates; overdue, including started tasks past their due date; due today; in progress; everything else) split into tasks in a project and tasks without one. A task tagged #today leaves its other group.
 2. Groups follow the user's bucket order (drag or the arrow buttons; saved at once): a group sits where its first bucket does. The default is each group in turn, project tasks first.
 3. Inside a group: higher priority first, then the bucket order (so a project task without priority never passes a higher-priority task without a project), then the earlier due date, then the user's tie-break (most recently changed by default, or newest, or oldest), then the task id.
 4. The suggestion cap (Profile > Planning) keeps the first suggestions in this order, so higher-priority suggestions always make the cut.
 
-The order is stored in `users.ui_settings.planning.candidateOrder`. A saved order that is missing buckets or has unknown ones is repaired on read, and the profile form's own save keeps the stored order.
+The order is stored in `users.ui_settings.planning.candidateOrder`. A saved order that is missing buckets or has unknown ones is repaired on read (missing #today buckets go first, others last), and the profile form's own save keeps the stored order.
 
 Groups follow the task's own due date. A task with no date of its own in a late or due-today project is not overdue here (the classic Today page lists still count the project's date).
 
@@ -106,8 +106,8 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | Method                | Path                                     | Notes                                                                                                                                                                                        |
 | --------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GET                   | `/api/daily-plan?date=`                  | `{ date, day_hours, plan }`, the plan or `null`. The date defaults to today in the user's timezone                                                                                           |
-| GET                   | `/api/daily-plan/candidates`             | `{ overdue, due_today, in_progress, suggested, inbox, inbox_count, ranked }`, each task in one group only; `ranked` lists task uids in the user's order                                      |
-| GET                   | `/api/daily-plan/ranking`                | `{ order, default_order }`, the eight bucket keys such as `overdue:project`                                                                                                                  |
+| GET                   | `/api/daily-plan/candidates`             | `{ tagged_today, overdue, due_today, in_progress, suggested, inbox, inbox_count, ranked }`, each task in one group only; `ranked` lists task uids in the user's order                                      |
+| GET                   | `/api/daily-plan/ranking`                | `{ order, default_order }`, the ten bucket keys such as `overdue:project`                                                                                                                  |
 | PUT                   | `/api/daily-plan/ranking`                | Body `{ order }` with every bucket key once; 400 otherwise                                                                                                                                   |
 | GET                   | `/api/daily-plan/hours`                  | `{ start, end }` in minutes after local midnight                                                                                                                                             |
 | GET                   | `/api/daily-plan/suggestions`            | `{ settings, defaults, options }` for the suggested group (see above)                                                                                                                        |
