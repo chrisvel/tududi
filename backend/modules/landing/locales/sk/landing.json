@@ -1,0 +1,501 @@
+{
+  "meta": {
+    "title": "tududi: správca úloh a systém na riadenie života, s MCP pre AI agentov",
+    "description": "Zachyťte čokoľvek, naplánujte si deň s AI podľa svojho kalendára a majte oblasti, ciele, projekty, poznámky a návyky v jednom systéme. MCP server so {{tools}} nástrojmi umožní AI agentom pracovať s vaším zoznamom. Účet v tududi Cloud si založíte za minútu.",
+    "langSwitcherLabel": "Zmeniť jazyk",
+    "langSwitcherCurrent": "Jazyk: {{name}}"
+  },
+  "nav": {
+    "demo": "Živé demo",
+    "features": "Funkcie",
+    "ai": "AI a MCP",
+    "pricing": "Cenník",
+    "faq": "FAQ",
+    "signIn": "Prihlásiť sa",
+    "toggle": "Prepnúť navigáciu",
+    "plan": "Naplánujte si deň"
+  },
+  "hero": {
+    "badgeStars": "hviezdičiek na GitHube",
+    "badgeMcp": "Vstavaný MCP server",
+    "badgeCloudOpen": "tududi Cloud je už otvorený",
+    "starsLoading": "Načítava sa počet hviezdičiek",
+    "titleLine1": "Produktivita jednoducho",
+    "titleLine2": "",
+    "lede": "Zachyťte čokoľvek, naplánujte si deň s AI podľa svojho kalendára a majte oblasti, ciele, projekty, poznámky a návyky v jednom systéme. Účet v Cloude si založíte za minútu.",
+    "ctaPrimary": "Začnite v tududi Cloud",
+    "ctaDemo": "Vyskúšajte živé demo",
+    "demoNote": "Skutočná hostovaná inštancia s ukážkovými dátami, zdieľaná a pravidelne obnovovaná",
+    "screenshotAlt": "Rozhranie tududi so zobrazením Dnes a naplánovanými úlohami",
+    "cloudNote": "Žiadny server na nastavovanie. Mesačne alebo ročne a zrušiť môžete kedykoľvek."
+  },
+  "proof": {
+    "stars": "hviezdičiek na GitHube",
+    "mcp": "MCP server, {{tools}} nástrojov",
+    "languages": "{{count}} jazykov",
+    "dockerPulls": "stiahnutí z Dockeru",
+    "discord": "členov na Discorde",
+    "discordAlt": "Discord: {{count}} členov",
+    "minute": "Nastavené za minútu"
+  },
+  "press": {
+    "featuredIn": "Písali o nás",
+    "eyebrow": "Médiá",
+    "title": "Neverte len nám",
+    "sub": "Čo napísali recenzenti, keď si tududi sami vyskúšali.",
+    "readLink": "Prečítať recenziu"
+  },
+  "ai": {
+    "kicker": "AI a MCP",
+    "titleLine1": "Skutočný systém,",
+    "titleLine2": "s ktorým váš AI agent naozaj dokáže pracovať",
+    "ledeHtml": "tududi obsahuje MCP server so <strong>{{tools}} nástrojmi</strong> pre úlohy, projekty, oblasti, ciele, návyky, poznámky, ľudí, štítky, zobrazenia, Schránku, vyhľadávanie a metriky. Pripojte Claude alebo akéhokoľvek agenta kompatibilného s MCP priamo k vlastnej inštancii, či už je to váš účet v Cloude, alebo server, ktorý prevádzkujete sami. Spojenie vedie do vašej inštancie, nie cez sprostredkovateľa medzi tým, a to je štrukturálny rozdiel, ktorý Todoist ani Notion ponúknuť nemôžu, nech sľubujú čokoľvek.",
+    "demo": {
+      "windowTitle": "Claude Desktop",
+      "badge": "tududi MCP",
+      "toolLabel": "Použité tududi",
+      "composer": "Odpovedať Claudovi…",
+      "ask1": "Na čo sa mám dnes sústrediť a nezaostáva niečo?",
+      "answer1Html": "Začnite úlohou <strong>Dokončiť migráciu fakturácie</strong>. Termín je dnes a v projekte <strong>Platby</strong> na ňu čakajú tri úlohy.",
+      "groupTitle": "Na vedomie",
+      "rows": {
+        "overdue": {
+          "label": "Po termíne",
+          "text": "2 úlohy v projekte Domácnosť, najstaršia 6 dní"
+        },
+        "stalled": {
+          "label": "Zaseknuté",
+          "text": "Redizajn webu, 11 dní bez aktivity"
+        },
+        "habit": {
+          "label": "Séria v ohrození",
+          "text": "Ranná revízia, 12 dní za sebou, dnes ešte nezaznamenaná"
+        }
+      },
+      "ask2": "Presuň revíziu redizajnu na piatok a pridaj úlohu na odblokovanie Platieb.",
+      "answer2Html": "Hotovo. <strong>Revízia návrhu redizajnu</strong> má teraz termín v piatok a úloha <strong>Odblokovať frontu Platieb</strong> je v projekte Platby s termínom dnes.",
+      "caption": "Ukážková relácia. Váš agent sa cez MCP pripája priamo k vašej vlastnej inštancii."
+    },
+    "cards": {
+      "capture": {
+        "title": "Zachytávanie a vyhľadávanie z chatu",
+        "body": "Pridávajte, hľadajte a dokončujte úlohy bez opustenia konverzácie."
+      },
+      "dataStays": {
+        "title": "Komunikuje s vašou inštanciou",
+        "body": "MCP spojenie vedie priamo do vášho vlastného tududi, v Cloude alebo na vašom serveri. Nič neprechádza cez tretiu stranu."
+      },
+      "openProtocol": {
+        "title": "Otvorený protokol, žiadna závislosť",
+        "body": "Postavené na otvorenom protokole Model Context Protocol. Funguje s Claude a ďalšími MCP klientmi."
+      }
+    },
+    "footnoteClients": "Rovnako to funguje s Cursorom, Windsurfom, Clineom a akýmkoľvek iným MCP klientom.",
+    "footnoteDocsLink": "Prečítajte si dokumentáciu MCP →",
+    "footnoteIncluded": "MCP je súčasťou tududi Cloud aj každej inštancie na vlastnom serveri.",
+    "assistantTitle": "AI asistent",
+    "assistantLede": "Samostatná, voliteľná vrstva, ktorá číta vaše dáta a vracia zhrnutia v bežnom jazyku. Funguje s akýmkoľvek poskytovateľom kompatibilným s OpenAI vrátane lokálne hostovaných, ako je Ollama.",
+    "assistantCards": {
+      "task": {
+        "title": "Prehľady úloh",
+        "body": "Navrhované ďalšie kroky pre konkrétnu úlohu, vygenerované na požiadanie."
+      },
+      "project": {
+        "title": "Prehľady projektov",
+        "body": "Rýchle zhodnotenie stavu projektu: čo napreduje a čo stojí."
+      },
+      "plan": {
+        "title": "Naplánuj mi deň",
+        "body": "Rozvrhne váš deň do voľného času okolo stretnutí a ku každému bloku uvedie dôvod."
+      },
+      "wrapUp": {
+        "title": "Zhrnutie dňa",
+        "body": "Na konci dňa: čo sa podarilo, vzorec, ktorý stojí za povšimnutie, a čo preniesť na zajtra."
+      }
+    }
+  },
+  "features": {
+    "eyebrow": "Funkcie",
+    "title": "Kompletný systém pre usporiadaný život",
+    "sub": "tududi spája ciele, projekty, úlohy, poznámky a inteligentné zobrazenia do jedného pokojného a sústredeného systému. Nechajte prevádzku na nás, alebo si ho spustite sami, ak chcete.",
+    "showAll": "Zobraziť všetkých {{count}} funkcií",
+    "preview": "Ukážka",
+    "closePreview": "Zavrieť ukážku",
+    "groups": {
+      "planDay": "Zachytávanie a plánovanie",
+      "planFocus": "Plánovanie a sústredenie",
+      "tasksProjects": "Úlohy a projekty",
+      "accessAnywhere": "Prístup odkiaľkoľvek",
+      "privacyCollab": "Súkromie a spolupráca"
+    },
+    "cards": {
+      "capture": {
+        "title": "Jedno pole na všetko",
+        "body": "Pridávajte položky do Schránky, úlohy, poznámky či projekty odkiaľkoľvek, aj s prílohami. Vložte snímku obrazovky a stane sa z nej položka."
+      },
+      "nlpDates": {
+        "title": "Dátumy bežnými slovami",
+        "body": "„tomorrow“, „next fri“, „every weekday“: dátumy a opakovania sa rozpoznávajú už počas písania, spolu s #štítkami, +Projektom a @osobou."
+      },
+      "planMyDay": {
+        "title": "Naplánuj mi deň",
+        "body": "Plánovač, ktorý umiestni úlohy do voľného času okolo vašich stretnutí, s dĺžkami, zoradenými návrhmi a tipmi na plánovanie."
+      },
+      "todayCalendar": {
+        "title": "Dnes s vaším kalendárom",
+        "body": "Pripojte kalendáre Google, Apple alebo Outlook a uvidíte stretnutia vedľa svojich úloh, s aktuálnym blokom navrchu."
+      },
+      "aiPlanning": {
+        "title": "Plánovanie dňa s AI",
+        "body": "Nechajte AI navrhnúť deň, odhadnúť dĺžku úloh a na konci dňa pripraviť zhrnutie, ktoré nedokončenú prácu prenesie ďalej."
+      },
+      "goals": {
+        "title": "Ciele",
+        "body": "Stanovte si výsledky na sezónu alebo rok a sledujte, ktoré oblasti a projekty vás k nim naozaj posúvajú."
+      },
+      "hierarchy": {
+        "title": "Hierarchická organizácia",
+        "body": "Ciele a oblasti stoja na vrchole vedľa seba: dlhodobé výsledky a trvalé oblasti života. Obe obsahujú projekty a tie obsahujú úlohy."
+      },
+      "lifeAreas": {
+        "title": "Správa životných oblastí",
+        "body": "Usporiadajte projekty podľa oblastí života – Práca, Osobné, Zdravie, Vzdelávanie."
+      },
+      "views": {
+        "title": "Zobrazenia",
+        "body": "Inteligentné uložené vyhľadávania ako „Dnes“, „Po termíne“ alebo „Niekedy“. Jedno kliknutie, bez zakaždým znova skladaného filtra."
+      },
+      "matrixKanban": {
+        "title": "Eisenhowerova matica a Kanban",
+        "body": "Prepnite na Eisenhowerovu maticu alebo Kanban tabuľu, keď je otázka jednoduchá: čo mám urobiť práve teraz."
+      },
+      "insights": {
+        "title": "Prehľady produktivity",
+        "body": "Sledujte trendy dokončovania a vyťaženie naprieč projektmi, aby ste vedeli, kam váš čas naozaj ide."
+      },
+      "people": {
+        "title": "Ľudia",
+        "body": "Prideľujte úlohy ľuďom a na prvý pohľad uvidíte, kto je zapojený do projektu."
+      },
+      "habits": {
+        "title": "Sledovanie návykov",
+        "body": "Sledujte opakujúce sa návyky vedľa úloh a projektov, s jednoduchými sériami a históriou plnenia."
+      },
+      "recurring": {
+        "title": "Inteligentné opakujúce sa úlohy",
+        "body": "Denné, týždenné a mesačné vzory s opakovaním podľa dokončenia a vzťahmi rodič – potomok."
+      },
+      "richTasks": {
+        "title": "Bohatá organizácia úloh",
+        "body": "Priority, termíny, štítky a inteligentné triedenie. Výkonné filtrovanie, aby ste našli to podstatné."
+      },
+      "subtasks": {
+        "title": "Podúlohy a rozdelenie",
+        "body": "Rozdeľte zložité úlohy na zvládnuteľné podúlohy so sledovaním postupu."
+      },
+      "notes": {
+        "title": "Projektová dokumentácia",
+        "body": "Formátované poznámky k projektom s plnohodnotným vyhľadávaním a organizáciou."
+      },
+      "tags": {
+        "title": "Flexibilný systém štítkov",
+        "body": "Vlastné štítky pre úlohy a poznámky s okamžitým filtrovaním a organizáciou naprieč projektmi."
+      },
+      "search": {
+        "title": "Inteligentné filtrovanie a vyhľadávanie",
+        "body": "Fulltextové vyhľadávanie a filtre podľa projektu, štítku, priority či termínu. Akúkoľvek úlohu nájdete za pár sekúnd."
+      },
+      "pwa": {
+        "title": "Inštalácia ako aplikácia",
+        "body": "Pridajte si tududi na domovskú obrazovku alebo pracovnú plochu ako PWA. Funguje offline a synchronizuje sa, keď ste znova online."
+      },
+      "oidc": {
+        "title": "Prihlásenie cez OIDC / SSO",
+        "body": "Prihláste sa cez svojho existujúceho poskytovateľa identity: Authentik, Keycloak, Google Workspace alebo akéhokoľvek poskytovateľa kompatibilného s OIDC."
+      },
+      "i18n": {
+        "title": "Podpora viacerých jazykov",
+        "body": "Dostupné v {{count}} jazykoch s plnou podporou lokalizácie."
+      },
+      "telegram": {
+        "title": "Integrácia s Telegramom",
+        "body": "Pošlite správu a úloha je okamžite zachytená, dostávajte denné súhrny a spravujte svoj zoznam na cestách."
+      },
+      "caldav": {
+        "title": "Synchronizácia CalDAV",
+        "body": "Obojsmerná synchronizácia úloh s Apple Reminders, tasks.org, Thunderbirdom a akoukoľvek aplikáciou kompatibilnou s CalDAV."
+      },
+      "api": {
+        "title": "Prístup k API a Swagger",
+        "body": "Verzovaná dokumentácia Swagger a osobné prístupové tokeny pre vlastné integrácie."
+      },
+      "privacy": {
+        "title": "Súkromie a kontrola",
+        "body": "Udržte svoje dáta v súkromí. Prevádzkujte tududi sami pre plnú kontrolu, alebo využite spravovanú inštanciu so šifrovanými zálohami."
+      },
+      "collab": {
+        "title": "Spolupráca na projektoch",
+        "body": "Zdieľajte projekty s podrobným riadením prístupu – iba na čítanie alebo na čítanie aj zápis."
+      }
+    }
+  },
+  "pricing": {
+    "eyebrow": "Cenník",
+    "title": "Vyberte si, ako budete tududi používať",
+    "sub": "Jeden hostovaný plán, alebo si ho prevádzkujte sami, ak sa radšej postaráte o prevádzku.",
+    "mostPopular": "NAJOBĽÚBENEJŠÍ",
+    "earlyBird": "ZAVÁDZACIA CENA",
+    "perYear": "/rok",
+    "plans": {
+      "selfHosted": {
+        "name": "Vlastný server (pre pokročilých)",
+        "priceNote": "Zadarmo, ak si server prevádzkujete sami",
+        "features": [
+          "Server alebo NAS si zabezpečíte sami",
+          "O Docker, aktualizácie a migrácie sa staráte vy",
+          "Reverzné proxy a TLS si nastavíte sami",
+          "Zálohy máte vo vlastných rukách",
+          "Všetky funkcie, bez limitu používateľov, dáta na vašom hardvéri"
+        ],
+        "action": "Prečítajte si návod na vlastný server →"
+      },
+      "cloud": {
+        "name": "Cloud",
+        "or": "alebo",
+        "launchNote": "Zavádzacia ročná cena, ktorá vám zostane, kým budete predplatiteľom.",
+        "priceNote": "Všetko v cene. Zrušiť môžete kedykoľvek.",
+        "features": [
+          "Spustené za minútu, bez nastavovania servera",
+          "Neobmedzené úlohy, projekty a poznámky, plus prílohy",
+          "Plánovanie dňa s AI, MCP, kalendárové feedy, CalDAV a Telegram bot",
+          "Aktualizácie a denné zálohy za vás, s úložiskom {{proStorageGb}} GB",
+          "Všetko kedykoľvek exportujete a účet si zrušíte sami"
+        ],
+        "action": "Začať →"
+      }
+    },
+    "fineprint": "Zrušiť môžete kedykoľvek a všetko si exportovať. Ak by tududi Cloud niekedy skončil, dostanete svoje dáta a návod na migráciu na vlastný server. Na úložisko a objem API sa vzťahuje primerané používanie. 14-dňová záruka vrátenia peňazí bez otázok.",
+    "perMonth": "/mesiac"
+  },
+  "compare": {
+    "title": "Rýchle porovnanie",
+    "sub": "Ako si tududi Cloud stojí v porovnaní s aplikáciami, s ktorými ho ľudia najčastejšie porovnávajú, v ich individuálnych plánoch.",
+    "footnote": "Todoist Pro, TickTick Premium a Notion Plus podľa ich verejných cenníkov zo septembra 2026. Aktuálne ceny si overte na ich stránkach. Ich ceny sú americké katalógové ceny v dolároch.",
+    "rows": {
+      "price": "Cena pri ročnej platbe",
+      "aiIncluded": "AI v cene",
+      "dayPlanner": "Plánovanie dňa podľa kalendára",
+      "habits": "Sledovanie návykov",
+      "goals": "Ciele, oblasti a projekty",
+      "notes": "Poznámky spolu s úlohami",
+      "matrix": "Eisenhowerova matica",
+      "kanban": "Kanban tabule",
+      "views": "Uložené inteligentné zobrazenia",
+      "people": "Prideľovanie úloh ľuďom",
+      "telegram": "Zachytávanie z Telegramu",
+      "caldav": "Synchronizácia úloh cez CalDAV",
+      "mcp": "MCP server pre AI agentov"
+    },
+    "values": {
+      "perYear": "{{price}}/rok",
+      "businessOnly": "Iba v pláne Business",
+      "separateApp": "Samostatná aplikácia",
+      "diy": "Musíte si to zostaviť sami"
+    }
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Otázky, na ktoré stojí za to poznať odpoveď vopred",
+    "sub": "Licencia, AI a čo sa deje s vašimi dátami. Ak tu niečo chýba, opýtajte sa na Discorde.",
+    "permalink": "Odkaz na túto odpoveď",
+    "groups": {
+      "project": "Licencia a projekt",
+      "managed": "AI, MCP a Cloud"
+    },
+    "items": {
+      "licence": {
+        "q": "Je tududi naozaj zadarmo?",
+        "a": "Aplikácia je open source pod licenciou MIT, takže ju môžete bezplatne prevádzkovať na vlastnom serveri, upravovať ju a stavať na nej bez toho, aby ste niekomu platili. Neexistujú žiadne limity používateľov ani zadržiavané funkcie: verzia na vlastný server je celý produkt. tududi Cloud je platená služba, pretože hosting, zálohy a e-maily stoja peniaze. Platíte za prevádzku, nikdy nie za prístup k softvéru."
+      },
+      "commercialUse": {
+        "q": "Môžem tududi používať v práci alebo vo svojej firme?",
+        "a": "Áno a nemusíte si nič vopred kupovať. Licencia MIT povoľuje komerčné použitie vrátane použitia vo firme a v komerčnom produkte, bez hranice obratu a bez akéhokoľvek nahlasovania. Ak vaše účtovné oddelenie potrebuje faktúru, predplatné Cloudu sa účtuje cez nášho platobného poskytovateľa, ktorý ju vystaví. Nič na tejto stránke nepredáva povolenie, pretože povolenie už máte."
+      },
+      "maintained": {
+        "q": "Je tududi aktívne udržiavané?",
+        "a": "Áno. Vyvíja ho predovšetkým jeden správca s príspevkami komunity a nové verzie vychádzajú často. Každé vydanie je uvedené na stránke vydaní na GitHube, na ktorú vedie Changelog v menu vyššie, takže tempo môžete posúdiť sami a nemusíte sa spoliehať na naše slovo. Vývoj prebieha otvorene: issues, verejná roadmapa a Discord, kde dostanete odpovede na otázky.",
+        "linkLabel": "Pozrieť všetky vydania"
+      },
+      "shutdown": {
+        "q": "Čo sa stane s mojimi dátami, ak tududi zanikne?",
+        "a": "Aplikácia je pod licenciou MIT a zdrojový kód je verejný, takže vám ju nikto nemôže vziať. Ktokoľvek ju môže ďalej prevádzkovať a vy si môžete vytvoriť fork. V tududi Cloud sú vaše dáta v štandardnej databáze tududi, nie v proprietárnom formáte, takže ak by služba niekedy skončila, dostanete svoje dáta a návod, ako ich presunúť na vlastný server."
+      },
+      "aiOptional": {
+        "q": "Musím používať funkcie AI?",
+        "a": "Nie. Obe vrstvy AI sú vypnuté, kým ich nezapnete, a tududi je kompletný systém aj bez nich. Ak ich nikdy nezapnete, nič vám nebude chýbať a nič vás nebude otravovať."
+      },
+      "aiPrivacy": {
+        "q": "Posielajú sa moje dáta nejakej AI spoločnosti?",
+        "a": "Záleží na tom, ktorú z dvoch vrstiev máte na mysli, a ten rozdiel je dôležitý. MCP server beží vo vašej vlastnej inštancii: agent ako Claude Desktop sa k nej pripája priamo, takže konverzácia prebieha medzi vaším agentom a vaším vlastným tududi, nie cez sprostredkovateľa. AI asistent funguje inak. Volá poskytovateľa kompatibilného s OpenAI, takže ak ho nasmerujete na hostovaného poskytovateľa, obsah týchto požiadaviek ide k nemu. Ak ho namiesto toho nasmerujete na lokálny model, napríklad Ollama alebo LM Studio, nič neopustí váš počítač. Zostáva vypnutý, kým nezadáte kľúč, takže je to vždy vaša voľba, nie predvolené nastavenie."
+      },
+      "mcp": {
+        "q": "Čo je MCP a čo vlastne agent dokáže?",
+        "a": "MCP je Model Context Protocol, otvorený štandard na prepojenie AI agentov so skutočnými systémami. tududi obsahuje MCP server so {{tools}} nástrojmi pre úlohy, projekty, oblasti, ciele, návyky, poznámky, ľudí, štítky, zobrazenia, Schránku, vyhľadávanie a metriky, takže agent dokáže prácu zachytiť, nájsť, upraviť a dokončiť, nielen o nej hovoriť. Je voliteľný, je súčasťou Cloudu aj každej inštancie na vlastnom serveri a funguje s Claude Desktop, Cursorom, Windsurfom, Clineom alebo akýmkoľvek iným MCP klientom."
+      },
+      "whyManaged": {
+        "q": "Prečo platiť za Cloud, keď je vlastný server zadarmo?",
+        "a": "Platíte za to, že nemusíte prevádzkovať infraštruktúru. tududi Cloud vám dá rovnaký systém, pričom o server, aktualizácie, zálohy a e-maily sa postaráme my – teda o tú piplavú a nevďačnú polovicu vlastného hostingu. Cloud je cesta, ktorú odporúčame. Vlastný server sa oplatí viac iba vtedy, ak už prevádzkujete Docker a reverzné proxy a naozaj chcete celú infraštruktúru spravovať sami."
+      },
+      "freePlan": {
+        "q": "Existuje v tududi Cloud bezplatný plán alebo skúšobná verzia?",
+        "a": "Nie. Cloud stojí {{monthly}} mesačne alebo {{price}} ročne a to je celý cenník: žiadna bezplatná úroveň, žiadne odpočítavanie skúšobnej doby, žiadna karta zadaná za niečo, čo vám neskôr potichu začne účtovať. Ak vám služba nebude vyhovovať, platí 14-dňová záruka vrátenia peňazí, a ak sa chcete najprv poobzerať, na tejto stránke nájdete živé demo. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri – je to tá istá aplikácia."
+      },
+      "leaving": {
+        "q": "Môžem odísť a čo sa stane s mojimi dátami?",
+        "a": "Áno, kedykoľvek. Vo svojom profile všetko exportujete do jedného súboru a importujete ho do tududi na vlastnom serveri, ktoré číta rovnaký formát. Zrušením účtu sa vaše dáta, prílohy a zálohy odstránia z našich serverov a zruší sa aj prípadné predplatné."
+      }
+    }
+  },
+  "waitlist": {
+    "placeholder": "vy@email.com",
+    "inputLabel": "E-mailová adresa"
+  },
+  "signup": {
+    "note": "Uchovávame vašu adresu a dátum, kedy ste nám ju poskytli, iba na zasielanie noviniek a aktualizácií. Nikdy ju s nikým nezdieľame.",
+    "joined": "Ste prihlásený na odber. Novinky a aktualizácie vám budú chodiť e-mailom."
+  },
+  "langs": {
+    "heading": "Aplikácia tududi je dostupná v {{count}} jazykoch po celom svete"
+  },
+  "community": {
+    "title": "Pridajte sa ku komunite tududi",
+    "sub": "Spojte sa s ďalšími používateľmi tududi, získajte podporu a buďte v obraze"
+  },
+  "footer": {
+    "tagline": "Pokojný a kompletný systém na organizáciu života a práce.",
+    "colProduct": "Produkt",
+    "colCommunity": "Komunita a podpora",
+    "colSupport": "Podpora",
+    "linkCoffee": "Kúpte mi kávu",
+    "subTitle": "Novinky a aktualizácie e-mailom",
+    "subBody": "Občasné novinky o produkte a aktualizácie. Žiadny spam, odhlásiť sa môžete kedykoľvek.",
+    "subSubmit": "Prihlásiť sa",
+    "rights": "Všetky práva vyhradené.",
+    "linkTerms": "Podmienky",
+    "linkPrivacy": "Ochrana súkromia",
+    "linkRefunds": "Vrátenie peňazí",
+    "linkContact": "Kontakt"
+  },
+  "js": {
+    "showFewer": "Zobraziť menej",
+    "copy": "Kopírovať",
+    "copied": "Skopírované"
+  },
+  "cloud": {
+    "metaTitle": "tududi Cloud: hostované tududi, ktoré prevádzkujeme za vás",
+    "metaDescription": "tududi Cloud je ten istý open source systém, ktorý beží na našich serveroch a o aktualizácie, zálohy a e-maily sa postaráme za vás. Jeden plán, mesačne alebo ročne, zrušiť môžete kedykoľvek.",
+    "title": "Prečo používať tududi Cloud?",
+    "lede": "Systém je v oboch prípadoch rovnaký. Rozdiel je v tom, kto ho o tretej ráno udržiava v chode, aktualizuje a zálohuje.",
+    "ctaPrimary": "Začať",
+    "ctaPricing": "Pozrieť cenu",
+    "note": "Tá istá aplikácia pod licenciou MIT. Všetko si môžete kedykoľvek exportovať.",
+    "whyEyebrow": "Cloud",
+    "whyTitle": "Za čo vlastne platíte",
+    "whySub": "Nie za funkcie. Každá funkcia je aj vo verzii na vlastný server.",
+    "reasons": {
+      "noOps": {
+        "title": "Žiadny server na prevádzku",
+        "body": "Žiadne VPS na prenájom, žiadny Docker na aktualizáciu, žiadne reverzné proxy ani certifikát na obnovovanie. Prihlásite sa a je to tam."
+      },
+      "updates": {
+        "title": "Aktualizácie za vás",
+        "body": "Nové verzie sa k vám dostanú bez pullu, reštartu či migrácie, ktorú by ste museli strážiť."
+      },
+      "backups": {
+        "title": "Zálohy, na ktoré nemusíte myslieť",
+        "body": "Databáza sa každú noc zálohuje a uchováva mimo stroja, ktorý vás obsluhuje. Všetko si navyše môžete kedykoľvek exportovať aj sami."
+      },
+      "email": {
+        "title": "E-maily, ktoré naozaj dorazia",
+        "body": "Overenia, obnovy hesla a pripomienky odchádzajú cez zabehnutú odosielaciu doménu, ktorej nastavenie na vlastnom serveri je piplavé a nudné."
+      },
+      "support": {
+        "title": "Niekto, komu môžete napísať",
+        "body": "Odpovie vám človek, ktorý pozná kód. Pri vlastnom serveri máte komunitu, ktorá je skvelá, ale nikto za nič neručí."
+      },
+      "sameApp": {
+        "title": "Presne tá istá aplikácia",
+        "body": "Žiadne funkcie iba pre Cloud a žiadna osekaná verzia na vlastný server. Ak by sme službu niekedy ukončili, dostanete svoje dáta a návod na migráciu."
+      }
+    },
+    "pricingTitle": "Jeden plán, dva spôsoby platby",
+    "pricingSub": "Všetko v cene. Zrušiť môžete, kedykoľvek chcete.",
+    "orAnnual": "alebo",
+    "priceNote": "Účtuje náš platobný poskytovateľ. Ceny sú bez príslušných daní.",
+    "includes": [
+      "Neobmedzené úlohy, projekty a poznámky",
+      "Prílohy a nahrávanie súborov",
+      "Plánovanie dňa s AI, MCP, kalendárové feedy, CalDAV a Telegram bot",
+      "Denné zálohy a spravované aktualizácie",
+      "Podpora e-mailom",
+      "Export všetkého kedykoľvek"
+    ],
+    "selfHostLine": "Chcete si server radšej prevádzkovať sami? Je to zadarmo a je to tá istá aplikácia."
+  },
+  "finalCta": {
+    "title": "Usporiadajte si to za minútu",
+    "sub": "Server, aktualizácie a zálohy prevádzkujeme my. Vy dostanete systém a 14-dňovú záruku vrátenia peňazí, ak vám nebude vyhovovať.",
+    "primary": "Začať",
+    "secondary": "Pozrieť cenník",
+    "selfHostLink": "Prečítajte si návod."
+  },
+  "contact": {
+    "title": "Kontaktujte nás",
+    "lede": "Máte otázky k tududi Cloud, platbám alebo svojmu účtu? Pošlite nám správu a odpovieme e-mailom.",
+    "name": "Meno",
+    "email": "E-mail",
+    "message": "Správa",
+    "submit": "Odoslať správu",
+    "sent": "Ďakujeme, vaša správa je na ceste. Odpovieme e-mailom.",
+    "invalid": "Vyplňte, prosím, svoje meno, platnú e-mailovú adresu a správu.",
+    "failed": "Vašu správu sa momentálne nepodarilo odoslať. Napíšte nám, prosím, na"
+  },
+  "plan": {
+    "eyebrow": "Naplánujte si deň",
+    "title": "Od letmej myšlienky k dokončenému dňu",
+    "sub": "Zachyťte veci hneď, ako vás napadnú, naplánujte si deň okolo stretnutí s AI a potom ho zvládajte blok po bloku.",
+    "stepLabel": "Krok {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Zachyťte čokoľvek, bežnými slovami",
+        "body": "Jedno pole Pridať pre Schránku, úlohy, poznámky a projekty, všade v aplikácii. Píšte tak, ako rozmýšľate, a tududi doplní zvyšok.",
+        "points": [
+          "„next fri“, „in 3 days“ alebo „every first monday“ nastaví dátum alebo opakovanie",
+          "#štítky, +Projekt a @osoba sa rozpoznajú už počas písania",
+          "Vložte snímku obrazovky alebo pretiahnite súbory a pridajú sa k položke"
+        ],
+        "alt": "Pole Pridať mení vetu na opakujúcu sa úlohu so štítkom a projektom"
+      },
+      "plan": {
+        "title": "Naplánuj mi deň, s AI (alebo bez nej)",
+        "body": "Plánovač ukáže, čo by sa dnes zmestilo, v poradí, ktoré si zvolíte. Každej úlohe určte dĺžku a umiestnite ju do voľného času medzi stretnutiami, alebo nechajte AI navrhnúť celý deň.",
+        "points": [
+          "Zoradené návrhy: po termíne, s termínom dnes, rozpracované a potom ostatné",
+          "Návrh s AI vyplní voľný čas okolo stretnutí a Späť všetko vráti",
+          "Tipy upozornia na preplnený deň a na medzery, do ktorých by sa úloha zmestila"
+        ],
+        "alt": "Plánovač dňa s úlohami a stretnutiami z kalendára na jednej časovej osi"
+      },
+      "today": {
+        "title": "Dnes, s vaším kalendárom",
+        "body": "Začnite deň a Dnes ukáže iba to, k čomu ste sa zaviazali: blok, na ktorom by ste mali práve byť, potom program dňa a medzi tým vaše stretnutia z Google, Apple alebo Outlooku.",
+        "points": [
+          "Označte ako hotové alebo odložte na neskôr priamo z karty Teraz",
+          "Kalendárové feedy iba na čítanie, uložené šifrovane",
+          "Zhrnutie dňa s AI na konci dňa prenesie nedokončenú prácu na zajtra"
+        ],
+        "alt": "Dnes s nasledujúcou úlohou, programom dňa a stretnutiami z dvoch kalendárov"
+      }
+    }
+  }
+}
