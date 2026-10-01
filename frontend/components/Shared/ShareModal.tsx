@@ -517,12 +517,12 @@ const ShareModal: React.FC<ShareModalProps> = ({
                                                 >
                                                     {r.email || `#${r.user_id}`}
                                                 </div>
-                                                <div className="text-xs text-gray-500">
+                                                <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
                                                     {accessLabel(
                                                         r.access_level
                                                     )}
                                                     {r.status === 'pending' && (
-                                                        <span className="ml-2 px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 dark:bg-transparent dark:text-amber-400 dark:border-amber-500">
+                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium leading-none bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
                                                             {t(
                                                                 'shares.pending',
                                                                 'Pending'
