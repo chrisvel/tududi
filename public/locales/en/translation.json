@@ -2756,6 +2756,9 @@
       "skippedCount": "Left out ({{count}})"
     },
     "lateWarning": "Time passed and not done yet",
+    "doneForToday": "Done for today",
+    "nextOccurrence": "Next on {{date}}",
+    "movedOffPlan": "'{{name}}' is no longer due today, so it left today's plan.",
     "tips": {
       "title": "Planning tips",
       "missed": "{{count}} planned blocks already passed",

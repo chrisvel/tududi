@@ -12,6 +12,9 @@ export interface DailyPlanItem {
     start_minute: number | null;
     duration_minutes: number;
     task: Task;
+    // A recurring task whose occurrence for this day is done; the task
+    // itself has moved on to its next due date.
+    occurrence_done?: boolean;
 }
 
 export interface AiWrapUp {

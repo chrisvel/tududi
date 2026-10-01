@@ -1,6 +1,7 @@
 'use strict';
 
 const moment = require('moment-timezone');
+const { Task } = require('../../models');
 const repository = require('./repository');
 const slots = require('./slots');
 const permissionsService = require('../../services/permissionsService');
@@ -27,6 +28,7 @@ const {
 const {
     getSafeTimezone,
     getCurrentDateInTimezone,
+    getDayBoundsInUTC,
     getTodayBoundsInUTC,
 } = require('../../utils/timezone-utils');
 const { ValidationError, NotFoundError } = require('../../shared/errors');
@@ -158,6 +160,28 @@ async function serializePlan(plan, userId, timezone) {
     });
     const byId = new Map(tasks.map((task, i) => [task.id, serialized[i]]));
 
+    // Completing a recurring task moves the same row on to its next due
+    // date and reopens it, so its status alone would show it as open again.
+    // Count it as done for this day when an occurrence was completed on the
+    // day and the task has since moved past it.
+    const bounds = getDayBoundsInUTC(plan.plan_date, timezone);
+    const completedIds = await repository.findTaskIdsCompletedBetween(
+        tasks.map((task) => task.id),
+        bounds.start,
+        bounds.end
+    );
+    const closedStatuses = [Task.STATUS.DONE, Task.STATUS.ARCHIVED];
+    const statusById = new Map(tasks.map((task) => [task.id, task.status]));
+    const isOccurrenceDone = (taskId) => {
+        const dueDate = byId.get(taskId).due_date;
+        return (
+            completedIds.has(taskId) &&
+            !!dueDate &&
+            dueDate > plan.plan_date &&
+            !closedStatuses.includes(statusById.get(taskId))
+        );
+    };
+
     return {
         uid: plan.uid,
         date: plan.plan_date,
@@ -171,6 +195,7 @@ async function serializePlan(plan, userId, timezone) {
                 start_minute: item.start_minute,
                 duration_minutes: item.duration_minutes,
                 task: byId.get(item.task_id),
+                occurrence_done: isOccurrenceDone(item.task_id),
             })),
     };
 }
