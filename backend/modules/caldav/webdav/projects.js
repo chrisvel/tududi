@@ -22,6 +22,14 @@ const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { Project } = require('../../../models');
 const { Op } = require('sequelize');
+const {
+    canReadTask,
+    visibleTaskWhere,
+    visibleProjects,
+    projectAccess,
+    isWritable,
+    ACCESS,
+} = require('../access');
 
 const INBOX_UID = '__inbox__';
 const INCLUDE_PROJECT = CALDAV_TASK_INCLUDES;
@@ -37,24 +45,37 @@ const homeHref = (u) => `/caldav/${enc(u)}/projects/`;
 const calHref = (u, p) => `/caldav/${enc(u)}/projects/${enc(p)}/`;
 const itemHref = (u, p, uid) => `${calHref(u, p)}${enc(uid)}.ics`;
 
-// Resolve a :projectUid (or the inbox sentinel) to { name, where } scoping the
-// task query. Returns null if the calendar does not exist / is not the user's.
+// Resolve a :projectUid (or the inbox sentinel) to { name, where, writable }
+// scoping the task query. Returns null if the calendar does not exist or the
+// user has no access to it. A shared project lists every task in it, like the
+// project page does (#1715).
 async function resolveProject(projectUid, userId) {
     if (projectUid === INBOX_UID) {
         return {
             name: '(No Project)',
-            where: { project_id: { [Op.is]: null } },
+            where: {
+                [Op.and]: [
+                    await visibleTaskWhere(userId),
+                    { project_id: { [Op.is]: null } },
+                ],
+            },
+            writable: true,
         };
     }
     const project = await Project.findOne({
         where: { uid: projectUid },
         attributes: ['id', 'uid', 'user_id', 'name'],
     });
-    if (!project || project.user_id !== userId) return null;
-    return { name: project.name, where: { project_id: project.id } };
+    const access = await projectAccess(project, userId);
+    if (access === ACCESS.NONE) return null;
+    return {
+        name: project.name,
+        where: { project_id: project.id },
+        writable: isWritable(access),
+    };
 }
 
-function calendarProps(displayname, ctag, username) {
+function calendarProps(displayname, ctag, username, writable = true) {
     return {
         'D:resourcetype': { 'D:collection': '', 'C:calendar': '' },
         'D:displayname': displayname,
@@ -67,13 +88,15 @@ function calendarProps(displayname, ctag, username) {
         'D:current-user-principal': { 'D:href': `/caldav/${enc(username)}/` },
         'D:principal-URL': { 'D:href': `/caldav/${enc(username)}/` },
         'D:current-user-privilege-set': {
-            'D:privilege': [
-                { 'D:read': '' },
-                { 'D:write': '' },
-                { 'D:write-content': '' },
-                { 'D:bind': '' },
-                { 'D:unbind': '' },
-            ],
+            'D:privilege': writable
+                ? [
+                      { 'D:read': '' },
+                      { 'D:write': '' },
+                      { 'D:write-content': '' },
+                      { 'D:bind': '' },
+                      { 'D:unbind': '' },
+                  ]
+                : [{ 'D:read': '' }],
         },
     };
 }
@@ -142,40 +165,53 @@ async function handleCalendarHomePropfind(req, res) {
         ];
 
         if (depth > 0) {
-            const tasks = await taskRepository.findByUser(
-                userId,
-                {},
-                { attributes: ['id', 'project_id', 'updated_at', 'created_at'] }
-            );
+            const taskAttributes = [
+                'id',
+                'project_id',
+                'updated_at',
+                'created_at',
+            ];
+            const projects = await visibleProjects(userId);
+            const projectTasks = projects.length
+                ? await taskRepository.findAll(
+                      { project_id: { [Op.in]: projects.map((p) => p.id) } },
+                      { attributes: taskAttributes }
+                  )
+                : [];
             const byProject = new Map();
-            for (const t of tasks) {
-                const key = t.project_id == null ? null : t.project_id;
-                if (!byProject.has(key)) byProject.set(key, []);
-                byProject.get(key).push(t);
+            for (const t of projectTasks) {
+                if (!byProject.has(t.project_id))
+                    byProject.set(t.project_id, []);
+                byProject.get(t.project_id).push(t);
             }
-            const projects = await Project.findAll({
-                where: { user_id: userId },
-                attributes: ['id', 'uid', 'name'],
-                order: [['name', 'ASC']],
-            });
             for (const p of projects) {
                 const ctag = generateCTag(byProject.get(p.id) || []);
+                const writable = isWritable(await projectAccess(p, userId));
                 responses.push(
                     buildResponse(
                         calHref(username, p.uid),
                         buildPropstat(
-                            calendarProps(p.name || 'Project', ctag, username)
+                            calendarProps(
+                                p.name || 'Project',
+                                ctag,
+                                username,
+                                writable
+                            )
                         )
                     )
                 );
             }
+            const inbox = await resolveProject(INBOX_UID, userId);
+            const inboxTasks = await taskRepository.findAll(inbox.where, {
+                attributes: taskAttributes,
+            });
             responses.push(
                 buildResponse(
                     calHref(username, INBOX_UID),
                     buildPropstat(
                         calendarProps(
                             '(No Project)',
-                            generateCTag(byProject.get(null) || []),
+                            generateCTag(inboxTasks),
                             username
                         )
                     )
@@ -218,19 +254,24 @@ async function handleProjectPropfind(req, res) {
             const task = await taskRepository.findByUid(uid, {
                 include: INCLUDE_PROJECT,
             });
-            if (!task || task.user_id !== userId) {
+            if (!(await canReadTask(task, userId))) {
                 return res.status(404).json({ error: 'Task not found' });
             }
             responses.push(await buildItemResponse(task, username, projectUid));
         } else {
-            const tasks = await taskRepository.findByUser(userId, proj.where, {
+            const tasks = await taskRepository.findAll(proj.where, {
                 include: INCLUDE_PROJECT,
             });
             responses.push(
                 buildResponse(
                     calHref(username, projectUid),
                     buildPropstat(
-                        calendarProps(proj.name, generateCTag(tasks), username)
+                        calendarProps(
+                            proj.name,
+                            generateCTag(tasks),
+                            username,
+                            proj.writable
+                        )
                     )
                 )
             );
@@ -292,7 +333,7 @@ async function handleProjectReport(req, res) {
                 const task = await taskRepository.findByUid(uid, {
                     include: INCLUDE_PROJECT,
                 });
-                if (!task || task.user_id !== userId) {
+                if (!(await canReadTask(task, userId))) {
                     responses.push(
                         buildResponse(
                             href,
@@ -330,7 +371,7 @@ async function handleProjectReport(req, res) {
             const includeData = queryRequest.props.some(
                 (p) => p === 'calendar-data' || p === 'C:calendar-data'
             );
-            const tasks = await taskRepository.findByUser(userId, proj.where, {
+            const tasks = await taskRepository.findAll(proj.where, {
                 include: INCLUDE_PROJECT,
             });
             for (const task of tasks) {
@@ -363,9 +404,9 @@ async function resolveProjectIdForPut(projectUid, userId) {
     if (!projectUid || projectUid === INBOX_UID) return null;
     const project = await Project.findOne({
         where: { uid: projectUid },
-        attributes: ['id', 'user_id'],
+        attributes: ['id', 'uid', 'user_id'],
     });
-    return project && project.user_id === userId ? project.id : null;
+    return isWritable(await projectAccess(project, userId)) ? project.id : null;
 }
 
 module.exports = {

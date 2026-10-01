@@ -7,6 +7,7 @@ const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const vtodoParser = require('../icalendar/vtodo-parser');
 const { resolveProjectIdForPut } = require('./projects');
 const { deleteTaskFromRemotes } = require('../services/task-deletion-service');
+const { canReadTask, canWriteTask } = require('../access');
 
 async function handleGetTask(req, res) {
     try {
@@ -21,7 +22,7 @@ async function handleGetTask(req, res) {
             include: CALDAV_TASK_INCLUDES,
         });
 
-        if (!task || task.user_id !== req.currentUser.id) {
+        if (!(await canReadTask(task, req.currentUser.id))) {
             return res.status(404).send('Not Found');
         }
 
@@ -77,7 +78,7 @@ async function handlePutTask(req, res) {
             include: CALDAV_TASK_INCLUDES,
         });
 
-        if (existingTask && existingTask.user_id !== userId) {
+        if (existingTask && !(await canWriteTask(existingTask, userId))) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
@@ -102,7 +103,8 @@ async function handlePutTask(req, res) {
         }
 
         taskData.uid = taskUid;
-        taskData.user_id = userId;
+        // An edit by a collaborator keeps the task with its owner.
+        taskData.user_id = existingTask ? existingTask.user_id : userId;
 
         // Per-project route: file the task into the URL's project (or null for
         // the "(No Project)" calendar). This also fixes the case where the
@@ -156,7 +158,7 @@ async function handleDeleteTask(req, res) {
             return res.status(404).send('Not Found');
         }
 
-        if (task.user_id !== req.currentUser.id) {
+        if (!(await canWriteTask(task, req.currentUser.id))) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
@@ -177,7 +179,7 @@ async function handleDeleteTask(req, res) {
             console.error('CalDAV remote delete error:', error);
         }
 
-        await taskRepository.delete(task.id, req.currentUser.id);
+        await taskRepository.delete(task.id, task.user_id);
 
         res.status(204).end();
     } catch (error) {
