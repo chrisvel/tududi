@@ -23,6 +23,10 @@ const {
 } = require('../../../utils/timezone-utils');
 const permissionsService = require('../../../services/permissionsService');
 const relationsService = require('../../tasks/relations/service');
+const {
+    computeTaskMetrics,
+} = require('../../tasks/queries/metrics-computation');
+const { filterTasksByParams } = require('../../tasks/queries/query-builders');
 
 const RECURRENCE_TYPES = [
     'none',
@@ -125,6 +129,21 @@ async function findTaskByIdentifier(identifier) {
     }
 }
 
+// The same tasks the Today page and the Upcoming view show, as ids.
+async function scheduledTaskIds(type, userId, timezone) {
+    if (type === 'today') {
+        const metrics = await computeTaskMetrics(userId, timezone);
+        return [
+            ...metrics.tasks_in_progress,
+            ...metrics.today_plan_tasks,
+            ...metrics.tasks_due_today,
+            ...metrics.tasks_overdue,
+        ].map((task) => task.id);
+    }
+    const tasks = await filterTasksByParams({ type }, userId, timezone);
+    return tasks.map((task) => task.id);
+}
+
 function registerTaskTools(server, context, tools) {
     // 1. list_tasks - List tasks with filtering
     tools.push({
@@ -136,7 +155,8 @@ function registerTaskTools(server, context, tools) {
                 type: {
                     type: 'string',
                     enum: ['today', 'upcoming', 'completed', 'archived', 'all'],
-                    description: 'Filter tasks by type',
+                    description:
+                        'Filter tasks by type. today: what the Today page shows (in progress, planned for today, due today, overdue). upcoming: tasks due or deferred in the next 7 days.',
                 },
                 status: {
                     type: 'string',
@@ -209,8 +229,26 @@ function registerTaskTools(server, context, tools) {
                 whereClause.status = 2;
             } else if (params.type === 'archived') {
                 whereClause.status = 3;
-            } else if (params.type === 'today' || params.type === 'upcoming') {
-                whereClause.status = { [Op.ne]: 3 };
+            }
+
+            const scheduled =
+                params.type === 'today' || params.type === 'upcoming';
+            if (scheduled) {
+                const ids = await scheduledTaskIds(
+                    params.type,
+                    context.userId,
+                    context.user.timezone
+                );
+                whereClause.id = { [Op.in]: [...new Set(ids)] };
+                if (!params.status) {
+                    whereClause.status = {
+                        [Op.notIn]: [
+                            Task.STATUS.DONE,
+                            Task.STATUS.ARCHIVED,
+                            Task.STATUS.CANCELLED,
+                        ],
+                    };
+                }
             }
 
             const tasks = await taskRepository.findAll(whereClause, {
@@ -219,7 +257,12 @@ function registerTaskTools(server, context, tools) {
                     { model: Tag, as: 'Tags' },
                 ],
                 limit: limit,
-                order: [['created_at', 'DESC']],
+                order: scheduled
+                    ? [
+                          ['due_date', 'ASC NULLS LAST'],
+                          ['created_at', 'DESC'],
+                      ]
+                    : [['created_at', 'DESC']],
             });
 
             const serializedTasks = await serializeTasks(
