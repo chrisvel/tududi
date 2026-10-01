@@ -4,7 +4,11 @@ name: Publish Docker image
 # as chrisvel/tududi:<version> and :latest. Until now the image was built and
 # pushed by hand, so a tag and an image could disagree.
 #
+# The same tags go to ghcr.io/chrisvel/tududi, which the hosted deploy pulls
+# from (Kamal, with the registry token shared by the other hosted apps).
+#
 # Requires the DOCKERHUB_USERNAME and DOCKERHUB_TOKEN repository secrets.
+# ghcr.io uses the workflow's own GITHUB_TOKEN.
 
 on:
   push:
@@ -135,6 +139,10 @@ jobs:
     needs: [version, build]
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
     outputs:
       version: ${{ needs.version.outputs.version }}
       latest: ${{ needs.version.outputs.latest }}
@@ -157,15 +165,24 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
       - name: Create and push the multi-platform tags
         working-directory: /tmp/digests
         env:
           VERSION: ${{ needs.version.outputs.version }}
           LATEST: ${{ needs.version.outputs.latest }}
         run: |
-          set -- -t "chrisvel/tududi:$VERSION"
+          # The images were pushed by digest to Docker Hub only; imagetools
+          # copies them to ghcr.io while it tags both.
+          set -- -t "chrisvel/tududi:$VERSION" -t "ghcr.io/chrisvel/tududi:$VERSION"
           if [ "$LATEST" = "true" ]; then
-            set -- "$@" -t chrisvel/tududi:latest
+            set -- "$@" -t chrisvel/tududi:latest -t ghcr.io/chrisvel/tududi:latest
           fi
           for digest in *; do
             set -- "$@" "chrisvel/tududi@sha256:$digest"
