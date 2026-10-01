@@ -80,7 +80,7 @@ const BackgroundCard: React.FC<BackgroundCardProps> = ({
         className="group text-left focus:outline-none"
     >
         <div
-            className={`relative aspect-[16/10] overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 transition-shadow ${
+            className={`relative aspect-[16/10] overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800 transition-shadow ${
                 selected
                     ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900'
                     : 'group-focus-visible:ring-2 group-focus-visible:ring-blue-400'
@@ -94,17 +94,17 @@ const BackgroundCard: React.FC<BackgroundCardProps> = ({
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
             ) : (
-                <NoSymbolIcon className="absolute inset-0 m-auto h-6 w-6 text-gray-400 dark:text-gray-500" />
+                <NoSymbolIcon className="absolute inset-0 m-auto h-5 w-5 text-gray-400 dark:text-gray-500" />
             )}
             {selected && (
-                <CheckCircleIcon className="absolute top-1.5 right-1.5 h-5 w-5 text-white drop-shadow" />
+                <CheckCircleIcon className="absolute top-1 right-1 h-4 w-4 text-white drop-shadow" />
             )}
         </div>
-        <p className="mt-1.5 text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+        <p className="mt-1 text-xs font-medium text-gray-800 dark:text-gray-200 truncate">
             {label}
         </p>
         {caption && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
                 {caption}
             </p>
         )}
@@ -192,7 +192,7 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
                     className="space-y-6"
                     data-testid="content-background-cards"
                 >
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                         <BackgroundCard
                             label={t('profile.contentBackgroundNone', 'None')}
                             selected={!contentBackground}
@@ -207,7 +207,7 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
                                     category.name
                                 )}
                             </h5>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                                 {CONTENT_BACKGROUNDS.filter(
                                     (bg) => bg.category === category.id
                                 ).map((bg) => (
@@ -215,7 +215,7 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
                                         key={bg.id}
                                         label={bg.name}
                                         caption={bg.photographer}
-                                        imageUrl={contentBackgroundUrl(bg, 480)}
+                                        imageUrl={contentBackgroundUrl(bg, 320)}
                                         selected={contentBackground === bg.id}
                                         onSelect={() =>
                                             onContentBackgroundChange(bg.id)
