@@ -1,0 +1,129 @@
+name: Release
+
+# One button for a release: cuts the version (scripts/create-version.sh),
+# publishes the image and the GitHub Release (docker-publish.yml), then asks
+# tududi/ci to deploy it to app.tududi.com, where the deploy waits for an
+# approval on the production environment.
+#
+#   Actions → Release → Run workflow, or
+#   gh workflow run release -f kind=stable -f bump=fix
+#
+# Requires the CI_DISPATCH_TOKEN secret (fine-grained token on tududi/ci,
+# Contents: read and write) besides the Docker Hub ones docker-publish.yml uses.
+
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: Channel
+        type: choice
+        options: [stable, rc, dev]
+        default: stable
+      bump:
+        description: 'Version: "next" promotes the rc line (stable) or continues it (rc, dev)'
+        type: choice
+        options: [fix, minor, major, next]
+        default: fix
+      version:
+        description: Exact version instead (e.g. v1.7.0-rc.2), overrides the two above
+        type: string
+        required: false
+      deploy_rc:
+        description: Also deploy an rc to app.tududi.com (stable always deploys, dev never)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  cut:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    outputs:
+      version: ${{ steps.cut.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cut the version
+        id: cut
+        env:
+          KIND: ${{ inputs.kind }}
+          BUMP: ${{ inputs.bump }}
+          EXACT: ${{ inputs.version }}
+        run: |
+          if [ -n "$EXACT" ]; then
+            VERSION="$EXACT"
+          else
+            # Shell assignments, the same plan create-version.sh offers
+            eval "$(node scripts/version-plan.js)"
+            K="${KIND^^}"
+            case "$K:$BUMP" in
+              STABLE:next) VERSION="$PROMOTE_STABLE" ;;
+              RC:next) VERSION="$NEXT_RC" ;;
+              DEV:next) VERSION="$NEXT_DEV" ;;
+              *) VAR="${K}_${BUMP^^}"; VERSION="${!VAR}" ;;
+            esac
+          fi
+          if [ -z "$VERSION" ]; then
+            echo "Nothing to release for $KIND/$BUMP (no rc line to promote?)" >&2
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          ./scripts/create-version.sh --no-push "$VERSION"
+
+          # Two pushes, as in create-version.sh. Neither triggers
+          # docker-publish.yml (the workflow token raises no events), which
+          # is why the next job calls it.
+          git push origin HEAD:main
+          git push origin "$VERSION"
+
+          echo "version=${VERSION#v}" >> "$GITHUB_OUTPUT"
+          echo "Released $VERSION" >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    needs: cut
+    uses: ./.github/workflows/docker-publish.yml
+    with:
+      tag: ${{ needs.cut.outputs.version }}
+    secrets: inherit
+    permissions:
+      contents: write
+      packages: write
+
+  deploy:
+    needs: [cut, publish]
+    # Stable always, rc when asked, dev never. Decided on the version itself,
+    # so an exact version is judged the same way.
+    if: >-
+      !contains(needs.cut.outputs.version, '-') ||
+      (contains(needs.cut.outputs.version, '-rc.') && inputs.deploy_rc)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ask tududi/ci to deploy
+        env:
+          GH_TOKEN: ${{ secrets.CI_DISPATCH_TOKEN }}
+          VERSION: ${{ needs.cut.outputs.version }}
+        run: |
+          gh api repos/tududi/ci/dispatches \
+            -f event_type=deploy \
+            -f "client_payload[version]=$VERSION"
+          {
+            echo "Deploy of $VERSION requested. Approve it in tududi/ci:"
+            echo "https://github.com/tududi/ci/actions/workflows/deploy.yml"
+          } >> "$GITHUB_STEP_SUMMARY"
