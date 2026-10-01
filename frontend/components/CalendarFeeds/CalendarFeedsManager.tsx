@@ -166,12 +166,12 @@ const CalendarFeedsManager: React.FC<CalendarFeedsManagerProps> = ({
                             aria-checked={feed.show_on_calendar}
                             aria-label={t(
                                 'profile.calendars.showOnCalendar',
-                                'Show {{name}} on the Calendar page',
+                                'Show {{name}} on the Calendar page and Today',
                                 { name: feed.name }
                             )}
                             title={t(
                                 'profile.calendars.showOnCalendarShort',
-                                'Show on Calendar page'
+                                'Show on Calendar and Today'
                             )}
                             onClick={() => void handleToggle(feed)}
                             className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${

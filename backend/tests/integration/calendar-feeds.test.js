@@ -147,7 +147,7 @@ describe('Calendar feed routes', () => {
         expect(bad.status).toBe(400);
     });
 
-    it('keeps a hidden feed in the day events used by the planner', async () => {
+    it('leaves a hidden feed out of the day events used by the planner', async () => {
         const created = await agent
             .post('/api/calendar-feeds')
             .send({ name: 'Google', url: SECRET_URL });
@@ -157,7 +157,8 @@ describe('Calendar feed routes', () => {
 
         const res = await agent.get(`/api/calendar-feeds/events?date=${today}`);
 
-        expect(res.body.events).toHaveLength(1);
+        expect(res.status).toBe(200);
+        expect(res.body.events).toHaveLength(0);
     });
 
     it('returns the events for a date range, tagged with their day', async () => {
