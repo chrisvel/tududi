@@ -175,6 +175,9 @@ const PlanMyDay: React.FC = () => {
     const aiEnabled = useStore(
         (state) => state.userSettingsStore.aiAssistantEnabled
     );
+    const calendarEnabled = useStore(
+        (state) => state.userSettingsStore.calendarEnabled
+    );
     const [aiEstimates, setAiEstimates] = useState<Record<string, number>>({});
     const [aiDraft, setAiDraft] = useState<{
         summary: string;
@@ -220,10 +223,6 @@ const PlanMyDay: React.FC = () => {
                 setStarted(!!planResponse.plan?.started_at);
                 setItems(planResponse.plan?.items ?? []);
                 setCandidates(candidateList);
-                const day = await fetchCalendarEvents(planResponse.date).catch(
-                    () => null
-                );
-                if (!cancelled && day) setEvents(day.events);
             } catch (err) {
                 if (!cancelled) {
                     setError(
@@ -238,6 +237,24 @@ const PlanMyDay: React.FC = () => {
             cancelled = true;
         };
     }, [t]);
+
+    // Calendar feeds belong to the Calendar feature; with it off the day
+    // is planned without events.
+    useEffect(() => {
+        if (!date || !calendarEnabled) {
+            setEvents([]);
+            return;
+        }
+        let cancelled = false;
+        fetchCalendarEvents(date)
+            .then((day) => {
+                if (!cancelled) setEvents(day.events);
+            })
+            .catch(() => undefined);
+        return () => {
+            cancelled = true;
+        };
+    }, [date, calendarEnabled]);
 
     // Priorities or due dates changed in another tab or on the task page
     // should reorder the list as soon as the planner is back in view.
@@ -906,21 +923,23 @@ const PlanMyDay: React.FC = () => {
                                     >
                                         {t('dailyPlan.addTask', 'Add task')}
                                     </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setMoreOpen(false);
-                                            void refreshEvents();
-                                        }}
-                                        disabled={refreshingEvents || !date}
-                                        className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
-                                        data-testid="plan-refresh-calendar"
-                                    >
-                                        {t(
-                                            'dailyPlan.refreshCalendar',
-                                            'Refresh calendar'
-                                        )}
-                                    </button>
+                                    {calendarEnabled && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setMoreOpen(false);
+                                                void refreshEvents();
+                                            }}
+                                            disabled={refreshingEvents || !date}
+                                            className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+                                            data-testid="plan-refresh-calendar"
+                                        >
+                                            {t(
+                                                'dailyPlan.refreshCalendar',
+                                                'Refresh calendar'
+                                            )}
+                                        </button>
+                                    )}
                                     {!narrow && (
                                         <button
                                             type="button"

@@ -68,6 +68,9 @@ const TodayPage: React.FC = () => {
     const setProgress = useDailyPlanProgress((s) => s.setProgress);
     const quote = useDailyQuote(i18n.language);
     const projects = useStore((state) => state.projectsStore.projects);
+    const calendarEnabled = useStore(
+        (state) => state.userSettingsStore.calendarEnabled
+    );
 
     const [planResponse, setPlanResponse] = useState<DailyPlanResponse | null>(
         null
@@ -97,19 +100,11 @@ const TodayPage: React.FC = () => {
                 if (cancelled) return;
                 setPlanResponse(plan);
 
-                const [feeds, candidateList] = await Promise.all([
-                    fetchCalendarFeeds().catch(() => []),
-                    fetchPlanCandidates().catch(() => null),
-                ]);
+                const candidateList = await fetchPlanCandidates().catch(
+                    () => null
+                );
                 if (cancelled) return;
-                setHasFeeds(feeds.length > 0);
                 setCandidates(candidateList);
-                if (feeds.length > 0) {
-                    const day = await fetchCalendarEvents(plan.date).catch(
-                        () => null
-                    );
-                    if (!cancelled && day) setEvents(day.events);
-                }
             } catch (err) {
                 if (!cancelled) {
                     setError(
@@ -124,6 +119,29 @@ const TodayPage: React.FC = () => {
             cancelled = true;
         };
     }, [t]);
+
+    // Calendar feeds belong to the Calendar feature; with it off Today shows
+    // no events and no prompt to connect a calendar.
+    const planDate = planResponse?.date;
+    useEffect(() => {
+        if (!planDate || !calendarEnabled) {
+            setHasFeeds(false);
+            setEvents([]);
+            return;
+        }
+        let cancelled = false;
+        (async () => {
+            const feeds = await fetchCalendarFeeds().catch(() => []);
+            if (cancelled) return;
+            setHasFeeds(feeds.length > 0);
+            if (feeds.length === 0) return;
+            const day = await fetchCalendarEvents(planDate).catch(() => null);
+            if (!cancelled && day) setEvents(day.events);
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [planDate, calendarEnabled]);
 
     const plan = planResponse?.plan ?? null;
     const items = useMemo(() => plan?.items ?? [], [plan]);
@@ -485,6 +503,7 @@ const TodayPage: React.FC = () => {
                         events={events}
                         freeMinutes={freeMinutes}
                         hasFeeds={hasFeeds}
+                        calendarEnabled={calendarEnabled}
                         hasDraft={items.length > 0}
                     />
                 )}
