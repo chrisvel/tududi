@@ -77,7 +77,9 @@ const buildApp = (...limiters) => {
         if (forced) return res.status(forced).json({ ok: true });
         return res.status(207).json({ ok: true });
     });
-    app.get('/oidc', (req, res) => res.status(302).set('Location', '/ok').end());
+    app.get('/oidc', (req, res) =>
+        res.status(302).set('Location', '/ok').end()
+    );
     return app;
 };
 
@@ -306,10 +308,20 @@ describe('signInLinkLimiter', () => {
         const ip = nextIp();
 
         // authLimiter only counts failed attempts once skipSuccessfulRequests is on
-        await request(authApp).get('/protected').set('X-Forwarded-For', ip).expect(401);
-        await request(authApp).get('/protected').set('X-Forwarded-For', ip).expect(401);
+        await request(authApp)
+            .get('/protected')
+            .set('X-Forwarded-For', ip)
+            .expect(401);
+        await request(authApp)
+            .get('/protected')
+            .set('X-Forwarded-For', ip)
+            .expect(401);
         expect(
-            (await request(authApp).get('/protected').set('X-Forwarded-For', ip)).status
+            (
+                await request(authApp)
+                    .get('/protected')
+                    .set('X-Forwarded-For', ip)
+            ).status
         ).toBe(429);
 
         await post(linkApp, ip).expect(200);
@@ -317,7 +329,10 @@ describe('signInLinkLimiter', () => {
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(200);
         await post(linkApp, ip).expect(429);
-        await request(authApp).get('/protected').set('X-Forwarded-For', ip).expect(429);
+        await request(authApp)
+            .get('/protected')
+            .set('X-Forwarded-For', ip)
+            .expect(429);
     });
 });
 
@@ -370,7 +385,6 @@ describe('caldavAuthLimiter', () => {
         await propfind(app, ip, { bad: true }).expect(429);
     });
 });
-
 
 describe('caldavAuthLimiter authenticated DAV errors', () => {
     const propfind = (app, ip, { user = 'dav@example.com', status } = {}) => {
