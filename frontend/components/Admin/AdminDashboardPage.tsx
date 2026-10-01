@@ -7,6 +7,7 @@ import {
     EnvelopeIcon,
     RectangleStackIcon,
     SparklesIcon,
+    BugAntIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
 import { handleAuthResponse } from '../../utils/authUtils';
@@ -15,6 +16,7 @@ interface Overview {
     users: { total: number; admins: number; verified: number; last24h: number };
     content: { tasks: number; projects: number; notes: number };
     waitlist: { total: number; last7d: number };
+    feedback: { open: number };
     billing: {
         paying: number;
         hosted: boolean;
@@ -189,6 +191,19 @@ const AdminDashboardPage: React.FC = () => {
                 >
                     <EnvelopeIcon className="w-4 h-4 mr-2" />
                     {t('admin.waitlist.title', 'Waitlist')}
+                </Link>
+                <Link
+                    to="/admin/feedback"
+                    className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    data-testid="admin-dashboard-feedback-link"
+                >
+                    <BugAntIcon className="w-4 h-4 mr-2" />
+                    {t('admin.feedback.title', 'Feedback')}
+                    {data.feedback?.open > 0 && (
+                        <span className="ml-2 px-1.5 rounded-full bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 text-xs">
+                            {data.feedback.open}
+                        </span>
+                    )}
                 </Link>
                 <span className="inline-flex items-center px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400">
                     <RectangleStackIcon className="w-4 h-4 mr-2" />

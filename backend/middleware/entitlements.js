@@ -55,6 +55,8 @@ const OPEN_WITHOUT_SUBSCRIPTION = [
     /^\/backup\/export$/,
     /^\/backup\/list$/,
     /^\/backup\/[^/]+\/download$/,
+    // Someone stuck at the paywall can still tell us something is wrong.
+    /^\/feedback$/,
 ];
 
 const requireSubscription = async (req, res, next) => {

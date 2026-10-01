@@ -50,6 +50,7 @@ const CLEANUP_TABLES = [
     'rate_limits',
     'usage_counters',
     'waitlist_subscribers',
+    'feedback',
     'billing_events',
     'billing_accounts',
     'notifications',
