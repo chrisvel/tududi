@@ -65,12 +65,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                     isAreasPageActive ? 'bg-gray-100 dark:bg-white/5' : ''
                 }`}
                 onClick={() => {
-                    setIsExpanded(true);
-                    handleNavClick(
-                        '/areas',
-                        'Areas',
-                        <Squares2X2Icon className="h-5 w-5 mr-2" />
-                    );
+                    if (areas.length > 0) setIsExpanded((v) => !v);
                 }}
             >
                 <span
@@ -79,6 +74,15 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                             ? 'text-gray-900 dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsExpanded(true);
+                        handleNavClick(
+                            '/areas',
+                            'Areas',
+                            <Squares2X2Icon className="h-5 w-5 mr-2" />
+                        );
+                    }}
                 >
                     <Squares2X2Icon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
                     {t('sidebar.areas')}
