@@ -5,6 +5,7 @@ const groupsRepository = require('../groups/repository');
 const { execAction } = require('../../services/execAction');
 const groupSharing = require('../../services/groupSharing');
 const { isAdmin } = require('../../services/rolesService');
+const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const { logError } = require('../../services/logService');
 const { Notification } = require('../../models');
 const {
@@ -16,6 +17,15 @@ const {
 const SHAREABLE_TYPES = new Set(['project', 'task', 'note', 'area', 'goal']);
 const ACCESS_LEVELS = new Set(['ro', 'rw']);
 const GROUP_INVITATION_ID = /^g(\d+)$/;
+
+// The label shown for a member in the share picker. Members of a workspace see
+// each other's names, never their emails.
+function candidateLabel(user) {
+    const fullName = [user.name, user.surname].filter(Boolean).join(' ');
+    if (fullName) return fullName;
+    if (user.email) return user.email.split('@')[0];
+    return 'Member';
+}
 
 function parseGroupInvitationId(idParam) {
     const match = GROUP_INVITATION_ID.exec(String(idParam));
@@ -43,28 +53,64 @@ class SharesService {
         }
     }
 
+    // The people the user can pick in the share modal: their workspace (see
+    // workspaceMembers), so the list never reveals other accounts.
+    async listCandidates(userId) {
+        const ids = await getWorkspaceUserIds(userId);
+        const users = await sharesRepository.findCandidateUsers(ids);
+        return users
+            .map((user) => ({
+                id: user.id,
+                uid: user.uid,
+                name: candidateLabel(user),
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    async findTargetUser({ target_user_id, target_user_email }, userId) {
+        if (!target_user_id) {
+            return sharesRepository.findUserByEmail(target_user_email);
+        }
+        const workspaceIds = await getWorkspaceUserIds(userId);
+        if (!workspaceIds.includes(Number(target_user_id))) {
+            throw new NotFoundError('User not found');
+        }
+        return sharesRepository.findUserById(Number(target_user_id), [
+            'id',
+            'email',
+            'name',
+        ]);
+    }
+
     // Sharing is an invitation: the recipient sees nothing until they accept.
     // The response is the same whether or not the email belongs to an account,
     // so this endpoint cannot be used to check who has signed up. A share
-    // targets either one user by email or a whole group by uid.
+    // targets one user by email, one workspace member by id, or a whole group
+    // by uid.
     async createShare(userId, data) {
         const {
             resource_type,
             resource_uid,
             target_user_email,
+            target_user_id,
             target_group_uid,
             access_level,
         } = data;
 
+        const targetCount = [
+            target_user_email,
+            target_user_id,
+            target_group_uid,
+        ].filter(Boolean).length;
         if (
             !resource_type ||
             !resource_uid ||
             !access_level ||
-            (!target_user_email && !target_group_uid)
+            targetCount === 0
         ) {
             throw new ValidationError('Missing parameters');
         }
-        if (target_user_email && target_group_uid) {
+        if (targetCount > 1) {
             throw new ValidationError(
                 'Share with either a user or a group, not both'
             );
@@ -102,8 +148,7 @@ class SharesService {
             return null; // 204 No Content
         }
 
-        const target =
-            await sharesRepository.findUserByEmail(target_user_email);
+        const target = await this.findTargetUser(data, userId);
         if (!target) {
             return null;
         }

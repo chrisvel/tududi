@@ -4,7 +4,9 @@ import {
     AccessLevel,
     GroupShareRow,
     ListSharesResponseRow,
+    ShareCandidate,
     ShareGrantRequest,
+    fetchShareCandidates,
     grantShare,
     listShareDetails,
     revokeGroupShare,
@@ -27,6 +29,9 @@ interface ShareModalProps {
 
 type ShareTarget = 'user' | 'group';
 
+// The picker value that switches to inviting someone by email.
+const BY_EMAIL = 'email';
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const TITLE_KEYS: Record<string, { key: string; fallback: string }> = {
@@ -47,6 +52,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
     const { t } = useTranslation();
     const [target, setTarget] = useState<ShareTarget>('user');
     const [email, setEmail] = useState('');
+    const [personId, setPersonId] = useState('');
     const [groupUid, setGroupUid] = useState('');
     const [access, setAccess] = useState<AccessLevel>('ro');
     const [submitting, setSubmitting] = useState(false);
@@ -55,6 +61,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
     const [rows, setRows] = useState<ListSharesResponseRow[] | null>(null);
     const [groupShares, setGroupShares] = useState<GroupShareRow[]>([]);
     const [groups, setGroups] = useState<GroupSummary[]>([]);
+    const [candidates, setCandidates] = useState<ShareCandidate[]>([]);
     const [loadingList, setLoadingList] = useState(false);
     const currentUser = getCurrentUser();
 
@@ -84,6 +91,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
         if (!isOpen) return;
         setTarget('user');
         setEmail('');
+        setPersonId('');
         setGroupUid('');
         setAccess('ro');
         setError(null);
@@ -99,6 +107,13 @@ const ShareModal: React.FC<ShareModalProps> = ({
             .catch(() => {
                 if (!cancelled) setGroups([]);
             });
+        fetchShareCandidates()
+            .then((list) => {
+                if (!cancelled) setCandidates(list);
+            })
+            .catch(() => {
+                if (!cancelled) setCandidates([]);
+            });
         return () => {
             cancelled = true;
         };
@@ -113,6 +128,9 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
     const sharedGroupUids = new Set(groupShares.map((g) => g.group_uid));
     const showTargetToggle = groups.length > 0;
+    const sharedUserIds = new Set((rows || []).map((r) => r.user_id));
+    // Without anyone to pick from, the email field is all there is.
+    const byEmail = candidates.length === 0 || personId === BY_EMAIL;
 
     const switchTarget = (next: ShareTarget) => {
         setTarget(next);
@@ -120,7 +138,25 @@ const ShareModal: React.FC<ShareModalProps> = ({
         setNotice(null);
     };
 
+    const shareWithPerson = async (uid: string) => {
+        if (!personId) {
+            setError(t('shares.selectPersonError', 'Choose a person'));
+            return false;
+        }
+
+        await grantShare({
+            resource_type: resourceType,
+            resource_uid: uid,
+            target_user_id: Number(personId),
+            access_level: access,
+        });
+        setPersonId('');
+        setNotice(t('shares.invitationSent', 'Invitation sent.'));
+        return true;
+    };
+
     const shareWithUser = async (uid: string) => {
+        if (!byEmail) return shareWithPerson(uid);
         const trimmed = email.trim().toLowerCase();
         if (!EMAIL_PATTERN.test(trimmed)) {
             setError(t('shares.invalidEmail', 'Enter a valid email address'));
@@ -232,7 +268,8 @@ const ShareModal: React.FC<ShareModalProps> = ({
         }`;
 
     const submitDisabled =
-        submitting || (target === 'group' ? !groupUid : !email.trim());
+        submitting ||
+        (target === 'group' ? !groupUid : byEmail ? !email.trim() : !personId);
 
     return (
         <div
@@ -283,24 +320,79 @@ const ShareModal: React.FC<ShareModalProps> = ({
                     )}
                     {target === 'user' ? (
                         <div>
-                            <label
-                                htmlFor="share-email"
-                                className="block text-sm text-gray-700 dark:text-gray-300 mb-1"
-                            >
-                                {t('shares.targetUser', 'Invite by email')}
-                            </label>
-                            <input
-                                id="share-email"
-                                type="email"
-                                autoComplete="off"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder={t(
-                                    'shares.emailPlaceholder',
-                                    'name@example.com'
-                                )}
-                                className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+                            {candidates.length > 0 && (
+                                <div className={byEmail ? 'mb-3' : ''}>
+                                    <label
+                                        htmlFor="share-person"
+                                        className="block text-sm text-gray-700 dark:text-gray-300 mb-1"
+                                    >
+                                        {t('shares.shareWith', 'Share with')}
+                                    </label>
+                                    <select
+                                        id="share-person"
+                                        value={personId}
+                                        onChange={(e) => {
+                                            setPersonId(e.target.value);
+                                            setError(null);
+                                        }}
+                                        className={`${FORM.select} w-full`}
+                                    >
+                                        <option value="">
+                                            {t(
+                                                'shares.selectPerson',
+                                                'Select a person'
+                                            )}
+                                        </option>
+                                        {candidates.map((person) => (
+                                            <option
+                                                key={person.id}
+                                                value={person.id}
+                                                disabled={sharedUserIds.has(
+                                                    person.id
+                                                )}
+                                            >
+                                                {person.name}
+                                                {sharedUserIds.has(person.id)
+                                                    ? ` - ${t('shares.alreadyHasAccess', 'already has access')}`
+                                                    : ''}
+                                            </option>
+                                        ))}
+                                        <option value={BY_EMAIL}>
+                                            {t(
+                                                'shares.someoneElseByEmail',
+                                                'Someone else, by email'
+                                            )}
+                                        </option>
+                                    </select>
+                                </div>
+                            )}
+                            {byEmail && (
+                                <>
+                                    <label
+                                        htmlFor="share-email"
+                                        className="block text-sm text-gray-700 dark:text-gray-300 mb-1"
+                                    >
+                                        {t(
+                                            'shares.targetUser',
+                                            'Invite by email'
+                                        )}
+                                    </label>
+                                    <input
+                                        id="share-email"
+                                        type="email"
+                                        autoComplete="off"
+                                        value={email}
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
+                                        placeholder={t(
+                                            'shares.emailPlaceholder',
+                                            'name@example.com'
+                                        )}
+                                        className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </>
+                            )}
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 {t(
                                     'shares.inviteHint',

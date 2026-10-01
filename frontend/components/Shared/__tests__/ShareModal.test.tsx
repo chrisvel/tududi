@@ -28,11 +28,13 @@ const grantShare = jest.fn();
 const listShareDetails = jest.fn();
 const revokeShare = jest.fn();
 const revokeGroupShare = jest.fn();
+const fetchShareCandidates = jest.fn();
 jest.mock('../../../utils/sharesService', () => ({
     grantShare: (...args: any[]) => grantShare(...args),
     listShareDetails: (...args: any[]) => listShareDetails(...args),
     revokeShare: (...args: any[]) => revokeShare(...args),
     revokeGroupShare: (...args: any[]) => revokeGroupShare(...args),
+    fetchShareCandidates: (...args: any[]) => fetchShareCandidates(...args),
 }));
 
 const fetchGroups = jest.fn();
@@ -69,6 +71,7 @@ describe('ShareModal', () => {
         failedShareCache.clear();
         listShareDetails.mockResolvedValue(emptyDetails);
         fetchGroups.mockResolvedValue([]);
+        fetchShareCandidates.mockResolvedValue([]);
         grantShare.mockResolvedValue(undefined);
         revokeShare.mockResolvedValue(undefined);
         revokeGroupShare.mockResolvedValue(undefined);
@@ -122,6 +125,98 @@ describe('ShareModal', () => {
                 await screen.findByText('You already have full access to this')
             ).toBeInTheDocument();
             expect(grantShare).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('when the workspace has members', () => {
+        beforeEach(() => {
+            fetchShareCandidates.mockResolvedValue([
+                { id: 7, uid: 'u7', name: 'Emma' },
+                { id: 8, uid: 'u8', name: 'Leo' },
+            ]);
+        });
+
+        it('offers the members in a dropdown instead of the email field', async () => {
+            renderModal();
+
+            expect(
+                await screen.findByRole('option', { name: 'Emma' })
+            ).toBeInTheDocument();
+            expect(
+                screen.getByRole('option', { name: 'Leo' })
+            ).toBeInTheDocument();
+            expect(
+                screen.queryByLabelText('Invite by email')
+            ).not.toBeInTheDocument();
+            expect(screen.getByText('Share')).toBeDisabled();
+        });
+
+        it('shares with the picked member by id', async () => {
+            renderModal();
+            await screen.findByRole('option', { name: 'Leo' });
+
+            fireEvent.change(screen.getByLabelText('Share with'), {
+                target: { value: '8' },
+            });
+            fireEvent.click(screen.getByText('Share'));
+
+            await waitFor(() =>
+                expect(grantShare).toHaveBeenCalledWith({
+                    resource_type: 'project',
+                    resource_uid: 'res-1',
+                    target_user_id: 8,
+                    access_level: 'ro',
+                })
+            );
+            expect(
+                await screen.findByText('Invitation sent.')
+            ).toBeInTheDocument();
+        });
+
+        it('disables members who already have access', async () => {
+            listShareDetails.mockResolvedValue({
+                shares: [
+                    owner,
+                    {
+                        user_id: 7,
+                        access_level: 'ro',
+                        status: 'pending',
+                        created_at: '2026-09-01T00:00:00.000Z',
+                        email: 'emma@example.com',
+                    },
+                ],
+                group_shares: [],
+            });
+            renderModal();
+
+            expect(
+                await screen.findByRole('option', {
+                    name: 'Emma - already has access',
+                })
+            ).toBeDisabled();
+            expect(screen.getByRole('option', { name: 'Leo' })).toBeEnabled();
+        });
+
+        it('still invites someone else by email', async () => {
+            renderModal();
+            await screen.findByRole('option', { name: 'Emma' });
+
+            fireEvent.change(screen.getByLabelText('Share with'), {
+                target: { value: 'email' },
+            });
+            fireEvent.change(screen.getByLabelText('Invite by email'), {
+                target: { value: 'friend@example.com' },
+            });
+            fireEvent.click(screen.getByText('Share'));
+
+            await waitFor(() =>
+                expect(grantShare).toHaveBeenCalledWith({
+                    resource_type: 'project',
+                    resource_uid: 'res-1',
+                    target_user_email: 'friend@example.com',
+                    access_level: 'ro',
+                })
+            );
         });
     });
 
