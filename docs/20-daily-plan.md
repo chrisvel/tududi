@@ -84,7 +84,7 @@ Profile → **Calendars**, or the **Calendars** button on the Calendar page, con
 
 - Tududi never writes to these calendars.
 - The address is a secret: it is stored encrypted (needs `TUDUDI_SESSION_SECRET` or `TUDUDI_OIDC_SECRET_ENCRYPTION_KEY`) and the API only returns its host.
-- The server fetches the feed through the SSRF guard (public hosts only, every redirect checked), with a 10 second timeout and a 5 MB limit, and caches it for 15 minutes per process.
+- The server fetches the feed through the SSRF guard (public hosts only, every redirect checked; `CALDAV_ALLOW_PRIVATE_HOSTS=true` also allows LAN hosts, never link-local or metadata addresses), with a 10 second timeout and a 5 MB limit, and caches it for 15 minutes per process.
 - Recurring events (RRULE, RDATE, EXDATE, moved instances), time zones, all-day events and events crossing midnight are expanded in the user's timezone. Cancelled events are dropped.
 - If a feed stops working, Today keeps the last good copy when one is cached, and the error shows on the Calendars tab.
 

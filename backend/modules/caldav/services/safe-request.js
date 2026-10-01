@@ -195,4 +195,6 @@ module.exports = {
     assertSafeCalDavUrl,
     safeRequest,
     guardedLookup,
+    allowPrivateHosts,
+    PRIVATE_ADDRESS_MESSAGE,
 };

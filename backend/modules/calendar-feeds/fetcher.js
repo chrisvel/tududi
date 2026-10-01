@@ -3,8 +3,14 @@
 const axios = require('axios');
 const http = require('http');
 const https = require('https');
-const { assertSafeUrl, publicOnlyLookup } = require('../url/ssrfGuard');
-const { ValidationError } = require('../../shared/errors');
+const { assertSafeUrl } = require('../url/ssrfGuard');
+const {
+    assertSafeCalDavUrl,
+    guardedLookup,
+    allowPrivateHosts,
+    PRIVATE_ADDRESS_MESSAGE,
+} = require('../caldav/services/safe-request');
+const { AppError, ValidationError } = require('../../shared/errors');
 
 const MAX_REDIRECTS = 5;
 const TIMEOUT_MS = 10000;
@@ -13,9 +19,35 @@ const MAX_BYTES = 5 * 1024 * 1024;
 class FeedFetchError extends Error {}
 
 // Addresses are checked again when the socket connects, so a host that
-// resolves differently after assertSafeUrl still cannot reach the LAN.
-const httpAgent = new http.Agent({ lookup: publicOnlyLookup });
-const httpsAgent = new https.Agent({ lookup: publicOnlyLookup });
+// resolves differently after the URL check still cannot reach the LAN.
+// CALDAV_ALLOW_PRIVATE_HOSTS opens private addresses here too (#1719), but
+// never link-local ones, where the cloud metadata service lives.
+const httpAgent = new http.Agent({ lookup: guardedLookup });
+const httpsAgent = new https.Agent({ lookup: guardedLookup });
+
+async function assertSafeFeedUrl(url) {
+    if (allowPrivateHosts()) {
+        try {
+            await assertSafeCalDavUrl(url);
+        } catch (err) {
+            throw new FeedFetchError(err.message);
+        }
+        return;
+    }
+    try {
+        await assertSafeUrl(url);
+    } catch (err) {
+        if (/^Could not resolve host/.test(err.message)) {
+            throw new FeedFetchError('Could not reach the calendar');
+        }
+        if (/^Unsupported port/.test(err.message)) {
+            throw new FeedFetchError(
+                'That address points to a private or unsupported host'
+            );
+        }
+        throw new FeedFetchError(PRIVATE_ADDRESS_MESSAGE);
+    }
+}
 
 // Calendar apps hand out webcal:// links; they are plain HTTPS underneath.
 function normalizeFeedUrl(raw) {
@@ -45,8 +77,8 @@ function describeFetchError(err) {
     ) {
         return 'The calendar is larger than 5 MB';
     }
-    if (err.cause?.name === 'UnsafeUrlError' || err.name === 'UnsafeUrlError') {
-        return 'That address points to a private or unsupported host';
+    if (err.cause instanceof AppError) {
+        return err.cause.message;
     }
     return 'Could not reach the calendar';
 }
@@ -57,13 +89,7 @@ async function fetchFeed(url) {
     let currentUrl = normalizeFeedUrl(url);
 
     for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-        try {
-            await assertSafeUrl(currentUrl);
-        } catch {
-            throw new FeedFetchError(
-                'That address points to a private or unsupported host'
-            );
-        }
+        await assertSafeFeedUrl(currentUrl);
 
         let response;
         try {

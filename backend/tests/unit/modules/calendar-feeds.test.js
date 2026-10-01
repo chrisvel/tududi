@@ -201,8 +201,6 @@ describe('fetchFeed', () => {
 
         await expect(
             fetchFeed('http://rebind.example/cal.ics')
-        ).rejects.toThrow(
-            'That address points to a private or unsupported host'
-        );
+        ).rejects.toThrow('CALDAV_ALLOW_PRIVATE_HOSTS');
     });
 });
