@@ -80,7 +80,7 @@ export const itemEnd = (item: DailyPlanItem): number =>
     (item.start_minute ?? 0) + item.duration_minutes;
 
 export const isItemDone = (item: DailyPlanItem): boolean =>
-    isTaskDone(item.task?.status);
+    !!item.occurrence_done || isTaskDone(item.task?.status);
 
 // The visible range of the timeline: the user's day hours (08:00-18:00 by
 // default), widened to whole hours around anything planned or on the

@@ -25,6 +25,8 @@ The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics
 - **Now card:** the block running right now; otherwise the next planned block; otherwise the first unfinished task without a time. **Mark done** completes the task. **Push to later** removes the time slot and moves the task to the end of the list.
 - **Reordering:** drag an **Anytime** task to move it among the other Anytime tasks; the new order is saved as the plan's item order. Timed tasks stay in time order.
 - **Not planned:** the tasks the classic page would show (overdue, due today, in progress, suggested) that are not in the plan. **Add to today** appends one without a time.
+- **Recurring tasks:** completing one moves the same task on to its next due date and reopens it. The plan still shows the day's occurrence as done (crossed out, with the next date) and counts it in `done/total`. This holds while a non-skipped completion falls on the plan's day and the task's due date is after that day, so undoing the completion makes it open again.
+- **Moving a due date:** changing a planned task's due date from the day (or earlier, or none) to a later day from the agenda takes it off the plan, with an undo toast. Changes made elsewhere leave the plan as it is.
 - **Replan** reopens the planner. Starting the day again keeps the first start time.
 - The sidebar shows `done/total` next to Today once the day is started.
 

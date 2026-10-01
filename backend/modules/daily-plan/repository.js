@@ -7,6 +7,7 @@ const {
     Task,
     InboxItem,
     Project,
+    RecurringCompletion,
     Tag,
     User,
     sequelize,
@@ -48,6 +49,21 @@ class DailyPlanRepository {
             where: { [Op.and]: [visibleWhere, { id: { [Op.in]: ids } }] },
             include: TASK_INCLUDES,
         });
+    }
+
+    // Tasks with a recurring occurrence completed (not skipped) in the range.
+    async findTaskIdsCompletedBetween(taskIds, start, end) {
+        if (taskIds.length === 0) return new Set();
+        const rows = await RecurringCompletion.findAll({
+            where: {
+                task_id: { [Op.in]: taskIds },
+                skipped: false,
+                completed_at: { [Op.between]: [start, end] },
+            },
+            attributes: ['task_id'],
+            raw: true,
+        });
+        return new Set(rows.map((row) => row.task_id));
     }
 
     async findVisibleProjectIds(visibleWhere, ids) {

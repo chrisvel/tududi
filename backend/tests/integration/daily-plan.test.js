@@ -387,6 +387,53 @@ describe('Daily plan routes', () => {
         expect(plan.body.plan.items[0].task.name).toBe('Water plants');
     });
 
+    it('marks a recurring task done for the day once its occurrence is completed', async () => {
+        const noon = moment.tz(today, 'Europe/Athens').hour(12).toDate();
+        const recurring = await makeTask({
+            name: 'Water plants',
+            recurrence_type: 'daily',
+            recurrence_interval: 1,
+            due_date: noon,
+        });
+        const other = await makeTask({ name: 'Write spec' });
+        await agent.put(`/api/daily-plan/${today}`).send({
+            items: [{ task_uid: recurring.uid }, { task_uid: other.uid }],
+        });
+
+        const completed = await agent
+            .patch(`/api/task/${recurring.uid}`)
+            .send({ status: 'done' });
+        expect(completed.status).toBe(200);
+        expect(completed.body.due_date > today).toBe(true);
+
+        const res = await agent.get('/api/daily-plan');
+        const [first, second] = res.body.plan.items;
+        expect(first.task_uid).toBe(recurring.uid);
+        expect(first.occurrence_done).toBe(true);
+        expect(first.task.status).toBe(Task.STATUS.NOT_STARTED);
+        expect(second.occurrence_done).toBe(false);
+    });
+
+    it('does not count a completion once its due date is back on the day', async () => {
+        const noon = moment.tz(today, 'Europe/Athens').hour(12).toDate();
+        const recurring = await makeTask({
+            recurrence_type: 'daily',
+            recurrence_interval: 1,
+            due_date: noon,
+        });
+        await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: recurring.uid }] });
+        await agent
+            .patch(`/api/task/${recurring.uid}`)
+            .send({ status: 'done' });
+        // Undoing the completion puts the old due date back.
+        await Task.update({ due_date: noon }, { where: { id: recurring.id } });
+
+        const res = await agent.get('/api/daily-plan');
+        expect(res.body.plan.items[0].occurrence_done).toBe(false);
+    });
+
     it('saves the day hours and returns them with the plan', async () => {
         const initial = await agent.get('/api/daily-plan');
         expect(initial.body.day_hours).toEqual({ start: 480, end: 1080 });
