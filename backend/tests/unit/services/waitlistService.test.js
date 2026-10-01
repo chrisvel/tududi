@@ -101,3 +101,11 @@ describe('waitlistService.acceptsMail', () => {
         expect(await waitlist.acceptsMail('small-site.dev')).toBe(true);
     });
 });
+
+describe('waitlistService.capture', () => {
+    it('turns away a disposable address before touching the table', async () => {
+        expect(await waitlist.capture({ email: 'bot@mailinator.com' })).toEqual(
+            { accepted: false, created: false }
+        );
+    });
+});

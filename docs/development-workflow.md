@@ -159,6 +159,8 @@ TUDUDI_ALLOWED_ORIGINS=http://localhost:8080
 
 # Optional - Registration
 REGISTRATION_TOKEN_EXPIRY_HOURS=24
+# Refuse signups whose email domain cannot receive mail (MX lookup)
+# REGISTRATION_MX_CHECK=true
 # Password reset links stay valid this long
 PASSWORD_RESET_TOKEN_EXPIRY_MINUTES=60
 ```

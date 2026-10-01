@@ -4,6 +4,11 @@ const { getConfig } = require('../../config/config');
 const { logError, logInfo } = require('../../services/logService');
 const { sendEmail } = require('../../services/emailService');
 const {
+    domainOf,
+    isDisposableDomain,
+    acceptsMail,
+} = require('../../services/emailDomainService');
+const {
     validateEmail,
     validatePassword,
     MIN_LENGTH_POLICY_MESSAGE,
@@ -38,6 +43,30 @@ const getTokenExpirationDate = () => {
     const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + hours);
     return expirationDate;
+};
+
+const DISPOSABLE_EMAIL_MESSAGE =
+    'Please sign up with a permanent email address. Temporary or disposable addresses are not accepted.';
+const UNDELIVERABLE_EMAIL_MESSAGE =
+    'This email address cannot receive mail. Please check it and try again.';
+
+// Returns why the address cannot be used for a new account, or null. A
+// malformed address passes here and is reported by createUnverifiedUser.
+// Reserved names like .local get no rule of their own: the MX check covers
+// them, and a self-hosted instance whose internal DNS serves its own mail
+// domain keeps working.
+const checkSignupEmailDomain = async (email) => {
+    if (!validateEmail(email)) return null;
+
+    const domain = domainOf(email);
+    if (isDisposableDomain(domain)) return DISPOSABLE_EMAIL_MESSAGE;
+    if (
+        getConfig().registrationConfig.mxCheck &&
+        !(await acceptsMail(domain))
+    ) {
+        return UNDELIVERABLE_EMAIL_MESSAGE;
+    }
+    return null;
 };
 
 const createUnverifiedUser = async (email, password, transaction = null) => {
@@ -260,6 +289,7 @@ module.exports = {
     setRegistrationEnabled,
     generateVerificationToken,
     createUnverifiedUser,
+    checkSignupEmailDomain,
     verifyUserEmail,
     sendVerificationEmail,
     resendVerificationEmail,
