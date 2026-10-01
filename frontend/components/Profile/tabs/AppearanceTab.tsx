@@ -13,7 +13,6 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import type { ProfileFormData } from '../types';
 import {
     CONTENT_BACKGROUNDS,
-    CONTENT_BACKGROUND_CATEGORIES,
     contentBackgroundUrl,
 } from '../../../constants/contentBackgrounds';
 
@@ -189,41 +188,23 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
                     )}
                 </p>
                 <div
-                    className="space-y-6"
+                    className="grid grid-cols-3 sm:grid-cols-4 gap-3"
                     data-testid="content-background-cards"
                 >
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    <BackgroundCard
+                        label={t('profile.contentBackgroundNone', 'None')}
+                        selected={!contentBackground}
+                        onSelect={() => onContentBackgroundChange(null)}
+                    />
+                    {CONTENT_BACKGROUNDS.map((bg) => (
                         <BackgroundCard
-                            label={t('profile.contentBackgroundNone', 'None')}
-                            selected={!contentBackground}
-                            onSelect={() => onContentBackgroundChange(null)}
+                            key={bg.id}
+                            label={bg.name}
+                            caption={bg.photographer}
+                            imageUrl={contentBackgroundUrl(bg, 320)}
+                            selected={contentBackground === bg.id}
+                            onSelect={() => onContentBackgroundChange(bg.id)}
                         />
-                    </div>
-                    {CONTENT_BACKGROUND_CATEGORIES.map((category) => (
-                        <section key={category.id}>
-                            <h5 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                                {t(
-                                    `profile.backgroundCategories.${category.id}`,
-                                    category.name
-                                )}
-                            </h5>
-                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                                {CONTENT_BACKGROUNDS.filter(
-                                    (bg) => bg.category === category.id
-                                ).map((bg) => (
-                                    <BackgroundCard
-                                        key={bg.id}
-                                        label={bg.name}
-                                        caption={bg.photographer}
-                                        imageUrl={contentBackgroundUrl(bg, 320)}
-                                        selected={contentBackground === bg.id}
-                                        onSelect={() =>
-                                            onContentBackgroundChange(bg.id)
-                                        }
-                                    />
-                                ))}
-                            </div>
-                        </section>
                     ))}
                 </div>
             </div>

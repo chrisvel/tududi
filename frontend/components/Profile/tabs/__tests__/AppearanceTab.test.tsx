@@ -59,26 +59,6 @@ describe('AppearanceTab background', () => {
         );
     });
 
-    it('groups the photos under their categories', () => {
-        renderTab(null);
-
-        expect(CONTENT_BACKGROUNDS).toHaveLength(16);
-        for (const name of [
-            'Abstract',
-            'Artistic',
-            'Modern',
-            'Cyberpunk',
-            'Scenery',
-            'Objects',
-        ]) {
-            expect(screen.getByText(name)).toBeInTheDocument();
-        }
-        const objects = screen.getByText('Objects').closest('section')!;
-        expect(
-            within(objects).getByRole('button', { name: /Typewriter/ })
-        ).toBeInTheDocument();
-    });
-
     it('reports the picked background, and null for None', () => {
         const { onContentBackgroundChange } = renderTab('misty-forest');
 
