@@ -73,7 +73,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="feedback-modal-title"
-                className="w-full max-w-lg rounded-xl bg-white dark:bg-gray-800 shadow-xl p-6"
+                className="w-full max-w-2xl rounded-2xl bg-white dark:bg-gray-800 shadow-xl p-6 sm:p-8"
                 onClick={(e) => e.stopPropagation()}
                 data-testid="feedback-modal"
             >
@@ -124,12 +124,12 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
                             }
                         }}
                         maxLength={MAX_LENGTH}
-                        rows={6}
+                        rows={9}
                         placeholder={t(
                             'feedback.placeholder',
                             'What happened, or what would make tududi better?'
                         )}
-                        className="w-full resize-y rounded-lg bg-gray-50 dark:bg-gray-900/60 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                        className="w-full min-h-[200px] resize-y rounded-xl bg-gray-50 dark:bg-gray-900/60 px-4 py-3 text-[15px] leading-relaxed text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                         data-testid="feedback-message"
                     />
                     <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">

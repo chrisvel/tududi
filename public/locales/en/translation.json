@@ -2194,7 +2194,9 @@
       "deleted": "Feedback deleted",
       "deleteFailed": "Failed to delete",
       "deleteTitle": "Delete Feedback",
-      "confirmDelete": "Delete this feedback? This cannot be undone."
+      "confirmDelete": "Delete this feedback? This cannot be undone.",
+      "statusOpen": "Open",
+      "statusResolved": "Resolved"
     }
   },
   "billing": {

@@ -6,6 +6,9 @@ import {
     CheckCircleIcon,
     ArrowUturnLeftIcon,
     TrashIcon,
+    LinkIcon,
+    ComputerDesktopIcon,
+    TagIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
@@ -23,6 +26,78 @@ const PAGE_SIZE = 50;
 // become a javascript: or off-site link.
 const isAppPath = (url: string) => /^\/(?![/\\])/.test(url);
 
+const initials = (name: string) =>
+    name
+        .split(/[\s@.]+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0].toUpperCase())
+        .join('') || '?';
+
+const AVATAR_TINTS = [
+    'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-200',
+    'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200',
+    'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200',
+    'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-200',
+    'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-200',
+    'bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-200',
+];
+
+// Same sender, same color, so repeat reporters are easy to spot.
+const avatarTint = (key: string) => {
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) {
+        hash = (hash * 31 + key.charCodeAt(i)) | 0;
+    }
+    return AVATAR_TINTS[Math.abs(hash) % AVATAR_TINTS.length];
+};
+
+// "Chrome · macOS" is all an admin needs at a glance; the full string is
+// in the chip's tooltip.
+const describeBrowser = (ua: string | null) => {
+    if (!ua) return null;
+    const browser = /Edg\//.test(ua)
+        ? 'Edge'
+        : /Firefox\//.test(ua)
+          ? 'Firefox'
+          : /Chrome\//.test(ua)
+            ? 'Chrome'
+            : /Safari\//.test(ua)
+              ? 'Safari'
+              : null;
+    const os = /iPhone|iPad/.test(ua)
+        ? 'iOS'
+        : /Android/.test(ua)
+          ? 'Android'
+          : /Mac OS X/.test(ua)
+            ? 'macOS'
+            : /Windows/.test(ua)
+              ? 'Windows'
+              : /Linux/.test(ua)
+                ? 'Linux'
+                : null;
+    return [browser, os].filter(Boolean).join(' · ') || ua.slice(0, 40);
+};
+
+const timeAgo = (iso: string) => {
+    const seconds = (new Date(iso).getTime() - Date.now()) / 1000;
+    const units: [Intl.RelativeTimeFormatUnit, number][] = [
+        ['year', 31536000],
+        ['month', 2592000],
+        ['week', 604800],
+        ['day', 86400],
+        ['hour', 3600],
+        ['minute', 60],
+    ];
+    const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+    for (const [unit, size] of units) {
+        if (Math.abs(seconds) >= size) {
+            return rtf.format(Math.round(seconds / size), unit);
+        }
+    }
+    return rtf.format(0, 'minute');
+};
+
 // Everything users sent from the bug icon in the sidebar footer. Open items
 // come first; marking one resolved moves it out of the way without losing
 // it, and deleting is for spam.
@@ -38,6 +113,15 @@ const AdminFeedbackPage: React.FC = () => {
     const [entryToDelete, setEntryToDelete] = useState<FeedbackEntry | null>(
         null
     );
+    const [expanded, setExpanded] = useState<Set<number>>(new Set());
+
+    const toggleExpanded = (id: number) =>
+        setExpanded((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -146,94 +230,203 @@ const AdminFeedbackPage: React.FC = () => {
                         : t('admin.feedback.empty', 'No feedback yet.')}
                 </p>
             ) : (
-                <ul className="space-y-3">
-                    {entries.map((entry) => (
-                        <li
-                            key={entry.id}
-                            className={`rounded-lg p-4 bg-white dark:bg-gray-800 ${
-                                entry.resolved_at ? 'opacity-60' : ''
-                            }`}
-                            data-testid="admin-feedback-item"
-                        >
-                            <div className="flex items-start justify-between gap-4">
-                                <p className="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words min-w-0">
-                                    {entry.message}
-                                </p>
-                                <div className="flex items-center gap-1 shrink-0">
-                                    <button
-                                        type="button"
-                                        onClick={() => toggleResolved(entry)}
-                                        className="p-1.5 rounded-md text-gray-500 hover:text-green-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                <ul className="rounded-2xl bg-white dark:bg-gray-800 shadow-sm overflow-hidden divide-y divide-gray-100 dark:divide-gray-700/60">
+                    {entries.map((entry) => {
+                        const resolved = Boolean(entry.resolved_at);
+                        const isOpen = expanded.has(entry.id);
+                        const browser = describeBrowser(entry.user_agent);
+                        const sender =
+                            entry.user?.name || entry.user?.email || '-';
+                        const preview = entry.message.replace(/\s+/g, ' ');
+                        return (
+                            <li
+                                key={entry.id}
+                                className={
+                                    isOpen
+                                        ? 'bg-gray-50 dark:bg-gray-900/40'
+                                        : ''
+                                }
+                                data-testid="admin-feedback-item"
+                            >
+                                <div
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-expanded={isOpen}
+                                    onClick={() => toggleExpanded(entry.id)}
+                                    onKeyDown={(e) => {
+                                        if (
+                                            e.key === 'Enter' ||
+                                            e.key === ' '
+                                        ) {
+                                            e.preventDefault();
+                                            toggleExpanded(entry.id);
+                                        }
+                                    }}
+                                    className="group flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/40 focus:outline-none focus-visible:bg-gray-50 dark:focus-visible:bg-gray-700/40"
+                                    data-testid="admin-feedback-row"
+                                >
+                                    <span
+                                        className={`w-2 h-2 rounded-full shrink-0 ${
+                                            resolved
+                                                ? 'bg-transparent'
+                                                : 'bg-rose-500'
+                                        }`}
                                         title={
-                                            entry.resolved_at
+                                            resolved
                                                 ? t(
-                                                      'admin.feedback.reopen',
-                                                      'Reopen'
+                                                      'admin.feedback.statusResolved',
+                                                      'Resolved'
                                                   )
                                                 : t(
-                                                      'admin.feedback.markResolved',
-                                                      'Mark resolved'
+                                                      'admin.feedback.statusOpen',
+                                                      'Open'
                                                   )
                                         }
-                                        data-testid="admin-feedback-toggle"
-                                    >
-                                        {entry.resolved_at ? (
-                                            <ArrowUturnLeftIcon className="w-5 h-5" />
-                                        ) : (
-                                            <CheckCircleIcon className="w-5 h-5" />
-                                        )}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setEntryToDelete(entry)}
-                                        className="p-1.5 rounded-md text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        title={t('common.delete', 'Delete')}
-                                        data-testid="admin-feedback-delete"
-                                    >
-                                        <TrashIcon className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
-                                <span>
-                                    {entry.user
-                                        ? entry.user.name
-                                            ? `${entry.user.name} · ${entry.user.email}`
-                                            : entry.user.email
-                                        : '-'}
-                                </span>
-                                <span>
-                                    {new Date(
-                                        entry.created_at
-                                    ).toLocaleString()}
-                                </span>
-                                {entry.page_url &&
-                                    !isAppPath(entry.page_url) && (
-                                        <span>{entry.page_url}</span>
-                                    )}
-                                {entry.page_url &&
-                                    isAppPath(entry.page_url) && (
-                                        <Link
-                                            to={entry.page_url}
-                                            className="text-blue-500 hover:text-blue-600"
-                                        >
-                                            {entry.page_url}
-                                        </Link>
-                                    )}
-                                {entry.app_version && (
-                                    <span>{entry.app_version}</span>
-                                )}
-                                {entry.user_agent && (
+                                    />
                                     <span
-                                        className="truncate max-w-full sm:max-w-md"
-                                        title={entry.user_agent}
+                                        className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 ${avatarTint(
+                                            entry.user?.email || sender
+                                        )}`}
+                                        aria-hidden="true"
                                     >
-                                        {entry.user_agent}
+                                        {initials(sender)}
                                     </span>
+                                    <span
+                                        className={`w-32 sm:w-48 shrink-0 truncate text-sm ${
+                                            resolved
+                                                ? 'text-gray-500 dark:text-gray-400'
+                                                : 'font-semibold text-gray-900 dark:text-white'
+                                        }`}
+                                    >
+                                        {sender}
+                                    </span>
+                                    <span
+                                        className={`flex-1 min-w-0 truncate text-sm ${
+                                            resolved
+                                                ? 'text-gray-400 dark:text-gray-500'
+                                                : 'text-gray-600 dark:text-gray-300'
+                                        }`}
+                                    >
+                                        {preview}
+                                    </span>
+                                    {entry.page_url && (
+                                        <span className="hidden md:inline-block max-w-[10rem] truncate shrink-0 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700/60 text-xs text-gray-500 dark:text-gray-300">
+                                            {entry.page_url}
+                                        </span>
+                                    )}
+                                    <time
+                                        className={`w-24 shrink-0 text-right text-xs ${
+                                            resolved
+                                                ? 'text-gray-400 dark:text-gray-500'
+                                                : 'font-medium text-gray-700 dark:text-gray-200'
+                                        }`}
+                                        dateTime={entry.created_at}
+                                        title={new Date(
+                                            entry.created_at
+                                        ).toLocaleString()}
+                                    >
+                                        {timeAgo(entry.created_at)}
+                                    </time>
+                                </div>
+
+                                {isOpen && (
+                                    <div className="px-4 pb-4 sm:pl-[4.25rem]">
+                                        {entry.user?.name && (
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                {entry.user.email}
+                                            </p>
+                                        )}
+                                        <p className="text-[15px] leading-relaxed text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words">
+                                            {entry.message}
+                                        </p>
+                                        <div className="mt-4 flex flex-wrap items-center gap-1.5 text-xs">
+                                            {entry.page_url &&
+                                                (isAppPath(entry.page_url) ? (
+                                                    <Link
+                                                        to={entry.page_url}
+                                                        className="inline-flex items-center max-w-full px-2 py-1 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20"
+                                                        title={entry.page_url}
+                                                    >
+                                                        <LinkIcon className="w-3.5 h-3.5 mr-1 shrink-0" />
+                                                        <span className="truncate">
+                                                            {entry.page_url}
+                                                        </span>
+                                                    </Link>
+                                                ) : (
+                                                    <span className="inline-flex items-center max-w-full px-2 py-1 rounded-md bg-gray-100 text-gray-600 dark:bg-gray-700/60 dark:text-gray-300">
+                                                        <span className="truncate">
+                                                            {entry.page_url}
+                                                        </span>
+                                                    </span>
+                                                ))}
+                                            {browser && (
+                                                <span
+                                                    className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-600 dark:bg-gray-700/60 dark:text-gray-300"
+                                                    title={
+                                                        entry.user_agent || ''
+                                                    }
+                                                >
+                                                    <ComputerDesktopIcon className="w-3.5 h-3.5 mr-1" />
+                                                    {browser}
+                                                </span>
+                                            )}
+                                            {entry.app_version && (
+                                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-600 dark:bg-gray-700/60 dark:text-gray-300">
+                                                    <TagIcon className="w-3.5 h-3.5 mr-1" />
+                                                    {entry.app_version}
+                                                </span>
+                                            )}
+                                            <span className="text-gray-400 dark:text-gray-500 ml-1">
+                                                {new Date(
+                                                    entry.created_at
+                                                ).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="mt-4 flex items-center gap-1">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    toggleResolved(entry)
+                                                }
+                                                className={`inline-flex items-center px-2.5 py-1.5 rounded-lg text-sm ${
+                                                    resolved
+                                                        ? 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                                        : 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20'
+                                                }`}
+                                                data-testid="admin-feedback-toggle"
+                                            >
+                                                {resolved ? (
+                                                    <ArrowUturnLeftIcon className="w-4 h-4 mr-1.5" />
+                                                ) : (
+                                                    <CheckCircleIcon className="w-4 h-4 mr-1.5" />
+                                                )}
+                                                {resolved
+                                                    ? t(
+                                                          'admin.feedback.reopen',
+                                                          'Reopen'
+                                                      )
+                                                    : t(
+                                                          'admin.feedback.markResolved',
+                                                          'Mark resolved'
+                                                      )}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setEntryToDelete(entry)
+                                                }
+                                                className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                                                data-testid="admin-feedback-delete"
+                                            >
+                                                <TrashIcon className="w-4 h-4 mr-1.5" />
+                                                {t('common.delete', 'Delete')}
+                                            </button>
+                                        </div>
+                                    </div>
                                 )}
-                            </div>
-                        </li>
-                    ))}
+                            </li>
+                        );
+                    })}
                 </ul>
             )}
 

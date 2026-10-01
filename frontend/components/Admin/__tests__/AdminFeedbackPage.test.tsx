@@ -71,10 +71,17 @@ describe('Admin feedback page', () => {
             limit: 50,
             offset: 0,
         });
-        expect(
-            screen.getByText('Ana Lee · ana@example.com')
-        ).toBeInTheDocument();
-        expect(screen.getByText('/today')).toHaveAttribute('href', '/today');
+        expect(screen.getByText('Ana Lee')).toBeInTheDocument();
+        expect(screen.queryByText('ana@example.com')).toBeNull();
+
+        fireEvent.click(screen.getByTestId('admin-feedback-row'));
+
+        expect(screen.getByText('ana@example.com')).toBeInTheDocument();
+        const link = screen
+            .getAllByText('/today')
+            .map((el) => el.closest('a'))
+            .find(Boolean);
+        expect(link).toHaveAttribute('href', '/today');
         expect(screen.getByTestId('admin-feedback-tab-open')).toHaveTextContent(
             'Open (1)'
         );
@@ -84,6 +91,7 @@ describe('Admin feedback page', () => {
         render(<AdminFeedbackPage />);
         await screen.findByText('Search is slow');
 
+        fireEvent.click(screen.getByTestId('admin-feedback-row'));
         fireEvent.click(screen.getByTestId('admin-feedback-toggle'));
 
         await waitFor(() =>
@@ -117,9 +125,11 @@ describe('Admin feedback page', () => {
         });
         render(<AdminFeedbackPage />);
 
-        const text = await screen.findByText('javascript:alert(1)');
-        expect(text.tagName).toBe('SPAN');
-        expect(text).not.toHaveAttribute('href');
+        fireEvent.click(await screen.findByTestId('admin-feedback-row'));
+
+        for (const el of screen.getAllByText('javascript:alert(1)')) {
+            expect(el.closest('a')).toBeNull();
+        }
     });
 
     it('says when nothing is open', async () => {
