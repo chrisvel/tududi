@@ -595,6 +595,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             showTaskContextMenu:
                                 data.ui_settings?.appearance
                                     ?.showTaskContextMenu ?? false,
+                            contentBackground:
+                                data.ui_settings?.appearance
+                                    ?.contentBackground ?? null,
                         },
                     },
                     notification_preferences:
@@ -1344,6 +1347,18 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     );
             }
 
+            if (
+                updatedProfile.ui_settings?.appearance?.contentBackground !==
+                undefined
+            ) {
+                useStore
+                    .getState()
+                    .userSettingsStore.setContentBackground(
+                        updatedProfile.ui_settings.appearance
+                            .contentBackground ?? null
+                    );
+            }
+
             if (updatedProfile.sidebar_settings?.visibleSections) {
                 useStore
                     .getState()
@@ -1574,6 +1589,24 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                         !prev.ui_settings
                                                             ?.appearance
                                                             ?.showTaskContextMenu,
+                                                },
+                                            },
+                                        }))
+                                    }
+                                    contentBackground={
+                                        formData.ui_settings?.appearance
+                                            ?.contentBackground ?? null
+                                    }
+                                    onContentBackgroundChange={(background) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            ui_settings: {
+                                                ...(prev.ui_settings || {}),
+                                                appearance: {
+                                                    ...(prev.ui_settings
+                                                        ?.appearance || {}),
+                                                    contentBackground:
+                                                        background,
                                                 },
                                             },
                                         }))

@@ -138,6 +138,8 @@ interface UserSettingsStore {
     setAiAssistantEnabled: (enabled: boolean) => void;
     showTaskContextMenu: boolean;
     setShowTaskContextMenu: (enabled: boolean) => void;
+    contentBackground: string | null;
+    setContentBackground: (background: string | null) => void;
     sidebarVisibleSections: SidebarVisibleSections;
     setSidebarVisibleSections: (sections: SidebarVisibleSections) => void;
     sidebarLinkOrder: string[];
@@ -1122,6 +1124,14 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     showTaskContextMenu: enabled,
+                },
+            })),
+        contentBackground: null,
+        setContentBackground: (background) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    contentBackground: background,
                 },
             })),
         sidebarVisibleSections: {},

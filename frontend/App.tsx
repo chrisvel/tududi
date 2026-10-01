@@ -163,6 +163,12 @@ const App: React.FC = () => {
                     );
                 useStore
                     .getState()
+                    .userSettingsStore.setContentBackground(
+                        data.user.ui_settings?.appearance?.contentBackground ??
+                            null
+                    );
+                useStore
+                    .getState()
                     .userSettingsStore.setSidebarVisibleSections(
                         data.user.sidebar_settings?.visibleSections ?? {}
                     );
