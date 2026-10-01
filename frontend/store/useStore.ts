@@ -25,6 +25,7 @@ interface NotesStore {
     isError: boolean;
     hasLoaded: boolean;
     setNotes: (notes: Note[]) => void;
+    addNote: (note: Note) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
     loadNotes: () => Promise<void>;
@@ -210,6 +211,18 @@ export const useStore = create<StoreState>((set: any) => ({
         hasLoaded: false,
         setNotes: (notes) =>
             set((state) => ({ notesStore: { ...state.notesStore, notes } })),
+        addNote: (note) =>
+            set((state) => ({
+                notesStore: {
+                    ...state.notesStore,
+                    notes: [
+                        note,
+                        ...state.notesStore.notes.filter(
+                            (n) => n.uid !== note.uid
+                        ),
+                    ],
+                },
+            })),
         setLoading: (isLoading) =>
             set((state) => ({
                 notesStore: { ...state.notesStore, isLoading },

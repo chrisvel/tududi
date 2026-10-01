@@ -1293,6 +1293,9 @@ const QuickCaptureInput = React.forwardRef<
                     );
                 }
             }
+            if (missingProjects.length > 0) {
+                await refreshProjectsStore();
+            }
         };
 
         const handleSubmit = useCallback(
@@ -1693,6 +1696,7 @@ const QuickCaptureInput = React.forwardRef<
                         : tagObjects,
                 project_uid: projectUid,
             });
+            useStore.getState().notesStore.addNote(created);
             return { target: destination, uid: created.uid, title, body };
         };
 
@@ -1766,6 +1770,12 @@ const QuickCaptureInput = React.forwardRef<
                             .tasksStore.deleteTask(item.uid);
                     } else if (item.target === 'note') {
                         await deleteNote(item.uid);
+                        const { notesStore } = useStore.getState();
+                        notesStore.setNotes(
+                            notesStore.notes.filter(
+                                (note) => note.uid !== item.uid
+                            )
+                        );
                     } else {
                         await deleteProject(item.uid);
                         await refreshProjectsStore();

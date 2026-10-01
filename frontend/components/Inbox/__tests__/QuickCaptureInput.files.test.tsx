@@ -51,6 +51,7 @@ jest.mock('../../../store/useStore', () => {
             deleteTask: jest.fn(),
         },
         projectsStore: { setProjects: jest.fn() },
+        notesStore: { notes: [], addNote: jest.fn(), setNotes: jest.fn() },
         inboxStore: {
             inboxItems: [{ uid: 'inbox-1', content: 'x', attachments: [] }],
             updateInboxItem: (item: unknown) => updateInboxItem(item),
