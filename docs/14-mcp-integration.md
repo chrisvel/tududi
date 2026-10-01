@@ -45,7 +45,7 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 **Key Features:**
 
-- **64 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people, plus task comments
+- **65 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people, plus task comments
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
 - **Enabled by default:** No configuration needed to turn MCP on
@@ -171,9 +171,9 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 64 MCP tools organized into 12 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 65 MCP tools organized into 12 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
-### Tasks Tools (11)
+### Tasks Tools (12)
 
 #### `list_tasks`
 
@@ -315,6 +315,25 @@ Changing recurrence fields on a task that already has future recurring instances
 #### `complete_task`
 
 Toggle a task between completed and pending.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+
+**Example:**
+
+```json
+{
+    "id": "abc123"
+}
+```
+
+---
+
+#### `skip_task_occurrence`
+
+Move a recurring task to its next due date without completing it. The skipped occurrence does not count in completion stats or streaks. Returns an error for non-recurring tasks, completed tasks, and tasks whose recurrence has no further occurrence.
 
 **Parameters:**
 | Parameter | Type | Required | Description |

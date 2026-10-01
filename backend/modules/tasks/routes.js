@@ -78,6 +78,7 @@ const {
 const {
     handleRecurrenceUpdate,
     calculateNextIterations,
+    skipRecurringOccurrence,
 } = require('./operations/recurring');
 
 const { getTaskMetrics } = require('./queries/metrics-computation');
@@ -1134,6 +1135,46 @@ router.get('/task/:uid/next-iterations', async (req, res) => {
         res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });
+
+router.post(
+    '/task/:uid/skip-occurrence',
+    requireTaskWriteAccess,
+    async (req, res) => {
+        try {
+            const task = await taskRepository.findByUid(req.params.uid);
+
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+
+            const result = await skipRecurringOccurrence(
+                task,
+                req.currentUser.id,
+                req.currentUser.timezone
+            );
+
+            if (result.error) {
+                return res.status(400).json({ error: result.error });
+            }
+
+            const taskWithAssociations = await taskRepository.findById(
+                task.id,
+                { include: TASK_INCLUDES_WITH_SUBTASKS }
+            );
+
+            res.json(
+                await serializeTask(
+                    taskWithAssociations,
+                    req.currentUser.timezone,
+                    { skipDisplayNameTransform: true }
+                )
+            );
+        } catch (error) {
+            logError('Error skipping recurring occurrence:', error);
+            res.status(500).json({ error: 'Failed to skip occurrence' });
+        }
+    }
+);
 
 // Mount sub-routers for task-related routes
 router.use(attachmentsRouter);

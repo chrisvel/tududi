@@ -1409,7 +1409,10 @@
     "estimateHint": "Roughly how long? Used when you plan your day.",
     "estimateClearHint": "Click again to clear",
     "estimateError": "Failed to update the estimate",
-    "noGoal": "Assign to a goal"
+    "noGoal": "Assign to a goal",
+    "skipOccurrence": "Skip this occurrence",
+    "occurrenceSkipped": "Occurrence skipped",
+    "skipOccurrenceError": "Failed to skip occurrence"
   },
   "subtasks": {
     "placeholder": "Add a subtask..."

@@ -15,6 +15,7 @@ const {
     Permission,
     Person,
     Notification,
+    RecurringCompletion,
 } = require('../../../models');
 const { createTestUser } = require('../../helpers/testUtils');
 const peopleService = require('../../../modules/people/service');
@@ -1242,6 +1243,54 @@ describe('MCP Tools Integration', () => {
                 const { content } = getToolContent(response);
                 expect(content.message).toBe('Task reopened');
                 expect(content.task.status).toBe(0); // pending = 0
+            });
+        });
+
+        describe('skip_task_occurrence', () => {
+            it('moves a recurring task to its next due date as a skip', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Pay rent',
+                    status: 0,
+                    recurrence_type: 'daily',
+                    recurrence_interval: 1,
+                    due_date: new Date('2030-01-10T00:00:00Z'),
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'skip_task_occurrence',
+                    { id: task.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.message).toBe('Occurrence skipped');
+                expect(content.next_due_date.slice(0, 10)).toBe('2030-01-11');
+
+                const completions = await RecurringCompletion.findAll({
+                    where: { task_id: task.id },
+                });
+                expect(completions).toHaveLength(1);
+                expect(completions[0].skipped).toBe(true);
+            });
+
+            it('refuses a task that does not recur', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'One-off',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'skip_task_occurrence',
+                    { id: task.id }
+                );
+
+                const { isError } = getToolContent(response);
+                expect(isError).toBe(true);
             });
         });
 
