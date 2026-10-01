@@ -261,7 +261,7 @@ describe('Group-derived access on the read path', () => {
             expect(listed.is_shared).toBe(true);
         });
 
-        it('does not count pending group rows', async () => {
+        it('marks pending group rows as shared without counting them', async () => {
             await seedGroupGrant({
                 owner,
                 member,
@@ -273,7 +273,7 @@ describe('Group-derived access on the read path', () => {
             const res = await agent.get('/api/projects');
             const listed = res.body.projects.find((p) => p.uid === project.uid);
             expect(listed.share_count).toBe(0);
-            expect(listed.is_shared).toBe(false);
+            expect(listed.is_shared).toBe(true);
         });
 
         it('counts distinct users per resource in the facade', async () => {

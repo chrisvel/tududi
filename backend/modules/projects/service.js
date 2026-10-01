@@ -162,6 +162,8 @@ class ProjectsService {
         const projectUids = projects.map((p) => p.uid).filter(Boolean);
         const shareCountMap =
             await projectsRepository.getShareCounts(projectUids);
+        const sharedUids =
+            await projectsRepository.getSharedProjectUids(projectUids);
 
         // Load per-user area overrides (covers shared projects assigned to user's areas)
         const areaOverrides =
@@ -204,7 +206,7 @@ class ProjectsService {
                             : 0,
                     user_uid: projectJson.User?.uid,
                     share_count: shareCount,
-                    is_shared: shareCount > 0,
+                    is_shared: sharedUids.has(project.uid),
                     is_stalled: isStalled,
                     sort_position: positions[project.id] ?? null,
                 };
@@ -313,6 +315,9 @@ class ProjectsService {
         const shareCount = project.uid
             ? await projectsRepository.getShareCount(project.uid)
             : 0;
+        const sharedUids = project.uid
+            ? await projectsRepository.getSharedProjectUids([project.uid])
+            : new Set();
 
         return {
             ...projectJson,
@@ -322,7 +327,7 @@ class ProjectsService {
             due_date_at: formatDate(project.due_date_at),
             user_id: project.user_id,
             share_count: shareCount,
-            is_shared: shareCount > 0,
+            is_shared: sharedUids.has(project.uid),
         };
     }
 

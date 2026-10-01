@@ -717,6 +717,12 @@ class UsersService {
                         {}),
                     ...((project && project.details) || {}),
                 },
+                list: {
+                    ...((currentSettings.project &&
+                        currentSettings.project.list) ||
+                        {}),
+                    ...((project && project.list) || {}),
+                },
             },
         };
 
