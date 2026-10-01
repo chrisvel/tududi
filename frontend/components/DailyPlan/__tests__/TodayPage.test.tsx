@@ -185,6 +185,28 @@ describe('TodayPage', () => {
         ).not.toBeInTheDocument();
     });
 
+    it('leaves out calendars switched off in Profile', async () => {
+        (fetchCalendarFeeds as jest.Mock).mockResolvedValue([
+            { uid: 'f1', name: 'Work', show_on_calendar: false },
+        ]);
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: null,
+        });
+
+        render(<TodayPage />);
+
+        await waitFor(() => expect(fetchCalendarFeeds).toHaveBeenCalled());
+        await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+        expect(fetchCalendarEvents).not.toHaveBeenCalled();
+        expect(
+            screen.queryByText('From your calendar')
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText('Connect a calendar')
+        ).not.toBeInTheDocument();
+    });
+
     it('offers to continue a draft plan', async () => {
         (fetchDailyPlan as jest.Mock).mockResolvedValue({
             date: '2026-09-24',

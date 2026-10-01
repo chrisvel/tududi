@@ -12,6 +12,7 @@ interface TodayUnplannedProps {
     events: CalendarEvent[];
     freeMinutes: number;
     hasFeeds: boolean;
+    showsFeeds: boolean;
     calendarEnabled: boolean;
     hasDraft: boolean;
 }
@@ -40,6 +41,7 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
     events,
     freeMinutes,
     hasFeeds,
+    showsFeeds,
     calendarEnabled,
     hasDraft,
 }) => {
@@ -100,7 +102,7 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
                 />
             </div>
 
-            {calendarEnabled && hasFeeds && (
+            {calendarEnabled && showsFeeds && (
                 <div className="flex flex-col gap-2">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                         {t('dailyPlan.fromCalendar', 'From your calendar')}

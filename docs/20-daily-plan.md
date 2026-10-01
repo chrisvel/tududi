@@ -80,7 +80,7 @@ Tasks have an optional `estimated_minutes` (5 to 720), set from the **Estimate**
 
 Profile → **Calendars**, or the **Calendars** button on the Calendar page, connects read-only iCal feeds, such as Google Calendar's "Secret address in iCal format". Apple Calendar, Outlook and Fastmail links work too, and `webcal://` links are accepted.
 
-- **Calendar page:** each connected calendar is a chip above the month, week and day views. Click a chip to show or hide that calendar's events; the choice is saved per calendar (`show_on_calendar`, on by default). Hiding a calendar only affects the Calendar page: its meetings still block time on Today and the planner.
+- **Calendar page:** each connected calendar is a chip above the month, week and day views. Click a chip to show or hide that calendar's events; the choice is saved per calendar (`show_on_calendar`, on by default). The same switch is in Profile → Calendars. A hidden calendar is also left out of Today, Plan my day and the AI draft, so its meetings no longer block time there.
 
 - Tududi never writes to these calendars.
 - The address is a secret: it is stored encrypted (needs `TUDUDI_SESSION_SECRET` or `TUDUDI_OIDC_SECRET_ENCRYPTION_KEY`) and the API only returns its host.

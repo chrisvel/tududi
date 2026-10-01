@@ -77,6 +77,7 @@ const TodayPage: React.FC = () => {
     );
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [hasFeeds, setHasFeeds] = useState(false);
+    const [showsFeeds, setShowsFeeds] = useState(false);
     const [candidates, setCandidates] = useState<PlanCandidates | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [busyUid, setBusyUid] = useState<string | null>(null);
@@ -126,6 +127,7 @@ const TodayPage: React.FC = () => {
     useEffect(() => {
         if (!planDate || !calendarEnabled) {
             setHasFeeds(false);
+            setShowsFeeds(false);
             setEvents([]);
             return;
         }
@@ -133,8 +135,11 @@ const TodayPage: React.FC = () => {
         (async () => {
             const feeds = await fetchCalendarFeeds().catch(() => []);
             if (cancelled) return;
+            // Calendars switched off in Profile -> Calendars stay out of Today.
+            const shown = feeds.some((feed) => feed.show_on_calendar);
             setHasFeeds(feeds.length > 0);
-            if (feeds.length === 0) return;
+            setShowsFeeds(shown);
+            if (!shown) return;
             const day = await fetchCalendarEvents(planDate).catch(() => null);
             if (!cancelled && day) setEvents(day.events);
         })();
@@ -503,6 +508,7 @@ const TodayPage: React.FC = () => {
                         events={events}
                         freeMinutes={freeMinutes}
                         hasFeeds={hasFeeds}
+                        showsFeeds={showsFeeds}
                         calendarEnabled={calendarEnabled}
                         hasDraft={items.length > 0}
                     />

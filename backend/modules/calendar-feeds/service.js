@@ -176,11 +176,18 @@ function validDay(value, name) {
     return value;
 }
 
-async function eventsBetween(user, startDate, endDate, refresh) {
+async function eventsBetween(
+    user,
+    startDate,
+    endDate,
+    { refresh = false, shownOnly = false } = {}
+) {
     const timezone = getSafeTimezone(user.timezone);
 
+    const where = { user_id: user.id };
+    if (shownOnly) where.show_on_calendar = true;
     const feeds = await CalendarFeed.findAll({
-        where: { user_id: user.id },
+        where,
         order: [['created_at', 'ASC']],
     });
 
@@ -218,11 +225,16 @@ async function eventsBetween(user, startDate, endDate, refresh) {
     return { events, errors };
 }
 
+// The day view feeds Today, the planner and the AI draft, so a calendar
+// switched off in Profile -> Calendars is left out of all three.
 async function eventsForDay(user, date, { refresh = false } = {}) {
     const day = date
         ? validDay(date, 'date')
         : getCurrentDateInTimezone(getSafeTimezone(user.timezone));
-    const { events, errors } = await eventsBetween(user, day, day, refresh);
+    const { events, errors } = await eventsBetween(user, day, day, {
+        refresh,
+        shownOnly: true,
+    });
     return {
         date: day,
         events: events.map(({ date: _date, ...event }) => event),
@@ -249,7 +261,7 @@ async function eventsForRangeOfDays(
             `Ask for at most ${MAX_RANGE_DAYS} days at a time`
         );
     }
-    const result = await eventsBetween(user, start, end, refresh);
+    const result = await eventsBetween(user, start, end, { refresh });
     return { start, end, ...result };
 }
 
