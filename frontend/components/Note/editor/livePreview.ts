@@ -13,6 +13,7 @@ import type { CalloutType } from '../../Shared/CalloutBlock';
 import {
     blockWidgetKind,
     holdForPointer,
+    readFenceBody,
     selectionTouches,
     setPointerDown,
 } from './blockWidgets';
@@ -313,7 +314,8 @@ export function buildLivePreview(
                                         ? state
                                               .sliceDoc(info.from, info.to)
                                               .trim()
-                                        : ''
+                                        : '',
+                                    readFenceBody(state, ref.node)
                                 )
                             );
                         }
@@ -398,6 +400,7 @@ class LivePreviewPlugin {
             update.docChanged ||
             update.selectionSet ||
             update.viewportChanged ||
+            update.transactions.some((tr) => tr.reconfigured) ||
             syntaxTree(update.startState) !== syntaxTree(update.state)
         ) {
             this.rebuild(update.view);

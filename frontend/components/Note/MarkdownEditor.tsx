@@ -28,6 +28,7 @@ import { createNote } from '../../utils/notesService';
 import { useNavigate } from 'react-router-dom';
 import { livePreviewExtension } from './editor';
 import { blockUxKeymap } from './editor/keymaps';
+import { isTouchScreen, touchReading } from './editor/touchReading';
 import { blockHandlePlugin, blockHandleTheme } from './editor/blockHandle';
 import {
     wrapSelection as wrapSelectionCmd,
@@ -474,6 +475,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                         return true;
                     },
                 }),
+                touchReading(isTouchScreen(), {
+                    startEditing: autoFocus || !value.trim(),
+                }),
                 livePreviewExtension({
                     onOpenWikilink: (title, event) => {
                         const target = findNoteByTitle(title);
@@ -525,9 +529,12 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                         }
                     }
 
-                    // Formatting toolbar (on selection)
+                    // Formatting toolbar (on selection, while editing)
                     const { main } = update.state.selection;
-                    if (!main.empty) {
+                    if (
+                        !main.empty &&
+                        update.state.facet(EditorView.editable)
+                    ) {
                         const fromCoords = view.coordsAtPos(main.from);
                         const toCoords = view.coordsAtPos(main.to);
                         if (fromCoords && toCoords) {

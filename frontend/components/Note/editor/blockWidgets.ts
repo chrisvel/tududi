@@ -50,12 +50,14 @@ export const holdForPointer = (tr: Transaction): boolean =>
     isPointerDown(tr.state) && !tr.docChanged;
 
 // Markdown source is shown where the caret is. A selected range keeps the
-// rendered text, so selecting to copy does not turn the note into source.
+// rendered text, so selecting to copy does not turn the note into source,
+// and a note open for reading never shows it.
 export const selectionTouches = (
     state: EditorState,
     from: number,
     to: number
 ): boolean =>
+    state.facet(EditorView.editable) &&
     state.selection.ranges.some((r) => r.empty && r.from <= to && r.to >= from);
 
 // Block-replacing decorations have to cover whole lines, so only top-level
@@ -119,7 +121,7 @@ function readTable(state: EditorState, node: SyntaxNode): TableData | null {
     };
 }
 
-function readFenceBody(state: EditorState, node: SyntaxNode): string {
+export function readFenceBody(state: EditorState, node: SyntaxNode): string {
     const first = state.doc.lineAt(node.from);
     const marks = node.getChildren('CodeMark');
     const closed =
@@ -184,6 +186,7 @@ export const blockWidgetsField = StateField.define<DecorationSet>({
         if (
             tr.docChanged ||
             tr.selection ||
+            tr.reconfigured ||
             tr.effects.some((e) => e.is(setPointerDown)) ||
             syntaxTree(tr.startState) !== syntaxTree(tr.state)
         ) {

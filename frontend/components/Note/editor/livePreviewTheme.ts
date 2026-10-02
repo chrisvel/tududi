@@ -142,9 +142,35 @@ export const livePreviewTheme = EditorView.baseTheme({
         borderBottomRightRadius: '6px',
     },
     '.cm-md-code-lang': {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '8px',
         fontSize: '0.75em',
-        opacity: '0.55',
         textTransform: 'lowercase',
+    },
+    '.cm-md-code-lang > span': {
+        opacity: '0.55',
+    },
+    '.cm-md-code-copy': {
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '28px',
+        height: '28px',
+        borderRadius: '6px',
+        opacity: '0.55',
+        cursor: 'pointer',
+        color: 'inherit',
+        background: 'transparent',
+    },
+    '.cm-md-code-copy:hover, .cm-md-code-copy:focus-visible': {
+        opacity: '1',
+        background: 'rgba(127, 127, 127, 0.15)',
+    },
+    '.cm-md-code-copy svg': {
+        width: '15px',
+        height: '15px',
     },
 
     '.cm-md-hr': {
