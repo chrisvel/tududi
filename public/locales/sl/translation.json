@@ -4,6 +4,7 @@
     "save": "Shrani",
     "cancel": "Prekliči",
     "delete": "Izbriši",
+    "moreActions": "Več dejanj",
     "edit": "Uredi",
     "create": "Ustvari",
     "submit": "Pošlji",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Povzetka ni bilo mogoče poslati.",
     "setPassword": "Nastavi geslo",
     "setPasswordInfo": "Gesla še nisi nastavil. Z geslom se lahko prijaviš neposredno in uporabljaš CalDAV.",
-    "showTaskContextMenu": "Prikaži gumb kontekstnega menija",
-    "showTaskContextMenuDescription": "Gumb s tremi pikami pri vsakem opravilu z dejanjema Uredi in Izbriši",
     "sidebarFeatureOff": "Izklopljeno v Funkcijah",
     "sidebarLayoutDescription": "To je predogled stranske vrstice. S stikali izbereš, kaj se prikaže, z vlečenjem ročajev pa spremeniš vrstni red.",
     "sidebarLayoutHint": "Predloge in Dostop ostanejo na dnu. Elementi, izklopljeni v Funkcijah, ostanejo skriti, dokler funkcije ne vklopiš.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "Prikaži razdelek {{name}} v stranski vrstici.",
     "sidebarShowItem": "Prikaži: {{name}}",
     "systemMode": "Sistemska",
-    "taskItem": "Element opravila",
-    "tasks": "Opravila",
     "telegram": {
       "botName": "Ime bota:"
     },

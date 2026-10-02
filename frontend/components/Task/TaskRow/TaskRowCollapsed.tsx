@@ -11,6 +11,9 @@ import {
     ChevronDownIcon,
     ChatBubbleLeftIcon,
     NoSymbolIcon,
+    EllipsisVerticalIcon,
+    PencilIcon,
+    TrashIcon,
 } from '@heroicons/react/24/outline';
 import { FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { Task } from '../../../entities/Task';
@@ -43,6 +46,9 @@ interface TaskRowCollapsedProps {
     editable?: boolean;
     onSaveTitle?: (name: string) => void | Promise<void>;
     onEscape?: () => void;
+    onEdit?: () => void;
+    onDelete?: (e: React.MouseEvent) => void;
+    onActionsMenuOpenChange?: (open: boolean) => void;
 }
 
 const tagColorStyle = (color?: string): React.CSSProperties | undefined => {
@@ -77,11 +83,38 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     editable = false,
     onSaveTitle,
     onEscape,
+    onEdit,
+    onDelete,
+    onActionsMenuOpenChange,
 }) => {
     const { t } = useTranslation();
     const currentName = task.original_name || task.name;
     const titleInputRef = useRef<HTMLInputElement>(null);
     const [draftName, setDraftName] = useState(currentName);
+    const actionsMenuRef = useRef<HTMLDivElement>(null);
+    const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+
+    useEffect(() => {
+        onActionsMenuOpenChange?.(isActionsMenuOpen);
+        if (!isActionsMenuOpen) return;
+        const onPointerDown = (e: MouseEvent) => {
+            if (
+                actionsMenuRef.current &&
+                !actionsMenuRef.current.contains(e.target as Node)
+            ) {
+                setIsActionsMenuOpen(false);
+            }
+        };
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setIsActionsMenuOpen(false);
+        };
+        document.addEventListener('mousedown', onPointerDown);
+        document.addEventListener('keydown', onKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', onPointerDown);
+            document.removeEventListener('keydown', onKeyDown);
+        };
+    }, [isActionsMenuOpen, onActionsMenuOpenChange]);
 
     useEffect(() => {
         setDraftName(currentName);
@@ -365,6 +398,67 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                     </div>
                 )}
             </div>
+
+            {!editable && (onEdit || onDelete) && (
+                <div
+                    ref={actionsMenuRef}
+                    className="relative flex-shrink-0"
+                    onClick={stop}
+                    onKeyDown={(e) => e.stopPropagation()}
+                >
+                    <button
+                        type="button"
+                        onClick={() => setIsActionsMenuOpen((open) => !open)}
+                        aria-haspopup="menu"
+                        aria-expanded={isActionsMenuOpen}
+                        aria-label={t('common.moreActions', 'More actions')}
+                        title={t('common.moreActions', 'More actions')}
+                        data-testid="task-actions-menu-button"
+                        className={`p-1 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-opacity focus-visible:opacity-100 ${
+                            isActionsMenuOpen
+                                ? 'opacity-100'
+                                : '[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100'
+                        }`}
+                    >
+                        <EllipsisVerticalIcon className="h-4 w-4" />
+                    </button>
+                    {isActionsMenuOpen && (
+                        <div
+                            role="menu"
+                            className="absolute right-0 top-full mt-1 w-36 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 overflow-hidden"
+                        >
+                            {onEdit && (
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={() => {
+                                        setIsActionsMenuOpen(false);
+                                        onEdit();
+                                    }}
+                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    <PencilIcon className="h-4 w-4" />
+                                    {t('common.edit', 'Edit')}
+                                </button>
+                            )}
+                            {onDelete && (
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={(e) => {
+                                        setIsActionsMenuOpen(false);
+                                        onDelete(e);
+                                    }}
+                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                >
+                                    <TrashIcon className="h-4 w-4" />
+                                    {t('common.delete', 'Delete')}
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
 
             {!hideStatusControl && !task.habit_mode && onToggleCompletion && (
                 <div className="flex-shrink-0" onClick={stop}>

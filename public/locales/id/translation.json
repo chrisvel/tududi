@@ -4,6 +4,7 @@
     "save": "Simpan",
     "cancel": "Batal",
     "delete": "Hapus",
+    "moreActions": "Tindakan lainnya",
     "edit": "Ubah",
     "create": "Buat",
     "submit": "Kirim",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Gagal mengirim ringkasan.",
     "setPassword": "Atur kata sandi",
     "setPasswordInfo": "Kamu belum mengatur kata sandi. Dengan kata sandi kamu bisa masuk langsung dan memakai CalDAV.",
-    "showTaskContextMenu": "Tampilkan tombol menu konteks",
-    "showTaskContextMenuDescription": "Menampilkan tombol tiga titik di setiap tugas dengan tindakan Ubah dan Hapus",
     "sidebarFeatureOff": "Mati di Fitur",
     "sidebarLayoutDescription": "Ini pratinjau bilah sisimu. Gunakan sakelar untuk memilih apa yang tampil, dan seret pegangan untuk mengubah urutan.",
     "sidebarLayoutHint": "Templat dan Akses tetap di bawah. Item yang mati di Fitur tetap tersembunyi sampai kamu menyalakan fiturnya.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "Tampilkan bagian {{name}} di bilah sisi.",
     "sidebarShowItem": "Tampilkan {{name}}",
     "systemMode": "Sistem",
-    "taskItem": "Item tugas",
-    "tasks": "Tugas",
     "telegram": {
       "botName": "Nama bot:"
     },

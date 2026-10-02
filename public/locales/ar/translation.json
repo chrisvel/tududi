@@ -4,6 +4,7 @@
     "save": "حفظ",
     "cancel": "إلغاء",
     "delete": "حذف",
+    "moreActions": "مزيد من الإجراءات",
     "edit": "تعديل",
     "create": "إنشاء",
     "submit": "إرسال",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "تعذّر إرسال الملخص.",
     "setPassword": "تعيين كلمة المرور",
     "setPasswordInfo": "لم تعيّن كلمة مرور بعد. بكلمة مرور يمكنك تسجيل الدخول مباشرة واستخدام CalDAV.",
-    "showTaskContextMenu": "إظهار زر القائمة السياقية",
-    "showTaskContextMenuDescription": "يعرض زر النقاط الثلاث على كل مهمة مع إجراءي التعديل والحذف",
     "sidebarFeatureOff": "متوقف في الميزات",
     "sidebarLayoutDescription": "هذه معاينة للشريط الجانبي. استخدم المفاتيح لاختيار ما يظهر، واسحب المقابض لتغيير الترتيب.",
     "sidebarLayoutHint": "تبقى القوالب والوصول في الأسفل. العناصر المتوقفة في الميزات تبقى مخفية حتى تفعّل الميزة.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "إظهار قسم {{name}} في الشريط الجانبي.",
     "sidebarShowItem": "إظهار {{name}}",
     "systemMode": "النظام",
-    "taskItem": "عنصر المهمة",
-    "tasks": "المهام",
     "telegram": {
       "botName": "اسم البوت:"
     },

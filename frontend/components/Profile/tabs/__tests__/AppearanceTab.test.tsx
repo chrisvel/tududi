@@ -19,8 +19,6 @@ const renderTab = (contentBackground: string | null) => {
             isActive
             formData={{ appearance: 'light' } as ProfileFormData}
             onAppearanceChange={jest.fn()}
-            showTaskContextMenu={false}
-            onToggleTaskContextMenu={jest.fn()}
             contentBackground={contentBackground}
             onContentBackgroundChange={onContentBackgroundChange}
         />

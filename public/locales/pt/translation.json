@@ -4,6 +4,7 @@
     "save": "Salvar",
     "cancel": "Cancelar",
     "delete": "Excluir",
+    "moreActions": "Mais ações",
     "edit": "Editar",
     "create": "Criar",
     "submit": "Enviar",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Não foi possível enviar o resumo.",
     "setPassword": "Definir palavra-passe",
     "setPasswordInfo": "Ainda não definiu uma palavra-passe. Com uma palavra-passe pode iniciar sessão diretamente e usar o CalDAV.",
-    "showTaskContextMenu": "Mostrar botão do menu de contexto",
-    "showTaskContextMenuDescription": "Mostra um botão com três pontos em cada tarefa com as ações Editar e Eliminar",
     "sidebarFeatureOff": "Desligado em Funcionalidades",
     "sidebarLayoutDescription": "Esta é uma pré-visualização da barra lateral. Use os interruptores para escolher o que aparece e arraste as pegas para mudar a ordem.",
     "sidebarLayoutHint": "Modelos e Acesso ficam sempre no fundo. Os itens desligados em Funcionalidades ficam ocultos até ativar a funcionalidade.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "Mostrar a secção {{name}} na barra lateral.",
     "sidebarShowItem": "Mostrar {{name}}",
     "systemMode": "Sistema",
-    "taskItem": "Item de tarefa",
-    "tasks": "Tarefas",
     "telegram": {
       "botName": "Nome do bot:"
     },

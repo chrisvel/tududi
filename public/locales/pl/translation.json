@@ -4,6 +4,7 @@
     "save": "Zapisz",
     "cancel": "Anuluj",
     "delete": "Usuń",
+    "moreActions": "Więcej działań",
     "edit": "Edytuj",
     "create": "Utwórz",
     "submit": "Wyślij",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Nie udało się wysłać podsumowania.",
     "setPassword": "Ustaw hasło",
     "setPasswordInfo": "Nie masz jeszcze hasła. Z hasłem możesz logować się bezpośrednio i korzystać z CalDAV.",
-    "showTaskContextMenu": "Pokaż przycisk menu kontekstowego",
-    "showTaskContextMenuDescription": "Przycisk z trzema kropkami przy każdym zadaniu z akcjami Edytuj i Usuń",
     "sidebarFeatureOff": "Wyłączone w Funkcjach",
     "sidebarLayoutDescription": "To podgląd paska bocznego. Przełącznikami wybierasz, co się pojawia, a przeciągając uchwyty zmieniasz kolejność.",
     "sidebarLayoutHint": "Szablony i Dostęp zostają na dole. Pozycje wyłączone w Funkcjach pozostają ukryte, dopóki nie włączysz funkcji.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "Pokaż sekcję {{name}} na pasku bocznym.",
     "sidebarShowItem": "Pokaż: {{name}}",
     "systemMode": "Systemowy",
-    "taskItem": "Element zadania",
-    "tasks": "Zadania",
     "telegram": {
       "botName": "Nazwa bota:"
     },

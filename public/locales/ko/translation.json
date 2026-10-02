@@ -4,6 +4,7 @@
     "save": "저장",
     "cancel": "취소",
     "delete": "삭제",
+    "moreActions": "추가 작업",
     "edit": "편집",
     "create": "생성",
     "submit": "제출",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "요약을 보낼 수 없습니다.",
     "setPassword": "비밀번호 설정",
     "setPasswordInfo": "아직 비밀번호를 설정하지 않았습니다. 비밀번호를 설정하면 직접 로그인하고 CalDAV를 사용할 수 있습니다.",
-    "showTaskContextMenu": "컨텍스트 메뉴 버튼 표시",
-    "showTaskContextMenuDescription": "각 작업에 편집과 삭제 작업이 있는 점 세 개 버튼을 표시합니다",
     "sidebarFeatureOff": "기능에서 꺼짐",
     "sidebarLayoutDescription": "사이드바 미리보기입니다. 스위치로 표시할 항목을 고르고, 핸들을 끌어 순서를 바꾸세요.",
     "sidebarLayoutHint": "템플릿과 액세스는 항상 맨 아래에 있습니다. 기능에서 꺼진 항목은 해당 기능을 켤 때까지 숨겨집니다.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "사이드바에 {{name}} 섹션을 표시합니다.",
     "sidebarShowItem": "{{name}} 표시",
     "systemMode": "시스템",
-    "taskItem": "작업 항목",
-    "tasks": "작업",
     "telegram": {
       "botName": "봇 이름:"
     },

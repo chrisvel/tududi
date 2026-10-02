@@ -4,6 +4,7 @@
     "save": "Gem",
     "cancel": "Annuller",
     "delete": "Slet",
+    "moreActions": "Flere handlinger",
     "edit": "Rediger",
     "create": "Opret",
     "submit": "Indsend",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Opsummeringen kunne ikke sendes.",
     "setPassword": "Angiv adgangskode",
     "setPasswordInfo": "Du har ikke angivet en adgangskode endnu. Med en adgangskode kan du logge direkte ind og bruge CalDAV.",
-    "showTaskContextMenu": "Vis knap til kontekstmenu",
-    "showTaskContextMenuDescription": "Viser en knap med tre prikker på hver opgave med handlingerne Rediger og Slet",
     "sidebarFeatureOff": "Slået fra i Funktioner",
     "sidebarLayoutDescription": "Dette er en forhåndsvisning af sidepanelet. Brug kontakterne til at vælge, hvad der vises, og træk i håndtagene for at ændre rækkefølgen.",
     "sidebarLayoutHint": "Skabeloner og Adgang bliver nederst. Elementer, der er slået fra i Funktioner, forbliver skjulte, indtil du slår funktionen til.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "Vis sektionen {{name}} i sidepanelet.",
     "sidebarShowItem": "Vis {{name}}",
     "systemMode": "System",
-    "taskItem": "Opgaveelement",
-    "tasks": "Opgaver",
     "telegram": {
       "botName": "Botnavn:"
     },

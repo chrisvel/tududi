@@ -5,6 +5,7 @@
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
+    "moreActions": "Más acciones",
     "edit": "Editar",
     "create": "Crear",
     "submit": "Enviar",
@@ -665,10 +666,6 @@
     "aiProfileDescription": "Contexto opcional para la IA: tu rol, tu área o lo que ayude a personalizar los resúmenes (p. ej. «Investigadora centrada en plazos de becas y periodos de evaluación»).",
     "aiProfilePlaceholder": "p. ej. Investigadora. Mi trabajo gira en torno a plazos de becas, revisiones de artículos y ciclos docentes, no a sprints ni despliegues.",
     "systemMode": "Sistema",
-    "tasks": "Tareas",
-    "taskItem": "Elemento de tarea",
-    "showTaskContextMenu": "Mostrar botón de menú contextual",
-    "showTaskContextMenuDescription": "Muestra en cada tarea un botón de tres puntos con Editar y Eliminar",
     "connected": {
       "loadError": "No se pudieron cargar las cuentas conectadas",
       "linkError": "No se pudo iniciar la vinculación de la cuenta",

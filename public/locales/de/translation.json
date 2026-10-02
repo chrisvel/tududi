@@ -4,6 +4,7 @@
     "save": "Speichern",
     "cancel": "Abbrechen",
     "delete": "Löschen",
+    "moreActions": "Weitere Aktionen",
     "edit": "Bearbeiten",
     "create": "Erstellen",
     "submit": "Absenden",
@@ -1109,10 +1110,6 @@
     "aiProfileDescription": "Optionaler Kontext für die KI: deine Rolle, dein Fachgebiet oder alles, was Briefings und Einblicke persönlicher macht (z. B. „Forscherin mit Fokus auf Förderfristen und Prüfungsphasen“).",
     "aiProfilePlaceholder": "z. B. Forscherin. Meine Arbeit dreht sich um Förderfristen, Gutachten und Semester, nicht um Sprints oder Deployments.",
     "systemMode": "System",
-    "tasks": "Aufgaben",
-    "taskItem": "Aufgabeneintrag",
-    "showTaskContextMenu": "Schaltfläche für das Kontextmenü anzeigen",
-    "showTaskContextMenuDescription": "Zeigt an jeder Aufgabe eine Drei-Punkte-Schaltfläche mit Bearbeiten und Löschen",
     "connected": {
       "loadError": "Verbundene Konten konnten nicht geladen werden",
       "linkError": "Kontoverknüpfung konnte nicht gestartet werden",

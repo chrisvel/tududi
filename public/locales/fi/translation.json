@@ -4,6 +4,7 @@
     "save": "Tallenna",
     "cancel": "Peruuta",
     "delete": "Poista",
+    "moreActions": "Lisää toimintoja",
     "edit": "Muokkaa",
     "create": "Luo",
     "submit": "Lähetä",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Yhteenvedon lähettäminen epäonnistui.",
     "setPassword": "Aseta salasana",
     "setPasswordInfo": "Et ole vielä asettanut salasanaa. Salasanalla voit kirjautua suoraan ja käyttää CalDAVia.",
-    "showTaskContextMenu": "Näytä pikavalikkopainike",
-    "showTaskContextMenuDescription": "Näyttää jokaisessa tehtävässä kolmen pisteen painikkeen, jossa on toiminnot Muokkaa ja Poista",
     "sidebarFeatureOff": "Pois päältä Ominaisuuksissa",
     "sidebarLayoutDescription": "Tämä on sivupalkin esikatselu. Valitse kytkimillä, mitä näytetään, ja muuta järjestystä vetämällä kahvoista.",
     "sidebarLayoutHint": "Mallit ja Käyttöoikeudet pysyvät alimpana. Ominaisuuksissa pois päältä olevat kohteet pysyvät piilossa, kunnes otat ominaisuuden käyttöön.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "Näytä {{name}}-osio sivupalkissa.",
     "sidebarShowItem": "Näytä: {{name}}",
     "systemMode": "Järjestelmä",
-    "taskItem": "Tehtäväkohde",
-    "tasks": "Tehtävät",
     "telegram": {
       "botName": "Botin nimi:"
     },

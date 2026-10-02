@@ -4,6 +4,7 @@
     "save": "Salva",
     "cancel": "Annulla",
     "delete": "Elimina",
+    "moreActions": "Altre azioni",
     "edit": "Modifica",
     "create": "Crea",
     "submit": "Invia",
@@ -754,10 +755,6 @@
     "aiProfileDescription": "Contesto facoltativo per l'IA: il tuo ruolo, il tuo campo o ciò che rende più personali riepiloghi e analisi (es. «Ricercatrice attenta alle scadenze dei bandi e ai periodi d'esame»).",
     "aiProfilePlaceholder": "es. Ricercatrice. Il mio lavoro ruota attorno a scadenze dei bandi, revisioni di articoli e cicli didattici, non a sprint o rilasci.",
     "systemMode": "Sistema",
-    "tasks": "Attività",
-    "taskItem": "Elemento attività",
-    "showTaskContextMenu": "Mostra il pulsante del menu contestuale",
-    "showTaskContextMenuDescription": "Mostra su ogni attività un pulsante a tre punti con Modifica ed Elimina",
     "connected": {
       "loadError": "Impossibile caricare gli account collegati",
       "linkError": "Impossibile avviare il collegamento dell'account",

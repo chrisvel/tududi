@@ -162,7 +162,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         ui_settings: {
             appearance: {
                 theme: isDarkMode ? 'dark' : 'light',
-                showTaskContextMenu: false,
             },
         },
         notification_preferences: null,
@@ -592,9 +591,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 data.appearance ??
                                 (isDarkMode ? 'dark' : 'light')) as
                                 'light' | 'dark' | 'system',
-                            showTaskContextMenu:
-                                data.ui_settings?.appearance
-                                    ?.showTaskContextMenu ?? false,
                             contentBackground:
                                 data.ui_settings?.appearance
                                     ?.contentBackground ?? null,
@@ -1334,20 +1330,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             }
 
             if (
-                updatedProfile.ui_settings?.appearance?.showTaskContextMenu !==
-                undefined
-            ) {
-                useStore
-                    .getState()
-                    .userSettingsStore.setShowTaskContextMenu(
-                        Boolean(
-                            updatedProfile.ui_settings.appearance
-                                .showTaskContextMenu
-                        )
-                    );
-            }
-
-            if (
                 updatedProfile.ui_settings?.appearance?.contentBackground !==
                 undefined
             ) {
@@ -1569,26 +1551,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                     ...(prev.ui_settings
                                                         ?.appearance || {}),
                                                     theme: appearance,
-                                                },
-                                            },
-                                        }))
-                                    }
-                                    showTaskContextMenu={Boolean(
-                                        formData.ui_settings?.appearance
-                                            ?.showTaskContextMenu
-                                    )}
-                                    onToggleTaskContextMenu={() =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            ui_settings: {
-                                                ...(prev.ui_settings || {}),
-                                                appearance: {
-                                                    ...(prev.ui_settings
-                                                        ?.appearance || {}),
-                                                    showTaskContextMenu:
-                                                        !prev.ui_settings
-                                                            ?.appearance
-                                                            ?.showTaskContextMenu,
                                                 },
                                             },
                                         }))

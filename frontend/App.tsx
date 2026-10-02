@@ -159,12 +159,6 @@ const App: React.FC = () => {
                     );
                 useStore
                     .getState()
-                    .userSettingsStore.setShowTaskContextMenu(
-                        data.user.ui_settings?.appearance
-                            ?.showTaskContextMenu === true
-                    );
-                useStore
-                    .getState()
                     .userSettingsStore.setContentBackground(
                         data.user.ui_settings?.appearance?.contentBackground ??
                             null
