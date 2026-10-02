@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Yakin ingin menghapus catatan \"{{title}}\"?",
     "untitled": "Catatan tanpa judul",
     "publicShare": {
-      "sharedTitle": "Dibagikan ke siapa pun yang memiliki tautan"
-    }
+      "sharedTitle": "Dibagikan ke siapa pun yang memiliki tautan",
+      "open": "Bagikan catatan",
+      "title": "Bagikan \"{{title}}\"",
+      "generalAccess": "Akses umum",
+      "restricted": "Terbatas",
+      "anyone": "Siapa saja yang memiliki tautan",
+      "restrictedHint": "Hanya Anda dan orang yang Anda bagikan yang dapat membuka catatan ini.",
+      "anyoneHint": "Siapa saja di internet yang memiliki tautan dapat membaca catatan ini tanpa masuk. Mereka tidak dapat mengeditnya. Matikan ini dan tautan langsung berhenti berfungsi.",
+      "link": "Tautan publik",
+      "copyLink": "Salin tautan",
+      "copied": "Disalin",
+      "copyFailed": "Tidak dapat menyalin otomatis. Pilih tautan lalu salin.",
+      "ownerOnly": "Hanya pemilik catatan yang dapat membagikannya secara publik.",
+      "failed": "Terjadi kesalahan. Coba lagi.",
+      "createLink": "Buat tautan publik",
+      "inheritStyle": "Wariskan gaya (latar dan warna) ke catatan publik",
+      "rotate": "Buat tautan baru dan nonaktifkan yang ini",
+      "rotateWarning": "Tautan saat ini akan berhenti berfungsi bagi semua yang memilikinya.",
+      "rotateConfirm": "Buat tautan baru"
+    },
+    "createLinkedNote": "Buat catatan \"{{title}}\"",
+    "linkedNoteMissing": "Belum ada catatan bernama \"{{title}}\". Buat sekarang?",
+    "linkedNoteNotNow": "Nanti saja",
+    "linkedNoteCreate": "Buat catatan",
+    "linkedNoteCreateFailed": "Catatan tidak dapat dibuat.",
+    "backgroundImage": "Latar",
+    "noBackground": "Tanpa latar"
   },
   "tags": {
     "loading": "Memuat tag...",
@@ -2887,5 +2912,8 @@
     "myTemplates": "Templat saya",
     "confirmDelete": "Hapus templat",
     "confirmDeleteMessage": "Hapus \"{{name}}\"? Proyek yang dibuat darinya tidak akan terpengaruh."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Catatan ini tidak dibagikan secara publik."
   }
 }

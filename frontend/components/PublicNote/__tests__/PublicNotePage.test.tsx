@@ -86,6 +86,29 @@ describe('PublicNotePage', () => {
         expect(screen.getByText(/Last updated/)).toBeInTheDocument();
     });
 
+    it("shows the note's color and background when it inherits them", async () => {
+        fetchPublicNote.mockResolvedValue({
+            ...sharedNote,
+            color: '#ffcc00',
+            background: 'mural',
+        });
+        renderPage();
+
+        const card = await screen.findByTestId('public-note');
+        expect(card.style.backgroundColor).not.toBe('');
+        expect(
+            screen.getByTestId('public-note-background').style.backgroundImage
+        ).toContain('images.unsplash.com');
+        expect(screen.getByTestId('photo-credit')).toBeInTheDocument();
+    });
+
+    it('shows no photo when none was picked', async () => {
+        fetchPublicNote.mockResolvedValue(sharedNote);
+        renderPage();
+        await screen.findByTestId('public-note');
+        expect(screen.queryByTestId('public-note-background')).toBeNull();
+    });
+
     it('has the navbar with a way to sign in, and no sidebar', async () => {
         fetchPublicNote.mockResolvedValue(sharedNote);
         renderPage();

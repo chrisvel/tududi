@@ -41,7 +41,21 @@ function validateTitle(title) {
     return title;
 }
 
+// A content background id, or null for none. The ids live in the frontend
+// list, so only their shape is checked here.
+function validateBackground(background) {
+    if (background === null || background === '') return null;
+    if (
+        typeof background !== 'string' ||
+        !/^[a-z0-9-]{1,40}$/.test(background)
+    ) {
+        throw new ValidationError('Invalid note background.');
+    }
+    return background;
+}
+
 module.exports = {
     validateUid,
     validateTitle,
+    validateBackground,
 };

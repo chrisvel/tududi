@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Ali res želite izbrisati opombo »{{title}}«?",
     "untitled": "Opomba brez naslova",
     "publicShare": {
-      "sharedTitle": "Deljeno z vsemi, ki imajo povezavo"
-    }
+      "sharedTitle": "Deljeno z vsemi, ki imajo povezavo",
+      "open": "Deli zapisek",
+      "title": "Deli »{{title}}«",
+      "generalAccess": "Splošni dostop",
+      "restricted": "Omejeno",
+      "anyone": "Vsi, ki imajo povezavo",
+      "restrictedHint": "Ta zapisek lahko odprete samo vi in osebe, s katerimi ste ga delili.",
+      "anyoneHint": "Vsakdo na internetu, ki ima povezavo, lahko ta zapisek prebere brez prijave. Urejati ga ne more. Če to izklopite, povezava takoj preneha delovati.",
+      "link": "Javna povezava",
+      "copyLink": "Kopiraj povezavo",
+      "copied": "Kopirano",
+      "copyFailed": "Samodejno kopiranje ni uspelo. Izberite povezavo in jo kopirajte.",
+      "ownerOnly": "Samo lastnik zapiska ga lahko deli javno.",
+      "failed": "Nekaj je šlo narobe. Poskusite znova.",
+      "createLink": "Ustvari javno povezavo",
+      "inheritStyle": "Prenesi videz (ozadje in barvo) v javni zapisek",
+      "rotate": "Ustvari novo povezavo in izklopi to",
+      "rotateWarning": "Trenutna povezava ne bo več delovala za nikogar, ki jo ima.",
+      "rotateConfirm": "Ustvari novo povezavo"
+    },
+    "createLinkedNote": "Ustvari zapisek »{{title}}«",
+    "linkedNoteMissing": "Zapiska »{{title}}« še ni. Ga želite ustvariti?",
+    "linkedNoteNotNow": "Ne zdaj",
+    "linkedNoteCreate": "Ustvari zapisek",
+    "linkedNoteCreateFailed": "Zapiska ni bilo mogoče ustvariti.",
+    "backgroundImage": "Ozadje",
+    "noBackground": "Brez ozadja"
   },
   "tags": {
     "loading": "Nalagam oznake...",
@@ -2894,5 +2919,8 @@
     "myTemplates": "Moje predloge",
     "confirmDelete": "Izbriši predlogo",
     "confirmDeleteMessage": "Izbrišem »{{name}}«? Projekti, ustvarjeni iz nje, ne bodo spremenjeni."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Ta zapisek ni javno deljen."
   }
 }

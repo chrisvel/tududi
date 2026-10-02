@@ -59,8 +59,15 @@ const notesController = {
     async create(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const { title, content, project_uid, project_id, tags, color } =
-                req.body;
+            const {
+                title,
+                content,
+                project_uid,
+                project_id,
+                tags,
+                color,
+                background,
+            } = req.body;
 
             const note = await notesService.create(userId, {
                 title,
@@ -69,6 +76,7 @@ const notesController = {
                 project_id,
                 tags,
                 color,
+                background,
             });
 
             res.status(201).json(note);
@@ -92,6 +100,7 @@ const notesController = {
                 project_id,
                 tags,
                 color,
+                background,
                 pin_to_sidebar,
             } = req.body;
 
@@ -102,6 +111,7 @@ const notesController = {
                 project_id,
                 tags,
                 color,
+                background,
                 pin_to_sidebar,
             });
 
@@ -162,7 +172,35 @@ const notesController = {
         try {
             const userId = requireUserId(req);
             const uid = extractUidFromSlug(req.params.uid);
-            res.json(await publicSharing.enable(userId, uid));
+            res.json(await publicSharing.enable(userId, uid, req.body));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * PATCH /api/note/:uid/public-share
+     * Change the color and background of the public page.
+     */
+    async updatePublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.updateLook(userId, uid, req.body));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * POST /api/note/:uid/public-share/rotate
+     * Replace the public link with a new one; the old one stops working.
+     */
+    async rotatePublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.rotate(userId, uid));
         } catch (error) {
             next(error);
         }

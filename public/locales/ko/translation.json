@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "노트 \"{{title}}\"을(를) 삭제하시겠습니까?",
     "untitled": "제목 없는 노트",
     "publicShare": {
-      "sharedTitle": "링크가 있는 모든 사람과 공유됨"
-    }
+      "sharedTitle": "링크가 있는 모든 사람과 공유됨",
+      "open": "노트 공유",
+      "title": "\"{{title}}\" 공유",
+      "generalAccess": "일반 액세스",
+      "restricted": "제한됨",
+      "anyone": "링크가 있는 모든 사용자",
+      "restrictedHint": "나와 공유받은 사람만 이 노트를 열 수 있습니다.",
+      "anyoneHint": "링크가 있는 인터넷상의 누구나 로그인 없이 이 노트를 읽을 수 있습니다. 편집은 할 수 없습니다. 이 기능을 끄면 링크가 즉시 작동을 멈춥니다.",
+      "link": "공개 링크",
+      "copyLink": "링크 복사",
+      "copied": "복사됨",
+      "copyFailed": "자동으로 복사할 수 없습니다. 링크를 선택해 복사하세요.",
+      "ownerOnly": "노트 소유자만 노트를 공개적으로 공유할 수 있습니다.",
+      "failed": "문제가 발생했습니다. 다시 시도하세요.",
+      "createLink": "공개 링크 만들기",
+      "inheritStyle": "스타일(배경 및 색상)을 공개 노트에 적용",
+      "rotate": "새 링크를 만들고 이 링크 끄기",
+      "rotateWarning": "현재 링크는 이를 가진 모든 사람에게서 작동하지 않게 됩니다.",
+      "rotateConfirm": "새 링크 만들기"
+    },
+    "createLinkedNote": "\"{{title}}\" 노트 만들기",
+    "linkedNoteMissing": "\"{{title}}\" 노트가 아직 없습니다. 만들까요?",
+    "linkedNoteNotNow": "나중에",
+    "linkedNoteCreate": "노트 만들기",
+    "linkedNoteCreateFailed": "노트를 만들 수 없습니다.",
+    "backgroundImage": "배경",
+    "noBackground": "배경 없음"
   },
   "tags": {
     "loading": "태그 로딩 중...",
@@ -2887,5 +2912,8 @@
     "myTemplates": "내 템플릿",
     "confirmDelete": "템플릿 삭제",
     "confirmDeleteMessage": "\"{{name}}\"을(를) 삭제할까요? 이 템플릿으로 만든 프로젝트는 영향을 받지 않습니다."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "이 노트는 공개적으로 공유되지 않았습니다."
   }
 }

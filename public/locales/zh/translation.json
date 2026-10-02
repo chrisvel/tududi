@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "确定要删除笔记“{{title}}”吗？",
     "untitled": "无标题笔记",
     "publicShare": {
-      "sharedTitle": "已分享给所有拥有链接的人"
-    }
+      "sharedTitle": "已分享给所有拥有链接的人",
+      "open": "分享笔记",
+      "title": "分享“{{title}}”",
+      "generalAccess": "常规访问权限",
+      "restricted": "受限",
+      "anyone": "任何拥有链接的人",
+      "restrictedHint": "只有你和你共享过的人可以打开此笔记。",
+      "anyoneHint": "互联网上任何拥有链接的人无需登录即可阅读此笔记，但无法编辑。关闭后，链接会立即失效。",
+      "link": "公开链接",
+      "copyLink": "复制链接",
+      "copied": "已复制",
+      "copyFailed": "无法自动复制。请选中链接后复制。",
+      "ownerOnly": "只有笔记的所有者才能公开分享。",
+      "failed": "出了点问题，请重试。",
+      "createLink": "创建公开链接",
+      "inheritStyle": "将样式（背景和颜色）沿用到公开笔记",
+      "rotate": "获取新链接并停用此链接",
+      "rotateWarning": "当前链接将对所有持有者失效。",
+      "rotateConfirm": "获取新链接"
+    },
+    "createLinkedNote": "创建笔记“{{title}}”",
+    "linkedNoteMissing": "还没有名为“{{title}}”的笔记。要创建吗？",
+    "linkedNoteNotNow": "暂不",
+    "linkedNoteCreate": "创建笔记",
+    "linkedNoteCreateFailed": "无法创建笔记。",
+    "backgroundImage": "背景",
+    "noBackground": "无背景"
   },
   "tags": {
     "loading": "加载标签...",
@@ -2887,5 +2912,8 @@
     "myTemplates": "我的模板",
     "confirmDelete": "删除模板",
     "confirmDeleteMessage": "删除“{{name}}”？由它创建的项目不受影响。"
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "此笔记未公开分享。"
   }
 }

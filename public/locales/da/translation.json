@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Er du sikker på, at du vil slette noten \"{{title}}\"?",
     "untitled": "Unavngiven note",
     "publicShare": {
-      "sharedTitle": "Delt med alle, der har linket"
-    }
+      "sharedTitle": "Delt med alle, der har linket",
+      "open": "Del note",
+      "title": "Del \"{{title}}\"",
+      "generalAccess": "Generel adgang",
+      "restricted": "Begrænset",
+      "anyone": "Alle med linket",
+      "restrictedHint": "Kun du og de personer, du har delt den med, kan åbne denne note.",
+      "anyoneHint": "Alle på internettet med linket kan læse denne note uden at logge ind. De kan ikke redigere den. Slår du det fra, holder linket straks op med at virke.",
+      "link": "Offentligt link",
+      "copyLink": "Kopiér link",
+      "copied": "Kopieret",
+      "copyFailed": "Kunne ikke kopiere automatisk. Markér linket og kopiér det.",
+      "ownerOnly": "Kun ejeren af en note kan dele den offentligt.",
+      "failed": "Noget gik galt. Prøv igen.",
+      "createLink": "Opret offentligt link",
+      "inheritStyle": "Overfør stil (baggrund og farve) til den offentlige note",
+      "rotate": "Få et nyt link og slå dette fra",
+      "rotateWarning": "Det nuværende link holder op med at virke for alle, der har det.",
+      "rotateConfirm": "Få nyt link"
+    },
+    "createLinkedNote": "Opret noten \"{{title}}\"",
+    "linkedNoteMissing": "Der er endnu ingen note med navnet \"{{title}}\". Vil du oprette den?",
+    "linkedNoteNotNow": "Ikke nu",
+    "linkedNoteCreate": "Opret note",
+    "linkedNoteCreateFailed": "Noten kunne ikke oprettes.",
+    "backgroundImage": "Baggrund",
+    "noBackground": "Ingen baggrund"
   },
   "tags": {
     "loading": "Indlæser tags...",
@@ -2888,5 +2913,8 @@
     "myTemplates": "Mine skabeloner",
     "confirmDelete": "Slet skabelon",
     "confirmDeleteMessage": "Slet \"{{name}}\"? Projekter oprettet ud fra den påvirkes ikke."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Denne note er ikke delt offentligt."
   }
 }

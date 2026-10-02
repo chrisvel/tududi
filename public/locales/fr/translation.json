@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Voulez-vous vraiment supprimer la note « {{title}} » ?",
     "untitled": "Note sans titre",
     "publicShare": {
-      "sharedTitle": "Partagé avec toute personne disposant du lien"
-    }
+      "sharedTitle": "Partagé avec toute personne disposant du lien",
+      "open": "Partager la note",
+      "title": "Partager « {{title}} »",
+      "generalAccess": "Accès général",
+      "restricted": "Restreint",
+      "anyone": "Toute personne disposant du lien",
+      "restrictedHint": "Seuls vous et les personnes avec qui vous l'avez partagée pouvez ouvrir cette note.",
+      "anyoneHint": "Toute personne sur internet disposant du lien peut lire cette note sans se connecter. Elle ne peut pas la modifier. Désactivez cette option et le lien cesse de fonctionner immédiatement.",
+      "link": "Lien public",
+      "copyLink": "Copier le lien",
+      "copied": "Copié",
+      "copyFailed": "Impossible de copier automatiquement. Sélectionnez le lien et copiez-le.",
+      "ownerOnly": "Seul le propriétaire d'une note peut la partager publiquement.",
+      "failed": "Un problème est survenu. Réessayez.",
+      "createLink": "Créer un lien public",
+      "inheritStyle": "Reprendre le style (arrière-plan et couleur) dans la note publique",
+      "rotate": "Obtenir un nouveau lien et désactiver celui-ci",
+      "rotateWarning": "Le lien actuel cessera de fonctionner pour tous ceux qui l'ont.",
+      "rotateConfirm": "Obtenir un nouveau lien"
+    },
+    "createLinkedNote": "Créer la note « {{title}} »",
+    "linkedNoteMissing": "Aucune note nommée « {{title}} » pour l'instant. La créer ?",
+    "linkedNoteNotNow": "Pas maintenant",
+    "linkedNoteCreate": "Créer la note",
+    "linkedNoteCreateFailed": "Impossible de créer la note.",
+    "backgroundImage": "Arrière-plan",
+    "noBackground": "Aucun arrière-plan"
   },
   "tags": {
     "loading": "Chargement des étiquettes...",
@@ -2889,5 +2914,8 @@
     "myTemplates": "Mes modèles",
     "confirmDelete": "Supprimer le modèle",
     "confirmDeleteMessage": "Supprimer « {{name}} » ? Les projets créés à partir de celui-ci ne seront pas affectés."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Cette note n'est pas partagée publiquement."
   }
 }

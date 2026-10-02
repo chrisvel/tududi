@@ -1552,6 +1552,13 @@
   },
   "notes": {
     "addNote": "Add Note",
+    "backgroundImage": "Background",
+    "noBackground": "No background",
+    "createLinkedNote": "Create note \"{{title}}\"",
+    "linkedNoteMissing": "No note called \"{{title}}\" yet. Create it?",
+    "linkedNoteNotNow": "Not now",
+    "linkedNoteCreate": "Create note",
+    "linkedNoteCreateFailed": "Could not create the note.",
     "loading": "Loading notes...",
     "error": "Error loading notes",
     "searchPlaceholder": "Search notes...",
@@ -1580,6 +1587,8 @@
       "folders": "Folders"
     },
     "publicShare": {
+      "createLink": "Create public link",
+      "inheritStyle": "Inherit styling (background and color) to the public note",
       "open": "Share note",
       "sharedTitle": "Shared with anyone who has the link",
       "title": "Share \"{{title}}\"",
@@ -1593,7 +1602,10 @@
       "copied": "Copied",
       "copyFailed": "Could not copy automatically. Select the link and copy it.",
       "ownerOnly": "Only the owner of a note can share it publicly.",
-      "failed": "Something went wrong. Try again."
+      "failed": "Something went wrong. Try again.",
+      "rotate": "Get a new link and turn off this one",
+      "rotateWarning": "The current link will stop working for everyone who has it.",
+      "rotateConfirm": "Get new link"
     },
     "deleteNote": "Delete Note",
     "deleteNoteConfirm": "Are you sure you want to delete the note \"{{title}}\"?",
@@ -2652,6 +2664,7 @@
     "invalidHint": "It may have been used already or expired. Ask the person who sent it for a new one."
   },
   "publicNote": {
+    "linkedNoteNotShared": "This note is not shared publicly.",
     "toggleTheme": "Toggle dark mode",
     "openApp": "Open tududi",
     "updated": "Last updated {{date}}",

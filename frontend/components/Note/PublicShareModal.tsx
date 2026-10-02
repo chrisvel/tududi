@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+    ArrowPathIcon,
+    CheckIcon,
     GlobeAltIcon,
     LockClosedIcon,
     LinkIcon,
@@ -12,8 +14,10 @@ import {
     disableNotePublicShare,
     enableNotePublicShare,
     getNotePublicShare,
+    rotateNotePublicShare,
+    updateNotePublicLook,
 } from '../../utils/publicNotesService';
-import { FORM } from '../../constants/formClasses';
+import SelectMenu from '../Shared/SelectMenu';
 
 interface PublicShareModalProps {
     isOpen: boolean;
@@ -38,12 +42,18 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
     const [saving, setSaving] = useState(false);
     const [copied, setCopied] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    // Set while choosing options before the link exists: whether the public
+    // page inherits the note's styling.
+    const [draft, setDraft] = useState<{ inherit: boolean } | null>(null);
+    const [confirmRotate, setConfirmRotate] = useState(false);
     const linkRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (!isOpen || !noteUid) return;
         let cancelled = false;
         setShare(null);
+        setDraft(null);
+        setConfirmRotate(false);
         setCopied(false);
         setError(null);
         setLoading(true);
@@ -77,25 +87,72 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
         );
     }
 
-    const access: Access = share?.enabled ? 'anyone' : 'restricted';
+    const access: Access = share?.enabled || draft ? 'anyone' : 'restricted';
     const link = share?.token ? buildPublicNoteUrl(share.token) : '';
+    const inheritStyle = draft
+        ? draft.inherit
+        : Boolean(share?.public_inherit_style);
+    const busy = loading || saving || !share;
 
-    const handleAccessChange = async (next: Access) => {
-        if (!noteUid || next === access) return;
+    const run = async (action: () => Promise<NotePublicShare>) => {
         setSaving(true);
         setError(null);
-        setCopied(false);
         try {
-            const state =
-                next === 'anyone'
-                    ? await enableNotePublicShare(noteUid)
-                    : await disableNotePublicShare(noteUid);
+            const state = await action();
             setShare(state);
-            onChange?.(state.enabled);
+            return state;
         } catch (err) {
             setError(describeError(err as Error));
+            return null;
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleAccessChange = async (next: Access) => {
+        if (!noteUid || busy || next === access) return;
+        setCopied(false);
+        setError(null);
+        if (next === 'anyone') {
+            // Ask about styling before making the link.
+            setDraft({ inherit: true });
+            return;
+        }
+        if (draft) {
+            setDraft(null);
+            return;
+        }
+        const state = await run(() => disableNotePublicShare(noteUid));
+        if (state) onChange?.(state.enabled);
+    };
+
+    const handleCreateLink = async () => {
+        if (!noteUid || !draft) return;
+        const state = await run(() =>
+            enableNotePublicShare(noteUid, {
+                public_inherit_style: draft.inherit,
+            })
+        );
+        if (state) {
+            setDraft(null);
+            onChange?.(state.enabled);
+        }
+    };
+
+    const handleRotate = async () => {
+        if (!noteUid) return;
+        setConfirmRotate(false);
+        setCopied(false);
+        await run(() => rotateNotePublicShare(noteUid));
+    };
+
+    const handleInheritChange = (inherit: boolean) => {
+        if (draft) {
+            setDraft({ inherit });
+        } else if (noteUid && share?.enabled) {
+            void run(() =>
+                updateNotePublicLook(noteUid, { public_inherit_style: inherit })
+            );
         }
     };
 
@@ -161,32 +218,30 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
                             )}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <select
-                                aria-label={t(
-                                    'notes.publicShare.generalAccess',
-                                    'General access'
-                                )}
+                            <SelectMenu
+                                id="public-share-access"
+                                testId="public-share-access"
                                 value={access}
-                                disabled={loading || saving || !share}
-                                onChange={(e) =>
-                                    handleAccessChange(e.target.value as Access)
+                                onChange={(value) =>
+                                    handleAccessChange(value as Access)
                                 }
-                                data-testid="public-share-access"
-                                className={`${FORM.select} w-full`}
-                            >
-                                <option value="restricted">
-                                    {t(
-                                        'notes.publicShare.restricted',
-                                        'Restricted'
-                                    )}
-                                </option>
-                                <option value="anyone">
-                                    {t(
-                                        'notes.publicShare.anyone',
-                                        'Anyone with the link'
-                                    )}
-                                </option>
-                            </select>
+                                options={[
+                                    {
+                                        value: 'restricted',
+                                        label: t(
+                                            'notes.publicShare.restricted',
+                                            'Restricted'
+                                        ),
+                                    },
+                                    {
+                                        value: 'anyone',
+                                        label: t(
+                                            'notes.publicShare.anyone',
+                                            'Anyone with the link'
+                                        ),
+                                    },
+                                ]}
+                            />
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 {access === 'anyone'
                                     ? t(
@@ -201,6 +256,55 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
                         </div>
                     </div>
                 </div>
+
+                {access === 'anyone' && share && (
+                    <div className="px-6 pt-3 pb-2">
+                        <button
+                            type="button"
+                            role="checkbox"
+                            aria-checked={inheritStyle}
+                            disabled={saving}
+                            onClick={() => handleInheritChange(!inheritStyle)}
+                            data-testid="public-share-inherit"
+                            className="flex items-center gap-2.5 text-left text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50"
+                        >
+                            <span
+                                className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded transition-colors ${
+                                    inheritStyle
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-black/[0.06] dark:bg-white/[0.1]'
+                                }`}
+                            >
+                                {inheritStyle && (
+                                    <CheckIcon
+                                        className="h-3.5 w-3.5"
+                                        strokeWidth={3}
+                                    />
+                                )}
+                            </span>
+                            {t(
+                                'notes.publicShare.inheritStyle',
+                                'Inherit styling (background and color) to the public note'
+                            )}
+                        </button>
+                        {draft && (
+                            <div className="flex justify-end mt-4">
+                                <button
+                                    type="button"
+                                    onClick={handleCreateLink}
+                                    disabled={saving}
+                                    data-testid="public-share-create"
+                                    className="px-4 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    {t(
+                                        'notes.publicShare.createLink',
+                                        'Create public link'
+                                    )}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {access === 'anyone' && link && (
                     <div className="px-6 pt-3 pb-2">
@@ -237,6 +341,52 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
                                       )}
                             </button>
                         </div>
+                        {confirmRotate ? (
+                            <div
+                                className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-600 dark:text-gray-300"
+                                data-testid="public-share-rotate-confirm"
+                            >
+                                <span className="flex-1 min-w-0">
+                                    {t(
+                                        'notes.publicShare.rotateWarning',
+                                        'The current link will stop working for everyone who has it.'
+                                    )}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setConfirmRotate(false)}
+                                    className="px-2.5 py-1 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                    {t('common.cancel', 'Cancel')}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleRotate}
+                                    disabled={saving}
+                                    data-testid="public-share-rotate-yes"
+                                    className="px-2.5 py-1 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {t(
+                                        'notes.publicShare.rotateConfirm',
+                                        'Get new link'
+                                    )}
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => setConfirmRotate(true)}
+                                disabled={saving}
+                                data-testid="public-share-rotate"
+                                className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-black/[0.04] dark:bg-white/[0.07] hover:bg-black/[0.07] dark:hover:bg-white/[0.12] text-sm text-gray-700 dark:text-gray-200 disabled:opacity-50"
+                            >
+                                <ArrowPathIcon className="h-4 w-4" />
+                                {t(
+                                    'notes.publicShare.rotate',
+                                    'Get a new link and turn off this one'
+                                )}
+                            </button>
+                        )}
                     </div>
                 )}
 

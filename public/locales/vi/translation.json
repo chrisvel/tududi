@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Bạn có chắc muốn xóa ghi chú \"{{title}}\" không?",
     "untitled": "Ghi chú không tiêu đề",
     "publicShare": {
-      "sharedTitle": "Chia sẻ với bất kỳ ai có liên kết"
-    }
+      "sharedTitle": "Chia sẻ với bất kỳ ai có liên kết",
+      "open": "Chia sẻ ghi chú",
+      "title": "Chia sẻ \"{{title}}\"",
+      "generalAccess": "Quyền truy cập chung",
+      "restricted": "Bị hạn chế",
+      "anyone": "Bất kỳ ai có liên kết",
+      "restrictedHint": "Chỉ bạn và những người bạn đã chia sẻ mới mở được ghi chú này.",
+      "anyoneHint": "Bất kỳ ai trên internet có liên kết đều có thể đọc ghi chú này mà không cần đăng nhập. Họ không thể chỉnh sửa. Tắt tùy chọn này thì liên kết ngừng hoạt động ngay.",
+      "link": "Liên kết công khai",
+      "copyLink": "Sao chép liên kết",
+      "copied": "Đã sao chép",
+      "copyFailed": "Không thể tự động sao chép. Hãy chọn liên kết và sao chép.",
+      "ownerOnly": "Chỉ chủ sở hữu ghi chú mới có thể chia sẻ công khai.",
+      "failed": "Đã xảy ra lỗi. Hãy thử lại.",
+      "createLink": "Tạo liên kết công khai",
+      "inheritStyle": "Kế thừa kiểu (nền và màu) cho ghi chú công khai",
+      "rotate": "Tạo liên kết mới và tắt liên kết này",
+      "rotateWarning": "Liên kết hiện tại sẽ ngừng hoạt động với mọi người đang có nó.",
+      "rotateConfirm": "Tạo liên kết mới"
+    },
+    "createLinkedNote": "Tạo ghi chú \"{{title}}\"",
+    "linkedNoteMissing": "Chưa có ghi chú nào tên \"{{title}}\". Tạo ngay?",
+    "linkedNoteNotNow": "Để sau",
+    "linkedNoteCreate": "Tạo ghi chú",
+    "linkedNoteCreateFailed": "Không thể tạo ghi chú.",
+    "backgroundImage": "Hình nền",
+    "noBackground": "Không có hình nền"
   },
   "tags": {
     "loading": "Đang tải thẻ...",
@@ -2887,5 +2912,8 @@
     "myTemplates": "Mẫu của tôi",
     "confirmDelete": "Xóa mẫu",
     "confirmDeleteMessage": "Xóa \"{{name}}\"? Các dự án đã tạo từ mẫu này không bị ảnh hưởng."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Ghi chú này không được chia sẻ công khai."
   }
 }

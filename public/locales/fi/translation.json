@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Haluatko varmasti poistaa muistiinpanon ”{{title}}”?",
     "untitled": "Nimetön muistiinpano",
     "publicShare": {
-      "sharedTitle": "Jaettu kaikille, joilla on linkki"
-    }
+      "sharedTitle": "Jaettu kaikille, joilla on linkki",
+      "open": "Jaa muistiinpano",
+      "title": "Jaa \"{{title}}\"",
+      "generalAccess": "Yleinen käyttöoikeus",
+      "restricted": "Rajoitettu",
+      "anyone": "Kaikki, joilla on linkki",
+      "restrictedHint": "Vain sinä ja ne, joille olet jakanut sen, voivat avata tämän muistiinpanon.",
+      "anyoneHint": "Kuka tahansa internetissä, jolla on linkki, voi lukea tämän muistiinpanon kirjautumatta. Hän ei voi muokata sitä. Kun poistat tämän käytöstä, linkki lakkaa toimimasta heti.",
+      "link": "Julkinen linkki",
+      "copyLink": "Kopioi linkki",
+      "copied": "Kopioitu",
+      "copyFailed": "Automaattinen kopiointi ei onnistunut. Valitse linkki ja kopioi se.",
+      "ownerOnly": "Vain muistiinpanon omistaja voi jakaa sen julkisesti.",
+      "failed": "Jokin meni vikaan. Yritä uudelleen.",
+      "createLink": "Luo julkinen linkki",
+      "inheritStyle": "Siirrä tyyli (tausta ja väri) julkiseen muistiinpanoon",
+      "rotate": "Luo uusi linkki ja poista tämä käytöstä",
+      "rotateWarning": "Nykyinen linkki lakkaa toimimasta kaikilta, joilla se on.",
+      "rotateConfirm": "Luo uusi linkki"
+    },
+    "createLinkedNote": "Luo muistiinpano \"{{title}}\"",
+    "linkedNoteMissing": "Muistiinpanoa \"{{title}}\" ei ole vielä olemassa. Luodaanko se?",
+    "linkedNoteNotNow": "Ei nyt",
+    "linkedNoteCreate": "Luo muistiinpano",
+    "linkedNoteCreateFailed": "Muistiinpanoa ei voitu luoda.",
+    "backgroundImage": "Tausta",
+    "noBackground": "Ei taustaa"
   },
   "tags": {
     "loading": "Ladataan tageja...",
@@ -2888,5 +2913,8 @@
     "myTemplates": "Omat mallit",
     "confirmDelete": "Poista malli",
     "confirmDeleteMessage": "Poistetaanko ”{{name}}”? Sen avulla luodut projektit eivät muutu."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Tätä muistiinpanoa ei ole jaettu julkisesti."
   }
 }

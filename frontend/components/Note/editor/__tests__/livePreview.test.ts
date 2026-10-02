@@ -131,10 +131,16 @@ describe('live preview decorations', () => {
 
     it('marks wikilinks but ignores them inside inline code', () => {
         const items = inline('[[Note]] and `[[Code]]`\ntail');
-        expect(has(items, 'mark:cm-md-wikilink', 2, 6)).toBe(true);
+        const chip = 'mark:cm-md-wikilink cm-md-wikilink-chip';
+        expect(has(items, chip, 2, 6)).toBe(true);
         expect(
-            items.filter((i) => i.kind === 'mark:cm-md-wikilink')
+            items.filter((i) => i.kind.startsWith('mark:cm-md-wikilink'))
         ).toHaveLength(1);
+    });
+
+    it('shows a wikilink as plain editable text while the caret is on it', () => {
+        const items = inline('[[Note]] and more', 4);
+        expect(has(items, 'mark:cm-md-wikilink', 2, 6)).toBe(true);
     });
 
     it('renders images as a widget off-line', () => {

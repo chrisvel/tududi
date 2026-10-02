@@ -1474,8 +1474,33 @@
     "deleteNoteConfirm": "¿Seguro que quieres eliminar la nota «{{title}}»?",
     "untitled": "Nota sin título",
     "publicShare": {
-      "sharedTitle": "Compartida con cualquiera que tenga el enlace"
-    }
+      "sharedTitle": "Compartida con cualquiera que tenga el enlace",
+      "open": "Compartir nota",
+      "title": "Compartir \"{{title}}\"",
+      "generalAccess": "Acceso general",
+      "restricted": "Restringido",
+      "anyone": "Cualquiera con el enlace",
+      "restrictedHint": "Solo tú y las personas con las que la compartiste pueden abrir esta nota.",
+      "anyoneHint": "Cualquier persona en internet con el enlace puede leer esta nota sin iniciar sesión. No puede editarla. Si lo desactivas, el enlace deja de funcionar al instante.",
+      "link": "Enlace público",
+      "copyLink": "Copiar enlace",
+      "copied": "Copiado",
+      "copyFailed": "No se pudo copiar automáticamente. Selecciona el enlace y cópialo.",
+      "ownerOnly": "Solo el propietario de una nota puede compartirla públicamente.",
+      "failed": "Algo salió mal. Inténtalo de nuevo.",
+      "createLink": "Crear enlace público",
+      "inheritStyle": "Heredar el estilo (fondo y color) en la nota pública",
+      "rotate": "Obtener un enlace nuevo y desactivar este",
+      "rotateWarning": "El enlace actual dejará de funcionar para todos los que lo tengan.",
+      "rotateConfirm": "Obtener enlace nuevo"
+    },
+    "createLinkedNote": "Crear la nota \"{{title}}\"",
+    "linkedNoteMissing": "Todavía no hay ninguna nota llamada \"{{title}}\". ¿Crearla?",
+    "linkedNoteNotNow": "Ahora no",
+    "linkedNoteCreate": "Crear nota",
+    "linkedNoteCreateFailed": "No se pudo crear la nota.",
+    "backgroundImage": "Fondo",
+    "noBackground": "Sin fondo"
   },
   "tags": {
     "loading": "Cargando etiquetas...",
@@ -2876,5 +2901,8 @@
     "myTemplates": "Mis plantillas",
     "confirmDelete": "Eliminar plantilla",
     "confirmDeleteMessage": "¿Eliminar «{{name}}»? Los proyectos creados con ella no se verán afectados."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Esta nota no se comparte públicamente."
   }
 }

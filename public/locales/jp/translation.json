@@ -1275,8 +1275,33 @@
     "deleteNoteConfirm": "ノート「{{title}}」を削除してもよろしいですか？",
     "untitled": "無題のノート",
     "publicShare": {
-      "sharedTitle": "リンクを知っている全員と共有"
-    }
+      "sharedTitle": "リンクを知っている全員と共有",
+      "open": "ノートを共有",
+      "title": "「{{title}}」を共有",
+      "generalAccess": "一般アクセス",
+      "restricted": "制限付き",
+      "anyone": "リンクを知っている全員",
+      "restrictedHint": "このノートを開けるのは、あなたと共有相手だけです。",
+      "anyoneHint": "リンクを知っているインターネット上の誰でも、サインインせずにこのノートを読めます。編集はできません。オフにするとリンクはすぐに無効になります。",
+      "link": "公開リンク",
+      "copyLink": "リンクをコピー",
+      "copied": "コピーしました",
+      "copyFailed": "自動でコピーできませんでした。リンクを選択してコピーしてください。",
+      "ownerOnly": "ノートを公開できるのは所有者だけです。",
+      "failed": "問題が発生しました。もう一度お試しください。",
+      "createLink": "公開リンクを作成",
+      "inheritStyle": "スタイル（背景と色）を公開ノートに引き継ぐ",
+      "rotate": "新しいリンクを作成してこのリンクを無効にする",
+      "rotateWarning": "現在のリンクは、持っている全員にとって使えなくなります。",
+      "rotateConfirm": "新しいリンクを作成"
+    },
+    "createLinkedNote": "ノート「{{title}}」を作成",
+    "linkedNoteMissing": "「{{title}}」というノートはまだありません。作成しますか？",
+    "linkedNoteNotNow": "今はしない",
+    "linkedNoteCreate": "ノートを作成",
+    "linkedNoteCreateFailed": "ノートを作成できませんでした。",
+    "backgroundImage": "背景",
+    "noBackground": "背景なし"
   },
   "tags": {
     "loading": "タグを読み込み中...",
@@ -2887,5 +2912,8 @@
     "myTemplates": "マイテンプレート",
     "confirmDelete": "テンプレートを削除",
     "confirmDeleteMessage": "「{{name}}」を削除しますか？ このテンプレートから作成したプロジェクトは影響を受けません。"
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "このノートは公開されていません。"
   }
 }
