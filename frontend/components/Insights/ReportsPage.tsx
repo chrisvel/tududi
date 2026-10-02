@@ -9,6 +9,7 @@ import {
     NoSymbolIcon,
     CheckCircleIcon,
 } from '@heroicons/react/24/outline';
+import ReportsOverview from './ReportsOverview';
 
 interface StalledProject {
     id: number;
@@ -271,13 +272,13 @@ function AreaBalanceChart({ areas }: { areas: AreaBalance[] }) {
     );
 }
 
-type Tab = 'weekly' | 'trends';
+type Tab = 'overview' | 'weekly' | 'trends';
 
 const ReportsPage: React.FC = () => {
     const { t } = useTranslation();
     const [report, setReport] = useState<GtdReport | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<Tab>('weekly');
+    const [activeTab, setActiveTab] = useState<Tab>('overview');
 
     useEffect(() => {
         fetch(getApiPath('reports/gtd'), {
@@ -317,6 +318,7 @@ const ReportsPage: React.FC = () => {
     );
 
     const tabs: { id: Tab; label: string }[] = [
+        { id: 'overview', label: t('reports.overview', 'Overview') },
         { id: 'weekly', label: t('reports.weeklyReview', 'Weekly Review') },
         { id: 'trends', label: t('reports.trends', 'Trends') },
     ];
@@ -348,6 +350,8 @@ const ReportsPage: React.FC = () => {
                     </button>
                 ))}
             </div>
+
+            {activeTab === 'overview' && <ReportsOverview />}
 
             {activeTab === 'weekly' && (
                 <div className="space-y-6">

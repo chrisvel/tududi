@@ -559,19 +559,6 @@ const TodayPage: React.FC = () => {
                         }}
                     />
                 )}
-
-                {planResponse && (
-                    <Link
-                        to="/today_legacy"
-                        className="self-center pt-4 text-xs text-gray-400 underline-offset-2 hover:text-gray-600 hover:underline dark:text-gray-500 dark:hover:text-gray-300"
-                        data-testid="old-today-link"
-                    >
-                        {t(
-                            'dailyPlan.oldTodayLink',
-                            'Go to the old Today page instead'
-                        )}
-                    </Link>
-                )}
             </div>
         </div>
     );

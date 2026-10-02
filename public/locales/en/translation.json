@@ -2530,6 +2530,7 @@
     "statOverdue": "Overdue"
   },
   "reports": {
+    "overview": "Overview",
     "weeklyReview": "Weekly Review",
     "inboxItems": "Inbox items",
     "stalledProjects": "Stalled projects",
@@ -2712,7 +2713,6 @@
     "connectCalendar": "Connect a calendar",
     "continuePlanning": "Continue planning",
     "planYourDay": "Plan your day",
-    "skipShowEverything": "Skip and show everything",
     "moveBlock": "Move {{name}}",
     "removeFromPlan": "Remove from plan",
     "freeGap": "{{duration}} free",
@@ -2757,7 +2757,6 @@
     "addAsTask": "Add as task",
     "moreInInbox": "{{count}} more in the inbox",
     "sidebarProgress": "{{done}} of {{total}} planned tasks done",
-    "oldTodayLink": "Go to the old Today page instead",
     "nowMarker": "Now, {{time}}",
     "beta": "Beta",
     "betaHint": "The planned Today page is new. The classic page is still at the bottom of this page.",
