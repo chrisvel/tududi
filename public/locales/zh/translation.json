@@ -4,6 +4,7 @@
     "save": "保存",
     "cancel": "取消",
     "delete": "删除",
+    "moreActions": "更多操作",
     "edit": "编辑",
     "create": "创建",
     "submit": "提交",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "无法发送摘要。",
     "setPassword": "设置密码",
     "setPasswordInfo": "你还没有设置密码。设置密码后可以直接登录并使用 CalDAV。",
-    "showTaskContextMenu": "显示上下文菜单按钮",
-    "showTaskContextMenuDescription": "在每个任务上显示带有编辑和删除操作的三点按钮",
     "sidebarFeatureOff": "已在功能中关闭",
     "sidebarLayoutDescription": "这是侧边栏的预览。用开关选择显示哪些内容,拖动手柄调整顺序。",
     "sidebarLayoutHint": "模板和访问始终位于底部。在功能中关闭的项目会保持隐藏,直到你开启该功能。",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "在侧边栏显示 {{name}} 板块。",
     "sidebarShowItem": "显示 {{name}}",
     "systemMode": "跟随系统",
-    "taskItem": "任务条目",
-    "tasks": "任务",
     "telegram": {
       "botName": "机器人名称:"
     },

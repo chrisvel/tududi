@@ -4,6 +4,7 @@
     "save": "Salvează",
     "cancel": "Anulează",
     "delete": "Șterge",
+    "moreActions": "Mai multe acțiuni",
     "edit": "Editează",
     "create": "Creează",
     "submit": "Trimite",
@@ -835,8 +836,6 @@
     "sendSummaryFailed": "Rezumatul nu a putut fi trimis.",
     "setPassword": "Setează parola",
     "setPasswordInfo": "Nu ți-ai setat încă o parolă. Cu o parolă te poți autentifica direct și poți folosi CalDAV.",
-    "showTaskContextMenu": "Afișează butonul meniului contextual",
-    "showTaskContextMenuDescription": "Afișează pe fiecare sarcină un buton cu trei puncte cu acțiunile Editează și Șterge",
     "sidebarFeatureOff": "Oprit în Funcții",
     "sidebarLayoutDescription": "Aceasta este o previzualizare a barei laterale. Folosește comutatoarele pentru a alege ce apare și trage de mânere pentru a schimba ordinea.",
     "sidebarLayoutHint": "Șabloane și Acces rămân jos. Elementele oprite în Funcții rămân ascunse până activezi funcția.",
@@ -845,8 +844,6 @@
     "sidebarSectionDescription": "Afișează secțiunea {{name}} în bara laterală.",
     "sidebarShowItem": "Afișează {{name}}",
     "systemMode": "Sistem",
-    "taskItem": "Element sarcină",
-    "tasks": "Sarcini",
     "telegram": {
       "botName": "Numele botului:"
     },

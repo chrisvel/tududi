@@ -92,6 +92,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
     const [isBlockedConfirmOpen, setIsBlockedConfirmOpen] = useState(false);
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
     const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
+    const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
 
     const [subtasks, setSubtasks] = useState<Task[]>(task.subtasks || []);
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
@@ -357,7 +358,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
         <div
             ref={rowRootRef}
             className={`relative ${
-                isStatusMenuOpen ? 'z-[10001]' : isExpanded ? 'z-30' : ''
+                isStatusMenuOpen || isActionsMenuOpen
+                    ? 'z-[10001]'
+                    : isExpanded
+                      ? 'z-30'
+                      : ''
             }`}
         >
             <div
@@ -389,6 +394,13 @@ const TaskRow: React.FC<TaskRowProps> = ({
                     editable={isExpanded}
                     onSaveTitle={setters.setTitle}
                     onEscape={collapse}
+                    onEdit={
+                        task.uid
+                            ? () => navigate(fullPagePath, fromState)
+                            : undefined
+                    }
+                    onDelete={task.uid ? handleDeleteClick : undefined}
+                    onActionsMenuOpenChange={setIsActionsMenuOpen}
                 />
 
                 {panelMounted && (

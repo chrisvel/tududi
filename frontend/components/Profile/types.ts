@@ -19,7 +19,6 @@ export interface Features {
 
 export interface UiSettingsAppearance {
     theme?: 'light' | 'dark' | 'system';
-    showTaskContextMenu?: boolean;
     contentBackground?: string | null;
 }
 

@@ -4,6 +4,7 @@
     "save": "Kaydet",
     "cancel": "İptal",
     "delete": "Sil",
+    "moreActions": "Diğer işlemler",
     "edit": "Düzenle",
     "create": "Oluştur",
     "submit": "Gönder",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Özet gönderilemedi.",
     "setPassword": "Parola belirle",
     "setPasswordInfo": "Henüz bir parola belirlemedin. Parolayla doğrudan giriş yapabilir ve CalDAV kullanabilirsin.",
-    "showTaskContextMenu": "Bağlam menüsü düğmesini göster",
-    "showTaskContextMenuDescription": "Her görevde Düzenle ve Sil işlemlerini içeren üç noktalı bir düğme gösterir",
     "sidebarFeatureOff": "Özellikler'de kapalı",
     "sidebarLayoutDescription": "Bu, kenar çubuğunun bir önizlemesi. Nelerin görüneceğini anahtarlarla seç, sırayı değiştirmek için tutamaçları sürükle.",
     "sidebarLayoutHint": "Şablonlar ve Erişim en altta kalır. Özellikler'de kapalı olan öğeler, özelliği açana kadar gizli kalır.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "{{name}} bölümünü kenar çubuğunda göster.",
     "sidebarShowItem": "Göster: {{name}}",
     "systemMode": "Sistem",
-    "taskItem": "Görev öğesi",
-    "tasks": "Görevler",
     "telegram": {
       "botName": "Bot adı:"
     },

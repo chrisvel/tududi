@@ -4,6 +4,7 @@
     "save": "Lưu",
     "cancel": "Hủy",
     "delete": "Xóa",
+    "moreActions": "Thêm thao tác",
     "edit": "Chỉnh sửa",
     "create": "Tạo",
     "submit": "Gửi",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Không thể gửi bản tóm tắt.",
     "setPassword": "Đặt mật khẩu",
     "setPasswordInfo": "Bạn chưa đặt mật khẩu. Có mật khẩu, bạn có thể đăng nhập trực tiếp và dùng CalDAV.",
-    "showTaskContextMenu": "Hiện nút menu ngữ cảnh",
-    "showTaskContextMenuDescription": "Hiện nút ba chấm trên mỗi công việc với các thao tác Sửa và Xóa",
     "sidebarFeatureOff": "Đã tắt trong Tính năng",
     "sidebarLayoutDescription": "Đây là bản xem trước thanh bên. Dùng các công tắc để chọn mục hiển thị, và kéo tay cầm để đổi thứ tự.",
     "sidebarLayoutHint": "Mẫu và Truy cập luôn ở dưới cùng. Các mục đã tắt trong Tính năng sẽ ẩn cho đến khi bạn bật tính năng đó.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "Hiển thị mục {{name}} trên thanh bên.",
     "sidebarShowItem": "Hiển thị {{name}}",
     "systemMode": "Hệ thống",
-    "taskItem": "Mục công việc",
-    "tasks": "Công việc",
     "telegram": {
       "botName": "Tên bot:"
     },

@@ -4,6 +4,7 @@
     "save": "Opslaan",
     "cancel": "Annuleren",
     "delete": "Verwijderen",
+    "moreActions": "Meer acties",
     "edit": "Bewerken",
     "create": "Aanmaken",
     "submit": "Indienen",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Kan de samenvatting niet verzenden.",
     "setPassword": "Wachtwoord instellen",
     "setPasswordInfo": "Je hebt nog geen wachtwoord ingesteld. Met een wachtwoord kun je direct inloggen en CalDAV gebruiken.",
-    "showTaskContextMenu": "Knop voor contextmenu tonen",
-    "showTaskContextMenuDescription": "Toont bij elke taak een knop met drie puntjes met de acties Bewerken en Verwijderen",
     "sidebarFeatureOff": "Uit in Functies",
     "sidebarLayoutDescription": "Dit is een voorbeeld van je zijbalk. Kies met de schakelaars wat er verschijnt en sleep aan de grepen om de volgorde te wijzigen.",
     "sidebarLayoutHint": "Sjablonen en Toegang blijven onderaan. Items die uit staan in Functies blijven verborgen tot je de functie aanzet.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "De sectie {{name}} tonen in de zijbalk.",
     "sidebarShowItem": "{{name}} tonen",
     "systemMode": "Systeem",
-    "taskItem": "Taakitem",
-    "tasks": "Taken",
     "telegram": {
       "botName": "Botnaam:"
     },

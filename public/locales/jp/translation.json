@@ -4,6 +4,7 @@
     "save": "保存",
     "cancel": "キャンセル",
     "delete": "削除",
+    "moreActions": "その他の操作",
     "edit": "編集",
     "create": "作成",
     "submit": "送信",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "サマリーを送信できませんでした。",
     "setPassword": "パスワードを設定",
     "setPasswordInfo": "まだパスワードが設定されていません。設定すると直接サインインでき、CalDAVも使えます。",
-    "showTaskContextMenu": "コンテキストメニューボタンを表示",
-    "showTaskContextMenuDescription": "各タスクに編集と削除の操作を含む三点ボタンを表示します",
     "sidebarFeatureOff": "機能でオフ",
     "sidebarLayoutDescription": "サイドバーのプレビューです。スイッチで表示する項目を選び、ハンドルをドラッグして並べ替えます。",
     "sidebarLayoutHint": "テンプレートとアクセスは常に一番下です。機能でオフにした項目は、その機能をオンにするまで非表示のままです。",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "サイドバーに{{name}}セクションを表示します。",
     "sidebarShowItem": "{{name}} を表示",
     "systemMode": "システム",
-    "taskItem": "タスク項目",
-    "tasks": "タスク",
     "telegram": {
       "botName": "ボット名:"
     },

@@ -4,6 +4,7 @@
     "save": "Enregistrer",
     "cancel": "Annuler",
     "delete": "Supprimer",
+    "moreActions": "Plus d'actions",
     "edit": "Modifier",
     "create": "Créer",
     "submit": "Soumettre",
@@ -754,10 +755,6 @@
     "aiProfileDescription": "Contexte facultatif transmis à l'IA : votre rôle, votre domaine ou tout ce qui personnalise les résumés et analyses (ex. « Chercheuse axée sur les échéances de financement et les périodes d'examens »).",
     "aiProfilePlaceholder": "ex. Chercheuse. Mon travail tourne autour des échéances de financement, des relectures d'articles et des cycles d'enseignement, pas des sprints ni des déploiements.",
     "systemMode": "Système",
-    "tasks": "Tâches",
-    "taskItem": "Élément de tâche",
-    "showTaskContextMenu": "Afficher le bouton de menu contextuel",
-    "showTaskContextMenuDescription": "Affiche sur chaque tâche un bouton à trois points avec Modifier et Supprimer",
     "connected": {
       "loadError": "Impossible de charger les comptes connectés",
       "linkError": "Impossible de lancer la liaison du compte",

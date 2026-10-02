@@ -58,6 +58,11 @@ jest.mock('../../../store/useStore', () => ({
         }),
 }));
 
+jest.mock('../../Shared/MarkdownRenderer', () => ({
+    __esModule: true,
+    default: ({ content }: { content: string }) => <div>{content}</div>,
+}));
+
 // The status control + heavy editors are exercised elsewhere; keep this test
 // focused on row layout + expansion.
 jest.mock('../TaskStatusControl', () => ({
@@ -255,6 +260,39 @@ describe('TaskRow', () => {
             expect(
                 screen.getByDisplayValue('Weekly review 1')
             ).toBeInTheDocument();
+        });
+    });
+
+    describe('actions menu', () => {
+        it('opens the full page from Edit without expanding the row', () => {
+            renderRow(baseTask());
+            fireEvent.click(screen.getByTestId('task-actions-menu-button'));
+            fireEvent.click(screen.getByRole('menuitem', { name: 'Edit' }));
+            expect(navigateMock).toHaveBeenCalledWith(
+                '/task/task-1',
+                expect.objectContaining({ state: expect.any(Object) })
+            );
+            expect(
+                screen.queryByDisplayValue('Buy tickets')
+            ).not.toBeInTheDocument();
+        });
+
+        it('deletes the task after confirming', () => {
+            const onTaskDelete = jest.fn();
+            renderRow(baseTask(), { onTaskDelete });
+            fireEvent.click(screen.getByTestId('task-actions-menu-button'));
+            fireEvent.click(screen.getByRole('menuitem', { name: 'Delete' }));
+            expect(onTaskDelete).not.toHaveBeenCalled();
+            fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+            expect(onTaskDelete).toHaveBeenCalledWith('task-1');
+        });
+
+        it('closes on a click outside the menu', () => {
+            renderRow(baseTask());
+            fireEvent.click(screen.getByTestId('task-actions-menu-button'));
+            expect(screen.getByRole('menu')).toBeInTheDocument();
+            fireEvent.mouseDown(document.body);
+            expect(screen.queryByRole('menu')).not.toBeInTheDocument();
         });
     });
 

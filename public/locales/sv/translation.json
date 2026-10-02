@@ -4,6 +4,7 @@
     "save": "Spara",
     "cancel": "Avbryt",
     "delete": "Ta bort",
+    "moreActions": "Fler åtgärder",
     "edit": "Ändra",
     "create": "Skapa",
     "submit": "Skicka",
@@ -833,8 +834,6 @@
     "sendSummaryFailed": "Det gick inte att skicka sammanfattningen.",
     "setPassword": "Ange lösenord",
     "setPasswordInfo": "Du har inte angett något lösenord ännu. Med ett lösenord kan du logga in direkt och använda CalDAV.",
-    "showTaskContextMenu": "Visa knapp för snabbmeny",
-    "showTaskContextMenuDescription": "Visar en knapp med tre punkter på varje uppgift med åtgärderna Redigera och Ta bort",
     "sidebarFeatureOff": "Av i Funktioner",
     "sidebarLayoutDescription": "Det här är en förhandsvisning av sidofältet. Använd reglagen för att välja vad som visas och dra i handtagen för att ändra ordningen.",
     "sidebarLayoutHint": "Mallar och Åtkomst ligger kvar längst ned. Objekt som är av i Funktioner förblir dolda tills du slår på funktionen.",
@@ -843,8 +842,6 @@
     "sidebarSectionDescription": "Visa sektionen {{name}} i sidofältet.",
     "sidebarShowItem": "Visa {{name}}",
     "systemMode": "System",
-    "taskItem": "Uppgiftsobjekt",
-    "tasks": "Uppgifter",
     "telegram": {
       "botName": "Botnamn:"
     },

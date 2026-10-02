@@ -4,6 +4,7 @@
     "save": "Lagre",
     "cancel": "Avbryt",
     "delete": "Slett",
+    "moreActions": "Flere handlinger",
     "edit": "Rediger",
     "create": "Opprett",
     "submit": "Send inn",
@@ -834,8 +835,6 @@
     "sendSummaryFailed": "Kunne ikke sende sammendraget.",
     "setPassword": "Angi passord",
     "setPasswordInfo": "Du har ikke angitt et passord ennå. Med et passord kan du logge inn direkte og bruke CalDAV.",
-    "showTaskContextMenu": "Vis knapp for kontekstmeny",
-    "showTaskContextMenuDescription": "Viser en knapp med tre prikker på hver oppgave med handlingene Rediger og Slett",
     "sidebarFeatureOff": "Av i Funksjoner",
     "sidebarLayoutDescription": "Dette er en forhåndsvisning av sidefeltet. Bruk bryterne til å velge hva som vises, og dra i håndtakene for å endre rekkefølgen.",
     "sidebarLayoutHint": "Maler og Tilgang blir liggende nederst. Elementer som er av i Funksjoner, forblir skjult til du slår på funksjonen.",
@@ -844,8 +843,6 @@
     "sidebarSectionDescription": "Vis seksjonen {{name}} i sidefeltet.",
     "sidebarShowItem": "Vis {{name}}",
     "systemMode": "System",
-    "taskItem": "Oppgaveelement",
-    "tasks": "Oppgaver",
     "telegram": {
       "botName": "Botnavn:"
     },
