@@ -291,24 +291,6 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 
             <PushDeviceCard onStateChange={setPushState} />
 
-            {/* Telegram Not Configured Warning */}
-            {!telegramConfigured && (
-                <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                    <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                        <span className="font-medium">
-                            {t(
-                                'notifications.telegram.notConfigured.title',
-                                'Telegram Not Configured:'
-                            )}
-                        </span>{' '}
-                        {t(
-                            'notifications.telegram.notConfigured.message',
-                            'To receive Telegram notifications, please configure your Telegram bot in the Telegram tab.'
-                        )}
-                    </p>
-                </div>
-            )}
-
             {/* Notifications Table */}
             <div className="overflow-x-auto">
                 <table className="w-full">
