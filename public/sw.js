@@ -12,6 +12,12 @@ const SYNC_QUEUE = 'tududi-sync-queue';
 // made; replaying one later could tie the device to the wrong account.
 const NO_QUEUE_PATHS = ['/api/inbox/analyze-text', '/api/push/'];
 
+// The development build registers this worker as /sw.js?push-only so push
+// notifications can be tried on the dev server. In that mode nothing is
+// cached and no request is intercepted, so hot reloading keeps serving
+// fresh code.
+const PUSH_ONLY = new URL(self.location.href).searchParams.has('push-only');
+
 // Set via SESSION_UPDATE message from the client after login.
 // Used to tag queued mutations and detect cross-principal replays.
 let sessionUserId = null;
@@ -27,6 +33,10 @@ const STATIC_ASSETS = [
 // ─── Install ────────────────────────────────────────────────────────────────
 
 self.addEventListener('install', (event) => {
+    if (PUSH_ONLY) {
+        self.skipWaiting();
+        return;
+    }
     event.waitUntil(
         caches.open(CACHE_VERSION).then((cache) => cache.addAll(STATIC_ASSETS))
     );
@@ -86,6 +96,8 @@ async function purgeQueue() {
 // ─── Fetch ───────────────────────────────────────────────────────────────────
 
 self.addEventListener('fetch', (event) => {
+    if (PUSH_ONLY) return;
+
     const { request } = event;
     const url = new URL(request.url);
 

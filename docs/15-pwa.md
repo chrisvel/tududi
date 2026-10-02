@@ -215,7 +215,7 @@ Push requests bypass the offline mutation queue.
 
 ### Testing locally
 
-The service worker only registers in production builds, so run `npm run build` and serve the backend on one port to try push in a desktop browser. Phones need an HTTPS address (a staging deployment or a tunnel).
+On the dev server (`npm start`, `localhost:8080`) the push-only worker is enough to try push in a desktop browser. Phones need an HTTPS address (a staging deployment or a tunnel).
 
 ---
 
@@ -253,10 +253,10 @@ Both functions handle the case where the SW has not yet taken control of the pag
 
 ## Development Mode
 
-The service worker is **not registered** when `NODE_ENV !== 'production'`. Instead, `frontend/index.tsx` actively unregisters any existing SWs and clears all caches at startup. This prevents stale cached responses from interfering with live development.
+In development the service worker is registered as `/sw.js?push-only`. In that mode it caches nothing and intercepts no requests (no offline queue either), so hot reloading always serves fresh code, but push notifications work on `localhost:8080`. `frontend/index.tsx` still unregisters any other worker (for example a full one left by a production build on the same origin) and clears all caches at startup.
 
 ```typescript
-// In frontend/index.tsx (dev only)
+// In frontend/index.tsx (dev only, simplified: the push-only worker is kept)
 if (isDevelopment && 'serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then((registrations) => {
         registrations.forEach((r) => r.unregister());
