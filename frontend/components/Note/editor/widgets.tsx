@@ -5,14 +5,13 @@ import MermaidDiagram from '../../Shared/MermaidDiagram';
 import { CALLOUT_CONFIG, CalloutType } from '../../Shared/CalloutBlock';
 import { isSafeImageUrl, renderInline } from './inlineMarkdown';
 
-const isEditable = (view: EditorView): boolean =>
-    !view.state.readOnly && view.state.facet(EditorView.editable);
-
 // Clicking a rendered block puts the caret at its start, which reveals the
 // Markdown source (the block widget is only shown while the selection is
-// outside the block).
+// outside the block). In a note open for reading the press is left to the
+// browser, so the block's text can be selected and copied.
 const revealSourceOnMouseDown = (dom: HTMLElement, view: EditorView) => {
     dom.addEventListener('mousedown', (event) => {
+        if (!view.state.facet(EditorView.editable)) return;
         event.preventDefault();
         view.dispatch({
             selection: { anchor: view.posAtDOM(dom) },
@@ -66,7 +65,9 @@ export class CheckboxWidget extends WidgetType {
         wrap.append(input);
         wrap.addEventListener('mousedown', (event) => {
             event.preventDefault();
-            if (!isEditable(view)) return;
+            // Ticking stays possible while a note is open for reading; only
+            // a read-only note blocks it.
+            if (view.state.readOnly) return;
             // The widget replaces "[ ]" / "[x]", so the state character is
             // the one right after the widget start.
             const pos = view.posAtDOM(wrap) + 1;
@@ -112,20 +113,60 @@ export class CalloutTitleWidget extends WidgetType {
     }
 }
 
+const COPY_ICON =
+    '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg>';
+const CHECK_ICON =
+    '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>';
+
 export class CodeLangWidget extends WidgetType {
-    constructor(readonly label: string) {
+    constructor(
+        readonly label: string,
+        readonly code: string = ''
+    ) {
         super();
     }
 
     eq(other: CodeLangWidget): boolean {
-        return other.label === this.label;
+        return other.label === this.label && other.code === this.code;
     }
 
     toDOM(): HTMLElement {
         const el = document.createElement('span');
         el.className = 'cm-md-code-lang';
-        el.textContent = this.label;
+        const label = document.createElement('span');
+        label.textContent = this.label;
+        el.append(label);
+
+        const copy = document.createElement('button');
+        copy.type = 'button';
+        copy.className = 'cm-md-code-copy';
+        copy.title = 'Copy code';
+        copy.setAttribute('aria-label', 'Copy code');
+        copy.innerHTML = COPY_ICON;
+        // Keep the press from placing the caret in the block, which would
+        // swap it for its source before the click lands.
+        copy.addEventListener('mousedown', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        copy.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            void navigator.clipboard?.writeText(this.code).then(() => {
+                copy.innerHTML = CHECK_ICON;
+                copy.title = 'Copied';
+                window.setTimeout(() => {
+                    copy.innerHTML = COPY_ICON;
+                    copy.title = 'Copy code';
+                }, 1500);
+            });
+        });
+        el.append(copy);
         return el;
+    }
+
+    ignoreEvent(): boolean {
+        return true;
     }
 }
 
