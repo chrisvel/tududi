@@ -109,6 +109,7 @@ const TaskContentCard: React.FC<TaskContentCardProps> = ({
                                     <MarkdownRenderer
                                         content={editedContent}
                                         className="prose dark:prose-invert max-w-none"
+                                        onContentChange={setEditedContent}
                                     />
                                 ) : (
                                     <p className="text-gray-500 dark:text-gray-400 italic">

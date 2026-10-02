@@ -10,6 +10,7 @@ import hljs from 'highlight.js';
 import CalloutBlock from './CalloutBlock';
 import MermaidDiagram, { getMermaidSource } from './MermaidDiagram';
 import { detectCallout } from '../../utils/calloutParser';
+import { toggleTaskListItem } from '../../utils/markdownTaskList';
 import { useStore } from '../../store/useStore';
 
 const WIKILINK_PREFIX = '/__wikilink__/';
@@ -220,29 +221,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     // Reset on each render
     checkboxIndexRef.current = -1;
 
-    // Function to toggle checkbox at a specific index
     const toggleCheckbox = (checkboxIndex: number) => {
         if (!onContentChange) return;
-
-        const lines = content.split('\n');
-        let currentCheckboxIndex = -1;
-
-        const newLines = lines.map((line) => {
-            // Match task list items: - [ ] or - [x] or - [X]
-            const match = line.match(/^(\s*-\s*)\[([ xX])\](.*)$/);
-            if (match) {
-                currentCheckboxIndex++;
-                if (currentCheckboxIndex === checkboxIndex) {
-                    const indent = match[1];
-                    const isChecked = match[2].toLowerCase() === 'x';
-                    const rest = match[3];
-                    return `${indent}[${isChecked ? ' ' : 'x'}]${rest}`;
-                }
-            }
-            return line;
-        });
-
-        onContentChange(newLines.join('\n'));
+        const next = toggleTaskListItem(content, checkboxIndex);
+        if (next !== content) onContentChange(next);
     };
 
     return (
