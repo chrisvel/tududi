@@ -547,7 +547,7 @@ const InboxItems: React.FC = () => {
 
                 {/* ── Item list ────────────────────────────────────────────── */}
                 {inboxItems.length > 0 && (
-                    <>
+                    <div className="w-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-1.5">
                         {/* Recently captured – collapsible header */}
                         <button
                             onClick={() =>
@@ -559,7 +559,7 @@ const InboxItems: React.FC = () => {
                                     return next;
                                 })
                             }
-                            className="flex items-center gap-2.5 w-full px-4 py-2.5 mt-1 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
+                            className="flex items-center gap-2.5 w-full px-4 py-2.5 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
                         >
                             <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
                                 {t('inbox.recentlyCaptured', 'Recently captured')}
@@ -636,7 +636,7 @@ const InboxItems: React.FC = () => {
                                 </div>
                             </div>
                         )}
-                    </>
+                    </div>
                 )}
 
                 {(() => {
