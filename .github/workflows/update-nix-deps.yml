@@ -1,0 +1,41 @@
+name: Update Nix Deps Hash
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'package-lock.json'
+      - '.github/workflows/update-nix-deps.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-deps:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v27
+      with:
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+
+    - name: Update npm deps hash
+      run: bash nix/update-deps.sh
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v6
+      with:
+        commit-message: 'chore: update nix npm deps hash'
+        title: 'chore: update nix npm deps hash'
+        body: |
+          Automated update of the npm dependencies hash in `nix/tududi.nix`
+          triggered by a change to `package-lock.json` on `main`.
+        branch: chore/update-nix-deps-hash
+        delete-branch: true
+        add-paths: nix/tududi.nix
