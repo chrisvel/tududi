@@ -15,6 +15,8 @@ const DEFAULT_PLANS = {
             storage_mb: 50,
             ai_requests_per_month: 0,
             ai_credits_per_month: 0,
+            // Members an owner may add, each a paid seat on its subscription.
+            max_members: 0,
         },
         features: {
             ai: false,
@@ -34,6 +36,7 @@ const DEFAULT_PLANS = {
             storage_mb: 5000,
             ai_requests_per_month: 200,
             ai_credits_per_month: 50,
+            max_members: 10,
         },
         features: {
             ai: true,

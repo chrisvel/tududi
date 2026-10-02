@@ -1,4 +1,5 @@
 const { Role, User, sequelize } = require('../models');
+const { getConfig } = require('../config/config');
 const { ValidationError, ForbiddenError } = require('../shared/errors');
 
 const ROLES = ['admin', 'user', 'guest'];
@@ -62,6 +63,23 @@ function effectiveCapabilities(role, overrides) {
     return capabilities;
 }
 
+// On a hosted instance every customer owns a small workspace: an account
+// that signed up by itself may add members, who then take a seat on its
+// subscription. Members it added (created_by_user_id set) may not add their
+// own, so one account always pays. A self-hosted instance keeps the role
+// defaults.
+async function withOwnerCapabilities(userId, role, capabilities) {
+    if (getConfig().hosted?.enabled !== true) return capabilities;
+    if (role !== 'user' || capabilities.invite_members) return capabilities;
+    if (!userId) return capabilities;
+
+    const user = await User.findByPk(userId, {
+        attributes: ['id', 'created_by_user_id'],
+    });
+    if (!user || user.created_by_user_id != null) return capabilities;
+    return { ...capabilities, invite_members: true };
+}
+
 async function isAdmin(userUidOrId) {
     const userId = await resolveUserId(userUidOrId);
     if (!userId) return false;
@@ -78,7 +96,11 @@ async function getRoleInfo(userUidOrId) {
     const role = effectiveRole(row);
     return {
         role,
-        capabilities: effectiveCapabilities(role, row && row.capabilities),
+        capabilities: await withOwnerCapabilities(
+            userId,
+            role,
+            effectiveCapabilities(role, row && row.capabilities)
+        ),
     };
 }
 
@@ -95,7 +117,12 @@ async function can(userUidOrId, capability) {
     }
 
     const role = effectiveRole(row);
-    return effectiveCapabilities(role, row && row.capabilities)[capability];
+    const capabilities = await withOwnerCapabilities(
+        userId,
+        role,
+        effectiveCapabilities(role, row && row.capabilities)
+    );
+    return capabilities[capability];
 }
 
 async function assertCan(userUidOrId, capability) {
@@ -225,6 +252,7 @@ module.exports = {
     isAdmin,
     effectiveRole,
     effectiveCapabilities,
+    withOwnerCapabilities,
     getRoleInfo,
     can,
     assertCan,

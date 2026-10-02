@@ -61,6 +61,7 @@ const { User, Role } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
 const entitlements = require('../../services/entitlementsService');
 const { eraseUserAccount } = require('../../services/accountErasureService');
+const seatsService = require('../../services/seatsService');
 const secretCipher = require('../../shared/crypto/secretCipher');
 const {
     createApiToken,
@@ -407,7 +408,14 @@ class UsersService {
             }
         }
 
+        const member = await User.findByPk(userId, {
+            attributes: ['created_by_user_id'],
+        });
         await eraseUserAccount(userId);
+        // A member leaving frees its seat on the owner's subscription.
+        if (member?.created_by_user_id != null) {
+            await seatsService.reconcile(member.created_by_user_id);
+        }
         return { success: true };
     }
 

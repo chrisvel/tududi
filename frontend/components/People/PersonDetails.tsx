@@ -15,6 +15,8 @@ import { fetchPersonByUid, updatePerson, deletePerson } from '../../utils/people
 import { useToast } from '../Shared/ToastContext';
 import PersonModal from './PersonModal';
 import SignInLinkModal from './SignInLinkModal';
+import MemberEditModal from './MemberEditModal';
+import { removeMember } from '../../utils/membersService';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 
 const RELATIONSHIP_LABELS: Record<string, string> = {
@@ -35,6 +37,8 @@ const PersonDetails: React.FC = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [signInLinkOpen, setSignInLinkOpen] = useState(false);
+    const [memberEditOpen, setMemberEditOpen] = useState(false);
+    const [memberRemoveOpen, setMemberRemoveOpen] = useState(false);
 
     const load = async () => {
         if (!uid) return;
@@ -92,6 +96,23 @@ const PersonDetails: React.FC = () => {
             setIsConfirmDialogOpen(false);
         }
     };
+
+    const handleRemoveMember = async () => {
+        if (person?.linked_user_id == null) return;
+        try {
+            await removeMember(person.linked_user_id);
+            showSuccessToast('Member removed');
+            navigate('/people');
+        } catch (err: unknown) {
+            showErrorToast(err instanceof Error ? err.message : 'Failed to remove member');
+        } finally {
+            setMemberRemoveOpen(false);
+        }
+    };
+
+    // A member you added: you can rename it, give it an email, or remove it.
+    const managesMember =
+        person?.kind === 'member' && person.can_manage === true && person.can_edit === false;
 
     if (loading) {
         return (
@@ -151,7 +172,7 @@ const PersonDetails: React.FC = () => {
                                 )}
                             </div>
                         </div>
-                        {(person.can_edit !== false || person.can_sign_in_link) && (
+                        {(person.can_edit !== false || person.can_sign_in_link || managesMember) && (
                         <div className="flex items-center gap-1 flex-shrink-0">
                             {person.can_sign_in_link && (
                             <button
@@ -166,6 +187,34 @@ const PersonDetails: React.FC = () => {
                             >
                                 <LinkIcon className="h-5 w-5" />
                             </button>
+                            )}
+                            {managesMember && (
+                            <>
+                            <button
+                                onClick={() => setMemberEditOpen(true)}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    hasColor
+                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                                title="Edit member"
+                                data-testid="member-edit"
+                            >
+                                <PencilSquareIcon className="h-5 w-5" />
+                            </button>
+                            <button
+                                onClick={() => setMemberRemoveOpen(true)}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    hasColor
+                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                        : 'text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                                title="Remove member"
+                                data-testid="member-remove"
+                            >
+                                <TrashIcon className="h-5 w-5" />
+                            </button>
+                            </>
                             )}
                             {person.can_edit !== false && (
                             <button
@@ -291,6 +340,28 @@ const PersonDetails: React.FC = () => {
                     memberId={person.linked_user_id}
                     memberName={person.name}
                     onClose={() => setSignInLinkOpen(false)}
+                />
+            )}
+
+            {memberEditOpen && (
+                <MemberEditModal
+                    person={person}
+                    onSaved={(member) => {
+                        showSuccessToast(
+                            member.invited ? 'Invitation sent' : 'Member updated'
+                        );
+                        load();
+                    }}
+                    onClose={() => setMemberEditOpen(false)}
+                />
+            )}
+
+            {memberRemoveOpen && (
+                <ConfirmDialog
+                    title="Remove member"
+                    message={`Remove ${person.name}? Their account and everything in it is deleted, and this cannot be undone. On tududi Cloud their seat is taken off your subscription.`}
+                    onConfirm={handleRemoveMember}
+                    onCancel={() => setMemberRemoveOpen(false)}
                 />
             )}
 

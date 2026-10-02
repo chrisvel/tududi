@@ -27,6 +27,7 @@ The catalog lives in `backend/config/plans.js`:
 | Notes | 50 | unlimited |
 | Attachment storage | 50 MB | 5 GB |
 | AI requests per month | 0 | 200 |
+| Members an owner may add, each a paid seat (`max_members`) | 0 | 10 |
 | AI assistant, MCP, CalDAV, Telegram, backup import | no | yes |
 
 `null` means unlimited. Override any number with `TUDUDI_PLANS_JSON`, a JSON
@@ -64,6 +65,41 @@ make it theirs in name only:
 
 The flag is meaningless when hosted mode is off, so a self-hosted instance
 is never gated. Leave it unset for the usual free-tier-plus-Pro shape.
+
+## Seats: customers add members
+
+On a hosted instance every customer owns a small workspace. An account that
+signed up by itself (no `created_by_user_id`) gets the `invite_members`
+permission without being an admin, so it can add members from the People
+page: a partner with an email, or a child without one. Members it adds
+cannot add members of their own, so exactly one account pays. The instance
+admin is still the only admin; a customer never gets `is_admin`, which would
+bypass every access check.
+
+Each member is one more seat. The owner's subscription quantity is the owner
+plus its members (`billing_accounts.seat_quantity`, the provider line item in
+`provider_subscription_item_id`), kept in line by
+`backend/services/seatsService.js`:
+
+- **Adding** a member raises the quantity first, through the provider
+  (`updateSeats`, `PATCH /subscription-items/:id` on Lemon Squeezy). If the
+  provider refuses, nothing is created. The change is prorated onto the next
+  invoice, so nothing is charged on the spot.
+- **Removing** a member (`DELETE /api/members/:id`, the member deleting
+  their own account, or an admin deleting it) lowers the quantity again. A
+  failed decrease is logged and corrected by the next sync.
+- **Webhooks**: a new or changed subscription is brought up to the members
+  the owner already has, so an owner who resubscribes is billed for them.
+- **Who may add**: only an owner with a subscription, its grace window, or an
+  admin override, and only up to `max_members`. Without one the request
+  answers `402 SUBSCRIPTION_REQUIRED`; past the limit `402
+  PLAN_LIMIT_REACHED`.
+
+A member with nothing of its own is covered by its owner: `getEntitlements`
+returns the owner's plan with `reason: 'seat'` and `seat_owner`. When the
+owner stops paying, its members hit the paywall with it (export stays open).
+Accounts the instance admin creates are not covered this way, since the admin
+pays for nothing; give those an override instead.
 
 ## How limits are enforced
 

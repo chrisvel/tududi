@@ -85,6 +85,8 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 14c. **An account is part of the workspace of whoever created it, and of the accounts it created.** A new member therefore shows up in your lists straight away, before anything is shared. Two accounts made by the same person are not connected to each other, and erasing the creator leaves its accounts in place. Accounts that were made before creators were recorded get one from an old contact link when the app updates: an admin who owns a contact card linked to the account is taken as its creator (the oldest card if several admins have one). Accounts with no such card, and cards owned by ordinary users, are left without a creator.
 
+14h. **Whoever added a member can rename it, give it an email, or remove it.** Renaming changes the account and its person. An email can only be added to a member that has none, which sends the invitation; an email that is set cannot be changed this way, so whoever made the account cannot take over its sign-in. Removing deletes the account and everything in it. An admin can do the same for any member who is not an admin. Anyone else is told the member does not exist (`PATCH` and `DELETE /api/members/:id`).
+
 ### Turning a contact into a member
 
 14d. **Give account, on a contact's menu, turns that contact into a member.** The form is the same as Add member, filled in from the contact. The contact becomes the account's own person and keeps its history, so tasks that were assigned to it stay assigned and nobody ends up with two entries. The contact's phone number, color and relationship are kept. An email is used if you give one.
@@ -98,6 +100,8 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 15. **There are three roles: admin, user and guest.** Admin manages accounts, roles and groups and can do everything. A user can add people and create projects, areas and goals. A guest works inside what is shared with them or assigned to them and creates none of those.
 
 16. **The capabilities are `create_people`, `invite_members` and `create_projects`.** `invite_members` lets an account add members (see above). An account gets them from its role: an admin has all three, a user can add people and create projects, and a guest has none. The role table and where the server enforces them are in [User Management](08-user-management.md#user-roles--permissions).
+
+16b. **On tududi Cloud every customer owns a workspace.** With hosted mode on, an account that signed up by itself has `invite_members` without being an admin, and each member it adds is a paid seat on its subscription. Members it added cannot add their own. See [Hosted Mode](17-hosted-mode.md#seats-customers-add-members).
 
 17. **The Roles tab in Admin > Access shows each role, how many accounts hold it and what it may do.** The role of an account is chosen in the Users tab when adding or editing it. That form lists what the chosen role allows, but cannot change it for one account. The roles themselves are fixed for now.
 
@@ -115,7 +119,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 | Endpoint | What it does |
 | --- | --- |
-| `GET /api/people` | The People list: your own person and contacts plus your workspace's members. Each entry has `kind` (`member` or `contact`), `can_edit`, and for a member `account_status`. Asking for `relationship_type`, `unlinked` or the archive returns only your own cards |
+| `GET /api/people` | The People list: your own person and contacts plus your workspace's members. Each entry has `kind` (`member` or `contact`), `can_edit`, and for a member `account_status`, `can_sign_in_link` and `can_manage` (you added it, or you are an admin). Asking for `relationship_type`, `unlinked` or the archive returns only your own cards |
 | `GET /api/people/assignable` | The same list, for tasks outside a project |
 | `GET /api/people/:uid` | One person. A member of your workspace can be opened, read only |
 | `POST /api/members` | Add a member, or with `person_uid` turn one of your contacts into a member. Needs `invite_members` |
@@ -125,6 +129,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 | `GET /api/everyone` | The Everyone board |
 | `GET /api/admin/roles` | The three roles, their default capabilities and how many accounts hold each (admin) |
 | `POST /api/admin/users`, `PUT /api/admin/users/:id` | Create or change an account, including `role`, `capabilities` and an optional email (admin) |
+| `PATCH /api/members/:id`, `DELETE /api/members/:id` | Rename a member you added or give it an email (which invites it), or remove it with all its data. Creator or admin; on Cloud removing gives the seat back |
 | `POST /api/members/:id/sign-in-link`, `DELETE /api/members/:id/sign-in-link` | Create a sign-in link for a member without an email (`201`, `{ url, path, expires_at }`), or take access back (`204`). Creator or admin |
 | `POST /api/sign-in-link/peek`, `POST /api/sign-in-link/redeem` | Public. Peek says whose link a token is (first name only), redeem signs in and uses the link up. The token goes in the body |
 
@@ -135,4 +140,4 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 - A member without an email signs in only with a link that someone makes for them. There is no PIN, and the link is not sent for you, since there is nowhere to send it.
 - Your People list only shows your workspace. An admin sees every account in Admin > Access, but not on the People page, unless they share something with it, are in a group with it, or created it.
 - Contacts and members are separate records. Turning a contact into a member merges them. Linking a contact to an existing account keeps both, and assignee lists show that person only once.
-- The Roles tab is read only. The set of roles and their defaults live in code, so no permission can be given to a user or guest yet. That means only an admin can add members for now, since the invite permission belongs to the admin role.
+- The Roles tab is read only. The set of roles and their defaults live in code, so no permission can be given to a user or guest yet. On a self-hosted instance that means only an admin can add members, since the invite permission belongs to the admin role. On tududi Cloud every self-registered account can (rule 16b).
