@@ -64,7 +64,7 @@ class NotificationsService {
     async triggerTestNotification(userId, testType) {
         const { User, Notification } = require('../../models');
         const {
-            shouldSendTelegramNotification,
+            deliverySources,
             ensureNotificationPreferences,
         } = require('../../utils/notificationPreferences');
 
@@ -138,10 +138,7 @@ class NotificationsService {
             throw new Error(`Invalid test type: ${testType}`);
         }
 
-        const sources = [];
-        if (shouldSendTelegramNotification(user, config.preferenceKey)) {
-            sources.push('telegram');
-        }
+        const sources = deliverySources(user, config.preferenceKey);
 
         const notification = await Notification.createNotification({
             userId: user.id,

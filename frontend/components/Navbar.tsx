@@ -28,6 +28,7 @@ import {
     invalidateProfileCache,
 } from '../utils/profileService';
 import { notifySwClearCache } from '../utils/swUtils';
+import { detachPushForLogout } from '../utils/pushService';
 import { resetSessionState } from '../utils/sessionReset';
 import { toggleCapture, useCaptureUi } from '../utils/captureUi';
 
@@ -163,6 +164,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
     const handleLogout = async () => {
         invalidateProfileCache();
+        await detachPushForLogout();
         try {
             const response = await fetch(getApiPath('logout'), {
                 method: 'GET',

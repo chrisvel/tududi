@@ -6,7 +6,7 @@ const taskEventService = require('../tasks/taskEventService');
 const { resolveAssigneeUser } = require('../tasks/operations/assignment');
 const {
     shouldSendInAppNotification,
-    shouldSendTelegramNotification,
+    deliverySources,
 } = require('../../utils/notificationPreferences');
 const { logError } = require('../../services/logService');
 const {
@@ -191,12 +191,7 @@ async function notifyAboutComment(
                 shouldSendInAppNotification(parentAuthor, 'comment_added')
             ) {
                 notified.add(parentAuthor.id);
-                const sources = shouldSendTelegramNotification(
-                    parentAuthor,
-                    'comment_added'
-                )
-                    ? ['telegram']
-                    : [];
+                const sources = deliverySources(parentAuthor, 'comment_added');
                 await Notification.createNotification({
                     userId: parentAuthor.id,
                     type: 'comment_added',
@@ -221,12 +216,7 @@ async function notifyAboutComment(
             if (!shouldSendInAppNotification(mentionedUser, 'mention')) {
                 continue;
             }
-            const sources = shouldSendTelegramNotification(
-                mentionedUser,
-                'mention'
-            )
-                ? ['telegram']
-                : [];
+            const sources = deliverySources(mentionedUser, 'mention');
 
             await Notification.createNotification({
                 userId: mentionedUser.id,
@@ -263,12 +253,7 @@ async function notifyAboutComment(
             if (!shouldSendInAppNotification(recipient, 'comment_added')) {
                 continue;
             }
-            const sources = shouldSendTelegramNotification(
-                recipient,
-                'comment_added'
-            )
-                ? ['telegram']
-                : [];
+            const sources = deliverySources(recipient, 'comment_added');
 
             await Notification.createNotification({
                 userId: recipient.id,

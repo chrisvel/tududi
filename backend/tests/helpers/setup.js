@@ -51,6 +51,7 @@ const CLEANUP_TABLES = [
     'usage_counters',
     'waitlist_subscribers',
     'feedback',
+    'push_subscriptions',
     'billing_events',
     'billing_accounts',
     'notifications',

@@ -2458,7 +2458,8 @@
       "dueProjects": "Due Projects",
       "overdueProjects": "Overdue Projects",
       "taskAssigned": "Task Assigned",
-      "habitReminders": "Habit Reminders"
+      "habitReminders": "Habit Reminders",
+      "comments": "Comments & Mentions"
     },
     "descriptions": {
       "dueTasks": "Tasks that are due within 24 hours",
@@ -2467,7 +2468,8 @@
       "dueProjects": "Projects that are due within 24 hours",
       "overdueProjects": "Projects that have passed their due date",
       "taskAssigned": "A task was assigned to you by someone else",
-      "habitReminders": "At the reminder time set on a habit, while it is still open"
+      "habitReminders": "At the reminder time set on a habit, while it is still open",
+      "comments": "Replies, comments on your tasks, and @mentions"
     },
     "telegram": {
       "notConfigured": {
@@ -2477,13 +2479,27 @@
     },
     "test": {
       "title": "Test Notifications",
-      "description": "Send a test notification to see how it appears in-app and on enabled channels (Telegram, etc.)",
+      "description": "Send a test notification to see how it appears in-app and on enabled channels (Telegram, Push)",
       "send": "Send Test",
       "sending": "Sending..."
     },
     "info": {
       "title": "Note:",
-      "message": "Email and Push notifications are coming soon. In-app and Telegram notifications are currently available."
+      "message": "Email notifications are coming soon. In-app, Push and Telegram notifications are available."
+    },
+    "push": {
+      "title": "Push notifications on this device",
+      "prompt": "Get notifications on this device even when tududi is closed.",
+      "subscribed": "This device receives push notifications. Choose which ones in the Push column below.",
+      "needsInstall": "To get notifications on iPhone or iPad, add tududi to your Home Screen first: tap Share, then Add to Home Screen, and open it from there.",
+      "unsupported": "This browser does not support push notifications.",
+      "denied": "Notifications are blocked for tududi. Allow them in your browser or system settings, then come back here.",
+      "enable": "Turn on",
+      "disable": "Turn off",
+      "test": "Send test",
+      "testSent": "Test notification sent.",
+      "testNone": "No device accepted the notification. Try turning push off and on again.",
+      "failed": "Something went wrong. Please try again."
     }
   },
   "aiAssistant": {

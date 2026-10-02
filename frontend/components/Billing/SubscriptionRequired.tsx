@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
+import { detachPushForLogout } from '../../utils/pushService';
 import {
     fetchBillingStatus,
     fetchBillingCatalog,
@@ -80,6 +81,7 @@ const SubscriptionRequired: React.FC = () => {
     };
 
     const onSignOut = async () => {
+        await detachPushForLogout();
         try {
             await fetch(getApiPath('logout'), {
                 method: 'GET',

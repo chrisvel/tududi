@@ -184,6 +184,7 @@
     "swagger-ui-express": "^5.0.1",
     "umzug": "^2.3.0",
     "use-debounce": "^10.0.6",
+    "web-push": "^3.6.7",
     "xml2js": "^0.6.0"
   },
   "overrides": {

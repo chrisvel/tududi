@@ -218,6 +218,12 @@ module.exports = (sequelize) => {
                         push: false,
                         telegram: false,
                     },
+                    comments: {
+                        inApp: true,
+                        email: false,
+                        push: false,
+                        telegram: false,
+                    },
                 },
             },
             keyboard_shortcuts: {

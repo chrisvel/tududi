@@ -65,6 +65,7 @@ import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
+import { resyncPush } from './utils/pushService';
 import { resetSessionState } from './utils/sessionReset';
 import {
     clearSharedText,
@@ -117,6 +118,7 @@ const App: React.FC = () => {
                 setCurrentUser(data.user);
                 setUserInStorage(data.user);
                 notifySwSession(data.user.id);
+                resyncPush(data.user.uid);
                 useStore
                     .getState()
                     .userSettingsStore.setEisenhowerEnabled(

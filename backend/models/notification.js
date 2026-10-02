@@ -74,7 +74,12 @@ module.exports = (sequelize) => {
                         if (!Array.isArray(value)) {
                             throw new Error('Sources must be an array');
                         }
-                        const validSources = ['telegram', 'mobile', 'email'];
+                        const validSources = [
+                            'telegram',
+                            'mobile',
+                            'email',
+                            'push',
+                        ];
                         const invalidSources = value.filter(
                             (s) => !validSources.includes(s)
                         );
@@ -177,8 +182,37 @@ module.exports = (sequelize) => {
             );
         }
 
+        if (sources.includes('push')) {
+            await sendPushNotification(notification);
+        }
+
         return notification;
     };
+
+    async function sendPushNotification(notificationInstance) {
+        try {
+            // Due and overdue checks delete and recreate the same reminder,
+            // carrying channel_sent_at over, so this keeps a phone from
+            // buzzing on every scheduler run.
+            if (
+                notificationInstance.wasChannelRecentlySent(
+                    'push',
+                    24 * 60 * 60 * 1000
+                )
+            ) {
+                return;
+            }
+
+            const pushService = require('../modules/push/service');
+            const delivered =
+                await pushService.sendNotification(notificationInstance);
+            if (delivered > 0) {
+                await notificationInstance.markChannelAsSent('push');
+            }
+        } catch (error) {
+            console.error('Failed to send push notification:', error);
+        }
+    }
 
     async function sendEmailNotification(
         userId,

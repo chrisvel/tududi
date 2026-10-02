@@ -8,10 +8,13 @@ import {
     FolderOpenIcon,
     ClockIcon,
     FireIcon,
+    ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
 import type { NotificationPreferences } from '../types';
 import { getCsrfToken } from '../../../utils/csrfService';
 import { FORM } from '../../../constants/formClasses';
+import PushDeviceCard from './PushDeviceCard';
+import { PushState, countPushDevices } from '../../../utils/pushService';
 
 interface NotificationsTabProps {
     isActive: boolean;
@@ -37,6 +40,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
         push: false,
         telegram: false,
     },
+    comments: { inApp: true, email: false, push: false, telegram: false },
 };
 
 interface NotificationTypeRowProps {
@@ -54,6 +58,7 @@ interface NotificationTypeRowProps {
         value: boolean
     ) => void;
     telegramConfigured: boolean;
+    pushAvailable: boolean;
 }
 
 const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
@@ -63,6 +68,7 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
     preferences,
     onToggle,
     telegramConfigured,
+    pushAvailable,
 }) => {
     const renderToggle = (
         channel: 'inApp' | 'email' | 'push' | 'telegram',
@@ -113,7 +119,7 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
                 {renderToggle('email', preferences.email, false)}
             </td>
             <td className="py-4 px-4 text-center">
-                {renderToggle('push', preferences.push, false)}
+                {renderToggle('push', preferences.push, pushAvailable)}
             </td>
             <td className="py-4 px-4 text-center">
                 {renderToggle(
@@ -137,6 +143,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         React.useState<string>('task_due_soon');
     const [testLoading, setTestLoading] = React.useState<boolean>(false);
     const [testMessage, setTestMessage] = React.useState<string>('');
+    const [pushState, setPushState] = React.useState<PushState | null>(null);
+    const [pushDevices, setPushDevices] = React.useState<number>(0);
 
     // Fetch profile data to check telegram configuration
     React.useEffect(() => {
@@ -145,8 +153,11 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 .then((res) => res.json())
                 .then((data) => setProfile(data))
                 .catch((err) => console.error('Failed to fetch profile', err));
+            countPushDevices()
+                .then(setPushDevices)
+                .catch(() => setPushDevices(0));
         }
-    }, [isActive]);
+    }, [isActive, pushState]);
 
     if (!isActive) return null;
 
@@ -160,6 +171,10 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
     const telegramConfigured = !!(
         profile?.telegram_bot_token && profile?.telegram_chat_id
     );
+
+    // Push toggles work once any device of this account can receive push,
+    // so they can be set from a desktop for a phone and the other way round.
+    const pushAvailable = pushState === 'subscribed' || pushDevices > 0;
 
     const handleToggle = (
         notificationType: keyof NotificationPreferences,
@@ -224,6 +239,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 )}
             </p>
 
+            <PushDeviceCard onStateChange={setPushState} />
+
             {/* Telegram Not Configured Warning */}
             {!telegramConfigured && (
                 <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
@@ -266,13 +283,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 </div>
                             </th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                <div className="flex items-center justify-center gap-1">
-                                    {t('notifications.channels.push', 'Push')}
-                                    <span className="text-[10px] text-gray-500 dark:text-gray-500 font-normal">
-                                        ({t('common.comingSoon', 'Coming Soon')}
-                                        )
-                                    </span>
-                                </div>
+                                {t('notifications.channels.push', 'Push')}
                             </th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 {t(
@@ -298,6 +309,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('dueTasks', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={ExclamationTriangleIcon}
@@ -314,6 +326,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('overdueTasks', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={ClockIcon}
@@ -330,6 +343,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('deferUntil', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={BellIcon}
@@ -346,6 +360,24 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('taskAssigned', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
+                        />
+                        <NotificationTypeRow
+                            icon={ChatBubbleLeftRightIcon}
+                            label={t(
+                                'notifications.types.comments',
+                                'Comments & Mentions'
+                            )}
+                            description={t(
+                                'notifications.descriptions.comments',
+                                'Replies, comments on your tasks, and @mentions'
+                            )}
+                            preferences={preferences.comments}
+                            onToggle={(channel, value) =>
+                                handleToggle('comments', channel, value)
+                            }
+                            telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={FireIcon}
@@ -362,6 +394,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('habitReminders', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={FolderIcon}
@@ -378,6 +411,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('dueProjects', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={FolderOpenIcon}
@@ -394,6 +428,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('overdueProjects', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                     </tbody>
                 </table>
@@ -408,7 +443,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 <p className="text-xs text-purple-700 dark:text-purple-300 mb-4">
                     {t(
                         'notifications.test.description',
-                        'Send a test notification to see how it appears in-app and on enabled channels (Telegram, etc.)'
+                        'Send a test notification to see how it appears in-app and on enabled channels (Telegram, Push)'
                     )}
                 </p>
                 <div className="flex items-center gap-3">
@@ -491,7 +526,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     </span>{' '}
                     {t(
                         'notifications.info.message',
-                        'Email and Push notifications are coming soon. In-app and Telegram notifications are currently available.'
+                        'Email notifications are coming soon. In-app, Push and Telegram notifications are available.'
                     )}
                 </p>
             </div>

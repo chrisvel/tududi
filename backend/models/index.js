@@ -106,6 +106,7 @@ const BillingEvent = require('./billing_event')(sequelize);
 const WaitlistSubscriber = require('./waitlist_subscriber')(sequelize);
 const UsageCounter = require('./usage_counter')(sequelize);
 const Feedback = require('./feedback')(sequelize);
+const PushSubscription = require('./push_subscription')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
@@ -114,6 +115,11 @@ User.hasMany(UsageCounter, { foreignKey: 'user_id', as: 'UsageCounters' });
 UsageCounter.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 User.hasMany(Feedback, { foreignKey: 'user_id', as: 'Feedback' });
 Feedback.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+User.hasMany(PushSubscription, {
+    foreignKey: 'user_id',
+    as: 'PushSubscriptions',
+});
+PushSubscription.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -659,4 +665,5 @@ module.exports = {
     WaitlistSubscriber,
     UsageCounter,
     Feedback,
+    PushSubscription,
 };
