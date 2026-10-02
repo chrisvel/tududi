@@ -60,7 +60,26 @@ jest.mock('../../../store/useStore', () => ({
 
 jest.mock('../../Shared/MarkdownRenderer', () => ({
     __esModule: true,
-    default: ({ content }: { content: string }) => <div>{content}</div>,
+    default: ({
+        content,
+        onContentChange,
+    }: {
+        content: string;
+        onContentChange?: (next: string) => void;
+    }) => (
+        <div>
+            {content}
+            {onContentChange && (
+                <input
+                    type="checkbox"
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() =>
+                        onContentChange(content.replace('[ ]', '[x]'))
+                    }
+                />
+            )}
+        </div>
+    ),
 }));
 
 // The status control + heavy editors are exercised elsewhere; keep this test
@@ -124,6 +143,28 @@ describe('TaskRow', () => {
         expect(screen.getByPlaceholderText('Add a note...')).toHaveValue(
             'Gate B, seat 12'
         );
+    });
+
+    it('saves the note when a checkbox in the preview is ticked (#1765)', async () => {
+        const updateTaskMock = tasksService.updateTask as jest.Mock;
+        updateTaskMock.mockReset();
+        updateTaskMock.mockResolvedValue(baseTask({ note: '- [x] milk' }));
+        renderRow(baseTask({ note: '- [ ] milk' }));
+        fireEvent.click(screen.getByText('Buy tickets'));
+
+        fireEvent.click(screen.getByRole('checkbox'));
+
+        await waitFor(() =>
+            expect(updateTaskMock).toHaveBeenCalledWith('task-1', {
+                note: '- [x] milk',
+            })
+        );
+        expect(screen.getByTestId('task-row-note-preview')).toHaveTextContent(
+            '- [x] milk'
+        );
+        expect(
+            screen.queryByPlaceholderText('Add a note...')
+        ).not.toBeInTheDocument();
     });
 
     it('shows no note preview for a task without a note', () => {

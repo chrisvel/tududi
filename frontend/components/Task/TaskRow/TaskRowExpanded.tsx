@@ -330,8 +330,12 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                         className="mt-2 max-h-72 overflow-y-auto rounded-md bg-gray-50 dark:bg-gray-800/60 px-2 py-1.5 text-sm cursor-text"
                     >
                         <MarkdownRenderer
-                            content={task.note}
+                            content={note}
                             className="prose prose-sm dark:prose-invert max-w-none break-words"
+                            onContentChange={(next) => {
+                                setNote(next);
+                                void setters.setNote(next);
+                            }}
                         />
                     </div>
                 )}
