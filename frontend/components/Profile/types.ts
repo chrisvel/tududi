@@ -107,6 +107,12 @@ export interface NotificationPreferences {
         push: boolean;
         telegram: boolean;
     };
+    comments: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
 }
 
 export interface Profile {

@@ -273,6 +273,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Background Sync for replaying queued mutations on reconnect
     - Session-scoped cache security (cleared on logout / 401)
     - Known limitations (sub-path deployments, iOS background sync, offline task creation)
+    - Web Push notifications for Android, iOS (Home Screen apps) and desktop
 
 25. **[PostgreSQL Deployment](docs/16-postgresql.md)**
     - Environment variables (`DATABASE_URL`, `DB_*`) and TLS

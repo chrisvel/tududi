@@ -144,6 +144,9 @@ LLM_DISABLE_THINKING=false    # true to send chat_template_kwargs.enable_thinkin
 
 # Optional - Integrations
 DISABLE_TELEGRAM=false
+# VAPID_PUBLIC_KEY=             # Web Push keys, generated and stored on
+# VAPID_PRIVATE_KEY=            # first use when unset (docs/15-pwa.md)
+# VAPID_SUBJECT=mailto:you@example.com
 GOOGLE_CLIENT_ID=your-google-oauth-client-id
 GOOGLE_CLIENT_SECRET=your-google-oauth-secret
 GOOGLE_REDIRECT_URI=http://localhost:8080/auth/google/callback

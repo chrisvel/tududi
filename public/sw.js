@@ -1,13 +1,22 @@
 // v2: manifest.json gained a share_target member, and the static cache is
 // cache-first — existing installs need the stale copy evicted to pick it up
-const CACHE_VERSION = 'tududi-v2';
+// v3: push notifications
+const CACHE_VERSION = 'tududi-v3';
 const API_CACHE = 'tududi-api-v1';
 const SYNC_QUEUE = 'tududi-sync-queue';
 
 // Non-GET endpoints with nothing worth replaying later (stateless reads
 // that happen to use a POST body). Queuing these would waste storage and
 // hand callers a stale/synthetic result instead of a real one.
-const NO_QUEUE_PATHS = ['/api/inbox/analyze-text'];
+// Push subscriptions belong to the device and session at the time they are
+// made; replaying one later could tie the device to the wrong account.
+const NO_QUEUE_PATHS = ['/api/inbox/analyze-text', '/api/push/'];
+
+// The development build registers this worker as /sw.js?push-only so push
+// notifications can be tried on the dev server. In that mode nothing is
+// cached and no request is intercepted, so hot reloading keeps serving
+// fresh code.
+const PUSH_ONLY = new URL(self.location.href).searchParams.has('push-only');
 
 // Set via SESSION_UPDATE message from the client after login.
 // Used to tag queued mutations and detect cross-principal replays.
@@ -24,6 +33,10 @@ const STATIC_ASSETS = [
 // ─── Install ────────────────────────────────────────────────────────────────
 
 self.addEventListener('install', (event) => {
+    if (PUSH_ONLY) {
+        self.skipWaiting();
+        return;
+    }
     event.waitUntil(
         caches.open(CACHE_VERSION).then((cache) => cache.addAll(STATIC_ASSETS))
     );
@@ -83,6 +96,8 @@ async function purgeQueue() {
 // ─── Fetch ───────────────────────────────────────────────────────────────────
 
 self.addEventListener('fetch', (event) => {
+    if (PUSH_ONLY) return;
+
     const { request } = event;
     const url = new URL(request.url);
 
@@ -317,6 +332,103 @@ async function replayQueuedRequests() {
     const clients = await self.clients.matchAll({ type: 'window' });
     clients.forEach((client) => client.postMessage({ type: 'SYNC_COMPLETE' }));
 }
+
+// ─── Push notifications ──────────────────────────────────────────────────────
+
+self.addEventListener('push', (event) => {
+    let payload = {};
+    try {
+        payload = event.data ? event.data.json() : {};
+    } catch {
+        payload = { body: event.data ? event.data.text() : '' };
+    }
+
+    // Always show something: iOS revokes the subscription of a site that
+    // receives a push without displaying a notification.
+    const title = payload.title || 'tududi';
+    event.waitUntil(
+        self.registration.showNotification(title, {
+            body: payload.body || '',
+            icon: '/icon-logo.png',
+            badge: '/favicon-48.png',
+            tag: payload.tag || undefined,
+            data: { url: payload.url || '/' },
+        })
+    );
+});
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    const target = new URL(
+        event.notification.data?.url || '/',
+        self.location.origin
+    );
+    // Only ever open pages of this app.
+    const url =
+        target.origin === self.location.origin
+            ? target.href
+            : self.location.origin;
+
+    event.waitUntil(
+        self.clients
+            .matchAll({ type: 'window', includeUncontrolled: true })
+            .then(async (windows) => {
+                const existing = windows.find(
+                    (client) =>
+                        new URL(client.url).origin === self.location.origin
+                );
+                if (existing) {
+                    await existing.focus();
+                    if ('navigate' in existing) {
+                        return existing.navigate(url).catch(() => undefined);
+                    }
+                    return undefined;
+                }
+                return self.clients.openWindow(url);
+            })
+    );
+});
+
+// Browsers that rotate a subscription (Chrome, Firefox) fire this; Safari
+// does not, and the app re-sends its subscription on every open instead.
+self.addEventListener('pushsubscriptionchange', (event) => {
+    event.waitUntil(
+        (async () => {
+            let applicationServerKey =
+                event.oldSubscription?.options?.applicationServerKey;
+            if (!applicationServerKey) {
+                const response = await fetch('/api/push/config', {
+                    credentials: 'include',
+                });
+                if (!response.ok) return;
+                applicationServerKey = (await response.json()).publicKey;
+            }
+
+            const subscription =
+                event.newSubscription ||
+                (await self.registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey,
+                }));
+
+            const csrf = await fetch('/api/csrf-token', {
+                credentials: 'include',
+            });
+            if (!csrf.ok) return;
+            const { csrfToken } = await csrf.json();
+
+            await fetch('/api/push/subscriptions', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken,
+                },
+                body: JSON.stringify(subscription.toJSON()),
+            });
+        })().catch(() => undefined)
+    );
+});
 
 // ─── IndexedDB helpers ───────────────────────────────────────────────────────
 

@@ -20,6 +20,7 @@ const DEFAULT_PREFERENCES = {
         push: false,
         telegram: false,
     },
+    comments: { inApp: true, email: false, push: false, telegram: false },
 };
 
 /**
@@ -31,6 +32,8 @@ const NOTIFICATION_TYPE_MAPPING = {
     project_due_soon: 'dueProjects',
     project_overdue: 'overdueProjects',
     task_assigned: 'taskAssigned',
+    comment_added: 'comments',
+    mention: 'comments',
 };
 
 /**
@@ -85,6 +88,36 @@ function shouldSendTelegramNotification(user, notificationType) {
 
     // Check if telegram channel is enabled (default to false if not set)
     return prefs[prefKey].telegram === true;
+}
+
+// Push is opt-in per type, like Telegram: off unless the user turned it on.
+function shouldSendPushNotification(user, notificationType) {
+    if (!user || !user.notification_preferences) {
+        return false;
+    }
+
+    const prefs = user.notification_preferences;
+    const prefKey =
+        NOTIFICATION_TYPE_MAPPING[notificationType] || notificationType;
+
+    if (!prefs[prefKey]) {
+        return false;
+    }
+
+    return prefs[prefKey].push === true;
+}
+
+// The extra delivery channels to pass as `sources` to
+// Notification.createNotification for one preference key.
+function deliverySources(user, notificationType) {
+    const sources = [];
+    if (shouldSendTelegramNotification(user, notificationType)) {
+        sources.push('telegram');
+    }
+    if (shouldSendPushNotification(user, notificationType)) {
+        sources.push('push');
+    }
+    return sources;
 }
 
 /**
@@ -143,6 +176,8 @@ function ensureNotificationPreferences(preferences) {
 module.exports = {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
+    shouldSendPushNotification,
+    deliverySources,
     getDefaultNotificationPreferences,
     ensureNotificationPreferences,
     NOTIFICATION_TYPE_MAPPING,

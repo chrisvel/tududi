@@ -395,6 +395,7 @@ const reportsModule = require('./modules/reports');
 const everyoneModule = require('./modules/everyone');
 const groupsModule = require('./modules/groups');
 const feedbackModule = require('./modules/feedback');
+const pushModule = require('./modules/push');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -519,6 +520,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, everyoneModule.routes);
     app.use(basePath, groupsModule.routes);
     app.use(basePath, feedbackModule.routes);
+    app.use(basePath, pushModule.routes);
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

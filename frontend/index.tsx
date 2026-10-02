@@ -18,9 +18,12 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 // the router reads it (see share_target in public/manifest.json)
 captureSharedPayload();
 
-if (!isDevelopment && 'serviceWorker' in navigator) {
+if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then((registration) => {
+        // Development gets the worker only for push notifications; caching
+        // and the offline queue would fight hot reloading.
+        const swUrl = isDevelopment ? '/sw.js?push-only' : '/sw.js';
+        navigator.serviceWorker.register(swUrl).then((registration) => {
             registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
                 if (newWorker) {
@@ -43,10 +46,17 @@ if (!isDevelopment && 'serviceWorker' in navigator) {
     });
 }
 
-// Clear out any lingering service workers/caches from other branches (e.g. PWA)
+// Clear out any lingering service workers/caches from other branches (e.g. PWA).
+// The push-only worker registered above stays: unregistering it would also
+// drop this browser's push subscription.
 if (isDevelopment && 'serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then((registrations) => {
         registrations.forEach((registration) => {
+            const worker =
+                registration.active ||
+                registration.waiting ||
+                registration.installing;
+            if (worker?.scriptURL.includes('push-only')) return;
             registration.unregister().catch(() => {
                 // Non-fatal during development cleanup
             });
