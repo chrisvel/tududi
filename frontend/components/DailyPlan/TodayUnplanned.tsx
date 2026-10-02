@@ -166,15 +166,6 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
                         ? t('dailyPlan.continuePlanning', 'Continue planning')
                         : t('dailyPlan.planYourDay', 'Plan your day')}
                 </Link>
-                <Link
-                    to="/today_legacy"
-                    className="text-sm text-gray-600 underline-offset-2 hover:underline dark:text-gray-400"
-                >
-                    {t(
-                        'dailyPlan.skipShowEverything',
-                        'Skip and show everything'
-                    )}
-                </Link>
             </div>
         </section>
     );

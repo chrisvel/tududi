@@ -144,8 +144,8 @@ describe('TodayPage', () => {
             '/today/plan'
         );
         expect(
-            screen.getByText('Skip and show everything').closest('a')
-        ).toHaveAttribute('href', '/today_legacy');
+            screen.queryByText('Skip and show everything')
+        ).not.toBeInTheDocument();
         await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
     });
 

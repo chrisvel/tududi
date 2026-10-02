@@ -11,7 +11,7 @@ Today has two modes:
 1. **Planning** (`/today/plan`): a full-screen planner. Pick tasks, give each a rough length and place them in free time around your meetings.
 2. **Doing** (`/today`): only what you committed to, in order, with the current block on top.
 
-The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics and the AI brief) is still available at `/today_legacy`. Its rules are in [Today Page Sections](02-today-page-sections.md).
+The classic Today page was removed; `/today_legacy` now redirects to `/today`. Its section lists (Overdue, Planned, Suggested, Completed) still feed the planner's candidates, see [Today Page Sections](02-today-page-sections.md). Its charts (overview counts, completions, area balance) moved to the **Overview** tab of Insights > Reports.
 
 ---
 
@@ -19,12 +19,12 @@ The classic Today page (Overdue, Planned, Suggested, Completed sections, metrics
 
 | State                                     | What you see                                                                                                                                                           |
 | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No plan, or a plan that was never started | A card with overdue, due today and inbox counts, free hours, today's meetings, **Plan your day** (or **Continue planning** for a draft) and a link to the classic page |
+| No plan, or a plan that was never started | A card with overdue, due today and inbox counts, free hours, today's meetings, **Plan your day** (or **Continue planning** for a draft) |
 | Plan started                              | The header shows done/total and time left, then the **Now** card, the agenda (tasks and meetings in time order) and a collapsed **Not planned** list                   |
 
 - **Now card:** the block running right now; otherwise the next planned block; otherwise the first unfinished task without a time. **Mark done** completes the task. **Push to later** removes the time slot and moves the task to the end of the list.
 - **Reordering:** drag an **Anytime** task to move it among the other Anytime tasks; the new order is saved as the plan's item order. Timed tasks stay in time order.
-- **Not planned:** the tasks the classic page would show (overdue, due today, in progress, suggested) that are not in the plan. **Add to today** appends one without a time.
+- **Not planned:** the tasks the Today section lists hold (overdue, due today, in progress, suggested) that are not in the plan. **Add to today** appends one without a time.
 - **Recurring tasks:** completing one moves the same task on to its next due date and reopens it. The plan still shows the day's occurrence as done (crossed out, with the next date) and counts it in `done/total`. This holds while a non-skipped completion falls on the plan's day and the task's due date is after that day, so undoing the completion makes it open again.
 - **Moving a due date:** changing a planned task's due date from the day (or earlier, or none) to a later day from the agenda takes it off the plan, with an undo toast. Changes made elsewhere leave the plan as it is.
 - **Replan** reopens the planner. Starting the day again keeps the first start time.
@@ -48,7 +48,7 @@ The order comes from `backend/modules/daily-plan/ranking.js` and each user sets 
 
 The order is stored in `users.ui_settings.planning.candidateOrder`. A saved order that is missing buckets or has unknown ones is repaired on read (missing #today buckets go first, others last), and the profile form's own save keeps the stored order.
 
-Groups follow the task's own due date. A task with no date of its own in a late or due-today project is not overdue here (the classic Today page lists still count the project's date).
+Groups follow the task's own due date. A task with no date of its own in a late or due-today project is not overdue here (the Today section lists still count the project's date).
 
 ### Which tasks are suggested
 
@@ -64,7 +64,7 @@ Groups follow the task's own due date. A task with no date of its own in a late 
 | `horizonDays`        | `3`                | `1`, `3`, `7`: nothing due further ahead is suggested          |
 | `maxSuggestions`     | `20`               | `10`, `20`, `50`                                               |
 
-These only filter the suggested group: overdue, due-today and in-progress tasks always show, even from an excluded project. Filters run before the limit, and the limit keeps the first suggestions in the final order. The classic Today page keeps its own suggestions (50, three days ahead, no project filter).
+These only filter the suggested group: overdue, due-today and in-progress tasks always show, even from an excluded project. Filters run before the limit, and the limit keeps the first suggestions in the final order. The underlying Today suggestions list keeps its own rules (50, three days ahead, no project filter).
 
 ### Day hours
 

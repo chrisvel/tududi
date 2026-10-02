@@ -44,7 +44,6 @@ const SubscriptionRequired = lazy(
     () => import('./components/Billing/SubscriptionRequired')
 );
 import { User } from './entities/User';
-import TasksToday from './components/Task/TasksToday';
 import TodayPage from './components/DailyPlan/TodayPage';
 import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
@@ -390,7 +389,7 @@ const App: React.FC = () => {
                             <Route path="/today" element={<TodayPage />} />
                             <Route
                                 path="/today_legacy"
-                                element={<TasksToday />}
+                                element={<Navigate to="/today" replace />}
                             />
                             <Route
                                 path="/today/plan"

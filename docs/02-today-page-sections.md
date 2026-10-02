@@ -1,6 +1,6 @@
 # Today Page Sections - Behavior Rules
 
-> The default Today page is now the day plan (see [Daily Plan](20-daily-plan.md)). The sections below describe the classic page at `/today_legacy`, whose lists also feed the planner's candidates.
+> The default Today page is now the day plan (see [Daily Plan](20-daily-plan.md)). The classic page that showed these sections was removed. The section lists below are still computed by the backend and feed the planner's candidates, the AI brief and the MCP tools.
 
 This document explains how the four main sections of the Today page work in tududi. For technical implementation details, see `/backend/modules/tasks/queries/metrics-queries.js` and `/backend/modules/tasks/queries/metrics-computation.js`.
 
@@ -396,8 +396,6 @@ The Today page automatically refreshes:
 **Technical Implementation Files:**
 - Backend eligibility & sorting: `/backend/modules/tasks/queries/metrics-computation.js`
 - Backend queries: `/backend/modules/tasks/queries/metrics-queries.js`
-- Frontend scoring & ordering: `/frontend/utils/suggestionScoringUtils.ts`
-- Frontend component: `/frontend/components/Task/TasksToday.tsx`
 - Task model: `/backend/models/task.js`
 
 ---
