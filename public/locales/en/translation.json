@@ -441,7 +441,7 @@
     "featuresAddons": "Features & Add-ons",
     "tabs": {
       "billing": "Plan & Billing",
-      "notifications": "Notification Preferences",
+      "notifications": "Notifications",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Sync",
       "calendars": "Calendars",
@@ -2478,10 +2478,12 @@
       }
     },
     "test": {
-      "title": "Test Notifications",
-      "description": "Creates a sample notification of the chosen type and sends it in-app and on every channel turned on for that type (Push, Telegram).",
-      "send": "Send Test",
-      "sending": "Sending..."
+      "rowLabel": "Send a test notification",
+      "button": "Test",
+      "sendVia": "Send a test via {{channel}}",
+      "sending": "Sending...",
+      "sent": "Test sent via {{channel}}.",
+      "failed": "Could not send the test."
     },
     "info": {
       "title": "Note:",
@@ -2490,7 +2492,7 @@
     "push": {
       "title": "Push notifications on this device",
       "prompt": "Get notifications on this device even when tududi is closed.",
-      "subscribed": "This device receives push notifications. Choose which ones in the Push column below, and try one with Test Notifications.",
+      "subscribed": "This device receives push notifications. Choose which ones in the Push column below.",
       "needsInstall": "To get notifications on iPhone or iPad, add tududi to your Home Screen first: tap Share, then Add to Home Screen, and open it from there.",
       "unsupported": "This browser does not support push notifications.",
       "denied": "Notifications are blocked for tududi. Allow them in your browser or system settings, then come back here.",

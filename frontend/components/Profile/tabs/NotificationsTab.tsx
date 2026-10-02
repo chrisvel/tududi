@@ -12,7 +12,6 @@ import {
 } from '@heroicons/react/24/outline';
 import type { NotificationPreferences } from '../types';
 import { getCsrfToken } from '../../../utils/csrfService';
-import { FORM } from '../../../constants/formClasses';
 import PushDeviceCard from './PushDeviceCard';
 import { PushState, countPushDevices } from '../../../utils/pushService';
 
@@ -42,6 +41,8 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
     },
     comments: { inApp: true, email: false, push: false, telegram: false },
 };
+
+type Channel = 'inApp' | 'email' | 'push' | 'telegram';
 
 interface NotificationTypeRowProps {
     icon: React.ComponentType<{ className?: string }>;
@@ -139,10 +140,13 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 }) => {
     const { t } = useTranslation();
     const [profile, setProfile] = React.useState<any>(null);
-    const [selectedTestType, setSelectedTestType] =
-        React.useState<string>('task_due_soon');
-    const [testLoading, setTestLoading] = React.useState<boolean>(false);
-    const [testMessage, setTestMessage] = React.useState<string>('');
+    const [testingChannel, setTestingChannel] = React.useState<Channel | null>(
+        null
+    );
+    const [testResult, setTestResult] = React.useState<{
+        ok: boolean;
+        text: string;
+    } | null>(null);
     const [pushState, setPushState] = React.useState<PushState | null>(null);
     const [pushDevices, setPushDevices] = React.useState<number>(0);
 
@@ -191,10 +195,9 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         onChange(updatedPreferences);
     };
 
-    const handleTestNotification = async () => {
-        setTestLoading(true);
-        setTestMessage('');
-
+    const handleTest = async (channel: Channel) => {
+        setTestingChannel(channel);
+        setTestResult(null);
         try {
             const response = await fetch('/api/test-notifications/trigger', {
                 method: 'POST',
@@ -202,35 +205,82 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     'Content-Type': 'application/json',
                     'x-csrf-token': await getCsrfToken(),
                 },
-                body: JSON.stringify({ type: selectedTestType }),
+                body: JSON.stringify({ channel }),
             });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                const sources = data.notification.sources;
-                const sourcesList =
-                    sources.length > 0 ? sources.join(', ') : 'in-app only';
-                setTestMessage(`✅ Test notification sent! (${sourcesList})`);
-            } else {
-                setTestMessage(`❌ Failed: ${data.error}`);
-            }
-        } catch (error) {
-            setTestMessage(
-                `❌ Error: ${error.message || 'Failed to send test'}`
+            const data = await response.json().catch(() => ({}));
+            setTestResult(
+                response.ok
+                    ? {
+                          ok: true,
+                          text: t(
+                              'notifications.test.sent',
+                              'Test sent via {{channel}}.',
+                              { channel: channelLabel(channel) }
+                          ),
+                      }
+                    : {
+                          ok: false,
+                          text:
+                              data.error ||
+                              t(
+                                  'notifications.test.failed',
+                                  'Could not send the test.'
+                              ),
+                      }
             );
+        } catch {
+            setTestResult({
+                ok: false,
+                text: t(
+                    'notifications.test.failed',
+                    'Could not send the test.'
+                ),
+            });
         } finally {
-            setTestLoading(false);
-            // Clear message after 5 seconds
-            setTimeout(() => setTestMessage(''), 5000);
+            setTestingChannel(null);
         }
     };
+
+    const channelLabel = (channel: Channel) =>
+        ({
+            inApp: t('notifications.channels.inApp', 'In-app'),
+            email: t('notifications.channels.email', 'Email'),
+            push: t('notifications.channels.push', 'Push'),
+            telegram: t('notifications.channels.telegram', 'Telegram'),
+        })[channel];
+
+    const channelAvailable: Record<Channel, boolean> = {
+        inApp: true,
+        email: false,
+        push: pushAvailable,
+        telegram: telegramConfigured,
+    };
+
+    const renderTestButton = (channel: Channel) => (
+        <button
+            type="button"
+            onClick={() => handleTest(channel)}
+            disabled={!channelAvailable[channel] || testingChannel !== null}
+            aria-label={t(
+                'notifications.test.sendVia',
+                'Send a test via {{channel}}',
+                {
+                    channel: channelLabel(channel),
+                }
+            )}
+            className="px-2.5 py-1 text-xs font-medium rounded-md text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+            {testingChannel === channel
+                ? t('notifications.test.sending', 'Sending...')
+                : t('notifications.test.button', 'Test')}
+        </button>
+    );
 
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
                 <BellIcon className="w-6 h-6 mr-3 text-purple-500" />
-                {t('profile.tabs.notifications', 'Notification Preferences')}
+                {t('profile.tabs.notifications', 'Notifications')}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                 {t(
@@ -431,92 +481,36 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             pushAvailable={pushAvailable}
                         />
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">
+                                {t(
+                                    'notifications.test.rowLabel',
+                                    'Send a test notification'
+                                )}
+                            </td>
+                            {(
+                                ['inApp', 'email', 'push', 'telegram'] as const
+                            ).map((channel) => (
+                                <td
+                                    key={channel}
+                                    className="py-4 px-4 text-center"
+                                >
+                                    {renderTestButton(channel)}
+                                </td>
+                            ))}
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
-
-            {/* Test Notifications Section */}
-            <div className="mt-6 p-6 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                <h4 className="text-sm font-semibold text-purple-900 dark:text-purple-100 mb-3 flex items-center">
-                    <ClockIcon className="w-4 h-4 mr-2" />
-                    {t('notifications.test.title', 'Test Notifications')}
-                </h4>
-                <p className="text-xs text-purple-700 dark:text-purple-300 mb-4">
-                    {t(
-                        'notifications.test.description',
-                        'Creates a sample notification of the chosen type and sends it in-app and on every channel turned on for that type (Push, Telegram).'
-                    )}
+            {testResult && (
+                <p
+                    role="status"
+                    className={`mt-2 px-4 text-sm ${testResult.ok ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}
+                >
+                    {testResult.text}
                 </p>
-                <div className="flex items-center gap-3">
-                    <select
-                        value={selectedTestType}
-                        onChange={(e) => setSelectedTestType(e.target.value)}
-                        className={`${FORM.select} flex-1`}
-                    >
-                        <option value="task_due_soon">
-                            {t('notifications.types.dueTasks', 'Due Tasks')}
-                        </option>
-                        <option value="task_overdue">
-                            {t(
-                                'notifications.types.overdueTasks',
-                                'Overdue Tasks'
-                            )}
-                        </option>
-                        <option value="defer_until">
-                            {t('notifications.types.deferUntil', 'Defer Until')}
-                        </option>
-                        <option value="project_due_soon">
-                            {t(
-                                'notifications.types.dueProjects',
-                                'Due Projects'
-                            )}
-                        </option>
-                        <option value="project_overdue">
-                            {t(
-                                'notifications.types.overdueProjects',
-                                'Overdue Projects'
-                            )}
-                        </option>
-                    </select>
-                    <button
-                        onClick={handleTestNotification}
-                        disabled={testLoading}
-                        className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors"
-                    >
-                        {testLoading ? (
-                            <span className="flex items-center">
-                                <svg
-                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                    />
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    />
-                                </svg>
-                                {t('notifications.test.sending', 'Sending...')}
-                            </span>
-                        ) : (
-                            t('notifications.test.send', 'Send Test')
-                        )}
-                    </button>
-                </div>
-                {testMessage && (
-                    <div className="mt-3 p-2 text-sm text-purple-900 dark:text-purple-100 bg-purple-100 dark:bg-purple-900/40 rounded">
-                        {testMessage}
-                    </div>
-                )}
-            </div>
+            )}
 
             {/* Help Text */}
             <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">

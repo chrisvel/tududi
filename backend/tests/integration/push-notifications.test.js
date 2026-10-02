@@ -9,12 +9,7 @@ jest.mock('web-push', () => {
 const request = require('supertest');
 const webpush = require('web-push');
 const app = require('../../app');
-const {
-    Notification,
-    PushSubscription,
-    Setting,
-    User,
-} = require('../../models');
+const { Notification, PushSubscription, Setting } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 const { resetVapidCache } = require('../../modules/push/vapid');
 const pushService = require('../../modules/push/service');
@@ -287,32 +282,58 @@ describe('Push notifications', () => {
 
             expect(webpush.sendNotification).not.toHaveBeenCalled();
         });
+    });
 
-        it('adds push to the test trigger when the user enabled it', async () => {
+    describe('POST /api/test-notifications/trigger', () => {
+        const trigger = (channel) =>
+            agent.post('/api/test-notifications/trigger').send({ channel });
+
+        it('creates an in-app notification only', async () => {
             await agent
                 .post('/api/push/subscriptions')
                 .send(subscriptionBody());
-            await User.update(
-                {
-                    notification_preferences: {
-                        dueTasks: {
-                            inApp: true,
-                            email: false,
-                            push: true,
-                            telegram: false,
-                        },
-                    },
-                },
-                { where: { id: user.id } }
-            );
 
-            const res = await agent
-                .post('/api/test-notifications/trigger')
-                .send({ type: 'task_due_soon' });
+            const res = await trigger('inApp');
 
             expect(res.status).toBe(200);
-            expect(res.body.notification.sources).toContain('push');
+            expect(
+                await Notification.count({
+                    where: { user_id: user.id, type: 'system' },
+                })
+            ).toBe(1);
+            expect(webpush.sendNotification).not.toHaveBeenCalled();
+        });
+
+        it('pushes to the devices without creating an in-app notification', async () => {
+            await agent
+                .post('/api/push/subscriptions')
+                .send(subscriptionBody());
+
+            const res = await trigger('push');
+
+            expect(res.status).toBe(200);
+            expect(res.body.devices).toBe(1);
             expect(webpush.sendNotification).toHaveBeenCalledTimes(1);
+            expect(
+                await Notification.count({ where: { user_id: user.id } })
+            ).toBe(0);
+        });
+
+        it('explains when no device can receive push', async () => {
+            const res = await trigger('push');
+
+            expect(res.status).toBe(400);
+            expect(res.body.error).toMatch(/Turn on push/);
+        });
+
+        it('refuses Telegram when it is not set up, and email for now', async () => {
+            expect((await trigger('telegram')).status).toBe(400);
+            expect((await trigger('email')).status).toBe(400);
+            expect((await trigger('carrier-pigeon')).status).toBe(400);
+            expect(
+                (await agent.post('/api/test-notifications/trigger').send({}))
+                    .status
+            ).toBe(400);
         });
     });
 });

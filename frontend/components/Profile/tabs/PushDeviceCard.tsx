@@ -86,7 +86,7 @@ const PushDeviceCard: React.FC<PushDeviceCardProps> = ({ onStateChange }) => {
     } else if (state === 'subscribed') {
         body = t(
             'notifications.push.subscribed',
-            'This device receives push notifications. Choose which ones in the Push column below, and try one with Test Notifications.'
+            'This device receives push notifications. Choose which ones in the Push column below.'
         );
     } else {
         body = t(
