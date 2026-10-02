@@ -2479,7 +2479,7 @@
     },
     "test": {
       "title": "Test Notifications",
-      "description": "Send a test notification to see how it appears in-app and on enabled channels (Telegram, Push)",
+      "description": "Creates a sample notification of the chosen type and sends it in-app and on every channel turned on for that type (Push, Telegram).",
       "send": "Send Test",
       "sending": "Sending..."
     },
@@ -2490,15 +2490,12 @@
     "push": {
       "title": "Push notifications on this device",
       "prompt": "Get notifications on this device even when tududi is closed.",
-      "subscribed": "This device receives push notifications. Choose which ones in the Push column below.",
+      "subscribed": "This device receives push notifications. Choose which ones in the Push column below, and try one with Test Notifications.",
       "needsInstall": "To get notifications on iPhone or iPad, add tududi to your Home Screen first: tap Share, then Add to Home Screen, and open it from there.",
       "unsupported": "This browser does not support push notifications.",
       "denied": "Notifications are blocked for tududi. Allow them in your browser or system settings, then come back here.",
       "enable": "Turn on",
       "disable": "Turn off",
-      "test": "Send test",
-      "testSent": "Test notification sent.",
-      "testNone": "No device accepted the notification. Try turning push off and on again.",
       "failed": "Something went wrong. Please try again."
     }
   },

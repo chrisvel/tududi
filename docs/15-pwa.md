@@ -209,7 +209,6 @@ Signing out removes the device from the account on the server but keeps the brow
 | `GET /api/push/subscriptions` | The user's devices |
 | `POST /api/push/subscriptions` | Add or refresh this device (`{ endpoint, keys: { p256dh, auth } }`) |
 | `DELETE /api/push/subscriptions` | Remove this device (`{ endpoint }`) |
-| `POST /api/push/test` | Send a test notification to all the user's devices |
 
 Push requests bypass the offline mutation queue.
 

@@ -204,17 +204,6 @@ export const resyncPush = async (userId: string | number): Promise<void> => {
     }
 };
 
-export const sendTestPush = async (): Promise<number> => {
-    const response = await fetch(getApiPath('push/test'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'x-csrf-token': await getCsrfToken() },
-    });
-    if (!response.ok) throw new Error('Could not send a test notification');
-    const data = await response.json();
-    return data.sent;
-};
-
 export const countPushDevices = async (): Promise<number> => {
     const response = await fetch(getApiPath('push/subscriptions'), {
         credentials: 'include',

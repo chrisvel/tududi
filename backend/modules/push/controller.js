@@ -49,14 +49,6 @@ const controller = {
             next(error);
         }
     },
-
-    async test(req, res, next) {
-        try {
-            res.json(await service.sendTest(requireUserId(req)));
-        } catch (error) {
-            next(error);
-        }
-    },
 };
 
 module.exports = controller;

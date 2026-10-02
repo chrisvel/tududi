@@ -120,16 +120,6 @@ class PushService {
         return { subscribed: false };
     }
 
-    async sendTest(userId) {
-        const sent = await this.sendToUser(userId, {
-            title: 'tududi',
-            body: 'Push notifications are working on this device.',
-            url: '/',
-            tag: 'test',
-        });
-        return { sent };
-    }
-
     async sendNotification(notification) {
         return this.sendToUser(notification.user_id, {
             title: notification.title,

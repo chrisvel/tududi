@@ -6,7 +6,6 @@ import {
     disablePush,
     enablePush,
     getPushState,
-    sendTestPush,
 } from '../../../utils/pushService';
 import { getCurrentUser } from '../../../utils/userUtils';
 
@@ -63,22 +62,6 @@ const PushDeviceCard: React.FC<PushDeviceCardProps> = ({ onStateChange }) => {
             update(await disablePush());
         });
 
-    const handleTest = () =>
-        run(async () => {
-            const sent = await sendTestPush();
-            setMessage(
-                sent > 0
-                    ? t(
-                          'notifications.push.testSent',
-                          'Test notification sent.'
-                      )
-                    : t(
-                          'notifications.push.testNone',
-                          'No device accepted the notification. Try turning push off and on again.'
-                      )
-            );
-        });
-
     if (state === null) return null;
 
     const buttonClass =
@@ -103,7 +86,7 @@ const PushDeviceCard: React.FC<PushDeviceCardProps> = ({ onStateChange }) => {
     } else if (state === 'subscribed') {
         body = t(
             'notifications.push.subscribed',
-            'This device receives push notifications. Choose which ones in the Push column below.'
+            'This device receives push notifications. Choose which ones in the Push column below, and try one with Test Notifications.'
         );
     } else {
         body = t(
@@ -144,24 +127,14 @@ const PushDeviceCard: React.FC<PushDeviceCardProps> = ({ onStateChange }) => {
                         </button>
                     )}
                     {state === 'subscribed' && (
-                        <>
-                            <button
-                                type="button"
-                                onClick={handleTest}
-                                disabled={busy}
-                                className={`${buttonClass} text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600`}
-                            >
-                                {t('notifications.push.test', 'Send test')}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleDisable}
-                                disabled={busy}
-                                className={`${buttonClass} text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600`}
-                            >
-                                {t('notifications.push.disable', 'Turn off')}
-                            </button>
-                        </>
+                        <button
+                            type="button"
+                            onClick={handleDisable}
+                            disabled={busy}
+                            className={`${buttonClass} text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600`}
+                        >
+                            {t('notifications.push.disable', 'Turn off')}
+                        </button>
                     )}
                 </div>
             </div>

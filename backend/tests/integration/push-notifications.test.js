@@ -164,7 +164,7 @@ describe('Push notifications', () => {
     });
 
     describe('sending', () => {
-        it('sends a test push to every device of the user', async () => {
+        it('sends to every device of the user', async () => {
             await agent
                 .post('/api/push/subscriptions')
                 .send(subscriptionBody());
@@ -172,14 +172,18 @@ describe('Push notifications', () => {
                 .post('/api/push/subscriptions')
                 .send(subscriptionBody());
 
-            const res = await agent.post('/api/push/test');
+            const sent = await pushService.sendToUser(user.id, {
+                title: 'tududi',
+                body: 'Hello',
+                url: '/',
+            });
 
-            expect(res.status).toBe(200);
-            expect(res.body.sent).toBe(2);
+            expect(sent).toBe(2);
             expect(webpush.sendNotification).toHaveBeenCalledTimes(2);
             const [, payload, options] = webpush.sendNotification.mock.calls[0];
             expect(JSON.parse(payload)).toMatchObject({
                 title: 'tududi',
+                body: 'Hello',
                 url: '/',
             });
             expect(options.vapidDetails.subject).toMatch(/^(mailto:|https:)/);

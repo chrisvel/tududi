@@ -9,6 +9,5 @@ router.get('/push/config', controller.getConfig);
 router.get('/push/subscriptions', controller.list);
 router.post('/push/subscriptions', createResourceLimiter, controller.subscribe);
 router.delete('/push/subscriptions', controller.unsubscribe);
-router.post('/push/test', createResourceLimiter, controller.test);
 
 module.exports = router;

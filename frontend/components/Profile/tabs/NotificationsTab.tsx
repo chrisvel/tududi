@@ -443,7 +443,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 <p className="text-xs text-purple-700 dark:text-purple-300 mb-4">
                     {t(
                         'notifications.test.description',
-                        'Send a test notification to see how it appears in-app and on enabled channels (Telegram, Push)'
+                        'Creates a sample notification of the chosen type and sends it in-app and on every channel turned on for that type (Push, Telegram).'
                     )}
                 </p>
                 <div className="flex items-center gap-3">
