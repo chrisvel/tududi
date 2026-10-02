@@ -507,7 +507,7 @@ const Layout: React.FC<LayoutProps> = ({
                                 />
                                 <PhotoCredit
                                     background={contentBackground}
-                                    className="absolute bottom-3 left-3 z-10"
+                                    className="absolute bottom-3 left-3"
                                 />
                             </>
                         )}
