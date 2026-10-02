@@ -1,6 +1,7 @@
 'use strict';
 
 const BaseRepository = require('../../shared/database/BaseRepository');
+const { Op } = require('sequelize');
 const { Note, Tag, Project } = require('../../models');
 
 const PUBLIC_ATTRIBUTES = [
@@ -98,6 +99,7 @@ class NotesRepository extends BaseRepository {
                 'user_id',
                 'public_token',
                 'public_shared_at',
+                'public_inherit_style',
             ],
         });
     }
@@ -108,8 +110,28 @@ class NotesRepository extends BaseRepository {
      */
     async findByPublicToken(token) {
         return this.model.findOne({
-            where: { public_token: token },
-            attributes: ['title', 'content', 'color', 'updated_at'],
+            where: { public_token: token, public_shared_at: { [Op.ne]: null } },
+            attributes: [
+                'user_id',
+                'title',
+                'content',
+                'color',
+                'background',
+                'public_inherit_style',
+                'updated_at',
+            ],
+        });
+    }
+
+    // The titles and public links of a user's notes that are shared publicly.
+    async findPublicTitlesForUser(userId) {
+        return this.model.findAll({
+            where: {
+                user_id: userId,
+                public_token: { [Op.ne]: null },
+                public_shared_at: { [Op.ne]: null },
+            },
+            attributes: ['title', 'public_token'],
         });
     }
 

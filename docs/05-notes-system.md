@@ -157,7 +157,8 @@ Only `http(s)` and `mailto:` links are followed, and only `http(s)` or same-orig
 
 - Select text to show the formatting toolbar (bold, italic, strikethrough, code, link, headings).
 - Type `/` at the start of a line or after a space for the slash menu: headings, bold/italic/strikethrough/inline code, code block, quote, to-do, bulleted and numbered lists, divider, link, note link, all five callout types, a 3x3 table, a Mermaid diagram template, and today's date.
-- Type `[[` to search your notes and insert a note link.
+- Type `[[` to search your notes and insert a note link. When no note has the typed title, the menu offers "Create note" to make it and link it in one step.
+- Closing a link by hand (`[[Title]]`) or Cmd/Ctrl-clicking a link to a note that does not exist asks whether to create it (Enter creates, Escape dismisses). A note created from a click opens right away.
 
 Formatting and block shortcuts are listed with the rest of the editor's keyboard shortcuts, below.
 
@@ -245,6 +246,8 @@ Hover the left edge of a paragraph, heading, list item, quote, code block or tab
 - Persists across sessions
 - Visible in note preview (full panel uses color)
 
+**Background photo:** under the colors, the ⋮ menu also offers **Background**: the same photos as Profile > Appearance, or none. The photo fills the open note behind a translucent tint of the note's color (white or dark gray when it has none), with the photographer credit in the corner. Stored in `notes.background` as the photo id.
+
 **Accessibility:**
 - Luminance calculation ensures readable text contrast
 - Dark colors → White text (#ffffff)
@@ -281,7 +284,7 @@ Hover the left edge of a paragraph, heading, list item, quote, code block or tab
 - Metadata row: last updated (or "New"), project selector, tag manager
 - Save status indicator (✓ Saved / Saving... / • Unsaved)
 - The live editor fills the rest of the panel
-- **Focus mode** button and **⋮ menu** (color picker, Save, Pin to sidebar, Share note, Delete)
+- **Focus mode** button, **Share** globe icon and **⋮ menu** (color, background, Save, Pin to sidebar, Delete)
 
 **Back button (mobile):**
 - ← Back to list
@@ -404,17 +407,21 @@ A note can be shared with anyone who has a link, without them having an account.
 
 ### Turning it on and off
 
-1. Open the note and click the **globe icon** (or **⋮ menu > Share note** in the notes editor)
+1. Open the note and click the **globe icon** next to the ⋮ menu (green while the note is shared, faint while it is private)
 2. Under **General access**, choose **Anyone with the link**
-3. Copy the **public link** and send it to whoever should read the note
-4. To stop sharing, switch **General access** back to **Restricted**
+3. **Inherit styling (background and color) to the public note** is ticked by default; untick it for a plain public page. Click **Create public link**
+4. Copy the **public link** and send it to whoever should read the note
+5. To stop sharing, switch **General access** back to **Restricted**
+
+The checkbox can be changed later while the note is public and saves straight away. With it on, the public page follows the note: recolor the note or change its background and readers see the change.
 
 ### Rules
 
 - **Owner only:** only the person who owns a note can share it publicly or stop sharing it. Collaborators with write access to the note's project cannot.
 - **Read only:** people with the link can read the note. They cannot edit it, and they see only the title, content and last updated date. Tags, project, owner and other notes are not shown.
 - **Always current:** the link shows the note as it is now, not a snapshot. Edits show up for readers right away.
-- **Disposable:** turning sharing off deletes the link's token. The old link shows "This note is not available" straight away, and turning sharing back on creates a **new** link. Deleting the note also ends the link.
+- **Kept for good:** a note keeps its link. Turning sharing off makes the link show "This note is not available" straight away, and turning it back on brings back the **same** link. Deleting the note ends the link.
+- **New link on demand:** **Get a new link and turn off this one** (under the link, with a confirmation) replaces the link. The old one stops working for everyone and never comes back.
 - **Unguessable:** the link contains 256 random bits, so it cannot be guessed. Anyone who has it can read the note, so treat it like a password-free document link.
 - **Kept out of search engines:** the public page sends `noindex` and `no-referrer` headers and is never cached.
 
@@ -422,18 +429,24 @@ A note can be shared with anyone who has a link, without them having an account.
 
 The link opens `/public/notes/<token>`, a page with no sidebar and no app navigation. It has only the tududi navbar (logo, dark mode toggle, **Sign In**, and **Sign Up** when registration is open) and the note. A visitor who is not signed in also sees a call to action: "Do you want to share your notes? Sign up now" (hidden when registration is closed). A signed-in visitor sees an **Open tududi** button instead.
 
+The title and content sit in one card. With styling inherited, the card uses the note's color, slightly translucent, and the note's background photo fills the page behind it with the photographer credited.
+
+**Note links:** a `[[link]]` to another note of the same owner that is public too opens that note's public page. Any other note link shows a badge with a lock that says "This note is not shared publicly" when clicked. A private note and a missing one look the same, so readers learn nothing about notes they cannot open.
+
 An unknown link, a link that was switched off and a deleted note all show the same "not available" page, so nobody can tell which it was.
 
 ### API
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| GET | `/api/note/:uid/public-share` | Owner | Current state: `{ enabled, token, shared_at }` |
-| POST | `/api/note/:uid/public-share` | Owner | Turn sharing on (keeps the same link if already on) |
-| DELETE | `/api/note/:uid/public-share` | Owner | Turn sharing off and delete the token |
-| GET | `/api/public/notes/:token` | None | Read a public note: `{ title, content, color, updated_at }` |
+| GET | `/api/note/:uid/public-share` | Owner | Current state: `{ enabled, token, shared_at, public_inherit_style }` |
+| POST | `/api/note/:uid/public-share` | Owner | Turn sharing on (keeps the same link if already on); optional body `{ public_inherit_style }` |
+| PATCH | `/api/note/:uid/public-share` | Owner | Change `public_inherit_style` (boolean, default true) |
+| POST | `/api/note/:uid/public-share/rotate` | Owner | Replace the link of a shared note; the old token stops working (400 if not shared) |
+| DELETE | `/api/note/:uid/public-share` | Owner | Turn sharing off; the token is kept so turning it back on restores the same link |
+| GET | `/api/public/notes/:token` | None | Read a public note: `{ title, content, color, background, updated_at, linked_notes }`, where `color` and `background` are the note's when it inherits its styling, otherwise null and `linked_notes` lists `{ title, token }` of linked notes that are public too |
 
-Note payloads never include the token. They carry `is_public` (boolean) instead, so a collaborator who can read a note cannot lift its public link. Stored in `notes.public_token` (unique) and `notes.public_shared_at`.
+Note payloads never include the token. They carry `is_public` (boolean) instead, so a collaborator who can read a note cannot lift its public link. Stored in `notes.public_token` (unique) and `notes.public_shared_at`; a note is public while both are set, and turning sharing off clears only `public_shared_at`.
 
 ---
 

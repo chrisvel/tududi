@@ -67,6 +67,22 @@ router.post(
     notesController.enablePublicShare
 );
 
+router.patch(
+    '/note/:uid/public-share',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    notesController.updatePublicShare
+);
+
+router.post(
+    '/note/:uid/public-share/rotate',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    notesController.rotatePublicShare
+);
+
 router.delete(
     '/note/:uid/public-share',
     hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {

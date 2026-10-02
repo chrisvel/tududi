@@ -495,8 +495,33 @@
     "deleteNoteConfirm": "Möchtest du die Notiz „{{title}}“ wirklich löschen?",
     "untitled": "Unbenannte Notiz",
     "publicShare": {
-      "sharedTitle": "Für alle mit dem Link freigegeben"
-    }
+      "sharedTitle": "Für alle mit dem Link freigegeben",
+      "open": "Notiz teilen",
+      "title": "\"{{title}}\" teilen",
+      "generalAccess": "Allgemeiner Zugriff",
+      "restricted": "Eingeschränkt",
+      "anyone": "Alle mit dem Link",
+      "restrictedHint": "Nur du und die Personen, mit denen du sie geteilt hast, können diese Notiz öffnen.",
+      "anyoneHint": "Alle im Internet, die den Link haben, können diese Notiz ohne Anmeldung lesen. Bearbeiten können sie sie nicht. Schaltest du das aus, funktioniert der Link sofort nicht mehr.",
+      "link": "Öffentlicher Link",
+      "copyLink": "Link kopieren",
+      "copied": "Kopiert",
+      "copyFailed": "Automatisches Kopieren nicht möglich. Markiere den Link und kopiere ihn.",
+      "ownerOnly": "Nur der Eigentümer einer Notiz kann sie öffentlich teilen.",
+      "failed": "Etwas ist schiefgelaufen. Versuche es erneut.",
+      "createLink": "Öffentlichen Link erstellen",
+      "inheritStyle": "Gestaltung (Hintergrund und Farbe) für die öffentliche Notiz übernehmen",
+      "rotate": "Neuen Link erstellen und diesen deaktivieren",
+      "rotateWarning": "Der aktuelle Link funktioniert dann für niemanden mehr.",
+      "rotateConfirm": "Neuen Link erstellen"
+    },
+    "createLinkedNote": "Notiz \"{{title}}\" erstellen",
+    "linkedNoteMissing": "Es gibt noch keine Notiz namens \"{{title}}\". Jetzt erstellen?",
+    "linkedNoteNotNow": "Nicht jetzt",
+    "linkedNoteCreate": "Notiz erstellen",
+    "linkedNoteCreateFailed": "Die Notiz konnte nicht erstellt werden.",
+    "backgroundImage": "Hintergrund",
+    "noBackground": "Kein Hintergrund"
   },
   "recurrence": {
     "none": "Keine",
@@ -2897,5 +2922,8 @@
     "myTemplates": "Meine Vorlagen",
     "confirmDelete": "Vorlage löschen",
     "confirmDeleteMessage": "„{{name}}“ löschen? Daraus erstellte Projekte bleiben unverändert."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Diese Notiz ist nicht öffentlich geteilt."
   }
 }

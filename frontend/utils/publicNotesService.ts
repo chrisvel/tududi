@@ -5,13 +5,22 @@ export interface NotePublicShare {
     enabled: boolean;
     token: string | null;
     shared_at: string | null;
+    public_inherit_style?: boolean;
+}
+
+// Whether the public page shows the note's color and background.
+export interface PublicNoteLook {
+    public_inherit_style: boolean;
 }
 
 export interface PublicNote {
     title: string;
     content: string;
     color?: string | null;
+    background?: string | null;
     updated_at?: string | null;
+    // Linked notes of the same owner that are public too.
+    linked_notes?: { title: string; token: string }[];
 }
 
 export class PublicShareError extends Error {
@@ -59,15 +68,44 @@ export const getNotePublicShare = async (
     );
 
 export const enableNotePublicShare = async (
-    noteUid: string
+    noteUid: string,
+    look?: PublicNoteLook
 ): Promise<NotePublicShare> =>
     readShare(
         await fetchWithCsrf(shareUrl(noteUid), {
             method: 'POST',
             credentials: 'include',
             headers: JSON_HEADERS,
+            body: look ? JSON.stringify(look) : undefined,
         }),
         'Could not turn on public sharing.'
+    );
+
+// A new link for a shared note; the old one stops working.
+export const rotateNotePublicShare = async (
+    noteUid: string
+): Promise<NotePublicShare> =>
+    readShare(
+        await fetchWithCsrf(`${shareUrl(noteUid)}/rotate`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: JSON_HEADERS,
+        }),
+        'Could not make a new link.'
+    );
+
+export const updateNotePublicLook = async (
+    noteUid: string,
+    look: PublicNoteLook
+): Promise<NotePublicShare> =>
+    readShare(
+        await fetchWithCsrf(shareUrl(noteUid), {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: JSON_HEADERS,
+            body: JSON.stringify(look),
+        }),
+        'Could not save the public page look.'
     );
 
 export const disableNotePublicShare = async (

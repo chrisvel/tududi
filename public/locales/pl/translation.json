@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Czy na pewno chcesz usunąć notatkę „{{title}}”?",
     "untitled": "Notatka bez tytułu",
     "publicShare": {
-      "sharedTitle": "Udostępniona każdemu, kto ma link"
-    }
+      "sharedTitle": "Udostępniona każdemu, kto ma link",
+      "open": "Udostępnij notatkę",
+      "title": "Udostępnij „{{title}}”",
+      "generalAccess": "Dostęp ogólny",
+      "restricted": "Ograniczony",
+      "anyone": "Każdy, kto ma link",
+      "restrictedHint": "Tylko Ty i osoby, którym ją udostępniono, mogą otworzyć tę notatkę.",
+      "anyoneHint": "Każdy w internecie, kto ma link, może przeczytać tę notatkę bez logowania. Nie może jej edytować. Wyłącz to, a link od razu przestanie działać.",
+      "link": "Link publiczny",
+      "copyLink": "Kopiuj link",
+      "copied": "Skopiowano",
+      "copyFailed": "Nie udało się skopiować automatycznie. Zaznacz link i skopiuj go.",
+      "ownerOnly": "Tylko właściciel notatki może udostępnić ją publicznie.",
+      "failed": "Coś poszło nie tak. Spróbuj ponownie.",
+      "createLink": "Utwórz link publiczny",
+      "inheritStyle": "Przenieś wygląd (tło i kolor) do publicznej notatki",
+      "rotate": "Utwórz nowy link i wyłącz ten",
+      "rotateWarning": "Obecny link przestanie działać dla wszystkich, którzy go mają.",
+      "rotateConfirm": "Utwórz nowy link"
+    },
+    "createLinkedNote": "Utwórz notatkę „{{title}}”",
+    "linkedNoteMissing": "Nie ma jeszcze notatki „{{title}}”. Utworzyć ją?",
+    "linkedNoteNotNow": "Nie teraz",
+    "linkedNoteCreate": "Utwórz notatkę",
+    "linkedNoteCreateFailed": "Nie udało się utworzyć notatki.",
+    "backgroundImage": "Tło",
+    "noBackground": "Bez tła"
   },
   "tags": {
     "loading": "Ładowanie tagów...",
@@ -2894,5 +2919,8 @@
     "myTemplates": "Moje szablony",
     "confirmDelete": "Usuń szablon",
     "confirmDeleteMessage": "Usunąć „{{name}}”? Projekty utworzone na jego podstawie się nie zmienią."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Ta notatka nie jest udostępniona publicznie."
   }
 }

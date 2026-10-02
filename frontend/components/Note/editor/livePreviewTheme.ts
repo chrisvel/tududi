@@ -43,6 +43,47 @@ export const livePreviewTheme = EditorView.baseTheme({
     '.cm-md-wikilink': { textUnderlineOffset: '2px' },
     '&light .cm-md-wikilink': { color: '#2563eb' },
     '&dark .cm-md-wikilink': { color: '#60a5fa' },
+    // Matches the NOTE: badge note links get in read-only markdown.
+    // inline-block stops an underline from a surrounding syntax-highlight
+    // span reaching the chip; the rule below clears it on nested spans.
+    '.cm-md-wikilink-chip': {
+        display: 'inline-block',
+        lineHeight: '1.4',
+        cursor: 'pointer',
+        textDecoration: 'none !important',
+        borderRadius: '4px',
+        padding: '1px 6px 1px 0',
+        border: '1px solid',
+    },
+    '.cm-md-wikilink-chip *': { textDecoration: 'none !important' },
+    '.cm-md-wikilink-chip::before': {
+        content: '"NOTE:"',
+        fontSize: '0.72em',
+        fontWeight: '700',
+        letterSpacing: '0.025em',
+        padding: '2px 6px',
+        marginRight: '6px',
+        borderRadius: '3px 0 0 3px',
+        verticalAlign: '1px',
+    },
+    '&light .cm-md-wikilink-chip': {
+        color: '#1d4ed8',
+        background: 'rgba(239, 246, 255, 0.8)',
+        borderColor: '#bfdbfe',
+    },
+    '&light .cm-md-wikilink-chip::before': {
+        color: '#1e40af',
+        background: 'rgba(191, 219, 254, 0.7)',
+    },
+    '&dark .cm-md-wikilink-chip': {
+        color: '#93c5fd',
+        background: 'rgba(30, 58, 138, 0.3)',
+        borderColor: 'rgba(29, 78, 216, 0.7)',
+    },
+    '&dark .cm-md-wikilink-chip::before': {
+        color: '#bfdbfe',
+        background: 'rgba(29, 78, 216, 0.6)',
+    },
 
     '.cm-md-quote': {
         borderLeft: '3px solid rgba(128,128,128,0.5)',

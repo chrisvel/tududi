@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Weet je zeker dat je de notitie \"{{title}}\" wilt verwijderen?",
     "untitled": "Naamloze notitie",
     "publicShare": {
-      "sharedTitle": "Gedeeld met iedereen met de link"
-    }
+      "sharedTitle": "Gedeeld met iedereen met de link",
+      "open": "Notitie delen",
+      "title": "\"{{title}}\" delen",
+      "generalAccess": "Algemene toegang",
+      "restricted": "Beperkt",
+      "anyone": "Iedereen met de link",
+      "restrictedHint": "Alleen jij en de mensen met wie je deze hebt gedeeld, kunnen deze notitie openen.",
+      "anyoneHint": "Iedereen op internet met de link kan deze notitie lezen zonder in te loggen. Bewerken kan niet. Zet je dit uit, dan werkt de link meteen niet meer.",
+      "link": "Openbare link",
+      "copyLink": "Link kopiëren",
+      "copied": "Gekopieerd",
+      "copyFailed": "Automatisch kopiëren lukt niet. Selecteer de link en kopieer hem.",
+      "ownerOnly": "Alleen de eigenaar van een notitie kan deze openbaar delen.",
+      "failed": "Er ging iets mis. Probeer het opnieuw.",
+      "createLink": "Openbare link maken",
+      "inheritStyle": "Opmaak (achtergrond en kleur) overnemen in de openbare notitie",
+      "rotate": "Nieuwe link maken en deze uitschakelen",
+      "rotateWarning": "De huidige link werkt dan voor niemand meer.",
+      "rotateConfirm": "Nieuwe link maken"
+    },
+    "createLinkedNote": "Notitie \"{{title}}\" maken",
+    "linkedNoteMissing": "Er is nog geen notitie met de naam \"{{title}}\". Nu maken?",
+    "linkedNoteNotNow": "Niet nu",
+    "linkedNoteCreate": "Notitie maken",
+    "linkedNoteCreateFailed": "De notitie kon niet worden gemaakt.",
+    "backgroundImage": "Achtergrond",
+    "noBackground": "Geen achtergrond"
   },
   "tags": {
     "loading": "Tags laden...",
@@ -2888,5 +2913,8 @@
     "myTemplates": "Mijn sjablonen",
     "confirmDelete": "Sjabloon verwijderen",
     "confirmDeleteMessage": "\"{{name}}\" verwijderen? Projecten die ermee zijn gemaakt blijven ongewijzigd."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Deze notitie is niet openbaar gedeeld."
   }
 }

@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Vill du verkligen ta bort anteckningen ”{{title}}”?",
     "untitled": "Namnlös anteckning",
     "publicShare": {
-      "sharedTitle": "Delad med alla som har länken"
-    }
+      "sharedTitle": "Delad med alla som har länken",
+      "open": "Dela anteckning",
+      "title": "Dela \"{{title}}\"",
+      "generalAccess": "Allmän åtkomst",
+      "restricted": "Begränsad",
+      "anyone": "Alla som har länken",
+      "restrictedHint": "Bara du och de du har delat den med kan öppna den här anteckningen.",
+      "anyoneHint": "Alla på internet som har länken kan läsa den här anteckningen utan att logga in. De kan inte redigera den. Stänger du av det slutar länken att fungera direkt.",
+      "link": "Offentlig länk",
+      "copyLink": "Kopiera länk",
+      "copied": "Kopierad",
+      "copyFailed": "Det gick inte att kopiera automatiskt. Markera länken och kopiera den.",
+      "ownerOnly": "Bara ägaren av en anteckning kan dela den offentligt.",
+      "failed": "Något gick fel. Försök igen.",
+      "createLink": "Skapa offentlig länk",
+      "inheritStyle": "Överför stil (bakgrund och färg) till den offentliga anteckningen",
+      "rotate": "Skapa en ny länk och stäng av den här",
+      "rotateWarning": "Den nuvarande länken slutar fungera för alla som har den.",
+      "rotateConfirm": "Skapa ny länk"
+    },
+    "createLinkedNote": "Skapa anteckningen \"{{title}}\"",
+    "linkedNoteMissing": "Det finns ingen anteckning som heter \"{{title}}\" ännu. Vill du skapa den?",
+    "linkedNoteNotNow": "Inte nu",
+    "linkedNoteCreate": "Skapa anteckning",
+    "linkedNoteCreateFailed": "Det gick inte att skapa anteckningen.",
+    "backgroundImage": "Bakgrund",
+    "noBackground": "Ingen bakgrund"
   },
   "tags": {
     "loading": "Laddar taggar...",
@@ -2888,5 +2913,8 @@
     "myTemplates": "Mina mallar",
     "confirmDelete": "Ta bort mall",
     "confirmDeleteMessage": "Ta bort ”{{name}}”? Projekt som skapats från den påverkas inte."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Den här anteckningen är inte delad offentligt."
   }
 }

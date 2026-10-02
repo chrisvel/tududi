@@ -36,6 +36,7 @@ describe('Public note sharing', () => {
                 enabled: false,
                 token: null,
                 shared_at: null,
+                public_inherit_style: true,
             });
         });
 
@@ -78,7 +79,7 @@ describe('Public note sharing', () => {
             expect(after.getTime()).toBe(before.getTime());
         });
 
-        it('disables sharing and clears the token', async () => {
+        it('disables sharing but keeps the link for later', async () => {
             await ownerAgent.post(`/api/note/${note.uid}/public-share`);
             const res = await ownerAgent.delete(
                 `/api/note/${note.uid}/public-share`
@@ -88,12 +89,13 @@ describe('Public note sharing', () => {
                 enabled: false,
                 token: null,
                 shared_at: null,
+                public_inherit_style: true,
             });
             const stored = await Note.findByPk(note.id);
-            expect(stored.public_token).toBeNull();
+            expect(stored.public_token).toMatch(/^[A-Za-z0-9_-]{43}$/);
         });
 
-        it('issues a different link after sharing is turned back on', async () => {
+        it('brings back the same link when sharing is turned back on', async () => {
             const first = await ownerAgent.post(
                 `/api/note/${note.uid}/public-share`
             );
@@ -101,7 +103,52 @@ describe('Public note sharing', () => {
             const second = await ownerAgent.post(
                 `/api/note/${note.uid}/public-share`
             );
-            expect(second.body.token).not.toBe(first.body.token);
+            expect(second.body.token).toBe(first.body.token);
+        });
+
+        it('reports a note whose sharing is off as not public', async () => {
+            await ownerAgent.post(`/api/note/${note.uid}/public-share`);
+            await ownerAgent.delete(`/api/note/${note.uid}/public-share`);
+            const res = await ownerAgent.get(`/api/note/${note.uid}`);
+            expect(res.body.is_public).toBe(false);
+        });
+
+        it('replaces the link with a new one on request', async () => {
+            const first = await ownerAgent.post(
+                `/api/note/${note.uid}/public-share`
+            );
+            const rotated = await ownerAgent.post(
+                `/api/note/${note.uid}/public-share/rotate`
+            );
+            expect(rotated.status).toBe(200);
+            expect(rotated.body.enabled).toBe(true);
+            expect(rotated.body.token).toMatch(/^[A-Za-z0-9_-]{43}$/);
+            expect(rotated.body.token).not.toBe(first.body.token);
+
+            const oldLink = await request(app).get(
+                `/api/public/notes/${first.body.token}`
+            );
+            const newLink = await request(app).get(
+                `/api/public/notes/${rotated.body.token}`
+            );
+            expect(oldLink.status).toBe(404);
+            expect(newLink.status).toBe(200);
+        });
+
+        it('does not make a new link for a note that is not shared', async () => {
+            const res = await ownerAgent.post(
+                `/api/note/${note.uid}/public-share/rotate`
+            );
+            expect(res.status).toBe(400);
+        });
+
+        it('lets only the owner make a new link', async () => {
+            await ownerAgent.post(`/api/note/${note.uid}/public-share`);
+            const otherAgent = await signIn(other.email);
+            const res = await otherAgent.post(
+                `/api/note/${note.uid}/public-share/rotate`
+            );
+            expect([403, 404]).toContain(res.status);
         });
 
         it('returns 404 for a note that does not exist', async () => {
@@ -116,6 +163,40 @@ describe('Public note sharing', () => {
                 `/api/note/${note.uid}/public-share`
             );
             expect(res.status).toBe(401);
+        });
+    });
+
+    describe('inheriting the note styling', () => {
+        it('is chosen when sharing is turned on', async () => {
+            const res = await ownerAgent
+                .post(`/api/note/${note.uid}/public-share`)
+                .send({ public_inherit_style: true });
+            expect(res.body.public_inherit_style).toBe(true);
+        });
+
+        it('can be turned off later', async () => {
+            await ownerAgent
+                .post(`/api/note/${note.uid}/public-share`)
+                .send({ public_inherit_style: true });
+            const res = await ownerAgent
+                .patch(`/api/note/${note.uid}/public-share`)
+                .send({ public_inherit_style: false });
+            expect(res.body.public_inherit_style).toBe(false);
+        });
+
+        it('rejects a value that is not a boolean', async () => {
+            const res = await ownerAgent
+                .patch(`/api/note/${note.uid}/public-share`)
+                .send({ public_inherit_style: 'yes' });
+            expect(res.status).toBe(400);
+        });
+
+        it('stays with the owner', async () => {
+            const otherAgent = await signIn(other.email);
+            const res = await otherAgent
+                .patch(`/api/note/${note.uid}/public-share`)
+                .send({ public_inherit_style: true });
+            expect([403, 404]).toContain(res.status);
         });
     });
 
@@ -213,7 +294,9 @@ describe('Public note sharing', () => {
                 title: 'Trip plan',
                 content: '# Lisbon\n\n- book flights',
                 color: '#ffcc00',
+                background: null,
                 updated_at: expect.any(String),
+                linked_notes: [],
             });
         });
 
@@ -223,8 +306,10 @@ describe('Public note sharing', () => {
             expect(body).not.toContain(owner.email);
             expect(body).not.toContain(note.uid);
             expect(Object.keys(res.body).sort()).toEqual([
+                'background',
                 'color',
                 'content',
+                'linked_notes',
                 'title',
                 'updated_at',
             ]);
@@ -251,11 +336,11 @@ describe('Public note sharing', () => {
             expect(res.status).toBe(404);
         });
 
-        it('stays dead after sharing is turned back on', async () => {
+        it('works again when sharing is turned back on', async () => {
             await ownerAgent.delete(`/api/note/${note.uid}/public-share`);
             await ownerAgent.post(`/api/note/${note.uid}/public-share`);
             const res = await request(app).get(`/api/public/notes/${token}`);
-            expect(res.status).toBe(404);
+            expect(res.status).toBe(200);
         });
 
         it('stops working when the note is deleted', async () => {
@@ -274,6 +359,67 @@ describe('Public note sharing', () => {
             expect(unknown.status).toBe(404);
             expect(malformed.status).toBe(404);
             expect(malformed.body).toEqual(unknown.body);
+        });
+
+        it("shows the note's color and background only when it inherits them", async () => {
+            await ownerAgent
+                .patch(`/api/note/${note.uid}`)
+                .send({ background: 'mural' });
+            await ownerAgent
+                .patch(`/api/note/${note.uid}/public-share`)
+                .send({ public_inherit_style: false });
+            const plain = await request(app).get(`/api/public/notes/${token}`);
+            expect(plain.body.color).toBeNull();
+            expect(plain.body.background).toBeNull();
+
+            await ownerAgent
+                .patch(`/api/note/${note.uid}/public-share`)
+                .send({ public_inherit_style: true });
+            const styled = await request(app).get(`/api/public/notes/${token}`);
+            expect(styled.body.color).toBe('#ffcc00');
+            expect(styled.body.background).toBe('mural');
+        });
+
+        it('lists only linked notes that are public too', async () => {
+            const shared = await Note.create({
+                title: 'Packing list',
+                content: '',
+                user_id: owner.id,
+            });
+            await Note.create({
+                title: 'Budget',
+                content: '',
+                user_id: owner.id,
+            });
+            const sharedRes = await ownerAgent.post(
+                `/api/note/${shared.uid}/public-share`
+            );
+            await ownerAgent.patch(`/api/note/${note.uid}`).send({
+                content: 'See [[packing list]], [[Budget]] and [[Nowhere]].',
+            });
+
+            const res = await request(app).get(`/api/public/notes/${token}`);
+
+            expect(res.body.linked_notes).toEqual([
+                { title: 'Packing list', token: sharedRes.body.token },
+            ]);
+        });
+
+        it("never links to another user's public note", async () => {
+            const otherAgent = await signIn(other.email);
+            const foreign = await Note.create({
+                title: 'Packing list',
+                content: '',
+                user_id: other.id,
+            });
+            await otherAgent.post(`/api/note/${foreign.uid}/public-share`);
+            await ownerAgent
+                .patch(`/api/note/${note.uid}`)
+                .send({ content: 'See [[Packing list]].' });
+
+            const res = await request(app).get(`/api/public/notes/${token}`);
+
+            expect(res.body.linked_notes).toEqual([]);
         });
 
         it('does not treat the note uid as a token', async () => {

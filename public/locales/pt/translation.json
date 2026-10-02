@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "Tem certeza de que deseja excluir a nota \"{{title}}\"?",
     "untitled": "Nota sem título",
     "publicShare": {
-      "sharedTitle": "Compartilhada com quem tiver o link"
-    }
+      "sharedTitle": "Compartilhada com quem tiver o link",
+      "open": "Partilhar nota",
+      "title": "Partilhar \"{{title}}\"",
+      "generalAccess": "Acesso geral",
+      "restricted": "Restrito",
+      "anyone": "Qualquer pessoa com o link",
+      "restrictedHint": "Apenas você e as pessoas com quem a partilhou podem abrir esta nota.",
+      "anyoneHint": "Qualquer pessoa na internet com o link pode ler esta nota sem iniciar sessão. Não pode editá-la. Desative isto e o link deixa de funcionar imediatamente.",
+      "link": "Link público",
+      "copyLink": "Copiar link",
+      "copied": "Copiado",
+      "copyFailed": "Não foi possível copiar automaticamente. Selecione o link e copie-o.",
+      "ownerOnly": "Apenas o proprietário de uma nota a pode partilhar publicamente.",
+      "failed": "Algo correu mal. Tente novamente.",
+      "createLink": "Criar link público",
+      "inheritStyle": "Herdar o estilo (fundo e cor) na nota pública",
+      "rotate": "Obter um novo link e desativar este",
+      "rotateWarning": "O link atual deixará de funcionar para todos os que o têm.",
+      "rotateConfirm": "Obter novo link"
+    },
+    "createLinkedNote": "Criar a nota \"{{title}}\"",
+    "linkedNoteMissing": "Ainda não existe uma nota chamada \"{{title}}\". Criá-la?",
+    "linkedNoteNotNow": "Agora não",
+    "linkedNoteCreate": "Criar nota",
+    "linkedNoteCreateFailed": "Não foi possível criar a nota.",
+    "backgroundImage": "Fundo",
+    "noBackground": "Sem fundo"
   },
   "tags": {
     "loading": "Carregando tags...",
@@ -2889,5 +2914,8 @@
     "myTemplates": "Meus modelos",
     "confirmDelete": "Excluir modelo",
     "confirmDeleteMessage": "Excluir \"{{name}}\"? Os projetos criados a partir dele não serão afetados."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Esta nota não está partilhada publicamente."
   }
 }

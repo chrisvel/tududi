@@ -1543,8 +1543,33 @@
     "deleteNoteConfirm": "Sigur vrei să ștergi nota „{{title}}”?",
     "untitled": "Notă fără titlu",
     "publicShare": {
-      "sharedTitle": "Partajată cu oricine are linkul"
-    }
+      "sharedTitle": "Partajată cu oricine are linkul",
+      "open": "Partajează nota",
+      "title": "Partajează „{{title}}”",
+      "generalAccess": "Acces general",
+      "restricted": "Restricționat",
+      "anyone": "Oricine are linkul",
+      "restrictedHint": "Doar tu și persoanele cu care ai partajat-o pot deschide această notă.",
+      "anyoneHint": "Oricine de pe internet are linkul poate citi această notă fără să se autentifice. Nu o poate modifica. Dezactivează opțiunea și linkul nu mai funcționează imediat.",
+      "link": "Link public",
+      "copyLink": "Copiază linkul",
+      "copied": "Copiat",
+      "copyFailed": "Copierea automată a eșuat. Selectează linkul și copiază-l.",
+      "ownerOnly": "Doar proprietarul unei note o poate partaja public.",
+      "failed": "Ceva nu a funcționat. Încearcă din nou.",
+      "createLink": "Creează link public",
+      "inheritStyle": "Preia stilul (fundal și culoare) în nota publică",
+      "rotate": "Obține un link nou și dezactivează-l pe acesta",
+      "rotateWarning": "Linkul actual nu va mai funcționa pentru nimeni care îl are.",
+      "rotateConfirm": "Obține link nou"
+    },
+    "createLinkedNote": "Creează nota „{{title}}”",
+    "linkedNoteMissing": "Nu există încă o notă numită „{{title}}”. O creezi?",
+    "linkedNoteNotNow": "Nu acum",
+    "linkedNoteCreate": "Creează nota",
+    "linkedNoteCreateFailed": "Nota nu a putut fi creată.",
+    "backgroundImage": "Fundal",
+    "noBackground": "Fără fundal"
   },
   "tags": {
     "loading": "Se încarcă etichetele...",
@@ -2893,5 +2918,8 @@
     "myTemplates": "Șabloanele mele",
     "confirmDelete": "Șterge șablonul",
     "confirmDeleteMessage": "Ștergi „{{name}}”? Proiectele create din el nu vor fi afectate."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Această notă nu este partajată public."
   }
 }

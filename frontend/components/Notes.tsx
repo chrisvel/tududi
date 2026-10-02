@@ -39,6 +39,12 @@ import { useStore } from '../store/useStore';
 import { createProject } from '../utils/projectsService';
 import { sortNotesByOrder } from '../utils/notesTreeUtils';
 import { COLORS } from './Shared/ColorPicker';
+import NoteBackgroundPicker from './Note/NoteBackgroundPicker';
+import PhotoCredit from './Shared/PhotoCredit';
+import {
+    contentBackgroundUrl,
+    findContentBackground,
+} from '../constants/contentBackgrounds';
 import NoteFocusMode from './Note/NoteFocusMode';
 import MarkdownEditor from './Note/MarkdownEditor';
 import NoteCard from './Shared/NoteCard';
@@ -113,6 +119,25 @@ const Notes: React.FC = () => {
     const previewNoteColor = previewNote ? previewNote.color : undefined;
     const activeNoteColor =
         (isEditing && editingNoteColor) || previewNoteColor || undefined;
+    // Let the content background show through the open note a little.
+    const activeNoteBackground =
+        activeNoteColor && /^#[0-9a-f]{6}$/i.test(activeNoteColor)
+            ? `${activeNoteColor}d9`
+            : activeNoteColor;
+    // A note's photo shows through a lighter tint of its color (or the page
+    // color), so the text stays readable.
+    const activeNotePhoto = findContentBackground(
+        (isEditing ? editingNote?.background : previewNote?.background) ??
+            null
+    );
+    const activeNoteStyle: React.CSSProperties = activeNotePhoto
+        ? ({
+              backgroundImage: `linear-gradient(var(--note-tint), var(--note-tint)), url(${contentBackgroundUrl(activeNotePhoto, 1600)})`,
+              ...(activeNoteColor && /^#[0-9a-f]{6}$/i.test(activeNoteColor)
+                  ? { '--note-tint': `${activeNoteColor}bf` }
+                  : {}),
+          } as React.CSSProperties)
+        : { backgroundColor: activeNoteBackground || undefined };
     const noteOptionsDropdownRef = useRef<HTMLDivElement>(null);
 
     const { notes, isLoading, isError, hasLoaded, loadNotes, setNotes } =
@@ -309,9 +334,18 @@ const Notes: React.FC = () => {
         setShowProjectDropdown(false);
     };
 
-    const handleColorChange = async (color: string, note: Note) => {
+    const handleColorChange = (color: string, note: Note) =>
+        handleLookChange({ color }, note);
+
+    const handleBackgroundChange = (background: string | null, note: Note) =>
+        handleLookChange({ background }, note);
+
+    const handleLookChange = async (
+        changes: Pick<Note, 'color' | 'background'>,
+        note: Note
+    ) => {
         try {
-            const updatedNote = { ...note, color };
+            const updatedNote = { ...note, ...changes };
 
             if (previewNote?.uid === note.uid || !note.uid) {
                 setPreviewNote(updatedNote);
@@ -336,7 +370,7 @@ const Notes: React.FC = () => {
             }
             setShowNoteOptionsDropdown(false);
         } catch (err) {
-            console.error('Error updating note color:', err);
+            console.error('Error updating note look:', err);
         }
     };
 
@@ -538,11 +572,15 @@ const Notes: React.FC = () => {
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden pt-2">
                 <div className="flex flex-1 min-h-0 overflow-hidden">
                     <div
-                        className={`flex flex-1 flex-col overflow-hidden h-full rounded-md ${activeNoteColor ? '' : 'bg-white dark:bg-gray-900'}`}
-                        style={{
-                            backgroundColor: activeNoteColor || undefined,
-                        }}
+                        className={`relative flex flex-1 flex-col overflow-hidden h-full rounded-md backdrop-blur-sm ${activeNoteColor ? '' : 'bg-white/85 dark:bg-gray-900/85'} ${activeNotePhoto ? 'bg-cover bg-center [--note-tint:rgb(255_255_255/0.75)] dark:[--note-tint:rgb(17_24_39/0.75)]' : ''}`}
+                        style={activeNoteStyle}
                     >
+                        {activeNotePhoto && (
+                            <PhotoCredit
+                                background={activeNotePhoto}
+                                className="absolute bottom-2 right-3 z-10"
+                            />
+                        )}
                         {isEditing && editingNote ? (
                             <div className="flex-1 flex flex-col overflow-hidden">
                                 <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-5">
@@ -698,6 +736,47 @@ const Notes: React.FC = () => {
                                         >
                                             <ArrowsPointingOutIcon className="h-5 w-5" />
                                         </button>
+                                        {editingNote.uid && (
+                                            <button
+                                                onClick={() =>
+                                                    setNoteToShare(editingNote)
+                                                }
+                                                className={`p-2 transition ${
+                                                    editingNote.is_public
+                                                        ? 'text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
+                                                        : 'text-gray-400 dark:text-gray-500 opacity-60 hover:opacity-100'
+                                                }`}
+                                                style={{
+                                                    color:
+                                                        editingNoteColor &&
+                                                        !editingNote.is_public
+                                                            ? shouldUseLightText(
+                                                                  editingNoteColor
+                                                              )
+                                                                ? '#e0e0e0'
+                                                                : '#333333'
+                                                            : undefined,
+                                                }}
+                                                aria-label={t(
+                                                    'notes.publicShare.open',
+                                                    'Share note'
+                                                )}
+                                                title={
+                                                    editingNote.is_public
+                                                        ? t(
+                                                              'notes.publicShare.sharedTitle',
+                                                              'Shared with anyone who has the link'
+                                                          )
+                                                        : t(
+                                                              'notes.publicShare.open',
+                                                              'Share note'
+                                                          )
+                                                }
+                                                data-testid="note-share-button"
+                                            >
+                                                <GlobeAltIcon className="h-5 w-5" />
+                                            </button>
+                                        )}
                                     <div
                                         className="relative"
                                         ref={noteOptionsDropdownRef}
@@ -766,6 +845,23 @@ const Notes: React.FC = () => {
                                                             )
                                                         )}
                                                     </div>
+                                                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-3 mb-2">
+                                                        {t(
+                                                            'notes.backgroundImage',
+                                                            'Background'
+                                                        )}
+                                                    </div>
+                                                    <NoteBackgroundPicker
+                                                        value={
+                                                            editingNote.background
+                                                        }
+                                                        onChange={(bg) =>
+                                                            handleBackgroundChange(
+                                                                bg,
+                                                                editingNote
+                                                            )
+                                                        }
+                                                    />
                                                 </div>
                                                 <div className="py-1">
                                                     <button
@@ -800,18 +896,6 @@ const Notes: React.FC = () => {
                                                             {editingNote.pin_to_sidebar
                                                                 ? t('notes.unpinFromSidebar', 'Unpin from sidebar')
                                                                 : t('notes.pinToSidebar', 'Pin to sidebar')}
-                                                        </button>
-                                                    )}
-                                                    {editingNote.uid && (
-                                                        <button
-                                                            onClick={() => {
-                                                                setNoteToShare(editingNote);
-                                                                setShowNoteOptionsDropdown(false);
-                                                            }}
-                                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                                                        >
-                                                            <GlobeAltIcon className="h-4 w-4" />
-                                                            {t('notes.publicShare.open', 'Share note')}
                                                         </button>
                                                     )}
                                                     {editingNote.uid && (
@@ -914,7 +998,9 @@ const Notes: React.FC = () => {
                                     </div>
                                 )}
 
-                                <div className="flex-1 overflow-y-auto px-6 md:px-8 py-4">
+                                {/* The editor keeps a 24px gutter for the block
+                                    handle, so its text lines up with the title. */}
+                                <div className="flex-1 overflow-y-auto pl-0 pr-6 md:pl-2 md:pr-8 py-4">
                                     <MarkdownEditor
                                         noteUid={editingNote.uid}
                                         value={editingNote.content || ''}
@@ -1050,6 +1136,9 @@ const Notes: React.FC = () => {
                                 n.uid === uid ? { ...n, is_public: isPublic } : n
                             )
                         );
+                        if (editingNote?.uid === uid) {
+                            setEditingNote({ ...editingNote, is_public: isPublic });
+                        }
                     }}
                 />
 

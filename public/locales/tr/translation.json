@@ -1541,8 +1541,33 @@
     "deleteNoteConfirm": "\"{{title}}\" notunu silmek istediğinizden emin misiniz?",
     "untitled": "Başlıksız not",
     "publicShare": {
-      "sharedTitle": "Bağlantıya sahip herkesle paylaşıldı"
-    }
+      "sharedTitle": "Bağlantıya sahip herkesle paylaşıldı",
+      "open": "Notu paylaş",
+      "title": "\"{{title}}\" notunu paylaş",
+      "generalAccess": "Genel erişim",
+      "restricted": "Kısıtlı",
+      "anyone": "Bağlantıya sahip herkes",
+      "restrictedHint": "Bu notu yalnızca siz ve paylaştığınız kişiler açabilir.",
+      "anyoneHint": "İnternette bağlantıya sahip herkes bu notu oturum açmadan okuyabilir. Notu düzenleyemez. Bunu kapattığınızda bağlantı hemen çalışmayı bırakır.",
+      "link": "Herkese açık bağlantı",
+      "copyLink": "Bağlantıyı kopyala",
+      "copied": "Kopyalandı",
+      "copyFailed": "Otomatik olarak kopyalanamadı. Bağlantıyı seçip kopyalayın.",
+      "ownerOnly": "Bir notu yalnızca sahibi herkese açık olarak paylaşabilir.",
+      "failed": "Bir şeyler ters gitti. Tekrar deneyin.",
+      "createLink": "Herkese açık bağlantı oluştur",
+      "inheritStyle": "Stili (arka plan ve renk) herkese açık nota aktar",
+      "rotate": "Yeni bağlantı al ve bunu kapat",
+      "rotateWarning": "Mevcut bağlantı, ona sahip herkes için çalışmayı bırakacak.",
+      "rotateConfirm": "Yeni bağlantı al"
+    },
+    "createLinkedNote": "\"{{title}}\" notunu oluştur",
+    "linkedNoteMissing": "Henüz \"{{title}}\" adlı bir not yok. Oluşturulsun mu?",
+    "linkedNoteNotNow": "Şimdi değil",
+    "linkedNoteCreate": "Not oluştur",
+    "linkedNoteCreateFailed": "Not oluşturulamadı.",
+    "backgroundImage": "Arka plan",
+    "noBackground": "Arka plan yok"
   },
   "tags": {
     "loading": "Etiketler yükleniyor...",
@@ -2888,5 +2913,8 @@
     "myTemplates": "Şablonlarım",
     "confirmDelete": "Şablonu sil",
     "confirmDeleteMessage": "\"{{name}}\" silinsin mi? Ondan oluşturulan projeler etkilenmez."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Bu not herkese açık olarak paylaşılmıyor."
   }
 }

@@ -19,6 +19,8 @@ jest.mock('react-i18next', () => ({
 const getNotePublicShare = jest.fn();
 const enableNotePublicShare = jest.fn();
 const disableNotePublicShare = jest.fn();
+const updateNotePublicLook = jest.fn();
+const rotateNotePublicShare = jest.fn();
 jest.mock('../../../utils/publicNotesService', () => {
     class PublicShareError extends Error {
         status: number;
@@ -34,6 +36,9 @@ jest.mock('../../../utils/publicNotesService', () => {
             enableNotePublicShare(...args),
         disableNotePublicShare: (...args: any[]) =>
             disableNotePublicShare(...args),
+        updateNotePublicLook: (...args: any[]) => updateNotePublicLook(...args),
+        rotateNotePublicShare: (...args: any[]) =>
+            rotateNotePublicShare(...args),
         buildPublicNoteUrl: (token: string) =>
             `https://tududi.test/public/notes/${token}`,
     };
@@ -55,8 +60,15 @@ const renderModal = (onChange = jest.fn()) => {
     return onChange;
 };
 
-const accessSelect = () =>
-    screen.getByTestId('public-share-access') as HTMLSelectElement;
+const accessMenu = () => screen.getByTestId('public-share-access');
+
+const chooseAccess = (label: string) => {
+    fireEvent.click(accessMenu());
+    fireEvent.click(screen.getByRole('option', { name: label }));
+};
+
+const waitForLoaded = () =>
+    waitFor(() => expect(getNotePublicShare).toHaveBeenCalled());
 
 describe('PublicShareModal', () => {
     beforeEach(() => {
@@ -78,8 +90,9 @@ describe('PublicShareModal', () => {
         getNotePublicShare.mockResolvedValue(off);
         renderModal();
 
-        await waitFor(() => expect(accessSelect()).not.toBeDisabled());
-        expect(accessSelect().value).toBe('restricted');
+        await waitForLoaded();
+        await screen.findByText('Restricted');
+        expect(accessMenu()).toHaveTextContent('Restricted');
         expect(screen.queryByTestId('public-share-link')).toBeNull();
         expect(getNotePublicShare).toHaveBeenCalledWith('note-1');
     });
@@ -90,22 +103,72 @@ describe('PublicShareModal', () => {
 
         const link = await screen.findByTestId('public-share-link');
         expect(link).toHaveValue('https://tududi.test/public/notes/tok-abc');
-        expect(accessSelect().value).toBe('anyone');
+        expect(accessMenu()).toHaveTextContent('Anyone with the link');
     });
 
     it('turns sharing on and reveals the link', async () => {
         getNotePublicShare.mockResolvedValue(off);
         enableNotePublicShare.mockResolvedValue(on);
         const onChange = renderModal();
-        await waitFor(() => expect(accessSelect()).not.toBeDisabled());
+        await waitForLoaded();
+        await screen.findByText('Restricted');
 
-        fireEvent.change(accessSelect(), { target: { value: 'anyone' } });
+        chooseAccess('Anyone with the link');
+        expect(enableNotePublicShare).not.toHaveBeenCalled();
+        fireEvent.click(screen.getByTestId('public-share-create'));
 
         expect(await screen.findByTestId('public-share-link')).toHaveValue(
             'https://tududi.test/public/notes/tok-abc'
         );
-        expect(enableNotePublicShare).toHaveBeenCalledWith('note-1');
+        expect(enableNotePublicShare).toHaveBeenCalledWith('note-1', {
+            public_inherit_style: true,
+        });
         expect(onChange).toHaveBeenCalledWith(true);
+    });
+
+    it('shares without the note styling when the box is unticked', async () => {
+        getNotePublicShare.mockResolvedValue(off);
+        enableNotePublicShare.mockResolvedValue(on);
+        renderModal();
+        await waitForLoaded();
+        await screen.findByText('Restricted');
+
+        chooseAccess('Anyone with the link');
+        const inherit = screen.getByTestId('public-share-inherit');
+        expect(inherit).toHaveAttribute('aria-checked', 'true');
+        fireEvent.click(inherit);
+        fireEvent.click(screen.getByTestId('public-share-create'));
+
+        await screen.findByTestId('public-share-link');
+        expect(enableNotePublicShare).toHaveBeenCalledWith('note-1', {
+            public_inherit_style: false,
+        });
+    });
+
+    it('saves the styling choice right away once the note is public', async () => {
+        getNotePublicShare.mockResolvedValue(on);
+        updateNotePublicLook.mockResolvedValue({
+            ...on,
+            public_inherit_style: true,
+        });
+        renderModal();
+        await screen.findByTestId('public-share-link');
+
+        const inherit = screen.getByTestId('public-share-inherit');
+        expect(inherit).toHaveAttribute('aria-checked', 'false');
+        fireEvent.click(inherit);
+
+        await waitFor(() =>
+            expect(updateNotePublicLook).toHaveBeenCalledWith('note-1', {
+                public_inherit_style: true,
+            })
+        );
+        await waitFor(() =>
+            expect(screen.getByTestId('public-share-inherit')).toHaveAttribute(
+                'aria-checked',
+                'true'
+            )
+        );
     });
 
     it('turns sharing off and removes the link', async () => {
@@ -114,14 +177,44 @@ describe('PublicShareModal', () => {
         const onChange = renderModal();
         await screen.findByTestId('public-share-link');
 
-        fireEvent.change(accessSelect(), { target: { value: 'restricted' } });
+        chooseAccess('Restricted');
 
         await waitFor(() =>
             expect(screen.queryByTestId('public-share-link')).toBeNull()
         );
         expect(disableNotePublicShare).toHaveBeenCalledWith('note-1');
         expect(onChange).toHaveBeenCalledWith(false);
-        expect(accessSelect().value).toBe('restricted');
+        expect(accessMenu()).toHaveTextContent('Restricted');
+    });
+
+    it('replaces the link after the owner confirms', async () => {
+        getNotePublicShare.mockResolvedValue(on);
+        rotateNotePublicShare.mockResolvedValue({ ...on, token: 'tok-new' });
+        renderModal();
+        await screen.findByTestId('public-share-link');
+
+        fireEvent.click(screen.getByTestId('public-share-rotate'));
+        expect(rotateNotePublicShare).not.toHaveBeenCalled();
+        fireEvent.click(screen.getByTestId('public-share-rotate-yes'));
+
+        await waitFor(() =>
+            expect(screen.getByTestId('public-share-link')).toHaveValue(
+                'https://tududi.test/public/notes/tok-new'
+            )
+        );
+        expect(rotateNotePublicShare).toHaveBeenCalledWith('note-1');
+    });
+
+    it('keeps the link when the owner cancels', async () => {
+        getNotePublicShare.mockResolvedValue(on);
+        renderModal();
+        await screen.findByTestId('public-share-link');
+
+        fireEvent.click(screen.getByTestId('public-share-rotate'));
+        fireEvent.click(screen.getByText('Cancel'));
+
+        expect(rotateNotePublicShare).not.toHaveBeenCalled();
+        expect(screen.getByTestId('public-share-rotate')).toBeInTheDocument();
     });
 
     it('copies the link', async () => {
@@ -149,21 +242,23 @@ describe('PublicShareModal', () => {
         expect(await screen.findByRole('alert')).toHaveTextContent(
             'Only the owner of a note can share it publicly.'
         );
-        expect(accessSelect()).toBeDisabled();
     });
 
     it('keeps the old state and reports the failure when turning it on fails', async () => {
         getNotePublicShare.mockResolvedValue(off);
         enableNotePublicShare.mockRejectedValue(new Error('Network down'));
         const onChange = renderModal();
-        await waitFor(() => expect(accessSelect()).not.toBeDisabled());
+        await waitForLoaded();
+        await screen.findByText('Restricted');
 
-        fireEvent.change(accessSelect(), { target: { value: 'anyone' } });
+        chooseAccess('Anyone with the link');
+        fireEvent.click(screen.getByTestId('public-share-create'));
 
         expect(await screen.findByRole('alert')).toHaveTextContent(
             'Network down'
         );
-        expect(accessSelect().value).toBe('restricted');
+        expect(accessMenu()).toHaveTextContent('Anyone with the link');
+        expect(screen.getByTestId('public-share-create')).toBeInTheDocument();
         expect(screen.queryByTestId('public-share-link')).toBeNull();
         expect(onChange).not.toHaveBeenCalled();
     });
