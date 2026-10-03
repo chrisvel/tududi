@@ -143,6 +143,9 @@ describe('permissionsService edge cases', () => {
 
     describe('ownershipOrPermissionWhere', () => {
         it('accepts a uid instead of a numeric id', async () => {
+            // Only the id handling is under test: PostgreSQL would refuse a
+            // uid compared with the numeric user_id column of the shares.
+            jest.spyOn(permissionSources, 'findAccepted').mockResolvedValue([]);
             const findByPk = jest.spyOn(User, 'findByPk');
             const where = await ownershipOrPermissionWhere('area', 'abc-uid');
             expect(findByPk).not.toHaveBeenCalled();
