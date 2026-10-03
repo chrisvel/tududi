@@ -20,7 +20,6 @@
     "badgeStars": "αστέρια στο GitHub",
     "badgeMcp": "Ενσωματωμένος MCP server",
     "badgeCloudOpen": "Το tududi Cloud άνοιξε",
-    "starsLoading": "Φόρτωση αριθμού αστεριών",
     "ctaDemo": "Δοκιμάστε τη ζωντανή έκδοση",
     "demoNote": "Μια πραγματική φιλοξενούμενη εγκατάσταση με δείγματα δεδομένων, κοινόχρηστη και με τακτική επαναφορά",
     "screenshotAlt": "Το περιβάλλον του tududi, με την προβολή Σήμερα και τις προγραμματισμένες εργασίες",
@@ -36,7 +35,6 @@
     "languages": "{{count}} γλώσσες",
     "dockerPulls": "λήψεις Docker",
     "discord": "μέλη στο Discord",
-    "discordAlt": "Discord: {{count}} μέλη",
     "minute": "Ρυθμισμένο σε ένα λεπτό"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Όροι",
     "linkPrivacy": "Απόρρητο",
     "linkRefunds": "Επιστροφές",
-    "linkContact": "Επικοινωνία"
+    "linkContact": "Επικοινωνία",
+    "linkCookies": "Ρυθμίσεις cookies"
+  },
+  "consent": {
+    "label": "Επιλογή cookies",
+    "body": "Θα θέλαμε να χρησιμοποιούμε το Google Analytics για να μετράμε τις επισκέψεις σε αυτόν τον ιστότοπο. Τοποθετεί cookies, γι’ αυτό λειτουργεί μόνο αν το επιτρέψεις. Η ίδια η εφαρμογή tududi δεν έχει καμία παρακολούθηση.",
+    "accept": "Αποδοχή στατιστικών",
+    "decline": "Όχι, ευχαριστώ"
   },
   "js": {
     "showFewer": "Δες λιγότερα",

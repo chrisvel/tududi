@@ -54,7 +54,7 @@ const NoteBackgroundPicker: React.FC<NoteBackgroundPickerProps> = ({
                     onClick={() => onChange(bg.id)}
                     className={swatch(value === bg.id)}
                     style={{
-                        backgroundImage: `url(${contentBackgroundUrl(bg, large ? 320 : 96)})`,
+                        backgroundImage: `url(${contentBackgroundUrl(bg, 'thumb')})`,
                     }}
                     title={bg.name}
                     aria-label={bg.name}

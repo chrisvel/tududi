@@ -20,7 +20,6 @@
     "badgeStars": "зірок на GitHub",
     "badgeMcp": "Вбудований MCP-сервер",
     "badgeCloudOpen": "tududi Cloud відкрито",
-    "starsLoading": "Завантаження кількості зірок",
     "ctaDemo": "Спробувати живе демо",
     "demoNote": "Справжній розміщений екземпляр із демонстраційними даними, спільний і регулярно скидається",
     "screenshotAlt": "Інтерфейс tududi з поданням «Сьогодні» та запланованими завданнями",
@@ -36,7 +35,6 @@
     "languages": "{{count}} мов",
     "dockerPulls": "завантажень Docker",
     "discord": "учасників у Discord",
-    "discordAlt": "Discord: {{count}} учасників",
     "minute": "Налаштовано за хвилину"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Умови",
     "linkPrivacy": "Конфіденційність",
     "linkRefunds": "Повернення",
-    "linkContact": "Контакти"
+    "linkContact": "Контакти",
+    "linkCookies": "Налаштування cookie"
+  },
+  "consent": {
+    "label": "Вибір cookie",
+    "body": "Ми хотіли б використовувати Google Analytics, щоб рахувати відвідування цього сайту. Він встановлює cookie, тому працює лише з вашого дозволу. У самому застосунку tududi немає жодного відстеження.",
+    "accept": "Дозволити аналітику",
+    "decline": "Ні, дякую"
   },
   "js": {
     "showFewer": "Показати менше",

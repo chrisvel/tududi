@@ -20,7 +20,6 @@
     "badgeStars": "stjärnor på GitHub",
     "badgeMcp": "MCP-server inbyggd",
     "badgeCloudOpen": "tududi Cloud är nu öppet",
-    "starsLoading": "Laddar antalet stjärnor",
     "ctaDemo": "Prova livedemon",
     "demoNote": "En riktig hostad instans med exempeldata, delad och återställs regelbundet",
     "screenshotAlt": "tududis gränssnitt med vyn Idag och de planerade uppgifterna",
@@ -36,7 +35,6 @@
     "languages": "{{count}} språk",
     "dockerPulls": "Docker-nedladdningar",
     "discord": "Discord-medlemmar",
-    "discordAlt": "Discord: {{count}} medlemmar",
     "minute": "Uppsatt på en minut"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Villkor",
     "linkPrivacy": "Integritet",
     "linkRefunds": "Återbetalning",
-    "linkContact": "Kontakt"
+    "linkContact": "Kontakt",
+    "linkCookies": "Cookieinställningar"
+  },
+  "consent": {
+    "label": "Cookieval",
+    "body": "Vi vill gärna använda Google Analytics för att räkna besök på den här webbplatsen. Det sätter cookies, så det körs bara om du tillåter det. Själva tududi-appen har ingen spårning.",
+    "accept": "Tillåt statistik",
+    "decline": "Nej tack"
   },
   "js": {
     "showFewer": "Visa färre",

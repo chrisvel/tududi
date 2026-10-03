@@ -20,7 +20,6 @@
     "badgeStars": "GitHub yıldızı",
     "badgeMcp": "Yerleşik MCP sunucusu",
     "badgeCloudOpen": "tududi Cloud artık açık",
-    "starsLoading": "Yıldız sayısı yükleniyor",
     "ctaDemo": "Canlı demoyu deneyin",
     "demoNote": "Örnek verilerle dolu gerçek bir barındırılan örnek; paylaşılır ve düzenli olarak sıfırlanır",
     "screenshotAlt": "tududi arayüzü; Bugün görünümü ve planlanmış görevler",
@@ -36,7 +35,6 @@
     "languages": "{{count}} dil",
     "dockerPulls": "Docker indirmesi",
     "discord": "Discord üyesi",
-    "discordAlt": "Discord: {{count}} üye",
     "minute": "Bir dakikada kuruldu"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Koşullar",
     "linkPrivacy": "Gizlilik",
     "linkRefunds": "İadeler",
-    "linkContact": "İletişim"
+    "linkContact": "İletişim",
+    "linkCookies": "Çerez ayarları"
+  },
+  "consent": {
+    "label": "Çerez tercihi",
+    "body": "Bu web sitesine yapılan ziyaretleri saymak için Google Analytics kullanmak istiyoruz. Çerez yerleştirdiği için yalnızca izin verirsen çalışır. tududi uygulamasının kendisinde hiçbir izleme yoktur.",
+    "accept": "Analize izin ver",
+    "decline": "Hayır, teşekkürler"
   },
   "js": {
     "showFewer": "Daha az göster",

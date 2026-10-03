@@ -49,7 +49,7 @@ describe('AppearanceTab background', () => {
         expect(card).toHaveAttribute('aria-pressed', 'true');
         expect(card).toHaveTextContent('Adrian Infernus');
         expect(card.querySelector('img')?.getAttribute('src')).toContain(
-            'images.unsplash.com/photo-1543871645-b3be1624a0fc'
+            'backgrounds/misty-forest-thumb.webp'
         );
         expect(screen.getByRole('button', { name: 'None' })).toHaveAttribute(
             'aria-pressed',

@@ -20,7 +20,6 @@
     "badgeStars": "Sterne auf GitHub",
     "badgeMcp": "MCP-Server integriert",
     "badgeCloudOpen": "tududi Cloud ist jetzt offen",
-    "starsLoading": "Sternanzahl wird geladen",
     "ctaDemo": "Live-Demo ausprobieren",
     "demoNote": "Eine echte gehostete Instanz mit Beispieldaten, gemeinsam genutzt und regelmäßig zurückgesetzt",
     "screenshotAlt": "Die Oberfläche von tududi mit der Heute-Ansicht und den geplanten Aufgaben",
@@ -36,7 +35,6 @@
     "languages": "{{count}} Sprachen",
     "dockerPulls": "Docker-Pulls",
     "discord": "Discord-Mitglieder",
-    "discordAlt": "Discord: {{count}} Mitglieder",
     "minute": "In einer Minute eingerichtet"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "AGB",
     "linkPrivacy": "Datenschutz",
     "linkRefunds": "Rückerstattung",
-    "linkContact": "Kontakt"
+    "linkContact": "Kontakt",
+    "linkCookies": "Cookie-Einstellungen"
+  },
+  "consent": {
+    "label": "Cookie-Auswahl",
+    "body": "Wir würden gern Google Analytics nutzen, um Besuche auf dieser Website zu zählen. Es setzt Cookies und läuft deshalb nur, wenn du zustimmst. Die tududi-App selbst enthält kein Tracking.",
+    "accept": "Statistik erlauben",
+    "decline": "Nein danke"
   },
   "js": {
     "showFewer": "Weniger anzeigen",

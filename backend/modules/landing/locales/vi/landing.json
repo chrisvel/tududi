@@ -20,7 +20,6 @@
     "badgeStars": "sao trên GitHub",
     "badgeMcp": "Tích hợp sẵn máy chủ MCP",
     "badgeCloudOpen": "tududi Cloud đã mở",
-    "starsLoading": "Đang tải số sao",
     "ctaDemo": "Dùng thử bản demo trực tiếp",
     "demoNote": "Một phiên bản lưu trữ thật với dữ liệu mẫu, dùng chung và được đặt lại thường xuyên",
     "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch",
@@ -36,7 +35,6 @@
     "languages": "{{count}} ngôn ngữ",
     "dockerPulls": "lượt tải Docker",
     "discord": "thành viên Discord",
-    "discordAlt": "Discord: {{count}} thành viên",
     "minute": "Thiết lập trong một phút"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Điều khoản",
     "linkPrivacy": "Quyền riêng tư",
     "linkRefunds": "Hoàn tiền",
-    "linkContact": "Liên hệ"
+    "linkContact": "Liên hệ",
+    "linkCookies": "Cài đặt cookie"
+  },
+  "consent": {
+    "label": "Lựa chọn cookie",
+    "body": "Chúng tôi muốn dùng Google Analytics để đếm lượt truy cập trang web này. Công cụ này đặt cookie nên chỉ chạy khi bạn cho phép. Bản thân ứng dụng tududi không có bất kỳ theo dõi nào.",
+    "accept": "Cho phép thống kê",
+    "decline": "Không, cảm ơn"
   },
   "js": {
     "showFewer": "Thu gọn",

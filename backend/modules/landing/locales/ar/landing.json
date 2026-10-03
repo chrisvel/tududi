@@ -20,7 +20,6 @@
     "badgeStars": "نجمة على GitHub",
     "badgeMcp": "خادم MCP مدمج",
     "badgeCloudOpen": "tududi Cloud متاح الآن",
-    "starsLoading": "جارٍ تحميل عدد النجوم",
     "ctaDemo": "جرّب العرض التجريبي المباشر",
     "demoNote": "نسخة مستضافة حقيقية، مزوّدة ببيانات تجريبية، مشتركة ويُعاد ضبطها بانتظام",
     "screenshotAlt": "واجهة tududi وهي تعرض شاشة اليوم والمهام المخطط لها",
@@ -36,7 +35,6 @@
     "languages": "{{count}} لغة",
     "dockerPulls": "تنزيل من Docker",
     "discord": "عضو في Discord",
-    "discordAlt": "‏Discord: {{count}} عضو",
     "minute": "جاهز في دقيقة"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "الشروط",
     "linkPrivacy": "الخصوصية",
     "linkRefunds": "الاسترداد",
-    "linkContact": "اتصل بنا"
+    "linkContact": "اتصل بنا",
+    "linkCookies": "إعدادات ملفات تعريف الارتباط"
+  },
+  "consent": {
+    "label": "اختيار ملفات تعريف الارتباط",
+    "body": "نود استخدام Google Analytics لإحصاء الزيارات إلى هذا الموقع. يضع ملفات تعريف الارتباط، لذلك لا يعمل إلا إذا سمحت بذلك. تطبيق tududi نفسه لا يحتوي على أي تتبع.",
+    "accept": "السماح بالتحليلات",
+    "decline": "لا، شكرًا"
   },
   "js": {
     "showFewer": "عرض أقل",
