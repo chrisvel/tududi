@@ -17,7 +17,7 @@ module.exports = {
             },
             {
                 name: 'ai_suggestion_key',
-                definition: { type: Sequelize.STRING(40), allowNull: true },
+                definition: { type: Sequelize.STRING(64), allowNull: true },
             },
         ]);
     },

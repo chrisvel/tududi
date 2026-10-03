@@ -66,9 +66,9 @@ module.exports = (sequelize) => {
                 type: DataTypes.JSON,
                 allowNull: true,
             },
-            // sha1 of the text and file names the suggestion was made from.
+            // sha256 of the text and file names the suggestion was made from.
             ai_suggestion_key: {
-                type: DataTypes.STRING(40),
+                type: DataTypes.STRING(64),
                 allowNull: true,
             },
         },

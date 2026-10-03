@@ -242,7 +242,7 @@ async function assertAiAvailable(userId) {
 // regardless.
 const suggestionKey = (item, files) =>
     crypto
-        .createHash('sha1')
+        .createHash('sha256')
         .update(String(item.content || ''))
         .update(files.map((f) => f.original_filename).join('\n'))
         .digest('hex');
