@@ -17,10 +17,13 @@ type Stage = 'loading' | 'ready' | 'unavailable' | 'failed';
 
 // Paragraphs that are nothing but [[links]] are the post list in the front
 // page note; the cards below show those, so the intro leaves them out.
+const WIKILINK = /\[\[[^[\]\n]+\]\]/g;
+const isLinkList = (paragraph: string) =>
+    paragraph.includes('[[') && paragraph.replace(WIKILINK, '').trim() === '';
 const introOf = (content: string) =>
     content
         .split(/\n\s*\n/)
-        .filter((p) => !/^(\s*\[\[[^[\]\n]+?\]\]\s*)+$/.test(p))
+        .filter((p) => !isLinkList(p))
         .join('\n\n')
         .trim();
 

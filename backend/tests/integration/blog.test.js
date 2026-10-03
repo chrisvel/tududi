@@ -119,6 +119,27 @@ describe('Blog', () => {
             ).toBeNull();
         });
 
+        it('reads the uid from a link with a query, fragment or trailing slash', async () => {
+            const { index } = await buildBlog();
+            for (const note of [
+                `https://app.tududi.com/notes/${index.uid}-blog/?tab=1#top`,
+                `${index.uid}#x`,
+            ]) {
+                const res = await adminAgent
+                    .put('/api/admin/blog')
+                    .send({ note });
+                expect(res.status).toBe(200);
+                expect(res.body.note_uid).toBe(index.uid);
+            }
+        });
+
+        it('refuses input far longer than a note link', async () => {
+            const res = await adminAgent
+                .put('/api/admin/blog')
+                .send({ note: '/'.repeat(10000) + '#'.repeat(10000) });
+            expect(res.status).toBe(400);
+        });
+
         it('clears the pick with an empty value', async () => {
             const { index } = await buildBlog();
             await adminAgent.put('/api/admin/blog').send({ note: index.uid });

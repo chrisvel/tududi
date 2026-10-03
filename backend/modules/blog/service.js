@@ -16,6 +16,8 @@ const FIRST_IMAGE = /!\[[^\]]*\]\(([^)\s]+)/;
 // Enough for any real blog, and a bound on the walk if notes link in circles.
 const MAX_POSTS = 200;
 const EXCERPT_LENGTH = 220;
+// A pasted note link is far shorter; anything longer is not one.
+const MAX_NOTE_INPUT = 500;
 
 const titleKey = (title) => (title || '').trim().toLowerCase();
 
@@ -169,11 +171,14 @@ const blogService = {
             await Setting.destroy({ where: { key: SETTING_KEY } });
             return null;
         }
-        const lastSegment = raw
-            .replace(/[?#].*$/, '')
-            .replace(/\/+$/, '')
-            .split('/')
-            .pop();
+        if (raw.length > MAX_NOTE_INPUT) {
+            throw new ValidationError('Pick one of your own notes.');
+        }
+        // The last path segment of a pasted link, without its query or
+        // fragment. Plain string handling: the input is user text.
+        const lastSegment =
+            raw.split('?')[0].split('#')[0].split('/').filter(Boolean).pop() ||
+            '';
         const uid = validateUid(extractUidFromSlug(lastSegment));
         const note = await notesRepository.findForBlog(uid);
         if (!note || note.user_id !== userId) {
