@@ -1992,12 +1992,14 @@
       "names": {
         "admin": "Admin",
         "user": "Utilisateur",
-        "guest": "Invité"
+        "guest": "Invité",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Gère les comptes, les rôles et les groupes, et peut faire tout le reste.",
         "user": "Un membre ordinaire. Travaille avec ses propres éléments et tout ce qui est partagé avec lui.",
-        "guest": "Travaille dans ce qui est partagé avec lui ou qui lui est assigné."
+        "guest": "Travaille dans ce qui est partagé avec lui ou qui lui est assigné.",
+        "superadmin": "Gère cette instance : tous les comptes, la facturation, les groupes et les réglages. Les clients n'ont jamais ce rôle ; ils ne gèrent que les membres qu'ils ajoutent."
       },
       "capabilities": {
         "createPeople": "Ajouter des personnes",

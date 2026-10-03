@@ -73,8 +73,11 @@ signed up by itself (no `created_by_user_id`) gets the `invite_members`
 permission without being an admin, so it can add members from the People
 page: a partner with an email, or a child without one. Members it adds
 cannot add members of their own, so exactly one account pays. The instance
-admin is still the only admin; a customer never gets `is_admin`, which would
-bypass every access check.
+admin is still the only admin, shown in the app as the **Superadmin**; a
+customer never gets `is_admin`, which would bypass every access check.
+`backend/tests/integration/cloud-superadmin-isolation.test.js` asserts that a
+customer and its members are refused every `/api/admin/*` route and cannot
+read, list, change or remove the superadmin's account or data.
 
 Each member is one more seat. The owner's subscription quantity is the owner
 plus its members (`billing_accounts.seat_quantity`, the provider line item in

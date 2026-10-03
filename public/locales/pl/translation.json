@@ -1993,12 +1993,14 @@
       "names": {
         "admin": "Admin",
         "user": "Użytkownik",
-        "guest": "Gość"
+        "guest": "Gość",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Zarządza kontami, rolami i grupami i może robić wszystko inne.",
         "user": "Zwykły członek. Pracuje na własnych elementach i na wszystkim, co jest mu udostępnione.",
-        "guest": "Pracuje w tym, co jest mu udostępnione lub przypisane."
+        "guest": "Pracuje w tym, co jest mu udostępnione lub przypisane.",
+        "superadmin": "Zarządza tą instancją: wszystkimi kontami, rozliczeniami, grupami i ustawieniami. Klienci nigdy nie dostają tej roli; zarządzają tylko członkami, których dodali."
       },
       "capabilities": {
         "createPeople": "Dodawanie osób",

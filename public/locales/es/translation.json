@@ -1979,12 +1979,14 @@
       "names": {
         "admin": "Admin",
         "user": "Usuario",
-        "guest": "Invitado"
+        "guest": "Invitado",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Gestiona cuentas, roles y grupos, y puede hacer todo lo demás.",
         "user": "Un miembro normal. Trabaja con sus propios elementos y con todo lo que se comparte con él.",
-        "guest": "Trabaja dentro de lo que se comparte con él o se le asigna."
+        "guest": "Trabaja dentro de lo que se comparte con él o se le asigna.",
+        "superadmin": "Gestiona esta instancia: todas las cuentas, la facturación, los grupos y los ajustes. Los clientes nunca tienen este rol; solo gestionan los miembros que añaden."
       },
       "capabilities": {
         "createPeople": "Añadir personas",

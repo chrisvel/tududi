@@ -1993,12 +1993,14 @@
       "names": {
         "admin": "Skrbnik",
         "user": "Uporabnik",
-        "guest": "Gost"
+        "guest": "Gost",
+        "superadmin": "Superskrbnik"
       },
       "descriptions": {
         "admin": "Upravlja račune, vloge in skupine ter lahko počne vse drugo.",
         "user": "Navaden član. Dela z lastnimi elementi in vsem, kar je deljeno z njim.",
-        "guest": "Dela znotraj tistega, kar je deljeno z njim ali mu dodeljeno."
+        "guest": "Dela znotraj tistega, kar je deljeno z njim ali mu dodeljeno.",
+        "superadmin": "Upravlja ta strežnik: vse račune, plačila, skupine in nastavitve. Stranke te vloge nikoli ne dobijo; upravljajo le člane, ki jih dodajo."
       },
       "capabilities": {
         "createPeople": "Dodajanje oseb",

@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "Ylläpitäjä",
         "user": "Käyttäjä",
-        "guest": "Vieras"
+        "guest": "Vieras",
+        "superadmin": "Pääylläpitäjä"
       },
       "descriptions": {
         "admin": "Hallitsee tilejä, rooleja ja ryhmiä ja voi tehdä kaiken muun.",
         "user": "Tavallinen jäsen. Työskentelee omien kohteidensa ja kaiken hänen kanssaan jaetun parissa.",
-        "guest": "Työskentelee sen parissa, mitä hänen kanssaan jaetaan tai mitä hänelle on osoitettu."
+        "guest": "Työskentelee sen parissa, mitä hänen kanssaan jaetaan tai mitä hänelle on osoitettu.",
+        "superadmin": "Ylläpitää tätä palvelua: kaikki tilit, laskutus, ryhmät ja asetukset. Asiakkaat eivät koskaan saa tätä roolia; he hallitsevat vain lisäämiään jäseniä."
       },
       "capabilities": {
         "createPeople": "Lisätä ihmisiä",

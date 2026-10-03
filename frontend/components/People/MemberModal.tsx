@@ -12,6 +12,7 @@ import { generatePassword } from '../../utils/passwordPolicy';
 import { roleName } from '../Admin/roleLabels';
 import { FORM } from '../../constants/formClasses';
 import { getFeatureFlags } from '../../utils/featureFlags';
+import { useHostedMode } from '../../hooks/useHostedMode';
 
 interface MemberModalProps {
     // A contact to turn into a member. It keeps its history, so tasks that
@@ -48,6 +49,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
     const [role, setRole] = useState<RoleId>('user');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const hosted = useHostedMode();
     // On tududi Cloud every member is a paid seat on the owner's subscription.
     const [paidSeats, setPaidSeats] = useState(false);
 
@@ -236,7 +238,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                         >
                             {roles.map((id) => (
                                 <option key={id} value={id}>
-                                    {roleName(t, id)}
+                                    {roleName(t, id, hosted)}
                                 </option>
                             ))}
                         </select>

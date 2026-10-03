@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "Admin",
         "user": "Bruger",
-        "guest": "Gæst"
+        "guest": "Gæst",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Administrerer konti, roller og grupper og kan alt andet.",
         "user": "Et almindeligt medlem. Arbejder med sine egne elementer og alt, der er delt med vedkommende.",
-        "guest": "Arbejder inden for det, der er delt med vedkommende eller tildelt vedkommende."
+        "guest": "Arbejder inden for det, der er delt med vedkommende eller tildelt vedkommende.",
+        "superadmin": "Driver denne instans: alle konti, fakturering, grupper og indstillinger. Kunder får aldrig denne rolle; de administrerer kun de medlemmer, de tilføjer."
       },
       "capabilities": {
         "createPeople": "Tilføje personer",

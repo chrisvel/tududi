@@ -1,19 +1,32 @@
 import { TFunction } from 'i18next';
 import { Capability, RoleId } from '../../entities/Role';
 
-export const roleName = (t: TFunction, id: RoleId): string =>
+// On tududi Cloud the instance admin is called the superadmin, so it is never
+// confused with a customer who runs their own workspace.
+export const roleName = (t: TFunction, id: RoleId, hosted = false): string =>
     ({
-        admin: t('admin.roles.names.admin', 'Admin'),
+        admin: hosted
+            ? t('admin.roles.names.superadmin', 'Superadmin')
+            : t('admin.roles.names.admin', 'Admin'),
         user: t('admin.roles.names.user', 'User'),
         guest: t('admin.roles.names.guest', 'Guest'),
     })[id];
 
-export const roleDescription = (t: TFunction, id: RoleId): string =>
+export const roleDescription = (
+    t: TFunction,
+    id: RoleId,
+    hosted = false
+): string =>
     ({
-        admin: t(
-            'admin.roles.descriptions.admin',
-            'Manages accounts, roles and groups, and can do everything else.'
-        ),
+        admin: hosted
+            ? t(
+                  'admin.roles.descriptions.superadmin',
+                  'Runs this instance: every account, billing, groups and settings. Customers never get this role; they manage only the members they add.'
+              )
+            : t(
+                  'admin.roles.descriptions.admin',
+                  'Manages accounts, roles and groups, and can do everything else.'
+              ),
         user: t(
             'admin.roles.descriptions.user',
             'A regular member. Works with their own items and everything shared with them.'

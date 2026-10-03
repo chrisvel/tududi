@@ -101,7 +101,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 16. **The capabilities are `create_people`, `invite_members` and `create_projects`.** `invite_members` lets an account add members (see above). An account gets them from its role: an admin has all three, a user can add people and create projects, and a guest has none. The role table and where the server enforces them are in [User Management](08-user-management.md#user-roles--permissions).
 
-16b. **On tududi Cloud every customer owns a workspace.** With hosted mode on, an account that signed up by itself has `invite_members` without being an admin, and each member it adds is a paid seat on its subscription. Members it added cannot add their own. See [Hosted Mode](17-hosted-mode.md#seats-customers-add-members).
+16b. **On tududi Cloud every customer owns a workspace.** With hosted mode on, an account that signed up by itself has `invite_members` without being an admin, and each member it adds is a paid seat on its subscription. Members it added cannot add their own. On Cloud the admin role is shown as **Superadmin**: it runs the instance, and a customer never holds it. A customer administers only the members it added, and `cloud-superadmin-isolation.test.js` checks that no admin route, superadmin account or superadmin data is reachable from a customer or its members. See [Hosted Mode](17-hosted-mode.md#seats-customers-add-members).
 
 17. **The Roles tab in Admin > Access shows each role, how many accounts hold it and what it may do.** The role of an account is chosen in the Users tab when adding or editing it. That form lists what the chosen role allows, but cannot change it for one account. The roles themselves are fixed for now.
 

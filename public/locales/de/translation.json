@@ -2000,12 +2000,14 @@
       "names": {
         "admin": "Admin",
         "user": "Benutzer",
-        "guest": "Gast"
+        "guest": "Gast",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Verwaltet Konten, Rollen und Gruppen und kann alles andere tun.",
         "user": "Ein normales Mitglied. Arbeitet mit den eigenen Elementen und allem, was mit ihm geteilt wird.",
-        "guest": "Arbeitet mit dem, was mit ihm geteilt oder ihm zugewiesen wird."
+        "guest": "Arbeitet mit dem, was mit ihm geteilt oder ihm zugewiesen wird.",
+        "superadmin": "Betreibt diese Instanz: alle Konten, Abrechnung, Gruppen und Einstellungen. Kunden erhalten diese Rolle nie; sie verwalten nur die Mitglieder, die sie hinzufügen."
       },
       "capabilities": {
         "createPeople": "Personen hinzufügen",

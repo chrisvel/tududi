@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "Admin",
         "user": "Pengguna",
-        "guest": "Tamu"
+        "guest": "Tamu",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Mengelola akun, peran, dan grup, dan dapat melakukan hal lainnya.",
         "user": "Anggota biasa. Bekerja dengan item miliknya sendiri dan semua yang dibagikan dengannya.",
-        "guest": "Bekerja di dalam apa yang dibagikan dengannya atau ditugaskan kepadanya."
+        "guest": "Bekerja di dalam apa yang dibagikan dengannya atau ditugaskan kepadanya.",
+        "superadmin": "Mengelola instans ini: semua akun, penagihan, grup, dan pengaturan. Pelanggan tidak pernah mendapat peran ini; mereka hanya mengelola anggota yang mereka tambahkan."
       },
       "capabilities": {
         "createPeople": "Menambah orang",

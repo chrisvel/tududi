@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "Quản trị viên",
         "user": "Người dùng",
-        "guest": "Khách"
+        "guest": "Khách",
+        "superadmin": "Quản trị viên cấp cao"
       },
       "descriptions": {
         "admin": "Quản lý tài khoản, vai trò và nhóm, và có thể làm mọi việc khác.",
         "user": "Một thành viên bình thường. Làm việc với các mục của mình và mọi thứ được chia sẻ với họ.",
-        "guest": "Làm việc trong phạm vi được chia sẻ hoặc giao cho họ."
+        "guest": "Làm việc trong phạm vi được chia sẻ hoặc giao cho họ.",
+        "superadmin": "Vận hành máy chủ này: mọi tài khoản, thanh toán, nhóm và cài đặt. Khách hàng không bao giờ có vai trò này; họ chỉ quản lý các thành viên họ thêm vào."
       },
       "capabilities": {
         "createPeople": "Thêm người",

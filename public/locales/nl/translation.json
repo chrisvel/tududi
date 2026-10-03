@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "Beheerder",
         "user": "Gebruiker",
-        "guest": "Gast"
+        "guest": "Gast",
+        "superadmin": "Superbeheerder"
       },
       "descriptions": {
         "admin": "Beheert accounts, rollen en groepen en kan al het andere doen.",
         "user": "Een gewoon lid. Werkt met eigen items en alles wat met hem of haar wordt gedeeld.",
-        "guest": "Werkt binnen wat met hem of haar is gedeeld of aan hem of haar is toegewezen."
+        "guest": "Werkt binnen wat met hem of haar is gedeeld of aan hem of haar is toegewezen.",
+        "superadmin": "Beheert deze installatie: alle accounts, facturering, groepen en instellingen. Klanten krijgen deze rol nooit; zij beheren alleen de leden die ze toevoegen."
       },
       "capabilities": {
         "createPeople": "Mensen toevoegen",
