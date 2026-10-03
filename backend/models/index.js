@@ -60,6 +60,7 @@ const Task = require('./task')(sequelize);
 const Tag = require('./tag')(sequelize);
 const Note = require('./note')(sequelize);
 const InboxItem = require('./inbox_item')(sequelize);
+const CaptureReceipt = require('./capture_receipt')(sequelize);
 const TaskEvent = require('./task_event')(sequelize);
 const TaskRelation = require('./task_relation')(sequelize);
 const Comment = require('./comment')(sequelize);
@@ -623,6 +624,7 @@ module.exports = {
     Tag,
     Note,
     InboxItem,
+    CaptureReceipt,
     TaskEvent,
     TaskRelation,
     Comment,

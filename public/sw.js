@@ -47,13 +47,17 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then((keys) =>
-            Promise.all(
-                keys
-                    .filter((key) => key !== CACHE_VERSION && key !== API_CACHE)
-                    .map((key) => caches.delete(key))
+        caches
+            .keys()
+            .then((keys) =>
+                Promise.all(
+                    keys
+                        .filter(
+                            (key) => key !== CACHE_VERSION && key !== API_CACHE
+                        )
+                        .map((key) => caches.delete(key))
+                )
             )
-        )
     );
     self.clients.claim();
 });
@@ -69,6 +73,10 @@ self.addEventListener('message', (event) => {
     }
     if (type === 'SESSION_UPDATE') {
         sessionUserId = sessionId || null;
+        return;
+    }
+    if (type === 'REPLAY_QUEUE' && !PUSH_ONLY) {
+        event.waitUntil(replayQueuedRequests());
         return;
     }
     if (type === 'CLEAR_CACHE') {
@@ -161,11 +169,13 @@ async function handleApiGet(request) {
         // Clear cached data so the next user cannot see stale responses.
         if (response.status === 401 || response.status === 403) {
             clearUserData().then(() => {
-                self.clients.matchAll({ type: 'window' }).then((clients) =>
-                    clients.forEach((client) =>
-                        client.postMessage({ type: 'AUTH_EXPIRED' })
-                    )
-                );
+                self.clients
+                    .matchAll({ type: 'window' })
+                    .then((clients) =>
+                        clients.forEach((client) =>
+                            client.postMessage({ type: 'AUTH_EXPIRED' })
+                        )
+                    );
             });
             return response;
         }
@@ -208,19 +218,18 @@ async function handleApiNoQueue(request) {
 
 async function handleApiMutation(request) {
     try {
-        return await fetch(request);
+        // Keep the original body (including capture request_id) for replay:
+        // fetch consumes the body even when the response is lost.
+        return await fetch(request.clone());
     } catch {
         await queueRequest(request);
-        return new Response(
-            JSON.stringify({ queued: true, offline: true }),
-            {
-                status: 202,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Tududi-Queued': '1',
-                },
-            }
-        );
+        return new Response(JSON.stringify({ queued: true, offline: true }), {
+            status: 202,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Tududi-Queued': '1',
+            },
+        });
     }
 }
 
@@ -254,10 +263,22 @@ async function queueRequest(request) {
 
     const db = await openQueueDb();
     const tx = db.transaction(SYNC_QUEUE, 'readwrite');
+    const committed = new Promise((resolve, reject) => {
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () =>
+            reject(tx.error || new Error('Offline queue transaction aborted'));
+    });
     tx.objectStore(SYNC_QUEUE).add(entry);
+    await committed;
 
     if ('sync' in self.registration) {
-        await self.registration.sync.register('tududi-sync');
+        try {
+            await self.registration.sync.register('tududi-sync');
+        } catch {
+            // The write is already durable. The open app also requests replay
+            // on reconnect when Background Sync is unavailable or denied.
+        }
     }
 }
 

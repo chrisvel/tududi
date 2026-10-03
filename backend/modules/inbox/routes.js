@@ -9,6 +9,7 @@ const attachmentRoutes = require('./attachmentRoutes');
 
 router.get('/inbox', inboxController.list);
 router.post('/inbox', inboxController.create);
+router.post('/inbox/capture', inboxController.capture);
 router.post('/inbox/analyze-text', inboxController.analyzeText);
 router.get('/inbox/:uid', inboxController.getOne);
 router.patch('/inbox/:uid', inboxController.update);

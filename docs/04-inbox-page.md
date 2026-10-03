@@ -74,7 +74,7 @@ Located at the top of the Inbox page:
    - URLs: `https://example.com/article`
    - Mixed: `Read this article https://example.com +Reading #bookmark`
 
-2. **Press Enter or Tab** to submit (configurable in settings)
+2. **Press Enter or click the submit control** to submit
    - Item is saved to inbox immediately
    - Input clears, ready for next item
    - Can add multiple items rapidly
@@ -82,6 +82,66 @@ Located at the top of the Inbox page:
 3. **Input auto-focuses** when you navigate to `/inbox`
    - Keyboard shortcut: `g` then `i` (Go to Inbox)
    - Sidebar navigation clicks auto-focus input
+
+### Create a task immediately with `=Task`
+
+Submit `My task name +Personal =Task` with **Add** (or your configured save shortcut)
+and tududi creates one task named **My task name** in the existing **Personal**
+project. There is no intermediate Inbox item or conversion step. The composer
+clears, you stay on Inbox, and a success notification links to the task.
+
+Examples:
+
+- `My task name =Task` — creates a task without a project.
+- `My task name +"Home Projects" #errands =Task` — assigns the project and tag.
+- `=task Read this https://example.com +Reading` — creates a task even when
+  automatic suggestions would normally classify the URL as a note.
+
+The directive is case-insensitive and can appear at the beginning, middle or end,
+with whitespace or text boundaries around it. Repeating it still creates one task.
+Quoted occurrences (`"=Task"`, `'=Task'`, `"some =Task text"`) and substrings
+(`value=Task`, `=Taskforce`) are ordinary text. `=Note` is also ordinary text.
+The directive and recognized project/tag metadata are removed from the task name.
+Project names match exactly, ignoring case; use double quotes for names with spaces.
+
+Explicit task creation requires a nonempty task name and at most one project
+reference. A missing, inaccessible, read-only or ambiguous project produces an
+error, without creating a project, task or Inbox item. The input stays available
+for correction. Other failed requests also keep the input and show an error.
+
+Captures without `=Task` keep their existing suggestions and behavior. The
+**Save as Inbox (ignore =Task)** action explicitly overrides the directive.
+The unified Add box applies the directive before its selected destination. With
+**One item per line**, each line is checked separately; lines without the directive
+use the selected destination. Undo follows each item's actual destination, and
+picked files attach to the first created item. Tab continues to select an open
+suggestion or move focus.
+
+Offline captures use the existing background queue. The notification says they
+are saved **offline**, not that a server task was created. Reconnection replays the
+same request ID; a lost response, retry or double submission does not create a
+second task. If the browser denies background sync, the open app requests replay
+when it reconnects. Failed background requests remain in the existing retry queue.
+
+### Shared capture API (for integrations)
+
+`POST /api/inbox/capture` accepts `{ content, request_id, source?, force_inbox? }`
+and returns `{ kind: "task", task }` or `{ kind: "inbox", item }`. It requires the
+same authentication as the other Inbox endpoints. The legacy `POST /api/inbox`
+continues to capture raw Inbox items.
+
+The shared entry point is `capture(user, payload)` in
+`backend/modules/inbox/captureService.js`.
+
+The service authoritatively resolves projects and permissions, checks task quotas,
+and calls the shared task-creation operation. It does not apply automatic
+classification to non-directive text; browser suggestions retain their existing
+path. Capture receipts are scoped to the user, source and request ID, and commit
+in the same transaction as the entity and tags. Replaying a completed request
+returns its original result, even if the entity was later edited or deleted.
+Reusing an ID for different content returns HTTP 409; use a new ID for a new
+capture or corrected input. Receipts persist until account deletion so delayed
+replays cannot recreate deleted tasks.
 
 ### Share Sheet (installed PWA)
 

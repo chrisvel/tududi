@@ -58,13 +58,16 @@ class InboxRepository extends BaseRepository {
         });
     }
 
-    async createForUser(userId, { content, title, source }) {
-        return this.model.create({
-            content,
-            title,
-            source,
-            user_id: userId,
-        });
+    async createForUser(userId, { content, title, source }, options = {}) {
+        return this.model.create(
+            {
+                content,
+                title,
+                source,
+                user_id: userId,
+            },
+            options
+        );
     }
 
     async updateItem(item, data) {

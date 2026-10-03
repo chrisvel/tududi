@@ -1132,6 +1132,15 @@
     "failedToDeleteTag": "Impossibile eliminare il tag."
   },
   "inbox": {
+    "explicitTaskHint": "Verrà creata un’attività. Salva in Inbox ignora =Task.",
+    "forceInbox": "Salva in Inbox (ignora =Task)",
+    "directTaskCreated": "Attività creata:",
+    "captureUnexpectedResult": "Il server non ha restituito un’attività creata.",
+    "captureFailed": "Impossibile creare l’attività: {{message}}",
+    "captureEmptyTitle": "Inserisci il nome dell’attività oltre alla direttiva e ai metadati.",
+    "captureMultipleProjects": "Usa un solo riferimento a un progetto per attività.",
+    "captureProjectUnavailable": "Il progetto indicato non esiste oppure non puoi aggiungervi attività.",
+    "captureProjectAmbiguous": "Più progetti modificabili hanno questo nome. Usa un nome univoco.",
     "title": "Inbox",
     "empty": "La tua inbox è vuota",
     "emptyDescription": "Cattura pensieri e idee rapidamente usando l'icona ⚡ nella barra di navigazione superiore o il pulsante + nella barra laterale",

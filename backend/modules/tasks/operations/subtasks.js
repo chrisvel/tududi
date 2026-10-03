@@ -49,13 +49,14 @@ async function getSubtasks(parentTaskId, userId, timezone) {
     return { error: null, subtasks: serializedSubtasks };
 }
 
-async function createSubtasks(parentTaskId, subtasks, userId) {
+async function createSubtasks(parentTaskId, subtasks, userId, options = {}) {
     if (!subtasks || !Array.isArray(subtasks)) return;
 
     // Get the highest order value for existing subtasks
     const existingSubtasks = await taskRepository.findAll(
         { parent_task_id: parentTaskId },
         {
+            ...options,
             attributes: ['order'],
             order: [['order', 'DESC NULLS LAST']],
             limit: 1,
@@ -67,6 +68,7 @@ async function createSubtasks(parentTaskId, subtasks, userId) {
     // same project-sharing checks as its parent task, instead of only being
     // accessible to whoever happened to create it (#1425).
     const parent = await taskRepository.findById(parentTaskId, {
+        ...options,
         attributes: ['id', 'project_id', 'priority'],
     });
 
@@ -93,7 +95,7 @@ async function createSubtasks(parentTaskId, subtasks, userId) {
             order: maxOrder + index + 1, // Assign sequential order values
         }));
 
-    await taskRepository.createMany(subtasksData);
+    await taskRepository.createMany(subtasksData, options);
 }
 
 async function updateSubtasks(taskId, subtasks, userId) {

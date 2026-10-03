@@ -15,6 +15,8 @@ import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import {
     createInboxItemWithStore,
+    submitCapture,
+    CaptureValidationError,
     deleteInboxItemWithStore,
     analyzeInboxText,
     applyAnalysisToTask,
@@ -67,6 +69,8 @@ import {
     PaperClipIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
+import { hasTaskDirective } from '../../../backend/shared/captureSyntax';
+import { Link } from 'react-router-dom';
 import { useStore } from '../../store/useStore';
 import { isUrl, extractUrlTitle } from '../../utils/urlService';
 import InboxSelectedChips from './InboxSelectedChips';
@@ -214,6 +218,12 @@ const QuickCaptureInput = React.forwardRef<
                 ? captureSettings.enterTouch
                 : captureSettings.enterKeyboard) === 'save';
         const [isSaving, setIsSaving] = useState(false);
+        const submittingRef = useRef(false);
+        const captureRequestRef = useRef<{
+            content: string;
+            id: string;
+        } | null>(null);
+        const explicitTask = mode !== 'edit' && hasTaskDirective(inputText);
         // Picked files are read into memory first, then uploaded after the
         // item is saved; Add stays locked through both.
         const [isPreparingFiles, setIsPreparingFiles] = useState(false);
@@ -352,6 +362,7 @@ const QuickCaptureInput = React.forwardRef<
 
         const clearComposerText = useCallback(() => {
             setInputText('');
+            captureRequestRef.current = null;
             setAnalysisResult(null);
             setUrlPreview(null);
             dismissedPreviewUrlRef.current = null;
@@ -1069,6 +1080,16 @@ const QuickCaptureInput = React.forwardRef<
             message: string | null;
             projectName: string | null;
         } => {
+            if (explicitTask) {
+                return {
+                    type: 'task',
+                    message: t(
+                        'inbox.explicitTaskHint',
+                        'Will create a task. Save as Inbox overrides =Task.'
+                    ),
+                    projectName: null,
+                };
+            }
             if (!analysisResult || !analysisResult.suggested_type) {
                 return { type: null, message: null, projectName: null };
             }
@@ -1298,10 +1319,85 @@ const QuickCaptureInput = React.forwardRef<
             }
         };
 
+        const createExplicitTask = useCallback(
+            async (content: string): Promise<Task> => {
+                if (captureRequestRef.current?.content !== content) {
+                    // getRandomValues also works on self-hosted HTTP origins.
+                    const bytes = crypto.getRandomValues(new Uint8Array(16));
+                    captureRequestRef.current = {
+                        content: content,
+                        id: Array.from(bytes, (byte) =>
+                            byte.toString(16).padStart(2, '0')
+                        ).join(''),
+                    };
+                }
+                const result = await submitCapture(
+                    content,
+                    captureRequestRef.current.id
+                );
+                if (result.kind !== 'task') {
+                    throw new Error(
+                        t(
+                            'inbox.captureUnexpectedResult',
+                            'The server did not return a created task.'
+                        )
+                    );
+                }
+                showSuccessToast(
+                    <span>
+                        {t('inbox.directTaskCreated', 'Task created:')}{' '}
+                        <Link
+                            to={`/task/${result.task.uid}`}
+                            className="text-green-200 underline hover:text-green-100"
+                        >
+                            {result.task.name}
+                        </Link>
+                    </span>
+                );
+                captureRequestRef.current = null;
+                void Promise.resolve(refreshTags?.()).catch((error) =>
+                    console.error('Failed to refresh tags:', error)
+                );
+                return result.task;
+            },
+            [t, showSuccessToast, refreshTags]
+        );
+
+        const showCaptureError = useCallback(
+            (error: Error) => {
+                const captureErrorKeys: Record<string, string> = {
+                    CAPTURE_EMPTY_TITLE: 'inbox.captureEmptyTitle',
+                    CAPTURE_MULTIPLE_PROJECTS: 'inbox.captureMultipleProjects',
+                    CAPTURE_PROJECT_UNAVAILABLE:
+                        'inbox.captureProjectUnavailable',
+                    CAPTURE_PROJECT_AMBIGUOUS: 'inbox.captureProjectAmbiguous',
+                };
+                if (error instanceof Error) {
+                    const key =
+                        error instanceof CaptureValidationError
+                            ? captureErrorKeys[error.code]
+                            : undefined;
+                    showErrorToast(
+                        key
+                            ? t(key, error.message)
+                            : t('inbox.captureFailed', {
+                                  message: error.message,
+                                  defaultValue:
+                                      'Could not create task: {{message}}',
+                              })
+                    );
+                }
+            },
+            [t, showErrorToast]
+        );
+
         const handleSubmit = useCallback(
             async (forceInbox = false) => {
                 const trimmedText = inputText.trim();
-                if ((!trimmedText && !isEditMode) || isSaving) return;
+                if ((!trimmedText && !isEditMode) || submittingRef.current)
+                    return;
+
+                submittingRef.current = true;
 
                 setIsSaving(true);
 
@@ -1312,6 +1408,12 @@ const QuickCaptureInput = React.forwardRef<
                         await onSubmitOverride(trimmedText);
                         onAfterSubmit?.();
                         setIsSaving(false);
+                        return;
+                    }
+
+                    if (!forceInbox && explicitTask) {
+                        await createExplicitTask(trimmedText);
+                        clearComposerText();
                         return;
                     }
 
@@ -1527,22 +1629,30 @@ const QuickCaptureInput = React.forwardRef<
                                 "Saved offline. It'll sync automatically once you're back online."
                             )
                         );
-                        setInputText('');
-                        setAnalysisResult(null);
+                        clearComposerText();
                         if (inputRef.current) {
                             inputRef.current.focus();
                         }
                         return;
                     }
                     console.error('Failed to save:', error);
-                    showErrorToast(t('inbox.addError'));
+                    if (explicitTask && error instanceof Error) {
+                        showCaptureError(error);
+                    } else {
+                        showErrorToast(t('inbox.addError'));
+                    }
                 } finally {
+                    submittingRef.current = false;
                     setIsSaving(false);
                 }
             },
             [
                 inputText,
                 isSaving,
+                explicitTask,
+                createExplicitTask,
+                showCaptureError,
+                clearComposerText,
                 onTaskCreate,
                 onNoteCreate,
                 showSuccessToast,
@@ -1607,8 +1717,13 @@ const QuickCaptureInput = React.forwardRef<
         // from it) and the other lines are its notes or body.
         const captureOne = async (
             destination: CaptureTarget,
-            itemText: string
+            itemText: string,
+            forceInbox = false
         ): Promise<CapturedItem> => {
+            if (!forceInbox && mode !== 'edit' && hasTaskDirective(itemText)) {
+                const task = await createExplicitTask(itemText);
+                return { target: 'task', uid: task.uid, title: task.name };
+            }
             const { first, rest } = splitFirstLine(itemText);
 
             if (destination === 'inbox') {
@@ -1903,17 +2018,17 @@ const QuickCaptureInput = React.forwardRef<
             return toUpload.length - failed.length;
         };
 
-        const handleUnifiedSubmit = async () => {
+        const handleUnifiedSubmit = async (forceInbox = false) => {
             const withFiles = files.length > 0;
             // A pasted screenshot on its own is enough; the file name
             // becomes the title.
             const raw =
                 inputText.trim() || (withFiles ? titleFromFiles(files) : '');
-            if (!raw || isSaving || isPreparingFiles) return;
+            if (!raw || submittingRef.current || isPreparingFiles) return;
 
             const texts = splitCaptureText(raw, captureSettings.oneItemPerLine);
             const captured: CapturedItem[] = [];
-            const destination = target;
+            const destination = forceInbox ? 'inbox' : target;
 
             const finish = (
                 items: CapturedItem[],
@@ -1925,7 +2040,14 @@ const QuickCaptureInput = React.forwardRef<
                 setUrlPreview(null);
                 dismissedPreviewUrlRef.current = null;
                 if (items.length > 0) {
-                    const saved = describeCaptured(destination, items);
+                    const saved = [...new Set(items.map((item) => item.target))]
+                        .map((kind) =>
+                            describeCaptured(
+                                kind,
+                                items.filter((item) => item.target === kind)
+                            )
+                        )
+                        .join(' ');
                     setStatus({
                         text:
                             attached > 0
@@ -1942,11 +2064,14 @@ const QuickCaptureInput = React.forwardRef<
                 inputRef.current?.focus();
             };
 
+            submittingRef.current = true;
             setIsSaving(true);
             setStatus(null);
             try {
                 for (const itemText of texts) {
-                    captured.push(await captureOne(destination, itemText));
+                    captured.push(
+                        await captureOne(destination, itemText, forceInbox)
+                    );
                 }
                 // With several items, the files go on the first one.
                 let attached = 0;
@@ -1966,7 +2091,8 @@ const QuickCaptureInput = React.forwardRef<
                 finish(captured, [], attached);
             } catch (error) {
                 if (error instanceof OfflineQueuedError) {
-                    finish([], []);
+                    captureRequestRef.current = null;
+                    finish(captured, texts.slice(captured.length + 1));
                     setStatus({
                         text: t(
                             'inbox.itemQueuedOffline',
@@ -1978,14 +2104,23 @@ const QuickCaptureInput = React.forwardRef<
                     // Keep the lines that were not saved so a retry does not
                     // duplicate the ones that were
                     finish(captured, texts.slice(captured.length));
-                    showErrorToast(
-                        t(
-                            'capture.saveError',
-                            'Could not save. Your text is still here.'
-                        )
-                    );
+                    if (
+                        !forceInbox &&
+                        hasTaskDirective(texts[captured.length] ?? '') &&
+                        error instanceof Error
+                    ) {
+                        showCaptureError(error);
+                    } else {
+                        showErrorToast(
+                            t(
+                                'capture.saveError',
+                                'Could not save. Your text is still here.'
+                            )
+                        );
+                    }
                 }
             } finally {
+                submittingRef.current = false;
                 setIsSaving(false);
             }
         };
@@ -2009,7 +2144,9 @@ const QuickCaptureInput = React.forwardRef<
             ref,
             () => ({
                 submit: (forceInbox = false) =>
-                    unified ? handleUnifiedSubmit() : handleSubmit(forceInbox),
+                    unified
+                        ? handleUnifiedSubmit(forceInbox)
+                        : handleSubmit(forceInbox),
                 focus: () => {
                     const el = inputRef.current;
                     if (!el) return;
@@ -2212,7 +2349,12 @@ const QuickCaptureInput = React.forwardRef<
                             {openTaskModal && (
                                 <button
                                     type="button"
+                                    disabled={isSaving}
                                     onClick={() => {
+                                        if (explicitTask) {
+                                            void handleSubmit();
+                                            return;
+                                        }
                                         const taskTags = buildTagObjects(
                                             composerFooterContext.hashtags
                                         );
@@ -2509,7 +2651,29 @@ const QuickCaptureInput = React.forwardRef<
                             aria-live="polite"
                             data-testid="capture-status"
                         >
-                            {status ? status.text : enterHint}
+                            {status
+                                ? status.text
+                                : explicitTask
+                                  ? t(
+                                        'inbox.explicitTaskHint',
+                                        'Will create a task. Save as Inbox overrides =Task.'
+                                    )
+                                  : enterHint}
+                            {explicitTask && (
+                                <button
+                                    type="button"
+                                    disabled={isSaving}
+                                    onClick={() =>
+                                        void handleUnifiedSubmit(true)
+                                    }
+                                    className={`ml-2 ${linkButtonClass}`}
+                                >
+                                    {t(
+                                        'inbox.forceInbox',
+                                        'Save as Inbox (ignore =Task)'
+                                    )}
+                                </button>
+                            )}
                             {status?.items && (
                                 <button
                                     type="button"
@@ -2635,6 +2799,7 @@ const QuickCaptureInput = React.forwardRef<
                                             }}
                                             data-testid="quick-capture-input"
                                             value={inputText}
+                                            readOnly={isSaving}
                                             rows={3}
                                             onChange={handleChange}
                                             onSelect={handleCaretEvent}
@@ -2657,6 +2822,7 @@ const QuickCaptureInput = React.forwardRef<
                                             type="text"
                                             data-testid="quick-capture-input"
                                             value={inputText}
+                                            readOnly={isSaving}
                                             onChange={handleChange}
                                             onSelect={handleCaretEvent}
                                             onKeyUp={handleCaretEvent}
@@ -2889,8 +3055,8 @@ const QuickCaptureInput = React.forwardRef<
                                                                 className="text-purple-600 dark:text-purple-400 hover:underline"
                                                             >
                                                                 {t(
-                                                                    'inbox.saveAsInboxItem',
-                                                                    'save as inbox item'
+                                                                    'inbox.forceInbox',
+                                                                    'Save as Inbox (ignore =Task)'
                                                                 )}
                                                             </button>
                                                         </div>
@@ -2909,7 +3075,11 @@ const QuickCaptureInput = React.forwardRef<
                                 type="button"
                                 onClick={() => handleSubmit(false)}
                                 disabled={isSaving}
-                                title={t('inbox.addToInbox')}
+                                title={
+                                    explicitTask
+                                        ? t('inbox.createTask', 'Task')
+                                        : t('inbox.addToInbox')
+                                }
                                 className={`flex-shrink-0 self-start mt-3 text-[13px] font-medium px-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none transition-opacity ${
                                     inputText.trim() && !isSaving
                                         ? 'opacity-100'

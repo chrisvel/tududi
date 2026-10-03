@@ -7,6 +7,7 @@ import {
     createInboxItemWithStore,
     analyzeInboxText,
     uploadInboxAttachment,
+    submitCapture,
 } from '../../../utils/inboxService';
 import {
     ownerAttachmentsApi,
@@ -90,6 +91,7 @@ jest.mock('../../../utils/attachmentsService', () => ({
 jest.mock('../../../utils/inboxService', () => ({
     ...jest.requireActual('../../../utils/inboxService'),
     analyzeInboxText: jest.fn(),
+    submitCapture: jest.fn(),
     createInboxItemWithStore: jest.fn(),
     deleteInboxItemWithStore: jest.fn(),
     uploadInboxAttachment: jest.fn(),
@@ -129,6 +131,27 @@ describe('QuickCaptureInput files', () => {
                 <QuickCaptureInput unified projects={[]} />
             </MemoryRouter>
         );
+
+    it('attaches files to the explicit task when Inbox is selected', async () => {
+        (submitCapture as jest.Mock).mockResolvedValue({
+            kind: 'task',
+            task: { uid: 'direct-task', name: 'Screenshot' },
+        });
+        renderBox();
+        type('Screenshot =Task');
+        await paste([screenshot()]);
+        await clickAdd();
+        expect(submitCapture).toHaveBeenCalledWith(
+            'Screenshot =Task',
+            expect.any(String)
+        );
+        expect(uploadAttachment).toHaveBeenCalledWith(
+            'direct-task',
+            expect.any(File)
+        );
+        expect(createInboxItemWithStore).not.toHaveBeenCalled();
+        expect(uploadInboxAttachment).not.toHaveBeenCalled();
+    });
 
     beforeEach(() => {
         localStorage.clear();
