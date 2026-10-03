@@ -2507,7 +2507,10 @@
       "telegram": "Telegram-botti",
       "backups_import": "varmuuskopioiden tuonti",
       "attachments": "liitteet"
-    }
+    },
+    "seatCovered": "Paikkasi maksaa {{name}}.",
+    "workspaceOwner": "työtilan omistaja",
+    "seats": "{{count}} paikkaa tilauksessasi: sinä ja {{members}} muuta."
   },
   "subscription": {
     "title": "Tilauksen",
@@ -2592,7 +2595,18 @@
     "add": "Lisää jäsen",
     "giveAccount": "Anna tili",
     "nameRequiredWithoutEmail": "Anna nimi, kun sähköpostia ei ole",
-    "failedToAdd": "Jäsenen lisääminen epäonnistui"
+    "failedToAdd": "Jäsenen lisääminen epäonnistui",
+    "seatNote": "Jokainen jäsen on yksi paikka lisää tilauksessasi. Muutos laskutetaan suhteutettuna seuraavassa laskussa, ja jäsenen poistaminen vapauttaa paikan.",
+    "editTitle": "Muokkaa jäsentä",
+    "nameRequired": "Anna nimi",
+    "failedToUpdate": "Jäsenen päivittäminen epäonnistui",
+    "addEmailHint": "Kun lisäät sähköpostiosoitteen, hän saa kutsun salasanan asettamiseen. Osoitetta ei voi muuttaa jälkikäteen.",
+    "remove": "Poista jäsen",
+    "removeConfirm": "Poistetaanko {{name}}? Tili ja kaikki sen sisältö poistetaan, eikä tätä voi perua. tududi Cloudissa paikka poistetaan tilauksestasi.",
+    "removed": "Jäsen poistettu",
+    "updated": "Jäsen päivitetty",
+    "invitationSent": "Kutsu lähetetty",
+    "failedToRemove": "Jäsenen poistaminen epäonnistui"
   },
   "signInLink": {
     "action": "Kirjautumislinkki",

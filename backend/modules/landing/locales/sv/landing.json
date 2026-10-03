@@ -244,7 +244,7 @@
     "title": "Välj hur du använder tududi",
     "mostPopular": "POPULÄRAST",
     "earlyBird": "LANSERINGSPRIS",
-    "perYear": "/år",
+    "perYear": "/år per person",
     "plans": {
       "selfHosted": {
         "action": "Läs självhostningsguiden →",
@@ -266,6 +266,7 @@
         "features": [
           "Igång på en minut, utan server att sätta upp",
           "Obegränsat med uppgifter, projekt och anteckningar, plus bilagor",
+          "Lägg till familjemedlemmar eller kollegor, var och en en plats till samma pris",
           "Dagsplanering med AI, MCP, kalenderflöden, CalDAV och Telegram-boten",
           "Uppdateringar och dagliga säkerhetskopior skötta för dig, med {{proStorageGb}} GB lagring",
           "Exportera allt när du vill, ta bort ditt konto själv"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Avsluta när som helst och exportera allt. Om tududi Cloud någonsin stänger får du dina data och en guide för att hosta själv. Skälig användning gäller för lagring och API-volym. 14 dagars pengarna-tillbaka-garanti, inga frågor.",
-    "perMonth": "/månad",
+    "perMonth": "/månad per person",
     "sub": "Ett hostat paket, eller kör det själv om du föredrar att sköta driften."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nej. Cloud kostar {{monthly}} i månaden eller {{price}} om året, och det är hela prislistan: ingen gratisnivå, ingen provklocka, inget kort debiterat för något som senare tyst börjar fakturera. Det finns en 14-dagars pengarna-tillbaka-garanti om det visar sig inte passa, och det finns en livedemo på denna sida om du vill titta runt först. Det gratis sättet att använda tududi är att köra det på din egen server, vilket är samma applikation.",
+        "a": "Nej. Cloud kostar {{monthly}} i månaden eller {{price}} om året per person, och det är hela prislistan: ingen gratisnivå, ingen provklocka, inget kort debiterat för något som senare tyst börjar fakturera. Det finns en 14-dagars pengarna-tillbaka-garanti om det visar sig inte passa, och det finns en livedemo på denna sida om du vill titta runt först. Det gratis sättet att använda tududi är att köra det på din egen server, vilket är samma applikation.",
         "q": "Finns det en gratisnivå eller provperiod på tududi Cloud?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Kom igång",
     "includes": [
       "Obegränsat med uppgifter, projekt och anteckningar",
+      "Lägg till familjemedlemmar eller kollegor, var och en en plats till samma pris",
       "Bilagor och filuppladdningar",
       "Dagsplanering med AI, MCP, kalenderflöden, CalDAV och Telegram-boten",
       "Dagliga säkerhetskopior och hanterade uppdateringar",

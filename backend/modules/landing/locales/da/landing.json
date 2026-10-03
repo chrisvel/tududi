@@ -244,7 +244,7 @@
     "title": "Vælg hvordan du bruger tududi",
     "mostPopular": "MEST VALGTE",
     "earlyBird": "LANCERINGSPRIS",
-    "perYear": "/år",
+    "perYear": "/år pr. person",
     "plans": {
       "selfHosted": {
         "action": "Læs selvhostingguiden →",
@@ -266,6 +266,7 @@
         "features": [
           "Kørende på et minut, uden server at sætte op",
           "Ubegrænsede opgaver, projekter og noter, plus vedhæftninger",
+          "Tilføj familiemedlemmer eller kolleger, hver som en plads til samme pris",
           "Dagsplanlægning med AI, MCP, kalenderfeeds, CalDAV og Telegram-botten",
           "Opdateringer og daglige sikkerhedskopier klaret for dig, med {{proStorageGb}} GB lagerplads",
           "Eksporter alt når som helst, slet din konto selv"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Opsig når som helst og eksporter alt. Skulle tududi Cloud nogensinde lukke, får du dine data og en guide til selvhosting. Fair use gælder for lagerplads og API-volumen. 14 dages pengene-tilbage-garanti, ingen spørgsmål.",
-    "perMonth": "/måned",
+    "perMonth": "/måned pr. person",
     "sub": "Én hostet plan, eller kør den selv, hvis du foretrækker at tage dig af driften."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nej. Cloud koster {{monthly}} om måneden eller {{price}} om året, og det er hele prislisten: ingen gratis plan, intet prøveur, intet kort belastet for noget, der senere stille begynder at fakturere. Der er en 14-dages penge-tilbage-garanti, hvis det ikke passer dig, og der er en live-demo på denne side, hvis du vil kigge først. Den gratis måde at bruge tududi er at køre det på din egen server, hvilket er samme applikation.",
+        "a": "Nej. Cloud koster {{monthly}} om måneden eller {{price}} om året pr. person, og det er hele prislisten: ingen gratis plan, intet prøveur, intet kort belastet for noget, der senere stille begynder at fakturere. Der er en 14-dages penge-tilbage-garanti, hvis det ikke passer dig, og der er en live-demo på denne side, hvis du vil kigge først. Den gratis måde at bruge tududi er at køre det på din egen server, hvilket er samme applikation.",
         "q": "Er der en gratis plan eller en prøveperiode på tududi Cloud?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Kom i gang",
     "includes": [
       "Ubegrænsede opgaver, projekter og noter",
+      "Tilføj familiemedlemmer eller kolleger, hver som en plads til samme pris",
       "Vedhæftninger og filupload",
       "Dagsplanlægning med AI, MCP, kalenderfeeds, CalDAV og Telegram-botten",
       "Daglige sikkerhedskopier og administrerede opdateringer",

@@ -2507,7 +2507,10 @@
       "telegram": "bot Telegram",
       "backups_import": "impor cadangan",
       "attachments": "lampiran"
-    }
+    },
+    "seatCovered": "Kursi Anda dibayar oleh {{name}}.",
+    "workspaceOwner": "pemilik ruang kerja",
+    "seats": "{{count}} kursi di langganan Anda: Anda dan {{members}} lainnya."
   },
   "subscription": {
     "title": "Langganan",
@@ -2592,7 +2595,18 @@
     "add": "Tambah anggota",
     "giveAccount": "Beri akun",
     "nameRequiredWithoutEmail": "Masukkan nama jika tidak ada email",
-    "failedToAdd": "Gagal menambahkan anggota"
+    "failedToAdd": "Gagal menambahkan anggota",
+    "seatNote": "Setiap anggota adalah satu kursi tambahan di langganan Anda. Perubahan dihitung secara proporsional di tagihan berikutnya, dan menghapus anggota mengembalikan kursinya.",
+    "editTitle": "Edit anggota",
+    "nameRequired": "Masukkan nama",
+    "failedToUpdate": "Gagal memperbarui anggota",
+    "addEmailHint": "Menambahkan email akan mengirim undangan untuk membuat kata sandi. Email tidak dapat diubah setelahnya.",
+    "remove": "Hapus anggota",
+    "removeConfirm": "Hapus {{name}}? Akun dan semua isinya akan dihapus, dan ini tidak dapat dibatalkan. Di tududi Cloud, kursinya dilepas dari langganan Anda.",
+    "removed": "Anggota dihapus",
+    "updated": "Anggota diperbarui",
+    "invitationSent": "Undangan terkirim",
+    "failedToRemove": "Gagal menghapus anggota"
   },
   "signInLink": {
     "action": "Tautan masuk",

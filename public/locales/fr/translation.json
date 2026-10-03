@@ -2508,7 +2508,10 @@
       "telegram": "le bot Telegram",
       "backups_import": "l'import de sauvegardes",
       "attachments": "les pièces jointes"
-    }
+    },
+    "seatCovered": "Votre place est payée par {{name}}.",
+    "workspaceOwner": "la personne propriétaire de l'espace de travail",
+    "seats": "{{count}} places sur votre abonnement : vous et {{members}} de plus."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2593,7 +2596,18 @@
     "add": "Ajouter un membre",
     "giveAccount": "Donner un compte",
     "nameRequiredWithoutEmail": "Saisissez un nom quand il n'y a pas d'e-mail",
-    "failedToAdd": "Échec de l'ajout du membre"
+    "failedToAdd": "Échec de l'ajout du membre",
+    "seatNote": "Chaque membre est une place de plus sur votre abonnement. Le changement est calculé au prorata sur votre prochaine facture, et retirer un membre libère la place.",
+    "editTitle": "Modifier le membre",
+    "nameRequired": "Saisissez un nom",
+    "failedToUpdate": "Impossible de modifier le membre",
+    "addEmailHint": "Ajouter une adresse e-mail lui envoie une invitation pour choisir un mot de passe. Elle ne pourra plus être modifiée ensuite.",
+    "remove": "Retirer le membre",
+    "removeConfirm": "Retirer {{name}} ? Son compte et tout son contenu sont supprimés, et c'est définitif. Sur tududi Cloud, sa place est retirée de votre abonnement.",
+    "removed": "Membre retiré",
+    "updated": "Membre modifié",
+    "invitationSent": "Invitation envoyée",
+    "failedToRemove": "Impossible de retirer le membre"
   },
   "signInLink": {
     "action": "Lien de connexion",

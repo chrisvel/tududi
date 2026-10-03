@@ -2511,7 +2511,10 @@
       "telegram": "botul Telegram",
       "backups_import": "importul de copii de rezervă",
       "attachments": "atașamentele"
-    }
+    },
+    "seatCovered": "Locul tău este plătit de {{name}}.",
+    "workspaceOwner": "proprietarul spațiului de lucru",
+    "seats": "Locuri în abonament: {{count}} (tu și încă {{members}})."
   },
   "subscription": {
     "title": "Abonament",
@@ -2596,7 +2599,18 @@
     "add": "Adaugă membru",
     "giveAccount": "Dă un cont",
     "nameRequiredWithoutEmail": "Introdu un nume când nu există e-mail",
-    "failedToAdd": "Nu s-a putut adăuga membrul"
+    "failedToAdd": "Nu s-a putut adăuga membrul",
+    "seatNote": "Fiecare membru înseamnă încă un loc în abonamentul tău. Modificarea se calculează proporțional pe factura următoare, iar eliminarea unui membru eliberează locul.",
+    "editTitle": "Editează membrul",
+    "nameRequired": "Introdu un nume",
+    "failedToUpdate": "Membrul nu a putut fi actualizat",
+    "addEmailHint": "Adăugarea unui e-mail îi trimite o invitație să își seteze o parolă. Nu mai poate fi schimbat ulterior.",
+    "remove": "Elimină membrul",
+    "removeConfirm": "Elimini pe {{name}}? Contul și tot conținutul său sunt șterse, iar acțiunea nu poate fi anulată. În tududi Cloud locul este scos din abonamentul tău.",
+    "removed": "Membru eliminat",
+    "updated": "Membru actualizat",
+    "invitationSent": "Invitație trimisă",
+    "failedToRemove": "Membrul nu a putut fi eliminat"
   },
   "signInLink": {
     "action": "Link de autentificare",

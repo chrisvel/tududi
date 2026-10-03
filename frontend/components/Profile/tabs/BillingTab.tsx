@@ -220,7 +220,7 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                                             >
                                                 {t('billing.seats', {
                                                     defaultValue:
-                                                        '{{count}} seats: you and {{members}} members.',
+                                                        '{{count}} seats on your subscription: you and {{members}} more.',
                                                     count: status.seats.needed,
                                                     members:
                                                         status.seats.members,

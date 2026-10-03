@@ -244,7 +244,7 @@
     "title": "Pilih cara Anda memakai tududi",
     "mostPopular": "PALING DIPILIH",
     "earlyBird": "HARGA PERDANA",
-    "perYear": "/tahun",
+    "perYear": "/tahun per orang",
     "plans": {
       "selfHosted": {
         "action": "Baca panduan hosting sendiri →",
@@ -266,6 +266,7 @@
         "features": [
           "Berjalan dalam satu menit, tanpa server yang perlu disiapkan",
           "Tugas, proyek, dan catatan tak terbatas, plus lampiran",
+          "Tambahkan anggota keluarga atau rekan kerja, masing-masing satu kursi dengan harga yang sama",
           "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
           "Pembaruan dan cadangan harian yang diurus untuk Anda, dengan {{proStorageGb}} GB penyimpanan",
           "Ekspor semuanya kapan saja, hapus akun Anda sendiri"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 14 hari, tanpa pertanyaan.",
-    "perMonth": "/bulan",
+    "perMonth": "/bulan per orang",
     "sub": "Satu paket yang dihosting, atau jalankan sendiri jika Anda lebih suka mengurus operasionalnya."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Tidak. Cloud berharga {{monthly}} per bulan atau {{price}} per tahun, dan itulah seluruh daftar harganya: tidak ada tingkat gratis, tidak ada jam percobaan, tidak ada kartu yang dikenai biaya untuk sesuatu yang diam-diam mulai menagih nanti. Ada garansi uang kembali 14 hari jika ternyata tidak sesuai untuk Anda, dan ada demo langsung di halaman ini jika Anda ingin melihat-lihat dulu. Cara gratis untuk menggunakan tududi adalah menjalankannya di server Anda sendiri, yang merupakan aplikasi yang sama.",
+        "a": "Tidak. Cloud berharga {{monthly}} per bulan atau {{price}} per tahun per orang, dan itulah seluruh daftar harganya: tidak ada tingkat gratis, tidak ada jam percobaan, tidak ada kartu yang dikenai biaya untuk sesuatu yang diam-diam mulai menagih nanti. Ada garansi uang kembali 14 hari jika ternyata tidak sesuai untuk Anda, dan ada demo langsung di halaman ini jika Anda ingin melihat-lihat dulu. Cara gratis untuk menggunakan tududi adalah menjalankannya di server Anda sendiri, yang merupakan aplikasi yang sama.",
         "q": "Apakah ada paket gratis atau percobaan di tududi Cloud?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Mulai",
     "includes": [
       "Tugas, proyek, dan catatan tak terbatas",
+      "Tambahkan anggota keluarga atau rekan kerja, masing-masing satu kursi dengan harga yang sama",
       "Lampiran dan unggahan file",
       "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
       "Cadangan harian dan pembaruan yang dikelola",

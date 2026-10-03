@@ -244,7 +244,7 @@
     "title": "Kies hoe je tududi gebruikt",
     "mostPopular": "MEEST GEKOZEN",
     "earlyBird": "VROEGBOEK",
-    "perYear": "/jaar",
+    "perYear": "/jaar per persoon",
     "plans": {
       "selfHosted": {
         "action": "Lees de zelfhostgids →",
@@ -266,6 +266,7 @@
         "features": [
           "Binnen een minuut draaiend, zonder server om op te zetten",
           "Onbeperkte taken, projecten en notities, plus bijlagen",
+          "Voeg gezinsleden of collega's toe, elk een plek voor dezelfde prijs",
           "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
           "Updates en dagelijkse backups voor je verzorgd, met {{proStorageGb}} GB opslag",
           "Exporteer alles op elk moment, verwijder je account zelf"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 14 dagen geld-terug-garantie, zonder vragen.",
-    "perMonth": "/maand",
+    "perMonth": "/maand per persoon",
     "sub": "Één gehost abonnement, of draai het zelf als je liever de operatie doet."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nee. Cloud kost {{monthly}} per maand of {{price}} per jaar, en dat is de hele prijslijst: geen gratis laag, geen proefklok, geen kaart belast voor iets dat later stilletjes begint te factureren. Er is een geld-terug-garantie van 14 dagen als het niet blijkt te passen, en er is een live demo op deze pagina als je eerst wilt rondkijken. De gratis manier om tududi te gebruiken is het op je eigen server te draaien, wat dezelfde applicatie is.",
+        "a": "Nee. Cloud kost {{monthly}} per maand of {{price}} per jaar per persoon, en dat is de hele prijslijst: geen gratis laag, geen proefklok, geen kaart belast voor iets dat later stilletjes begint te factureren. Er is een geld-terug-garantie van 14 dagen als het niet blijkt te passen, en er is een live demo op deze pagina als je eerst wilt rondkijken. De gratis manier om tududi te gebruiken is het op je eigen server te draaien, wat dezelfde applicatie is.",
         "q": "Is er een gratis abonnement of een proefperiode op tududi Cloud?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Aan de slag",
     "includes": [
       "Onbeperkte taken, projecten en notities",
+      "Voeg gezinsleden of collega's toe, elk een plek voor dezelfde prijs",
       "Bijlagen en bestandsuploads",
       "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
       "Dagelijkse backups en beheerde updates",

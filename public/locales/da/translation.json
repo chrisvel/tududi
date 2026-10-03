@@ -2507,7 +2507,10 @@
       "telegram": "Telegram-botten",
       "backups_import": "import af sikkerhedskopier",
       "attachments": "vedhæftninger"
-    }
+    },
+    "seatCovered": "Din plads betales af {{name}}.",
+    "workspaceOwner": "ejeren af arbejdsområdet",
+    "seats": "{{count}} pladser i dit abonnement: dig og {{members}} mere."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2592,7 +2595,18 @@
     "add": "Tilføj medlem",
     "giveAccount": "Giv konto",
     "nameRequiredWithoutEmail": "Angiv et navn, når der ikke er nogen e-mail",
-    "failedToAdd": "Kunne ikke tilføje medlemmet"
+    "failedToAdd": "Kunne ikke tilføje medlemmet",
+    "seatNote": "Hvert medlem er en plads mere i dit abonnement. Ændringen afregnes forholdsmæssigt på din næste faktura, og når du fjerner et medlem, frigives pladsen.",
+    "editTitle": "Rediger medlem",
+    "nameRequired": "Skriv et navn",
+    "failedToUpdate": "Kunne ikke opdatere medlemmet",
+    "addEmailHint": "Når du tilføjer en e-mail, får personen en invitation til at vælge en adgangskode. Den kan ikke ændres bagefter.",
+    "remove": "Fjern medlem",
+    "removeConfirm": "Fjern {{name}}? Kontoen og alt i den slettes, og det kan ikke fortrydes. På tududi Cloud fjernes pladsen fra dit abonnement.",
+    "removed": "Medlemmet blev fjernet",
+    "updated": "Medlemmet blev opdateret",
+    "invitationSent": "Invitation sendt",
+    "failedToRemove": "Kunne ikke fjerne medlemmet"
   },
   "signInLink": {
     "action": "Login-link",

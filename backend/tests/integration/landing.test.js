@@ -828,7 +828,7 @@ describe('Landing page', () => {
                 i18n.tList('pricing.plans.cloud.features', {
                     proStorageGb: 5,
                 })
-            ).toHaveLength(5);
+            ).toHaveLength(6);
             expect(i18n.t('faq.items.freePlan.q')).not.toBe(
                 'faq.items.freePlan.q'
             );

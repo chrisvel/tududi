@@ -244,7 +244,7 @@
     "title": "Wähle, wie du tududi nutzt",
     "mostPopular": "BELIEBTESTE",
     "earlyBird": "FRÜHBUCHER",
-    "perYear": "/Jahr",
+    "perYear": "/Jahr pro Person",
     "plans": {
       "selfHosted": {
         "action": "Self-Host-Anleitung lesen →",
@@ -266,6 +266,7 @@
         "features": [
           "In einer Minute startklar, ohne Server einzurichten",
           "Unbegrenzte Aufgaben, Projekte und Notizen, plus Anhänge",
+          "Familienmitglieder oder Kollegen hinzufügen, jeweils als Platz zum gleichen Preis",
           "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
           "Updates und tägliche Backups für dich erledigt, mit {{proStorageGb}} GB Speicher",
           "Exportiere jederzeit alles, lösche dein Konto selbst"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 14 Tage Geld-zurück-Garantie, ohne Nachfragen.",
-    "perMonth": "/Monat",
+    "perMonth": "/Monat pro Person",
     "sub": "Ein gehosteter Plan, oder betreibe ihn selbst, wenn du den Betrieb lieber übernimmst."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nein. Cloud kostet {{monthly}} im Monat oder {{price}} im Jahr, und das ist die gesamte Preisliste: kein kostenloser Tarif, keine Probezeit, keine Karte, die für etwas belastet wird, das später still zu berechnen beginnt. Es gibt eine 14-tägige Geld-zurück-Garantie, falls es sich als unpassend erweist, und es gibt auf dieser Seite eine Live-Demo, falls du dir vorab einen Eindruck verschaffen möchtest. Der kostenlose Weg, tududi zu nutzen, ist, es auf deinem eigenen Server zu betreiben, was dieselbe Anwendung ist.",
+        "a": "Nein. Cloud kostet {{monthly}} im Monat oder {{price}} im Jahr pro Person, und das ist die gesamte Preisliste: kein kostenloser Tarif, keine Probezeit, keine Karte, die für etwas belastet wird, das später still zu berechnen beginnt. Es gibt eine 14-tägige Geld-zurück-Garantie, falls es sich als unpassend erweist, und es gibt auf dieser Seite eine Live-Demo, falls du dir vorab einen Eindruck verschaffen möchtest. Der kostenlose Weg, tududi zu nutzen, ist, es auf deinem eigenen Server zu betreiben, was dieselbe Anwendung ist.",
         "q": "Gibt es bei tududi Cloud einen kostenlosen Tarif oder eine Testphase?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Loslegen",
     "includes": [
       "Unbegrenzte Aufgaben, Projekte und Notizen",
+      "Familienmitglieder oder Kollegen hinzufügen, jeweils als Platz zum gleichen Preis",
       "Anhänge und Datei-Uploads",
       "KI-Tagesplanung, MCP, Kalender-Feeds, CalDAV und der Telegram-Bot",
       "Tägliche Backups und verwaltete Updates",
