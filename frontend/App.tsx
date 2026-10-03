@@ -551,6 +551,12 @@ const App: React.FC = () => {
                                 element={
                                     <BackupRestore
                                         isAdmin={currentUser.is_admin === true}
+                                        onImportSuccess={() => {
+                                            // A restore brings back the profile
+                                            // settings, so reload them (#1776)
+                                            invalidateProfileCache();
+                                            fetchCurrentUser();
+                                        }}
                                     />
                                 }
                             />
