@@ -1,6 +1,9 @@
 const request = require('supertest');
+const path = require('path');
+const fs = require('fs').promises;
 const app = require('../../app');
-const { Note, Project, Permission } = require('../../models');
+const { Note, NoteAttachment, Project, Permission } = require('../../models');
+const { getConfig } = require('../../config/config');
 const { createTestUser } = require('../helpers/testUtils');
 const { uid } = require('../../utils/uid');
 
@@ -424,6 +427,124 @@ describe('Public note sharing', () => {
 
         it('does not treat the note uid as a token', async () => {
             const res = await request(app).get(`/api/public/notes/${note.uid}`);
+            expect(res.status).toBe(404);
+        });
+    });
+
+    describe('files attached to a public note', () => {
+        const uploadPath = getConfig().uploadPath;
+        let token, stored, written;
+
+        const attach = async (owningNote, name, body) => {
+            const storedName = `note-${Date.now()}-${uid()}${path.extname(name)}`;
+            await fs.mkdir(path.join(uploadPath, 'note-files'), {
+                recursive: true,
+            });
+            await fs.writeFile(
+                path.join(uploadPath, 'note-files', storedName),
+                body
+            );
+            written.push(storedName);
+            await NoteAttachment.create({
+                note_id: owningNote.id,
+                user_id: owningNote.user_id,
+                original_filename: name,
+                stored_filename: storedName,
+                file_size: body.length,
+                mime_type: 'application/octet-stream',
+                file_path: `note-files/${storedName}`,
+            });
+            return storedName;
+        };
+
+        beforeEach(async () => {
+            written = [];
+            stored = await attach(note, 'board.png', 'PNG bytes');
+            await note.update({
+                content: `# Lisbon\n\n![The board](/api/uploads/note-files/${stored})`,
+            });
+            const res = await ownerAgent.post(
+                `/api/note/${note.uid}/public-share`
+            );
+            token = res.body.token;
+        });
+
+        afterEach(async () => {
+            await Promise.all(
+                written.map((name) =>
+                    fs.rm(path.join(uploadPath, 'note-files', name), {
+                        force: true,
+                    })
+                )
+            );
+        });
+
+        it('points the images in the content at the public link', async () => {
+            const res = await request(app).get(`/api/public/notes/${token}`);
+            expect(res.body.content).toBe(
+                `# Lisbon\n\n![The board](/api/public/notes/${token}/files/${stored})`
+            );
+        });
+
+        it('serves an attached image without a session', async () => {
+            const res = await request(app).get(
+                `/api/public/notes/${token}/files/${stored}`
+            );
+            expect(res.status).toBe(200);
+            expect(res.body.toString()).toBe('PNG bytes');
+            expect(res.headers['cache-control']).toBe('no-store');
+            expect(res.headers['referrer-policy']).toBe('no-referrer');
+            expect(res.headers['x-content-type-options']).toBe('nosniff');
+            expect(res.headers['content-disposition']).toBeUndefined();
+        });
+
+        it('downloads a file that is not safe to show inline', async () => {
+            const script = await attach(
+                note,
+                'notes.html',
+                '<script></script>'
+            );
+            const res = await request(app).get(
+                `/api/public/notes/${token}/files/${script}`
+            );
+            expect(res.status).toBe(200);
+            expect(res.headers['content-disposition']).toMatch(
+                /^attachment; filename="notes.html"/
+            );
+        });
+
+        it('still refuses the private upload address without a session', async () => {
+            const res = await request(app).get(
+                `/api/uploads/note-files/${stored}`
+            );
+            expect(res.status).toBe(401);
+        });
+
+        it("never serves another note's file through the link", async () => {
+            const privateNote = await Note.create({
+                title: 'Private',
+                content: '',
+                user_id: owner.id,
+            });
+            const secret = await attach(privateNote, 'secret.png', 'secret');
+            const res = await request(app).get(
+                `/api/public/notes/${token}/files/${secret}`
+            );
+            expect(res.status).toBe(404);
+        });
+
+        it('stops serving files when sharing is turned off', async () => {
+            await ownerAgent.delete(`/api/note/${note.uid}/public-share`);
+            const res = await request(app).get(
+                `/api/public/notes/${token}/files/${stored}`
+            );
+            expect(res.status).toBe(404);
+        });
+
+        it('refuses a file name that walks out of the folder', async () => {
+            const res = await request(app).get(
+                `/api/public/notes/${token}/files/..%2F..%2Fpackage.json`
+            );
             expect(res.status).toBe(404);
         });
     });
