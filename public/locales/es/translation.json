@@ -2012,7 +2012,19 @@
     },
     "turnContactIntoAccount": "Convertir uno de tus contactos en esta cuenta (opcional)",
     "noContact": "(ninguno)",
-    "turnContactNote": "El contacto conserva su historial, así que las tareas que tiene asignadas siguen asignadas. Tus notas privadas sobre él no se trasladan."
+    "turnContactNote": "El contacto conserva su historial, así que las tareas que tiene asignadas siguen asignadas. Tus notas privadas sobre él no se trasladan.",
+    "blog": {
+      "title": "Blog",
+      "description": "Elige una de tus notas como portada. Las notas públicas que enlaza con [[Título]] se convierten en los artículos. Comparte públicamente la portada y cada artículo para que aparezcan.",
+      "placeholder": "Enlace o ID de la nota, p. ej. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Nota de portada",
+      "turnOff": "Desactivar",
+      "shared": "Pública",
+      "notShared": "Aún no compartida: compártela desde la nota para publicar el blog",
+      "postCount": "Artículos: {{count}}",
+      "open": "Abrir el blog",
+      "preview": "Vista previa en la app"
+    }
   },
   "shares": {
     "shareProject": "Compartir proyecto",
@@ -2916,5 +2928,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Esta nota no se comparte públicamente."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Empieza ahora",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Términos",
+    "footerPrivacy": "Privacidad",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Saca las cosas pequeñas de tu cabeza.",
+    "ctaBody": "Tareas, proyectos, notas y hábitos en un lugar tranquilo, compartidos con las personas con las que vives y trabajas. Sin servidor, nada que instalar.",
+    "ctaPrice": "{{monthly}} al mes o {{annual}} al año",
+    "ctaGuarantee": "Garantía de devolución de 14 días",
+    "ctaPrimary": "Empieza ahora",
+    "ctaSecondary": "Mira qué incluye",
+    "readPost": "Leer el artículo",
+    "emptyTitle": "Todavía no hay nada",
+    "emptyBody": "Los primeros artículos están en camino. Vuelve pronto.",
+    "failedTitle": "No se pudo cargar el blog",
+    "failedBody": "Algo salió mal por nuestra parte. Inténtalo de nuevo en un momento.",
+    "missingTitle": "Este artículo no está aquí",
+    "missingBody": "Puede que se haya movido o retirado. Los demás artículos están a un clic.",
+    "allPosts": "Todos los artículos",
+    "morePosts": "Más del blog"
   }
 }

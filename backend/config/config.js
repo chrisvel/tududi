@@ -47,6 +47,16 @@ const displayPricing = () => ({
     ),
 });
 
+// Where the blog lives, for links from the marketing pages and the sitemap:
+// TUDUDI_BLOG_URL, else the first blog host, else null (no blog host).
+function blogSiteUrl() {
+    if (process.env.TUDUDI_BLOG_URL) {
+        return process.env.TUDUDI_BLOG_URL.replace(/\/$/, '');
+    }
+    const host = (process.env.TUDUDI_BLOG_HOSTS || '').split(',')[0].trim();
+    return host ? `https://${host.toLowerCase()}` : null;
+}
+
 // A JSON object from an environment variable, or {} when unset or invalid.
 function parseJsonEnv(value) {
     if (!value) return {};
@@ -222,6 +232,19 @@ const config = {
                 : 'https://tududi.com'),
         appUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
         pricing: displayPricing(),
+        blogUrl: blogSiteUrl(),
+    },
+
+    // Blog. The superadmin picks a publicly shared note of theirs as the
+    // front page in the admin area; the public notes it links with [[Title]]
+    // are the posts. TUDUDI_BLOG_HOSTS serves the blog at the root of those
+    // hostnames; without it the blog is still readable at /blog.
+    blog: {
+        hosts: (process.env.TUDUDI_BLOG_HOSTS || '')
+            .split(',')
+            .map((h) => h.trim().toLowerCase())
+            .filter(Boolean),
+        siteUrl: blogSiteUrl(),
     },
 
     // Same object the marketing page uses, so /api/billing can quote the

@@ -2024,7 +2024,19 @@
     },
     "turnContactIntoAccount": "Ubah salah satu kontak Anda menjadi akun ini (opsional)",
     "noContact": "(tidak ada)",
-    "turnContactNote": "Kontak mempertahankan riwayatnya, jadi tugas yang ditugaskan kepadanya tetap ditugaskan. Catatan pribadi Anda tentangnya tidak dibawa."
+    "turnContactNote": "Kontak mempertahankan riwayatnya, jadi tugas yang ditugaskan kepadanya tetap ditugaskan. Catatan pribadi Anda tentangnya tidak dibawa.",
+    "blog": {
+      "title": "Blog",
+      "description": "Pilih salah satu catatanmu sebagai halaman depan. Catatan publik yang ditautkannya dengan [[Judul]] menjadi tulisan. Bagikan halaman depan dan setiap tulisan secara publik agar tampil.",
+      "placeholder": "Tautan atau ID catatan, mis. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Catatan halaman depan",
+      "turnOff": "Matikan",
+      "shared": "Publik",
+      "notShared": "Belum dibagikan: bagikan dari catatan untuk menerbitkan blog",
+      "postCount": "Tulisan: {{count}}",
+      "open": "Buka blog",
+      "preview": "Pratinjau di aplikasi"
+    }
   },
   "shares": {
     "shareProject": "Bagikan proyek",
@@ -2927,5 +2939,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Catatan ini tidak dibagikan secara publik."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Mulai sekarang",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Ketentuan",
+    "footerPrivacy": "Privasi",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Keluarkan hal-hal kecil dari kepalamu.",
+    "ctaBody": "Tugas, proyek, catatan, dan kebiasaan di satu tempat yang tenang, dibagikan dengan orang-orang yang tinggal dan bekerja bersamamu. Tanpa server, tidak ada yang perlu dipasang.",
+    "ctaPrice": "{{monthly}} per bulan atau {{annual}} per tahun",
+    "ctaGuarantee": "Jaminan uang kembali 14 hari",
+    "ctaPrimary": "Mulai sekarang",
+    "ctaSecondary": "Lihat apa saja yang termasuk",
+    "readPost": "Baca tulisan",
+    "emptyTitle": "Belum ada apa-apa",
+    "emptyBody": "Tulisan pertama sedang disiapkan. Kembali lagi nanti.",
+    "failedTitle": "Blog tidak dapat dimuat",
+    "failedBody": "Ada yang salah di pihak kami. Coba lagi sebentar lagi.",
+    "missingTitle": "Tulisan ini tidak ada di sini",
+    "missingBody": "Mungkin sudah dipindahkan atau dihapus. Tulisan lain hanya sekali klik.",
+    "allPosts": "Semua tulisan",
+    "morePosts": "Lainnya dari blog"
   }
 }

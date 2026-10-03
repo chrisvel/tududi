@@ -11,6 +11,7 @@
     "ai": "AI 与 MCP",
     "pricing": "价格",
     "faq": "常见问题",
+    "blog": "博客",
     "signIn": "登录",
     "toggle": "打开菜单",
     "plan": "规划一天"
@@ -24,7 +25,7 @@
     "demoNote": "一个真实的托管实例，内含示例数据，共享使用并定期重置",
     "screenshotAlt": "tududi 的界面，显示「今天」视图和已规划的任务",
     "cloudNote": "没有服务器需要搭建。按月或按年，随时可以取消。",
-    "ctaPrimary": "在 tududi Cloud 上开始使用",
+    "ctaPrimary": "立即开始",
     "lede": "随手记录一切，用 AI 围绕日历规划一天，把领域、目标、项目、笔记和习惯放进一个系统。一分钟创建 Cloud 账户。",
     "titleLine1": "让生产力变得简单",
     "titleLine2": ""

@@ -11,6 +11,7 @@
     "ai": "AI & MCP",
     "pricing": "Priser",
     "faq": "FAQ",
+    "blog": "Blogg",
     "signIn": "Logga in",
     "toggle": "Öppna menyn",
     "plan": "Planera dagen"
@@ -24,7 +25,7 @@
     "demoNote": "En riktig hostad instans med exempeldata, delad och återställs regelbundet",
     "screenshotAlt": "tududis gränssnitt med vyn Idag och de planerade uppgifterna",
     "cloudNote": "Ingen server att sätta upp. Månadsvis eller årsvis, och du kan avsluta när du vill.",
-    "ctaPrimary": "Kom igång på tududi Cloud",
+    "ctaPrimary": "Kom igång nu",
     "lede": "Fånga allt, planera dagen med AI runt din kalender och håll områden, mål, projekt, anteckningar och vanor i ett system. Skapa ett Cloud-konto på en minut.",
     "titleLine1": "Produktivitet gjort enkel",
     "titleLine2": ""

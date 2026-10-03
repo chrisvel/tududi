@@ -265,6 +265,20 @@ app.use((req, res, next) => {
 const landingModule = require('./modules/landing');
 app.use(landingModule.hostSwitch(config.landing));
 
+// The blog at the root of the hostnames in TUDUDI_BLOG_HOSTS. Also a no-op
+// unless set; it serves the app shell marked as the blog, so it sits before
+// the static handlers for the same reason.
+const blogModule = require('./modules/blog');
+app.use(
+    blogModule.hostSwitch({
+        shellPath: () =>
+            serveFromDist
+                ? distIndexPath
+                : path.join(__dirname, '../public', 'index.html'),
+        cacheShell: config.production,
+    })
+);
+
 // Static files. Webpack output is content-hashed, so the bundles can be
 // cached for a year; the shell (index.html) and the service worker must
 // always be revalidated or a deploy would never reach returning visitors.
@@ -482,6 +496,7 @@ const registerApiRoutes = (basePath) => {
     app.use(`${basePath}/oidc`, oidcModule.routes);
     // Public note links: reachable without signing in
     app.use(basePath, notesModule.publicRoutes);
+    app.use(basePath, blogModule.routes);
 
     app.use(basePath, requireAuth);
     // Instances that sell access close everything past this point until the

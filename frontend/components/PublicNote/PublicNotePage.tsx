@@ -2,15 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MoonIcon, SunIcon } from '@heroicons/react/24/solid';
-import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { getApiPath, getAssetPath } from '../../config/paths';
 import { PublicNote, fetchPublicNote } from '../../utils/publicNotesService';
-import PhotoCredit from '../Shared/PhotoCredit';
-import {
-    CONTENT_BACKGROUND_OVERLAY,
-    contentBackgroundUrl,
-    findContentBackground,
-} from '../../constants/contentBackgrounds';
+import PublicNoteArticle, { PublicNoteBackground } from './PublicNoteArticle';
 
 interface PublicNotePageProps {
     isSignedIn: boolean;
@@ -28,7 +22,7 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
     isDarkMode,
     toggleDarkMode,
 }) => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const { token = '' } = useParams<{ token: string }>();
     const [stage, setStage] = useState<Stage>('loading');
     const [note, setNote] = useState<PublicNote | null>(null);
@@ -86,51 +80,12 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
         };
     }, [stage, note]);
 
-    const updated =
-        note?.updated_at &&
-        new Date(note.updated_at).toLocaleDateString(i18n.language, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-
     const showSignUp = !isSignedIn && registrationEnabled;
-    const photo =
-        stage === 'ready' ? findContentBackground(note?.background) : undefined;
-    const noteColor =
-        note?.color && /^#[0-9a-f]{6}$/i.test(note.color)
-            ? note.color
-            : undefined;
-    // Light text on dark note colors, as in the notes editor.
-    const lightText =
-        !!noteColor &&
-        (0.299 * parseInt(noteColor.slice(1, 3), 16) +
-            0.587 * parseInt(noteColor.slice(3, 5), 16) +
-            0.114 * parseInt(noteColor.slice(5, 7), 16)) /
-            255 <
-            0.4;
 
     return (
         <div className="relative min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            {photo && (
-                <>
-                    <div
-                        aria-hidden="true"
-                        className="fixed inset-0 bg-cover bg-center"
-                        style={{
-                            backgroundImage: `url(${contentBackgroundUrl(photo)})`,
-                        }}
-                        data-testid="public-note-background"
-                    />
-                    <div
-                        aria-hidden="true"
-                        className={`fixed inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
-                    />
-                    <PhotoCredit
-                        background={photo}
-                        className="fixed bottom-3 left-3 z-10"
-                    />
-                </>
+            {stage === 'ready' && (
+                <PublicNoteBackground background={note?.background} />
             )}
             <nav
                 className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
@@ -246,41 +201,13 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
                 )}
 
                 {stage === 'ready' && note && (
-                    <article
-                        data-testid="public-note"
-                        className={`shadow-md rounded-lg px-6 md:px-8 py-6 break-words backdrop-blur-sm ${noteColor ? '' : 'bg-white/90 dark:bg-gray-800/90'}`}
-                        style={
-                            noteColor
-                                ? {
-                                      backgroundColor: `${noteColor}e6`,
-                                      color: lightText ? '#ffffff' : '#333333',
-                                  }
-                                : undefined
-                        }
-                    >
-                        <header className="mb-6">
-                            <h1 className="text-3xl font-light break-words">
-                                {note.title ||
-                                    t('notes.untitled', 'Untitled Note')}
-                            </h1>
-                            {updated && (
-                                <p
-                                    className={`mt-1 text-sm ${noteColor ? 'opacity-70' : 'text-gray-500 dark:text-gray-400'}`}
-                                >
-                                    {t(
-                                        'publicNote.updated',
-                                        'Last updated {{date}}',
-                                        { date: updated }
-                                    )}
-                                </p>
-                            )}
-                        </header>
-                        <MarkdownRenderer
-                            content={note.content || ''}
-                            noteColor={noteColor}
-                            publicNoteLinks={note.linked_notes ?? []}
-                        />
-                    </article>
+                    <PublicNoteArticle
+                        title={note.title}
+                        content={note.content || ''}
+                        color={note.color}
+                        updatedAt={note.updated_at}
+                        linkedNotes={note.linked_notes ?? []}
+                    />
                 )}
             </main>
 

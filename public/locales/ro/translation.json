@@ -2027,7 +2027,19 @@
     },
     "turnContactIntoAccount": "Transformă unul dintre contactele tale în acest cont (opțional)",
     "noContact": "(niciunul)",
-    "turnContactNote": "Contactul își păstrează istoricul, deci sarcinile atribuite lui rămân atribuite. Notele tale private despre el nu sunt preluate."
+    "turnContactNote": "Contactul își păstrează istoricul, deci sarcinile atribuite lui rămân atribuite. Notele tale private despre el nu sunt preluate.",
+    "blog": {
+      "title": "Blog",
+      "description": "Alege una dintre notițele tale ca pagină principală. Notițele publice pe care le leagă cu [[Titlu]] devin articolele. Partajează public pagina principală și fiecare articol ca să apară.",
+      "placeholder": "Link sau ID notiță, de ex. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Notița paginii principale",
+      "turnOff": "Dezactivează",
+      "shared": "Publică",
+      "notShared": "Încă nepartajată: partajeaz-o din notiță ca să publici blogul",
+      "postCount": "Articole: {{count}}",
+      "open": "Deschide blogul",
+      "preview": "Previzualizare în aplicație"
+    }
   },
   "shares": {
     "shareProject": "Partajați proiectul",
@@ -2933,5 +2945,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Această notă nu este partajată public."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Începe acum",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Termeni",
+    "footerPrivacy": "Confidențialitate",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Scoate lucrurile mărunte din cap.",
+    "ctaBody": "Sarcini, proiecte, notițe și obiceiuri într-un loc liniștit, împărtășite cu oamenii cu care locuiești și lucrezi. Fără server, nimic de instalat.",
+    "ctaPrice": "{{monthly}} pe lună sau {{annual}} pe an",
+    "ctaGuarantee": "Garanție de returnare a banilor 14 zile",
+    "ctaPrimary": "Începe acum",
+    "ctaSecondary": "Vezi ce include",
+    "readPost": "Citește articolul",
+    "emptyTitle": "Nimic aici încă",
+    "emptyBody": "Primele articole sunt pe drum. Revino curând.",
+    "failedTitle": "Blogul nu a putut fi încărcat",
+    "failedBody": "Ceva n-a mers bine la noi. Încearcă din nou peste puțin timp.",
+    "missingTitle": "Acest articol nu este aici",
+    "missingBody": "Poate a fost mutat sau retras. Celelalte articole sunt la un clic distanță.",
+    "allPosts": "Toate articolele",
+    "morePosts": "Mai multe de pe blog"
   }
 }

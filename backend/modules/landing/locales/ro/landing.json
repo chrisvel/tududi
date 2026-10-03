@@ -11,6 +11,7 @@
     "ai": "IA și MCP",
     "pricing": "Prețuri",
     "faq": "FAQ",
+    "blog": "Blog",
     "signIn": "Autentificare",
     "toggle": "Deschide meniul",
     "plan": "Planifică-ți ziua"
@@ -24,7 +25,7 @@
     "demoNote": "O instanță găzduită reală, cu date de exemplu, partajată și resetată periodic",
     "screenshotAlt": "Interfața tududi, cu vizualizarea Astăzi și sarcinile planificate",
     "cloudNote": "Niciun server de configurat. Lunar sau anual, și poți anula oricând.",
-    "ctaPrimary": "Începe pe tududi Cloud",
+    "ctaPrimary": "Începe acum",
     "lede": "Notează orice, planifică ziua cu AI în jurul calendarului și ține ariile, obiectivele, proiectele, notele și obiceiurile într-un singur sistem. Creează un cont Cloud într-un minut.",
     "titleLine1": "Productivitate simplificată",
     "titleLine2": ""

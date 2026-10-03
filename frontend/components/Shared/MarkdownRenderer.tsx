@@ -141,8 +141,18 @@ interface MarkdownRendererProps {
     noteColor?: string;
     // On a public note page: the linked notes the reader may open. Any other
     // [[link]] shows as not shared instead of looking up the reader's notes.
-    publicNoteLinks?: { title: string; token: string }[];
+    publicNoteLinks?: PublicNoteLink[];
+    // Where a public linked note opens; its public link page by default.
+    publicNoteHref?: (link: PublicNoteLink) => string;
 }
+
+export interface PublicNoteLink {
+    title: string;
+    token?: string;
+    slug?: string;
+}
+
+const publicLinkPage = (link: PublicNoteLink) => `/public/notes/${link.token}`;
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     content,
@@ -151,6 +161,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     onContentChange,
     noteColor,
     publicNoteLinks,
+    publicNoteHref = publicLinkPage,
 }) => {
     const storeNotes = useStore((state) => state.notesStore.notes);
 
@@ -403,7 +414,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                                 );
                                 return target ? (
                                     <Link
-                                        to={`/public/notes/${target.token}`}
+                                        to={publicNoteHref(target)}
                                         className="!no-underline hover:!no-underline"
                                     >
                                         <NoteBadge title={title} />

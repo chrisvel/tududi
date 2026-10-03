@@ -2026,7 +2026,19 @@
     },
     "turnContactIntoAccount": "Enega od svojih stikov spremenite v ta račun (neobvezno)",
     "noContact": "(brez)",
-    "turnContactNote": "Stik obdrži svojo zgodovino, zato naloge, dodeljene njemu, ostanejo dodeljene. Vaši zasebni zapiski o njem se ne prenesejo."
+    "turnContactNote": "Stik obdrži svojo zgodovino, zato naloge, dodeljene njemu, ostanejo dodeljene. Vaši zasebni zapiski o njem se ne prenesejo.",
+    "blog": {
+      "title": "Blog",
+      "description": "Izberi enega svojih zapiskov za naslovnico. Javni zapiski, na katere se povezuje z [[Naslov]], postanejo objave. Naslovnico in vsako objavo deli javno, da se prikažejo.",
+      "placeholder": "Povezava ali ID zapiska, npr. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Zapisek za naslovnico",
+      "turnOff": "Izklopi",
+      "shared": "Javen",
+      "notShared": "Še ni deljen: deli ga iz zapiska, da objaviš blog",
+      "postCount": "Objave: {{count}}",
+      "open": "Odpri blog",
+      "preview": "Predogled v aplikaciji"
+    }
   },
   "shares": {
     "shareProject": "Deli projekt",
@@ -2934,5 +2946,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Ta zapisek ni javno deljen."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Začni zdaj",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Pogoji",
+    "footerPrivacy": "Zasebnost",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Spravi drobne stvari iz glave.",
+    "ctaBody": "Opravila, projekti, zapiski in navade na enem mirnem mestu, deljeni z ljudmi, s katerimi živiš in delaš. Brez strežnika, nič za namestiti.",
+    "ctaPrice": "{{monthly}} na mesec ali {{annual}} na leto",
+    "ctaGuarantee": "14-dnevno jamstvo vračila denarja",
+    "ctaPrimary": "Začni zdaj",
+    "ctaSecondary": "Poglej, kaj vključuje",
+    "readPost": "Preberi objavo",
+    "emptyTitle": "Tu še ni ničesar",
+    "emptyBody": "Prve objave so na poti. Vrni se kmalu.",
+    "failedTitle": "Bloga ni bilo mogoče naložiti",
+    "failedBody": "Pri nas je šlo nekaj narobe. Poskusi znova čez trenutek.",
+    "missingTitle": "Te objave tu ni",
+    "missingBody": "Morda je bila premaknjena ali odstranjena. Druge objave so le en klik stran.",
+    "allPosts": "Vse objave",
+    "morePosts": "Več z bloga"
   }
 }

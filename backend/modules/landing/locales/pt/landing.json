@@ -11,6 +11,7 @@
     "ai": "IA e MCP",
     "pricing": "Preços",
     "faq": "FAQ",
+    "blog": "Blog",
     "signIn": "Entrar",
     "toggle": "Abrir o menu",
     "plan": "Planeje seu dia"
@@ -24,7 +25,7 @@
     "demoNote": "Uma instância alojada real, com dados de exemplo, partilhada e reiniciada regularmente",
     "screenshotAlt": "A interface do tududi, com a vista Hoje e as tarefas planeadas",
     "cloudNote": "Nenhum servidor para configurar. Mensal ou anual, e você pode cancelar quando quiser.",
-    "ctaPrimary": "Começar no tududi Cloud",
+    "ctaPrimary": "Começar agora",
     "lede": "Anote tudo, planeje o dia com IA em torno do seu calendário e mantenha áreas, metas, projetos, notas e hábitos num só sistema. Crie uma conta Cloud em um minuto.",
     "titleLine1": "Produtividade feita simples",
     "titleLine2": ""

@@ -2025,7 +2025,19 @@
     },
     "turnContactIntoAccount": "Trasforma uno dei tuoi contatti in questo account (facoltativo)",
     "noContact": "(nessuno)",
-    "turnContactNote": "Il contatto mantiene la sua cronologia, quindi le attività che gli sono assegnate restano assegnate. Le tue note private su di lui non vengono trasferite."
+    "turnContactNote": "Il contatto mantiene la sua cronologia, quindi le attività che gli sono assegnate restano assegnate. Le tue note private su di lui non vengono trasferite.",
+    "blog": {
+      "title": "Blog",
+      "description": "Scegli una delle tue note come pagina iniziale. Le note pubbliche che collega con [[Titolo]] diventano gli articoli. Condividi pubblicamente la pagina iniziale e ogni articolo perché compaiano.",
+      "placeholder": "Link o ID della nota, es. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Nota della pagina iniziale",
+      "turnOff": "Disattiva",
+      "shared": "Pubblica",
+      "notShared": "Non ancora condivisa: condividila dalla nota per pubblicare il blog",
+      "postCount": "Articoli: {{count}}",
+      "open": "Apri il blog",
+      "preview": "Anteprima nell'app"
+    }
   },
   "shares": {
     "shareProject": "Condividi progetto",
@@ -2929,5 +2941,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Questa nota non è condivisa pubblicamente."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Inizia ora",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Termini",
+    "footerPrivacy": "Privacy",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Togliti dalla testa le piccole cose.",
+    "ctaBody": "Attività, progetti, note e abitudini in un posto tranquillo, condivisi con le persone con cui vivi e lavori. Nessun server, niente da installare.",
+    "ctaPrice": "{{monthly}} al mese o {{annual}} all'anno",
+    "ctaGuarantee": "Garanzia soddisfatti o rimborsati di 14 giorni",
+    "ctaPrimary": "Inizia ora",
+    "ctaSecondary": "Scopri cosa include",
+    "readPost": "Leggi l'articolo",
+    "emptyTitle": "Ancora niente qui",
+    "emptyBody": "I primi articoli stanno arrivando. Torna presto.",
+    "failedTitle": "Impossibile caricare il blog",
+    "failedBody": "Qualcosa è andato storto da parte nostra. Riprova tra un momento.",
+    "missingTitle": "Questo articolo non è qui",
+    "missingBody": "Potrebbe essere stato spostato o rimosso. Gli altri articoli sono a un clic.",
+    "allPosts": "Tutti gli articoli",
+    "morePosts": "Altro dal blog"
   }
 }

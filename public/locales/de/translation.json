@@ -2033,7 +2033,19 @@
     },
     "turnContactIntoAccount": "Einen deiner Kontakte in dieses Konto umwandeln (optional)",
     "noContact": "(keine)",
-    "turnContactNote": "Der Kontakt behält seinen Verlauf, sodass ihm zugewiesene Aufgaben zugewiesen bleiben. Deine privaten Notizen dazu werden nicht übernommen."
+    "turnContactNote": "Der Kontakt behält seinen Verlauf, sodass ihm zugewiesene Aufgaben zugewiesen bleiben. Deine privaten Notizen dazu werden nicht übernommen.",
+    "blog": {
+      "title": "Blog",
+      "description": "Wähle eine deiner Notizen als Startseite. Die öffentlichen Notizen, die sie mit [[Titel]] verlinkt, werden zu Beiträgen. Teile die Startseite und jeden Beitrag öffentlich, damit sie erscheinen.",
+      "placeholder": "Notiz-Link oder ID, z. B. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Notiz für die Startseite",
+      "turnOff": "Ausschalten",
+      "shared": "Öffentlich",
+      "notShared": "Noch nicht geteilt: teile sie in der Notiz, um den Blog zu veröffentlichen",
+      "postCount": "Beiträge: {{count}}",
+      "open": "Blog öffnen",
+      "preview": "In der App ansehen"
+    }
   },
   "shares": {
     "shareProject": "Projekt teilen",
@@ -2937,5 +2949,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Diese Notiz ist nicht öffentlich geteilt."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Jetzt starten",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "AGB",
+    "footerPrivacy": "Datenschutz",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Hol die kleinen Dinge aus deinem Kopf.",
+    "ctaBody": "Aufgaben, Projekte, Notizen und Gewohnheiten an einem ruhigen Ort, geteilt mit den Menschen, mit denen du lebst und arbeitest. Kein Server, nichts zu installieren.",
+    "ctaPrice": "{{monthly}} pro Monat oder {{annual}} pro Jahr",
+    "ctaGuarantee": "14 Tage Geld-zurück-Garantie",
+    "ctaPrimary": "Jetzt starten",
+    "ctaSecondary": "Was enthalten ist",
+    "readPost": "Beitrag lesen",
+    "emptyTitle": "Noch nichts hier",
+    "emptyBody": "Die ersten Beiträge sind unterwegs. Schau bald wieder vorbei.",
+    "failedTitle": "Der Blog konnte nicht geladen werden",
+    "failedBody": "Bei uns ist etwas schiefgelaufen. Versuch es gleich noch einmal.",
+    "missingTitle": "Diesen Beitrag gibt es hier nicht",
+    "missingBody": "Er wurde vielleicht verschoben oder entfernt. Die anderen Beiträge sind nur einen Klick entfernt.",
+    "allPosts": "Alle Beiträge",
+    "morePosts": "Mehr aus dem Blog"
   }
 }

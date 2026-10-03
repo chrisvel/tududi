@@ -49,4 +49,20 @@ describe('MarkdownRenderer note links on a public page', () => {
             screen.getByText('This note is not shared publicly.')
         ).toBeInTheDocument();
     });
+
+    it('opens linked notes where the page says, such as a blog post', () => {
+        render(
+            <MemoryRouter>
+                <MarkdownRenderer
+                    content="See [[packing list]]."
+                    publicNoteLinks={[
+                        { title: 'Packing list', slug: 'packing-list' },
+                    ]}
+                    publicNoteHref={(link) => `/blog/${link.slug}`}
+                />
+            </MemoryRouter>
+        );
+        const link = screen.getByText('packing list').closest('a');
+        expect(link).toHaveAttribute('href', '/blog/packing-list');
+    });
 });

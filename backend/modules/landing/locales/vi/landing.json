@@ -11,6 +11,7 @@
     "ai": "AI và MCP",
     "pricing": "Giá",
     "faq": "Câu hỏi thường gặp",
+    "blog": "Blog",
     "signIn": "Đăng nhập",
     "toggle": "Mở menu",
     "plan": "Lên kế hoạch ngày"
@@ -24,7 +25,7 @@
     "demoNote": "Một phiên bản lưu trữ thật với dữ liệu mẫu, dùng chung và được đặt lại thường xuyên",
     "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch",
     "cloudNote": "Không có máy chủ nào cần thiết lập. Hàng tháng hoặc hàng năm, và bạn có thể hủy bất cứ lúc nào.",
-    "ctaPrimary": "Bắt đầu trên tududi Cloud",
+    "ctaPrimary": "Bắt đầu ngay",
     "lede": "Ghi lại mọi thứ, lên kế hoạch ngày bằng AI quanh lịch của bạn, và giữ lĩnh vực, mục tiêu, dự án, ghi chú, thói quen trong một hệ thống. Tạo tài khoản Cloud trong một phút.",
     "titleLine1": "Năng suất được đơn giản hóa",
     "titleLine2": ""
