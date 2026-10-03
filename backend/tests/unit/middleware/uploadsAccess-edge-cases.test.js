@@ -41,14 +41,14 @@ const run = async (path) => {
     return { res, next };
 };
 
-const refused = ({ res, next }) => {
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(next).not.toHaveBeenCalled();
-};
-
-const allowed = ({ res, next }) => {
-    expect(res.status).not.toHaveBeenCalled();
-    expect(next).toHaveBeenCalledWith();
+// What the middleware did: refused with 403, or passed the request on.
+const outcome = ({ res, next }) => {
+    if (res.status.mock.calls.some(([code]) => code === 403)) {
+        return next.mock.calls.length === 0 ? 'refused' : 'both';
+    }
+    return next.mock.calls.length === 1 && next.mock.calls[0].length === 0
+        ? 'allowed'
+        : 'other';
 };
 
 // The refusals the integration tests for uploads do not reach: files that
@@ -62,12 +62,12 @@ describe('uploadsAccessControl edge cases', () => {
 
     it('refuses a project file that belongs to no project', async () => {
         models.ProjectAttachment.findOne.mockResolvedValue(null);
-        refused(await run('/project-files/orphan.pdf'));
+        expect(outcome(await run('/project-files/orphan.pdf'))).toBe('refused');
     });
 
     it('refuses a note file that belongs to no note', async () => {
         models.NoteAttachment.findOne.mockResolvedValue(null);
-        refused(await run('/note-files/orphan.pdf'));
+        expect(outcome(await run('/note-files/orphan.pdf'))).toBe('refused');
     });
 
     it('allows a note file the viewer can read', async () => {
@@ -75,20 +75,20 @@ describe('uploadsAccessControl edge cases', () => {
             Note: { uid: 'note1' },
         });
         permissionsService.getAccess.mockResolvedValue('ro');
-        allowed(await run('/note-files/mine.pdf'));
+        expect(outcome(await run('/note-files/mine.pdf'))).toBe('allowed');
     });
 
     describe('project cover images', () => {
         it('refuses an image no project uses', async () => {
             models.Project.findAll.mockResolvedValue([]);
-            refused(await run('/projects/unused.png'));
+            expect(outcome(await run('/projects/unused.png'))).toBe('refused');
         });
 
         it('refuses a viewer who is not a person anywhere', async () => {
             models.Project.findAll.mockResolvedValue([{ id: 1, uid: 'p1' }]);
             permissionsService.getAccess.mockResolvedValue('none');
             permissionsService.getMyPersonUids.mockResolvedValue([]);
-            refused(await run('/projects/cover.png'));
+            expect(outcome(await run('/projects/cover.png'))).toBe('refused');
             expect(models.Task.count).not.toHaveBeenCalled();
         });
 
@@ -97,7 +97,7 @@ describe('uploadsAccessControl edge cases', () => {
             permissionsService.getAccess.mockResolvedValue('none');
             permissionsService.getMyPersonUids.mockResolvedValue(['person1']);
             models.Task.count.mockResolvedValue(1);
-            allowed(await run('/projects/cover.png'));
+            expect(outcome(await run('/projects/cover.png'))).toBe('allowed');
         });
 
         it('refuses someone with nothing assigned in the project', async () => {
@@ -105,21 +105,21 @@ describe('uploadsAccessControl edge cases', () => {
             permissionsService.getAccess.mockResolvedValue('none');
             permissionsService.getMyPersonUids.mockResolvedValue(['person1']);
             models.Task.count.mockResolvedValue(0);
-            refused(await run('/projects/cover.png'));
+            expect(outcome(await run('/projects/cover.png'))).toBe('refused');
         });
     });
 
     describe('avatars', () => {
         it('refuses an avatar nobody uses', async () => {
             models.User.findOne.mockResolvedValue(null);
-            refused(await run('/avatars/nobody.png'));
+            expect(outcome(await run('/avatars/nobody.png'))).toBe('refused');
         });
 
         it("refuses a stranger's avatar", async () => {
             models.User.findOne.mockResolvedValue({ id: 99 });
             permissionSources.countAccepted.mockResolvedValue(0);
             permissionSources.findAccepted.mockResolvedValue([]);
-            refused(await run('/avatars/stranger.png'));
+            expect(outcome(await run('/avatars/stranger.png'))).toBe('refused');
         });
 
         it('allows the avatar of someone sharing the same resource', async () => {
@@ -130,7 +130,9 @@ describe('uploadsAccessControl edge cases', () => {
             permissionSources.findAccepted.mockResolvedValue([
                 { resource_uid: 'shared1' },
             ]);
-            allowed(await run('/avatars/colleague.png'));
+            expect(outcome(await run('/avatars/colleague.png'))).toBe(
+                'allowed'
+            );
         });
 
         it('refuses when the shared resources do not overlap', async () => {
@@ -139,12 +141,12 @@ describe('uploadsAccessControl edge cases', () => {
             permissionSources.findAccepted.mockResolvedValue([
                 { resource_uid: 'mine-only' },
             ]);
-            refused(await run('/avatars/other.png'));
+            expect(outcome(await run('/avatars/other.png'))).toBe('refused');
         });
     });
 
     it('refuses an unknown folder', async () => {
-        refused(await run('/secrets/file.txt'));
+        expect(outcome(await run('/secrets/file.txt'))).toBe('refused');
     });
 
     it('passes a lookup failure on to the error handler', async () => {
