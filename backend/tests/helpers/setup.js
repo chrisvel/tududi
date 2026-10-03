@@ -54,6 +54,7 @@ const CLEANUP_TABLES = [
     'push_subscriptions',
     'billing_events',
     'billing_accounts',
+    'accounts',
     'notifications',
     'member_sign_in_links',
     'group_permissions',

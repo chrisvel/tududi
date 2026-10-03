@@ -511,6 +511,22 @@ While not strictly enforced, aim for:
 - **Business logic:** 70%+ coverage
 - **UI components:** 50%+ coverage
 
+**Authentication and authorization are kept at 100%** (lines and branches):
+`middleware/{auth,authorize,csrf,roles,uploadsAccess,rateLimiter,captcha}.js`,
+`modules/auth`, `modules/oidc`, `modules/users/apiTokenService.js`,
+`modules/mcp/middleware.js`, the admin, members, sign-in link, shares and
+groups services, and `services/{permissions*,permissionSources,roles,accounts,session,workspaceMembers,groupSharing,applyPerms}`.
+Their edge cases live in `*-edge-cases.test.js` files next to the other unit
+tests. Jest maps the ESM-only `jose` package to a stub
+(`tests/mocks/jose.js`), so bearer token signatures are verified for real by
+`tests/helpers/oidcRealTokenCheck.js`, which `service-tokens.test.js` runs
+in a plain Node process. Check a change with:
+
+```bash
+cd backend && NODE_ENV=test npx jest --coverage \
+  --collectCoverageFrom='modules/auth/*.js' --collectCoverageFrom='modules/oidc/*.js' # add the files you touched
+```
+
 **Run coverage report:**
 ```bash
 npm run test:coverage
