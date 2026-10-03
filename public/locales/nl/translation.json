@@ -2943,7 +2943,7 @@
   },
   "blog": {
     "nav": "Blog",
-    "navCta": "Probeer tududi Cloud",
+    "navCta": "Begin nu",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Voorwaarden",
     "footerPrivacy": "Privacy",
@@ -2952,7 +2952,7 @@
     "ctaBody": "Taken, projecten, notities en gewoonten op één rustige plek, gedeeld met de mensen met wie je woont en werkt. Geen server, niets te installeren.",
     "ctaPrice": "{{monthly}} per maand of {{annual}} per jaar",
     "ctaGuarantee": "14 dagen geld-terug-garantie",
-    "ctaPrimary": "Begin met tududi Cloud",
+    "ctaPrimary": "Begin nu",
     "ctaSecondary": "Bekijk wat erbij zit",
     "readPost": "Lees het bericht",
     "emptyTitle": "Nog niets hier",

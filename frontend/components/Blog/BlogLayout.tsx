@@ -28,7 +28,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({
     const { t } = useTranslation();
 
     return (
-        <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+        <div className="relative min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <nav
                 className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur"
                 data-testid="blog-navbar"
@@ -82,7 +82,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({
                                     className="px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 whitespace-nowrap"
                                     data-testid="blog-nav-cta"
                                 >
-                                    {t('blog.navCta', 'Try tududi Cloud')}
+                                    {t('blog.navCta', 'Start now')}
                                 </a>
                             </>
                         )}

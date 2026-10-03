@@ -8,10 +8,11 @@ import {
     RectangleStackIcon,
     SparklesIcon,
     BugAntIcon,
+    NewspaperIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
 import { handleAuthResponse } from '../../utils/authUtils';
-import AdminBlogCard from './AdminBlogCard';
+import AdminBlogSettings from './AdminBlogSettings';
 
 interface Overview {
     users: { total: number; admins: number; verified: number; last24h: number };
@@ -65,6 +66,7 @@ const AdminDashboardPage: React.FC = () => {
     const [data, setData] = useState<Overview | null>(null);
     const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [blogOpen, setBlogOpen] = useState(false);
 
     useEffect(() => {
         const load = async () => {
@@ -206,6 +208,15 @@ const AdminDashboardPage: React.FC = () => {
                         </span>
                     )}
                 </Link>
+                <button
+                    type="button"
+                    onClick={() => setBlogOpen(true)}
+                    className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    data-testid="admin-dashboard-blog-button"
+                >
+                    <NewspaperIcon className="w-4 h-4 mr-2" />
+                    {t('admin.blog.title', 'Blog')}
+                </button>
                 <span className="inline-flex items-center px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400">
                     <RectangleStackIcon className="w-4 h-4 mr-2" />
                     {data.instance.registration_enabled
@@ -214,7 +225,9 @@ const AdminDashboardPage: React.FC = () => {
                 </span>
             </div>
 
-            <AdminBlogCard />
+            {blogOpen && (
+                <AdminBlogSettings onClose={() => setBlogOpen(false)} />
+            )}
 
             <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                 <EnvelopeIcon className="w-5 h-5 mr-2" />

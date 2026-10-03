@@ -180,8 +180,9 @@ describe('Blog post', () => {
                 name: 'How to organize a family',
             })
         ).toBeInTheDocument();
-        expect(screen.getByTestId('blog-post')).toHaveTextContent(
-            'October 2, 2026'
+        // The post is shown the way its public link shows it.
+        expect(screen.getByTestId('public-note')).toHaveTextContent(
+            'Last updated October 3, 2026'
         );
         expect(screen.getByText('Weekly review')).toHaveAttribute(
             'href',

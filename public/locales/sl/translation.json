@@ -2949,7 +2949,7 @@
   },
   "blog": {
     "nav": "Blog",
-    "navCta": "Preizkusi tududi Cloud",
+    "navCta": "Začni zdaj",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Pogoji",
     "footerPrivacy": "Zasebnost",
@@ -2958,7 +2958,7 @@
     "ctaBody": "Opravila, projekti, zapiski in navade na enem mirnem mestu, deljeni z ljudmi, s katerimi živiš in delaš. Brez strežnika, nič za namestiti.",
     "ctaPrice": "{{monthly}} na mesec ali {{annual}} na leto",
     "ctaGuarantee": "14-dnevno jamstvo vračila denarja",
-    "ctaPrimary": "Začni s tududi Cloud",
+    "ctaPrimary": "Začni zdaj",
     "ctaSecondary": "Poglej, kaj vključuje",
     "readPost": "Preberi objavo",
     "emptyTitle": "Tu še ni ničesar",

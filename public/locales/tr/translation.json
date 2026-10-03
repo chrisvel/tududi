@@ -2943,7 +2943,7 @@
   },
   "blog": {
     "nav": "Blog",
-    "navCta": "tududi Cloud'u dene",
+    "navCta": "Hemen başla",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Koşullar",
     "footerPrivacy": "Gizlilik",
@@ -2952,7 +2952,7 @@
     "ctaBody": "Görevler, projeler, notlar ve alışkanlıklar tek ve sakin bir yerde, birlikte yaşadığın ve çalıştığın insanlarla paylaşılmış. Sunucu yok, kurulacak bir şey yok.",
     "ctaPrice": "Ayda {{monthly}} veya yılda {{annual}}",
     "ctaGuarantee": "14 gün para iade garantisi",
-    "ctaPrimary": "tududi Cloud ile başla",
+    "ctaPrimary": "Hemen başla",
     "ctaSecondary": "Neler dahil, gör",
     "readPost": "Yazıyı oku",
     "emptyTitle": "Henüz bir şey yok",

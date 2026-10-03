@@ -2949,7 +2949,7 @@
   },
   "blog": {
     "nav": "Блог",
-    "navCta": "Попробовать tududi Cloud",
+    "navCta": "Начать сейчас",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Условия",
     "footerPrivacy": "Конфиденциальность",
@@ -2958,7 +2958,7 @@
     "ctaBody": "Задачи, проекты, заметки и привычки в одном спокойном месте, общие с теми, с кем вы живёте и работаете. Без сервера, ничего не нужно устанавливать.",
     "ctaPrice": "{{monthly}} в месяц или {{annual}} в год",
     "ctaGuarantee": "Возврат денег в течение 14 дней",
-    "ctaPrimary": "Начать с tududi Cloud",
+    "ctaPrimary": "Начать сейчас",
     "ctaSecondary": "Что входит",
     "readPost": "Читать статью",
     "emptyTitle": "Пока ничего нет",

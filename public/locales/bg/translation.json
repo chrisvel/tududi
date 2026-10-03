@@ -2943,7 +2943,7 @@
   },
   "blog": {
     "nav": "Блог",
-    "navCta": "Пробвай tududi Cloud",
+    "navCta": "Започни сега",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Условия",
     "footerPrivacy": "Поверителност",
@@ -2952,7 +2952,7 @@
     "ctaBody": "Задачи, проекти, бележки и навици на едно спокойно място, споделени с хората, с които живееш и работиш. Без сървър, нищо за инсталиране.",
     "ctaPrice": "{{monthly}} на месец или {{annual}} на година",
     "ctaGuarantee": "14-дневна гаранция за връщане на парите",
-    "ctaPrimary": "Започни с tududi Cloud",
+    "ctaPrimary": "Започни сега",
     "ctaSecondary": "Виж какво включва",
     "readPost": "Прочети публикацията",
     "emptyTitle": "Още няма нищо",

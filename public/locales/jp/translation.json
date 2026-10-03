@@ -2942,7 +2942,7 @@
   },
   "blog": {
     "nav": "ブログ",
-    "navCta": "tududi Cloud を試す",
+    "navCta": "今すぐ始める",
     "footerCloud": "tududi Cloud",
     "footerTerms": "利用規約",
     "footerPrivacy": "プライバシー",
@@ -2951,7 +2951,7 @@
     "ctaBody": "タスク、プロジェクト、メモ、習慣をひとつの落ち着いた場所に。一緒に暮らし、働く人たちと共有できます。サーバー不要、インストール不要。",
     "ctaPrice": "月額 {{monthly}} または年額 {{annual}}",
     "ctaGuarantee": "14日間の返金保証",
-    "ctaPrimary": "tududi Cloud を始める",
+    "ctaPrimary": "今すぐ始める",
     "ctaSecondary": "含まれる内容を見る",
     "readPost": "記事を読む",
     "emptyTitle": "まだ何もありません",

@@ -2955,7 +2955,7 @@
   },
   "blog": {
     "nav": "المدونة",
-    "navCta": "جرّب tududi Cloud",
+    "navCta": "ابدأ الآن",
     "footerCloud": "tududi Cloud",
     "footerTerms": "الشروط",
     "footerPrivacy": "الخصوصية",
@@ -2964,7 +2964,7 @@
     "ctaBody": "المهام والمشاريع والملاحظات والعادات في مكان واحد هادئ، مشتركة مع من تعيش وتعمل معهم. بلا خادم، ولا شيء لتثبيته.",
     "ctaPrice": "{{monthly}} شهريًا أو {{annual}} سنويًا",
     "ctaGuarantee": "ضمان استرداد المال لمدة 14 يومًا",
-    "ctaPrimary": "ابدأ مع tududi Cloud",
+    "ctaPrimary": "ابدأ الآن",
     "ctaSecondary": "اطّلع على ما يتضمنه",
     "readPost": "اقرأ المقال",
     "emptyTitle": "لا شيء هنا بعد",

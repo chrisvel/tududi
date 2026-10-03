@@ -2942,7 +2942,7 @@
   },
   "blog": {
     "nav": "Blog",
-    "navCta": "Coba tududi Cloud",
+    "navCta": "Mulai sekarang",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Ketentuan",
     "footerPrivacy": "Privasi",
@@ -2951,7 +2951,7 @@
     "ctaBody": "Tugas, proyek, catatan, dan kebiasaan di satu tempat yang tenang, dibagikan dengan orang-orang yang tinggal dan bekerja bersamamu. Tanpa server, tidak ada yang perlu dipasang.",
     "ctaPrice": "{{monthly}} per bulan atau {{annual}} per tahun",
     "ctaGuarantee": "Jaminan uang kembali 14 hari",
-    "ctaPrimary": "Mulai dengan tududi Cloud",
+    "ctaPrimary": "Mulai sekarang",
     "ctaSecondary": "Lihat apa saja yang termasuk",
     "readPost": "Baca tulisan",
     "emptyTitle": "Belum ada apa-apa",

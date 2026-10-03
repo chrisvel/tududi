@@ -2944,7 +2944,7 @@
   },
   "blog": {
     "nav": "Blog",
-    "navCta": "Δοκίμασε το tududi Cloud",
+    "navCta": "Ξεκίνα τώρα",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Όροι",
     "footerPrivacy": "Απόρρητο",
@@ -2953,7 +2953,7 @@
     "ctaBody": "Εργασίες, έργα, σημειώσεις και συνήθειες σε ένα ήρεμο μέρος, κοινά με τους ανθρώπους με τους οποίους ζεις και δουλεύεις. Χωρίς server, χωρίς εγκατάσταση.",
     "ctaPrice": "{{monthly}} τον μήνα ή {{annual}} τον χρόνο",
     "ctaGuarantee": "Εγγύηση επιστροφής χρημάτων 14 ημερών",
-    "ctaPrimary": "Ξεκίνα με το tududi Cloud",
+    "ctaPrimary": "Ξεκίνα τώρα",
     "ctaSecondary": "Δες τι περιλαμβάνει",
     "readPost": "Διάβασε το άρθρο",
     "emptyTitle": "Τίποτα ακόμα εδώ",

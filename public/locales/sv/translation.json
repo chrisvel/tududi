@@ -2943,7 +2943,7 @@
   },
   "blog": {
     "nav": "Blogg",
-    "navCta": "Prova tududi Cloud",
+    "navCta": "Kom igång nu",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Villkor",
     "footerPrivacy": "Integritet",
@@ -2952,7 +2952,7 @@
     "ctaBody": "Uppgifter, projekt, anteckningar och vanor på ett lugnt ställe, delade med dem du bor och arbetar med. Ingen server, inget att installera.",
     "ctaPrice": "{{monthly}} i månaden eller {{annual}} om året",
     "ctaGuarantee": "14 dagars pengarna-tillbaka-garanti",
-    "ctaPrimary": "Kom igång med tududi Cloud",
+    "ctaPrimary": "Kom igång nu",
     "ctaSecondary": "Se vad som ingår",
     "readPost": "Läs inlägget",
     "emptyTitle": "Inget här ännu",

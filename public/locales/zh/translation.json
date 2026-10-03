@@ -2942,7 +2942,7 @@
   },
   "blog": {
     "nav": "博客",
-    "navCta": "试用 tududi Cloud",
+    "navCta": "立即开始",
     "footerCloud": "tududi Cloud",
     "footerTerms": "条款",
     "footerPrivacy": "隐私",
@@ -2951,7 +2951,7 @@
     "ctaBody": "任务、项目、笔记和习惯集中在一个安静的地方,与你一起生活和工作的人共享。无需服务器,无需安装。",
     "ctaPrice": "每月 {{monthly}} 或每年 {{annual}}",
     "ctaGuarantee": "14 天退款保证",
-    "ctaPrimary": "开始使用 tududi Cloud",
+    "ctaPrimary": "立即开始",
     "ctaSecondary": "查看包含的内容",
     "readPost": "阅读文章",
     "emptyTitle": "这里还什么都没有",

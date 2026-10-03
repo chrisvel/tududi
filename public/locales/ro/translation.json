@@ -2948,7 +2948,7 @@
   },
   "blog": {
     "nav": "Blog",
-    "navCta": "Încearcă tududi Cloud",
+    "navCta": "Începe acum",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Termeni",
     "footerPrivacy": "Confidențialitate",
@@ -2957,7 +2957,7 @@
     "ctaBody": "Sarcini, proiecte, notițe și obiceiuri într-un loc liniștit, împărtășite cu oamenii cu care locuiești și lucrezi. Fără server, nimic de instalat.",
     "ctaPrice": "{{monthly}} pe lună sau {{annual}} pe an",
     "ctaGuarantee": "Garanție de returnare a banilor 14 zile",
-    "ctaPrimary": "Începe cu tududi Cloud",
+    "ctaPrimary": "Începe acum",
     "ctaSecondary": "Vezi ce include",
     "readPost": "Citește articolul",
     "emptyTitle": "Nimic aici încă",

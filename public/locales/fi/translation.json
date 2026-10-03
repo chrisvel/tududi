@@ -2943,7 +2943,7 @@
   },
   "blog": {
     "nav": "Blogi",
-    "navCta": "Kokeile tududi Cloudia",
+    "navCta": "Aloita nyt",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Ehdot",
     "footerPrivacy": "Tietosuoja",
@@ -2952,7 +2952,7 @@
     "ctaBody": "Tehtävät, projektit, muistiinpanot ja tavat yhdessä rauhallisessa paikassa, jaettuna niiden kanssa, joiden kanssa asut ja teet töitä. Ei palvelinta, ei mitään asennettavaa.",
     "ctaPrice": "{{monthly}} kuukaudessa tai {{annual}} vuodessa",
     "ctaGuarantee": "14 päivän rahat takaisin -takuu",
-    "ctaPrimary": "Aloita tududi Cloudilla",
+    "ctaPrimary": "Aloita nyt",
     "ctaSecondary": "Katso mitä se sisältää",
     "readPost": "Lue kirjoitus",
     "emptyTitle": "Täällä ei ole vielä mitään",

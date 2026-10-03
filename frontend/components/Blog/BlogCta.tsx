@@ -46,7 +46,7 @@ const BlogCta: React.FC<{ links: BlogLinks }> = ({ links }) => {
                     href={links.register}
                     className="inline-flex justify-center px-6 py-3 rounded-full bg-white text-blue-700 font-semibold hover:bg-blue-50"
                 >
-                    {t('blog.ctaPrimary', 'Start with tududi Cloud')}
+                    {t('blog.ctaPrimary', 'Start now')}
                 </a>
                 <a
                     href={links.cloud}

@@ -2943,7 +2943,7 @@
   },
   "blog": {
     "nav": "Blog",
-    "navCta": "Prøv tududi Cloud",
+    "navCta": "Kom i gang nu",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Vilkår",
     "footerPrivacy": "Privatliv",
@@ -2952,7 +2952,7 @@
     "ctaBody": "Opgaver, projekter, noter og vaner ét roligt sted, delt med dem, du bor og arbejder med. Ingen server, intet at installere.",
     "ctaPrice": "{{monthly}} om måneden eller {{annual}} om året",
     "ctaGuarantee": "14 dages pengene-tilbage-garanti",
-    "ctaPrimary": "Kom i gang med tududi Cloud",
+    "ctaPrimary": "Kom i gang nu",
     "ctaSecondary": "Se hvad der er med",
     "readPost": "Læs indlægget",
     "emptyTitle": "Intet her endnu",

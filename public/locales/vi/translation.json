@@ -2942,7 +2942,7 @@
   },
   "blog": {
     "nav": "Blog",
-    "navCta": "Dùng thử tududi Cloud",
+    "navCta": "Bắt đầu ngay",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Điều khoản",
     "footerPrivacy": "Quyền riêng tư",
@@ -2951,7 +2951,7 @@
     "ctaBody": "Công việc, dự án, ghi chú và thói quen ở một nơi yên tĩnh, chia sẻ với những người bạn sống và làm việc cùng. Không cần máy chủ, không cần cài đặt.",
     "ctaPrice": "{{monthly}} mỗi tháng hoặc {{annual}} mỗi năm",
     "ctaGuarantee": "Hoàn tiền trong 14 ngày",
-    "ctaPrimary": "Bắt đầu với tududi Cloud",
+    "ctaPrimary": "Bắt đầu ngay",
     "ctaSecondary": "Xem những gì có trong gói",
     "readPost": "Đọc bài viết",
     "emptyTitle": "Chưa có gì ở đây",

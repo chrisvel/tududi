@@ -2942,7 +2942,7 @@
   },
   "blog": {
     "nav": "블로그",
-    "navCta": "tududi Cloud 사용해 보기",
+    "navCta": "지금 시작하기",
     "footerCloud": "tududi Cloud",
     "footerTerms": "약관",
     "footerPrivacy": "개인정보",
@@ -2951,7 +2951,7 @@
     "ctaBody": "할 일, 프로젝트, 노트, 습관을 하나의 차분한 공간에. 함께 살고 일하는 사람들과 공유하세요. 서버도, 설치도 필요 없습니다.",
     "ctaPrice": "월 {{monthly}} 또는 연 {{annual}}",
     "ctaGuarantee": "14일 환불 보장",
-    "ctaPrimary": "tududi Cloud 시작하기",
+    "ctaPrimary": "지금 시작하기",
     "ctaSecondary": "포함된 기능 보기",
     "readPost": "글 읽기",
     "emptyTitle": "아직 아무것도 없습니다",

@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
-import AdminBlogCard from '../AdminBlogCard';
+import AdminBlogSettings from '../AdminBlogSettings';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -24,10 +24,12 @@ jest.mock('../../../utils/blogService', () => ({
     saveBlogNote: (note: string) => saveBlogNote(note),
 }));
 
+const onClose = jest.fn();
+
 const renderCard = () =>
     render(
         <MemoryRouter>
-            <AdminBlogCard />
+            <AdminBlogSettings onClose={onClose} />
         </MemoryRouter>
     );
 
@@ -36,9 +38,10 @@ const empty = { note_uid: null, note: null, posts: [], blog_url: null };
 beforeEach(() => {
     fetchBlogStatus.mockReset();
     saveBlogNote.mockReset();
+    onClose.mockReset();
 });
 
-describe('AdminBlogCard', () => {
+describe('AdminBlogSettings', () => {
     it('saves a pasted note link and shows the posts it yields', async () => {
         fetchBlogStatus.mockResolvedValue(empty);
         saveBlogNote.mockResolvedValue({
@@ -105,5 +108,20 @@ describe('AdminBlogCard', () => {
         expect(await screen.findByRole('alert')).toHaveTextContent(
             'Pick one of your own notes.'
         );
+    });
+
+    it('closes from the button, the backdrop and Escape', async () => {
+        fetchBlogStatus.mockResolvedValue(empty);
+        renderCard();
+        await screen.findByTestId('admin-blog-input');
+
+        fireEvent.click(screen.getByLabelText('Close'));
+        fireEvent.keyDown(document, { key: 'Escape' });
+        fireEvent.click(screen.getByTestId('admin-blog-settings'));
+        expect(onClose).toHaveBeenCalledTimes(2);
+        fireEvent.click(
+            screen.getByTestId('admin-blog-settings').parentElement!
+        );
+        expect(onClose).toHaveBeenCalledTimes(3);
     });
 });

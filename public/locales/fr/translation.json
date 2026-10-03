@@ -2944,7 +2944,7 @@
   },
   "blog": {
     "nav": "Blog",
-    "navCta": "Essayer tududi Cloud",
+    "navCta": "Commencer maintenant",
     "footerCloud": "tududi Cloud",
     "footerTerms": "Conditions",
     "footerPrivacy": "Confidentialité",
@@ -2953,7 +2953,7 @@
     "ctaBody": "Tâches, projets, notes et habitudes dans un endroit calme, partagés avec les personnes avec qui vous vivez et travaillez. Pas de serveur, rien à installer.",
     "ctaPrice": "{{monthly}} par mois ou {{annual}} par an",
     "ctaGuarantee": "Satisfait ou remboursé pendant 14 jours",
-    "ctaPrimary": "Commencer avec tududi Cloud",
+    "ctaPrimary": "Commencer maintenant",
     "ctaSecondary": "Voir ce qui est inclus",
     "readPost": "Lire l'article",
     "emptyTitle": "Rien pour l'instant",
