@@ -1997,9 +1997,10 @@
       },
       "descriptions": {
         "admin": "Gere contas, funções e grupos, e pode fazer tudo o resto.",
+        "accountAdmin": "Gere os membros, funções e grupos desta conta. Só vê o que é partilhado consigo.",
         "user": "Um membro normal. Trabalha com os seus próprios itens e tudo o que é partilhado com ele.",
         "guest": "Trabalha dentro do que é partilhado com ele ou lhe é atribuído.",
-        "superadmin": "Gere esta instância: todas as contas, faturação, grupos e definições. Os clientes nunca têm esta função; gerem apenas os membros que adicionam."
+        "superadmin": "Gere esta instância: todas as contas, a faturação e as definições. Só existe um; os clientes são administradores da própria conta."
       },
       "capabilities": {
         "createPeople": "Adicionar pessoas",

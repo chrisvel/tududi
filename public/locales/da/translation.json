@@ -1996,9 +1996,10 @@
       },
       "descriptions": {
         "admin": "Administrerer konti, roller og grupper og kan alt andet.",
+        "accountAdmin": "Administrerer kontoens medlemmer, roller og grupper. Ser kun det, der deles med dem.",
         "user": "Et almindeligt medlem. Arbejder med sine egne elementer og alt, der er delt med vedkommende.",
         "guest": "Arbejder inden for det, der er delt med vedkommende eller tildelt vedkommende.",
-        "superadmin": "Driver denne instans: alle konti, fakturering, grupper og indstillinger. Kunder får aldrig denne rolle; de administrerer kun de medlemmer, de tilføjer."
+        "superadmin": "Driver denne instans: alle konti, betaling og indstillinger. Der er kun én; kunder er administratorer af deres egen konto."
       },
       "capabilities": {
         "createPeople": "Tilføje personer",

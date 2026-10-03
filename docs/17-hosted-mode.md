@@ -66,21 +66,43 @@ make it theirs in name only:
 The flag is meaningless when hosted mode is off, so a self-hosted instance
 is never gated. Leave it unset for the usual free-tier-plus-Pro shape.
 
-## Seats: customers add members
+## Accounts: customers are admins of their own
 
-On a hosted instance every customer owns a small workspace. An account that
-signed up by itself (no `created_by_user_id`) gets the `invite_members`
-permission without being an admin, so it can add members from the People
-page: a partner with an email, or a child without one. Members it adds
-cannot add members of their own, so exactly one account pays. The instance
-admin is still the only admin, shown in the app as the **Superadmin**; a
-customer never gets `is_admin`, which would bypass every access check.
-`backend/tests/integration/cloud-superadmin-isolation.test.js` asserts that a
-customer and its members are refused every `/api/admin/*` route and cannot
-read, list, change or remove the superadmin's account or data.
+On a hosted instance every customer owns an **account**
+(`backend/services/accountsService.js`, table `accounts`, `users.account_id`).
+Whoever signs up owns a new account and is an **admin** of it (role
+`account_admin`, shown as "Admin"). Members added to it, by the owner or by
+any other admin of the account, join the same account; a partner with an
+email, or a child without one.
 
-Each member is one more seat. The owner's subscription quantity is the owner
-plus its members (`billing_accounts.seat_quantity`, the provider line item in
+Admins of an account open **Access** (Users, Groups, Roles) and see only their
+own account there. They add and remove members, make a member an admin or
+take that back, set permissions, set a password for a user or guest, and
+manage the account's groups (group names are unique per account, and a group
+only takes and is shared with from its own account). They do not see each
+other's tasks, notes or projects unless those are shared. The owner always
+stays an admin, and no other admin can remove it, change its email or set its
+password. Only the owner manages billing.
+
+The instance admin is the **Superadmin** (`is_admin`), and there is only one:
+making a second is refused, including through an OIDC admin email domain.
+Every other admin page (dashboard, billing, AI usage, feedback, waitlist,
+registration, OIDC) is the superadmin's alone. A customer never gets
+`is_admin`, which would bypass every access check.
+`cloud-superadmin-isolation.test.js` and `cloud-accounts.test.js` check that
+an account admin is refused every superadmin route, never sees another account
+or the superadmin, and that a member who is not an admin is refused Access.
+
+Accounts exist only with hosted mode on. The migration adds the empty table
+and columns everywhere; when a hosted instance starts, every user without an
+account is put into one (members join their creator's account, everyone else
+owns one) and groups join their creator's account. Accounts the superadmin
+creates stand on their own. When an owner's account is deleted its members
+stay and each gets an account of its own.
+
+Each member is one more seat, paid by the account owner whichever admin added
+it. The owner's subscription quantity is the owner plus the other members of
+its account (`billing_accounts.seat_quantity`, the provider line item in
 `provider_subscription_item_id`), kept in line by
 `backend/services/seatsService.js`:
 
@@ -93,12 +115,12 @@ plus its members (`billing_accounts.seat_quantity`, the provider line item in
   failed decrease is logged and corrected by the next sync.
 - **Webhooks**: a new or changed subscription is brought up to the members
   the owner already has, so an owner who resubscribes is billed for them.
-- **Who may add**: only an owner with a subscription, its grace window, or an
-  admin override, and only up to `max_members`. Without one the request
+- **Who may add**: an admin of an account whose owner has a subscription, its
+  grace window, or an admin override, and only up to `max_members`. Without one the request
   answers `402 SUBSCRIPTION_REQUIRED`; past the limit `402
   PLAN_LIMIT_REACHED`.
 
-A member with nothing of its own is covered by its owner: `getEntitlements`
+A member with nothing of its own is covered by its account owner: `getEntitlements`
 returns the owner's plan with `reason: 'seat'` and `seat_owner`. When the
 owner stops paying, its members hit the paywall with it (export stays open).
 Accounts the instance admin creates are not covered this way, since the admin

@@ -1996,9 +1996,10 @@
       },
       "descriptions": {
         "admin": "Quản lý tài khoản, vai trò và nhóm, và có thể làm mọi việc khác.",
+        "accountAdmin": "Quản lý thành viên, vai trò và nhóm của tài khoản này. Chỉ thấy những gì được chia sẻ với họ.",
         "user": "Một thành viên bình thường. Làm việc với các mục của mình và mọi thứ được chia sẻ với họ.",
         "guest": "Làm việc trong phạm vi được chia sẻ hoặc giao cho họ.",
-        "superadmin": "Vận hành máy chủ này: mọi tài khoản, thanh toán, nhóm và cài đặt. Khách hàng không bao giờ có vai trò này; họ chỉ quản lý các thành viên họ thêm vào."
+        "superadmin": "Vận hành phiên bản này: mọi tài khoản, thanh toán và cài đặt. Chỉ có một; khách hàng là quản trị viên tài khoản của chính họ."
       },
       "capabilities": {
         "createPeople": "Thêm người",

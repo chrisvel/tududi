@@ -23,10 +23,10 @@ const entitlements = require('../../services/entitlementsService');
 const { createTestUser } = require('../helpers/testUtils');
 
 // On tududi Cloud the instance admin (the superadmin) and the customers who
-// administer their own workspace must never meet: a workspace owner can add,
-// rename and remove its own members, and nothing else. These tests pin that
-// down from the owner's side, for every admin route and for the superadmin's
-// own data.
+// administer their own account must never meet: an account owner manages its
+// own account (Access: users, roles, groups) and nothing else. These tests pin
+// that down from the owner's side, for every superadmin route and for the
+// superadmin's own data. cloud-accounts.test.js covers the account pages.
 
 const config = getConfig();
 
@@ -67,28 +67,33 @@ const subscribe = (userId) =>
         plan: 'pro',
     });
 
-// Every admin route, with placeholder ids. None of them may answer an owner
-// with anything but a refusal.
-const ADMIN_ROUTES = [
-    ['get', '/api/admin/overview'],
+// The Access routes an account admin may use, scoped to its own account.
+// A member who is not an admin is refused them.
+const ACCOUNT_ROUTES = [
     ['get', '/api/admin/users'],
     ['post', '/api/admin/users'],
     ['put', '/api/admin/users/1'],
     ['delete', '/api/admin/users/1'],
-    ['post', '/api/admin/set-admin-role'],
     ['get', '/api/admin/roles'],
-    ['post', '/api/admin/toggle-registration'],
-    ['get', '/api/admin/oidc-config'],
-    ['put', '/api/admin/oidc-config'],
-    ['get', '/api/admin/waitlist'],
-    ['get', '/api/admin/waitlist/export'],
-    ['delete', '/api/admin/waitlist/1'],
     ['get', '/api/admin/groups'],
     ['post', '/api/admin/groups'],
     ['get', '/api/admin/groups/abc'],
     ['patch', '/api/admin/groups/abc'],
     ['delete', '/api/admin/groups/abc'],
     ['post', '/api/admin/groups/abc/members'],
+];
+
+// Every superadmin route, with placeholder ids. None of them may answer an
+// owner with anything but a refusal.
+const SUPERADMIN_ROUTES = [
+    ['get', '/api/admin/overview'],
+    ['post', '/api/admin/set-admin-role'],
+    ['post', '/api/admin/toggle-registration'],
+    ['get', '/api/admin/oidc-config'],
+    ['put', '/api/admin/oidc-config'],
+    ['get', '/api/admin/waitlist'],
+    ['get', '/api/admin/waitlist/export'],
+    ['delete', '/api/admin/waitlist/1'],
     ['get', '/api/admin/feedback'],
     ['patch', '/api/admin/feedback/1'],
     ['delete', '/api/admin/feedback/1'],
@@ -187,40 +192,59 @@ describe('Cloud: workspace owners never see what the superadmin sees', () => {
         entitlements.invalidate();
     });
 
-    describe('the owner is a workspace admin, not an instance admin', () => {
-        it('is told it is not an admin', async () => {
+    describe('the owner is an account admin, not an instance admin', () => {
+        it('is told it is an admin of its account only', async () => {
             const res = await ownerAgent.get('/api/current_user');
             expect(res.body.user.is_admin).toBe(false);
-            expect(res.body.user.role).toBe('user');
+            expect(res.body.user.role).toBe('account_admin');
             expect(res.body.user.capabilities.invite_members).toBe(true);
         });
 
-        it.each(ADMIN_ROUTES)('is refused %s %s', async (method, path) => {
+        it.each(SUPERADMIN_ROUTES)('is refused %s %s', async (method, path) => {
             const res = await ownerAgent[method](path).send({});
             expect([401, 403, 404]).toContain(res.status);
         });
 
-        it.each(ADMIN_ROUTES)(
-            'refuses %s %s to a member too',
+        it.each([...SUPERADMIN_ROUTES, ...ACCOUNT_ROUTES])(
+            'refuses %s %s to a member who is not an admin',
             async (method, path) => {
                 const res = await memberAgent[method](path).send({});
                 expect([401, 403, 404]).toContain(res.status);
             }
         );
 
-        it('cannot make itself or a member an admin', async () => {
+        it('cannot make itself or a member the superadmin', async () => {
             const asAdmin = await ownerAgent
                 .post('/api/members')
                 .send({ name: 'Sneaky', role: 'admin' });
-            const withPermissions = await ownerAgent.post('/api/members').send({
-                name: 'Sneaky',
-                capabilities: { invite_members: true },
-            });
+            const promoted = await ownerAgent
+                .put(`/api/admin/users/${member.id}`)
+                .send({ role: 'admin' });
+            const self = await ownerAgent
+                .put(`/api/admin/users/${owner.id}`)
+                .send({ role: 'admin' });
 
             expect(asAdmin.status).toBe(403);
-            expect(withPermissions.status).toBe(403);
+            expect(promoted.status).toBe(403);
+            expect(self.status).toBe(403);
             expect(await User.count({ where: { name: 'Sneaky' } })).toBe(0);
             expect(await Role.count({ where: { is_admin: true } })).toBe(1);
+        });
+
+        it('cannot reach the superadmin through the Access page', async () => {
+            const update = await ownerAgent
+                .put(`/api/admin/users/${superadmin.id}`)
+                .send({ name: 'Hijacked' });
+            const remove = await ownerAgent.delete(
+                `/api/admin/users/${superadmin.id}`
+            );
+            const list = await ownerAgent.get('/api/admin/users');
+
+            expect(update.status).toBe(404);
+            expect(remove.status).toBe(404);
+            expect(list.status).toBe(200);
+            expect(JSON.stringify(list.body)).not.toContain(superadmin.email);
+            expect((await User.findByPk(superadmin.id)).name).toBe('Super');
         });
     });
 

@@ -599,6 +599,20 @@ async function startServer() {
         assertHostedConfig();
         billingModule.billingService.validateConfig();
 
+        // A hosted instance puts every customer and its members into an
+        // account (a no-op once done, and on a self-hosted instance).
+        try {
+            const placed =
+                await require('./services/accountsService').backfill();
+            if (placed.users || placed.groups) {
+                console.log(
+                    `Accounts: placed ${placed.users} users and ${placed.groups} groups`
+                );
+            }
+        } catch (error) {
+            console.error('Could not place users into accounts:', error);
+        }
+
         const server = app.listen(config.port, config.host, () => {
             console.log(`Server running on port ${config.port}`);
             console.log(`Server listening on http://localhost:${config.port}`);

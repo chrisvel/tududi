@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const { Op } = require('sequelize');
 const { sequelize, User, Role, MemberSignInLink } = require('../../models');
 const rolesService = require('../../services/rolesService');
+const accounts = require('../../services/accountsService');
 const { destroyUserSessions } = require('../../services/sessionService');
 const { getConfig } = require('../../config/config');
 const {
@@ -41,12 +42,13 @@ const withinPermissionsOf = (actorCapabilities, targetCapabilities) =>
             !targetCapabilities[capability] || actorCapabilities[capability]
     );
 
-// Can this actor manage links for this account at all: an admin, or whoever
-// created it. Anyone else is told the account does not exist, so account ids
-// cannot be probed.
-function assertMayManage(actorId, target, actorIsAdmin) {
+// Can this actor manage links for this account at all: an admin, whoever
+// created it, or an admin of the hosted account it belongs to. Anyone else is
+// told the account does not exist, so account ids cannot be probed.
+function assertMayManage(actorId, target, actorIsAdmin, managed = false) {
     const mayManage =
         actorIsAdmin ||
+        managed ||
         (target &&
             target.created_by_user_id != null &&
             target.created_by_user_id === actorId);
@@ -68,14 +70,15 @@ function assertEligible(target, targetIsAdmin) {
 
 class SignInLinkService {
     async create(actorId, targetId) {
-        const [actorRole, target, targetRole] = await Promise.all([
+        const [actorRole, target, targetRole, managed] = await Promise.all([
             Role.findOne({ where: { user_id: actorId } }),
             User.findByPk(targetId),
             Role.findOne({ where: { user_id: targetId } }),
+            accounts.managesUser(actorId, targetId),
         ]);
         const actorIsAdmin = Boolean(actorRole && actorRole.is_admin);
 
-        assertMayManage(actorId, target, actorIsAdmin);
+        assertMayManage(actorId, target, actorIsAdmin, managed);
         assertEligible(target, Boolean(targetRole && targetRole.is_admin));
         if (
             !actorIsAdmin &&
@@ -136,11 +139,12 @@ class SignInLinkService {
     // Removes the member's live link and signs them out everywhere, so access
     // can be taken back at any time.
     async revoke(actorId, targetId) {
-        const [actorRole, target] = await Promise.all([
+        const [actorRole, target, managed] = await Promise.all([
             Role.findOne({ where: { user_id: actorId } }),
             User.findByPk(targetId),
+            accounts.managesUser(actorId, targetId),
         ]);
-        assertMayManage(actorId, target, Boolean(actorRole?.is_admin));
+        assertMayManage(actorId, target, Boolean(actorRole?.is_admin), managed);
 
         await MemberSignInLink.destroy({ where: { user_id: target.id } });
         await destroyUserSessions(target.id);
@@ -211,7 +215,7 @@ class SignInLinkService {
         );
         if (ids.length === 0) return new Set();
 
-        const [actorRole, targets, targetRoles] = await Promise.all([
+        const [actorRole, targets, targetRoles, managed] = await Promise.all([
             Role.findOne({ where: { user_id: actorId } }),
             User.findAll({
                 where: { id: { [Op.in]: ids } },
@@ -219,6 +223,7 @@ class SignInLinkService {
                 raw: true,
             }),
             Role.findAll({ where: { user_id: { [Op.in]: ids } } }),
+            accounts.managedUserIds(actorId),
         ]);
         const actorIsAdmin = Boolean(actorRole && actorRole.is_admin);
         const actorCapabilities = capabilitiesOf(actorRole).capabilities;
@@ -229,7 +234,12 @@ class SignInLinkService {
             const targetRole = roleOf.get(target.id);
             if (target.email || (targetRole && targetRole.is_admin)) continue;
             if (!actorIsAdmin) {
-                if (target.created_by_user_id !== actorId) continue;
+                if (
+                    target.created_by_user_id !== actorId &&
+                    !managed.has(target.id)
+                ) {
+                    continue;
+                }
                 if (
                     !withinPermissionsOf(
                         actorCapabilities,

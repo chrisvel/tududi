@@ -1996,9 +1996,10 @@
       },
       "descriptions": {
         "admin": "Hesapları, rolleri ve grupları yönetir ve diğer her şeyi yapabilir.",
+        "accountAdmin": "Bu hesabın üyelerini, rollerini ve gruplarını yönetir. Yalnızca kendisiyle paylaşılanları görür.",
         "user": "Normal bir üye. Kendi öğeleriyle ve kendisiyle paylaşılan her şeyle çalışır.",
         "guest": "Kendisiyle paylaşılan veya kendisine atanan öğelerin içinde çalışır.",
-        "superadmin": "Bu kurulumu yönetir: tüm hesaplar, faturalandırma, gruplar ve ayarlar. Müşteriler bu rolü asla almaz; yalnızca ekledikleri üyeleri yönetirler."
+        "superadmin": "Bu örneği yönetir: tüm hesaplar, faturalandırma ve ayarlar. Yalnızca bir tane vardır; müşteriler kendi hesaplarının yöneticisidir."
       },
       "capabilities": {
         "createPeople": "Kişi ekleme",

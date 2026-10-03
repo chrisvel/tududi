@@ -298,10 +298,15 @@ const Navbar: React.FC<NavbarProps> = ({
                                             {t('navigation.admin', 'Admin')}
                                         </span>
                                         <span className="ml-3 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
-                                            {t(
-                                                'navigation.adminBadge',
-                                                'Admin'
-                                            )}
+                                            {featureFlags.hosted
+                                                ? t(
+                                                      'admin.roles.names.superadmin',
+                                                      'Superadmin'
+                                                  )
+                                                : t(
+                                                      'navigation.adminBadge',
+                                                      'Admin'
+                                                  )}
                                         </span>
                                     </Link>
                                 )}

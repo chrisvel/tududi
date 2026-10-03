@@ -1997,9 +1997,10 @@
       },
       "descriptions": {
         "admin": "Gestisce account, ruoli e gruppi e può fare tutto il resto.",
+        "accountAdmin": "Gestisce membri, ruoli e gruppi di questo account. Vede solo ciò che viene condiviso con lui.",
         "user": "Un membro normale. Lavora con i propri elementi e con tutto ciò che è condiviso con lui.",
         "guest": "Lavora all'interno di ciò che è condiviso con lui o che gli è assegnato.",
-        "superadmin": "Gestisce questa istanza: tutti gli account, la fatturazione, i gruppi e le impostazioni. I clienti non hanno mai questo ruolo; gestiscono solo i membri che aggiungono."
+        "superadmin": "Gestisce questa istanza: tutti gli account, la fatturazione e le impostazioni. Ce n'è uno solo; i clienti sono amministratori del proprio account."
       },
       "capabilities": {
         "createPeople": "Aggiungere persone",

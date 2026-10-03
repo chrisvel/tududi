@@ -1996,9 +1996,10 @@
       },
       "descriptions": {
         "admin": "Mengelola akun, peran, dan grup, dan dapat melakukan hal lainnya.",
+        "accountAdmin": "Mengelola anggota, peran, dan grup akun ini. Hanya melihat apa yang dibagikan kepadanya.",
         "user": "Anggota biasa. Bekerja dengan item miliknya sendiri dan semua yang dibagikan dengannya.",
         "guest": "Bekerja di dalam apa yang dibagikan dengannya atau ditugaskan kepadanya.",
-        "superadmin": "Mengelola instans ini: semua akun, penagihan, grup, dan pengaturan. Pelanggan tidak pernah mendapat peran ini; mereka hanya mengelola anggota yang mereka tambahkan."
+        "superadmin": "Menjalankan instans ini: semua akun, penagihan, dan pengaturan. Hanya ada satu; pelanggan adalah admin akun mereka sendiri."
       },
       "capabilities": {
         "createPeople": "Menambah orang",

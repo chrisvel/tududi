@@ -1998,9 +1998,10 @@
       },
       "descriptions": {
         "admin": "Upravlja račune, vloge in skupine ter lahko počne vse drugo.",
+        "accountAdmin": "Upravlja člane, vloge in skupine tega računa. Vidi samo tisto, kar je deljeno z njim.",
         "user": "Navaden član. Dela z lastnimi elementi in vsem, kar je deljeno z njim.",
         "guest": "Dela znotraj tistega, kar je deljeno z njim ali mu dodeljeno.",
-        "superadmin": "Upravlja ta strežnik: vse račune, plačila, skupine in nastavitve. Stranke te vloge nikoli ne dobijo; upravljajo le člane, ki jih dodajo."
+        "superadmin": "Upravlja to namestitev: vse račune, obračun in nastavitve. Obstaja samo eden; stranke so skrbniki svojega računa."
       },
       "capabilities": {
         "createPeople": "Dodajanje oseb",

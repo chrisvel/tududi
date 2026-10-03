@@ -44,6 +44,7 @@ const SubscriptionRequired = lazy(
     () => import('./components/Billing/SubscriptionRequired')
 );
 import { User } from './entities/User';
+import { canOpenAccess } from './entities/Role';
 import TodayPage from './components/DailyPlan/TodayPage';
 import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
@@ -667,7 +668,7 @@ const App: React.FC = () => {
                             <Route
                                 path="/admin/users"
                                 element={
-                                    currentUser?.is_admin === true ? (
+                                    canOpenAccess(currentUser) ? (
                                         <React.Suspense
                                             fallback={
                                                 <div className="p-4">

@@ -1999,9 +1999,10 @@
       },
       "descriptions": {
         "admin": "Gestionează conturi, roluri și grupuri și poate face orice altceva.",
+        "accountAdmin": "Gestionează membrii, rolurile și grupurile acestui cont. Vede doar ce i se partajează.",
         "user": "Un membru obișnuit. Lucrează cu elementele proprii și cu tot ce este partajat cu el.",
         "guest": "Lucrează în cadrul a ceea ce este partajat cu el sau i-a fost atribuit.",
-        "superadmin": "Administrează această instanță: toate conturile, facturarea, grupurile și setările. Clienții nu primesc niciodată acest rol; ei gestionează doar membrii pe care îi adaugă."
+        "superadmin": "Administrează această instanță: toate conturile, facturarea și setările. Există unul singur; clienții sunt administratori ai propriului cont."
       },
       "capabilities": {
         "createPeople": "Adăugarea de persoane",
