@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Pilihan cookie",
-    "body": "Kami ingin memakai Google Analytics untuk menghitung kunjungan ke situs ini. Layanan ini memasang cookie, jadi hanya berjalan jika Anda mengizinkannya. Aplikasi tududi sendiri tidak memiliki pelacakan.",
-    "accept": "Izinkan analitik",
-    "decline": "Tidak, terima kasih"
+    "body": "Kami menggunakan cookie untuk meningkatkan pengalaman Anda di situs ini. Cookie hanya dipasang jika Anda menerimanya.",
+    "accept": "Terima",
+    "decline": "Tolak"
   },
   "js": {
     "showFewer": "Tampilkan lebih sedikit",

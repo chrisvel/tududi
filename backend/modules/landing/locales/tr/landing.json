@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Çerez tercihi",
-    "body": "Bu web sitesine yapılan ziyaretleri saymak için Google Analytics kullanmak istiyoruz. Çerez yerleştirdiği için yalnızca izin verirsen çalışır. tududi uygulamasının kendisinde hiçbir izleme yoktur.",
-    "accept": "Analize izin ver",
-    "decline": "Hayır, teşekkürler"
+    "body": "Bu web sitesindeki deneyimini iyileştirmek için çerez kullanıyoruz. Çerezler yalnızca kabul edersen yerleştirilir.",
+    "accept": "Kabul et",
+    "decline": "Reddet"
   },
   "js": {
     "showFewer": "Daha az göster",

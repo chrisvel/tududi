@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Informasjonskapselvalg",
-    "body": "Vi vil gjerne bruke Google Analytics til å telle besøk på dette nettstedet. Det setter informasjonskapsler, så det kjører bare hvis du tillater det. Selve tududi-appen har ingen sporing.",
-    "accept": "Tillat statistikk",
-    "decline": "Nei takk"
+    "body": "Vi bruker informasjonskapsler for å forbedre opplevelsen din på dette nettstedet. De settes bare hvis du godtar dem.",
+    "accept": "Godta",
+    "decline": "Avslå"
   },
   "js": {
     "showFewer": "Vis færre",

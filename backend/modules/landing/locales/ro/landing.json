@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Alegerea cookie-urilor",
-    "body": "Am dori să folosim Google Analytics pentru a număra vizitele pe acest site. Setează cookie-uri, așa că rulează doar dacă îți dai acordul. Aplicația tududi în sine nu conține nicio urmărire.",
-    "accept": "Permite statisticile",
-    "decline": "Nu, mulțumesc"
+    "body": "Folosim cookie-uri pentru a-ți îmbunătăți experiența pe acest site. Sunt setate doar dacă le accepți.",
+    "accept": "Accept",
+    "decline": "Refuz"
   },
   "js": {
     "showFewer": "Arată mai puține",

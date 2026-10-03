@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Cookiekeuze",
-    "body": "We willen Google Analytics gebruiken om bezoeken aan deze website te tellen. Het plaatst cookies, dus het draait alleen als je dat toestaat. De tududi-app zelf bevat geen tracking.",
-    "accept": "Statistieken toestaan",
-    "decline": "Nee, bedankt"
+    "body": "We gebruiken cookies om je ervaring op deze website te verbeteren. Ze worden alleen geplaatst als je ze accepteert.",
+    "accept": "Accepteren",
+    "decline": "Weigeren"
   },
   "js": {
     "showFewer": "Minder tonen",

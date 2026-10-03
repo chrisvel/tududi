@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Izbira piškotkov",
-    "body": "Radi bi uporabljali Google Analytics za štetje obiskov tega spletnega mesta. Nastavlja piškotke, zato deluje le, če to dovolite. Sama aplikacija tududi nima nobenega sledenja.",
-    "accept": "Dovoli analitiko",
-    "decline": "Ne, hvala"
+    "body": "Piškotke uporabljamo za boljšo izkušnjo na tem spletnem mestu. Nastavijo se le, če jih sprejmete.",
+    "accept": "Sprejmi",
+    "decline": "Zavrni"
   },
   "js": {
     "showFewer": "Pokaži manj",

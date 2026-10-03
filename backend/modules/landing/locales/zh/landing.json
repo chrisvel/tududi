@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Cookie 选择",
-    "body": "我们希望使用 Google Analytics 统计本网站的访问量。它会设置 Cookie，因此只有在你允许时才会运行。tududi 应用本身没有任何追踪。",
-    "accept": "允许统计",
-    "decline": "不用了"
+    "body": "我们使用 Cookie 来改善你在本网站的体验。只有在你接受后才会设置 Cookie。",
+    "accept": "接受",
+    "decline": "拒绝"
   },
   "js": {
     "showFewer": "收起",

@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Lựa chọn cookie",
-    "body": "Chúng tôi muốn dùng Google Analytics để đếm lượt truy cập trang web này. Công cụ này đặt cookie nên chỉ chạy khi bạn cho phép. Bản thân ứng dụng tududi không có bất kỳ theo dõi nào.",
-    "accept": "Cho phép thống kê",
-    "decline": "Không, cảm ơn"
+    "body": "Chúng tôi dùng cookie để cải thiện trải nghiệm của bạn trên trang web này. Cookie chỉ được đặt khi bạn đồng ý.",
+    "accept": "Chấp nhận",
+    "decline": "Từ chối"
   },
   "js": {
     "showFewer": "Thu gọn",

@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Choix des cookies",
-    "body": "Nous aimerions utiliser Google Analytics pour compter les visites sur ce site. Il dépose des cookies, il ne fonctionne donc que si vous l'acceptez. L'application tududi elle-même ne contient aucun suivi.",
-    "accept": "Autoriser les statistiques",
-    "decline": "Non merci"
+    "body": "Nous utilisons des cookies pour améliorer votre expérience sur ce site. Ils ne sont déposés que si vous les acceptez.",
+    "accept": "Accepter",
+    "decline": "Refuser"
   },
   "js": {
     "showFewer": "Afficher moins",

@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Evästevalinta",
-    "body": "Haluaisimme käyttää Google Analyticsia tämän sivuston käyntien laskemiseen. Se asettaa evästeitä, joten se on käytössä vain, jos sallit sen. Itse tududi-sovelluksessa ei ole seurantaa.",
-    "accept": "Salli analytiikka",
-    "decline": "Ei kiitos"
+    "body": "Käytämme evästeitä parantaaksemme kokemustasi tällä sivustolla. Ne asetetaan vain, jos hyväksyt ne.",
+    "accept": "Hyväksy",
+    "decline": "Hylkää"
   },
   "js": {
     "showFewer": "Näytä vähemmän",

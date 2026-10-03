@@ -336,9 +336,9 @@
   },
   "consent": {
     "label": "Cookie の選択",
-    "body": "このサイトへの訪問数を数えるために Google Analytics を使いたいと考えています。Cookie を設定するため、許可した場合にのみ動作します。tududi アプリ自体にはトラッキングはありません。",
-    "accept": "解析を許可",
-    "decline": "許可しない"
+    "body": "このサイトでの体験を向上させるために Cookie を使用しています。Cookie は同意した場合にのみ設定されます。",
+    "accept": "同意する",
+    "decline": "拒否する"
   },
   "js": {
     "showFewer": "表示を減らす",
