@@ -33,6 +33,22 @@ function parseETag(etagHeader) {
     return etagHeader.replace(/^["']|["']$/g, '');
 }
 
+// If-Match takes entity-tags, and the quotes are part of the tag (RFC 9110
+// 8.8.3). ETags are stored without them, so add them back for the header. A
+// weak tag is left as it is: it keeps its W/ prefix and never matches a
+// strong comparison.
+function formatEntityTag(etag) {
+    if (!etag) {
+        return null;
+    }
+
+    if (/^W\//i.test(etag)) {
+        return etag;
+    }
+
+    return `"${parseETag(etag)}"`;
+}
+
 function matchesETag(etag1, etag2) {
     if (!etag1 || !etag2) {
         return false;
@@ -48,5 +64,6 @@ module.exports = {
     generateETag,
     generateCTag,
     parseETag,
+    formatEntityTag,
     matchesETag,
 };

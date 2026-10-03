@@ -7,6 +7,7 @@ const RemoteCalendarRepository = require('../repositories/remote-calendar-reposi
 const { serializeTaskToVTODO } = require('../icalendar/vtodo-serializer');
 const encryptionService = require('../services/encryption-service');
 const { buildRemoteTaskUrl, normalizeHref } = require('../utils/href-utils');
+const { formatEntityTag } = require('../utils/etag-generator');
 
 class PushPhase {
     async execute(calendar, userId, options = {}) {
@@ -171,7 +172,7 @@ class PushPhase {
             };
 
             if (syncState?.etag) {
-                headers['If-Match'] = syncState.etag;
+                headers['If-Match'] = formatEntityTag(syncState.etag);
             }
 
             const response = await safeRequest({
