@@ -1993,12 +1993,14 @@
       "names": {
         "admin": "Admin",
         "user": "Użytkownik",
-        "guest": "Gość"
+        "guest": "Gość",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Zarządza kontami, rolami i grupami i może robić wszystko inne.",
         "user": "Zwykły członek. Pracuje na własnych elementach i na wszystkim, co jest mu udostępnione.",
-        "guest": "Pracuje w tym, co jest mu udostępnione lub przypisane."
+        "guest": "Pracuje w tym, co jest mu udostępnione lub przypisane.",
+        "superadmin": "Zarządza tą instancją: wszystkimi kontami, rozliczeniami, grupami i ustawieniami. Klienci nigdy nie dostają tej roli; zarządzają tylko członkami, których dodali."
       },
       "capabilities": {
         "createPeople": "Dodawanie osób",
@@ -2511,7 +2513,10 @@
       "telegram": "bot Telegram",
       "backups_import": "import kopii zapasowych",
       "attachments": "załączniki"
-    }
+    },
+    "seatCovered": "Twoje miejsce opłaca {{name}}.",
+    "workspaceOwner": "właściciel obszaru roboczego",
+    "seats": "Miejsca w Twojej subskrypcji: {{count}} (Ty i jeszcze {{members}})."
   },
   "subscription": {
     "title": "Subskrypcja",
@@ -2596,7 +2601,18 @@
     "add": "Dodaj członka",
     "giveAccount": "Nadaj konto",
     "nameRequiredWithoutEmail": "Wpisz imię, gdy nie ma e-maila",
-    "failedToAdd": "Nie udało się dodać członka"
+    "failedToAdd": "Nie udało się dodać członka",
+    "seatNote": "Każdy członek to jedno miejsce więcej w Twojej subskrypcji. Zmiana jest rozliczana proporcjonalnie na następnej fakturze, a usunięcie członka zwalnia miejsce.",
+    "editTitle": "Edytuj członka",
+    "nameRequired": "Wpisz imię",
+    "failedToUpdate": "Nie udało się zaktualizować członka",
+    "addEmailHint": "Dodanie adresu e-mail wyśle zaproszenie do ustawienia hasła. Nie można go później zmienić.",
+    "remove": "Usuń członka",
+    "removeConfirm": "Usunąć {{name}}? Konto i cała jego zawartość zostaną usunięte, tej operacji nie można cofnąć. W tududi Cloud miejsce zostanie usunięte z Twojej subskrypcji.",
+    "removed": "Członek usunięty",
+    "updated": "Członek zaktualizowany",
+    "invitationSent": "Zaproszenie wysłane",
+    "failedToRemove": "Nie udało się usunąć członka"
   },
   "signInLink": {
     "action": "Link do logowania",

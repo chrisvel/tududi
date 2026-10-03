@@ -17,6 +17,9 @@ export interface Person {
     can_edit?: boolean;
     account_status?: 'active' | 'invited' | 'no_sign_in';
     can_sign_in_link?: boolean;
+    // A member the viewer created (or any member, for an admin): it may be
+    // renamed, given an email or removed.
+    can_manage?: boolean;
     created_at?: string;
     updated_at?: string;
 }

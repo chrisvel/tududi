@@ -1,8 +1,15 @@
 'use strict';
 
-const { sequelize, User, Person } = require('../../models');
+const { Op } = require('sequelize');
+const { sequelize, User, Person, Role } = require('../../models');
 const rolesService = require('../../services/rolesService');
-const { validateCreateUser } = require('../admin/validation');
+const seats = require('../../services/seatsService');
+const { eraseUserAccount } = require('../../services/accountErasureService');
+const {
+    validateCreateUser,
+    validateEmail,
+    validatePersonName,
+} = require('../admin/validation');
 const { accountStatusOf } = require('../admin/accountStatus');
 const {
     getDefaultNotificationPreferences,
@@ -35,6 +42,29 @@ async function findContactToConvert(actorId, personUid) {
         throw new ConflictError('That person already has an account');
     }
     return person;
+}
+
+// The member an actor may change: one it created, or any account for an
+// admin, never the actor itself and never an admin. Anyone else is told the
+// member does not exist, so account ids cannot be probed.
+async function findManagedMember(actorId, memberId) {
+    const [actorIsAdmin, target, targetRole] = await Promise.all([
+        rolesService.isAdmin(actorId),
+        User.findByPk(memberId),
+        Role.findOne({ where: { user_id: memberId } }),
+    ]);
+    const mayManage =
+        actorIsAdmin ||
+        (target &&
+            target.created_by_user_id != null &&
+            target.created_by_user_id === actorId);
+    if (!target || target.id === actorId || !mayManage) {
+        throw new NotFoundError('Member not found');
+    }
+    if (targetRole && targetRole.is_admin) {
+        throw new ForbiddenError('An admin cannot be changed here');
+    }
+    return target;
 }
 
 function assertMayGrant(actorIsAdmin, { role, capabilities }) {
@@ -101,6 +131,10 @@ class MembersService {
         if (name) userData.name = name;
         if (surname) userData.surname = surname;
 
+        // On a hosted instance the member is a paid seat: it is added to the
+        // owner's subscription first, so a refused payment creates nothing.
+        if (!actorIsAdmin) await seats.addSeat(actorId);
+
         let user;
         let person;
         try {
@@ -151,6 +185,7 @@ class MembersService {
                 }
             });
         } catch (err) {
+            if (!actorIsAdmin) await seats.reconcile(actorId);
             if (err?.name === 'SequelizeUniqueConstraintError') {
                 throw new ConflictError('Email already exists');
             }
@@ -178,6 +213,93 @@ class MembersService {
             verification_requested: verify,
             email_sent: emailSent,
         };
+    }
+
+    // Renames a member, or gives a member without an email one, which sends
+    // them an invitation. An email that is already set cannot be changed
+    // here: that would let whoever made the account take over its sign-in.
+    async updateMember(actorId, memberId, body) {
+        const member = await findManagedMember(actorId, memberId);
+        const { name, surname, email } = body || {};
+
+        if (name !== undefined) member.name = validatePersonName(name, 'Name');
+        if (surname !== undefined) {
+            member.surname = validatePersonName(surname, 'Surname');
+        }
+
+        let invite = false;
+        if (email !== undefined && email !== null && String(email).trim()) {
+            if (member.email) {
+                throw new ForbiddenError(
+                    'This member already has an email address'
+                );
+            }
+            member.email = validateEmail(String(email).trim().toLowerCase());
+            member.email_verified = false;
+            invite = true;
+        }
+
+        try {
+            await member.save();
+        } catch (err) {
+            if (err?.name === 'SequelizeUniqueConstraintError') {
+                throw new ConflictError('Email already exists');
+            }
+            throw err;
+        }
+
+        const emailSent = invite
+            ? await this.sendEmails(member, { verify: false, invite: true })
+            : false;
+
+        return {
+            id: member.id,
+            email: member.email ?? null,
+            name: member.name,
+            surname: member.surname,
+            account_status: accountStatusOf(member),
+            invited: invite,
+            email_sent: emailSent,
+        };
+    }
+
+    // Which of these accounts the actor may rename or remove: the ones it
+    // created, or any for an admin, never an admin and never itself.
+    async manageableAccountIds(actorId, accountIds) {
+        const ids = Array.from(new Set(accountIds)).filter(
+            (id) => id && id !== actorId
+        );
+        if (ids.length === 0) return new Set();
+
+        const [actorIsAdmin, targets, adminRoles] = await Promise.all([
+            rolesService.isAdmin(actorId),
+            User.findAll({
+                where: { id: { [Op.in]: ids } },
+                attributes: ['id', 'created_by_user_id'],
+                raw: true,
+            }),
+            Role.findAll({
+                where: { user_id: { [Op.in]: ids }, is_admin: true },
+                attributes: ['user_id'],
+                raw: true,
+            }),
+        ]);
+        const admins = new Set(adminRoles.map((row) => row.user_id));
+        return new Set(
+            targets
+                .filter((t) => !admins.has(t.id))
+                .filter((t) => actorIsAdmin || t.created_by_user_id === actorId)
+                .map((t) => t.id)
+        );
+    }
+
+    // Deletes a member's account and everything in it, then gives the seat
+    // back on the owner's subscription.
+    async removeMember(actorId, memberId) {
+        const member = await findManagedMember(actorId, memberId);
+        const ownerId = member.created_by_user_id;
+        await eraseUserAccount(member.id);
+        if (ownerId != null) await seats.reconcile(ownerId);
     }
 
     async sendEmails(user, { verify, invite }) {

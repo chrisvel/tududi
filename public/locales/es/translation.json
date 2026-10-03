@@ -1979,12 +1979,14 @@
       "names": {
         "admin": "Admin",
         "user": "Usuario",
-        "guest": "Invitado"
+        "guest": "Invitado",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Gestiona cuentas, roles y grupos, y puede hacer todo lo demás.",
         "user": "Un miembro normal. Trabaja con sus propios elementos y con todo lo que se comparte con él.",
-        "guest": "Trabaja dentro de lo que se comparte con él o se le asigna."
+        "guest": "Trabaja dentro de lo que se comparte con él o se le asigna.",
+        "superadmin": "Gestiona esta instancia: todas las cuentas, la facturación, los grupos y los ajustes. Los clientes nunca tienen este rol; solo gestionan los miembros que añaden."
       },
       "capabilities": {
         "createPeople": "Añadir personas",
@@ -2495,7 +2497,10 @@
       "telegram": "el bot de Telegram",
       "backups_import": "la importación de copias",
       "attachments": "los adjuntos"
-    }
+    },
+    "seatCovered": "Tu plaza la paga {{name}}.",
+    "workspaceOwner": "la persona propietaria del espacio de trabajo",
+    "seats": "{{count}} plazas en tu suscripción: tú y {{members}} más."
   },
   "subscription": {
     "title": "Suscripción",
@@ -2580,7 +2585,18 @@
     "add": "Añadir miembro",
     "giveAccount": "Dar cuenta",
     "nameRequiredWithoutEmail": "Escribe un nombre cuando no hay correo",
-    "failedToAdd": "No se pudo añadir el miembro"
+    "failedToAdd": "No se pudo añadir el miembro",
+    "seatNote": "Cada miembro es una plaza más en tu suscripción. El cambio se prorratea en tu próxima factura, y al quitar a un miembro se libera la plaza.",
+    "editTitle": "Editar miembro",
+    "nameRequired": "Escribe un nombre",
+    "failedToUpdate": "No se pudo actualizar el miembro",
+    "addEmailHint": "Al añadir un correo se le envía una invitación para crear una contraseña. Después no se puede cambiar.",
+    "remove": "Quitar miembro",
+    "removeConfirm": "¿Quitar a {{name}}? Se eliminan su cuenta y todo su contenido, y no se puede deshacer. En tududi Cloud su plaza se retira de tu suscripción.",
+    "removed": "Miembro quitado",
+    "updated": "Miembro actualizado",
+    "invitationSent": "Invitación enviada",
+    "failedToRemove": "No se pudo quitar el miembro"
   },
   "signInLink": {
     "action": "Enlace de acceso",

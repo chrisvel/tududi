@@ -244,7 +244,7 @@
     "title": "Chọn cách bạn dùng tududi",
     "mostPopular": "ĐƯỢC CHỌN NHẤT",
     "earlyBird": "ƯU ĐÃI SỚM",
-    "perYear": "/năm",
+    "perYear": "/năm mỗi người",
     "plans": {
       "selfHosted": {
         "action": "Đọc hướng dẫn tự lưu trữ →",
@@ -266,6 +266,7 @@
         "features": [
           "Hoạt động trong một phút, không cần máy chủ để thiết lập",
           "Nhiệm vụ, dự án và ghi chú không giới hạn, cộng với tệp đính kèm",
+          "Thêm người thân hoặc đồng đội, mỗi người là một chỗ với cùng mức giá",
           "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
           "Các bản cập nhật và sao lưu hàng ngày được xử lý cho bạn, với {{proStorageGb}} GB dung lượng lưu trữ",
           "Xuất mọi thứ bất cứ lúc nào, tự xóa tài khoản của mình"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 14 ngày, không cần lý do.",
-    "perMonth": "/tháng",
+    "perMonth": "/tháng mỗi người",
     "sub": "Một gói được lưu trữ, hoặc tự chạy nó nếu bạn thích tự xử lý vận hành hơn."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Không. Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm, và đó là toàn bộ bảng giá: không có mức miễn phí, không có đồng hồ thử nghiệm, không có thẻ bị tính phí cho thứ mà sau này lặng lẽ bắt đầu tính tiền. Có bảo đảm hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn, và có một bản demo trực tiếp trên trang này nếu bạn muốn xem trước. Cách miễn phí để dùng tududi là chạy nó trên máy chủ riêng của bạn, đó là cùng một ứng dụng.",
+        "a": "Không. Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm cho mỗi người, và đó là toàn bộ bảng giá: không có mức miễn phí, không có đồng hồ thử nghiệm, không có thẻ bị tính phí cho thứ mà sau này lặng lẽ bắt đầu tính tiền. Có bảo đảm hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn, và có một bản demo trực tiếp trên trang này nếu bạn muốn xem trước. Cách miễn phí để dùng tududi là chạy nó trên máy chủ riêng của bạn, đó là cùng một ứng dụng.",
         "q": "Có gói miễn phí hoặc bản thử nghiệm nào trên tududi Cloud không?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Bắt đầu",
     "includes": [
       "Nhiệm vụ, dự án và ghi chú không giới hạn",
+      "Thêm người thân hoặc đồng đội, mỗi người là một chỗ với cùng mức giá",
       "Tệp đính kèm và tải lên tệp",
       "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
       "Sao lưu hàng ngày và cập nhật được quản lý",

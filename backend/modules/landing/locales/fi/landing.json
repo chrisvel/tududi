@@ -244,7 +244,7 @@
     "title": "Valitse miten käytät tududia",
     "mostPopular": "SUOSITUIN",
     "earlyBird": "ENNAKKOHINTA",
-    "perYear": "/vuosi",
+    "perYear": "/vuosi per henkilö",
     "plans": {
       "selfHosted": {
         "action": "Lue itse ylläpidon opas →",
@@ -266,6 +266,7 @@
         "features": [
           "Käynnissä minuutissa, ei palvelinta pystytettäväksi",
           "Rajattomat tehtävät, projektit ja muistiinpanot, plus liitteet",
+          "Lisää perheenjäseniä tai työkavereita, jokainen paikka samaan hintaan",
           "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
           "Päivitykset ja päivittäiset varmuuskopiot hoidettuna puolestasi, ja {{proStorageGb}} GB tallennustilaa",
           "Vie kaikki milloin tahansa, poista tilisi itse"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 14 päivän rahat takaisin -takuu, ilman kysymyksiä.",
-    "perMonth": "/kk",
+    "perMonth": "/kk per henkilö",
     "sub": "Yksi isännöity paketti, tai aja sitä itse, jos haluat mieluummin hoitaa ylläpidon."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Ei. Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa, ja se on koko hinnasto: ei ilmaistasoa, ei kokeiluaikaa, ei korttia veloitettuna jostain, joka alkaa hiljaa laskuttaa myöhemmin. Tarjolla on 14 päivän rahat takaisin -takuu, jos se ei osoittaudu sopivaksi, ja tällä sivulla on live-demo, jos haluat vilkaista ensin. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimellasi, joka on samat sovellus.",
+        "a": "Ei. Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa henkilöltä, ja se on koko hinnasto: ei ilmaistasoa, ei kokeiluaikaa, ei korttia veloitettuna jostain, joka alkaa hiljaa laskuttaa myöhemmin. Tarjolla on 14 päivän rahat takaisin -takuu, jos se ei osoittaudu sopivaksi, ja tällä sivulla on live-demo, jos haluat vilkaista ensin. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimellasi, joka on samat sovellus.",
         "q": "Onko tududi Cloudissa ilmaistaso tai kokeilua?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Aloita",
     "includes": [
       "Rajattomat tehtävät, projektit ja muistiinpanot",
+      "Lisää perheenjäseniä tai työkavereita, jokainen paikka samaan hintaan",
       "Liitteet ja tiedostojen lataus",
       "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
       "Päivittäiset varmuuskopiot ja hallitut päivitykset",

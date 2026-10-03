@@ -107,6 +107,47 @@ function subscriptionToAccountFields(resource) {
         trial_ends_at: toDate(a.trial_ends_at),
         cancel_at_period_end: !!a.cancelled && !terminal,
         canceled_at: ending ? toDate(a.updated_at) || new Date() : null,
+        ...seatFields(a.first_subscription_item),
+    };
+}
+
+// The subscription's line item, whose quantity is the number of paid seats.
+// Left out when the payload has none, so an older stored value survives.
+function seatFields(item) {
+    if (!item || item.id == null) return {};
+    return {
+        provider_subscription_item_id: String(item.id),
+        seat_quantity: Number.isInteger(item.quantity) ? item.quantity : 1,
+    };
+}
+
+// Sets the number of paid seats. Lemon Squeezy prorates the change onto the
+// next invoice, so nothing is charged at the moment a member is added.
+async function updateSeats({ account, quantity }) {
+    let itemId = account.provider_subscription_item_id;
+    if (!itemId && account.provider_subscription_id) {
+        const result = await api(
+            'GET',
+            `/subscriptions/${account.provider_subscription_id}`
+        );
+        itemId = result.data.attributes.first_subscription_item?.id;
+    }
+    if (!itemId) {
+        throw new NotFoundError('No subscription to add seats to');
+    }
+    const result = await api('PATCH', `/subscription-items/${itemId}`, {
+        data: {
+            type: 'subscription-items',
+            id: String(itemId),
+            attributes: { quantity },
+        },
+    });
+    const attributes = result?.data?.attributes || {};
+    return {
+        provider_subscription_item_id: String(itemId),
+        seat_quantity: Number.isInteger(attributes.quantity)
+            ? attributes.quantity
+            : quantity,
     };
 }
 
@@ -326,6 +367,7 @@ module.exports = {
     isConfigured,
     configuredPrices,
     planForPrice,
+    updateSeats,
     canOpenPortal: (account) =>
         !!(account?.provider_subscription_id || account?.provider_customer_id),
     createCheckout,

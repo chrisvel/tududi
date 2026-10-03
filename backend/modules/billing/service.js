@@ -3,6 +3,7 @@
 const { getConfig } = require('../../config/config');
 const { getPlans } = require('../../config/plans');
 const entitlements = require('../../services/entitlementsService');
+const seats = require('../../services/seatsService');
 const { logError, logInfo } = require('../../services/logService');
 const { isAdmin } = require('../../services/rolesService');
 const repository = require('./repository');
@@ -53,15 +54,18 @@ class BillingService {
                 name: provider.name,
                 display_name: provider.displayName,
             },
+            // A member whose seat is paid by its owner has nothing to buy.
             checkout_available:
                 configured &&
                 !!(prices.month || prices.year) &&
-                !ACTIVE_STATUSES.has(account?.status),
+                !ACTIVE_STATUSES.has(account?.status) &&
+                ent.reason !== 'seat',
             portal_available: configured && provider.canOpenPortal(account),
             intervals: {
                 month: !!prices.month,
                 year: !!prices.year,
             },
+            seats: await seats.describeSeats(userId),
             subscription: account
                 ? {
                       status: account.status,
@@ -265,6 +269,14 @@ class BillingService {
         }
 
         entitlements.invalidate(account.user_id);
+        if (
+            event.type === 'checkout.completed' ||
+            event.type === 'subscription.updated'
+        ) {
+            // A new or resumed subscription starts at one seat; bring it up
+            // to the members this owner already has.
+            await seats.reconcile(account.user_id);
+        }
         return { handled: true, userId: account.user_id };
     }
 

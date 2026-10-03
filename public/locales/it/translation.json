@@ -1992,12 +1992,14 @@
       "names": {
         "admin": "Admin",
         "user": "Utente",
-        "guest": "Ospite"
+        "guest": "Ospite",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Gestisce account, ruoli e gruppi e può fare tutto il resto.",
         "user": "Un membro normale. Lavora con i propri elementi e con tutto ciò che è condiviso con lui.",
-        "guest": "Lavora all'interno di ciò che è condiviso con lui o che gli è assegnato."
+        "guest": "Lavora all'interno di ciò che è condiviso con lui o che gli è assegnato.",
+        "superadmin": "Gestisce questa istanza: tutti gli account, la fatturazione, i gruppi e le impostazioni. I clienti non hanno mai questo ruolo; gestiscono solo i membri che aggiungono."
       },
       "capabilities": {
         "createPeople": "Aggiungere persone",
@@ -2508,7 +2510,10 @@
       "telegram": "il bot Telegram",
       "backups_import": "l'importazione dei backup",
       "attachments": "gli allegati"
-    }
+    },
+    "seatCovered": "Il tuo posto è pagato da {{name}}.",
+    "workspaceOwner": "il titolare dell'area di lavoro",
+    "seats": "{{count}} posti nel tuo abbonamento: tu e altri {{members}}."
   },
   "subscription": {
     "title": "Abbonamento",
@@ -2593,7 +2598,18 @@
     "add": "Aggiungi membro",
     "giveAccount": "Dai un account",
     "nameRequiredWithoutEmail": "Inserisci un nome quando non c'è un'email",
-    "failedToAdd": "Impossibile aggiungere il membro"
+    "failedToAdd": "Impossibile aggiungere il membro",
+    "seatNote": "Ogni membro è un posto in più nel tuo abbonamento. La modifica viene calcolata in proporzione sulla prossima fattura, e rimuovere un membro libera il posto.",
+    "editTitle": "Modifica membro",
+    "nameRequired": "Inserisci un nome",
+    "failedToUpdate": "Impossibile aggiornare il membro",
+    "addEmailHint": "Aggiungere un'email invia un invito a impostare una password. Non può essere cambiata in seguito.",
+    "remove": "Rimuovi membro",
+    "removeConfirm": "Rimuovere {{name}}? L'account e tutto il suo contenuto vengono eliminati, e non si può annullare. Su tududi Cloud il posto viene tolto dal tuo abbonamento.",
+    "removed": "Membro rimosso",
+    "updated": "Membro aggiornato",
+    "invitationSent": "Invito inviato",
+    "failedToRemove": "Impossibile rimuovere il membro"
   },
   "signInLink": {
     "action": "Link di accesso",

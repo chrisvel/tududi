@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "Beheerder",
         "user": "Gebruiker",
-        "guest": "Gast"
+        "guest": "Gast",
+        "superadmin": "Superbeheerder"
       },
       "descriptions": {
         "admin": "Beheert accounts, rollen en groepen en kan al het andere doen.",
         "user": "Een gewoon lid. Werkt met eigen items en alles wat met hem of haar wordt gedeeld.",
-        "guest": "Werkt binnen wat met hem of haar is gedeeld of aan hem of haar is toegewezen."
+        "guest": "Werkt binnen wat met hem of haar is gedeeld of aan hem of haar is toegewezen.",
+        "superadmin": "Beheert deze installatie: alle accounts, facturering, groepen en instellingen. Klanten krijgen deze rol nooit; zij beheren alleen de leden die ze toevoegen."
       },
       "capabilities": {
         "createPeople": "Mensen toevoegen",
@@ -2507,7 +2509,10 @@
       "telegram": "de Telegram-bot",
       "backups_import": "back-upimport",
       "attachments": "bijlagen"
-    }
+    },
+    "seatCovered": "Je plek wordt betaald door {{name}}.",
+    "workspaceOwner": "de eigenaar van de werkruimte",
+    "seats": "{{count}} plekken in je abonnement: jij en {{members}} anderen."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2592,7 +2597,18 @@
     "add": "Lid toevoegen",
     "giveAccount": "Account geven",
     "nameRequiredWithoutEmail": "Voer een naam in als er geen e-mailadres is",
-    "failedToAdd": "Lid toevoegen mislukt"
+    "failedToAdd": "Lid toevoegen mislukt",
+    "seatNote": "Elk lid is een extra plek in je abonnement. De wijziging wordt naar rato verrekend op je volgende factuur, en een lid verwijderen geeft de plek terug.",
+    "editTitle": "Lid bewerken",
+    "nameRequired": "Vul een naam in",
+    "failedToUpdate": "Lid bijwerken mislukt",
+    "addEmailHint": "Met een e-mailadres krijgt deze persoon een uitnodiging om een wachtwoord in te stellen. Het kan daarna niet meer worden gewijzigd.",
+    "remove": "Lid verwijderen",
+    "removeConfirm": "{{name}} verwijderen? Het account en alles erin wordt verwijderd, en dit kan niet ongedaan worden gemaakt. Bij tududi Cloud gaat de plek van je abonnement af.",
+    "removed": "Lid verwijderd",
+    "updated": "Lid bijgewerkt",
+    "invitationSent": "Uitnodiging verstuurd",
+    "failedToRemove": "Lid verwijderen mislukt"
   },
   "signInLink": {
     "action": "Inloglink",

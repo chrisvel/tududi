@@ -110,6 +110,16 @@ module.exports = (sequelize) => {
                 type: DataTypes.INTEGER,
                 allowNull: true,
             },
+            // The subscription line whose quantity is the number of paid
+            // seats: the owner plus every member it added.
+            provider_subscription_item_id: {
+                type: DataTypes.STRING(64),
+                allowNull: true,
+            },
+            seat_quantity: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
         },
         {
             tableName: 'billing_accounts',

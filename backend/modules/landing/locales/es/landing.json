@@ -244,7 +244,7 @@
     "title": "Elige cómo usar tududi",
     "mostPopular": "MÁS ELEGIDO",
     "earlyBird": "LANZAMIENTO",
-    "perYear": "/año",
+    "perYear": "/año por persona",
     "plans": {
       "selfHosted": {
         "action": "Leer la guía de autoalojamiento →",
@@ -266,6 +266,7 @@
         "features": [
           "Funcionando en un minuto, sin servidor que configurar",
           "Tareas, proyectos y notas ilimitados, más adjuntos",
+          "Añade a tu familia o a tu equipo, cada persona es una plaza al mismo precio",
           "Planificación con IA, MCP, calendarios, CalDAV y el bot de Telegram",
           "Actualizaciones y copias de seguridad diarias gestionadas por nosotros, con {{proStorageGb}} GB de almacenamiento",
           "Exporta todo cuando quieras, elimina tu cuenta tú mismo"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Cancela cuando quieras y exporta todo. Si tududi Cloud cerrara algún día, recibirás tus datos y una guía para migrar a autoalojado. Se aplica uso razonable al almacenamiento y al volumen de API. Garantía de devolución de 14 días, sin preguntas.",
-    "perMonth": "/mes",
+    "perMonth": "/mes por persona",
     "sub": "Un plan alojado, o ejecútalo tú mismo si prefieres encargarte de la operación."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "No. Cloud cuesta {{monthly}} al mes o {{price}} al año, y esa es toda la lista de precios: sin plan gratuito, sin reloj de prueba, sin tarjeta cobrada por algo que empieza a facturarse discretamente más adelante. Hay una garantía de devolución de 14 días si resulta que no te conviene, y hay una demo en vivo en esta página si quieres echar un vistazo primero. La forma gratuita de usar tududi es ejecutarlo en tu propio servidor, que es la misma aplicación.",
+        "a": "No. Cloud cuesta {{monthly}} al mes o {{price}} al año por persona, y esa es toda la lista de precios: sin plan gratuito, sin reloj de prueba, sin tarjeta cobrada por algo que empieza a facturarse discretamente más adelante. Hay una garantía de devolución de 14 días si resulta que no te conviene, y hay una demo en vivo en esta página si quieres echar un vistazo primero. La forma gratuita de usar tududi es ejecutarlo en tu propio servidor, que es la misma aplicación.",
         "q": "¿Hay un plan gratuito o una prueba en tududi Cloud?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Empezar",
     "includes": [
       "Tareas, proyectos y notas ilimitados",
+      "Añade a tu familia o a tu equipo, cada persona es una plaza al mismo precio",
       "Adjuntos y subida de archivos",
       "Planificación con IA, MCP, calendarios, CalDAV y el bot de Telegram",
       "Copias de seguridad diarias y actualizaciones gestionadas",

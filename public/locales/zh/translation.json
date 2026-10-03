@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "管理员",
         "user": "用户",
-        "guest": "访客"
+        "guest": "访客",
+        "superadmin": "超级管理员"
       },
       "descriptions": {
         "admin": "管理账户、角色和群组，并可执行其他所有操作。",
         "user": "普通成员。处理自己的项目以及与其共享的所有内容。",
-        "guest": "在与其共享或分配给其的内容范围内工作。"
+        "guest": "在与其共享或分配给其的内容范围内工作。",
+        "superadmin": "负责运行此实例：所有账户、账单、群组和设置。客户永远不会获得此角色；他们只管理自己添加的成员。"
       },
       "capabilities": {
         "createPeople": "添加人员",
@@ -2507,7 +2509,10 @@
       "telegram": "Telegram 机器人",
       "backups_import": "备份导入",
       "attachments": "附件"
-    }
+    },
+    "seatCovered": "你的席位由 {{name}} 付费。",
+    "workspaceOwner": "工作区所有者",
+    "seats": "订阅中共有 {{count}} 个席位：你和另外 {{members}} 人。"
   },
   "subscription": {
     "title": "订阅",
@@ -2592,7 +2597,18 @@
     "add": "添加成员",
     "giveAccount": "授予账户",
     "nameRequiredWithoutEmail": "没有邮箱时请输入姓名",
-    "failedToAdd": "添加成员失败"
+    "failedToAdd": "添加成员失败",
+    "seatNote": "每位成员会在你的订阅中多占一个席位。费用会按比例计入下一张账单，移除成员即可释放席位。",
+    "editTitle": "编辑成员",
+    "nameRequired": "请输入姓名",
+    "failedToUpdate": "更新成员失败",
+    "addEmailHint": "添加邮箱后，对方会收到设置密码的邀请。之后无法更改。",
+    "remove": "移除成员",
+    "removeConfirm": "移除 {{name}}？其账户及全部内容将被删除，且无法撤销。在 tududi Cloud 上，该席位会从你的订阅中移除。",
+    "removed": "成员已移除",
+    "updated": "成员已更新",
+    "invitationSent": "邀请已发送",
+    "failedToRemove": "移除成员失败"
   },
   "signInLink": {
     "action": "登录链接",

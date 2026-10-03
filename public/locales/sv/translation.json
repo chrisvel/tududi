@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "Admin",
         "user": "Användare",
-        "guest": "Gäst"
+        "guest": "Gäst",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Hanterar konton, roller och grupper och kan göra allt annat.",
         "user": "En vanlig medlem. Arbetar med sina egna objekt och allt som delas med hen.",
-        "guest": "Arbetar inom det som delas med hen eller tilldelas hen."
+        "guest": "Arbetar inom det som delas med hen eller tilldelas hen.",
+        "superadmin": "Driver den här instansen: alla konton, fakturering, grupper och inställningar. Kunder får aldrig den här rollen; de hanterar bara de medlemmar de lägger till."
       },
       "capabilities": {
         "createPeople": "Lägga till personer",
@@ -2507,7 +2509,10 @@
       "telegram": "Telegram-boten",
       "backups_import": "import av säkerhetskopior",
       "attachments": "bilagor"
-    }
+    },
+    "seatCovered": "Din plats betalas av {{name}}.",
+    "workspaceOwner": "arbetsytans ägare",
+    "seats": "{{count}} platser i ditt abonnemang: du och {{members}} till."
   },
   "subscription": {
     "title": "Prenumeration",
@@ -2592,7 +2597,18 @@
     "add": "Lägg till medlem",
     "giveAccount": "Ge konto",
     "nameRequiredWithoutEmail": "Ange ett namn när det inte finns någon e-postadress",
-    "failedToAdd": "Det gick inte att lägga till medlemmen"
+    "failedToAdd": "Det gick inte att lägga till medlemmen",
+    "seatNote": "Varje medlem är en plats till i ditt abonnemang. Ändringen proportioneras på nästa faktura, och när du tar bort en medlem frigörs platsen.",
+    "editTitle": "Redigera medlem",
+    "nameRequired": "Ange ett namn",
+    "failedToUpdate": "Det gick inte att uppdatera medlemmen",
+    "addEmailHint": "När du lägger till en e-postadress får personen en inbjudan att välja ett lösenord. Den kan inte ändras efteråt.",
+    "remove": "Ta bort medlem",
+    "removeConfirm": "Ta bort {{name}}? Kontot och allt i det raderas, och det går inte att ångra. På tududi Cloud tas platsen bort från ditt abonnemang.",
+    "removed": "Medlemmen togs bort",
+    "updated": "Medlemmen uppdaterades",
+    "invitationSent": "Inbjudan skickad",
+    "failedToRemove": "Det gick inte att ta bort medlemmen"
   },
   "signInLink": {
     "action": "Inloggningslänk",

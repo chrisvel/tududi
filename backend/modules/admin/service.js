@@ -21,6 +21,7 @@ const {
     ConflictError,
 } = require('../../shared/errors');
 const rolesService = require('../../services/rolesService');
+const seatsService = require('../../services/seatsService');
 const { isAdmin } = rolesService;
 const { sequelize } = require('../../models');
 const { destroyUserSessions } = require('../../services/sessionService');
@@ -252,6 +253,7 @@ class AdminService {
             throw new ValidationError('Cannot delete your own account');
         }
 
+        const target = await adminRepository.findUserById(id);
         const result = await adminRepository.deleteUserWithData(id);
 
         if (!result.success) {
@@ -259,6 +261,11 @@ class AdminService {
                 throw new NotFoundError(result.error);
             }
             throw new ValidationError(result.error);
+        }
+
+        // Deleting a member frees its seat on the owner's subscription.
+        if (target?.created_by_user_id != null) {
+            await seatsService.reconcile(target.created_by_user_id);
         }
 
         return null;

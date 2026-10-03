@@ -2000,12 +2000,14 @@
       "names": {
         "admin": "Admin",
         "user": "Benutzer",
-        "guest": "Gast"
+        "guest": "Gast",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Verwaltet Konten, Rollen und Gruppen und kann alles andere tun.",
         "user": "Ein normales Mitglied. Arbeitet mit den eigenen Elementen und allem, was mit ihm geteilt wird.",
-        "guest": "Arbeitet mit dem, was mit ihm geteilt oder ihm zugewiesen wird."
+        "guest": "Arbeitet mit dem, was mit ihm geteilt oder ihm zugewiesen wird.",
+        "superadmin": "Betreibt diese Instanz: alle Konten, Abrechnung, Gruppen und Einstellungen. Kunden erhalten diese Rolle nie; sie verwalten nur die Mitglieder, die sie hinzufügen."
       },
       "capabilities": {
         "createPeople": "Personen hinzufügen",
@@ -2516,7 +2518,10 @@
       "telegram": "den Telegram-Bot",
       "backups_import": "den Backup-Import",
       "attachments": "Anhänge"
-    }
+    },
+    "seatCovered": "Dein Platz wird von {{name}} bezahlt.",
+    "workspaceOwner": "der Inhaberin oder dem Inhaber des Arbeitsbereichs",
+    "seats": "{{count}} Plätze in deinem Abonnement: du und {{members}} weitere."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2601,7 +2606,18 @@
     "add": "Mitglied hinzufügen",
     "giveAccount": "Konto geben",
     "nameRequiredWithoutEmail": "Gib einen Namen ein, wenn es keine E-Mail-Adresse gibt",
-    "failedToAdd": "Mitglied konnte nicht hinzugefügt werden"
+    "failedToAdd": "Mitglied konnte nicht hinzugefügt werden",
+    "seatNote": "Jedes Mitglied ist ein weiterer Platz in deinem Abonnement. Die Änderung wird anteilig mit der nächsten Rechnung verrechnet, und wenn du ein Mitglied entfernst, wird der Platz wieder frei.",
+    "editTitle": "Mitglied bearbeiten",
+    "nameRequired": "Gib einen Namen ein",
+    "failedToUpdate": "Mitglied konnte nicht aktualisiert werden",
+    "addEmailHint": "Mit einer E-Mail-Adresse erhält die Person eine Einladung, ein Passwort festzulegen. Sie kann danach nicht mehr geändert werden.",
+    "remove": "Mitglied entfernen",
+    "removeConfirm": "{{name}} entfernen? Das Konto und alles darin wird gelöscht, und das lässt sich nicht rückgängig machen. Bei tududi Cloud wird der Platz aus deinem Abonnement entfernt.",
+    "removed": "Mitglied entfernt",
+    "updated": "Mitglied aktualisiert",
+    "invitationSent": "Einladung gesendet",
+    "failedToRemove": "Mitglied konnte nicht entfernt werden"
   },
   "signInLink": {
     "action": "Anmeldelink",

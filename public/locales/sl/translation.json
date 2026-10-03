@@ -1993,12 +1993,14 @@
       "names": {
         "admin": "Skrbnik",
         "user": "Uporabnik",
-        "guest": "Gost"
+        "guest": "Gost",
+        "superadmin": "Superskrbnik"
       },
       "descriptions": {
         "admin": "Upravlja račune, vloge in skupine ter lahko počne vse drugo.",
         "user": "Navaden član. Dela z lastnimi elementi in vsem, kar je deljeno z njim.",
-        "guest": "Dela znotraj tistega, kar je deljeno z njim ali mu dodeljeno."
+        "guest": "Dela znotraj tistega, kar je deljeno z njim ali mu dodeljeno.",
+        "superadmin": "Upravlja ta strežnik: vse račune, plačila, skupine in nastavitve. Stranke te vloge nikoli ne dobijo; upravljajo le člane, ki jih dodajo."
       },
       "capabilities": {
         "createPeople": "Dodajanje oseb",
@@ -2511,7 +2513,10 @@
       "telegram": "bota Telegram",
       "backups_import": "uvoza varnostnih kopij",
       "attachments": "prilog"
-    }
+    },
+    "seatCovered": "Vaše mesto plačuje {{name}}.",
+    "workspaceOwner": "lastnik delovnega prostora",
+    "seats": "Mesta v naročnini: {{count}} (vi in še {{members}})."
   },
   "subscription": {
     "title": "Naročnina",
@@ -2596,7 +2601,18 @@
     "add": "Dodaj člana",
     "giveAccount": "Dodeli račun",
     "nameRequiredWithoutEmail": "Vnesite ime, kadar ni e-pošte",
-    "failedToAdd": "Člana ni bilo mogoče dodati"
+    "failedToAdd": "Člana ni bilo mogoče dodati",
+    "seatNote": "Vsak član je še eno mesto v vaši naročnini. Sprememba se sorazmerno obračuna na naslednjem računu, odstranitev člana pa mesto sprosti.",
+    "editTitle": "Uredi člana",
+    "nameRequired": "Vnesite ime",
+    "failedToUpdate": "Člana ni bilo mogoče posodobiti",
+    "addEmailHint": "Ko dodate e-pošto, prejme vabilo za nastavitev gesla. Pozneje je ni mogoče spremeniti.",
+    "remove": "Odstrani člana",
+    "removeConfirm": "Odstranim {{name}}? Račun in vsa njegova vsebina bodo izbrisani, tega ni mogoče razveljaviti. V tududi Cloud se mesto odstrani iz vaše naročnine.",
+    "removed": "Član odstranjen",
+    "updated": "Član posodobljen",
+    "invitationSent": "Vabilo poslano",
+    "failedToRemove": "Člana ni bilo mogoče odstraniti"
   },
   "signInLink": {
     "action": "Povezava za prijavo",

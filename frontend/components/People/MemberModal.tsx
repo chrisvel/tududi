@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Person } from '../../entities/Person';
 import { RoleId } from '../../entities/Role';
@@ -11,6 +11,8 @@ import {
 import { generatePassword } from '../../utils/passwordPolicy';
 import { roleName } from '../Admin/roleLabels';
 import { FORM } from '../../constants/formClasses';
+import { getFeatureFlags } from '../../utils/featureFlags';
+import { useHostedMode } from '../../hooks/useHostedMode';
 
 interface MemberModalProps {
     // A contact to turn into a member. It keeps its history, so tasks that
@@ -47,6 +49,15 @@ const MemberModal: React.FC<MemberModalProps> = ({
     const [role, setRole] = useState<RoleId>('user');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const hosted = useHostedMode();
+    // On tududi Cloud every member is a paid seat on the owner's subscription.
+    const [paidSeats, setPaidSeats] = useState(false);
+
+    useEffect(() => {
+        getFeatureFlags().then((flags) =>
+            setPaidSeats(flags.hosted && flags.billing)
+        );
+    }, []);
 
     // Without an email there is nothing to sign in with, so no password and no
     // invitation.
@@ -227,11 +238,22 @@ const MemberModal: React.FC<MemberModalProps> = ({
                         >
                             {roles.map((id) => (
                                 <option key={id} value={id}>
-                                    {roleName(t, id)}
+                                    {roleName(t, id, hosted)}
                                 </option>
                             ))}
                         </select>
                     </div>
+                    {paidSeats && viewerRole !== 'admin' && (
+                        <p
+                            className="text-sm text-gray-600 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 rounded px-3 py-2"
+                            data-testid="member-seat-note"
+                        >
+                            {t(
+                                'members.seatNote',
+                                'Each member is one more seat on your subscription. The change is prorated on your next invoice, and removing a member gives the seat back.'
+                            )}
+                        </p>
+                    )}
                     {error && (
                         <div
                             className="text-sm text-red-600 dark:text-red-400"

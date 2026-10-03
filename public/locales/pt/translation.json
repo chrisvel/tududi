@@ -1992,12 +1992,14 @@
       "names": {
         "admin": "Admin",
         "user": "Utilizador",
-        "guest": "Convidado"
+        "guest": "Convidado",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Gere contas, funções e grupos, e pode fazer tudo o resto.",
         "user": "Um membro normal. Trabalha com os seus próprios itens e tudo o que é partilhado com ele.",
-        "guest": "Trabalha dentro do que é partilhado com ele ou lhe é atribuído."
+        "guest": "Trabalha dentro do que é partilhado com ele ou lhe é atribuído.",
+        "superadmin": "Gere esta instância: todas as contas, faturação, grupos e definições. Os clientes nunca têm esta função; gerem apenas os membros que adicionam."
       },
       "capabilities": {
         "createPeople": "Adicionar pessoas",
@@ -2508,7 +2510,10 @@
       "telegram": "o bot do Telegram",
       "backups_import": "a importação de cópias de segurança",
       "attachments": "os anexos"
-    }
+    },
+    "seatCovered": "O seu lugar é pago por {{name}}.",
+    "workspaceOwner": "o titular do espaço de trabalho",
+    "seats": "{{count}} lugares na sua assinatura: você e mais {{members}}."
   },
   "subscription": {
     "title": "Assinatura",
@@ -2593,7 +2598,18 @@
     "add": "Adicionar membro",
     "giveAccount": "Dar conta",
     "nameRequiredWithoutEmail": "Introduza um nome quando não há e-mail",
-    "failedToAdd": "Falha ao adicionar o membro"
+    "failedToAdd": "Falha ao adicionar o membro",
+    "seatNote": "Cada membro é mais um lugar na sua assinatura. A alteração é cobrada proporcionalmente na próxima fatura, e remover um membro devolve o lugar.",
+    "editTitle": "Editar membro",
+    "nameRequired": "Introduza um nome",
+    "failedToUpdate": "Não foi possível atualizar o membro",
+    "addEmailHint": "Adicionar um email envia-lhe um convite para definir uma palavra-passe. Não pode ser alterado depois.",
+    "remove": "Remover membro",
+    "removeConfirm": "Remover {{name}}? A conta e tudo o que contém são eliminados, e isto não pode ser desfeito. No tududi Cloud o lugar é retirado da sua assinatura.",
+    "removed": "Membro removido",
+    "updated": "Membro atualizado",
+    "invitationSent": "Convite enviado",
+    "failedToRemove": "Não foi possível remover o membro"
   },
   "signInLink": {
     "action": "Link de acesso",

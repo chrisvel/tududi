@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "Quản trị viên",
         "user": "Người dùng",
-        "guest": "Khách"
+        "guest": "Khách",
+        "superadmin": "Quản trị viên cấp cao"
       },
       "descriptions": {
         "admin": "Quản lý tài khoản, vai trò và nhóm, và có thể làm mọi việc khác.",
         "user": "Một thành viên bình thường. Làm việc với các mục của mình và mọi thứ được chia sẻ với họ.",
-        "guest": "Làm việc trong phạm vi được chia sẻ hoặc giao cho họ."
+        "guest": "Làm việc trong phạm vi được chia sẻ hoặc giao cho họ.",
+        "superadmin": "Vận hành máy chủ này: mọi tài khoản, thanh toán, nhóm và cài đặt. Khách hàng không bao giờ có vai trò này; họ chỉ quản lý các thành viên họ thêm vào."
       },
       "capabilities": {
         "createPeople": "Thêm người",
@@ -2507,7 +2509,10 @@
       "telegram": "bot Telegram",
       "backups_import": "nhập bản sao lưu",
       "attachments": "tệp đính kèm"
-    }
+    },
+    "seatCovered": "Chỗ của bạn do {{name}} trả phí.",
+    "workspaceOwner": "chủ không gian làm việc",
+    "seats": "{{count}} chỗ trong gói đăng ký: bạn và {{members}} người khác."
   },
   "subscription": {
     "title": "Đăng ký",
@@ -2592,7 +2597,18 @@
     "add": "Thêm thành viên",
     "giveAccount": "Cấp tài khoản",
     "nameRequiredWithoutEmail": "Nhập tên khi không có email",
-    "failedToAdd": "Không thể thêm thành viên"
+    "failedToAdd": "Không thể thêm thành viên",
+    "seatNote": "Mỗi thành viên là thêm một chỗ trong gói đăng ký của bạn. Thay đổi được tính theo tỷ lệ vào hóa đơn kế tiếp, và xóa thành viên sẽ trả lại chỗ.",
+    "editTitle": "Sửa thành viên",
+    "nameRequired": "Nhập tên",
+    "failedToUpdate": "Không cập nhật được thành viên",
+    "addEmailHint": "Thêm email sẽ gửi lời mời để họ đặt mật khẩu. Không thể thay đổi sau đó.",
+    "remove": "Xóa thành viên",
+    "removeConfirm": "Xóa {{name}}? Tài khoản và mọi nội dung trong đó sẽ bị xóa, không thể hoàn tác. Trên tududi Cloud, chỗ của họ được bỏ khỏi gói đăng ký của bạn.",
+    "removed": "Đã xóa thành viên",
+    "updated": "Đã cập nhật thành viên",
+    "invitationSent": "Đã gửi lời mời",
+    "failedToRemove": "Không xóa được thành viên"
   },
   "signInLink": {
     "action": "Liên kết đăng nhập",

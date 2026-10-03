@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHostedMode } from '../../hooks/useHostedMode';
 import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -201,6 +202,7 @@ const AddUserModal: React.FC<{
     roleDefaults?: Partial<Record<RoleId, Capabilities>> | null;
 }> = ({ isOpen, onClose, onCreated, onUpdated, editingUser, roleDefaults }) => {
     const { t } = useTranslation();
+    const hosted = useHostedMode();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -592,7 +594,7 @@ const AddUserModal: React.FC<{
                                     setIsRoleDropdownOpen(!isRoleDropdownOpen)
                                 }
                             >
-                                <span>{roleName(t, role)}</span>
+                                <span>{roleName(t, role, hosted)}</span>
                                 <ChevronDownIcon
                                     className={`h-4 w-4 text-gray-500 dark:text-gray-300 transition-transform ${
                                         isRoleDropdownOpen ? 'rotate-180' : ''
@@ -618,7 +620,7 @@ const AddUserModal: React.FC<{
                                             >
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-gray-900 dark:text-gray-100">
-                                                        {roleName(t, id)}
+                                                        {roleName(t, id, hosted)}
                                                     </span>
                                                     {role === id && (
                                                         <CheckIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
@@ -781,6 +783,7 @@ const AdminUsersPanel: React.FC<{
     onChanged?: () => void;
 }> = ({ roleDefaults, onChanged }) => {
     const { t } = useTranslation();
+    const hosted = useHostedMode();
     const { showSuccessToast, showErrorToast } = useToast();
     const [users, setUsers] = useState<AdminUserItem[] | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -974,7 +977,7 @@ const AdminUsersPanel: React.FC<{
                                                 }`}
                                                 data-testid={`user-role-${u.id}`}
                                             >
-                                                {roleName(t, u.role)}
+                                                {roleName(t, u.role, hosted)}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

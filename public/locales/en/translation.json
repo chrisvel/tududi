@@ -2168,12 +2168,14 @@
       "names": {
         "admin": "Admin",
         "user": "User",
-        "guest": "Guest"
+        "guest": "Guest",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Manages accounts, roles and groups, and can do everything else.",
         "user": "A regular member. Works with their own items and everything shared with them.",
-        "guest": "Works inside what is shared with them or assigned to them."
+        "guest": "Works inside what is shared with them or assigned to them.",
+        "superadmin": "Runs this instance: every account, billing, groups and settings. Customers never get this role; they manage only the members they add."
       },
       "capabilities": {
         "createPeople": "Add people",
@@ -2262,7 +2264,10 @@
       "telegram": "the Telegram bot",
       "backups_import": "backup import",
       "attachments": "attachments"
-    }
+    },
+    "seatCovered": "Your seat is paid by {{name}}.",
+    "workspaceOwner": "the workspace owner",
+    "seats": "{{count}} seats on your subscription: you and {{members}} more."
   },
   "shares": {
     "shareProject": "Share project",
@@ -2651,7 +2656,18 @@
     "add": "Add member",
     "giveAccount": "Give account",
     "nameRequiredWithoutEmail": "Enter a name when there is no email",
-    "failedToAdd": "Failed to add member"
+    "failedToAdd": "Failed to add member",
+    "seatNote": "Each member is one more seat on your subscription. The change is prorated on your next invoice, and removing a member gives the seat back.",
+    "editTitle": "Edit member",
+    "nameRequired": "Enter a name",
+    "failedToUpdate": "Failed to update member",
+    "addEmailHint": "Adding an email sends them an invitation to set a password. It cannot be changed afterwards.",
+    "remove": "Remove member",
+    "removeConfirm": "Remove {{name}}? Their account and everything in it is deleted, and this cannot be undone. On tududi Cloud their seat is taken off your subscription.",
+    "removed": "Member removed",
+    "updated": "Member updated",
+    "invitationSent": "Invitation sent",
+    "failedToRemove": "Failed to remove member"
   },
   "signInLink": {
     "action": "Sign-in link",

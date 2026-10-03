@@ -244,7 +244,7 @@
     "title": "Alege cum folosești tududi",
     "mostPopular": "CEL MAI ALES",
     "earlyBird": "PREȚ DE LANSARE",
-    "perYear": "/an",
+    "perYear": "/an de persoană",
     "plans": {
       "selfHosted": {
         "action": "Citește ghidul de auto-hostare →",
@@ -266,6 +266,7 @@
         "features": [
           "Funcțional într-un minut, fără server de configurat",
           "Sarcini, proiecte și notițe nelimitate, plus atașamente",
+          "Adaugă membri ai familiei sau colegi, fiecare un loc la același preț",
           "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
           "Actualizări și backupuri zilnice gestionate pentru tine, cu {{proStorageGb}} GB de spațiu",
           "Exportă totul oricând, șterge-ți contul singur"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 14 de zile, fără întrebări.",
-    "perMonth": "/lună",
+    "perMonth": "/lună de persoană",
     "sub": "Un plan găzduit, sau rulează-l tu, dacă preferi să te ocupi de operare."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nu. Cloud costă {{monthly}} pe lună sau {{price}} pe an, și aceasta e toată lista de prețuri: fără nivel gratuit, fără ceas de probă, fără card taxat pentru ceva care începe discret să facturaze mai târziu. Există o garanție de rambursare de 14 de zile dacă se dovedește că nu ți se potrivește, și există un demo live pe această pagină dacă vrei să te uiți întâi. Modul gratuit de a folosi tududi este să-l rulezi pe propriul tău server, care e aceeași aplicație.",
+        "a": "Nu. Cloud costă {{monthly}} pe lună sau {{price}} pe an de persoană, și aceasta e toată lista de prețuri: fără nivel gratuit, fără ceas de probă, fără card taxat pentru ceva care începe discret să facturaze mai târziu. Există o garanție de rambursare de 14 de zile dacă se dovedește că nu ți se potrivește, și există un demo live pe această pagină dacă vrei să te uiți întâi. Modul gratuit de a folosi tududi este să-l rulezi pe propriul tău server, care e aceeași aplicație.",
         "q": "Există un plan gratuit sau o probă pe tududi Cloud?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Începe",
     "includes": [
       "Sarcini, proiecte și notițe nelimitate",
+      "Adaugă membri ai familiei sau colegi, fiecare un loc la același preț",
       "Atașamente și încărcare de fișiere",
       "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
       "Backupuri zilnice și actualizări administrate",

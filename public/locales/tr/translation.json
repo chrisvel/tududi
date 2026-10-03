@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "Yönetici",
         "user": "Kullanıcı",
-        "guest": "Misafir"
+        "guest": "Misafir",
+        "superadmin": "Süper yönetici"
       },
       "descriptions": {
         "admin": "Hesapları, rolleri ve grupları yönetir ve diğer her şeyi yapabilir.",
         "user": "Normal bir üye. Kendi öğeleriyle ve kendisiyle paylaşılan her şeyle çalışır.",
-        "guest": "Kendisiyle paylaşılan veya kendisine atanan öğelerin içinde çalışır."
+        "guest": "Kendisiyle paylaşılan veya kendisine atanan öğelerin içinde çalışır.",
+        "superadmin": "Bu kurulumu yönetir: tüm hesaplar, faturalandırma, gruplar ve ayarlar. Müşteriler bu rolü asla almaz; yalnızca ekledikleri üyeleri yönetirler."
       },
       "capabilities": {
         "createPeople": "Kişi ekleme",
@@ -2507,7 +2509,10 @@
       "telegram": "Telegram botunu",
       "backups_import": "yedek içe aktarmayı",
       "attachments": "ekleri"
-    }
+    },
+    "seatCovered": "Koltuğunuzun ücretini {{name}} ödüyor.",
+    "workspaceOwner": "çalışma alanının sahibi",
+    "seats": "Aboneliğinizde {{count}} koltuk: siz ve {{members}} kişi daha."
   },
   "subscription": {
     "title": "Abonelik",
@@ -2592,7 +2597,18 @@
     "add": "Üye ekle",
     "giveAccount": "Hesap ver",
     "nameRequiredWithoutEmail": "E-posta yokken bir ad gir",
-    "failedToAdd": "Üye eklenemedi"
+    "failedToAdd": "Üye eklenemedi",
+    "seatNote": "Her üye aboneliğinizde bir koltuk daha demektir. Değişiklik bir sonraki faturanıza orantılı olarak yansıtılır ve bir üyeyi çıkarmak koltuğu boşaltır.",
+    "editTitle": "Üyeyi düzenle",
+    "nameRequired": "Bir ad girin",
+    "failedToUpdate": "Üye güncellenemedi",
+    "addEmailHint": "E-posta eklemek, parola belirlemesi için bir davet gönderir. Daha sonra değiştirilemez.",
+    "remove": "Üyeyi çıkar",
+    "removeConfirm": "{{name}} çıkarılsın mı? Hesabı ve içindeki her şey silinir, bu işlem geri alınamaz. tududi Cloud'da koltuğu aboneliğinizden düşülür.",
+    "removed": "Üye çıkarıldı",
+    "updated": "Üye güncellendi",
+    "invitationSent": "Davet gönderildi",
+    "failedToRemove": "Üye çıkarılamadı"
   },
   "signInLink": {
     "action": "Oturum açma bağlantısı",

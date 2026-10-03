@@ -133,6 +133,43 @@ async function ensureAccount(userId) {
     return account;
 }
 
+// Reasons an owner's plan counts as paid, so the members it added share it.
+// An admin's exemption and a bare trial are not seats anybody paid for.
+const SEAT_REASONS = ['subscription', 'grace', 'override'];
+
+// A member added by an owner sits on the owner's subscription: when the
+// member has nothing of its own, it gets the owner's plan for as long as the
+// owner pays.
+async function resolveSeat(userId) {
+    const { User } = models();
+    const user = await User.findByPk(userId, {
+        attributes: ['id', 'created_by_user_id'],
+    });
+    if (!user || user.created_by_user_id == null) return null;
+
+    const owner = await User.findByPk(user.created_by_user_id, {
+        attributes: ['id', 'name', 'surname', 'email'],
+    });
+    if (!owner || (await isAdmin(owner.id))) return null;
+
+    const ownerAccount = await models().BillingAccount.findOne({
+        where: { user_id: owner.id },
+    });
+    const ownerPlan = resolvePlan(ownerAccount, null);
+    if (!SEAT_REASONS.includes(ownerPlan.reason)) return null;
+
+    return {
+        resolved: { ...ownerPlan, reason: 'seat' },
+        owner: {
+            id: owner.id,
+            name:
+                [owner.name, owner.surname].filter(Boolean).join(' ') ||
+                owner.email ||
+                null,
+        },
+    };
+}
+
 async function getEntitlements(userId, { includeUsage = false } = {}) {
     if (!isHostedMode()) {
         return {
@@ -155,7 +192,15 @@ async function getEntitlements(userId, { includeUsage = false } = {}) {
     if (!resolved) {
         const account = await ensureAccount(userId);
         const admin = await isAdmin(userId);
-        const r = resolvePlan(account, null, { isAdmin: admin });
+        let r = resolvePlan(account, null, { isAdmin: admin });
+        let seatOwner = null;
+        if (r.reason === 'free' && !admin) {
+            const seat = await resolveSeat(userId);
+            if (seat) {
+                r = seat.resolved;
+                seatOwner = seat.owner;
+            }
+        }
         resolved = {
             hosted: true,
             plan: r.plan.key,
@@ -170,6 +215,7 @@ async function getEntitlements(userId, { includeUsage = false } = {}) {
             grace_until: r.graceUntil || null,
             subscription_required: isSubscriptionRequired(),
             active: r.reason !== 'free',
+            seat_owner: seatOwner,
             override: account?.override_plan
                 ? {
                       plan: account.override_plan,

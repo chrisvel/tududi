@@ -245,7 +245,7 @@
     "sub": "One hosted plan, or run it yourself if you would rather do the ops.",
     "mostPopular": "MOST POPULAR",
     "earlyBird": "EARLY BIRD",
-    "perYear": "/year",
+    "perYear": "/year per person",
     "plans": {
       "selfHosted": {
         "name": "Self-host (advanced)",
@@ -267,6 +267,7 @@
         "features": [
           "Running in a minute, with no server to set up",
           "Unlimited tasks, projects and notes, plus attachments",
+          "Add family members or teammates, each a seat at the same price",
           "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
           "Updates and daily backups handled for you, with {{proStorageGb}} GB of storage",
           "Export everything any time, delete your account yourself"
@@ -275,7 +276,7 @@
       }
     },
     "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",
-    "perMonth": "/month"
+    "perMonth": "/month per person"
   },
   "compare": {
     "title": "Quick Comparison",
@@ -348,7 +349,7 @@
       },
       "freePlan": {
         "q": "Is there a free plan or a trial on tududi Cloud?",
-        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 14-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first. The free way to use tududi is to run it on your own server, which is the same application."
+        "a": "No. Cloud is {{monthly}} a month or {{price}} a year per person, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 14-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first. The free way to use tududi is to run it on your own server, which is the same application."
       },
       "leaving": {
         "q": "Can I leave, and what happens to my data?",
@@ -434,6 +435,7 @@
     "priceNote": "Billed by our payment provider. Prices exclude applicable taxes.",
     "includes": [
       "Unlimited tasks, projects and notes",
+      "Add family members or teammates, each a seat at the same price",
       "Attachments and file uploads",
       "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
       "Daily backups and managed updates",

@@ -1992,12 +1992,14 @@
       "names": {
         "admin": "Admin",
         "user": "Bruker",
-        "guest": "Gjest"
+        "guest": "Gjest",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Administrerer kontoer, roller og grupper og kan gjøre alt annet.",
         "user": "Et vanlig medlem. Arbeider med sine egne elementer og alt som deles med vedkommende.",
-        "guest": "Arbeider innenfor det som deles med vedkommende eller tildeles vedkommende."
+        "guest": "Arbeider innenfor det som deles med vedkommende eller tildeles vedkommende.",
+        "superadmin": "Driver denne instansen: alle kontoer, fakturering, grupper og innstillinger. Kunder får aldri denne rollen; de administrerer bare medlemmene de legger til."
       },
       "capabilities": {
         "createPeople": "Legge til personer",
@@ -2512,7 +2514,10 @@
       "telegram": "Telegram-boten",
       "backups_import": "import av sikkerhetskopier",
       "attachments": "vedlegg"
-    }
+    },
+    "seatCovered": "Plassen din betales av {{name}}.",
+    "workspaceOwner": "eieren av arbeidsområdet",
+    "seats": "{{count}} plasser i abonnementet ditt: deg og {{members}} til."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2597,7 +2602,18 @@
     "add": "Legg til medlem",
     "giveAccount": "Gi konto",
     "nameRequiredWithoutEmail": "Skriv inn et navn når det ikke er noen e-post",
-    "failedToAdd": "Kunne ikke legge til medlemmet"
+    "failedToAdd": "Kunne ikke legge til medlemmet",
+    "seatNote": "Hvert medlem er én plass til i abonnementet ditt. Endringen fordeles forholdsmessig på neste faktura, og når du fjerner et medlem, frigjøres plassen.",
+    "editTitle": "Rediger medlem",
+    "nameRequired": "Skriv inn et navn",
+    "failedToUpdate": "Kunne ikke oppdatere medlemmet",
+    "addEmailHint": "Når du legger til en e-postadresse, får personen en invitasjon til å velge passord. Den kan ikke endres etterpå.",
+    "remove": "Fjern medlem",
+    "removeConfirm": "Fjerne {{name}}? Kontoen og alt i den slettes, og det kan ikke angres. På tududi Cloud fjernes plassen fra abonnementet ditt.",
+    "removed": "Medlemmet ble fjernet",
+    "updated": "Medlemmet ble oppdatert",
+    "invitationSent": "Invitasjon sendt",
+    "failedToRemove": "Kunne ikke fjerne medlemmet"
   },
   "signInLink": {
     "action": "Innloggingslenke",

@@ -201,6 +201,32 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                                             'billing.adminExempt',
                                             'Administrators are not limited.'
                                         )}
+                                    {status.reason === 'seat' &&
+                                        t('billing.seatCovered', {
+                                            defaultValue:
+                                                'Your seat is paid by {{name}}.',
+                                            name:
+                                                status.seat_owner?.name ||
+                                                t(
+                                                    'billing.workspaceOwner',
+                                                    'the workspace owner'
+                                                ),
+                                        })}
+                                    {status.reason !== 'seat' &&
+                                        !!status.seats?.members && (
+                                            <span
+                                                className="block"
+                                                data-testid="billing-seats"
+                                            >
+                                                {t('billing.seats', {
+                                                    defaultValue:
+                                                        '{{count}} seats on your subscription: you and {{members}} more.',
+                                                    count: status.seats.needed,
+                                                    members:
+                                                        status.seats.members,
+                                                })}
+                                            </span>
+                                        )}
                                 </div>
                             </div>
                             {status.portal_available && (

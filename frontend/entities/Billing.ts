@@ -7,6 +7,7 @@ export interface PlanLimits {
     storage_mb: number | null;
     ai_requests_per_month: number | null;
     ai_credits_per_month: number | null;
+    max_members?: number | null;
 }
 
 export interface PlanFeatures {
@@ -53,6 +54,10 @@ export interface BillingStatus {
     // entitles the account to the app.
     subscription_required: boolean;
     active: boolean;
+    // Set for a member whose seat is paid by the account that added it.
+    seat_owner?: { id: number; name: string | null } | null;
+    // On a hosted instance: this account's members and the seats billed.
+    seats?: { members: number; needed: number; billed: number | null } | null;
     billing_configured: boolean;
     pricing: { currency: string; monthly: number; annual: number };
     provider: { name: string; display_name: string };

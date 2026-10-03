@@ -244,7 +244,7 @@
     "title": "Izberite, kako boste uporabljali tududi",
     "mostPopular": "NAJPOGOSTEJŠA",
     "earlyBird": "UVAJALNA CENA",
-    "perYear": "/leto",
+    "perYear": "/leto na osebo",
     "plans": {
       "selfHosted": {
         "action": "Preberi vodnik za samostojno gostovanje →",
@@ -266,6 +266,7 @@
         "features": [
           "Deluje v minuti, brez strežnika za namestitev",
           "Neomejene naloge, projekti in opombe, plus priloge",
+          "Dodajte družinske člane ali sodelavce, vsak je mesto po enaki ceni",
           "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
           "Posodobitve in dnevne varnostne kopije, poskrbljene za vas, z {{proStorageGb}} GB prostora",
           "Izvozite vse kadarkoli, izbrišite svoj račun sami"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 14-dnevna garancija vračila denarja, brez vprašanj.",
-    "perMonth": "/mesec",
+    "perMonth": "/mesec na osebo",
     "sub": "En gostovan paket, ali ga zaženite sami, če raje skrbite za delovanje."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Ne. Cloud stane {{monthly}} na mesec ali {{price}} na leto, in to je celoten cenik: brez brezplačne stopnje, brez preizkusne ure, brez kartice, obremenjene za nekaj, kar se tiho začne zaračunavati kasneje. Obstaja 14-dnevna garancija vračila denarja, če se izkaže, da vam ne ustreza, in obstaja živa predstavitev na tej strani, če želite najprej pogledati. Brezplačen način uporabe tududi je zagon na vašem lastnem strežniku, kar je enaka aplikacija.",
+        "a": "Ne. Cloud stane {{monthly}} na mesec ali {{price}} na leto na osebo, in to je celoten cenik: brez brezplačne stopnje, brez preizkusne ure, brez kartice, obremenjene za nekaj, kar se tiho začne zaračunavati kasneje. Obstaja 14-dnevna garancija vračila denarja, če se izkaže, da vam ne ustreza, in obstaja živa predstavitev na tej strani, če želite najprej pogledati. Brezplačen način uporabe tududi je zagon na vašem lastnem strežniku, kar je enaka aplikacija.",
         "q": "Ali obstaja brezplačen paket ali preizkusna doba na tududi Cloud?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Začni",
     "includes": [
       "Neomejene naloge, projekti in opombe",
+      "Dodajte družinske člane ali sodelavce, vsak je mesto po enaki ceni",
       "Priloge in nalaganje datotek",
       "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
       "Dnevne varnostne kopije in upravljane posodobitve",

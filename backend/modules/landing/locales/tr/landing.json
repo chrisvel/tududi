@@ -244,7 +244,7 @@
     "title": "tududi'yi nasıl kullanacağınızı seçin",
     "mostPopular": "EN ÇOK SEÇİLEN",
     "earlyBird": "ERKEN KAYIT",
-    "perYear": "/yıl",
+    "perYear": "/yıl, kişi başı",
     "plans": {
       "selfHosted": {
         "action": "Kendi kendine barındırma kılavuzunu okuyun →",
@@ -266,6 +266,7 @@
         "features": [
           "Kurulacak sunucu olmadan bir dakikada çalışır",
           "Sınırsız görev, proje ve not, ayrıca ekler",
+          "Aile üyelerini veya ekip arkadaşlarını ekleyin, her biri aynı fiyattan bir koltuk",
           "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
           "Sizin için halledilmiş güncellemeler ve günlük yedeklemeler, {{proStorageGb}} GB depolama ile",
           "Her şeyi istediğiniz zaman dışa aktarın, hesabınızı kendiniz silin"
@@ -274,7 +275,7 @@
       }
     },
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 14 gün para iade garantisi, soru sorulmaz.",
-    "perMonth": "/ay",
+    "perMonth": "/ay, kişi başı",
     "sub": "Bir barındırılan plan, veya operasyonla ilgilenmeyi tercih ederseniz kendiniz çalıştırın."
   },
   "compare": {
@@ -341,7 +342,7 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Hayır. Cloud ayda {{monthly}} veya yılda {{price}}'dır, ve bu tüm fiyat listesi: ücretsiz katman yok, deneme saati yok, daha sonra sessizce faturalandırmaya başlayan bir şey için tahsil edilen kart yok. Size uymadığı ortaya çıkarsa 14 günlük para geri garantisi var, ve önce bakmak isterseniz bu sayfada canlı bir demo var. tududi'yi kullanmanın ücretsiz yolu, aynı uygulama olan kendi sunucunuzda çalıştırmaktır.",
+        "a": "Hayır. Cloud kişi başı ayda {{monthly}} veya yılda {{price}}'dır, ve bu tüm fiyat listesi: ücretsiz katman yok, deneme saati yok, daha sonra sessizce faturalandırmaya başlayan bir şey için tahsil edilen kart yok. Size uymadığı ortaya çıkarsa 14 günlük para geri garantisi var, ve önce bakmak isterseniz bu sayfada canlı bir demo var. tududi'yi kullanmanın ücretsiz yolu, aynı uygulama olan kendi sunucunuzda çalıştırmaktır.",
         "q": "tududi Cloud'da ücretsiz bir plan veya deneme var mı?"
       },
       "leaving": {
@@ -396,6 +397,7 @@
     "ctaPrimary": "Başlayın",
     "includes": [
       "Sınırsız görev, proje ve not",
+      "Aile üyelerini veya ekip arkadaşlarını ekleyin, her biri aynı fiyattan bir koltuk",
       "Ekler ve dosya yüklemeleri",
       "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
       "Günlük yedeklemeler ve yönetilen güncellemeler",

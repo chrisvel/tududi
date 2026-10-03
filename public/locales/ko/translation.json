@@ -1991,12 +1991,14 @@
       "names": {
         "admin": "관리자",
         "user": "사용자",
-        "guest": "게스트"
+        "guest": "게스트",
+        "superadmin": "최고 관리자"
       },
       "descriptions": {
         "admin": "계정, 역할, 그룹을 관리하며 그 밖의 모든 일을 할 수 있습니다.",
         "user": "일반 멤버입니다. 자신의 항목과 공유된 모든 항목을 다룹니다.",
-        "guest": "공유되었거나 할당된 범위 안에서 작업합니다."
+        "guest": "공유되었거나 할당된 범위 안에서 작업합니다.",
+        "superadmin": "이 인스턴스를 운영합니다: 모든 계정, 결제, 그룹, 설정. 고객은 이 역할을 받지 않으며, 자신이 추가한 멤버만 관리합니다."
       },
       "capabilities": {
         "createPeople": "사람 추가",
@@ -2507,7 +2509,10 @@
       "telegram": "Telegram 봇",
       "backups_import": "백업 가져오기",
       "attachments": "첨부 파일"
-    }
+    },
+    "seatCovered": "내 좌석은 {{name}} 님이 결제합니다.",
+    "workspaceOwner": "워크스페이스 소유자",
+    "seats": "구독 좌석 {{count}}개: 나와 다른 {{members}}명."
   },
   "subscription": {
     "title": "구독",
@@ -2592,7 +2597,18 @@
     "add": "멤버 추가",
     "giveAccount": "계정 부여",
     "nameRequiredWithoutEmail": "이메일이 없으면 이름을 입력하세요",
-    "failedToAdd": "멤버를 추가하지 못했습니다"
+    "failedToAdd": "멤버를 추가하지 못했습니다",
+    "seatNote": "멤버 한 명마다 구독에 좌석이 하나씩 추가됩니다. 변경 사항은 다음 청구서에 일할 계산되며, 멤버를 삭제하면 좌석이 반환됩니다.",
+    "editTitle": "멤버 편집",
+    "nameRequired": "이름을 입력하세요",
+    "failedToUpdate": "멤버를 업데이트하지 못했습니다",
+    "addEmailHint": "이메일을 추가하면 비밀번호 설정 초대가 전송됩니다. 이후에는 변경할 수 없습니다.",
+    "remove": "멤버 삭제",
+    "removeConfirm": "{{name}} 님을 삭제할까요? 계정과 모든 내용이 삭제되며 되돌릴 수 없습니다. tududi Cloud에서는 해당 좌석이 구독에서 빠집니다.",
+    "removed": "멤버를 삭제했습니다",
+    "updated": "멤버를 업데이트했습니다",
+    "invitationSent": "초대를 보냈습니다",
+    "failedToRemove": "멤버를 삭제하지 못했습니다"
   },
   "signInLink": {
     "action": "로그인 링크",

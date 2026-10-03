@@ -66,6 +66,56 @@ const failure = async (response: Response, fallback: string) => {
     return new Error(fallback);
 };
 
+export interface MemberUpdate {
+    name?: string;
+    surname?: string;
+    email?: string;
+}
+
+export interface UpdatedMember {
+    id: number;
+    email: string | null;
+    name?: string;
+    surname?: string;
+    account_status: 'active' | 'invited' | 'no_sign_in';
+    invited: boolean;
+    email_sent: boolean;
+}
+
+// Renames a member you added, or gives one without an email an address,
+// which sends them an invitation.
+export const updateMember = async (
+    memberId: number,
+    input: MemberUpdate
+): Promise<UpdatedMember> => {
+    const response = await fetchWithCsrf(getApiPath(`members/${memberId}`), {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify(input),
+    });
+    if (!response.ok) {
+        throw await failure(response, 'Failed to update the member.');
+    }
+    return response.json();
+};
+
+// Deletes a member you added, with everything in their account. On tududi
+// Cloud this also gives their seat back.
+export const removeMember = async (memberId: number): Promise<void> => {
+    const response = await fetchWithCsrf(getApiPath(`members/${memberId}`), {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) {
+        throw await failure(response, 'Failed to remove the member.');
+    }
+};
+
 // A link that lets a member without an email sign in. Whoever created the
 // account, or an admin, makes it and hands it over.
 export const createSignInLink = async (
