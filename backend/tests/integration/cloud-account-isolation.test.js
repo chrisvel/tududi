@@ -775,6 +775,7 @@ describe('Cloud: account isolation', () => {
         });
 
         it('leaves the other account untouched as well', async () => {
+            expect(await Area.findByPk(itemsB.area.id)).not.toBeNull();
             await expectUntouched(itemsB, markerB);
         });
     });
