@@ -316,6 +316,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Example manifests in `docs/examples/kubernetes`
     - One replica, block storage for SQLite, ingress and backup notes
 
+32. **[Blog](docs/23-blog.md)**
+    - A front page note and the public notes it links become the blog
+    - Superadmin picks the front page in Admin → Blog
+    - `/blog` in the app, or the root of `TUDUDI_BLOG_HOSTS` (blog.tududi.com)
+
 ---
 
 ## Project Overview

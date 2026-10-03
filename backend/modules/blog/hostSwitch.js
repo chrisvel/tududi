@@ -5,9 +5,9 @@ const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
 const blogService = require('./service');
 
-// The blog's name, shared with the frontend header.
-const BLOG_TITLE = 'Take control of your life';
-const BLOG_TAGLINE = 'before someone else does.';
+// The blog's name, as the frontend header shows it (utils/blogService.ts).
+const BLOG_TAGLINE = '…before someone else does.';
+const BLOG_NAME = 'Let’s take control… before someone else does.';
 
 const escapeHtml = (value) =>
     String(value)
@@ -23,7 +23,7 @@ const SLUG = /^\/([a-z0-9-]{1,200})$/;
 // even though the page itself renders in the browser.
 async function headFor(req, origin) {
     const tags = ['<meta name="tududi-site" content="blog">'];
-    let title = `${BLOG_TITLE}, ${BLOG_TAGLINE} | tududi`;
+    let title = `${BLOG_NAME} | tududi`;
     let description = '';
     let image = null;
     let type = 'website';
@@ -103,7 +103,7 @@ function rss(origin, index) {
         .join('\n');
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n' +
-        `    <title>${escapeHtml(BLOG_TITLE)}</title>\n` +
+        `    <title>${escapeHtml(BLOG_NAME)}</title>\n` +
         `    <link>${escapeHtml(`${origin}/`)}</link>\n` +
         `    <description>${escapeHtml(index.excerpt || BLOG_TAGLINE)}</description>\n` +
         `${items}\n  </channel>\n</rss>\n`
@@ -178,4 +178,4 @@ function hostSwitch({ shellPath, cacheShell }) {
     };
 }
 
-module.exports = { hostSwitch, BLOG_TITLE, BLOG_TAGLINE };
+module.exports = { hostSwitch, BLOG_NAME };

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import {
+    BLOG_NAME,
     BLOG_TAGLINE,
     BLOG_TITLE,
     BlogIndex,
@@ -46,7 +47,7 @@ const BlogIndexPage: React.FC<BlogPageProps> = (props) => {
 
     useEffect(() => {
         const previous = document.title;
-        document.title = `${BLOG_TITLE}, ${BLOG_TAGLINE} | tududi`;
+        document.title = `${BLOG_NAME} | tududi`;
         return () => {
             document.title = previous;
         };
