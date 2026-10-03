@@ -20,7 +20,6 @@
     "badgeStars": "GitHubスター",
     "badgeMcp": "MCPサーバー内蔵",
     "badgeCloudOpen": "tududi Cloud 公開中",
-    "starsLoading": "スター数を読み込み中",
     "ctaDemo": "ライブデモを試す",
     "demoNote": "サンプルデータ入りの実際のホスティングインスタンス。共有され、定期的にリセットされます",
     "screenshotAlt": "tududiの画面。今日のビューと予定されたタスクが表示されています",
@@ -36,7 +35,6 @@
     "languages": "{{count}}言語対応",
     "dockerPulls": "Dockerプル",
     "discord": "Discord メンバー",
-    "discordAlt": "Discord: {{count}} メンバー",
     "minute": "1分でセットアップ"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "利用規約",
     "linkPrivacy": "プライバシー",
     "linkRefunds": "返金",
-    "linkContact": "お問い合わせ"
+    "linkContact": "お問い合わせ",
+    "linkCookies": "Cookie 設定"
+  },
+  "consent": {
+    "label": "Cookie の選択",
+    "body": "このサイトでの体験を向上させるために Cookie を使用しています。Cookie は同意した場合にのみ設定されます。",
+    "accept": "同意する",
+    "decline": "拒否する"
   },
   "js": {
     "showFewer": "表示を減らす",

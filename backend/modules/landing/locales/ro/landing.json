@@ -20,7 +20,6 @@
     "badgeStars": "stele pe GitHub",
     "badgeMcp": "Server MCP integrat",
     "badgeCloudOpen": "tududi Cloud este acum deschis",
-    "starsLoading": "Se încarcă numărul de stele",
     "ctaDemo": "Încearcă demo-ul live",
     "demoNote": "O instanță găzduită reală, cu date de exemplu, partajată și resetată periodic",
     "screenshotAlt": "Interfața tududi, cu vizualizarea Astăzi și sarcinile planificate",
@@ -36,7 +35,6 @@
     "languages": "{{count}} limbi",
     "dockerPulls": "descărcări Docker",
     "discord": "membri pe Discord",
-    "discordAlt": "Discord: {{count}} membri",
     "minute": "Configurat într-un minut"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Termeni",
     "linkPrivacy": "Confidențialitate",
     "linkRefunds": "Rambursări",
-    "linkContact": "Contact"
+    "linkContact": "Contact",
+    "linkCookies": "Setări cookie-uri"
+  },
+  "consent": {
+    "label": "Alegerea cookie-urilor",
+    "body": "Folosim cookie-uri pentru a-ți îmbunătăți experiența pe acest site. Sunt setate doar dacă le accepți.",
+    "accept": "Accept",
+    "decline": "Refuz"
   },
   "js": {
     "showFewer": "Arată mai puține",

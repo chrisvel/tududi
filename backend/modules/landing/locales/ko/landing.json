@@ -20,7 +20,6 @@
     "badgeStars": "GitHub 스타",
     "badgeMcp": "MCP 서버 내장",
     "badgeCloudOpen": "tududi Cloud 오픈",
-    "starsLoading": "스타 수를 불러오는 중",
     "ctaDemo": "라이브 데모 사용해보기",
     "demoNote": "샘플 데이터가 들어 있는 실제 호스팅 인스턴스입니다. 공유되며 주기적으로 초기화됩니다",
     "screenshotAlt": "오늘 보기와 계획된 작업이 표시된 tududi 화면",
@@ -36,7 +35,6 @@
     "languages": "{{count}}개 언어",
     "dockerPulls": "Docker 내려받기",
     "discord": "Discord 멤버",
-    "discordAlt": "Discord: {{count}}명의 멤버",
     "minute": "1분 안에 설정 완료"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "이용약관",
     "linkPrivacy": "개인정보",
     "linkRefunds": "환불",
-    "linkContact": "문의"
+    "linkContact": "문의",
+    "linkCookies": "쿠키 설정"
+  },
+  "consent": {
+    "label": "쿠키 선택",
+    "body": "이 웹사이트에서 더 나은 경험을 제공하기 위해 쿠키를 사용합니다. 쿠키는 동의하신 경우에만 설정됩니다.",
+    "accept": "동의",
+    "decline": "거부"
   },
   "js": {
     "showFewer": "간략히 보기",

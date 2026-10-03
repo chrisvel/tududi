@@ -59,7 +59,9 @@
                     <a href="/terms"><%= t('footer.linkTerms') %></a>
                     <a href="/privacy"><%= t('footer.linkPrivacy') %></a>
                     <a href="/refunds"><%= t('footer.linkRefunds') %></a>
+                    <button type="button" data-consent-open><%= t('footer.linkCookies') %></button>
                 </p>
             </div>
         </div>
     </footer>
+    <%- include('consent') %>

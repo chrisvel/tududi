@@ -53,7 +53,7 @@ const MCP_TOOL_COUNT = 59;
 // The facts the legal pages are written around. Kept here rather than in the
 // templates so a change of host, provider or backup schedule is one edit, and
 // LEGAL_UPDATED moves with it.
-const LEGAL_UPDATED = '27 September 2026';
+const LEGAL_UPDATED = '3 October 2026';
 const LEGAL_OPERATOR = {
     name: 'Chris Veleris',
     location: 'an individual based in Greece',
@@ -85,7 +85,7 @@ const LEGAL_DOCS = [
     },
 ];
 
-// The template pulls fonts, icons and analytics from a handful of hosts the
+// Google Analytics, loaded only after the visitor consents, needs hosts the
 // app's own policy has no reason to allow, so the marketing responses carry
 // their own policy in place of helmet's. Every form on the page posts back
 // here, hence the bare 'self' form-action.
@@ -93,10 +93,10 @@ function buildCsp() {
     return [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
-        "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+        "style-src 'self' 'unsafe-inline'",
+        "font-src 'self'",
         "img-src 'self' data: https:",
-        "connect-src 'self' https://api.github.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
         "form-action 'self'",
         "frame-src 'none'",
         "object-src 'none'",
@@ -216,6 +216,7 @@ function createLandingRouter(landing) {
                 },
                 appUrl,
                 blogUrl: landing.blogUrl,
+                githubStars: stats.githubStars,
                 dockerPulls: stats.dockerPulls,
                 discordMembers: stats.discordMembers,
                 demo: demoSnapshot(),
@@ -247,7 +248,7 @@ function createLandingRouter(landing) {
         res.setHeader('Cache-Control', 'public, max-age=300');
 
         const stats = getStats();
-        const cacheKey = `${locale}:${stats.dockerPulls}:${stats.discordMembers}`;
+        const cacheKey = `${locale}:${stats.githubStars}:${stats.dockerPulls}:${stats.discordMembers}`;
         // A cached render is the page without the thank-you, so the visitor
         // who just left their address must not be served one.
         const cached = req.query.joined ? null : rendered.get(cacheKey);
@@ -274,6 +275,7 @@ function createLandingRouter(landing) {
                 },
                 appUrl,
                 blogUrl: landing.blogUrl,
+                githubStars: stats.githubStars,
                 dockerPulls: stats.dockerPulls,
                 discordMembers: stats.discordMembers,
                 demo: demoSnapshot(),

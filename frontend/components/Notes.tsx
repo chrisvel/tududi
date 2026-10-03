@@ -132,7 +132,7 @@ const Notes: React.FC = () => {
     );
     const activeNoteStyle: React.CSSProperties = activeNotePhoto
         ? ({
-              backgroundImage: `linear-gradient(var(--note-tint), var(--note-tint)), url(${contentBackgroundUrl(activeNotePhoto, 1600)})`,
+              backgroundImage: `linear-gradient(var(--note-tint), var(--note-tint)), url(${contentBackgroundUrl(activeNotePhoto)})`,
               ...(activeNoteColor && /^#[0-9a-f]{6}$/i.test(activeNoteColor)
                   ? { '--note-tint': `${activeNoteColor}bf` }
                   : {}),

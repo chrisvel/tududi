@@ -1,3 +1,10 @@
+// Counters are never fetched under test; give the stars chip a number so the
+// hero renders as it does in production.
+jest.mock('../../modules/landing/stats', () => {
+    const actual = jest.requireActual('../../modules/landing/stats');
+    return { getStats: () => ({ ...actual.getStats(), githubStars: 1234 }) };
+});
+
 const request = require('supertest');
 const app = require('../../app');
 const { getConfig } = require('../../config/config');
@@ -42,13 +49,50 @@ describe('Landing page', () => {
         expect(res.text).toContain(
             'rel="canonical" href="https://tududi.com/"'
         );
-        expect(res.headers['content-security-policy']).toContain(
-            'fonts.googleapis.com'
+        // Fonts, icons and counters are served from here, so nothing but
+        // consented analytics leaves the page.
+        expect(res.headers['content-security-policy']).not.toMatch(
+            /fonts\.googleapis|fonts\.gstatic|cdnjs|api\.github\.com/
         );
         // Every form on the page posts back here, nowhere else.
         expect(res.headers['content-security-policy']).toContain(
             "form-action 'self';"
         );
+    });
+
+    it('loads nothing from third parties until analytics is allowed', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.status).toBe(200);
+
+        expect(res.text).not.toMatch(
+            /fonts\.googleapis|fonts\.gstatic|cdnjs\.cloudflare|img\.shields\.io|api\.github\.com/
+        );
+        expect(res.text).toContain('/landing-assets/fonts/fonts.css');
+        // gtag.js is only named inside the loader, never as a script tag.
+        expect(res.text).not.toMatch(/<script[^>]+googletagmanager/);
+        expect(res.text).toContain(
+            "localStorage.getItem('tududi_analytics') === 'granted'"
+        );
+        // The banner ships hidden and the script reveals it, with refusing
+        // as one click like accepting, and a footer link to reopen it.
+        expect(res.text).toMatch(
+            /<div class="consent" id="consent"[^>]* hidden>/
+        );
+        expect(res.text).toContain('data-consent="denied"');
+        expect(res.text).toContain('data-consent="granted"');
+        expect(res.text).toContain('data-consent-open');
+    });
+
+    it('serves the self-hosted fonts and icons', async () => {
+        for (const asset of [
+            '/landing-assets/fonts/fonts.css',
+            '/landing-assets/fonts/inter-latin.woff2',
+            '/landing-assets/vendor/fontawesome/css/all.min.css',
+            '/landing-assets/vendor/fontawesome/webfonts/fa-solid-900.woff2',
+        ]) {
+            const res = await request(app).get(asset).set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+        }
     });
 
     it('renders other locales at their own path', async () => {

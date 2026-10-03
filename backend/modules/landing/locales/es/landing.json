@@ -20,7 +20,6 @@
     "badgeStars": "estrellas en GitHub",
     "badgeMcp": "Servidor MCP integrado",
     "badgeCloudOpen": "tududi Cloud ya está abierto",
-    "starsLoading": "Cargando el número de estrellas",
     "ctaDemo": "Prueba la demo en vivo",
     "demoNote": "Una instancia alojada real, con datos de ejemplo, compartida y reiniciada con regularidad",
     "screenshotAlt": "La interfaz de tududi, con la vista Hoy y sus tareas planificadas",
@@ -36,7 +35,6 @@
     "languages": "{{count}} idiomas",
     "dockerPulls": "descargas de Docker",
     "discord": "miembros en Discord",
-    "discordAlt": "Discord: {{count}} miembros",
     "minute": "Listo en un minuto"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Términos",
     "linkPrivacy": "Privacidad",
     "linkRefunds": "Reembolsos",
-    "linkContact": "Contacto"
+    "linkContact": "Contacto",
+    "linkCookies": "Configuración de cookies"
+  },
+  "consent": {
+    "label": "Elección de cookies",
+    "body": "Usamos cookies para mejorar tu experiencia en este sitio web. Solo se activan si las aceptas.",
+    "accept": "Aceptar",
+    "decline": "Rechazar"
   },
   "js": {
     "showFewer": "Ver menos",

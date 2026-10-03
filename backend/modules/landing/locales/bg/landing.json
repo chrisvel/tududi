@@ -20,7 +20,6 @@
     "badgeStars": "звезди в GitHub",
     "badgeMcp": "Вграден MCP сървър",
     "badgeCloudOpen": "tududi Cloud вече е отворен",
-    "starsLoading": "Зареждане на броя звезди",
     "ctaDemo": "Изпробвайте демото на живо",
     "demoNote": "Реална хоствана инстанция с примерни данни, споделена и редовно нулирана",
     "screenshotAlt": "Интерфейсът на tududi с изгледа Днес и планираните задачи",
@@ -36,7 +35,6 @@
     "languages": "{{count}} езика",
     "dockerPulls": "изтегляния от Docker",
     "discord": "членове в Discord",
-    "discordAlt": "Discord: {{count}} членове",
     "minute": "Настроено за минута"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Условия",
     "linkPrivacy": "Поверителност",
     "linkRefunds": "Възстановяване",
-    "linkContact": "Контакт"
+    "linkContact": "Контакт",
+    "linkCookies": "Настройки за бисквитки"
+  },
+  "consent": {
+    "label": "Избор за бисквитки",
+    "body": "Използваме бисквитки, за да подобрим вашето изживяване на този сайт. Задават се само ако ги приемете.",
+    "accept": "Приемам",
+    "decline": "Отказвам"
   },
   "js": {
     "showFewer": "Покажи по-малко",

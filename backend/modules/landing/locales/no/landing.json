@@ -20,7 +20,6 @@
     "badgeStars": "stjerner på GitHub",
     "badgeMcp": "MCP-server innebygd",
     "badgeCloudOpen": "tududi Cloud er nå åpen",
-    "starsLoading": "Laster antall stjerner",
     "ctaDemo": "Prøv live-demoen",
     "demoNote": "En ekte hostet instans med eksempeldata, delt og nullstilles jevnlig",
     "screenshotAlt": "Grensesnittet i tududi, med I dag-visningen og de planlagte oppgavene",
@@ -36,7 +35,6 @@
     "languages": "{{count}} språk",
     "dockerPulls": "Docker-nedlastinger",
     "discord": "Discord-medlemmer",
-    "discordAlt": "Discord: {{count}} medlemmer",
     "minute": "Satt opp på ett minutt"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Vilkår",
     "linkPrivacy": "Personvern",
     "linkRefunds": "Refusjon",
-    "linkContact": "Kontakt"
+    "linkContact": "Kontakt",
+    "linkCookies": "Innstillinger for informasjonskapsler"
+  },
+  "consent": {
+    "label": "Informasjonskapselvalg",
+    "body": "Vi bruker informasjonskapsler for å forbedre opplevelsen din på dette nettstedet. De settes bare hvis du godtar dem.",
+    "accept": "Godta",
+    "decline": "Avslå"
   },
   "js": {
     "showFewer": "Vis færre",

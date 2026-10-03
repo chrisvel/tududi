@@ -20,7 +20,6 @@
     "badgeStars": "GitHub 星标",
     "badgeMcp": "内置 MCP 服务器",
     "badgeCloudOpen": "tududi Cloud 现已开放",
-    "starsLoading": "正在加载星标数",
     "ctaDemo": "试用在线演示",
     "demoNote": "一个真实的托管实例，内含示例数据，共享使用并定期重置",
     "screenshotAlt": "tududi 的界面，显示「今天」视图和已规划的任务",
@@ -36,7 +35,6 @@
     "languages": "{{count}} 种语言",
     "dockerPulls": "次 Docker 拉取",
     "discord": "位 Discord 成员",
-    "discordAlt": "Discord：{{count}} 位成员",
     "minute": "一分钟内完成设置"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "条款",
     "linkPrivacy": "隐私",
     "linkRefunds": "退款",
-    "linkContact": "联系我们"
+    "linkContact": "联系我们",
+    "linkCookies": "Cookie 设置"
+  },
+  "consent": {
+    "label": "Cookie 选择",
+    "body": "我们使用 Cookie 来改善你在本网站的体验。只有在你接受后才会设置 Cookie。",
+    "accept": "接受",
+    "decline": "拒绝"
   },
   "js": {
     "showFewer": "收起",

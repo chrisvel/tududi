@@ -1,6 +1,11 @@
+import { getAssetPath } from '../config/paths';
+
 // Backgrounds a user can pick for the main content area (Profile > Appearance).
-// Photos are hotlinked from the Unsplash CDN, as the Unsplash guidelines ask,
-// and every one is credited to its photographer wherever it is shown.
+// Unsplash photos, served from public/backgrounds rather than the Unsplash CDN
+// so showing one sends the viewer's address to nobody else. Every one is
+// credited to its photographer wherever it is shown. Each has a 1920px file
+// (<id>.webp) and a 320px thumbnail for the pickers (<id>-thumb.webp); `photo`
+// is the Unsplash id they were downloaded from.
 export interface ContentBackground {
     id: string;
     name: string;
@@ -137,9 +142,11 @@ export const findContentBackground = (
 
 export const contentBackgroundUrl = (
     bg: ContentBackground,
-    width = 2400
+    size: 'full' | 'thumb' = 'full'
 ): string =>
-    `https://images.unsplash.com/photo-${bg.photo}?auto=format&fit=crop&w=${width}&q=80`;
+    getAssetPath(
+        `backgrounds/${bg.id}${size === 'thumb' ? '-thumb' : ''}.webp`
+    );
 
 export const photographerUrl = (bg: ContentBackground): string =>
     `https://unsplash.com/@${bg.username}?${UTM}`;

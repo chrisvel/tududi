@@ -98,7 +98,7 @@ describe('PublicNotePage', () => {
         expect(card.style.backgroundColor).not.toBe('');
         expect(
             screen.getByTestId('public-note-background').style.backgroundImage
-        ).toContain('images.unsplash.com');
+        ).toContain('backgrounds/mural.webp');
         expect(screen.getByTestId('photo-credit')).toBeInTheDocument();
     });
 

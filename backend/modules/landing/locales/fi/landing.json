@@ -20,7 +20,6 @@
     "badgeStars": "tähteä GitHubissa",
     "badgeMcp": "MCP-palvelin sisäänrakennettuna",
     "badgeCloudOpen": "tududi Cloud on nyt avoinna",
-    "starsLoading": "Ladataan tähtien määrää",
     "ctaDemo": "Kokeile live-demoa",
     "demoNote": "Aito isännöity instanssi esimerkkidatalla, jaettu ja nollataan säännöllisesti",
     "screenshotAlt": "tududin käyttöliittymä, jossa näkyy Tänään-näkymä ja suunnitellut tehtävät",
@@ -36,7 +35,6 @@
     "languages": "{{count}} kieltä",
     "dockerPulls": "Docker-latausta",
     "discord": "Discord-jäsentä",
-    "discordAlt": "Discord: {{count}} jäsentä",
     "minute": "Käyttövalmis minuutissa"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Ehdot",
     "linkPrivacy": "Tietosuoja",
     "linkRefunds": "Hyvitykset",
-    "linkContact": "Yhteystiedot"
+    "linkContact": "Yhteystiedot",
+    "linkCookies": "Evästeasetukset"
+  },
+  "consent": {
+    "label": "Evästevalinta",
+    "body": "Käytämme evästeitä parantaaksemme kokemustasi tällä sivustolla. Ne asetetaan vain, jos hyväksyt ne.",
+    "accept": "Hyväksy",
+    "decline": "Hylkää"
   },
   "js": {
     "showFewer": "Näytä vähemmän",

@@ -20,7 +20,6 @@
     "badgeStars": "bintang di GitHub",
     "badgeMcp": "Server MCP bawaan",
     "badgeCloudOpen": "tududi Cloud kini dibuka",
-    "starsLoading": "Memuat jumlah bintang",
     "ctaDemo": "Coba demo langsung",
     "demoNote": "Instance terkelola sungguhan dengan data contoh, dipakai bersama dan direset secara berkala",
     "screenshotAlt": "Antarmuka tududi, menampilkan tampilan Hari Ini dengan tugas yang direncanakan",
@@ -36,7 +35,6 @@
     "languages": "{{count}} bahasa",
     "dockerPulls": "unduhan Docker",
     "discord": "anggota Discord",
-    "discordAlt": "Discord: {{count}} anggota",
     "minute": "Disiapkan dalam satu menit"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Ketentuan",
     "linkPrivacy": "Privasi",
     "linkRefunds": "Pengembalian dana",
-    "linkContact": "Kontak"
+    "linkContact": "Kontak",
+    "linkCookies": "Pengaturan cookie"
+  },
+  "consent": {
+    "label": "Pilihan cookie",
+    "body": "Kami menggunakan cookie untuk meningkatkan pengalaman Anda di situs ini. Cookie hanya dipasang jika Anda menerimanya.",
+    "accept": "Terima",
+    "decline": "Tolak"
   },
   "js": {
     "showFewer": "Tampilkan lebih sedikit",

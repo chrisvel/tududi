@@ -165,7 +165,7 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
                             key={bg.id}
                             label={bg.name}
                             caption={bg.photographer}
-                            imageUrl={contentBackgroundUrl(bg, 320)}
+                            imageUrl={contentBackgroundUrl(bg, 'thumb')}
                             selected={contentBackground === bg.id}
                             onSelect={() => onContentBackgroundChange(bg.id)}
                         />

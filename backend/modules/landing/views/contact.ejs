@@ -2,24 +2,13 @@
 <!DOCTYPE html>
 <html lang="<%= i18n.meta.htmlLang %>" dir="<%= i18n.meta.dir || 'ltr' %>">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-VC2N7ZBPEE', { page_locale: '<%= i18n.locale %>' });
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= t('contact.title') %> · tududi</title>
     <meta name="description" content="<%= t('contact.lede') %>">
     <link rel="canonical" href="<%= canonicalUrl %>" />
     <link rel="icon" href="/landing-assets/favicon.ico">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <%- include('partials/head-assets') %>
     <%- include('partials/styles') %>
     <style>
         .contact { padding: 120px 16px 80px; }

@@ -20,7 +20,6 @@
     "badgeStars": "zvezdic na GitHubu",
     "badgeMcp": "Vgrajen strežnik MCP",
     "badgeCloudOpen": "tududi Cloud je zdaj odprt",
-    "starsLoading": "Nalaganje števila zvezdic",
     "ctaDemo": "Preizkusite demo v živo",
     "demoNote": "Prava gostovana instanca z vzorčnimi podatki, deljena in redno ponastavljena",
     "screenshotAlt": "Vmesnik tududi s pogledom Danes in načrtovanimi opravili",
@@ -36,7 +35,6 @@
     "languages": "{{count}} jezikov",
     "dockerPulls": "prenosov z Dockerja",
     "discord": "članov na Discordu",
-    "discordAlt": "Discord: {{count}} članov",
     "minute": "Nastavljeno v minuti"
   },
   "press": {
@@ -333,7 +331,14 @@
     "linkTerms": "Pogoji",
     "linkPrivacy": "Zasebnost",
     "linkRefunds": "Vračila",
-    "linkContact": "Kontakt"
+    "linkContact": "Kontakt",
+    "linkCookies": "Nastavitve piškotkov"
+  },
+  "consent": {
+    "label": "Izbira piškotkov",
+    "body": "Piškotke uporabljamo za boljšo izkušnjo na tem spletnem mestu. Nastavijo se le, če jih sprejmete.",
+    "accept": "Sprejmi",
+    "decline": "Zavrni"
   },
   "js": {
     "showFewer": "Pokaži manj",

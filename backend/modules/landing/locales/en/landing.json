@@ -20,7 +20,6 @@
     "badgeStars": "stars on GitHub",
     "badgeMcp": "MCP server built in",
     "badgeCloudOpen": "tududi Cloud is now open",
-    "starsLoading": "Loading star count",
     "titleLine1": "Productivity made simple",
     "titleLine2": "",
     "lede": "Capture anything, plan your day with AI around your calendar, and keep areas, goals, projects, notes and habits in one system. Create a Cloud account in a minute.",
@@ -36,7 +35,6 @@
     "languages": "{{count}} languages",
     "dockerPulls": "Docker pulls",
     "discord": "Discord members",
-    "discordAlt": "Discord: {{count}} members",
     "minute": "Set up in a minute"
   },
   "press": {
@@ -386,7 +384,14 @@
     "linkTerms": "Terms",
     "linkPrivacy": "Privacy",
     "linkRefunds": "Refunds",
-    "linkContact": "Contact"
+    "linkContact": "Contact",
+    "linkCookies": "Cookie settings"
+  },
+  "consent": {
+    "label": "Cookie choice",
+    "body": "We use cookies to improve your experience on this website. They are only set if you accept.",
+    "accept": "Accept",
+    "decline": "Decline"
   },
   "js": {
     "showFewer": "Show fewer",

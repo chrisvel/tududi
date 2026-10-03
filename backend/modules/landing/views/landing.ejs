@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html lang="<%= i18n.meta.htmlLang %>" dir="<%= i18n.meta.dir || 'ltr' %>">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      // page_locale separates the five homepages without a second property.
-      // GA's built-in language dimension is the *browser's* language, which is
-      // a different question from which language we actually served.
-      gtag('config', 'G-VC2N7ZBPEE', { page_locale: '<%= i18n.locale %>' });
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= i18n.t('meta.title') %></title>
@@ -118,10 +105,7 @@
         }),
     }) %></script>
     <link rel="icon" href="/landing-assets/favicon.ico">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <%- include('partials/head-assets') %>
     <%- include('partials/styles') %>
 </head>
 <body>
@@ -275,11 +259,13 @@
                     <span><%= t('hero.badgeCloudOpen') %></span>
                     <i class="fas fa-arrow-right hero-badge-arrow" aria-hidden="true"></i>
                 </a>
+                <% if (githubStars) { %>
                 <span class="hero-badge">
                     <i class="fab fa-github"></i>
-                    <strong data-github-stars><span class="stars-spinner" role="status" aria-label="<%= t('hero.starsLoading') %>"></span></strong>
+                    <strong><%= githubStars.toLocaleString() %></strong>
                     <span><%= t('hero.badgeStars') %></span>
                 </span>
+                <% } %>
                 <span class="hero-badge">
                     <i class="fas fa-plug"></i>
                     <span><%= t('hero.badgeMcp') %></span>
@@ -370,11 +356,13 @@
                 <% }); %>
             </div>
             <div class="proofbar-stats">
+                <% if (githubStars) { %>
                 <span class="proofbar-item">
                     <i class="fab fa-github"></i>
-                    <strong data-github-stars><span class="stars-spinner" role="status" aria-label="<%= t('hero.starsLoading') %>"></span></strong> <%= t('proof.stars') %>
+                    <strong><%= githubStars.toLocaleString() %></strong> <%= t('proof.stars') %>
                 </span>
                 <span class="proofbar-sep">&middot;</span>
+                <% } %>
                 <span class="proofbar-item"><%= t('proof.mcp', { tools: mcpToolCount }) %></span>
                 <span class="proofbar-sep">&middot;</span>
                 <span class="proofbar-item"><%= t('proof.languages', { count: languageCount }) %></span>
@@ -914,10 +902,12 @@
                 <%= t('footer.subBody') %>
             </p>
             <div class="waitlist-proof">
+                <% if (githubStars) { %>
                 <a href="https://github.com/chrisvel/tududi" class="waitlist-proof-item" rel="noopener">
                     <i class="fab fa-github"></i>
-                    <strong data-github-stars><span class="stars-spinner" role="status" aria-label="<%= t('hero.starsLoading') %>"></span></strong> <%= t('proof.stars') %>
+                    <strong><%= githubStars.toLocaleString() %></strong> <%= t('proof.stars') %>
                 </a>
+                <% } %>
                 <a href="https://discord.gg/fkbeJ9CmcH" class="waitlist-proof-item" rel="noopener">
                     <i class="fab fa-discord"></i>
                     <% if (discordMembers) { %><strong><%= discordMembers.toLocaleString() %></strong> <%= t('proof.discord') %><% } else { %>Discord<% } %>
@@ -969,19 +959,16 @@
             <h2 class="section-title" style="font-size:30px; margin-bottom:16px;"><%= t('community.title') %></h2>
             <p class="section-sub" style="font-size:18px; margin-bottom:32px;"><%= t('community.sub') %></p>
             <div class="community-badges">
-                <%# The count is baked into a static badge rather than fetched by
-                    shields.io's own /discord/:id endpoint, which needs the server
-                    widget enabled and otherwise renders "WIDGET DISABLED". Falls
-                    back to the plain join label until the first fetch lands. %>
-                <a href="https://discord.gg/fkbeJ9CmcH">
-                    <% if (discordMembers) { %>
-                    <img src="https://img.shields.io/badge/Discord-<%= discordMembers.toLocaleString() %>%20members-7289da?logo=discord&logoColor=white&style=for-the-badge" alt="<%= t('proof.discordAlt', { count: discordMembers.toLocaleString() }) %>">
-                    <% } else { %>
-                    <img src="https://img.shields.io/badge/Discord-Join%20Server-7289da?logo=discord&logoColor=white&style=for-the-badge" alt="Discord">
-                    <% } %>
+                <%# Plain links styled as badges rather than shields.io images, so
+                    the page loads nothing from a third party. The Discord count
+                    comes from the server-side cache in stats.js and falls back to
+                    the plain join label until the first fetch lands. %>
+                <a href="https://discord.gg/fkbeJ9CmcH" class="community-badge community-badge-discord">
+                    <i class="fab fa-discord" aria-hidden="true"></i>
+                    <% if (discordMembers) { %><strong><%= discordMembers.toLocaleString() %></strong> <%= t('proof.discord') %><% } else { %>Discord<% } %>
                 </a>
-                <a href="https://www.reddit.com/r/tududi/">
-                    <img src="https://img.shields.io/reddit/subreddit-subscribers/tududi?color=ff4500&label=Reddit&logo=reddit&logoColor=white&style=for-the-badge" alt="Reddit">
+                <a href="https://www.reddit.com/r/tududi/" class="community-badge community-badge-reddit">
+                    <i class="fab fa-reddit-alien" aria-hidden="true"></i> r/tududi
                 </a>
             </div>
         </div>
@@ -1002,39 +989,6 @@
 
     <script>
         const T = window.__I18N || {};
-
-        // Live star count replaces the spinner baked into the markup. Three
-        // elements show it now - the hero badge, the proof bar and the row
-        // above the waitlist form - so this writes to every
-        // [data-github-stars] rather than a single id.
-        //
-        // There is deliberately no static fallback figure: a hardcoded number
-        // goes stale between deploys. But a spinner that never resolves is
-        // worse than no claim at all, so if the fetch fails - GitHub rate
-        // limits anonymous callers at 60/hr per IP - the item is removed
-        // entirely, the same way the proof bar drops a missing pull count.
-        async function fetchGitHubStars() {
-            const targets = document.querySelectorAll('[data-github-stars]');
-            try {
-                const response = await fetch('https://api.github.com/repos/chrisvel/tududi');
-                if (!response.ok) throw new Error('GitHub responded ' + response.status);
-                const data = await response.json();
-                if (typeof data.stargazers_count !== 'number') {
-                    throw new Error('no stargazers_count in response');
-                }
-                const count = data.stargazers_count.toLocaleString();
-                targets.forEach((el) => { el.textContent = count; });
-            } catch (error) {
-                targets.forEach((el) => {
-                    const item = el.closest('.hero-badge, .proofbar-item, .waitlist-proof-item');
-                    if (!item) return;
-                    const sep = item.nextElementSibling;
-                    if (sep && sep.classList.contains('proofbar-sep')) sep.remove();
-                    item.remove();
-                });
-            }
-        }
-        fetchGitHubStars();
 
         // Mobile menu toggle
         const navToggle = document.getElementById('nav-toggle');
