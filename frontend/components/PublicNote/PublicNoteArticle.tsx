@@ -62,7 +62,9 @@ const PublicNoteArticle: React.FC<PublicNoteArticleProps> = ({
             }
         >
             <header className="mb-6">
-                <h1 className="text-3xl font-light break-words">
+                <h1
+                    className={`text-[2rem] leading-[2rem] font-medium break-words ${noteColor ? '' : 'text-gray-900 dark:text-gray-100'}`}
+                >
                     {title || t('notes.untitled', 'Untitled Note')}
                 </h1>
                 {updated && (
