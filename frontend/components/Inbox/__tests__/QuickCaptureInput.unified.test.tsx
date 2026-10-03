@@ -16,6 +16,7 @@ import {
     createInboxItemWithStore,
     deleteInboxItemWithStore,
     analyzeInboxText,
+    submitCapture,
 } from '../../../utils/inboxService';
 
 jest.mock('react-i18next', () => ({
@@ -78,6 +79,7 @@ jest.mock('../../../utils/projectsService', () => ({
 jest.mock('../../../utils/inboxService', () => ({
     ...jest.requireActual('../../../utils/inboxService'),
     analyzeInboxText: jest.fn(),
+    submitCapture: jest.fn(),
     createInboxItemWithStore: jest.fn(),
     deleteInboxItemWithStore: jest.fn(),
 }));
@@ -133,6 +135,12 @@ describe('QuickCaptureInput unified capture', () => {
         resetCaptureSettingsCache();
         (window as any).matchMedia = undefined;
         showErrorToast.mockReset();
+        (submitCapture as jest.Mock)
+            .mockReset()
+            .mockResolvedValue({
+                kind: 'task',
+                task: { uid: 'direct-task', name: 'Call Sam' },
+            });
         createTaskInStore.mockReset().mockResolvedValue({ uid: 'task-1' });
         deleteTaskInStore.mockReset().mockResolvedValue(undefined);
         setProjects.mockReset();
@@ -183,6 +191,32 @@ describe('QuickCaptureInput unified capture', () => {
         expect(screen.getByTestId('capture-status')).toHaveTextContent(
             'Removed. Nothing was saved.'
         );
+    });
+
+    it('reports and undoes the actual destinations in a mixed Inbox batch', async () => {
+        const onCaptured = jest.fn();
+        renderBox({ onCaptured });
+        updateCaptureSettings({ oneItemPerLine: true });
+        type('Call Sam =Task\nAn idea');
+        await clickAdd();
+        expect(submitCapture).toHaveBeenCalledWith(
+            'Call Sam =Task',
+            expect.any(String)
+        );
+        expect(createInboxItemWithStore).toHaveBeenCalledWith('An idea');
+        expect(createTaskInStore).not.toHaveBeenCalled();
+        expect(onCaptured).toHaveBeenCalledWith([
+            { target: 'task', uid: 'direct-task', title: 'Call Sam' },
+            { target: 'inbox', uid: 'inbox-1', title: 'An idea' },
+        ]);
+        expect(screen.getByTestId('capture-status')).toHaveTextContent(
+            'Created task "Call Sam". Saved "An idea" to Inbox.'
+        );
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('capture-undo'));
+        });
+        expect(deleteTaskInStore).toHaveBeenCalledWith('direct-task');
+        expect(deleteInboxItemWithStore).toHaveBeenCalledWith('inbox-1');
     });
 
     it('replaces the status line with the hint as soon as you type again', async () => {

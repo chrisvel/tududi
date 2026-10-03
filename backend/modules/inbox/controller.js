@@ -2,6 +2,7 @@
 
 const inboxService = require('./service');
 const { validateReferenceDate } = require('./validation');
+const { capture } = require('./captureService');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 
@@ -24,6 +25,19 @@ function processTarget(body = {}) {
 }
 
 const inboxController = {
+    async capture(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await capture(
+                { id: userId, timezone: req.currentUser?.timezone },
+                req.body
+            );
+            res.status(201).json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async list(req, res, next) {
         try {
             const userId = requireUserId(req);

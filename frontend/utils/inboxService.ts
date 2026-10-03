@@ -6,6 +6,37 @@ import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
 
+export class CaptureValidationError extends Error {
+    constructor(
+        public code: string,
+        message: string
+    ) {
+        super(message);
+        this.name = 'CaptureValidationError';
+    }
+}
+
+export type CaptureResult =
+    { kind: 'task'; task: Task } | { kind: 'inbox'; item: InboxItem };
+
+export const submitCapture = async (
+    content: string,
+    requestId: string
+): Promise<CaptureResult> => {
+    const response = await fetch(getApiPath('inbox/capture'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({ content, request_id: requestId }),
+    });
+    if (response.status === 400 || response.status === 409) {
+        const body = await response.json();
+        throw new CaptureValidationError(body.code, body.error);
+    }
+    await handleAuthResponse(response, 'Failed to save capture.');
+    return response.json();
+};
+
 export interface InboxRecurrence {
     recurrence_type: RecurrenceType;
     recurrence_interval?: number;
@@ -148,9 +179,7 @@ export const updateInboxItem = async (
 
 // What an item became when it was processed. The item's files move onto it.
 export type ProcessedInto =
-    | { task_uid: string }
-    | { project_uid: string }
-    | { note_uid: string };
+    { task_uid: string } | { project_uid: string } | { note_uid: string };
 
 export const processInboxItem = async (
     itemUid: string,
