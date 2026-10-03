@@ -71,11 +71,11 @@ const NoteBadge: React.FC<{ title: string; locked?: boolean }> = ({
     title,
     locked = false,
 }) => (
-    <span className="inline-flex items-baseline align-baseline rounded overflow-hidden border border-blue-200 dark:border-blue-700/70 mx-0.5 leading-snug">
-        <span className="self-stretch flex items-center px-1.5 text-[0.72em] font-bold uppercase tracking-wide text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60">
+    <span className="inline-flex items-baseline align-baseline rounded overflow-hidden mx-0.5 leading-snug">
+        <span className="self-stretch flex items-center px-1.5 text-[0.72em] font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 bg-gray-200/80 dark:bg-gray-700/80">
             NOTE:
         </span>
-        <span className="inline-flex items-baseline gap-1 px-1.5 py-px text-[0.9em] text-blue-700 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-900/30">
+        <span className="inline-flex items-baseline gap-1 px-1.5 py-px text-[0.9em] text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800">
             {locked && <LockClosedIcon className="h-3 w-3 self-center" />}
             {title}
         </span>
@@ -435,7 +435,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                         }
                         return (
                             <a
-                                className="text-blue-600 dark:text-blue-400 hover:underline"
+                                className="underline underline-offset-2 decoration-gray-400 dark:decoration-gray-500 hover:decoration-current"
                                 href={href}
                                 {...props}
                             >

@@ -15,11 +15,6 @@ import {
 import { EditorState, Compartment } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands';
-import {
-    syntaxHighlighting,
-    defaultHighlightStyle,
-} from '@codemirror/language';
-import { oneDark } from '@codemirror/theme-one-dark';
 import FormattingToolbar from './FormattingToolbar';
 import SlashCommandMenu, { SlashCommand } from './SlashCommandMenu';
 import WikilinkMenu, { NoteTitle } from './WikilinkMenu';
@@ -27,6 +22,7 @@ import MissingNotePrompt from './MissingNotePrompt';
 import { createNote } from '../../utils/notesService';
 import { useNavigate } from 'react-router-dom';
 import { livePreviewExtension } from './editor';
+import { neutralEditorTheme } from './editor/highlightStyle';
 import { blockUxKeymap } from './editor/keymaps';
 import { isTouchScreen, touchReading } from './editor/touchReading';
 import { blockHandlePlugin, blockHandleTheme } from './editor/blockHandle';
@@ -414,7 +410,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
         const getThemeExtension = () => {
             const isDark = document.documentElement.classList.contains('dark');
-            return isDark ? oneDark : syntaxHighlighting(defaultHighlightStyle);
+            return neutralEditorTheme(isDark);
         };
 
         const colorOverride = noteColor
