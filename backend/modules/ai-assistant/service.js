@@ -263,6 +263,35 @@ async function callWithFallback(client, userId, params) {
     return response;
 }
 
+// One request plus one credit, charged before the call like the briefs.
+async function chargeAiCall(userId) {
+    await entitlements.consumeUsage(userId, 'ai_requests');
+    await entitlements.consumeMonthlyUsage(userId, 'ai_credits');
+}
+
+// A system + user prompt that must come back as one JSON object. Budgets
+// are generous on purpose: reasoning models spend most of them thinking
+// before the JSON starts, and a cut-off answer parses to nothing.
+async function askJson(userId, { name, system, user, schema, maxTokens }) {
+    const client = await getOpenAIClient(userId);
+    const response = await callWithFallback(client, userId, {
+        model: await getAIModel(userId),
+        messages: [
+            { role: 'system', content: system },
+            { role: 'user', content: user },
+        ],
+        max_tokens: maxTokens,
+        ...getExtraBodyParams(),
+        response_format: buildResponseFormat(name, schema),
+    });
+    const raw = extractMessageContent(response.choices[0]?.message);
+    try {
+        return JSON.parse(extractJSON(raw));
+    } catch {
+        return {};
+    }
+}
+
 async function fetchUserContext(userId) {
     const user = await User.findByPk(userId, {
         attributes: ['id', 'timezone', 'email', 'ai_profile'],
@@ -967,8 +996,11 @@ Rules:
 module.exports = {
     resolveAIConfig,
     isAIConfigured,
-    // Shared with other AI features (daily plan) so they call the provider
-    // the same way: same client, fallbacks, JSON handling and accounting.
+    // Shared with other AI features (daily plan, inbox) so they call the
+    // provider the same way: same client, fallbacks, JSON handling and
+    // accounting.
+    chargeAiCall,
+    askJson,
     getOpenAIClient,
     getAIModel,
     getMaxTokens,

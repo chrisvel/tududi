@@ -61,6 +61,16 @@ module.exports = (sequelize) => {
                 type: DataTypes.TEXT,
                 allowNull: true,
             },
+            // Last AI assist result ({ item_uid, options, generated_at }).
+            ai_suggestion: {
+                type: DataTypes.JSON,
+                allowNull: true,
+            },
+            // sha1 of the text and file names the suggestion was made from.
+            ai_suggestion_key: {
+                type: DataTypes.STRING(40),
+                allowNull: true,
+            },
         },
         {
             tableName: 'inbox_items',

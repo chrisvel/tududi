@@ -1,7 +1,7 @@
 'use strict';
 
 const { Op, fn, col, where } = require('sequelize');
-const { InboxItem, Project } = require('../../models');
+const { InboxItem, Project, Tag } = require('../../models');
 const {
     ownershipOrPermissionWhere,
 } = require('../../services/permissionsService');
@@ -13,6 +13,7 @@ const PUBLIC_ATTRIBUTES = [
     'content',
     'status',
     'source',
+    'ai_suggestion',
     'created_at',
     'updated_at',
 ];
@@ -80,6 +81,45 @@ class InboxRepository extends BaseRepository {
     async markProcessed(item) {
         await item.update({ status: 'processed' });
         return item;
+    }
+
+    async findActiveByUids(userId, uids) {
+        return this.model.findAll({
+            where: {
+                user_id: userId,
+                uid: { [Op.in]: uids },
+                status: { [Op.notIn]: ['deleted', 'trashed', 'processed'] },
+            },
+            order: [['created_at', 'DESC']],
+        });
+    }
+
+    // Open projects the user can file things into, for the AI to choose from.
+    async findOpenProjectsForUser(userId, limit) {
+        const accessWhere = await ownershipOrPermissionWhere('project', userId);
+        return Project.findAll({
+            where: {
+                [Op.and]: [
+                    accessWhere,
+                    { status: { [Op.notIn]: ['done', 'cancelled'] } },
+                ],
+            },
+            attributes: ['uid', 'name'],
+            order: [['updated_at', 'DESC']],
+            limit,
+            raw: true,
+        });
+    }
+
+    async findTagNamesForUser(userId, limit) {
+        const tags = await Tag.findAll({
+            where: { user_id: userId },
+            attributes: ['name'],
+            order: [['name', 'ASC']],
+            limit,
+            raw: true,
+        });
+        return tags.map((tag) => tag.name);
     }
 
     // A project the user owns or has been shared, matched by name the way

@@ -75,6 +75,7 @@ LLM_MAX_TOKENS_PROJECT_INSIGHTS=600   # default 600
 LLM_MAX_TOKENS_DAY_PLAN=6000          # default 6000 (Draft with AI)
 LLM_MAX_TOKENS_ESTIMATES=4000         # default 4000 (task length guesses)
 LLM_MAX_TOKENS_WRAP_UP=3000           # default 3000 (day wrap-up)
+LLM_MAX_TOKENS_INBOX=21000            # default 4000 + 1300 per item, max 32000 (inbox AI assist)
 ```
 
 Non-numeric or non-positive values are ignored and fall back to the default.
@@ -208,6 +209,12 @@ Appears in the project detail panel. Generated on demand and cached per project.
 
 Help in the planner and on Today (see [Daily Plan](20-daily-plan.md#ai-help)): **Draft with AI**, length guesses for tasks without an estimate, and an end-of-day wrap-up. It follows the same per-user **AI assistant** switch as everything above; with it off, the UI hides these and the endpoints return `403`. Each draft, estimate batch or wrap-up costs one AI credit in hosted mode. The planning tips ("30m free at 09:30 fits …") are worked out locally and never call the model.
 
+### Inbox AI assist
+
+On the Inbox (see [Inbox Page](04-inbox-page.md#ai-assist)), **AI assist** suggests one to three options for what each captured item should become (task, note, project, or keep in the inbox), each with a name, project, tags, due date, a `confidence` of `sure` or `guess`, and an explanation: a one-line reason, a short analysis, and where each proposed value came from. Unclear items (e.g. only an attached file) get a best guess rather than "keep"; the model sees attached file names and types. Accepting opens the usual prefilled modal, so nothing is created without review.
+
+Unlike the features above, it does not follow the AI assistant switch: it is available whenever a provider is configured (`isAIConfigured`), so always on hosted instances and on self-hosted ones once a key is set in Profile → AI Assistant or `.env`; otherwise the endpoint returns `403`. One call (one credit in hosted mode) covers up to 25 items. Suggestions are saved on the item (`inbox_items.ai_suggestion`, with `ai_suggestion_key` fingerprinting the text and file names) and returned with the inbox list; a later call reuses them until the item changes, unless `regenerate: true` is sent. `DELETE /api/inbox/:uid/ai-suggestion` dismisses one. Code: `backend/modules/inbox/ai.js`.
+
 ---
 
 ## API Endpoints
@@ -225,6 +232,8 @@ Help in the planner and on Today (see [Daily Plan](20-daily-plan.md#ai-help)): *
 | `POST` | `/api/daily-plan/ai/draft` | Draft the day (body: `{ date, mode: "fill" \| "replace" }`); returned, not saved |
 | `POST` | `/api/daily-plan/ai/estimates` | Guess lengths for up to 40 tasks (body: `{ task_uids }`) |
 | `POST` | `/api/daily-plan/:date/ai/wrap-up` | Generate and store the day's wrap-up |
+| `POST` | `/api/inbox/ai/suggest` | Suggest 1-3 options for each of up to 25 inbox items, with explanations (body: `{ item_uids, regenerate? }`); saved on the items, nothing else is created |
+| `DELETE` | `/api/inbox/:uid/ai-suggestion` | Dismiss an item's saved suggestion |
 | `GET` | `/api/profile/ai-settings` | Return the caller's AI provider settings (API key masked) |
 | `PUT` | `/api/profile/ai-settings` | Set/clear the caller's `ai_api_key`/`ai_base_url`/`ai_model` |
 

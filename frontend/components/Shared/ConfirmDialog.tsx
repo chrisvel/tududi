@@ -7,6 +7,9 @@ interface ConfirmDialogProps {
     onConfirm: () => void;
     onCancel: () => void;
     confirmButtonText?: string;
+    cancelButtonText?: string;
+    // Replaces the red (destructive) style for confirmations that are not.
+    confirmButtonClassName?: string;
 }
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -15,6 +18,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     onConfirm,
     onCancel,
     confirmButtonText,
+    cancelButtonText,
+    confirmButtonClassName,
 }) => {
     const { t } = useTranslation();
 
@@ -40,12 +45,12 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                         className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 focus:outline-none"
                         data-testid="confirm-dialog-cancel"
                     >
-                        {t('common.cancel', 'Cancel')}
+                        {cancelButtonText ?? t('common.cancel', 'Cancel')}
                     </button>
                     <button
                         type="button"
                         onClick={onConfirm}
-                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
+                        className={`px-4 py-2 text-white rounded focus:outline-none ${confirmButtonClassName ?? 'bg-red-500 hover:bg-red-600'}`}
                         data-testid="confirm-dialog-confirm"
                     >
                         {confirmButtonText ?? t('common.delete', 'Delete')}
