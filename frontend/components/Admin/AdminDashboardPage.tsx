@@ -11,6 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
 import { handleAuthResponse } from '../../utils/authUtils';
+import AdminBlogCard from './AdminBlogCard';
 
 interface Overview {
     users: { total: number; admins: number; verified: number; last24h: number };
@@ -212,6 +213,8 @@ const AdminDashboardPage: React.FC = () => {
                         : t('admin.dashboard.regClosed', 'Registration closed')}
                 </span>
             </div>
+
+            <AdminBlogCard />
 
             <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                 <EnvelopeIcon className="w-5 h-5 mr-2" />

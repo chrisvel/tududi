@@ -74,6 +74,7 @@ import {
 const PublicNotePage = lazy(
     () => import('./components/PublicNote/PublicNotePage')
 );
+const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
 const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
@@ -341,6 +342,18 @@ const App: React.FC = () => {
                     element={
                         <PublicNotePage
                             isSignedIn={!!currentUser}
+                            isDarkMode={isDarkMode}
+                            toggleDarkMode={toggleDarkMode}
+                        />
+                    }
+                />
+                {/* The blog, for anyone, signed in or not. On a blog host it
+                    renders at the root instead (see index.tsx). */}
+                <Route
+                    path="/blog/*"
+                    element={
+                        <BlogApp
+                            basePath="/blog"
                             isDarkMode={isDarkMode}
                             toggleDarkMode={toggleDarkMode}
                         />

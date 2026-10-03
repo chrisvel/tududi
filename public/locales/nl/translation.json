@@ -2024,7 +2024,19 @@
     },
     "turnContactIntoAccount": "Maak van een van je contacten dit account (optioneel)",
     "noContact": "(geen)",
-    "turnContactNote": "Het contact behoudt zijn geschiedenis, dus toegewezen taken blijven toegewezen. Je privénotities over het contact worden niet meegenomen."
+    "turnContactNote": "Het contact behoudt zijn geschiedenis, dus toegewezen taken blijven toegewezen. Je privénotities over het contact worden niet meegenomen.",
+    "blog": {
+      "title": "Blog",
+      "description": "Kies een van je notities als voorpagina. De openbare notities die ze met [[Titel]] linkt, worden de berichten. Deel de voorpagina en elk bericht openbaar zodat ze verschijnen.",
+      "placeholder": "Notitielink of ID, bijv. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Notitie voor de voorpagina",
+      "turnOff": "Uitzetten",
+      "shared": "Openbaar",
+      "notShared": "Nog niet gedeeld: deel haar vanuit de notitie om de blog te publiceren",
+      "postCount": "Berichten: {{count}}",
+      "open": "Blog openen",
+      "preview": "Voorbeeld in de app"
+    }
   },
   "shares": {
     "shareProject": "Project delen",
@@ -2928,5 +2940,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Deze notitie is niet openbaar gedeeld."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Probeer tududi Cloud",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Voorwaarden",
+    "footerPrivacy": "Privacy",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Haal de kleine dingen uit je hoofd.",
+    "ctaBody": "Taken, projecten, notities en gewoonten op één rustige plek, gedeeld met de mensen met wie je woont en werkt. Geen server, niets te installeren.",
+    "ctaPrice": "{{monthly}} per maand of {{annual}} per jaar",
+    "ctaGuarantee": "14 dagen geld-terug-garantie",
+    "ctaPrimary": "Begin met tududi Cloud",
+    "ctaSecondary": "Bekijk wat erbij zit",
+    "readPost": "Lees het bericht",
+    "emptyTitle": "Nog niets hier",
+    "emptyBody": "De eerste berichten komen eraan. Kom snel terug.",
+    "failedTitle": "De blog kon niet worden geladen",
+    "failedBody": "Er ging iets mis aan onze kant. Probeer het zo opnieuw.",
+    "missingTitle": "Dit bericht is er niet",
+    "missingBody": "Het is misschien verplaatst of verwijderd. De andere berichten zijn één klik verwijderd.",
+    "allPosts": "Alle berichten",
+    "morePosts": "Meer van de blog"
   }
 }

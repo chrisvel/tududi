@@ -2025,7 +2025,19 @@
     },
     "turnContactIntoAccount": "Transformar um dos seus contactos nesta conta (opcional)",
     "noContact": "(nenhum)",
-    "turnContactNote": "O contacto mantém o seu histórico, por isso as tarefas que lhe estão atribuídas continuam atribuídas. As suas notas privadas sobre ele não são transferidas."
+    "turnContactNote": "O contacto mantém o seu histórico, por isso as tarefas que lhe estão atribuídas continuam atribuídas. As suas notas privadas sobre ele não são transferidas.",
+    "blog": {
+      "title": "Blog",
+      "description": "Escolha uma das suas notas como página inicial. As notas públicas que ela liga com [[Título]] tornam-se os artigos. Partilhe publicamente a página inicial e cada artigo para que apareçam.",
+      "placeholder": "Link ou ID da nota, ex. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Nota da página inicial",
+      "turnOff": "Desativar",
+      "shared": "Pública",
+      "notShared": "Ainda não partilhada: partilhe-a a partir da nota para publicar o blog",
+      "postCount": "Artigos: {{count}}",
+      "open": "Abrir o blog",
+      "preview": "Pré-visualizar na app"
+    }
   },
   "shares": {
     "shareProject": "Compartilhar projeto",
@@ -2929,5 +2941,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Esta nota não está partilhada publicamente."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Experimente o tududi Cloud",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Termos",
+    "footerPrivacy": "Privacidade",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Tire as pequenas coisas da cabeça.",
+    "ctaBody": "Tarefas, projetos, notas e hábitos num lugar tranquilo, partilhados com as pessoas com quem vive e trabalha. Sem servidor, nada para instalar.",
+    "ctaPrice": "{{monthly}} por mês ou {{annual}} por ano",
+    "ctaGuarantee": "Garantia de reembolso de 14 dias",
+    "ctaPrimary": "Comece com o tududi Cloud",
+    "ctaSecondary": "Veja o que está incluído",
+    "readPost": "Ler o artigo",
+    "emptyTitle": "Ainda não há nada aqui",
+    "emptyBody": "Os primeiros artigos estão a caminho. Volte em breve.",
+    "failedTitle": "Não foi possível carregar o blog",
+    "failedBody": "Algo correu mal do nosso lado. Tente novamente daqui a pouco.",
+    "missingTitle": "Este artigo não está aqui",
+    "missingBody": "Pode ter sido movido ou removido. Os outros artigos estão a um clique.",
+    "allPosts": "Todos os artigos",
+    "morePosts": "Mais do blog"
   }
 }

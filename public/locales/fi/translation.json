@@ -2024,7 +2024,19 @@
     },
     "turnContactIntoAccount": "Muuta yksi yhteyshenkilöistäsi tähän tiliin (valinnainen)",
     "noContact": "(ei mitään)",
-    "turnContactNote": "Yhteyshenkilö säilyttää historiansa, joten hänelle osoitetut tehtävät pysyvät osoitettuina. Yksityisiä muistiinpanojasi hänestä ei siirretä."
+    "turnContactNote": "Yhteyshenkilö säilyttää historiansa, joten hänelle osoitetut tehtävät pysyvät osoitettuina. Yksityisiä muistiinpanojasi hänestä ei siirretä.",
+    "blog": {
+      "title": "Blogi",
+      "description": "Valitse yksi muistiinpanoistasi etusivuksi. Julkiset muistiinpanot, joihin se linkittää [[Otsikko]]-linkeillä, ovat kirjoitukset. Jaa etusivu ja jokainen kirjoitus julkisesti, jotta ne näkyvät.",
+      "placeholder": "Muistiinpanon linkki tai ID, esim. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Etusivun muistiinpano",
+      "turnOff": "Poista käytöstä",
+      "shared": "Julkinen",
+      "notShared": "Ei vielä jaettu: jaa se muistiinpanosta julkaistaksesi blogin",
+      "postCount": "Kirjoituksia: {{count}}",
+      "open": "Avaa blogi",
+      "preview": "Esikatsele sovelluksessa"
+    }
   },
   "shares": {
     "shareProject": "Jaa projekti",
@@ -2928,5 +2940,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Tätä muistiinpanoa ei ole jaettu julkisesti."
+  },
+  "blog": {
+    "nav": "Blogi",
+    "navCta": "Kokeile tududi Cloudia",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Ehdot",
+    "footerPrivacy": "Tietosuoja",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Saa pienet asiat pois päästäsi.",
+    "ctaBody": "Tehtävät, projektit, muistiinpanot ja tavat yhdessä rauhallisessa paikassa, jaettuna niiden kanssa, joiden kanssa asut ja teet töitä. Ei palvelinta, ei mitään asennettavaa.",
+    "ctaPrice": "{{monthly}} kuukaudessa tai {{annual}} vuodessa",
+    "ctaGuarantee": "14 päivän rahat takaisin -takuu",
+    "ctaPrimary": "Aloita tududi Cloudilla",
+    "ctaSecondary": "Katso mitä se sisältää",
+    "readPost": "Lue kirjoitus",
+    "emptyTitle": "Täällä ei ole vielä mitään",
+    "emptyBody": "Ensimmäiset kirjoitukset ovat tulossa. Palaa pian.",
+    "failedTitle": "Blogia ei voitu ladata",
+    "failedBody": "Jokin meni vikaan meidän päässämme. Yritä hetken päästä uudelleen.",
+    "missingTitle": "Tätä kirjoitusta ei ole täällä",
+    "missingBody": "Se on ehkä siirretty tai poistettu. Muut kirjoitukset ovat yhden klikkauksen päässä.",
+    "allPosts": "Kaikki kirjoitukset",
+    "morePosts": "Lisää blogista"
   }
 }

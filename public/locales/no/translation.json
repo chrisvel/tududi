@@ -2025,7 +2025,19 @@
     },
     "turnContactIntoAccount": "Gjør en av kontaktene dine til denne kontoen (valgfritt)",
     "noContact": "(ingen)",
-    "turnContactNote": "Kontakten beholder historikken sin, så oppgaver som er tildelt den, forblir tildelt. De private notatene dine om den tas ikke med."
+    "turnContactNote": "Kontakten beholder historikken sin, så oppgaver som er tildelt den, forblir tildelt. De private notatene dine om den tas ikke med.",
+    "blog": {
+      "title": "Blogg",
+      "description": "Velg et av notatene dine som forside. De offentlige notatene den lenker til med [[Tittel]], blir innleggene. Del forsiden og hvert innlegg offentlig for at de skal vises.",
+      "placeholder": "Notatlenke eller ID, f.eks. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Notat for forsiden",
+      "turnOff": "Slå av",
+      "shared": "Offentlig",
+      "notShared": "Ikke delt ennå: del det fra notatet for å publisere bloggen",
+      "postCount": "Innlegg: {{count}}",
+      "open": "Åpne bloggen",
+      "preview": "Forhåndsvis i appen"
+    }
   },
   "shares": {
     "shareProject": "Del prosjekt",
@@ -2933,5 +2945,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Dette notatet er ikke delt offentlig."
+  },
+  "blog": {
+    "nav": "Blogg",
+    "navCta": "Prøv tududi Cloud",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Vilkår",
+    "footerPrivacy": "Personvern",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Få de små tingene ut av hodet.",
+    "ctaBody": "Oppgaver, prosjekter, notater og vaner på ett rolig sted, delt med dem du bor og jobber med. Ingen server, ingenting å installere.",
+    "ctaPrice": "{{monthly}} i måneden eller {{annual}} i året",
+    "ctaGuarantee": "14 dagers pengene-tilbake-garanti",
+    "ctaPrimary": "Kom i gang med tududi Cloud",
+    "ctaSecondary": "Se hva som er med",
+    "readPost": "Les innlegget",
+    "emptyTitle": "Ingenting her ennå",
+    "emptyBody": "De første innleggene er på vei. Kom tilbake snart.",
+    "failedTitle": "Kunne ikke laste bloggen",
+    "failedBody": "Noe gikk galt hos oss. Prøv igjen om litt.",
+    "missingTitle": "Dette innlegget er ikke her",
+    "missingBody": "Det kan ha blitt flyttet eller fjernet. De andre innleggene er ett klikk unna.",
+    "allPosts": "Alle innlegg",
+    "morePosts": "Mer fra bloggen"
   }
 }

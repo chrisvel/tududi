@@ -2024,7 +2024,19 @@
     },
     "turnContactIntoAccount": "将你的一位联系人转为此账户（可选）",
     "noContact": "（无）",
-    "turnContactNote": "联系人会保留其历史记录，因此分配给他们的任务仍保持分配。你对他们的私人笔记不会被带过来。"
+    "turnContactNote": "联系人会保留其历史记录，因此分配给他们的任务仍保持分配。你对他们的私人笔记不会被带过来。",
+    "blog": {
+      "title": "博客",
+      "description": "选择你的一篇笔记作为首页。它用 [[标题]] 链接的公开笔记会成为文章。首页和每篇文章都需要公开分享才会显示。",
+      "placeholder": "笔记链接或 ID,例如 https://app.tududi.com/notes/abc123",
+      "inputLabel": "首页笔记",
+      "turnOff": "关闭",
+      "shared": "公开",
+      "notShared": "尚未分享:在笔记中分享它即可发布博客",
+      "postCount": "文章:{{count}}",
+      "open": "打开博客",
+      "preview": "在应用中预览"
+    }
   },
   "shares": {
     "shareProject": "分享项目",
@@ -2927,5 +2939,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "此笔记未公开分享。"
+  },
+  "blog": {
+    "nav": "博客",
+    "navCta": "试用 tududi Cloud",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "条款",
+    "footerPrivacy": "隐私",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "把琐事从脑子里拿出来。",
+    "ctaBody": "任务、项目、笔记和习惯集中在一个安静的地方,与你一起生活和工作的人共享。无需服务器,无需安装。",
+    "ctaPrice": "每月 {{monthly}} 或每年 {{annual}}",
+    "ctaGuarantee": "14 天退款保证",
+    "ctaPrimary": "开始使用 tududi Cloud",
+    "ctaSecondary": "查看包含的内容",
+    "readPost": "阅读文章",
+    "emptyTitle": "这里还什么都没有",
+    "emptyBody": "第一批文章正在路上,请稍后再来。",
+    "failedTitle": "无法加载博客",
+    "failedBody": "我们这边出了点问题,请稍后再试。",
+    "missingTitle": "这篇文章不在这里",
+    "missingBody": "它可能已被移动或撤下。其他文章只需一次点击。",
+    "allPosts": "所有文章",
+    "morePosts": "更多博客文章"
   }
 }

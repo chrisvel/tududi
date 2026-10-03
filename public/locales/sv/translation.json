@@ -2024,7 +2024,19 @@
     },
     "turnContactIntoAccount": "Gör en av dina kontakter till det här kontot (valfritt)",
     "noContact": "(ingen)",
-    "turnContactNote": "Kontakten behåller sin historik, så uppgifter som är tilldelade den förblir tilldelade. Dina privata anteckningar om den tas inte med."
+    "turnContactNote": "Kontakten behåller sin historik, så uppgifter som är tilldelade den förblir tilldelade. Dina privata anteckningar om den tas inte med.",
+    "blog": {
+      "title": "Blogg",
+      "description": "Välj en av dina anteckningar som förstasida. De offentliga anteckningar den länkar med [[Titel]] blir inläggen. Dela förstasidan och varje inlägg offentligt för att de ska visas.",
+      "placeholder": "Anteckningslänk eller ID, t.ex. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Anteckning för förstasidan",
+      "turnOff": "Stäng av",
+      "shared": "Offentlig",
+      "notShared": "Inte delad ännu: dela den från anteckningen för att publicera bloggen",
+      "postCount": "Inlägg: {{count}}",
+      "open": "Öppna bloggen",
+      "preview": "Förhandsgranska i appen"
+    }
   },
   "shares": {
     "shareProject": "Dela projekt",
@@ -2928,5 +2940,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Den här anteckningen är inte delad offentligt."
+  },
+  "blog": {
+    "nav": "Blogg",
+    "navCta": "Prova tududi Cloud",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Villkor",
+    "footerPrivacy": "Integritet",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Få ut de små sakerna ur huvudet.",
+    "ctaBody": "Uppgifter, projekt, anteckningar och vanor på ett lugnt ställe, delade med dem du bor och arbetar med. Ingen server, inget att installera.",
+    "ctaPrice": "{{monthly}} i månaden eller {{annual}} om året",
+    "ctaGuarantee": "14 dagars pengarna-tillbaka-garanti",
+    "ctaPrimary": "Kom igång med tududi Cloud",
+    "ctaSecondary": "Se vad som ingår",
+    "readPost": "Läs inlägget",
+    "emptyTitle": "Inget här ännu",
+    "emptyBody": "De första inläggen är på väg. Kom tillbaka snart.",
+    "failedTitle": "Det gick inte att läsa in bloggen",
+    "failedBody": "Något gick fel hos oss. Försök igen om en stund.",
+    "missingTitle": "Det här inlägget finns inte här",
+    "missingBody": "Det kan ha flyttats eller tagits bort. De andra inläggen är ett klick bort.",
+    "allPosts": "Alla inlägg",
+    "morePosts": "Mer från bloggen"
   }
 }
