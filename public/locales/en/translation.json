@@ -2173,9 +2173,10 @@
       },
       "descriptions": {
         "admin": "Manages accounts, roles and groups, and can do everything else.",
+        "accountAdmin": "Manages the members, roles and groups of this account. Sees only what is shared with them.",
         "user": "A regular member. Works with their own items and everything shared with them.",
         "guest": "Works inside what is shared with them or assigned to them.",
-        "superadmin": "Runs this instance: every account, billing, groups and settings. Customers never get this role; they manage only the members they add."
+        "superadmin": "Runs this instance: every account, billing and settings. There is only one; customers are admins of their own account."
       },
       "capabilities": {
         "createPeople": "Add people",

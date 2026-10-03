@@ -16,10 +16,11 @@ module.exports = (sequelize) => {
                 unique: true,
                 defaultValue: uid,
             },
+            // Unique per account on a hosted instance and across the instance
+            // otherwise, checked by the groups service.
             name: {
                 type: DataTypes.STRING(100),
                 allowNull: false,
-                unique: true,
             },
             description: {
                 type: DataTypes.TEXT,
@@ -30,6 +31,12 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 references: { model: 'users', key: 'id' },
                 onDelete: 'SET NULL',
+            },
+            // The hosted account the group belongs to; empty when self-hosted.
+            account_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                defaultValue: null,
             },
         },
         {

@@ -9,8 +9,9 @@ const {
     SubscriptionRequiredError,
 } = require('../shared/errors');
 
-// Seats on a hosted instance: an owner pays for itself plus every member it
-// added, as the quantity of its subscription. Self-hosted instances never get
+// Seats on a hosted instance: an account owner pays for itself plus every
+// member of its account (see accountsService), whichever admin added them, as
+// the quantity of its subscription. Self-hosted instances never get
 // here, since every function returns early when hosted mode is off.
 
 // Reasons an owner's own plan lets it add members. A comp (override) adds
@@ -28,7 +29,7 @@ function provider() {
 }
 
 async function countMembers(ownerId) {
-    return models().User.count({ where: { created_by_user_id: ownerId } });
+    return require('./accountsService').countMembers(ownerId);
 }
 
 // Throws unless `ownerId` may add one more member right now.

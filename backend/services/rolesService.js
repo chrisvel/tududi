@@ -1,12 +1,23 @@
+const { Op } = require('sequelize');
 const { Role, User, sequelize } = require('../models');
 const { getConfig } = require('../config/config');
 const { ValidationError, ForbiddenError } = require('../shared/errors');
 
-const ROLES = ['admin', 'user', 'guest'];
+// account_admin exists only on a hosted instance: an admin of one customer
+// account (see accountsService), shown as "Admin". There, admin is the
+// superadmin who runs the instance, and there is only one.
+const ROLES = ['admin', 'account_admin', 'user', 'guest'];
 const CAPABILITIES = ['create_people', 'invite_members', 'create_projects'];
 
+const ALL_CAPABILITIES = {
+    create_people: true,
+    invite_members: true,
+    create_projects: true,
+};
+
 const ROLE_DEFAULTS = {
-    admin: { create_people: true, invite_members: true, create_projects: true },
+    admin: { ...ALL_CAPABILITIES },
+    account_admin: { ...ALL_CAPABILITIES },
     user: { create_people: true, invite_members: false, create_projects: true },
     guest: {
         create_people: false,
@@ -18,6 +29,19 @@ const ROLE_DEFAULTS = {
 // Accepts either a user's uid (string) or numeric id. Callers pass both, and
 // comparing an integer against the varchar uid column is an error on
 // PostgreSQL (SQLite silently evaluated it to "no match").
+function isHosted() {
+    return getConfig().hosted?.enabled === true;
+}
+
+function accounts() {
+    return require('./accountsService');
+}
+
+// The roles that exist on this instance, in the order they are listed.
+function availableRoles() {
+    return isHosted() ? ROLES : ROLES.filter((r) => r !== 'account_admin');
+}
+
 async function resolveUserId(userUidOrId) {
     if (!userUidOrId) return null;
     if (typeof userUidOrId === 'number') return userUidOrId;
@@ -37,7 +61,14 @@ async function resolveUserId(userUidOrId) {
 function effectiveRole(row) {
     if (!row) return 'user';
     if (row.is_admin) return 'admin';
+    if (row.role === 'account_admin') {
+        return isHosted() ? 'account_admin' : 'user';
+    }
     return row.role === 'guest' ? 'guest' : 'user';
+}
+
+function hasFixedCapabilities(role) {
+    return role === 'admin' || role === 'account_admin';
 }
 
 function parseOverrides(value) {
@@ -52,7 +83,7 @@ function parseOverrides(value) {
 
 function effectiveCapabilities(role, overrides) {
     const capabilities = { ...ROLE_DEFAULTS[role] };
-    if (role === 'admin') return capabilities;
+    if (hasFixedCapabilities(role)) return capabilities;
 
     const parsed = parseOverrides(overrides);
     for (const capability of CAPABILITIES) {
@@ -63,21 +94,22 @@ function effectiveCapabilities(role, overrides) {
     return capabilities;
 }
 
-// On a hosted instance every customer owns a small workspace: an account
-// that signed up by itself may add members, who then take a seat on its
-// subscription. Members it added (created_by_user_id set) may not add their
-// own, so one account always pays. A self-hosted instance keeps the role
-// defaults.
-async function withOwnerCapabilities(userId, role, capabilities) {
-    if (getConfig().hosted?.enabled !== true) return capabilities;
-    if (role !== 'user' || capabilities.invite_members) return capabilities;
-    if (!userId) return capabilities;
+// The role row behind a user. On a hosted instance the user is put into an
+// account first, which is what makes a new customer an admin of its own.
+async function loadRoleRow(userId) {
+    if (!userId) return null;
+    if (!isHosted()) return Role.findOne({ where: { user_id: userId } });
 
-    const user = await User.findByPk(userId, {
-        attributes: ['id', 'created_by_user_id'],
-    });
-    if (!user || user.created_by_user_id != null) return capabilities;
-    return { ...capabilities, invite_members: true };
+    await accounts().ensureAccountId(userId);
+    const row = await Role.findOne({ where: { user_id: userId } });
+    const adminRow = row && (row.is_admin || row.role === 'account_admin');
+    // The owner is always an admin of its account, even if its role row was
+    // lost or written by something that does not know about accounts.
+    if (!adminRow && (await accounts().isOwner(userId))) {
+        await accounts().createAccountFor(userId);
+        return Role.findOne({ where: { user_id: userId } });
+    }
+    return row;
 }
 
 async function isAdmin(userUidOrId) {
@@ -90,18 +122,21 @@ async function isAdmin(userUidOrId) {
 
 async function getRoleInfo(userUidOrId) {
     const userId = await resolveUserId(userUidOrId);
-    const row = userId
-        ? await Role.findOne({ where: { user_id: userId } })
-        : null;
+    const row = await loadRoleRow(userId);
     const role = effectiveRole(row);
     return {
         role,
-        capabilities: await withOwnerCapabilities(
-            userId,
-            role,
-            effectiveCapabilities(role, row && row.capabilities)
-        ),
+        capabilities: effectiveCapabilities(role, row && row.capabilities),
     };
+}
+
+// An admin of a customer account on a hosted instance (the owner, or a member
+// made admin). Never the superadmin.
+async function isAccountAdmin(userUidOrId) {
+    if (!isHosted()) return false;
+    const userId = await resolveUserId(userUidOrId);
+    const row = await loadRoleRow(userId);
+    return effectiveRole(row) === 'account_admin';
 }
 
 async function can(userUidOrId, capability) {
@@ -110,19 +145,14 @@ async function can(userUidOrId, capability) {
     const userId = await resolveUserId(userUidOrId);
     if (!userId) return false;
 
-    const row = await Role.findOne({ where: { user_id: userId } });
+    const row = await loadRoleRow(userId);
     if (!row) {
         const exists = await User.findByPk(userId, { attributes: ['id'] });
         if (!exists) return false;
     }
 
     const role = effectiveRole(row);
-    const capabilities = await withOwnerCapabilities(
-        userId,
-        role,
-        effectiveCapabilities(role, row && row.capabilities)
-    );
-    return capabilities[capability];
+    return effectiveCapabilities(role, row && row.capabilities)[capability];
 }
 
 async function assertCan(userUidOrId, capability) {
@@ -147,8 +177,39 @@ async function assertAnotherAdminRemains(transaction, message) {
     }
 }
 
+// On a hosted instance there is one superadmin, and the owner of a customer
+// account is always an admin of it.
+async function assertHostedRoleChange(userId, role, transaction) {
+    if (!isHosted()) return;
+    if (role === 'admin') {
+        const others = await Role.count({
+            where: { is_admin: true, user_id: { [Op.ne]: userId } },
+            transaction,
+        });
+        if (others > 0) {
+            throw new ValidationError('There can be only one superadmin');
+        }
+        return;
+    }
+    if (role !== 'account_admin') {
+        const owned = await models().Account.count({
+            where: { owner_user_id: userId },
+            transaction,
+        });
+        if (owned > 0) {
+            throw new ValidationError(
+                'The account owner is always an admin of the account'
+            );
+        }
+    }
+}
+
+function models() {
+    return require('../models');
+}
+
 async function setRole(userUidOrId, role, options = {}) {
-    if (!ROLES.includes(role)) {
+    if (!availableRoles().includes(role)) {
         throw new ValidationError(`Unknown role: ${role}`);
     }
     const userId = await resolveUserId(userUidOrId);
@@ -164,6 +225,8 @@ async function setRole(userUidOrId, role, options = {}) {
             where: { user_id: userId },
             transaction,
         });
+
+        await assertHostedRoleChange(userId, role, transaction);
 
         if (row && row.is_admin && role !== 'admin') {
             await assertAnotherAdminRemains(
@@ -202,7 +265,7 @@ async function setCapabilities(userUidOrId, desired, options = {}) {
     const role = effectiveRole(row);
 
     const overrides = {};
-    if (role !== 'admin') {
+    if (!hasFixedCapabilities(role)) {
         for (const [capability, value] of entries) {
             if (value !== ROLE_DEFAULTS[role][capability]) {
                 overrides[capability] = value;
@@ -226,17 +289,26 @@ async function setCapabilities(userUidOrId, desired, options = {}) {
     }
 }
 
-async function describeRoles() {
-    const rows = await Role.findAll({ attributes: ['is_admin', 'role'] });
-    const totalUsers = await User.count();
+// The roles and how many accounts hold each. With userIds (an account admin
+// looking at its own account) only those users are counted and the
+// superadmin role is left out.
+async function describeRoles({ userIds = null } = {}) {
+    const scoped = Array.isArray(userIds);
+    const userWhere = scoped ? { id: { [Op.in]: userIds } } : {};
+    const rows = await Role.findAll({
+        where: scoped ? { user_id: { [Op.in]: userIds } } : {},
+        attributes: ['is_admin', 'role'],
+    });
+    const totalUsers = await User.count({ where: userWhere });
 
-    const counts = { admin: 0, user: 0, guest: 0 };
+    const counts = { admin: 0, account_admin: 0, user: 0, guest: 0 };
     for (const row of rows) counts[effectiveRole(row)] += 1;
     counts.user += Math.max(0, totalUsers - rows.length);
 
+    const listed = availableRoles().filter((id) => !(scoped && id === 'admin'));
     return {
         capabilities: [...CAPABILITIES],
-        roles: ROLES.map((id) => ({
+        roles: listed.map((id) => ({
             id,
             capabilities: { ...ROLE_DEFAULTS[id] },
             member_count: counts[id],
@@ -249,10 +321,11 @@ module.exports = {
     ROLES,
     CAPABILITIES,
     ROLE_DEFAULTS,
+    availableRoles,
     isAdmin,
+    isAccountAdmin,
     effectiveRole,
     effectiveCapabilities,
-    withOwnerCapabilities,
     getRoleInfo,
     can,
     assertCan,

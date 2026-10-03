@@ -7,8 +7,9 @@ class AdminRepository {
     /**
      * Find all users with basic attributes.
      */
-    async findAllUsers() {
+    async findAllUsers(userIds = null) {
         return User.findAll({
+            where: userIds ? { id: userIds } : {},
             attributes: [
                 'id',
                 'email',
@@ -17,8 +18,19 @@ class AdminRepository {
                 'created_at',
                 'password_digest',
                 'email_verified',
+                'account_id',
             ],
         });
+    }
+
+    async findAccountOwnerIds(accountIds = null) {
+        const { Account } = require('../../models');
+        const rows = await Account.findAll({
+            where: accountIds ? { id: accountIds } : {},
+            attributes: ['owner_user_id'],
+            raw: true,
+        });
+        return new Set(rows.map((row) => row.owner_user_id));
     }
 
     async findIdentityUserIds(userIds) {
@@ -34,8 +46,9 @@ class AdminRepository {
     /**
      * Find all roles.
      */
-    async findAllRoles() {
+    async findAllRoles(userIds = null) {
         return Role.findAll({
+            where: userIds ? { user_id: userIds } : {},
             attributes: ['user_id', 'is_admin', 'role', 'capabilities'],
         });
     }

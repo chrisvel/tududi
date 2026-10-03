@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const { sequelize, User, Person, Role } = require('../../models');
 const rolesService = require('../../services/rolesService');
 const seats = require('../../services/seatsService');
+const accounts = require('../../services/accountsService');
 const { eraseUserAccount } = require('../../services/accountErasureService');
 const {
     validateCreateUser,
@@ -44,17 +45,21 @@ async function findContactToConvert(actorId, personUid) {
     return person;
 }
 
-// The member an actor may change: one it created, or any account for an
-// admin, never the actor itself and never an admin. Anyone else is told the
-// member does not exist, so account ids cannot be probed.
+// The member an actor may change: one it created, any member of its account
+// for an admin of a hosted account (except the owner), or any account for the
+// superadmin; never the actor itself and never the superadmin. Anyone else is
+// told the member does not exist, so account ids cannot be probed.
 async function findManagedMember(actorId, memberId) {
-    const [actorIsAdmin, target, targetRole] = await Promise.all([
-        rolesService.isAdmin(actorId),
-        User.findByPk(memberId),
-        Role.findOne({ where: { user_id: memberId } }),
-    ]);
+    const [actorIsAdmin, target, targetRole, managedByAccount] =
+        await Promise.all([
+            rolesService.isAdmin(actorId),
+            User.findByPk(memberId),
+            Role.findOne({ where: { user_id: memberId } }),
+            accounts.managesUser(actorId, memberId),
+        ]);
     const mayManage =
         actorIsAdmin ||
+        managedByAccount ||
         (target &&
             target.created_by_user_id != null &&
             target.created_by_user_id === actorId);
@@ -67,12 +72,19 @@ async function findManagedMember(actorId, memberId) {
     return target;
 }
 
-function assertMayGrant(actorIsAdmin, { role, capabilities }) {
+// The superadmin may set anything. An admin of a hosted account may add
+// users, guests and other admins of its account and set their permissions.
+// Anyone else only adds a user or a guest with the default permissions.
+function assertMayGrant(actorIsAdmin, actorIsAccountAdmin, input) {
+    const { role, capabilities } = input;
     if (actorIsAdmin) return;
-    if (role !== undefined && role !== 'user' && role !== 'guest') {
+    const grantable = actorIsAccountAdmin
+        ? ['user', 'guest', 'account_admin']
+        : ['user', 'guest'];
+    if (role !== undefined && !grantable.includes(role)) {
         throw new ForbiddenError('Only an admin can create an admin');
     }
-    if (capabilities !== undefined) {
+    if (capabilities !== undefined && !actorIsAccountAdmin) {
         throw new ForbiddenError('Only an admin can set permissions');
     }
 }
@@ -89,8 +101,10 @@ class MembersService {
     // hand out more than the caller has.
     async createMember(actorId, body) {
         const actorIsAdmin = await rolesService.isAdmin(actorId);
+        const actorIsAccountAdmin =
+            !actorIsAdmin && (await rolesService.isAccountAdmin(actorId));
         const input = body || {};
-        assertMayGrant(actorIsAdmin, input);
+        assertMayGrant(actorIsAdmin, actorIsAccountAdmin, input);
 
         const personUid = input.person_uid || input.linked_person_uid;
         if (personUid !== undefined && typeof personUid !== 'string') {
@@ -132,8 +146,12 @@ class MembersService {
         if (surname) userData.surname = surname;
 
         // On a hosted instance the member is a paid seat: it is added to the
-        // owner's subscription first, so a refused payment creates nothing.
-        if (!actorIsAdmin) await seats.addSeat(actorId);
+        // account owner's subscription first, so a refused payment creates
+        // nothing.
+        const payerId = actorIsAdmin
+            ? null
+            : await accounts.getOwnerId(actorId);
+        if (payerId) await seats.addSeat(payerId);
 
         let user;
         let person;
@@ -185,7 +203,7 @@ class MembersService {
                 }
             });
         } catch (err) {
-            if (!actorIsAdmin) await seats.reconcile(actorId);
+            if (payerId) await seats.reconcile(payerId);
             if (err?.name === 'SequelizeUniqueConstraintError') {
                 throw new ConflictError('Email already exists');
             }
@@ -271,7 +289,7 @@ class MembersService {
         );
         if (ids.length === 0) return new Set();
 
-        const [actorIsAdmin, targets, adminRoles] = await Promise.all([
+        const [actorIsAdmin, targets, adminRoles, managed] = await Promise.all([
             rolesService.isAdmin(actorId),
             User.findAll({
                 where: { id: { [Op.in]: ids } },
@@ -283,23 +301,29 @@ class MembersService {
                 attributes: ['user_id'],
                 raw: true,
             }),
+            accounts.managedUserIds(actorId),
         ]);
         const admins = new Set(adminRoles.map((row) => row.user_id));
         return new Set(
             targets
                 .filter((t) => !admins.has(t.id))
-                .filter((t) => actorIsAdmin || t.created_by_user_id === actorId)
+                .filter(
+                    (t) =>
+                        actorIsAdmin ||
+                        managed.has(t.id) ||
+                        t.created_by_user_id === actorId
+                )
                 .map((t) => t.id)
         );
     }
 
     // Deletes a member's account and everything in it, then gives the seat
-    // back on the owner's subscription.
+    // back on the account owner's subscription.
     async removeMember(actorId, memberId) {
         const member = await findManagedMember(actorId, memberId);
-        const ownerId = member.created_by_user_id;
+        const payerId = await accounts.getOwnerId(member.id);
         await eraseUserAccount(member.id);
-        if (ownerId != null) await seats.reconcile(ownerId);
+        if (payerId !== member.id) await seats.reconcile(payerId);
     }
 
     async sendEmails(user, { verify, invite }) {

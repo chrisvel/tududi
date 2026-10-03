@@ -3,6 +3,7 @@
 const { UniqueConstraintError } = require('sequelize');
 const groupsRepository = require('./repository');
 const adminService = require('../admin/service');
+const accountsService = require('../../services/accountsService');
 const groupSharing = require('../../services/groupSharing');
 const {
     validateCreateGroup,
@@ -30,9 +31,15 @@ function serializeGroup(group, counts = {}) {
     };
 }
 
+// On a hosted instance a group belongs to one customer account: its admins
+// manage it and only its members can be put in it or share with it. The
+// superadmin (scope.superadmin) manages every group, as an admin does on a
+// self-hosted instance, where groups have no account.
 class GroupsService {
-    async listForPicker() {
-        const groups = await groupsRepository.findAllWithCounts();
+    async listForPicker(requesterId) {
+        const accountId = await accountsService.ensureAccountId(requesterId);
+        if (accountsService.isHosted() && !accountId) return [];
+        const groups = await groupsRepository.findAllWithCounts({ accountId });
         return groups.map((g) => ({
             uid: g.uid,
             name: g.name,
@@ -41,14 +48,16 @@ class GroupsService {
     }
 
     async listForAdmin(requesterId) {
-        await adminService.verifyAdmin(requesterId);
-        const groups = await groupsRepository.findAllWithCounts();
+        const scope = await adminService.accessScope(requesterId);
+        const groups = await groupsRepository.findAllWithCounts({
+            accountId: scope.superadmin ? null : scope.accountId,
+        });
         return groups.map((g) => serializeGroup(g, g));
     }
 
     async getDetail(requesterId, uid) {
-        await adminService.verifyAdmin(requesterId);
-        const group = await this._requireGroup(uid);
+        const scope = await adminService.accessScope(requesterId);
+        const group = await this._requireGroup(uid, scope);
         const [members, shares] = await Promise.all([
             groupsRepository.listMembers(group.id),
             groupsRepository.listShares(group.id),
@@ -70,13 +79,17 @@ class GroupsService {
     }
 
     async create(requesterId, body) {
-        await adminService.verifyAdmin(requesterId);
+        const scope = await adminService.accessScope(requesterId);
         const data = validateCreateGroup(body);
-        await this._assertNameAvailable(data.name);
+        const accountId = scope.superadmin
+            ? await accountsService.ensureAccountId(requesterId)
+            : scope.accountId;
+        await this._assertNameAvailable(data.name, null, accountId);
         try {
             const group = await groupsRepository.create({
                 ...data,
                 created_by_user_id: requesterId,
+                account_id: accountId,
             });
             return serializeGroup(group);
         } catch (err) {
@@ -85,11 +98,15 @@ class GroupsService {
     }
 
     async update(requesterId, uid, body) {
-        await adminService.verifyAdmin(requesterId);
-        const group = await this._requireGroup(uid);
+        const scope = await adminService.accessScope(requesterId);
+        const group = await this._requireGroup(uid, scope);
         const data = validateUpdateGroup(body);
         if (data.name) {
-            await this._assertNameAvailable(data.name, group.id);
+            await this._assertNameAvailable(
+                data.name,
+                group.id,
+                group.account_id
+            );
         }
         try {
             await groupsRepository.update(group, data);
@@ -103,18 +120,21 @@ class GroupsService {
     }
 
     async remove(requesterId, uid) {
-        await adminService.verifyAdmin(requesterId);
-        const group = await this._requireGroup(uid);
+        const scope = await adminService.accessScope(requesterId);
+        const group = await this._requireGroup(uid, scope);
         await groupsRepository.destroyWithGrants(group);
     }
 
     async addMembers(requesterId, uid, body) {
-        await adminService.verifyAdmin(requesterId);
-        const group = await this._requireGroup(uid);
+        const scope = await adminService.accessScope(requesterId);
+        const group = await this._requireGroup(uid, scope);
         const userIds = validateMemberIds(body);
 
         const existingUsers = await groupsRepository.findUsersByIds(userIds);
-        if (existingUsers.length !== userIds.length) {
+        const outsideAccount =
+            !scope.superadmin &&
+            userIds.some((id) => !scope.userIds.includes(id));
+        if (existingUsers.length !== userIds.length || outsideAccount) {
             throw new ValidationError('One or more users do not exist');
         }
 
@@ -133,8 +153,8 @@ class GroupsService {
     }
 
     async removeMember(requesterId, uid, userIdParam) {
-        await adminService.verifyAdmin(requesterId);
-        const group = await this._requireGroup(uid);
+        const scope = await adminService.accessScope(requesterId);
+        const group = await this._requireGroup(uid, scope);
         const userId = validateUserId(userIdParam);
         const removed = await groupSharing.removeMember({ group, userId });
         if (!removed) {
@@ -142,16 +162,21 @@ class GroupsService {
         }
     }
 
-    async _requireGroup(uid) {
+    async _requireGroup(uid, scope = { superadmin: true }) {
         const group = await groupsRepository.findByUid(uid);
         if (!group) throw new NotFoundError('Group not found');
+        if (!scope.superadmin && group.account_id !== scope.accountId) {
+            throw new NotFoundError('Group not found');
+        }
         return group;
     }
 
-    async _assertNameAvailable(name, excludeId = null) {
+    // A hosted account's group names only clash within that account.
+    async _assertNameAvailable(name, excludeId = null, accountId = null) {
         const clash = await groupsRepository.findByNameInsensitive(
             name,
-            excludeId
+            excludeId,
+            accountsService.isHosted() ? accountId : null
         );
         if (clash) throw new ConflictError(DUPLICATE_NAME_MESSAGE);
     }

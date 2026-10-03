@@ -3,11 +3,12 @@ import { Location } from 'react-router-dom';
 import { RectangleStackIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
+import { canOpenAccess } from '../../entities/Role';
 
 interface SidebarAdminProps {
     handleNavClick: (path: string, title: string) => void;
     location: Location;
-    currentUser: { is_admin?: boolean };
+    currentUser: { is_admin?: boolean; role?: string };
 }
 
 const SidebarAdmin: React.FC<SidebarAdminProps> = ({
@@ -25,7 +26,7 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
     const templatesEnabled =
         templatesFeatureEnabled && visibleSections.templates !== false;
     const accessVisible =
-        currentUser?.is_admin === true && visibleSections.access !== false;
+        canOpenAccess(currentUser) && visibleSections.access !== false;
 
     if (!templatesEnabled && !accessVisible) {
         return null;

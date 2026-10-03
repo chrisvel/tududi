@@ -62,9 +62,15 @@ const MemberModal: React.FC<MemberModalProps> = ({
     // Without an email there is nothing to sign in with, so no password and no
     // invitation.
     const hasEmail = email.trim() !== '';
-    // Only an admin can create an admin. Anyone else adds a user or a guest.
+    // Only an admin can create an admin: on tududi Cloud an admin of the
+    // account (never the superadmin), elsewhere the instance admin. Anyone else
+    // adds a user or a guest.
     const roles: RoleId[] =
-        viewerRole === 'admin' ? ['user', 'guest', 'admin'] : ['user', 'guest'];
+        viewerRole === 'account_admin'
+            ? ['user', 'guest', 'account_admin']
+            : viewerRole === 'admin' && !hosted
+              ? ['user', 'guest', 'admin']
+              : ['user', 'guest'];
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

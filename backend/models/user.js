@@ -270,6 +270,12 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: null,
             },
+            // The hosted account this user belongs to (see models/account.js).
+            account_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                defaultValue: null,
+            },
             email_verified: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
@@ -298,6 +304,10 @@ module.exports = (sequelize) => {
                 {
                     fields: ['created_by_user_id'],
                     name: 'users_created_by_user_id',
+                },
+                {
+                    fields: ['account_id'],
+                    name: 'users_account_id',
                 },
             ],
             hooks: {
@@ -338,6 +348,15 @@ module.exports = (sequelize) => {
                         },
                         { transaction: options.transaction }
                     );
+
+                    // On a hosted instance every account belongs to a customer
+                    // account: its creator's, or a new one it owns.
+                    if (hosted) {
+                        await require('../services/accountsService').ensureAccountId(
+                            user.id,
+                            { transaction: options.transaction }
+                        );
+                    }
                 },
             },
         }

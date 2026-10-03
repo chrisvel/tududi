@@ -1996,9 +1996,10 @@
       },
       "descriptions": {
         "admin": "Beheert accounts, rollen en groepen en kan al het andere doen.",
+        "accountAdmin": "Beheert de leden, rollen en groepen van dit account. Ziet alleen wat met hen gedeeld wordt.",
         "user": "Een gewoon lid. Werkt met eigen items en alles wat met hem of haar wordt gedeeld.",
         "guest": "Werkt binnen wat met hem of haar is gedeeld of aan hem of haar is toegewezen.",
-        "superadmin": "Beheert deze installatie: alle accounts, facturering, groepen en instellingen. Klanten krijgen deze rol nooit; zij beheren alleen de leden die ze toevoegen."
+        "superadmin": "Beheert deze instantie: alle accounts, facturering en instellingen. Er is er maar één; klanten zijn beheerder van hun eigen account."
       },
       "capabilities": {
         "createPeople": "Mensen toevoegen",

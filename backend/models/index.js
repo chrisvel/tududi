@@ -107,6 +107,7 @@ const WaitlistSubscriber = require('./waitlist_subscriber')(sequelize);
 const UsageCounter = require('./usage_counter')(sequelize);
 const Feedback = require('./feedback')(sequelize);
 const PushSubscription = require('./push_subscription')(sequelize);
+const Account = require('./account')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
@@ -665,5 +666,6 @@ module.exports = {
     WaitlistSubscriber,
     UsageCounter,
     Feedback,
+    Account,
     PushSubscription,
 };

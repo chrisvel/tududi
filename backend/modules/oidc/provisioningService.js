@@ -9,6 +9,19 @@ const { logError } = require('../../services/logService');
 const { getConfig } = require('../../config/config');
 const { OidcUserError } = require('./errors');
 
+// A hosted instance has one superadmin, so an admin email domain never
+// makes a second one.
+async function mayAddAdmin(transaction) {
+    const { getConfig } = require('../../config/config');
+    if (getConfig().hosted?.enabled !== true) return true;
+    const { Role } = require('../../models');
+    const admins = await Role.count({
+        where: { is_admin: true },
+        transaction,
+    });
+    return admins === 0;
+}
+
 function shouldBeAdmin(config, email) {
     if (!config.adminEmailDomains || config.adminEmailDomains.length === 0) {
         return false;
@@ -163,7 +176,10 @@ async function provisionUser(providerSlug, claims, req) {
 
             isNewUser = true;
 
-            if (shouldBeAdmin(config, claims.email)) {
+            if (
+                shouldBeAdmin(config, claims.email) &&
+                (await mayAddAdmin(transaction))
+            ) {
                 const { Role } = require('../../models');
                 await Role.update(
                     { is_admin: true },

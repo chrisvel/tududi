@@ -1998,9 +1998,10 @@
       },
       "descriptions": {
         "admin": "Zarządza kontami, rolami i grupami i może robić wszystko inne.",
+        "accountAdmin": "Zarządza członkami, rolami i grupami tego konta. Widzi tylko to, co zostało mu udostępnione.",
         "user": "Zwykły członek. Pracuje na własnych elementach i na wszystkim, co jest mu udostępnione.",
         "guest": "Pracuje w tym, co jest mu udostępnione lub przypisane.",
-        "superadmin": "Zarządza tą instancją: wszystkimi kontami, rozliczeniami, grupami i ustawieniami. Klienci nigdy nie dostają tej roli; zarządzają tylko członkami, których dodali."
+        "superadmin": "Prowadzi tę instancję: wszystkie konta, płatności i ustawienia. Jest tylko jeden; klienci są administratorami własnych kont."
       },
       "capabilities": {
         "createPeople": "Dodawanie osób",

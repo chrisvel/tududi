@@ -1996,9 +1996,10 @@
       },
       "descriptions": {
         "admin": "Hallitsee tilejä, rooleja ja ryhmiä ja voi tehdä kaiken muun.",
+        "accountAdmin": "Hallinnoi tämän tilin jäseniä, rooleja ja ryhmiä. Näkee vain sen, mitä hänen kanssaan jaetaan.",
         "user": "Tavallinen jäsen. Työskentelee omien kohteidensa ja kaiken hänen kanssaan jaetun parissa.",
         "guest": "Työskentelee sen parissa, mitä hänen kanssaan jaetaan tai mitä hänelle on osoitettu.",
-        "superadmin": "Ylläpitää tätä palvelua: kaikki tilit, laskutus, ryhmät ja asetukset. Asiakkaat eivät koskaan saa tätä roolia; he hallitsevat vain lisäämiään jäseniä."
+        "superadmin": "Ylläpitää tätä instanssia: kaikki tilit, laskutus ja asetukset. Niitä on vain yksi; asiakkaat ovat oman tilinsä ylläpitäjiä."
       },
       "capabilities": {
         "createPeople": "Lisätä ihmisiä",

@@ -6,6 +6,7 @@ const { execAction } = require('../../services/execAction');
 const groupSharing = require('../../services/groupSharing');
 const { isAdmin } = require('../../services/rolesService');
 const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
+const accountsService = require('../../services/accountsService');
 const { logError } = require('../../services/logService');
 const { Notification } = require('../../models');
 const {
@@ -51,6 +52,14 @@ class SharesService {
         if (!userIsAdmin && !userIsOwner) {
             throw new ForbiddenError('Forbidden');
         }
+    }
+
+    // On a hosted instance a group can only be shared with from inside the
+    // customer account it belongs to.
+    async mayShareWithGroup(userId, group) {
+        if (!accountsService.isHosted()) return true;
+        const accountId = await accountsService.ensureAccountId(userId);
+        return Boolean(accountId) && group.account_id === accountId;
     }
 
     // The people the user can pick in the share modal: their workspace (see
@@ -134,7 +143,7 @@ class SharesService {
 
         if (target_group_uid) {
             const group = await groupsRepository.findByUid(target_group_uid);
-            if (!group) {
+            if (!group || !(await this.mayShareWithGroup(userId, group))) {
                 throw new NotFoundError('Group not found');
             }
             await groupSharing.grantToGroup({

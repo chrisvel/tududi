@@ -28,7 +28,12 @@ import type { SidebarSectionId } from '../utils/sidebarLayout';
 interface SidebarProps {
     isSidebarOpen: boolean;
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    currentUser: { email: string; is_admin?: boolean; avatar_image?: string };
+    currentUser: {
+        email: string;
+        is_admin?: boolean;
+        role?: string;
+        avatar_image?: string;
+    };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     openTaskModal: () => void;
@@ -64,7 +69,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const habitsEnabled = useStore((state) => state.userSettingsStore.habitsEnabled);
+    const habitsEnabled = useStore(
+        (state) => state.userSettingsStore.habitsEnabled
+    );
     const visibleSections = useStore(
         (state) => state.userSettingsStore.sidebarVisibleSections
     );

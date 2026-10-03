@@ -5,6 +5,7 @@ import { CheckIcon, MinusIcon } from '@heroicons/react/24/outline';
 import {
     CAPABILITY_IDS,
     RoleId,
+    isAdminRole,
     RoleSummary,
     RolesOverview,
 } from '../../entities/Role';
@@ -146,7 +147,7 @@ const AdminRolesPanel: React.FC<AdminRolesPanelProps> = ({
                                     </td>
                                     {roles.map((role) => (
                                         <td key={role.id} className="px-6 py-4">
-                                            {cell(role.id === 'admin')}
+                                            {cell(isAdminRole(role.id))}
                                         </td>
                                     ))}
                                 </tr>

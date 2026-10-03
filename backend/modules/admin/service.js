@@ -22,6 +22,7 @@ const {
 } = require('../../shared/errors');
 const rolesService = require('../../services/rolesService');
 const seatsService = require('../../services/seatsService');
+const accountsService = require('../../services/accountsService');
 const { isAdmin } = rolesService;
 const { sequelize } = require('../../models');
 const { destroyUserSessions } = require('../../services/sessionService');
@@ -104,6 +105,29 @@ class AdminService {
         return { user_id, is_admin: await isAdmin(user_id) };
     }
 
+    // Who may open the Access page (users, groups, roles) and what it shows:
+    // the instance admin sees everyone; on a hosted instance an admin of a
+    // customer account sees only its account. Anyone else is refused.
+    async accessScope(requesterId) {
+        if (!requesterId) {
+            throw new UnauthorizedError('Authentication required');
+        }
+        if (await isAdmin(requesterId)) return { superadmin: true };
+        if (await rolesService.isAccountAdmin(requesterId)) {
+            const account = await accountsService.getAccount(requesterId);
+            if (account) {
+                const userIds = await accountsService.getUserIds(account.id);
+                return {
+                    superadmin: false,
+                    accountId: account.id,
+                    ownerId: account.owner_user_id,
+                    userIds,
+                };
+            }
+        }
+        throw new ForbiddenError('Forbidden');
+    }
+
     describeRole(row) {
         const role = rolesService.effectiveRole(row);
         return {
@@ -116,20 +140,30 @@ class AdminService {
     }
 
     async listRoles(requesterId) {
-        await this.verifyAdmin(requesterId);
-        return rolesService.describeRoles();
+        const scope = await this.accessScope(requesterId);
+        return scope.superadmin
+            ? rolesService.describeRoles()
+            : rolesService.describeRoles({ userIds: scope.userIds });
     }
 
     /**
      * List all users with roles.
      */
     async listUsers(requesterId) {
-        await this.verifyAdmin(requesterId);
+        const scope = await this.accessScope(requesterId);
+        const userIds = scope.superadmin ? null : scope.userIds;
 
-        const users = await adminRepository.findAllUsers();
-        const roles = await adminRepository.findAllRoles();
+        const users = await adminRepository.findAllUsers(userIds);
+        const roles = await adminRepository.findAllRoles(userIds);
         const userIdToRole = new Map(roles.map((r) => [r.user_id, r]));
-        const identityUserIds = await adminRepository.findIdentityUserIds();
+        const identityUserIds =
+            await adminRepository.findIdentityUserIds(userIds);
+        const hosted = accountsService.isHosted();
+        const ownerIds = hosted
+            ? await adminRepository.findAccountOwnerIds(
+                  scope.superadmin ? null : [scope.accountId]
+              )
+            : new Set();
 
         return users.map((u) => ({
             id: u.id,
@@ -139,6 +173,7 @@ class AdminService {
             created_at: u.created_at,
             account_status: accountStatusOf(u, identityUserIds.has(u.id)),
             ...this.describeRole(userIdToRole.get(u.id)),
+            ...(hosted ? { is_account_owner: ownerIds.has(u.id) } : {}),
         }));
     }
 
@@ -146,15 +181,54 @@ class AdminService {
      * Create a new user.
      */
     async createUser(requesterId, body) {
-        await this.verifyAdmin(requesterId);
+        await this.accessScope(requesterId);
         return membersService.createMember(requesterId, body);
+    }
+
+    // What an admin of a hosted account may change on someone in its
+    // account. The owner stays an admin (setRole refuses), only the person
+    // themself changes an email they already have, and a password is set
+    // only for a user or a guest, never for another admin.
+    async assertAccountAdminMayUpdate(scope, requesterId, user, body) {
+        if (!scope.userIds.includes(user.id)) {
+            throw new NotFoundError('User not found');
+        }
+        const { email, password, role } = body || {};
+        if (role === 'admin') {
+            throw new ForbiddenError('Only an admin can create an admin');
+        }
+        const self = user.id === requesterId;
+        const changesEmail =
+            email !== undefined &&
+            email !== null &&
+            String(email).trim() !== '' &&
+            String(email).trim().toLowerCase() !== user.email;
+        if (changesEmail && user.email && !self) {
+            throw new ForbiddenError(
+                'Only the account holder can change their email address'
+            );
+        }
+        const changesPassword =
+            password !== undefined &&
+            password !== null &&
+            !(typeof password === 'string' && password.trim() === '');
+        if (changesPassword && !self) {
+            const targetRole = rolesService.effectiveRole(
+                await adminRepository.findRoleByUserId(user.id)
+            );
+            if (targetRole === 'admin' || targetRole === 'account_admin') {
+                throw new ForbiddenError(
+                    'Only the account holder can change an admin password'
+                );
+            }
+        }
     }
 
     /**
      * Update a user.
      */
     async updateUser(requesterId, userId, body, { sessionId = null } = {}) {
-        await this.verifyAdmin(requesterId);
+        const scope = await this.accessScope(requesterId);
 
         const id = validateUserId(userId);
         const user = await adminRepository.findUserById(id);
@@ -165,6 +239,14 @@ class AdminService {
         const { email, password, name, surname, role, capabilities } =
             body || {};
         validateRoleChange(role, capabilities);
+        if (!scope.superadmin) {
+            await this.assertAccountAdminMayUpdate(
+                scope,
+                requesterId,
+                user,
+                body
+            );
+        }
 
         // A blank email leaves the current one alone: an email can be added or
         // changed here, but not taken away, since the account could then no
@@ -245,7 +327,7 @@ class AdminService {
      * Delete a user.
      */
     async deleteUser(requesterId, userId) {
-        await this.verifyAdmin(requesterId);
+        const scope = await this.accessScope(requesterId);
 
         const id = validateUserId(userId);
 
@@ -253,7 +335,23 @@ class AdminService {
             throw new ValidationError('Cannot delete your own account');
         }
 
+        // An admin of a hosted account removes members of its account (never
+        // its owner) the way the People page does, seat included.
+        if (!scope.superadmin) {
+            if (id === scope.ownerId) {
+                throw new ForbiddenError('The account owner cannot be removed');
+            }
+            if (!scope.userIds.includes(id)) {
+                throw new NotFoundError('User not found');
+            }
+            await membersService.removeMember(requesterId, id);
+            return null;
+        }
+
         const target = await adminRepository.findUserById(id);
+        const payerId = target
+            ? await accountsService.getOwnerId(target.id)
+            : null;
         const result = await adminRepository.deleteUserWithData(id);
 
         if (!result.success) {
@@ -264,8 +362,8 @@ class AdminService {
         }
 
         // Deleting a member frees its seat on the owner's subscription.
-        if (target?.created_by_user_id != null) {
-            await seatsService.reconcile(target.created_by_user_id);
+        if (payerId != null && payerId !== id) {
+            await seatsService.reconcile(payerId);
         }
 
         return null;

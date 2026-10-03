@@ -229,6 +229,9 @@ async function eraseUserAccount(userId) {
         await PushSubscription.destroy(byUser);
         await BillingAccount.destroy(byUser);
 
+        // A hosted account this one owned goes with it; its members stay.
+        await require('./accountsService').releaseOwnedAccount(userId, tx);
+
         // Accounts this one created stay, and just forget who created them.
         await User.update(
             { created_by_user_id: null },

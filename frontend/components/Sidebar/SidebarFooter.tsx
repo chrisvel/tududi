@@ -17,6 +17,7 @@ import AppsGridIcon from '../Shared/Icons/AppsGridIcon';
 import AppLauncherModal from './AppLauncherModal';
 import FeedbackModal from '../Feedback/FeedbackModal';
 import { useTranslation } from 'react-i18next';
+import { canOpenAccess } from '../../entities/Role';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
 import { getApiPath } from '../../config/paths';
@@ -30,7 +31,12 @@ import {
 } from '../../utils/keyboardShortcutsService';
 
 interface SidebarFooterProps {
-    currentUser: { email: string; is_admin?: boolean; avatar_image?: string };
+    currentUser: {
+        email: string;
+        is_admin?: boolean;
+        role?: string;
+        avatar_image?: string;
+    };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     isSidebarOpen: boolean;
@@ -231,24 +237,33 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     {isDropdownOpen && (
                         <div className="absolute bottom-full left-0 mb-2 w-60 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                             <div className="py-1">
-                                {dropdownItems.map(({ label, translationKey, icon, action }) => (
-                                    <button
-                                        key={label}
-                                        onClick={() => handleDropdownSelect(label)}
-                                        className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
-                                    >
-                                        <div className="flex items-center">
-                                            {icon}
-                                            {t(translationKey, label)}
-                                        </div>
-                                        <span
-                                            className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
-                                            style={{ fontSize: '10px' }}
+                                {dropdownItems.map(
+                                    ({
+                                        label,
+                                        translationKey,
+                                        icon,
+                                        action,
+                                    }) => (
+                                        <button
+                                            key={label}
+                                            onClick={() =>
+                                                handleDropdownSelect(label)
+                                            }
+                                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
                                         >
-                                            {getShortcutDisplay(action)}
-                                        </span>
-                                    </button>
-                                ))}
+                                            <div className="flex items-center">
+                                                {icon}
+                                                {t(translationKey, label)}
+                                            </div>
+                                            <span
+                                                className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
+                                                style={{ fontSize: '10px' }}
+                                            >
+                                                {getShortcutDisplay(action)}
+                                            </span>
+                                        </button>
+                                    )
+                                )}
                             </div>
                         </div>
                     )}
@@ -269,7 +284,17 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     {telegramStatus !== 'none' && (
                         <div
                             className="flex items-center justify-center"
-                            title={telegramStatus === 'healthy' ? t('sidebar.telegramConnected', 'Telegram connected') : t('sidebar.telegramProblem', 'Telegram connection problem')}
+                            title={
+                                telegramStatus === 'healthy'
+                                    ? t(
+                                          'sidebar.telegramConnected',
+                                          'Telegram connected'
+                                      )
+                                    : t(
+                                          'sidebar.telegramProblem',
+                                          'Telegram connection problem'
+                                      )
+                            }
                         >
                             <TelegramIcon
                                 className={`h-4 w-4 ${telegramStatus === 'healthy' ? 'text-green-500' : 'text-red-500'}`}
@@ -301,7 +326,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 
             <AppLauncherModal
                 isOpen={isLauncherOpen}
-                isAdmin={currentUser?.is_admin === true}
+                isAdmin={canOpenAccess(currentUser)}
                 onClose={() => setIsLauncherOpen(false)}
                 onSelect={handleLauncherSelect}
             />

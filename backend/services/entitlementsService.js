@@ -137,17 +137,15 @@ async function ensureAccount(userId) {
 // An admin's exemption and a bare trial are not seats anybody paid for.
 const SEAT_REASONS = ['subscription', 'grace', 'override'];
 
-// A member added by an owner sits on the owner's subscription: when the
+// A member of an account sits on the account owner's subscription: when the
 // member has nothing of its own, it gets the owner's plan for as long as the
 // owner pays.
 async function resolveSeat(userId) {
     const { User } = models();
-    const user = await User.findByPk(userId, {
-        attributes: ['id', 'created_by_user_id'],
-    });
-    if (!user || user.created_by_user_id == null) return null;
+    const ownerId = await require('./accountsService').getOwnerId(userId);
+    if (!ownerId || ownerId === userId) return null;
 
-    const owner = await User.findByPk(user.created_by_user_id, {
+    const owner = await User.findByPk(ownerId, {
         attributes: ['id', 'name', 'surname', 'email'],
     });
     if (!owner || (await isAdmin(owner.id))) return null;

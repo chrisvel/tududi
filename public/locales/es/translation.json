@@ -1984,9 +1984,10 @@
       },
       "descriptions": {
         "admin": "Gestiona cuentas, roles y grupos, y puede hacer todo lo demás.",
+        "accountAdmin": "Gestiona los miembros, roles y grupos de esta cuenta. Solo ve lo que se comparte con él.",
         "user": "Un miembro normal. Trabaja con sus propios elementos y con todo lo que se comparte con él.",
         "guest": "Trabaja dentro de lo que se comparte con él o se le asigna.",
-        "superadmin": "Gestiona esta instancia: todas las cuentas, la facturación, los grupos y los ajustes. Los clientes nunca tienen este rol; solo gestionan los miembros que añaden."
+        "superadmin": "Administra esta instancia: todas las cuentas, la facturación y la configuración. Solo hay uno; los clientes son administradores de su propia cuenta."
       },
       "capabilities": {
         "createPeople": "Añadir personas",
