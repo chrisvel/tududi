@@ -18,7 +18,7 @@ const attachments = require('./operations/attachments');
 async function withAttachments(items) {
     const byItem = await attachments.listForItems(items);
     return items.map((item) => ({
-        ...item.toJSON(),
+        ..._.omit(item.toJSON(), ['ai_suggestion_key']),
         attachments: byItem.get(item.id) || [],
     }));
 }
@@ -98,6 +98,11 @@ class InboxService {
             const validatedContent = validateContent(content);
             updateData.content = validatedContent;
             updateData.title = buildTitleFromContent(validatedContent);
+            // A suggestion for the old text no longer applies.
+            if (validatedContent !== item.content) {
+                updateData.ai_suggestion = null;
+                updateData.ai_suggestion_key = null;
+            }
         }
 
         if (status !== undefined && status !== null) {
@@ -110,6 +115,20 @@ class InboxService {
             ..._.pick(item, PUBLIC_ATTRIBUTES),
             attachments: await attachments.listForItem(item),
         };
+    }
+
+    // The user said no to the AI's suggestion; it should not come back.
+    async dismissAiSuggestion(userId, uid) {
+        validateUid(uid);
+        const item = await inboxRepository.findByUid(userId, uid);
+        if (!item) {
+            throw new NotFoundError('Inbox item not found.');
+        }
+        await inboxRepository.updateItem(item, {
+            ai_suggestion: null,
+            ai_suggestion_key: null,
+        });
+        return { uid: item.uid };
     }
 
     async delete(userId, uid) {

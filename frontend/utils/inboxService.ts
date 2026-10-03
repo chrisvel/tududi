@@ -1,4 +1,4 @@
-import { InboxItem } from '../entities/InboxItem';
+import { InboxItem, InboxAiSuggestion } from '../entities/InboxItem';
 import { InboxAttachment } from '../entities/Attachment';
 import { Task, RecurrenceType } from '../entities/Task';
 import { useStore } from '../store/useStore';
@@ -65,6 +65,42 @@ export const applyAnalysisToTask = (
         next.assigned_to = analysis.parsed_assignee.uid;
     }
     return next;
+};
+
+export type {
+    InboxAiKind,
+    InboxAiOption,
+    InboxAiSuggestion,
+} from '../entities/InboxItem';
+
+// Saved suggestions come back as they are; regenerate asks the AI again.
+export const suggestInboxWithAi = async (
+    itemUids: string[],
+    options: { regenerate?: boolean } = {}
+): Promise<InboxAiSuggestion[]> => {
+    const response = await fetch(getApiPath('inbox/ai/suggest'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({
+            item_uids: itemUids,
+            regenerate: options.regenerate === true,
+        }),
+    });
+    await handleAuthResponse(response, 'Could not get AI suggestions.');
+    const data = await response.json();
+    return data.suggestions || [];
+};
+
+export const dismissInboxAiSuggestion = async (
+    itemUid: string
+): Promise<void> => {
+    const response = await fetch(getApiPath(`inbox/${itemUid}/ai-suggestion`), {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+    });
+    await handleAuthResponse(response, 'Could not dismiss the suggestion.');
 };
 
 // API functions
@@ -148,9 +184,7 @@ export const updateInboxItem = async (
 
 // What an item became when it was processed. The item's files move onto it.
 export type ProcessedInto =
-    | { task_uid: string }
-    | { project_uid: string }
-    | { note_uid: string };
+    { task_uid: string } | { project_uid: string } | { note_uid: string };
 
 export const processInboxItem = async (
     itemUid: string,

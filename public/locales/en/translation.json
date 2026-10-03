@@ -1220,7 +1220,48 @@
     "hideInfo": "Hide info",
     "aboutInbox": "About Inbox",
     "shortcutTag": "to label with a tag",
-    "shortcutProject": "to assign to a project"
+    "shortcutProject": "to assign to a project",
+    "ai": {
+      "askKeep": "Keep it in the inbox?",
+      "askNote": "Create this note?",
+      "askProject": "Create this project?",
+      "askTask": "Create this task?",
+      "assist": "AI assist",
+      "assisting": "Thinking…",
+      "failed": "Could not get AI suggestions.",
+      "guess": "Best guess",
+      "guessHint": "Best guess, item is unclear",
+      "keep": "Keep",
+      "no": "No",
+      "noSuggestions": "The AI had no suggestions.",
+      "ok": "OK",
+      "reviewHint": "You can review and change everything before it is saved.",
+      "suggests": "AI suggests",
+      "yes": "Yes",
+      "regenerateTitle": "Regenerate AI suggestions?",
+      "regenerateAll": "The AI will look at your inbox again and replace the current suggestions.",
+      "regenerateItem": "The AI will look at this item again and replace its current suggestion.",
+      "dismissFailed": "Could not dismiss the suggestion.",
+      "progress": {
+        "readAll": "Reading your inbox…",
+        "readItem": "Reading this item…",
+        "actions": "Spotting actions and deadlines…",
+        "projects": "Checking your projects for a match…",
+        "tags": "Picking tags you already use…",
+        "kinds": "Telling tasks from notes…",
+        "files": "Looking at attached files…",
+        "names": "Thinking up clear names…",
+        "options": "Weighing a few options…",
+        "why": "Writing down why…",
+        "almost": "Almost there, tidying up…"
+      },
+      "field": {
+        "dueDate": "Due",
+        "project": "Project",
+        "tags": "Tags",
+        "title": "Name"
+      }
+    }
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

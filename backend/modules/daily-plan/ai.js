@@ -4,7 +4,6 @@ const moment = require('moment-timezone');
 const { Op } = require('sequelize');
 const { User, Task, Project } = require('../../models');
 const ai = require('../ai-assistant/service');
-const entitlements = require('../../services/entitlementsService');
 const permissionsService = require('../../services/permissionsService');
 const calendarFeedsService = require('../calendar-feeds/service');
 const dailyPlanService = require('./service');
@@ -67,33 +66,6 @@ function languageInstruction(language) {
         // Keep the code; the model understands it.
     }
     return `\nWrite every text field (summary, reasons, wins, pattern) in ${name}.`;
-}
-
-async function chargeForCall(userId) {
-    await entitlements.consumeUsage(userId, 'ai_requests');
-    await entitlements.consumeMonthlyUsage(userId, 'ai_credits');
-}
-
-// Budgets are generous on purpose: reasoning models spend most of them
-// thinking before the JSON starts, and a cut-off answer parses to nothing.
-async function askModel(userId, { name, system, user, schema, maxTokens }) {
-    const client = await ai.getOpenAIClient(userId);
-    const response = await ai.callWithFallback(client, userId, {
-        model: await ai.getAIModel(userId),
-        messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: user },
-        ],
-        max_tokens: maxTokens,
-        ...ai.getExtraBodyParams(),
-        response_format: ai.buildResponseFormat(name, schema),
-    });
-    const raw = ai.extractMessageContent(response.choices[0]?.message);
-    try {
-        return JSON.parse(ai.extractJSON(raw));
-    } catch {
-        return {};
-    }
 }
 
 function nowMinute(timezone, date) {
@@ -306,9 +278,9 @@ async function draftDay(userId, { date, mode = 'fill' } = {}) {
         .filter((line) => line !== null)
         .join('\n');
 
-    await chargeForCall(userId);
+    await ai.chargeAiCall(userId);
 
-    const parsed = await askModel(userId, {
+    const parsed = await ai.askJson(userId, {
         name: 'day_plan_draft',
         maxTokens: ai.getMaxTokens('LLM_MAX_TOKENS_DAY_PLAN', 6000),
         schema: DRAFT_SCHEMA,
@@ -400,8 +372,8 @@ async function estimateTasks(userId, taskUids) {
     }
 
     if (missing.length > 0) {
-        await chargeForCall(userId);
-        const parsed = await askModel(userId, {
+        await ai.chargeAiCall(userId);
+        const parsed = await ai.askJson(userId, {
             name: 'task_estimates',
             maxTokens: ai.getMaxTokens('LLM_MAX_TOKENS_ESTIMATES', 4000),
             schema: {
@@ -521,9 +493,9 @@ async function wrapUpDay(userId, date) {
         });
     });
 
-    await chargeForCall(userId);
+    await ai.chargeAiCall(userId);
 
-    const parsed = await askModel(userId, {
+    const parsed = await ai.askJson(userId, {
         name: 'day_wrap_up',
         maxTokens: ai.getMaxTokens('LLM_MAX_TOKENS_WRAP_UP', 3000),
         schema: WRAP_UP_SCHEMA,

@@ -331,6 +331,26 @@ Each inbox item can be converted to three types:
 - Save or cancel without leaving inbox page
 - More lightweight for quick additions
 
+### AI assist
+
+AI assist is available whenever an AI provider is set up: always on the hosted version, and on a self-hosted instance once an API key is saved in Profile → AI Assistant (or in the server's `.env`). It does not depend on the AI assistant switch in Profile → Features.
+
+- **AI assist** on the "Recently captured" header analyzes every loaded item in one call.
+- **AI assist** in an item's edit footer (next to Delete) analyzes just that item.
+- While it works (a minute or more for a full inbox with a reasoning model), a status line under the header (or inside the item) rotates through short messages about what the AI is looking at, with a seconds counter.
+
+Each item with a suggestion becomes its own card:
+
+- **Options:** one to three pills, best first (Task blue, Note purple, Project green, Keep gray). Picking a pill switches the card to that option.
+- **Best guess:** when the item is unclear (e.g. only an attached file, no text), the AI still suggests something, marked with a `?` and shown in amber, with "Best guess, item is unclear". The AI sees the names and types of attached files.
+- **Preview:** the proposed name, with icon chips for project, tags and due date.
+- **Why:** chat bubbles, always visible. The first gives the reason and a short analysis; then one bubble per field, in the color and icon of its chip, saying where the value came from.
+- **Decision:** "Create this task?" with **No** and **Yes**. Yes opens the same prefilled modal as the Task, Note and Project buttons, so nothing is saved until you confirm, and saving processes the item as usual. No dismisses the suggestion for good.
+
+Suggestions are saved with the item and show again when you come back to the Inbox. Pressing AI assist again (on the header or an item) when there are saved suggestions asks "Regenerate AI suggestions?" first; **Yes** asks the AI again and replaces them, **No** keeps them. Editing an item's text drops its suggestion.
+
+Rules the server enforces on what the model returns: only existing projects (matched by name, otherwise dropped), up to 5 tags, a due date only for tasks and never before the capture day, an explanation only for fields that survived, an option to create something only with a name, and up to three distinct options per item. Saved suggestions are reused, without calling the AI, until the item's text or files change or you regenerate them. See [AI Assistant](13-ai-assistant.md#inbox-ai-assist).
+
 ---
 
 ## Inbox Item Lifecycle
