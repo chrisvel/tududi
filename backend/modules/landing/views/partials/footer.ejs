@@ -16,6 +16,9 @@
                         <a href="#ai"><%= t('nav.ai') %></a>
                         <a href="#pricing"><%= t('nav.pricing') %></a>
                         <a href="<%= localePath(i18n.locale, '/cloud') %>"><%= t('pricing.plans.cloud.name') %></a>
+                        <% if (typeof blogUrl !== 'undefined' && blogUrl) { %>
+                        <a href="<%= blogUrl %>"><%= t('nav.blog') %></a>
+                        <% } %>
                     </div>
                 </div>
                 <div>

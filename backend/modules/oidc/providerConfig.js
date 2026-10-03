@@ -55,8 +55,8 @@ function loadProvidersFromEnv() {
         };
 
         const missingFields = [];
+        // The name is always set: the loop only runs while it is.
         if (!provider.slug) missingFields.push(`OIDC_PROVIDER_${i}_SLUG`);
-        if (!provider.name) missingFields.push(`OIDC_PROVIDER_${i}_NAME`);
         if (!provider.issuer) missingFields.push(`OIDC_PROVIDER_${i}_ISSUER`);
         if (!provider.clientId)
             missingFields.push(`OIDC_PROVIDER_${i}_CLIENT_ID`);

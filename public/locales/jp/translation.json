@@ -2024,7 +2024,19 @@
     },
     "turnContactIntoAccount": "連絡先の 1 人をこのアカウントに変換（任意）",
     "noContact": "（なし）",
-    "turnContactNote": "連絡先は履歴を保持するため、割り当て済みのタスクはそのまま割り当てられます。その連絡先についての非公開メモは引き継がれません。"
+    "turnContactNote": "連絡先は履歴を保持するため、割り当て済みのタスクはそのまま割り当てられます。その連絡先についての非公開メモは引き継がれません。",
+    "blog": {
+      "title": "ブログ",
+      "description": "メモをひとつ選んでトップページにします。そのメモが [[タイトル]] でリンクしている公開メモが記事になります。表示するには、トップページと各記事を公開共有してください。",
+      "placeholder": "メモのリンクまたは ID(例: https://app.tududi.com/notes/abc123)",
+      "inputLabel": "トップページのメモ",
+      "turnOff": "オフにする",
+      "shared": "公開",
+      "notShared": "まだ共有されていません: ブログを公開するにはメモから共有してください",
+      "postCount": "記事: {{count}}",
+      "open": "ブログを開く",
+      "preview": "アプリでプレビュー"
+    }
   },
   "shares": {
     "shareProject": "プロジェクトを共有",
@@ -2927,5 +2939,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "このノートは公開されていません。"
+  },
+  "blog": {
+    "nav": "ブログ",
+    "navCta": "今すぐ始める",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "利用規約",
+    "footerPrivacy": "プライバシー",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "小さなことを頭の中から出そう。",
+    "ctaBody": "タスク、プロジェクト、メモ、習慣をひとつの落ち着いた場所に。一緒に暮らし、働く人たちと共有できます。サーバー不要、インストール不要。",
+    "ctaPrice": "月額 {{monthly}} または年額 {{annual}}",
+    "ctaGuarantee": "14日間の返金保証",
+    "ctaPrimary": "今すぐ始める",
+    "ctaSecondary": "含まれる内容を見る",
+    "readPost": "記事を読む",
+    "emptyTitle": "まだ何もありません",
+    "emptyBody": "最初の記事を準備中です。また来てください。",
+    "failedTitle": "ブログを読み込めませんでした",
+    "failedBody": "こちら側で問題が発生しました。少し待ってからもう一度お試しください。",
+    "missingTitle": "この記事はここにありません",
+    "missingBody": "移動または削除された可能性があります。ほかの記事はすぐそこです。",
+    "allPosts": "すべての記事",
+    "morePosts": "ブログのほかの記事"
   }
 }

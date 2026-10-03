@@ -2259,6 +2259,18 @@
       "confirmDelete": "Delete this feedback? This cannot be undone.",
       "statusOpen": "Open",
       "statusResolved": "Resolved"
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Pick one of your notes as the front page. The public notes it links with [[Title]] become the posts. Share the front page and each post publicly for them to show.",
+      "placeholder": "Note link or ID, e.g. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Front page note",
+      "turnOff": "Turn off",
+      "shared": "Public",
+      "notShared": "Not shared yet: share it from the note to publish the blog",
+      "postCount": "Posts: {{count}}",
+      "open": "Open the blog",
+      "preview": "Preview in the app"
     }
   },
   "billing": {
@@ -3082,5 +3094,28 @@
     "sending": "Sending...",
     "sent": "Thanks! Your feedback was sent.",
     "failed": "Could not send your feedback"
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Start now",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Terms",
+    "footerPrivacy": "Privacy",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Get the small things out of your head.",
+    "ctaBody": "Tasks, projects, notes and habits in one calm place, shared with the people you live and work with. No server, nothing to install.",
+    "ctaPrice": "{{monthly}} a month or {{annual}} a year",
+    "ctaGuarantee": "14-day money-back guarantee",
+    "ctaPrimary": "Start now",
+    "ctaSecondary": "See what is included",
+    "readPost": "Read the post",
+    "emptyTitle": "Nothing here yet",
+    "emptyBody": "The first posts are on their way. Come back soon.",
+    "failedTitle": "Could not load the blog",
+    "failedBody": "Something went wrong on our side. Try again in a moment.",
+    "missingTitle": "This post is not here",
+    "missingBody": "It may have moved or been taken down. The other posts are one click away.",
+    "allPosts": "All posts",
+    "morePosts": "More from the blog"
   }
 }

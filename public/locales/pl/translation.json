@@ -2026,7 +2026,19 @@
     },
     "turnContactIntoAccount": "Zamień jeden ze swoich kontaktów w to konto (opcjonalnie)",
     "noContact": "(brak)",
-    "turnContactNote": "Kontakt zachowuje swoją historię, więc przypisane mu zadania pozostają przypisane. Twoje prywatne notatki o nim nie są przenoszone."
+    "turnContactNote": "Kontakt zachowuje swoją historię, więc przypisane mu zadania pozostają przypisane. Twoje prywatne notatki o nim nie są przenoszone.",
+    "blog": {
+      "title": "Blog",
+      "description": "Wybierz jedną ze swoich notatek jako stronę główną. Publiczne notatki, do których linkuje przez [[Tytuł]], stają się wpisami. Udostępnij publicznie stronę główną i każdy wpis, aby się pojawiły.",
+      "placeholder": "Link lub ID notatki, np. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Notatka strony głównej",
+      "turnOff": "Wyłącz",
+      "shared": "Publiczna",
+      "notShared": "Jeszcze nieudostępniona: udostępnij ją w notatce, aby opublikować bloga",
+      "postCount": "Wpisy: {{count}}",
+      "open": "Otwórz bloga",
+      "preview": "Podgląd w aplikacji"
+    }
   },
   "shares": {
     "shareProject": "Udostępnij projekt",
@@ -2934,5 +2946,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Ta notatka nie jest udostępniona publicznie."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Zacznij teraz",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Regulamin",
+    "footerPrivacy": "Prywatność",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Wyrzuć drobiazgi z głowy.",
+    "ctaBody": "Zadania, projekty, notatki i nawyki w jednym spokojnym miejscu, wspólne z ludźmi, z którymi mieszkasz i pracujesz. Bez serwera, nic do instalowania.",
+    "ctaPrice": "{{monthly}} miesięcznie lub {{annual}} rocznie",
+    "ctaGuarantee": "14-dniowa gwarancja zwrotu pieniędzy",
+    "ctaPrimary": "Zacznij teraz",
+    "ctaSecondary": "Zobacz, co zawiera",
+    "readPost": "Przeczytaj wpis",
+    "emptyTitle": "Jeszcze nic tu nie ma",
+    "emptyBody": "Pierwsze wpisy są w drodze. Wróć wkrótce.",
+    "failedTitle": "Nie udało się wczytać bloga",
+    "failedBody": "Coś poszło nie tak po naszej stronie. Spróbuj ponownie za chwilę.",
+    "missingTitle": "Tego wpisu tu nie ma",
+    "missingBody": "Mógł zostać przeniesiony lub usunięty. Pozostałe wpisy są o jedno kliknięcie.",
+    "allPosts": "Wszystkie wpisy",
+    "morePosts": "Więcej z bloga"
   }
 }

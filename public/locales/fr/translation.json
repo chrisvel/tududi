@@ -2025,7 +2025,19 @@
     },
     "turnContactIntoAccount": "Transformer l'un de vos contacts en ce compte (facultatif)",
     "noContact": "(aucun)",
-    "turnContactNote": "Le contact conserve son historique, donc les tâches qui lui sont assignées le restent. Vos notes privées à son sujet ne sont pas reprises."
+    "turnContactNote": "Le contact conserve son historique, donc les tâches qui lui sont assignées le restent. Vos notes privées à son sujet ne sont pas reprises.",
+    "blog": {
+      "title": "Blog",
+      "description": "Choisissez une de vos notes comme page d'accueil. Les notes publiques qu'elle relie avec [[Titre]] deviennent les articles. Partagez publiquement la page d'accueil et chaque article pour qu'ils apparaissent.",
+      "placeholder": "Lien ou ID de la note, ex. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Note de page d'accueil",
+      "turnOff": "Désactiver",
+      "shared": "Publique",
+      "notShared": "Pas encore partagée : partagez-la depuis la note pour publier le blog",
+      "postCount": "Articles : {{count}}",
+      "open": "Ouvrir le blog",
+      "preview": "Aperçu dans l'app"
+    }
   },
   "shares": {
     "shareProject": "Partager le projet",
@@ -2929,5 +2941,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Cette note n'est pas partagée publiquement."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Commencer maintenant",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Conditions",
+    "footerPrivacy": "Confidentialité",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Sortez les petites choses de votre tête.",
+    "ctaBody": "Tâches, projets, notes et habitudes dans un endroit calme, partagés avec les personnes avec qui vous vivez et travaillez. Pas de serveur, rien à installer.",
+    "ctaPrice": "{{monthly}} par mois ou {{annual}} par an",
+    "ctaGuarantee": "Satisfait ou remboursé pendant 14 jours",
+    "ctaPrimary": "Commencer maintenant",
+    "ctaSecondary": "Voir ce qui est inclus",
+    "readPost": "Lire l'article",
+    "emptyTitle": "Rien pour l'instant",
+    "emptyBody": "Les premiers articles arrivent. Revenez bientôt.",
+    "failedTitle": "Impossible de charger le blog",
+    "failedBody": "Un problème est survenu de notre côté. Réessayez dans un instant.",
+    "missingTitle": "Cet article n'est pas ici",
+    "missingBody": "Il a peut-être été déplacé ou retiré. Les autres articles sont à un clic.",
+    "allPosts": "Tous les articles",
+    "morePosts": "Plus sur le blog"
   }
 }

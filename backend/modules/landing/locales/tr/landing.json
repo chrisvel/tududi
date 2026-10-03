@@ -11,6 +11,7 @@
     "ai": "Yapay zekâ ve MCP",
     "pricing": "Fiyatlar",
     "faq": "SSS",
+    "blog": "Blog",
     "signIn": "Giriş yap",
     "toggle": "Menüyü aç",
     "plan": "Gününü planla"
@@ -24,7 +25,7 @@
     "demoNote": "Örnek verilerle dolu gerçek bir barındırılan örnek; paylaşılır ve düzenli olarak sıfırlanır",
     "screenshotAlt": "tududi arayüzü; Bugün görünümü ve planlanmış görevler",
     "cloudNote": "Kurulacak sunucu yok. Aylık veya yıllık, ve istediğiniz zaman iptal edebilirsiniz.",
-    "ctaPrimary": "tududi Cloud'da başlayın",
+    "ctaPrimary": "Hemen başlayın",
     "lede": "Her şeyi yakala, günü yapay zekâyla takviminin etrafında planla; alanlar, hedefler, projeler, notlar ve alışkanlıklar tek sistemde. Bir dakikada Cloud hesabı aç.",
     "titleLine1": "Basitleştirilmiş verimlilik",
     "titleLine2": ""

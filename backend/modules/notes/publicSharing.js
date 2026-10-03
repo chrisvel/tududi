@@ -14,6 +14,11 @@ const TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 
 const WIKILINK = /\[\[([^[\]\n]+?)\]\]/g;
 
+// Files attached to a note are linked as /api/uploads/note-files/<name>, which
+// needs a signed-in reader. On the public page they go through the link.
+const NOTE_FILE_LINK = /\/api\/uploads\/note-files\/([A-Za-z0-9._-]+)/g;
+const STORED_FILENAME = /^[A-Za-z0-9._-]+$/;
+
 function generateToken() {
     return crypto.randomBytes(32).toString('base64url');
 }
@@ -34,6 +39,17 @@ async function loadOwnedNote(userId, uid) {
 // The [[links]] in a public note that a reader may follow: only notes of the
 // same owner that are public too. A private note and a missing one look the
 // same, so the reader learns nothing about notes they cannot open.
+async function findPublicNote(token) {
+    if (typeof token !== 'string' || !TOKEN_PATTERN.test(token)) {
+        throw new NotFoundError('This link is not available.');
+    }
+    const note = await notesRepository.findByPublicToken(token);
+    if (!note) {
+        throw new NotFoundError('This link is not available.');
+    }
+    return note;
+}
+
 async function publicLinkedNotes(note) {
     const titles = new Set(
         [...(note.content || '').matchAll(WIKILINK)].map((m) =>
@@ -138,16 +154,13 @@ const publicSharing = {
     },
 
     async getPublicNote(token) {
-        if (typeof token !== 'string' || !TOKEN_PATTERN.test(token)) {
-            throw new NotFoundError('This link is not available.');
-        }
-        const note = await notesRepository.findByPublicToken(token);
-        if (!note) {
-            throw new NotFoundError('This link is not available.');
-        }
+        const note = await findPublicNote(token);
         return {
             title: note.title,
-            content: note.content,
+            content: (note.content || '').replace(
+                NOTE_FILE_LINK,
+                (_, name) => `/api/public/notes/${token}/files/${name}`
+            ),
             color: note.public_inherit_style ? note.color || null : null,
             background: note.public_inherit_style
                 ? note.background || null
@@ -155,6 +168,20 @@ const publicSharing = {
             updated_at: note.updated_at,
             linked_notes: await publicLinkedNotes(note),
         };
+    },
+
+    // A file attached to the public note. Files of other notes, and every
+    // file once sharing is off, look the same as a missing one.
+    async getPublicFile(token, filename) {
+        const note = await findPublicNote(token);
+        const attachment =
+            typeof filename === 'string' && STORED_FILENAME.test(filename)
+                ? await notesRepository.findAttachment(note.id, filename)
+                : null;
+        if (!attachment) {
+            throw new NotFoundError('This file is not available.');
+        }
+        return attachment;
     },
 };
 

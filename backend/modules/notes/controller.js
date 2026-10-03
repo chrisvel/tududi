@@ -1,10 +1,13 @@
 'use strict';
 
+const path = require('path');
 const notesService = require('./service');
 const publicSharing = require('./publicSharing');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
+const { getConfig } = require('../../config/config');
+const { INLINE_SAFE_EXTENSIONS } = require('../../utils/attachment-utils');
 
 /**
  * Get authenticated user ID or throw UnauthorizedError.
@@ -234,6 +237,34 @@ const notesController = {
                 'Referrer-Policy': 'no-referrer',
             });
             res.json(await publicSharing.getPublicNote(req.params.token));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // An image or file of a public note, so the public page can show it.
+    async getPublicNoteFile(req, res, next) {
+        try {
+            const attachment = await publicSharing.getPublicFile(
+                req.params.token,
+                req.params.filename
+            );
+            res.set({
+                'Cache-Control': 'no-store',
+                'X-Robots-Tag': 'noindex, nofollow',
+                'Referrer-Policy': 'no-referrer',
+                'X-Content-Type-Options': 'nosniff',
+            });
+            const ext = path.extname(attachment.file_path).toLowerCase();
+            if (!INLINE_SAFE_EXTENSIONS.has(ext)) {
+                res.attachment(attachment.original_filename);
+            }
+            res.sendFile(
+                path.join(getConfig().uploadPath, attachment.file_path),
+                (error) => {
+                    if (error && !res.headersSent) next(error);
+                }
+            );
         } catch (error) {
             next(error);
         }

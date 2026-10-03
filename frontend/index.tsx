@@ -11,14 +11,23 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; // Import the i18n instance with its configuration
 import { getBasePath } from './config/paths';
 import { captureSharedPayload } from './utils/shareTargetService';
+import BlogApp from './components/Blog/BlogApp';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+
+// On a blog host the server marks the shell, and the blog renders at the
+// root in place of the app.
+const isBlogSite =
+    document
+        .querySelector('meta[name="tududi-site"]')
+        ?.getAttribute('content') === 'blog';
 
 // Stash anything handed over by the OS share sheet and clean the URL before
 // the router reads it (see share_target in public/manifest.json)
 captureSharedPayload();
 
-if ('serviceWorker' in navigator) {
+// The blog host has no app to cache or work offline.
+if ('serviceWorker' in navigator && !isBlogSite) {
     window.addEventListener('load', () => {
         // Development gets the worker only for push notifications; caching
         // and the offline queue would fight hot reloading.
@@ -96,11 +105,15 @@ if (container) {
     root.render(
         <I18nextProvider i18n={i18n}>
             <BrowserRouter basename={basename || undefined}>
-                <ToastProvider>
-                    <TelegramStatusProvider>
-                        <App />
-                    </TelegramStatusProvider>
-                </ToastProvider>
+                {isBlogSite ? (
+                    <BlogApp basePath="" />
+                ) : (
+                    <ToastProvider>
+                        <TelegramStatusProvider>
+                            <App />
+                        </TelegramStatusProvider>
+                    </ToastProvider>
+                )}
             </BrowserRouter>
         </I18nextProvider>
     );

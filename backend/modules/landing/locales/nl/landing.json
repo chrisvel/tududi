@@ -11,6 +11,7 @@
     "ai": "AI & MCP",
     "pricing": "Prijzen",
     "faq": "FAQ",
+    "blog": "Blog",
     "signIn": "Inloggen",
     "toggle": "Menu openen",
     "plan": "Plan je dag"
@@ -24,7 +25,7 @@
     "demoNote": "Een echte gehoste instantie met voorbeeldgegevens, gedeeld en regelmatig gereset",
     "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken",
     "cloudNote": "Geen server om op te zetten. Maandelijks of jaarlijks, en je kunt op elk moment opzeggen.",
-    "ctaPrimary": "Begin op tududi Cloud",
+    "ctaPrimary": "Begin nu",
     "lede": "Leg alles vast, plan je dag met AI rond je agenda en houd gebieden, doelen, projecten, notities en gewoonten in één systeem. Maak in een minuut een Cloud-account.",
     "titleLine1": "Productiviteit eenvoudig gemaakt",
     "titleLine2": ""

@@ -45,7 +45,7 @@ const withinPermissionsOf = (actorCapabilities, targetCapabilities) =>
 // Can this actor manage links for this account at all: an admin, whoever
 // created it, or an admin of the hosted account it belongs to. Anyone else is
 // told the account does not exist, so account ids cannot be probed.
-function assertMayManage(actorId, target, actorIsAdmin, managed = false) {
+function assertMayManage(actorId, target, actorIsAdmin, managed) {
     const mayManage =
         actorIsAdmin ||
         managed ||

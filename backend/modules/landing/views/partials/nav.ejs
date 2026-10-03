@@ -14,6 +14,9 @@
                     <a href="#ai" class="nav-link"><%= t('nav.ai') %></a>
                     <a href="#pricing" class="nav-link"><%= t('nav.pricing') %></a>
                     <a href="#faq" class="nav-link"><%= t('nav.faq') %></a>
+                    <% if (typeof blogUrl !== 'undefined' && blogUrl) { %>
+                    <a href="<%= blogUrl %>" class="nav-link"><%= t('nav.blog') %></a>
+                    <% } %>
                     <%# <details> rather than a JS dropdown: it gives click-to-open
                         and keyboard access for free, and still works with JS off. %>
                     <details class="nav-dd nav-lang">
@@ -55,6 +58,9 @@
                 <a href="#ai" class="nav-link"><%= t('nav.ai') %></a>
                 <a href="#pricing" class="nav-link"><%= t('nav.pricing') %></a>
                 <a href="#faq" class="nav-link"><%= t('nav.faq') %></a>
+                <% if (typeof blogUrl !== 'undefined' && blogUrl) { %>
+                <a href="<%= blogUrl %>" class="nav-link"><%= t('nav.blog') %></a>
+                <% } %>
                 <% if (demo && demo.available) { %>
                 <a href="<%= appUrl %>/demo" class="nav-demo">
                     <span class="nav-demo-dot" aria-hidden="true"></span><%= t('nav.demo') %>

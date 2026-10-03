@@ -2024,7 +2024,19 @@
     },
     "turnContactIntoAccount": "Kişilerinden birini bu hesaba dönüştür (isteğe bağlı)",
     "noContact": "(yok)",
-    "turnContactNote": "Kişi geçmişini korur, bu yüzden kendisine atanan görevler atanmış kalır. Onunla ilgili özel notların taşınmaz."
+    "turnContactNote": "Kişi geçmişini korur, bu yüzden kendisine atanan görevler atanmış kalır. Onunla ilgili özel notların taşınmaz.",
+    "blog": {
+      "title": "Blog",
+      "description": "Notlarından birini ana sayfa olarak seç. [[Başlık]] ile bağladığı herkese açık notlar yazılar olur. Görünmeleri için ana sayfayı ve her yazıyı herkese açık paylaş.",
+      "placeholder": "Not bağlantısı veya kimliği, örn. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Ana sayfa notu",
+      "turnOff": "Kapat",
+      "shared": "Herkese açık",
+      "notShared": "Henüz paylaşılmadı: blogu yayınlamak için nottan paylaş",
+      "postCount": "Yazılar: {{count}}",
+      "open": "Blogu aç",
+      "preview": "Uygulamada önizle"
+    }
   },
   "shares": {
     "shareProject": "Projeyi paylaş",
@@ -2928,5 +2940,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Bu not herkese açık olarak paylaşılmıyor."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Hemen başla",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Koşullar",
+    "footerPrivacy": "Gizlilik",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Küçük şeyleri kafandan çıkar.",
+    "ctaBody": "Görevler, projeler, notlar ve alışkanlıklar tek ve sakin bir yerde, birlikte yaşadığın ve çalıştığın insanlarla paylaşılmış. Sunucu yok, kurulacak bir şey yok.",
+    "ctaPrice": "Ayda {{monthly}} veya yılda {{annual}}",
+    "ctaGuarantee": "14 gün para iade garantisi",
+    "ctaPrimary": "Hemen başla",
+    "ctaSecondary": "Neler dahil, gör",
+    "readPost": "Yazıyı oku",
+    "emptyTitle": "Henüz bir şey yok",
+    "emptyBody": "İlk yazılar yolda. Yakında tekrar uğra.",
+    "failedTitle": "Blog yüklenemedi",
+    "failedBody": "Bizim tarafımızda bir şeyler ters gitti. Birazdan tekrar dene.",
+    "missingTitle": "Bu yazı burada değil",
+    "missingBody": "Taşınmış ya da kaldırılmış olabilir. Diğer yazılar bir tık uzakta.",
+    "allPosts": "Tüm yazılar",
+    "morePosts": "Blogdan daha fazlası"
   }
 }

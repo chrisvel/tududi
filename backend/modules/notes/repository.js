@@ -2,7 +2,7 @@
 
 const BaseRepository = require('../../shared/database/BaseRepository');
 const { Op } = require('sequelize');
-const { Note, Tag, Project } = require('../../models');
+const { Note, NoteAttachment, Tag, Project } = require('../../models');
 
 const PUBLIC_ATTRIBUTES = [
     'uid',
@@ -112,6 +112,7 @@ class NotesRepository extends BaseRepository {
         return this.model.findOne({
             where: { public_token: token, public_shared_at: { [Op.ne]: null } },
             attributes: [
+                'id',
                 'user_id',
                 'title',
                 'content',
@@ -120,6 +121,15 @@ class NotesRepository extends BaseRepository {
                 'public_inherit_style',
                 'updated_at',
             ],
+        });
+    }
+
+    // A file attached to the note, by the name it is stored under.
+    async findAttachment(noteId, storedFilename) {
+        return NoteAttachment.findOne({
+            where: { note_id: noteId, stored_filename: storedFilename },
+            attributes: ['file_path', 'original_filename'],
+            raw: true,
         });
     }
 
@@ -132,6 +142,46 @@ class NotesRepository extends BaseRepository {
                 public_shared_at: { [Op.ne]: null },
             },
             attributes: ['title', 'public_token'],
+        });
+    }
+
+    // A user's publicly shared notes with what the blog shows of them.
+    async findPublicNotesForUser(userId) {
+        return this.model.findAll({
+            where: {
+                user_id: userId,
+                public_token: { [Op.ne]: null },
+                public_shared_at: { [Op.ne]: null },
+            },
+            attributes: [
+                'id',
+                'uid',
+                'title',
+                'content',
+                'color',
+                'background',
+                'public_inherit_style',
+                'public_token',
+                'public_shared_at',
+                'updated_at',
+            ],
+            order: [['id', 'ASC']],
+        });
+    }
+
+    // The note picked as the blog's front page, shared or not, so the admin
+    // can be told what is missing.
+    async findForBlog(uid) {
+        return this.model.findOne({
+            where: { uid },
+            attributes: [
+                'id',
+                'uid',
+                'user_id',
+                'title',
+                'public_token',
+                'public_shared_at',
+            ],
         });
     }
 

@@ -11,6 +11,7 @@
     "ai": "SI i MCP",
     "pricing": "Cennik",
     "faq": "FAQ",
+    "blog": "Blog",
     "signIn": "Zaloguj się",
     "toggle": "Otwórz menu",
     "plan": "Zaplanuj dzień"
@@ -24,7 +25,7 @@
     "demoNote": "Prawdziwa hostowana instancja z przykładowymi danymi, współdzielona i regularnie resetowana",
     "screenshotAlt": "Interfejs tududi z widokiem Dziś i zaplanowanymi zadaniami",
     "cloudNote": "Żadnego serwera do skonfigurowania. Miesięcznie lub rocznie, i możesz anulować w każdej chwili.",
-    "ctaPrimary": "Zacznij na tududi Cloud",
+    "ctaPrimary": "Zacznij teraz",
     "lede": "Zapisuj wszystko, planuj dzień z AI wokół kalendarza i trzymaj obszary, cele, projekty, notatki i nawyki w jednym systemie. Załóż konto Cloud w minutę.",
     "titleLine1": "Produktywność uproszczona",
     "titleLine2": ""

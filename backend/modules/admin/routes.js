@@ -20,5 +20,7 @@ router.delete('/admin/users/:id', adminController.deleteUser);
 router.post('/admin/toggle-registration', adminController.toggleRegistration);
 router.get('/admin/oidc-config', adminController.getOidcConfig);
 router.put('/admin/oidc-config', adminController.updateOidcConfig);
+router.get('/admin/blog', adminController.getBlog);
+router.put('/admin/blog', adminController.updateBlog);
 
 module.exports = router;

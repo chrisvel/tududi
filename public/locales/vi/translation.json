@@ -2024,7 +2024,19 @@
     },
     "turnContactIntoAccount": "Biến một liên hệ của bạn thành tài khoản này (tùy chọn)",
     "noContact": "(không có)",
-    "turnContactNote": "Liên hệ giữ nguyên lịch sử, nên các nhiệm vụ được giao cho họ vẫn được giao. Ghi chú riêng của bạn về họ không được chuyển sang."
+    "turnContactNote": "Liên hệ giữ nguyên lịch sử, nên các nhiệm vụ được giao cho họ vẫn được giao. Ghi chú riêng của bạn về họ không được chuyển sang.",
+    "blog": {
+      "title": "Blog",
+      "description": "Chọn một ghi chú của bạn làm trang chủ. Các ghi chú công khai mà nó liên kết bằng [[Tiêu đề]] sẽ trở thành bài viết. Chia sẻ công khai trang chủ và từng bài viết để chúng hiển thị.",
+      "placeholder": "Liên kết hoặc ID ghi chú, ví dụ https://app.tududi.com/notes/abc123",
+      "inputLabel": "Ghi chú trang chủ",
+      "turnOff": "Tắt",
+      "shared": "Công khai",
+      "notShared": "Chưa chia sẻ: hãy chia sẻ từ ghi chú để xuất bản blog",
+      "postCount": "Bài viết: {{count}}",
+      "open": "Mở blog",
+      "preview": "Xem trước trong ứng dụng"
+    }
   },
   "shares": {
     "shareProject": "Chia sẻ dự án",
@@ -2927,5 +2939,28 @@
   },
   "publicNote": {
     "linkedNoteNotShared": "Ghi chú này không được chia sẻ công khai."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Bắt đầu ngay",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Điều khoản",
+    "footerPrivacy": "Quyền riêng tư",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Gỡ những việc nhỏ ra khỏi đầu bạn.",
+    "ctaBody": "Công việc, dự án, ghi chú và thói quen ở một nơi yên tĩnh, chia sẻ với những người bạn sống và làm việc cùng. Không cần máy chủ, không cần cài đặt.",
+    "ctaPrice": "{{monthly}} mỗi tháng hoặc {{annual}} mỗi năm",
+    "ctaGuarantee": "Hoàn tiền trong 14 ngày",
+    "ctaPrimary": "Bắt đầu ngay",
+    "ctaSecondary": "Xem những gì có trong gói",
+    "readPost": "Đọc bài viết",
+    "emptyTitle": "Chưa có gì ở đây",
+    "emptyBody": "Những bài viết đầu tiên đang đến. Hãy quay lại sớm.",
+    "failedTitle": "Không thể tải blog",
+    "failedBody": "Đã có lỗi ở phía chúng tôi. Hãy thử lại sau giây lát.",
+    "missingTitle": "Bài viết này không có ở đây",
+    "missingBody": "Có thể bài đã được chuyển hoặc gỡ xuống. Các bài khác chỉ cách một cú nhấp.",
+    "allPosts": "Tất cả bài viết",
+    "morePosts": "Thêm từ blog"
   }
 }

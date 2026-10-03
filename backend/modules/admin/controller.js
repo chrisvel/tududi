@@ -195,6 +195,26 @@ const adminController = {
             next(error);
         }
     },
+
+    // GET /api/admin/blog: the note picked as the blog's front page.
+    async getBlog(req, res, next) {
+        try {
+            res.json(await adminService.getBlog(getRequesterId(req)));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // PUT /api/admin/blog: pick the front page note, or clear it.
+    async updateBlog(req, res, next) {
+        try {
+            res.json(
+                await adminService.updateBlog(getRequesterId(req), req.body)
+            );
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = adminController;

@@ -515,6 +515,20 @@ class AdminService {
         const oidcConfigService = require('../oidc/configService');
         return oidcConfigService.saveConfig(validated);
     }
+
+    // The blog is the instance's own, so only the superadmin runs it.
+    async getBlog(requesterId) {
+        await this.verifyAdmin(requesterId);
+        const { blogService } = require('../blog');
+        return blogService.status();
+    }
+
+    async updateBlog(requesterId, body = {}) {
+        await this.verifyAdmin(requesterId);
+        const { blogService } = require('../blog');
+        await blogService.setNoteUid(requesterId, body.note);
+        return blogService.status();
+    }
 }
 
 module.exports = new AdminService();
