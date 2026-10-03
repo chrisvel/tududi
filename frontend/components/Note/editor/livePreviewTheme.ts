@@ -2,13 +2,6 @@ import { EditorView } from '@codemirror/view';
 
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
 
-const calloutTheme = (type: string, rgb: string) => ({
-    [`.cm-md-callout-${type}`]: {
-        backgroundColor: `rgba(${rgb}, 0.1)`,
-        borderLeftColor: `rgb(${rgb})`,
-    },
-});
-
 export const livePreviewTheme = EditorView.baseTheme({
     '.cm-md-h1': { fontSize: '1.8em', fontWeight: '700', lineHeight: '1.3' },
     '.cm-md-h2': { fontSize: '1.5em', fontWeight: '700', lineHeight: '1.3' },
@@ -34,15 +27,15 @@ export const livePreviewTheme = EditorView.baseTheme({
     '.cm-md-link': {
         textDecoration: 'underline',
         textUnderlineOffset: '2px',
+        textDecorationColor: 'rgba(128,128,128,0.6)',
     },
-    '&light .cm-md-link': { color: '#2563eb' },
-    '&dark .cm-md-link': { color: '#60a5fa' },
     '&.cm-mod-pressed .cm-md-link, &.cm-mod-pressed .cm-md-wikilink': {
         cursor: 'pointer',
     },
-    '.cm-md-wikilink': { textUnderlineOffset: '2px' },
-    '&light .cm-md-wikilink': { color: '#2563eb' },
-    '&dark .cm-md-wikilink': { color: '#60a5fa' },
+    '.cm-md-wikilink': {
+        textUnderlineOffset: '2px',
+        textDecorationColor: 'rgba(128,128,128,0.6)',
+    },
     // Matches the NOTE: badge note links get in read-only markdown.
     // inline-block stops an underline from a surrounding syntax-highlight
     // span reaching the chip; the rule below clears it on nested spans.
@@ -53,7 +46,7 @@ export const livePreviewTheme = EditorView.baseTheme({
         textDecoration: 'none !important',
         borderRadius: '4px',
         padding: '1px 6px 1px 0',
-        border: '1px solid',
+        background: 'rgba(128,128,128,0.12)',
     },
     '.cm-md-wikilink-chip *': { textDecoration: 'none !important' },
     '.cm-md-wikilink-chip::before': {
@@ -65,37 +58,20 @@ export const livePreviewTheme = EditorView.baseTheme({
         marginRight: '6px',
         borderRadius: '3px 0 0 3px',
         verticalAlign: '1px',
-    },
-    '&light .cm-md-wikilink-chip': {
-        color: '#1d4ed8',
-        background: 'rgba(239, 246, 255, 0.8)',
-        borderColor: '#bfdbfe',
-    },
-    '&light .cm-md-wikilink-chip::before': {
-        color: '#1e40af',
-        background: 'rgba(191, 219, 254, 0.7)',
-    },
-    '&dark .cm-md-wikilink-chip': {
-        color: '#93c5fd',
-        background: 'rgba(30, 58, 138, 0.3)',
-        borderColor: 'rgba(29, 78, 216, 0.7)',
-    },
-    '&dark .cm-md-wikilink-chip::before': {
-        color: '#bfdbfe',
-        background: 'rgba(29, 78, 216, 0.6)',
+        opacity: '0.7',
+        background: 'rgba(128,128,128,0.15)',
     },
 
     '.cm-md-quote': {
         borderLeft: '3px solid rgba(128,128,128,0.5)',
         paddingLeft: '0.75em !important',
     },
-    '.cm-md-callout': { borderLeftWidth: '4px' },
+    '.cm-md-callout': {
+        borderLeftWidth: '4px',
+        borderLeftColor: 'rgba(128,128,128,0.45)',
+        backgroundColor: 'rgba(128,128,128,0.08)',
+    },
     '.cm-md-callout-first': { borderTopRightRadius: '6px', paddingTop: '4px' },
-    ...calloutTheme('note', '96, 165, 250'),
-    ...calloutTheme('tip', '74, 222, 128'),
-    ...calloutTheme('warning', '251, 191, 36'),
-    ...calloutTheme('important', '192, 132, 252'),
-    ...calloutTheme('danger', '248, 113, 113'),
     '.cm-md-callout-label': {
         display: 'inline-flex',
         gap: '0.4em',

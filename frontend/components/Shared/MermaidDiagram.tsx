@@ -87,7 +87,7 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ code }) => {
                     // untrusted: strict mode sanitizes labels and disables
                     // click handlers.
                     securityLevel: 'strict',
-                    theme: isDark ? 'dark' : 'default',
+                    theme: isDark ? 'dark' : 'neutral',
                 });
                 await mermaid.parse(code);
                 const result = await mermaid.render(id, code);
