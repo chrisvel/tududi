@@ -111,4 +111,29 @@ describe('Notes opened by link (#1785)', () => {
         ).toBeInTheDocument();
         expect(screen.queryByText('notes.loading')).not.toBeInTheDocument();
     });
+
+    it('keeps the pane empty while the linked note loads', async () => {
+        let resolveNote: (note: typeof linkedNote) => void = () => {};
+        mockFetchNoteBySlug.mockReturnValue(
+            new Promise((resolve) => {
+                resolveNote = resolve;
+            })
+        );
+
+        render(
+            <MemoryRouter initialEntries={[`/notes/${linkedNote.uid}`]}>
+                <Routes>
+                    <Route path="/notes/:uid" element={<Notes />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        expect(screen.queryByText('notes.loading')).not.toBeInTheDocument();
+        expect(screen.queryByText('No notes yet.')).not.toBeInTheDocument();
+
+        resolveNote(linkedNote);
+        expect(
+            await screen.findByDisplayValue(linkedNote.title)
+        ).toBeInTheDocument();
+    });
 });
