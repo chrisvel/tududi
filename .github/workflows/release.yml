@@ -114,17 +114,59 @@ jobs:
       (!contains(needs.cut.outputs.version, '-') ||
       contains(needs.cut.outputs.version, '-rc.'))
     runs-on: ubuntu-latest
+    # Long enough to sit behind another deploy in tududi/ci's queue
+    timeout-minutes: 45
 
     steps:
-      - name: Ask tududi/ci to deploy
+      # The deploy runs in tududi/ci. Wait for it so a failed deploy fails
+      # this job instead of passing silently. CI_DISPATCH_TOKEN needs
+      # Actions: read on tududi/ci for this.
+      - name: Deploy through tududi/ci
         env:
           GH_TOKEN: ${{ secrets.CI_DISPATCH_TOKEN }}
           VERSION: ${{ needs.cut.outputs.version }}
+          REQUEST_ID: ${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           gh api repos/tududi/ci/dispatches \
             -f event_type=deploy \
-            -f "client_payload[version]=$VERSION"
-          {
-            echo "Deploy of $VERSION requested, follow it in tududi/ci:"
-            echo "https://github.com/tududi/ci/actions/workflows/deploy.yml"
-          } >> "$GITHUB_STEP_SUMMARY"
+            -f "client_payload[version]=$VERSION" \
+            -f "client_payload[request_id]=$REQUEST_ID"
+
+          # The deploy is already requested; this only checks we can follow it
+          if ! gh run list -R tududi/ci --workflow deploy.yml --limit 1 > /dev/null; then
+            echo "::error::CI_DISPATCH_TOKEN cannot read tududi/ci runs (needs Actions: read); the deploy was requested but its result is unknown"
+            exit 1
+          fi
+
+          # tududi/ci names the run after the request id
+          RUN_ID=""
+          for _ in $(seq 1 30); do
+            RUN_ID=$(gh run list -R tududi/ci --workflow deploy.yml \
+              --event repository_dispatch --limit 20 \
+              --json databaseId,displayTitle \
+              --jq ".[] | select(.displayTitle | endswith(\"[$REQUEST_ID]\")) | .databaseId" \
+              | head -n 1)
+            [ -n "$RUN_ID" ] && break
+            sleep 10
+          done
+          if [ -z "$RUN_ID" ]; then
+            echo "::error::No tududi/ci deploy run found for request $REQUEST_ID"
+            exit 1
+          fi
+
+          URL="https://github.com/tududi/ci/actions/runs/$RUN_ID"
+          echo "Deploy of $VERSION: $URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "Waiting for $URL"
+
+          while :; do
+            STATE=$(gh run view "$RUN_ID" -R tududi/ci \
+              --json status,conclusion -q '.status + " " + .conclusion' \
+              || true)
+            case "$STATE" in
+              "completed success") echo "Deployed $VERSION"; break ;;
+              completed*)
+                echo "::error::Deploy of $VERSION failed (${STATE#completed }): $URL"
+                exit 1 ;;
+            esac
+            sleep 15
+          done
