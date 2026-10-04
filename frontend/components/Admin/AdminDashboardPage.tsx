@@ -32,15 +32,6 @@ interface Overview {
     };
 }
 
-interface WaitlistEntry {
-    id: number;
-    email: string;
-    source: string;
-    locale: string | null;
-    submission_count: number;
-    created_at: string;
-}
-
 const Stat: React.FC<{
     label: string;
     value: React.ReactNode;
@@ -64,7 +55,6 @@ const Stat: React.FC<{
 const AdminDashboardPage: React.FC = () => {
     const { t } = useTranslation();
     const [data, setData] = useState<Overview | null>(null);
-    const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [blogOpen, setBlogOpen] = useState(false);
 
@@ -76,11 +66,6 @@ const AdminDashboardPage: React.FC = () => {
                 });
                 await handleAuthResponse(res, 'Failed to load the overview.');
                 setData(await res.json());
-
-                const wl = await fetch(getApiPath('admin/waitlist?limit=25'), {
-                    credentials: 'include',
-                });
-                if (wl.ok) setWaitlist((await wl.json()).subscribers || []);
             } catch (err: any) {
                 setError(err.message || 'Could not load the dashboard');
             }
@@ -227,61 +212,6 @@ const AdminDashboardPage: React.FC = () => {
 
             {blogOpen && (
                 <AdminBlogSettings onClose={() => setBlogOpen(false)} />
-            )}
-
-            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                <EnvelopeIcon className="w-5 h-5 mr-2" />
-                {t('admin.dashboard.waitlistLatest', 'Latest waitlist signups')}
-                <Link
-                    to="/admin/waitlist"
-                    className="ml-3 text-sm font-normal text-blue-500 hover:text-blue-600"
-                >
-                    {t('admin.dashboard.waitlistAll', 'See all')}
-                </Link>
-            </h2>
-            {waitlist.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    {t('admin.dashboard.waitlistEmpty', 'Nobody yet.')}
-                </p>
-            ) : (
-                <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <table className="min-w-full text-sm">
-                        <thead className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                            <tr>
-                                <th className="text-left px-4 py-2 font-medium">
-                                    {t('admin.dashboard.email', 'Email')}
-                                </th>
-                                <th className="text-left px-4 py-2 font-medium">
-                                    {t('admin.dashboard.source', 'Source')}
-                                </th>
-                                <th className="text-left px-4 py-2 font-medium">
-                                    {t('admin.dashboard.joined', 'Joined')}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {waitlist.map((w) => (
-                                <tr
-                                    key={w.id}
-                                    className="border-b border-gray-100 dark:border-gray-700 last:border-0"
-                                >
-                                    <td className="px-4 py-2 text-gray-800 dark:text-gray-200">
-                                        {w.email}
-                                    </td>
-                                    <td className="px-4 py-2 text-gray-500 dark:text-gray-400">
-                                        {w.source}
-                                        {w.locale ? ` · ${w.locale}` : ''}
-                                    </td>
-                                    <td className="px-4 py-2 text-gray-500 dark:text-gray-400">
-                                        {new Date(
-                                            w.created_at
-                                        ).toLocaleDateString()}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
             )}
         </div>
     );

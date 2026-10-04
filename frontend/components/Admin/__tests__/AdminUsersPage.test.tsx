@@ -489,6 +489,31 @@ describe('Admin users and groups page', () => {
             );
         });
 
+        it('shows which accounts have verified their email', async () => {
+            mockAdminApi([
+                {
+                    ...account(1, 'boss@example.com', 'admin'),
+                    email_verified: true,
+                },
+                {
+                    ...account(2, 'kid@example.com', 'user'),
+                    email_verified: false,
+                },
+                { ...account(3, null as any, 'guest'), email_verified: false },
+            ]);
+            renderPage();
+
+            expect(
+                await screen.findByTestId('user-verified-1')
+            ).toHaveTextContent('Verified');
+            expect(screen.getByTestId('user-verified-2')).toHaveTextContent(
+                'Not verified'
+            );
+            expect(screen.getByTestId('user-verified-3')).toHaveTextContent(
+                '-'
+            );
+        });
+
         const openAddForm = async () => {
             mockAdminApi();
             renderPage();
@@ -887,12 +912,14 @@ describe('Admin users and groups page', () => {
 
             fireEvent.click(await screen.findByTestId('sign-in-link-5'));
 
-            expect(await screen.findByTestId('sign-in-link-modal')).toBeVisible();
+            expect(
+                await screen.findByTestId('sign-in-link-modal')
+            ).toBeVisible();
             (fetchWithCsrf as jest.Mock).mockResolvedValue(
                 jsonResponse(
                     {
                         url: 'http://localhost:8080/sign-in-link?token=abc',
-            path: '/sign-in-link?token=abc',
+                        path: '/sign-in-link?token=abc',
                         expires_at: new Date().toISOString(),
                     },
                     201

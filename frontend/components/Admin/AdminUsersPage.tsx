@@ -47,6 +47,7 @@ interface AdminUserItem {
     name?: string;
     surname?: string;
     created_at: string;
+    email_verified?: boolean;
     role: RoleId;
     capabilities?: Capabilities;
     // tududi Cloud: the person who pays for the account. Always an admin of it.
@@ -908,6 +909,9 @@ const AdminUsersPanel: React.FC<{
                                     {t('admin.created', 'Created')}
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    {t('admin.verified', 'Verified')}
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     {t('admin.role', 'Role')}
                                 </th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -919,7 +923,7 @@ const AdminUsersPanel: React.FC<{
                             {loading && (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={7}
                                         className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                     >
                                         {t(
@@ -932,7 +936,7 @@ const AdminUsersPanel: React.FC<{
                             {!loading && users && users.length === 0 && (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={7}
                                         className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                     >
                                         {t('admin.noUsers', 'No users')}
@@ -989,6 +993,31 @@ const AdminUsersPanel: React.FC<{
                                             {new Date(
                                                 u.created_at
                                             ).toLocaleString()}
+                                        </td>
+                                        <td
+                                            className="px-6 py-4 whitespace-nowrap text-sm"
+                                            data-testid={`user-verified-${u.id}`}
+                                        >
+                                            {!u.email ? (
+                                                <span className="text-gray-400 dark:text-gray-500">
+                                                    -
+                                                </span>
+                                            ) : u.email_verified ? (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                    <CheckIcon className="w-3.5 h-3.5 mr-1" />
+                                                    {t(
+                                                        'admin.verifiedYes',
+                                                        'Verified'
+                                                    )}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-500 dark:text-gray-400">
+                                                    {t(
+                                                        'admin.verifiedNo',
+                                                        'Not verified'
+                                                    )}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span
