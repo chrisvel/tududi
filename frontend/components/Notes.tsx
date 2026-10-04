@@ -109,6 +109,8 @@ const Notes: React.FC = () => {
     >('saved');
     const [isFocusMode, setIsFocusMode] = useState(false);
     const hasAutoSelected = useRef(false);
+    const currentUidRef = useRef(uid);
+    const [urlNoteMissing, setUrlNoteMissing] = useState(false);
     // Timestamp flag attached to the /notes navigation state by Layout's
     // "new note" action; deduplicated per location entry below.
     const newNoteSignal = (location.state as { newNote?: number } | null)
@@ -458,41 +460,64 @@ const Notes: React.FC = () => {
 
     useEffect(() => {
         hasAutoSelected.current = false;
+        currentUidRef.current = uid;
     }, [uid]);
 
     useEffect(() => {
         if (newNoteSignal) return;
-        if (!uid || !hasLoaded || hasAutoSelected.current) return;
+        if (!uid || hasAutoSelected.current) return;
 
-        const noteFromUrl = sortedNotes.find((note) => note.uid === uid);
+        const noteFromUrl = hasLoaded
+            ? sortedNotes.find((note) => note.uid === uid)
+            : undefined;
         if (noteFromUrl) {
             setPreviewNote(noteFromUrl);
             hasAutoSelected.current = true;
             return;
         }
 
-        // Not in the cached notes list. This can legitimately happen when a
-        // project was shared with us after the list was last loaded (#1523):
-        // the note exists and we have access, it's just missing from the
-        // stale cache. Fetch it directly before assuming it doesn't exist -
-        // otherwise we'd silently fall back to whatever note happens to be
-        // first in the list.
+        // Fetch the note directly instead of waiting for the full notes
+        // list (#1785). This also covers notes missing from a stale cached
+        // list, e.g. a project shared with us after it was loaded (#1523).
         hasAutoSelected.current = true;
+        setUrlNoteMissing(false);
         fetchNoteBySlug(uid)
             .then((fetchedNote) => {
                 if (!fetchedNote) throw new Error('Note not found');
-                setNotes([fetchedNote, ...notes]);
+                if (currentUidRef.current !== uid) return;
+                const { notesStore } = useStore.getState();
+                if (
+                    notesStore.hasLoaded &&
+                    !notesStore.notes.some((n) => n.uid === fetchedNote.uid)
+                ) {
+                    setNotes([fetchedNote, ...notesStore.notes]);
+                }
                 setPreviewNote(fetchedNote);
             })
             .catch(() => {
-                if (!previewNote) {
-                    const isDesktop = window.innerWidth >= 768;
-                    if (isDesktop) {
-                        handleSelectNote(sortedNotes[0]);
-                    }
-                }
+                if (currentUidRef.current === uid) setUrlNoteMissing(true);
             });
     }, [uid, sortedNotes, hasLoaded]);
+
+    // The direct fetch can finish before the list does. Once the list is
+    // in, add the open note to it if it's missing so the rest of the page
+    // knows about it.
+    useEffect(() => {
+        if (!hasLoaded || !previewNote?.uid) return;
+        if (!notes.some((n) => n.uid === previewNote.uid)) {
+            setNotes([previewNote, ...notes]);
+        }
+    }, [hasLoaded]);
+
+    // The note in the URL is unavailable: fall back to the first note once
+    // the list has loaded.
+    useEffect(() => {
+        if (!urlNoteMissing || !hasLoaded || previewNote) return;
+        const isDesktop = window.innerWidth >= 768;
+        if (isDesktop && sortedNotes.length > 0) {
+            handleSelectNote(sortedNotes[0]);
+        }
+    }, [urlNoteMissing, hasLoaded, sortedNotes, previewNote]);
 
     useEffect(() => {
         if (newNoteSignal) return;
@@ -538,7 +563,9 @@ const Notes: React.FC = () => {
         return () => document.removeEventListener('keydown', handleEscape);
     }, [isEditing, debouncedSave]);
 
-    if (isLoading) {
+    // A note opened by link renders as soon as it arrives, without waiting
+    // for the full notes list.
+    if (isLoading && !previewNote) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
