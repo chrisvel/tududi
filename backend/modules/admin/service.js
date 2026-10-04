@@ -171,6 +171,7 @@ class AdminService {
             name: u.name,
             surname: u.surname,
             created_at: u.created_at,
+            email_verified: !!u.email_verified,
             account_status: accountStatusOf(u, identityUserIds.has(u.id)),
             ...this.describeRole(userIdToRole.get(u.id)),
             ...(hosted ? { is_account_owner: ownerIds.has(u.id) } : {}),
@@ -318,6 +319,7 @@ class AdminService {
             name: user.name,
             surname: user.surname,
             created_at: user.created_at,
+            email_verified: !!user.email_verified,
             account_status: accountStatusOf(user, identityUserIds.has(user.id)),
             ...this.describeRole(userRole),
         };

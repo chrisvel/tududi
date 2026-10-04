@@ -67,7 +67,9 @@ describe('Admin dashboard billing/AI usage links', () => {
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(screen.getByText('Billing')).toBeInTheDocument());
+        await waitFor(() =>
+            expect(screen.getByText('Billing')).toBeInTheDocument()
+        );
         expect(screen.getByText('AI Usage')).toBeInTheDocument();
     });
 
@@ -85,5 +87,27 @@ describe('Admin dashboard billing/AI usage links', () => {
         );
         expect(screen.queryByText('Billing')).toBeNull();
         expect(screen.queryByText('AI Usage')).toBeNull();
+    });
+});
+
+describe('Admin dashboard waitlist', () => {
+    it('does not list the latest waitlist signups', async () => {
+        mockFetch(false);
+
+        render(
+            <MemoryRouter>
+                <AdminDashboardPage />
+            </MemoryRouter>
+        );
+
+        await waitFor(() =>
+            expect(screen.getByText('self-hosted')).toBeInTheDocument()
+        );
+        expect(screen.queryByText('Latest waitlist signups')).toBeNull();
+        expect(
+            (global.fetch as jest.Mock).mock.calls.some(([url]) =>
+                String(url).includes('admin/waitlist')
+            )
+        ).toBe(false);
     });
 });
