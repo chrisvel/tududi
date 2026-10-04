@@ -564,8 +564,15 @@ const Notes: React.FC = () => {
     }, [isEditing, debouncedSave]);
 
     // A note opened by link renders as soon as it arrives, without waiting
-    // for the full notes list.
-    if (isLoading && !previewNote) {
+    // for the full notes list. Until then keep the pane empty rather than
+    // flashing a loader or the empty state.
+    const waitingForLinkedNote =
+        !!uid && !previewNote && !isEditing && !urlNoteMissing && !isError;
+    if (waitingForLinkedNote) {
+        return <div className="w-full h-full" />;
+    }
+
+    if ((isLoading || (!hasLoaded && !isError)) && !previewNote && !isEditing) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">

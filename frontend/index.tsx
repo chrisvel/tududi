@@ -10,6 +10,7 @@ import './styles/markdown.css'; // Import markdown styles
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; // Import the i18n instance with its configuration
 import { getBasePath } from './config/paths';
+import { prefetchNoteFromPath } from './utils/notesService';
 import { captureSharedPayload } from './utils/shareTargetService';
 import BlogApp from './components/Blog/BlogApp';
 
@@ -25,6 +26,18 @@ const isBlogSite =
 // Stash anything handed over by the OS share sheet and clean the URL before
 // the router reads it (see share_target in public/manifest.json)
 captureSharedPayload();
+
+// Start loading a linked note right away rather than after the user check
+// and page mount.
+if (!isBlogSite) {
+    const basePath = getBasePath();
+    const { pathname } = window.location;
+    prefetchNoteFromPath(
+        basePath && pathname.startsWith(basePath)
+            ? pathname.slice(basePath.length)
+            : pathname
+    );
+}
 
 // The blog host has no app to cache or work offline.
 if ('serviceWorker' in navigator && !isBlogSite) {
