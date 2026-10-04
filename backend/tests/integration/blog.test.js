@@ -309,6 +309,12 @@ describe('Blog', () => {
                 .set('Host', 'blog.tududi.com');
             expect(res.status).toBe(200);
             expect(res.text).toContain('content="blog"');
+            expect(res.text).toContain(
+                '<script defer src="https://dyneteq.com/admin/s.js"></script>'
+            );
+            const csp = res.headers['content-security-policy'];
+            expect(csp).toMatch(/script-src [^;]*https:\/\/dyneteq\.com/);
+            expect(csp).toMatch(/connect-src [^;]*https:\/\/dyneteq\.com/);
         });
 
         it('lists the posts in the sitemap and the feed', async () => {
@@ -343,6 +349,10 @@ describe('Blog', () => {
                 .get('/how-to-organize-a-family')
                 .set('Host', 'app.tududi.com');
             expect(app404.text).not.toContain('tududi-site');
+            expect(app404.text).not.toContain('dyneteq.com');
+            expect(app404.headers['content-security-policy']).not.toContain(
+                'dyneteq.com'
+            );
         });
     });
 
