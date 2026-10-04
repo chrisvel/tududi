@@ -87,10 +87,13 @@ const PublicNoteArticle: React.FC<PublicNoteArticleProps> = ({
     );
 };
 
-// The note's background photo behind the whole page, when it has one.
+// The note's background photo behind the whole page, when it has one. Pages
+// with a footer pass showCredit={false} and place the credit themselves, so
+// the pinned credit does not sit on top of the footer.
 export const PublicNoteBackground: React.FC<{
     background?: string | null;
-}> = ({ background }) => {
+    showCredit?: boolean;
+}> = ({ background, showCredit = true }) => {
     const photo = findContentBackground(background);
     if (!photo) return null;
     return (
@@ -107,10 +110,12 @@ export const PublicNoteBackground: React.FC<{
                 aria-hidden="true"
                 className={`fixed inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
             />
-            <PhotoCredit
-                background={photo}
-                className="fixed bottom-3 left-3 z-10"
-            />
+            {showCredit && (
+                <PhotoCredit
+                    background={photo}
+                    className="fixed bottom-3 left-3 z-10"
+                />
+            )}
         </>
     );
 };

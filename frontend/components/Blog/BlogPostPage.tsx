@@ -9,6 +9,8 @@ import BlogLayout, { BlogPageProps } from './BlogLayout';
 import BlogPostCard from './BlogPostCard';
 import BlogCta from './BlogCta';
 import BlogMessage from './BlogMessage';
+import PhotoCredit from '../Shared/PhotoCredit';
+import { findContentBackground } from '../../constants/contentBackgrounds';
 
 type Stage = 'loading' | 'ready' | 'unavailable' | 'failed';
 
@@ -44,12 +46,18 @@ const BlogPostPage: React.FC<BlogPageProps> = (props) => {
         };
     }, [post]);
 
+    const photo =
+        stage === 'ready' ? findContentBackground(post?.background) : null;
+
     // A post is a public note, shown the way its public link shows it,
     // with the blog around it.
     return (
         <BlogLayout {...props} links={post?.links ?? null}>
             {stage === 'ready' && (
-                <PublicNoteBackground background={post?.background} />
+                <PublicNoteBackground
+                    background={post?.background}
+                    showCredit={false}
+                />
             )}
 
             <main className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
@@ -127,6 +135,10 @@ const BlogPostPage: React.FC<BlogPageProps> = (props) => {
                             </section>
                         )}
                     </>
+                )}
+
+                {photo && (
+                    <PhotoCredit background={photo} className="relative mt-8" />
                 )}
             </main>
         </BlogLayout>
