@@ -69,6 +69,7 @@ class SearchService {
             extras,
             excludeSubtasks,
             status,
+            taskStatus,
         } = params;
 
         const conditions = { user_id: userId };
@@ -79,7 +80,11 @@ class SearchService {
             conditions.recurring_parent_id = null;
         }
 
-        if (status === 'active') {
+        // A specific status (e.g. In Progress) wins over the broader
+        // active/completed toggle, which would otherwise contradict it.
+        if (taskStatus !== undefined) {
+            conditions.status = taskStatus;
+        } else if (status === 'active') {
             conditions.status = { [Op.notIn]: this.completedTaskStatuses() };
         } else if (status === 'completed') {
             conditions.status = { [Op.in]: this.completedTaskStatuses() };

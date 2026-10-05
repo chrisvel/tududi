@@ -27,6 +27,7 @@ interface View {
     defer: string | null;
     tags: string[];
     extras: string[] | null;
+    task_status: string | null;
     is_pinned: boolean;
 }
 
@@ -148,6 +149,7 @@ const Views: React.FC = () => {
         view.filters.length +
         (view.search_query ? 1 : 0) +
         (view.priority ? 1 : 0) +
+        (view.task_status ? 1 : 0) +
         (view.due ? 1 : 0) +
         (view.defer ? 1 : 0) +
         (view.extras?.length ?? 0);

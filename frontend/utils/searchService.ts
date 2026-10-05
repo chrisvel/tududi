@@ -12,6 +12,7 @@ interface SearchParams {
     offset?: number;
     excludeSubtasks?: boolean;
     status?: 'active' | 'completed' | 'all';
+    taskStatus?: string;
 }
 
 interface SearchResult {
@@ -61,6 +62,10 @@ export const searchUniversal = async (
 
         if (params.priority) {
             queryParams.append('priority', params.priority);
+        }
+
+        if (params.taskStatus) {
+            queryParams.append('task_status', params.taskStatus);
         }
 
         if (params.due) {
