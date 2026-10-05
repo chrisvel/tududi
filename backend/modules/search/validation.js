@@ -2,6 +2,18 @@
 
 const VALID_TASK_STATUS_FILTERS = ['active', 'completed', 'all'];
 
+// Specific task statuses a search or view can be narrowed to, mapped to the
+// Task.STATUS integers.
+const TASK_STATUS_FILTERS = {
+    not_started: 0,
+    in_progress: 1,
+    done: 2,
+    archived: 3,
+    waiting: 4,
+    cancelled: 5,
+    planned: 6,
+};
+
 /**
  * Parse and validate search query parameters.
  */
@@ -19,6 +31,7 @@ function parseSearchParams(query) {
         offset: offsetParam,
         excludeSubtasks,
         status: statusParam,
+        task_status: taskStatusParam,
     } = query;
 
     const searchQuery = q ? q.trim() : '';
@@ -29,6 +42,13 @@ function parseSearchParams(query) {
 
     const status = VALID_TASK_STATUS_FILTERS.includes(statusParam)
         ? statusParam
+        : undefined;
+
+    const taskStatus = Object.prototype.hasOwnProperty.call(
+        TASK_STATUS_FILTERS,
+        taskStatusParam
+    )
+        ? TASK_STATUS_FILTERS[taskStatusParam]
         : undefined;
 
     const tagNames = tagsParam ? tagsParam.split(',').map((t) => t.trim()) : [];
@@ -59,6 +79,7 @@ function parseSearchParams(query) {
         offset,
         excludeSubtasks: excludeSubtasks === 'true',
         status,
+        taskStatus,
     };
 }
 
@@ -77,6 +98,7 @@ function priorityToInt(priorityStr) {
 }
 
 module.exports = {
+    TASK_STATUS_FILTERS,
     parseSearchParams,
     priorityToInt,
 };

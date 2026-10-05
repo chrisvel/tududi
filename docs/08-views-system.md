@@ -34,6 +34,7 @@ This document explains how Views work in tududi from a user behavior perspective
    - Enter search text
    - Select entity types (Tasks, Notes, Projects)
    - Set priority filter (High, Medium, Low)
+   - Set status filter (e.g. In Progress)
    - Set due date filter (Today, This Week, Overdue, etc.)
    - Set defer filter (Deferred, Not Deferred, etc.)
    - Add tags
@@ -49,6 +50,7 @@ When you save a view, it stores:
 - **Search query** - The text you searched for
 - **Filters** - Entity types (Tasks, Notes, Projects)
 - **Priority** - Priority filter setting
+- **Status** - One task status (Not Started, Planned, In Progress, Waiting, Done, Cancelled)
 - **Due** - Due date filter setting
 - **Defer** - Defer filter setting
 - **Tags** - Selected tags
@@ -57,7 +59,7 @@ When you save a view, it stores:
 The view does **NOT** save:
 - Sort order (set per-session when viewing)
 - Group by setting (set per-session when viewing)
-- Show status (active/completed/all) (set per-session when viewing)
+- Show status (active/completed/all) (set per-session when viewing). A view saved with a Status filter shows only that status and hides this toggle.
 
 ---
 
@@ -279,7 +281,7 @@ When viewing a view at `/views/:uid`, you can use URL parameters to control disp
 |-----------|--------|---------|-------------|
 | `order_by` | `due_date:asc`, `name:asc`, `priority:desc`, `status:desc`, `created_at:desc` | `created_at:desc` | Task sort order |
 | `group_by` | `none`, `project` | `none` | Task grouping |
-| `status` | `active`, `all`, `completed` | `active` | Task status filter |
+| `status` | `active`, `all`, `completed` | `active` | Task status filter (ignored when the view has a saved Status) |
 | `search` | Any text | Empty | Search within view results |
 
 **Example:**
