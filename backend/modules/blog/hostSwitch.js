@@ -18,11 +18,29 @@ const escapeHtml = (value) =>
 
 const SLUG = /^\/([a-z0-9-]{1,200})$/;
 
+// DYNETEQ stats: cookieless page counts for the blog host only, so the app
+// shell everywhere else stays free of it.
+const STATS_ORIGIN = 'https://dyneteq.com';
+const STATS_TAG = `<script defer src="${STATS_ORIGIN}/admin/s.js"></script>`;
+
+// Helmet's policy with the stats host added to script-src and connect-src.
+function allowStats(csp) {
+    if (!csp) return csp;
+    return String(csp)
+        .split(';')
+        .map((directive) =>
+            /^\s*(script-src|connect-src)\s/.test(directive)
+                ? `${directive.trimEnd()} ${STATS_ORIGIN}`
+                : directive
+        )
+        .join(';');
+}
+
 // The head of one blog page: the marker the frontend switches on, plus a
 // title, description and Open Graph tags so a shared link previews properly
 // even though the page itself renders in the browser.
 async function headFor(req, origin) {
-    const tags = ['<meta name="tududi-site" content="blog">'];
+    const tags = ['<meta name="tududi-site" content="blog">', STATS_TAG];
     let title = `${BLOG_NAME} | tududi`;
     let description = '';
     let image = null;
@@ -169,6 +187,8 @@ function hostSwitch({ shellPath, cacheShell }) {
                     `<title>${escapeHtml(title)}</title>`
                 )
                 .replace('</head>', `    ${tags.join('\n    ')}\n  </head>`);
+            const csp = res.getHeader('Content-Security-Policy');
+            if (csp) res.setHeader('Content-Security-Policy', allowStats(csp));
             res.set('Cache-Control', 'no-cache');
             return res.type('html').send(html);
         } catch (error) {

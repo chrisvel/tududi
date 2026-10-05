@@ -85,18 +85,18 @@ const LEGAL_DOCS = [
     },
 ];
 
-// Google Analytics, loaded only after the visitor consents, needs hosts the
-// app's own policy has no reason to allow, so the marketing responses carry
-// their own policy in place of helmet's. Every form on the page posts back
+// Google Analytics, loaded only after the visitor consents, and DYNETEQ
+// stats need hosts the app's own policy has no reason to allow, so the
+// marketing responses carry their own policy in place of helmet's. Every form on the page posts back
 // here, hence the bare 'self' form-action.
 function buildCsp() {
     return [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+        "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://dyneteq.com",
         "style-src 'self' 'unsafe-inline'",
         "font-src 'self'",
         "img-src 'self' data: https:",
-        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://dyneteq.com",
         "form-action 'self'",
         "frame-src 'none'",
         "object-src 'none'",

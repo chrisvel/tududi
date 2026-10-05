@@ -3,7 +3,11 @@
 
     Google Analytics is defined but not loaded: tududiAnalytics() fetches
     gtag.js only once the visitor has allowed it in the consent banner
-    (partials/consent), and on later visits only if that choice is stored. %>
+    (partials/consent), and on later visits only if that choice is stored.
+
+    DYNETEQ stats is cookieless and stores no addresses, so it loads without
+    asking. %>
+    <script defer src="https://dyneteq.com/admin/s.js"></script>
     <link rel="stylesheet" href="/landing-assets/fonts/fonts.css">
     <link rel="stylesheet" href="/landing-assets/vendor/fontawesome/css/all.min.css">
     <script>

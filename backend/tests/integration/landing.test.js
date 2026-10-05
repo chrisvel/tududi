@@ -70,6 +70,17 @@ describe('Landing page', () => {
         expect(res.text).toContain('/landing-assets/fonts/fonts.css');
         // gtag.js is only named inside the loader, never as a script tag.
         expect(res.text).not.toMatch(/<script[^>]+googletagmanager/);
+        // DYNETEQ stats is cookieless, so it is the one script that loads
+        // without asking, and the policy allows it.
+        expect(res.text).toContain(
+            '<script defer src="https://dyneteq.com/admin/s.js"></script>'
+        );
+        expect(res.headers['content-security-policy']).toMatch(
+            /script-src [^;]*https:\/\/dyneteq\.com/
+        );
+        expect(res.headers['content-security-policy']).toMatch(
+            /connect-src [^;]*https:\/\/dyneteq\.com/
+        );
         expect(res.text).toContain(
             "localStorage.getItem('tududi_analytics') === 'granted'"
         );
