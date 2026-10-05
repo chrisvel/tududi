@@ -3,11 +3,20 @@ const app = require('../../app');
 const { getConfig } = require('../../config/config');
 const { BillingAccount, Note, Role, User } = require('../../models');
 const entitlements = require('../../services/entitlementsService');
+const emailService = require('../../services/emailService');
+const lifecycle = require('../../services/trialLifecycleService');
 const {
     createUnverifiedUser,
+    sendVerificationReminders,
     verifyUserEmail,
 } = require('../../modules/auth/registrationService');
 const { createTestUser } = require('../helpers/testUtils');
+
+jest.mock('../../services/emailService', () => ({
+    ...jest.requireActual('../../services/emailService'),
+    isEmailEnabled: jest.fn(() => false),
+    sendEmail: jest.fn(async () => ({ success: false })),
+}));
 
 const config = getConfig();
 const DAY = 24 * 60 * 60 * 1000;
@@ -201,7 +210,7 @@ describe('Cloud trials', () => {
         });
     });
 
-    describe('deleting expired trials', () => {
+    describe('the account lifecycle job', () => {
         const expiredTrialUser = async (prefix, endedDaysAgo = 31) => {
             const u = await createTestUser({ email: uniqueEmail(prefix) });
             await entitlements.startTrial(u.id);
@@ -215,10 +224,60 @@ describe('Cloud trials', () => {
             return u;
         };
 
-        it('deletes only unpaid trials past the read-only window', async () => {
-            const expired = await expiredTrialUser('gone');
-            const inWindow = await expiredTrialUser('window', 10);
+        beforeEach(() => {
+            emailService.isEmailEnabled.mockReturnValue(true);
+            emailService.sendEmail.mockResolvedValue({ success: true });
+        });
 
+        it('warns a week before deleting, then deletes', async () => {
+            const user = await expiredTrialUser('warned', 24);
+            const early = await expiredTrialUser('early', 10);
+
+            expect(await lifecycle.warnExpiringTrials()).toEqual([user.id]);
+            const [mail] = emailService.sendEmail.mock.calls[0];
+            expect(mail.to).toBe(user.email);
+            expect(mail.subject).toMatch(/will be deleted on/);
+
+            // Warned, but the week has not passed: kept, and warned once.
+            expect(await lifecycle.deleteExpiredTrials()).toEqual([]);
+            expect(await lifecycle.warnExpiringTrials()).toEqual([]);
+
+            const inEightDays = new Date(Date.now() + 8 * DAY);
+            expect(
+                await lifecycle.deleteExpiredTrials({ now: inEightDays })
+            ).toEqual([user.id]);
+            expect(await User.findByPk(user.id)).toBeNull();
+            expect(await User.findByPk(early.id)).not.toBeNull();
+        });
+
+        it('never deletes an account that was not warned', async () => {
+            const user = await expiredTrialUser('unwarned', 60);
+            expect(await lifecycle.deleteExpiredTrials()).toEqual([]);
+            expect(await User.findByPk(user.id)).not.toBeNull();
+        });
+
+        it('pushes the deletion date back when the warning went out late', async () => {
+            const user = await expiredTrialUser('late', 45);
+            await lifecycle.warnExpiringTrials();
+            entitlements.invalidate();
+            const ent = await entitlements.getEntitlements(user.id);
+            expect(ent.read_only).toBe(true);
+            expect(new Date(ent.read_only_until).getTime()).toBeGreaterThan(
+                Date.now() + 6 * DAY
+            );
+        });
+
+        it('does not warn when the email cannot be sent', async () => {
+            const user = await expiredTrialUser('nomail', 24);
+            emailService.sendEmail.mockResolvedValue({ success: false });
+            expect(await lifecycle.warnExpiringTrials()).toEqual([]);
+            const account = await BillingAccount.findOne({
+                where: { user_id: user.id },
+            });
+            expect(account.deletion_warned_at).toBeNull();
+        });
+
+        it('leaves paid, comped, admin and older accounts alone', async () => {
             const legacy = await createTestUser({
                 email: uniqueEmail('legacy'),
             });
@@ -245,26 +304,53 @@ describe('Cloud trials', () => {
                 { where: { user_id: admin.id } }
             );
 
-            const deleted = await entitlements.deleteExpiredTrials();
-            expect(deleted).toEqual([expired.id]);
-            expect(await User.findByPk(expired.id)).toBeNull();
-            for (const kept of [inWindow, legacy, subscribed, comped, admin]) {
+            expect(await lifecycle.warnExpiringTrials()).toEqual([]);
+            await BillingAccount.update(
+                { deletion_warned_at: daysAgo(30) },
+                { where: {} }
+            );
+            expect(await lifecycle.deleteExpiredTrials()).toEqual([]);
+            for (const kept of [legacy, subscribed, comped, admin]) {
                 expect(await User.findByPk(kept.id)).not.toBeNull();
             }
         });
 
-        it('deletes nothing where access is not sold', async () => {
-            const expired = await expiredTrialUser('freetier');
+        it('does nothing where access is not sold, or when switched off', async () => {
+            const user = await expiredTrialUser('off', 24);
             config.hosted.requireSubscription = false;
-            expect(await entitlements.deleteExpiredTrials()).toEqual([]);
-            expect(await User.findByPk(expired.id)).not.toBeNull();
+            expect(await lifecycle.warnExpiringTrials()).toEqual([]);
+            config.hosted.requireSubscription = true;
+            config.hosted.deleteExpiredTrials = false;
+            expect(await lifecycle.warnExpiringTrials()).toEqual([]);
+            expect(await User.findByPk(user.id)).not.toBeNull();
         });
 
-        it('deletes nothing when switched off', async () => {
-            const expired = await expiredTrialUser('switch');
-            config.hosted.deleteExpiredTrials = false;
-            expect(await entitlements.deleteExpiredTrials()).toEqual([]);
-            expect(await User.findByPk(expired.id)).not.toBeNull();
+        it('reminds an unverified sign-up once, with a fresh link', async () => {
+            const { user } = await createUnverifiedUser(
+                uniqueEmail('unverified'),
+                'password123'
+            );
+            await User.update(
+                { created_at: daysAgo(1.5) },
+                { where: { id: user.id }, silent: true }
+            );
+            const fresh = await createUnverifiedUser(
+                uniqueEmail('fresh'),
+                'password123'
+            );
+
+            const first = await sendVerificationReminders();
+            expect(first).toEqual([user.id]);
+            const [mail] = emailService.sendEmail.mock.calls[0];
+            expect(mail.subject).toMatch(/^Reminder/);
+            await user.reload();
+            expect(mail.text).toContain(user.email_verification_token);
+            expect(
+                user.email_verification_token_expires_at.getTime()
+            ).toBeGreaterThan(Date.now());
+
+            expect(await sendVerificationReminders()).toEqual([]);
+            expect(first).not.toContain(fresh.user.id);
         });
     });
 });

@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const { getConfig } = require('../config/config');
 const { getPlans, UNLIMITED } = require('../config/plans');
 const { isAdmin } = require('./rolesService');
-const { logError, logInfo } = require('./logService');
+const { logError } = require('./logService');
 const { PlanLimitError, FeatureNotInPlanError } = require('../shared/errors');
 
 // What a user may do right now, derived from their billing account and the
@@ -106,17 +106,26 @@ function resolvePlan(
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// Days between the deletion warning email and the deletion itself.
+const DELETION_NOTICE_DAYS = 7;
+
 // A trial that ended without a subscription leaves the account readable
 // (and exportable) until this date, after which the account is deleted.
 // Only trials started on email verification (trial_started_at) count, and
-// only for an account that never subscribed.
+// only for an account that never subscribed. A warning that went out late
+// pushes the date back, so nobody is deleted sooner than the email said.
 function readOnlyUntil(account) {
     if (!account?.trial_started_at || !account.trial_ends_at) return null;
     if (account.provider_subscription_id || account.status !== 'none') {
         return null;
     }
     const days = getConfig().hosted?.trialReadOnlyDays ?? 30;
-    return new Date(new Date(account.trial_ends_at).getTime() + days * DAY_MS);
+    const end = new Date(account.trial_ends_at).getTime() + days * DAY_MS;
+    const noticeEnd = account.deletion_warned_at
+        ? new Date(account.deletion_warned_at).getTime() +
+          DELETION_NOTICE_DAYS * DAY_MS
+        : 0;
+    return new Date(Math.max(end, noticeEnd));
 }
 
 async function ensureAccount(userId) {
@@ -463,66 +472,14 @@ async function getUsageForUsers(userIds, metric) {
     return map;
 }
 
-// Deletes accounts whose trial ended unpaid and whose read-only window has
-// passed. Deliberately narrow: only where access is sold (with a free tier
-// an ended trial is a working free account), a trial started under the
-// verification rule (trial_started_at), never subscribed, no override, not
-// an admin, not a member, and no members of its own.
-async function deleteExpiredTrials({ now = new Date() } = {}) {
-    if (!isSubscriptionRequired()) return [];
-    if (getConfig().hosted.deleteExpiredTrials === false) return [];
-    if ((getConfig().hosted.trialDays || 0) <= 0) return [];
-
-    const { BillingAccount, User } = models();
-    const days = getConfig().hosted.trialReadOnlyDays ?? 30;
-    const cutoff = new Date(now.getTime() - days * DAY_MS);
-    const accounts = await BillingAccount.findAll({
-        where: {
-            trial_started_at: { [Op.ne]: null },
-            trial_ends_at: { [Op.lt]: cutoff },
-            status: 'none',
-            provider_subscription_id: null,
-            override_plan: null,
-        },
-        attributes: ['id', 'user_id'],
-    });
-
-    const { eraseUserAccount } = require('./accountErasureService');
-    const accountsService = require('./accountsService');
-    const deleted = [];
-    for (const account of accounts) {
-        try {
-            const user = await User.findByPk(account.user_id, {
-                attributes: ['id', 'email', 'created_by_user_id'],
-            });
-            if (!user || user.created_by_user_id) continue;
-            if (await isAdmin(user.id)) continue;
-            if ((await accountsService.countMembers(user.id)) > 0) continue;
-
-            await eraseUserAccount(user.id);
-            invalidate(user.id);
-            deleted.push(user.id);
-            logInfo(
-                `Deleted account ${user.id}: trial ended ${days}+ days ago without a subscription`
-            );
-        } catch (error) {
-            logError(
-                error,
-                `Could not delete expired trial account ${account.user_id}`
-            );
-        }
-    }
-    return deleted;
-}
-
 module.exports = {
     isHostedMode,
     isSubscriptionRequired,
     resolvePlan,
     readOnlyUntil,
+    DELETION_NOTICE_DAYS,
     ensureAccount,
     startTrial,
-    deleteExpiredTrials,
     getEntitlements,
     invalidate,
     hasFeature,

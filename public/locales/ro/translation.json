@@ -2563,7 +2563,8 @@
     "onTrial": "Folosești perioada de probă gratuită",
     "readOnlyUntil": "Datele tale sunt doar pentru citire până pe {{date}}, apoi contul este șters. Abonează-te pentru a folosi în continuare tududi Cloud.",
     "trialIncludes": "Perioada de probă se încheie pe {{date}}. Asistentul AI, notițele publice și adăugarea de membri se deblochează când te abonezi.",
-    "backToApp": "Înapoi la tududi"
+    "backToApp": "Înapoi la tududi",
+    "trialBanner": "Perioadă de probă gratuită, zile rămase: {{count}}"
   },
   "demo": {
     "opening": "Deschiderea demo-ului...",

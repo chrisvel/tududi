@@ -2621,7 +2621,9 @@
     "onTrial": "You are on the free trial",
     "readOnlyUntil": "Your data is read-only until {{date}}, then the account is deleted. Subscribe to keep using tududi Cloud.",
     "trialIncludes": "Your trial ends on {{date}}. The AI assistant, public notes and adding members unlock when you subscribe.",
-    "backToApp": "Back to tududi"
+    "backToApp": "Back to tududi",
+    "trialBanner_one": "You're on the free trial, {{count}} day left",
+    "trialBanner_other": "You're on the free trial, {{count}} days left"
   },
   "demo": {
     "opening": "Opening the demo...",

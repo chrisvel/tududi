@@ -2560,7 +2560,8 @@
     "onTrial": "Você está no teste gratuito",
     "readOnlyUntil": "Seus dados ficam somente leitura até {{date}}; depois a conta será excluída. Assine para continuar usando o tududi Cloud.",
     "trialIncludes": "Seu teste termina em {{date}}. O assistente de IA, as notas públicas e adicionar membros são liberados quando você assina.",
-    "backToApp": "Voltar ao tududi"
+    "backToApp": "Voltar ao tududi",
+    "trialBanner": "Teste gratuito, dias restantes: {{count}}"
   },
   "demo": {
     "opening": "Abrindo a demonstração...",

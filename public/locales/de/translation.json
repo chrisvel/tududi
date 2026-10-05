@@ -2568,7 +2568,8 @@
     "onTrial": "Sie nutzen die kostenlose Testphase",
     "readOnlyUntil": "Ihre Daten sind bis zum {{date}} schreibgeschützt, danach wird das Konto gelöscht. Abonnieren Sie, um tududi Cloud weiter zu nutzen.",
     "trialIncludes": "Ihre Testphase endet am {{date}}. KI-Assistent, öffentliche Notizen und das Hinzufügen von Mitgliedern werden mit einem Abonnement freigeschaltet.",
-    "backToApp": "Zurück zu tududi"
+    "backToApp": "Zurück zu tududi",
+    "trialBanner": "Kostenlose Testphase, verbleibende Tage: {{count}}"
   },
   "demo": {
     "opening": "Öffne die Demo...",

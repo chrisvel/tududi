@@ -85,6 +85,12 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // When the "your account will be deleted" email went out. An
+            // ended trial is only deleted a week after this.
+            deletion_warned_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
             cancel_at_period_end: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

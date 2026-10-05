@@ -2559,7 +2559,8 @@
     "onTrial": "Du använder den kostnadsfria provperioden",
     "readOnlyUntil": "Dina data är skrivskyddade till {{date}}, sedan raderas kontot. Prenumerera för att fortsätta använda tududi Cloud.",
     "trialIncludes": "Din provperiod slutar den {{date}}. AI-assistenten, offentliga anteckningar och att lägga till medlemmar låses upp när du prenumererar.",
-    "backToApp": "Tillbaka till tududi"
+    "backToApp": "Tillbaka till tududi",
+    "trialBanner": "Kostnadsfri provperiod, dagar kvar: {{count}}"
   },
   "demo": {
     "opening": "Öppnar demon...",

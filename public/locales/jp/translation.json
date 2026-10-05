@@ -2559,7 +2559,8 @@
     "onTrial": "無料試用中です",
     "readOnlyUntil": "データは {{date}} まで読み取り専用で、その後アカウントは削除されます。tududi Cloud を引き続き使うには購読してください。",
     "trialIncludes": "試用期間は {{date}} に終了します。AI アシスタント、公開ノート、メンバーの追加は購読すると使えるようになります。",
-    "backToApp": "tududi に戻る"
+    "backToApp": "tududi に戻る",
+    "trialBanner": "無料試用中、残り日数：{{count}}"
   },
   "demo": {
     "opening": "デモを開いています...",

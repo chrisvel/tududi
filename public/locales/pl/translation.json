@@ -2563,7 +2563,8 @@
     "onTrial": "Korzystasz z bezpłatnego okresu próbnego",
     "readOnlyUntil": "Twoje dane są tylko do odczytu do {{date}}, potem konto zostanie usunięte. Wykup subskrypcję, aby dalej korzystać z tududi Cloud.",
     "trialIncludes": "Twój okres próbny kończy się {{date}}. Asystent AI, publiczne notatki i dodawanie członków odblokujesz po wykupieniu subskrypcji.",
-    "backToApp": "Wróć do tududi"
+    "backToApp": "Wróć do tududi",
+    "trialBanner": "Bezpłatny okres próbny, pozostało dni: {{count}}"
   },
   "demo": {
     "opening": "Otwieranie dema...",

@@ -65,12 +65,20 @@ money or can be abused by someone who signed up only to misuse it.
 - **One trial per mailbox.** `users.email_canonical` folds `+tags`, Gmail dots
   and googlemail.com, and a hosted sign-up (password or SSO) whose mailbox
   already has an account is refused. Self-hosted instances skip this check.
+- **Always visible.** During the trial a bar on every page counts the days
+  left and links to `/subscription/new`.
 - **Then read-only.** With `TUDUDI_REQUIRE_SUBSCRIPTION`, an ended, never-paid
   trial can still `GET` everything (and export) for
-  `TUDUDI_TRIAL_READ_ONLY_DAYS`; writes answer `402 TRIAL_ENDED`. A daily job
-  (03:00 UTC) then deletes the account. It only touches accounts whose trial
-  started under these rules (`billing_accounts.trial_started_at`), that never
-  subscribed, have no override and no members, and are not admins.
+  `TUDUDI_TRIAL_READ_ONLY_DAYS`; writes answer `402 TRIAL_ENDED`.
+- **Warned, then deleted.** The daily `account_lifecycle` job (03:00 UTC)
+  emails a deletion warning when deletion is a week or less away, and deletes
+  only accounts warned at least 7 days earlier; a late warning pushes the date
+  back. No email, no warning, so no deletion. It only touches accounts whose
+  trial started under these rules (`billing_accounts.trial_started_at`), that
+  never subscribed, have no override and no members, and are not admins.
+- **Verification reminder.** The same job sends one reminder, with a fresh
+  link, to a self-registered sign-up that has not verified 1 to 7 days after
+  signing up (`users.verification_reminder_sent_at`).
 
 ## Selling access rather than upgrades
 

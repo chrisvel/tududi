@@ -2559,7 +2559,8 @@
     "onTrial": "Anda sedang dalam masa uji coba gratis",
     "readOnlyUntil": "Data Anda hanya bisa dibaca hingga {{date}}, lalu akun akan dihapus. Berlanggananlah untuk terus menggunakan tududi Cloud.",
     "trialIncludes": "Masa uji coba Anda berakhir pada {{date}}. Asisten AI, catatan publik, dan menambahkan anggota terbuka saat Anda berlangganan.",
-    "backToApp": "Kembali ke tududi"
+    "backToApp": "Kembali ke tududi",
+    "trialBanner": "Uji coba gratis, sisa hari: {{count}}"
   },
   "demo": {
     "opening": "Membuka demo...",

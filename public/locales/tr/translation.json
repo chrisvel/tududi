@@ -2559,7 +2559,8 @@
     "onTrial": "Ücretsiz deneme sürecindesiniz",
     "readOnlyUntil": "Verileriniz {{date}} tarihine kadar salt okunur, ardından hesap silinir. tududi Cloud'u kullanmaya devam etmek için abone olun.",
     "trialIncludes": "Deneme süreniz {{date}} tarihinde bitiyor. Yapay zeka asistanı, herkese açık notlar ve üye ekleme abone olduğunuzda açılır.",
-    "backToApp": "tududi'ye dön"
+    "backToApp": "tududi'ye dön",
+    "trialBanner": "Ücretsiz deneme, kalan gün: {{count}}"
   },
   "demo": {
     "opening": "Demoyu açıyor...",

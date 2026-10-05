@@ -2564,7 +2564,8 @@
     "onTrial": "Du bruker den gratis prøveperioden",
     "readOnlyUntil": "Dataene dine er skrivebeskyttet til {{date}}, deretter slettes kontoen. Abonner for å fortsette å bruke tududi Cloud.",
     "trialIncludes": "Prøveperioden din slutter {{date}}. AI-assistenten, offentlige notater og å legge til medlemmer låses opp når du abonnerer.",
-    "backToApp": "Tilbake til tududi"
+    "backToApp": "Tilbake til tududi",
+    "trialBanner": "Gratis prøveperiode, dager igjen: {{count}}"
   },
   "demo": {
     "opening": "Åpner demoen...",

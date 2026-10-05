@@ -2559,7 +2559,8 @@
     "onTrial": "您正在免费试用",
     "readOnlyUntil": "您的数据在 {{date}} 之前为只读，之后账户将被删除。订阅即可继续使用 tududi Cloud。",
     "trialIncludes": "您的试用将于 {{date}} 结束。订阅后即可使用 AI 助手、公开笔记和添加成员。",
-    "backToApp": "返回 tududi"
+    "backToApp": "返回 tududi",
+    "trialBanner": "免费试用，剩余天数：{{count}}"
   },
   "demo": {
     "opening": "正在打开演示...",

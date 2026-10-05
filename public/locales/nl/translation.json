@@ -2559,7 +2559,8 @@
     "onTrial": "Je gebruikt de gratis proefperiode",
     "readOnlyUntil": "Je gegevens zijn alleen-lezen tot {{date}}, daarna wordt het account verwijderd. Neem een abonnement om tududi Cloud te blijven gebruiken.",
     "trialIncludes": "Je proefperiode eindigt op {{date}}. De AI-assistent, openbare notities en leden toevoegen worden ontgrendeld met een abonnement.",
-    "backToApp": "Terug naar tududi"
+    "backToApp": "Terug naar tududi",
+    "trialBanner": "Gratis proefperiode, resterende dagen: {{count}}"
   },
   "demo": {
     "opening": "De demo wordt geopend...",

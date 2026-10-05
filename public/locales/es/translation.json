@@ -2547,7 +2547,8 @@
     "onTrial": "Estás en la prueba gratuita",
     "readOnlyUntil": "Tus datos son de solo lectura hasta el {{date}}; después la cuenta se eliminará. Suscríbete para seguir usando tududi Cloud.",
     "trialIncludes": "Tu prueba termina el {{date}}. El asistente de IA, las notas públicas y añadir miembros se desbloquean al suscribirte.",
-    "backToApp": "Volver a tududi"
+    "backToApp": "Volver a tududi",
+    "trialBanner": "Prueba gratuita, días restantes: {{count}}"
   },
   "demo": {
     "opening": "Abriendo la demostración...",

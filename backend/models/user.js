@@ -39,6 +39,12 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+            // A sign-up that has not verified gets one reminder, with a new
+            // link, a day or so later.
+            verification_reminder_sent_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
             password: {
                 type: DataTypes.VIRTUAL,
                 allowNull: true,

@@ -2559,7 +2559,8 @@
     "onTrial": "Bạn đang dùng thử miễn phí",
     "readOnlyUntil": "Dữ liệu của bạn chỉ có thể xem đến {{date}}, sau đó tài khoản sẽ bị xóa. Hãy đăng ký để tiếp tục dùng tududi Cloud.",
     "trialIncludes": "Thời gian dùng thử kết thúc vào {{date}}. Trợ lý AI, ghi chú công khai và thêm thành viên sẽ mở khi bạn đăng ký.",
-    "backToApp": "Quay lại tududi"
+    "backToApp": "Quay lại tududi",
+    "trialBanner": "Dùng thử miễn phí, số ngày còn lại: {{count}}"
   },
   "demo": {
     "opening": "Đang mở bản demo...",

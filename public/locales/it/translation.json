@@ -2560,7 +2560,8 @@
     "onTrial": "Stai usando la prova gratuita",
     "readOnlyUntil": "I tuoi dati sono in sola lettura fino al {{date}}, poi l'account sarà eliminato. Abbonati per continuare a usare tududi Cloud.",
     "trialIncludes": "La tua prova termina il {{date}}. L'assistente IA, le note pubbliche e l'aggiunta di membri si sbloccano con l'abbonamento.",
-    "backToApp": "Torna a tududi"
+    "backToApp": "Torna a tududi",
+    "trialBanner": "Prova gratuita, giorni rimanenti: {{count}}"
   },
   "demo": {
     "opening": "Apertura della demo...",

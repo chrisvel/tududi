@@ -2563,7 +2563,8 @@
     "onTrial": "Uporabljate brezplačno preizkusno obdobje",
     "readOnlyUntil": "Vaši podatki so samo za branje do {{date}}, nato bo račun izbrisan. Naročite se, da boste tududi Cloud lahko še naprej uporabljali.",
     "trialIncludes": "Preizkusno obdobje se izteče {{date}}. Pomočnik AI, javni zapiski in dodajanje članov se odklenejo z naročnino.",
-    "backToApp": "Nazaj v tududi"
+    "backToApp": "Nazaj v tududi",
+    "trialBanner": "Brezplačni preizkus, preostali dnevi: {{count}}"
   },
   "demo": {
     "opening": "Odpiranje demota...",
