@@ -41,10 +41,36 @@ Other knobs:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `TUDUDI_TRIAL_DAYS` | `14` | new accounts get Pro for this long, counted from the account creation date |
+| `TUDUDI_TRIAL_DAYS` | `14` | a self-registered account gets the trial plan for this long, counted from when it verifies its email (SSO sign-ups: from creation). `0` turns trials off |
+| `TUDUDI_TRIAL_READ_ONLY_DAYS` | `30` | with `TUDUDI_REQUIRE_SUBSCRIPTION`, how long an unpaid ended trial stays readable before the account is deleted |
+| `TUDUDI_DELETE_EXPIRED_TRIALS` | `true` | set `false` to keep ended trials read-only instead of deleting them; past the window they get the usual 402 wall |
+| `RATE_LIMIT_SIGNUP_MAX` / `RATE_LIMIT_SIGNUP_WINDOW_MS` | `3` / 24 h | password sign-ups per IP on a hosted instance; only created accounts count |
 | `TUDUDI_PAST_DUE_GRACE_DAYS` | `14` | after a failed payment, Pro continues this long past the period end |
 | `TUDUDI_HOSTED_EXEMPT_ADMINS` | `true` | admins are treated as Pro |
 | `TUDUDI_REQUIRE_SUBSCRIPTION` | `false` | sell access rather than upgrades: see below |
+
+## Trials
+
+A trial is its own plan (`trial` in `config/plans.js`): Pro, minus what costs
+money or can be abused by someone who signed up only to misuse it.
+
+- **Starts on email verification**, once per account. Signing up does not
+  start it, so an address that never receives mail never gets one. Members
+  added by an owner and admins never get a trial.
+- **No AI** (`features.ai: false`, AI budgets `0`), **no public note links**
+  (`features.public_notes: false`; turning a link off still works) and **no
+  members** (`max_members: 0`). Each answers `402 FEATURE_NOT_IN_PLAN` with
+  `details.plan: "trial"`, and the app sends the browser to
+  `/subscription/new?feature=<name>`.
+- **One trial per mailbox.** `users.email_canonical` folds `+tags`, Gmail dots
+  and googlemail.com, and a hosted sign-up (password or SSO) whose mailbox
+  already has an account is refused. Self-hosted instances skip this check.
+- **Then read-only.** With `TUDUDI_REQUIRE_SUBSCRIPTION`, an ended, never-paid
+  trial can still `GET` everything (and export) for
+  `TUDUDI_TRIAL_READ_ONLY_DAYS`; writes answer `402 TRIAL_ENDED`. A daily job
+  (03:00 UTC) then deletes the account. It only touches accounts whose trial
+  started under these rules (`billing_accounts.trial_started_at`), that never
+  subscribed, have no override and no members, and are not admins.
 
 ## Selling access rather than upgrades
 

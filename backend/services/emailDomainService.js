@@ -84,7 +84,33 @@ async function acceptsMail(domain) {
     }
 }
 
+// Gmail ignores dots in the local part, and googlemail.com is the same
+// mailbox under its older name.
+const DOTLESS_DOMAINS = new Set(['gmail.com', 'googlemail.com']);
+
+// One spelling per mailbox: lowercased, without a "+tag" (which nearly every
+// provider delivers to the same inbox), and for Gmail without dots. Two
+// addresses with the same canonical form reach the same person.
+const canonicalEmail = (email) => {
+    const value = String(email || '')
+        .trim()
+        .toLowerCase();
+    const at = value.lastIndexOf('@');
+    if (at <= 0) return value || null;
+
+    let local = value.slice(0, at);
+    let domain = value.slice(at + 1);
+    const plus = local.indexOf('+');
+    if (plus > 0) local = local.slice(0, plus);
+    if (DOTLESS_DOMAINS.has(domain)) {
+        local = local.replace(/\./g, '');
+        domain = 'gmail.com';
+    }
+    return `${local}@${domain}`;
+};
+
 module.exports = {
+    canonicalEmail,
     domainOf,
     isReservedDomain,
     isDisposableDomain,

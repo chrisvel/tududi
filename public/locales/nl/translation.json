@@ -2523,7 +2523,9 @@
       "caldav": "CalDAV-synchronisatie",
       "telegram": "de Telegram-bot",
       "backups_import": "back-upimport",
-      "attachments": "bijlagen"
+      "attachments": "bijlagen",
+      "public_notes": "openbare notities",
+      "members": "leden toevoegen"
     },
     "seatCovered": "Je plek wordt betaald door {{name}}.",
     "workspaceOwner": "de eigenaar van de werkruimte",
@@ -2547,7 +2549,17 @@
     "perkExport": "Exporteer alles op elk moment",
     "taxNote": "Betalingen worden afgehandeld door {{provider}}. Prijzen zijn exclusief toepasselijke belastingen. Annuleer op elk moment.",
     "notConfigured": "Abonnementen zijn nog niet beschikbaar op deze instantie. Neem contact op met de ondersteuning.",
-    "exportData": "Exporteer uw gegevens"
+    "exportData": "Exporteer uw gegevens",
+    "subscribe": "Abonneren",
+    "readOnlyBanner": "Je proefperiode is afgelopen, dus je gegevens zijn alleen-lezen. Neem een abonnement om tududi te blijven gebruiken, of exporteer je gegevens. Het account wordt op {{date}} verwijderd.",
+    "lockedAi": "De AI-assistent hoort bij het betaalde abonnement.",
+    "lockedPublicNotes": "Openbare notitielinks horen bij het betaalde abonnement.",
+    "lockedMembers": "Leden toevoegen hoort bij het betaalde abonnement.",
+    "trialEnded": "Je proefperiode is afgelopen",
+    "onTrial": "Je gebruikt de gratis proefperiode",
+    "readOnlyUntil": "Je gegevens zijn alleen-lezen tot {{date}}, daarna wordt het account verwijderd. Neem een abonnement om tududi Cloud te blijven gebruiken.",
+    "trialIncludes": "Je proefperiode eindigt op {{date}}. De AI-assistent, openbare notities en leden toevoegen worden ontgrendeld met een abonnement.",
+    "backToApp": "Terug naar tududi"
   },
   "demo": {
     "opening": "De demo wordt geopend...",

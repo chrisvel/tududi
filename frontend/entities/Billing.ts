@@ -17,6 +17,7 @@ export interface PlanFeatures {
     backups_import: boolean;
     telegram: boolean;
     attachments: boolean;
+    public_notes?: boolean;
 }
 
 export interface BillingUsage {
@@ -54,6 +55,10 @@ export interface BillingStatus {
     // entitles the account to the app.
     subscription_required: boolean;
     active: boolean;
+    // The trial ended unpaid: the app opens read-only until this date, then
+    // the account is deleted.
+    read_only?: boolean;
+    read_only_until?: string | null;
     // Set for a member whose seat is paid by the account that added it.
     seat_owner?: { id: number; name: string | null } | null;
     // On a hosted instance: this account's members and the seats billed.

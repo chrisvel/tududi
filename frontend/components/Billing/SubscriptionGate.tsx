@@ -25,7 +25,11 @@ const SubscriptionGate: React.FC<{ children: React.ReactNode }> = ({
         fetchBillingStatus()
             .then((status) => {
                 if (cancelled) return;
-                setLocked(!!status.subscription_required && !status.active);
+                setLocked(
+                    !!status.subscription_required &&
+                        !status.active &&
+                        !status.read_only
+                );
             })
             .catch(() => {
                 // 404 on self-hosted, or a transient failure: the server is

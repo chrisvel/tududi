@@ -25,6 +25,7 @@ const DEFAULT_PLANS = {
             backups_import: false,
             telegram: false,
             attachments: true,
+            public_notes: true,
         },
     },
     pro: {
@@ -45,6 +46,32 @@ const DEFAULT_PLANS = {
             backups_import: true,
             telegram: true,
             attachments: true,
+            public_notes: true,
+        },
+    },
+    // A new Cloud account before it pays: Pro, minus what costs money or
+    // can be abused by someone who signed up only to misuse it. AI calls
+    // cost per request, public notes could host spam on our domain, and
+    // members are paid seats.
+    trial: {
+        name: 'Pro',
+        limits: {
+            max_tasks: null,
+            max_projects: null,
+            max_notes: null,
+            storage_mb: 5000,
+            ai_requests_per_month: 0,
+            ai_credits_per_month: 0,
+            max_members: 0,
+        },
+        features: {
+            ai: false,
+            mcp: true,
+            caldav: true,
+            backups_import: true,
+            telegram: true,
+            attachments: true,
+            public_notes: false,
         },
     },
 };

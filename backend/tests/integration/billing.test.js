@@ -197,7 +197,11 @@ describe('Billing with hosted mode on', () => {
         it('publishes the catalog without price ids', async () => {
             const res = await agent.get('/api/billing/plans');
             expect(res.status).toBe(200);
-            expect(res.body.plans.map((p) => p.key)).toEqual(['free', 'pro']);
+            expect(res.body.plans.map((p) => p.key)).toEqual([
+                'free',
+                'pro',
+                'trial',
+            ]);
             expect(JSON.stringify(res.body)).not.toContain(PRICE_MONTH);
         });
     });

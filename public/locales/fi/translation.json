@@ -2523,7 +2523,9 @@
       "caldav": "CalDAV-synkronointi",
       "telegram": "Telegram-botti",
       "backups_import": "varmuuskopioiden tuonti",
-      "attachments": "liitteet"
+      "attachments": "liitteet",
+      "public_notes": "julkiset muistiinpanot",
+      "members": "jäsenten lisääminen"
     },
     "seatCovered": "Paikkasi maksaa {{name}}.",
     "workspaceOwner": "työtilan omistaja",
@@ -2547,7 +2549,17 @@
     "perkExport": "Vie kaikki milloin tahansa",
     "taxNote": "Maksut käsittelee {{provider}}. Hinnat eivät sisällä sovellettavia veroja. Peruuta milloin tahansa.",
     "notConfigured": "Tilausta ei ole vielä saatavilla tässä instanssissa. Ota yhteyttä tukeen.",
-    "exportData": "Vie tietosi"
+    "exportData": "Vie tietosi",
+    "subscribe": "Tilaa",
+    "readOnlyBanner": "Kokeilujaksosi on päättynyt, joten tietosi ovat vain luku -tilassa. Tilaa jatkaaksesi tududin käyttöä tai vie tietosi. Tili poistetaan {{date}}.",
+    "lockedAi": "AI-avustaja kuuluu maksulliseen tilaukseen.",
+    "lockedPublicNotes": "Julkiset muistiinpanolinkit kuuluvat maksulliseen tilaukseen.",
+    "lockedMembers": "Jäsenten lisääminen kuuluu maksulliseen tilaukseen.",
+    "trialEnded": "Kokeilujaksosi on päättynyt",
+    "onTrial": "Käytät ilmaista kokeilujaksoa",
+    "readOnlyUntil": "Tietosi ovat vain luku -tilassa {{date}} asti, minkä jälkeen tili poistetaan. Tilaa jatkaaksesi tududi Cloudin käyttöä.",
+    "trialIncludes": "Kokeilujaksosi päättyy {{date}}. AI-avustaja, julkiset muistiinpanot ja jäsenten lisääminen avautuvat, kun tilaat.",
+    "backToApp": "Takaisin tududiin"
   },
   "demo": {
     "opening": "Avaamassa demoa...",

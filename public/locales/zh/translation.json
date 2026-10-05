@@ -2523,7 +2523,9 @@
       "caldav": "CalDAV 同步",
       "telegram": "Telegram 机器人",
       "backups_import": "备份导入",
-      "attachments": "附件"
+      "attachments": "附件",
+      "public_notes": "公开笔记",
+      "members": "添加成员"
     },
     "seatCovered": "你的席位由 {{name}} 付费。",
     "workspaceOwner": "工作区所有者",
@@ -2547,7 +2549,17 @@
     "perkExport": "随时导出所有内容",
     "taxNote": "付款由 {{provider}} 处理。价格不含适用税费。随时取消。",
     "notConfigured": "此实例尚未提供订阅服务。请联系支持。",
-    "exportData": "导出您的数据"
+    "exportData": "导出您的数据",
+    "subscribe": "订阅",
+    "readOnlyBanner": "您的试用已结束，数据现在为只读。订阅即可继续使用 tududi，或导出您的数据。账户将于 {{date}} 删除。",
+    "lockedAi": "AI 助手属于付费方案。",
+    "lockedPublicNotes": "公开笔记链接属于付费方案。",
+    "lockedMembers": "添加成员属于付费方案。",
+    "trialEnded": "您的试用已结束",
+    "onTrial": "您正在免费试用",
+    "readOnlyUntil": "您的数据在 {{date}} 之前为只读，之后账户将被删除。订阅即可继续使用 tududi Cloud。",
+    "trialIncludes": "您的试用将于 {{date}} 结束。订阅后即可使用 AI 助手、公开笔记和添加成员。",
+    "backToApp": "返回 tududi"
   },
   "demo": {
     "opening": "正在打开演示...",

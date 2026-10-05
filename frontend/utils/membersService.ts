@@ -1,6 +1,7 @@
 import { getApiPath } from '../config/paths';
 import { fetchWithCsrf } from './csrfService';
 import { RoleId } from '../entities/Role';
+import { handlePlanLimit } from './planLimits';
 
 export interface MemberInput {
     name?: string;
@@ -36,6 +37,7 @@ export const createMember = async (
         body: JSON.stringify(input),
     });
     if (!response.ok) {
+        await handlePlanLimit(response);
         let message = 'Failed to add member.';
         try {
             const body = await response.json();

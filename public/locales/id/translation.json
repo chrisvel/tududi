@@ -2523,7 +2523,9 @@
       "caldav": "sinkronisasi CalDAV",
       "telegram": "bot Telegram",
       "backups_import": "impor cadangan",
-      "attachments": "lampiran"
+      "attachments": "lampiran",
+      "public_notes": "catatan publik",
+      "members": "menambahkan anggota"
     },
     "seatCovered": "Kursi Anda dibayar oleh {{name}}.",
     "workspaceOwner": "pemilik ruang kerja",
@@ -2547,7 +2549,17 @@
     "perkExport": "Ekspor semuanya kapan saja",
     "taxNote": "Pembayaran ditangani oleh {{provider}}. Harga tidak termasuk pajak yang berlaku. Batalkan kapan saja.",
     "notConfigured": "Langganan belum tersedia di instance ini. Silakan hubungi dukungan.",
-    "exportData": "Ekspor data Anda"
+    "exportData": "Ekspor data Anda",
+    "subscribe": "Berlangganan",
+    "readOnlyBanner": "Masa uji coba Anda telah berakhir, jadi data Anda hanya bisa dibaca. Berlanggananlah untuk terus menggunakan tududi, atau ekspor data Anda. Akun akan dihapus pada {{date}}.",
+    "lockedAi": "Asisten AI termasuk dalam paket berbayar.",
+    "lockedPublicNotes": "Tautan catatan publik termasuk dalam paket berbayar.",
+    "lockedMembers": "Menambahkan anggota termasuk dalam paket berbayar.",
+    "trialEnded": "Masa uji coba Anda telah berakhir",
+    "onTrial": "Anda sedang dalam masa uji coba gratis",
+    "readOnlyUntil": "Data Anda hanya bisa dibaca hingga {{date}}, lalu akun akan dihapus. Berlanggananlah untuk terus menggunakan tududi Cloud.",
+    "trialIncludes": "Masa uji coba Anda berakhir pada {{date}}. Asisten AI, catatan publik, dan menambahkan anggota terbuka saat Anda berlangganan.",
+    "backToApp": "Kembali ke tududi"
   },
   "demo": {
     "opening": "Membuka demo...",

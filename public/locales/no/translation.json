@@ -2528,7 +2528,9 @@
       "caldav": "CalDAV-synkronisering",
       "telegram": "Telegram-boten",
       "backups_import": "import av sikkerhetskopier",
-      "attachments": "vedlegg"
+      "attachments": "vedlegg",
+      "public_notes": "offentlige notater",
+      "members": "å legge til medlemmer"
     },
     "seatCovered": "Plassen din betales av {{name}}.",
     "workspaceOwner": "eieren av arbeidsområdet",
@@ -2552,7 +2554,17 @@
     "perkExport": "Eksporter alt når som helst",
     "taxNote": "Betalinger håndteres av {{provider}}. Priser ekskluderer gjeldende skatter. Kanseller når som helst.",
     "notConfigured": "Abonnementer er ikke tilgjengelige på denne instansen ennå. Vennligst kontakt support.",
-    "exportData": "Eksporter dataene dine"
+    "exportData": "Eksporter dataene dine",
+    "subscribe": "Abonner",
+    "readOnlyBanner": "Prøveperioden din er over, så dataene dine er skrivebeskyttet. Abonner for å fortsette å bruke tududi, eller eksporter dataene dine. Kontoen slettes {{date}}.",
+    "lockedAi": "AI-assistenten er en del av den betalte planen.",
+    "lockedPublicNotes": "Offentlige notatlenker er en del av den betalte planen.",
+    "lockedMembers": "Å legge til medlemmer er en del av den betalte planen.",
+    "trialEnded": "Prøveperioden din er over",
+    "onTrial": "Du bruker den gratis prøveperioden",
+    "readOnlyUntil": "Dataene dine er skrivebeskyttet til {{date}}, deretter slettes kontoen. Abonner for å fortsette å bruke tududi Cloud.",
+    "trialIncludes": "Prøveperioden din slutter {{date}}. AI-assistenten, offentlige notater og å legge til medlemmer låses opp når du abonnerer.",
+    "backToApp": "Tilbake til tududi"
   },
   "demo": {
     "opening": "Åpner demoen...",

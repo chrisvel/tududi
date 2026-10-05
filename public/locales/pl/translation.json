@@ -2527,7 +2527,9 @@
       "caldav": "synchronizacja CalDAV",
       "telegram": "bot Telegram",
       "backups_import": "import kopii zapasowych",
-      "attachments": "załączniki"
+      "attachments": "załączniki",
+      "public_notes": "publiczne notatki",
+      "members": "dodawanie członków"
     },
     "seatCovered": "Twoje miejsce opłaca {{name}}.",
     "workspaceOwner": "właściciel obszaru roboczego",
@@ -2551,7 +2553,17 @@
     "perkExport": "Eksportuj wszystko w dowolnym momencie",
     "taxNote": "Płatności są obsługiwane przez {{provider}}. Ceny nie zawierają obowiązujących podatków. Anuluj w dowolnym momencie.",
     "notConfigured": "Subskrypcje nie są jeszcze dostępne w tej instancji. Proszę skontaktować się z pomocą techniczną.",
-    "exportData": "Eksportuj swoje dane"
+    "exportData": "Eksportuj swoje dane",
+    "subscribe": "Subskrybuj",
+    "readOnlyBanner": "Twój okres próbny się zakończył, więc dane są tylko do odczytu. Wykup subskrypcję, aby dalej korzystać z tududi, lub wyeksportuj dane. Konto zostanie usunięte {{date}}.",
+    "lockedAi": "Asystent AI jest częścią płatnego planu.",
+    "lockedPublicNotes": "Publiczne linki do notatek są częścią płatnego planu.",
+    "lockedMembers": "Dodawanie członków jest częścią płatnego planu.",
+    "trialEnded": "Twój okres próbny się zakończył",
+    "onTrial": "Korzystasz z bezpłatnego okresu próbnego",
+    "readOnlyUntil": "Twoje dane są tylko do odczytu do {{date}}, potem konto zostanie usunięte. Wykup subskrypcję, aby dalej korzystać z tududi Cloud.",
+    "trialIncludes": "Twój okres próbny kończy się {{date}}. Asystent AI, publiczne notatki i dodawanie członków odblokujesz po wykupieniu subskrypcji.",
+    "backToApp": "Wróć do tududi"
   },
   "demo": {
     "opening": "Otwieranie dema...",

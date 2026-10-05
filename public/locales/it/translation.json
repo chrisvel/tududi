@@ -2524,7 +2524,9 @@
       "caldav": "la sincronizzazione CalDAV",
       "telegram": "il bot Telegram",
       "backups_import": "l'importazione dei backup",
-      "attachments": "gli allegati"
+      "attachments": "gli allegati",
+      "public_notes": "le note pubbliche",
+      "members": "l'aggiunta di membri"
     },
     "seatCovered": "Il tuo posto è pagato da {{name}}.",
     "workspaceOwner": "il titolare dell'area di lavoro",
@@ -2548,7 +2550,17 @@
     "perkExport": "Esporta tutto in qualsiasi momento",
     "taxNote": "I pagamenti sono gestiti da {{provider}}. I prezzi escludono le tasse applicabili. Annulla in qualsiasi momento.",
     "notConfigured": "Le sottoscrizioni non sono ancora disponibili su questa istanza. Contatta il supporto.",
-    "exportData": "Esporta i tuoi dati"
+    "exportData": "Esporta i tuoi dati",
+    "subscribe": "Abbonati",
+    "readOnlyBanner": "La tua prova è terminata, quindi i tuoi dati sono in sola lettura. Abbonati per continuare a usare tududi oppure esporta i tuoi dati. L'account sarà eliminato il {{date}}.",
+    "lockedAi": "L'assistente IA fa parte del piano a pagamento.",
+    "lockedPublicNotes": "I link pubblici alle note fanno parte del piano a pagamento.",
+    "lockedMembers": "Aggiungere membri fa parte del piano a pagamento.",
+    "trialEnded": "La tua prova è terminata",
+    "onTrial": "Stai usando la prova gratuita",
+    "readOnlyUntil": "I tuoi dati sono in sola lettura fino al {{date}}, poi l'account sarà eliminato. Abbonati per continuare a usare tududi Cloud.",
+    "trialIncludes": "La tua prova termina il {{date}}. L'assistente IA, le note pubbliche e l'aggiunta di membri si sbloccano con l'abbonamento.",
+    "backToApp": "Torna a tududi"
   },
   "demo": {
     "opening": "Apertura della demo...",

@@ -1,5 +1,6 @@
 import { getApiPath, getBasePath } from '../config/paths';
 import { fetchWithCsrf } from './csrfService';
+import { handlePlanLimit } from './planLimits';
 
 export interface NotePublicShare {
     enabled: boolean;
@@ -45,6 +46,7 @@ const readShare = async (
     fallback: string
 ): Promise<NotePublicShare> => {
     if (response.ok) return response.json();
+    await handlePlanLimit(response);
     let message = fallback;
     try {
         const body = await response.json();

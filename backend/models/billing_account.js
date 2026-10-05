@@ -77,6 +77,14 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // Set when a Cloud trial starts (on email verification). Only
+            // these trials get the read-only month and then deletion, so an
+            // older account whose trial_ends_at predates the rule is never
+            // swept up by it.
+            trial_started_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
             cancel_at_period_end: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

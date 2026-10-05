@@ -2523,7 +2523,9 @@
       "caldav": "CalDAV同期",
       "telegram": "Telegramボット",
       "backups_import": "バックアップのインポート",
-      "attachments": "添付ファイル"
+      "attachments": "添付ファイル",
+      "public_notes": "公開ノート",
+      "members": "メンバーの追加"
     },
     "seatCovered": "あなたの席は {{name}} が支払っています。",
     "workspaceOwner": "ワークスペースのオーナー",
@@ -2547,7 +2549,17 @@
     "perkExport": "いつでもすべてをエクスポート",
     "taxNote": "支払いは{{provider}}によって処理されます。価格には適用される税金は含まれていません。いつでもキャンセルできます。",
     "notConfigured": "このインスタンスではまだサブスクリプションは利用できません。サポートにお問い合わせください。",
-    "exportData": "データをエクスポート"
+    "exportData": "データをエクスポート",
+    "subscribe": "購読する",
+    "readOnlyBanner": "試用期間が終了したため、データは読み取り専用です。tududi を引き続き使うには購読するか、データをエクスポートしてください。アカウントは {{date}} に削除されます。",
+    "lockedAi": "AI アシスタントは有料プランに含まれます。",
+    "lockedPublicNotes": "ノートの公開リンクは有料プランに含まれます。",
+    "lockedMembers": "メンバーの追加は有料プランに含まれます。",
+    "trialEnded": "試用期間が終了しました",
+    "onTrial": "無料試用中です",
+    "readOnlyUntil": "データは {{date}} まで読み取り専用で、その後アカウントは削除されます。tududi Cloud を引き続き使うには購読してください。",
+    "trialIncludes": "試用期間は {{date}} に終了します。AI アシスタント、公開ノート、メンバーの追加は購読すると使えるようになります。",
+    "backToApp": "tududi に戻る"
   },
   "demo": {
     "opening": "デモを開いています...",

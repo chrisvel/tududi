@@ -4,6 +4,7 @@ const { getConfig } = require('../../config/config');
 const { logError, logInfo } = require('../../services/logService');
 const { sendEmail } = require('../../services/emailService');
 const {
+    canonicalEmail,
     domainOf,
     isDisposableDomain,
     acceptsMail,
@@ -69,6 +70,21 @@ const checkSignupEmailDomain = async (email) => {
     return null;
 };
 
+// On a hosted instance one mailbox gets one account, so a "+tag" or Gmail
+// dots cannot open a second trial. A self-hosted instance may well want
+// alias accounts (for testing, or one per role), so it is not checked there.
+const isTakenMailbox = async (email, transaction = null) => {
+    if (getConfig().hosted?.enabled !== true) return false;
+    const canonical = canonicalEmail(email);
+    if (!canonical) return false;
+    const existing = await User.findOne({
+        where: { email_canonical: canonical },
+        attributes: ['id'],
+        transaction,
+    });
+    return !!existing;
+};
+
 const createUnverifiedUser = async (email, password, transaction = null) => {
     if (!validateEmail(email)) {
         throw new Error('Invalid email format');
@@ -82,7 +98,7 @@ const createUnverifiedUser = async (email, password, transaction = null) => {
         where: { email: email.trim().toLowerCase() },
         transaction,
     });
-    if (existingUser) {
+    if (existingUser || (await isTakenMailbox(email, transaction))) {
         throw new Error('Email already registered');
     }
 
@@ -169,6 +185,9 @@ const verifyUserEmail = async (token) => {
     user.email_verification_token = null;
     user.email_verification_token_expires_at = null;
     await user.save();
+
+    // A Cloud trial starts only once the address is proven to be real.
+    await require('../../services/entitlementsService').startTrial(user.id);
 
     return user;
 };
@@ -289,6 +308,7 @@ module.exports = {
     setRegistrationEnabled,
     generateVerificationToken,
     createUnverifiedUser,
+    isTakenMailbox,
     checkSignupEmailDomain,
     verifyUserEmail,
     sendVerificationEmail,
