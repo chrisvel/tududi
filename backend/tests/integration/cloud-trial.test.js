@@ -198,15 +198,60 @@ describe('Cloud trials', () => {
             expect(read.body.code).toBe('SUBSCRIPTION_REQUIRED');
         });
 
-        it('is not read-only, but closed, for an older account without a started trial', async () => {
+        it('gives a fresh trial to an older account whose trial predates these rules', async () => {
             await BillingAccount.update(
-                { trial_started_at: null, trial_ends_at: daysAgo(5) },
+                { trial_started_at: null, trial_ends_at: daysAgo(40) },
                 { where: { user_id: user.id } }
             );
             entitlements.invalidate();
+
+            const billing = await agent.get('/api/billing');
+            expect(billing.body.reason).toBe('trial');
+            expect(
+                new Date(billing.body.trial_ends_at).getTime()
+            ).toBeGreaterThan(Date.now() + 13 * DAY);
             const read = await agent.get('/api/tasks');
-            expect(read.status).toBe(402);
-            expect(read.body.code).toBe('SUBSCRIPTION_REQUIRED');
+            expect(read.status).toBe(200);
+        });
+    });
+
+    describe('coming back after verifying before trials existed', () => {
+        it('starts the trial on the first request of a signed-in account', async () => {
+            config.hosted.trialDays = 0;
+            const user = await createTestUser({ email: uniqueEmail('back') });
+            const agent = await login(user);
+            const closed = await agent.get('/api/tasks');
+            expect(closed.status).toBe(402);
+
+            config.hosted.trialDays = 14;
+            entitlements.invalidate();
+            const open = await agent.get('/api/tasks');
+            expect(open.status).toBe(200);
+            const account = await BillingAccount.findOne({
+                where: { user_id: user.id },
+            });
+            expect(account.trial_started_at).not.toBeNull();
+        });
+
+        it('gives no trial to an account that subscribed before', async () => {
+            const user = await createTestUser({ email: uniqueEmail('lapsed') });
+            await BillingAccount.create({
+                user_id: user.id,
+                status: 'canceled',
+                provider_subscription_id: 'sub_old',
+            });
+            const agent = await login(user);
+            const res = await agent.get('/api/tasks');
+            expect(res.status).toBe(402);
+            expect(res.body.code).toBe('SUBSCRIPTION_REQUIRED');
+        });
+
+        it('gives no trial to an unverified account', async () => {
+            const { user } = await createUnverifiedUser(
+                uniqueEmail('noverify'),
+                'password123'
+            );
+            expect(await entitlements.startTrial(user.id)).toBeNull();
         });
     });
 

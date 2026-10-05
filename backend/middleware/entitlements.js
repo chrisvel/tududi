@@ -67,10 +67,13 @@ const READ_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const requireSubscription = async (req, res, next) => {
     try {
         if (!entitlements.isSubscriptionRequired()) return next();
+        const userId = getAuthenticatedUserId(req);
+        // Before the open routes: the app's first calls after sign-in are to
+        // billing, and that is where a returning account's trial must begin.
+        if (userId) await entitlements.startTrialOnReturn(userId);
         if (OPEN_WITHOUT_SUBSCRIPTION.some((rule) => rule.test(req.path))) {
             return next();
         }
-        const userId = getAuthenticatedUserId(req);
         if (!userId) return next();
         const ent = await entitlements.getEntitlements(userId);
         if (ent.active) return next();

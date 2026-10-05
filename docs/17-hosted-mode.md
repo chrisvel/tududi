@@ -57,6 +57,11 @@ money or can be abused by someone who signed up only to misuse it.
 - **Starts on email verification**, once per account. Signing up does not
   start it, so an address that never receives mail never gets one. Members
   added by an owner and admins never get a trial.
+- **Returning accounts get one too.** A verified account that never had a
+  trial under these rules, never subscribed and has no comp gets its trial on
+  its first request after trials are switched on (`startTrialOnReturn`, run
+  by the subscription gate). A `trial_ends_at` with no `trial_started_at`
+  dates from before these rules and counts as never started.
 - **No AI** (`features.ai: false`, AI budgets `0`), **no public note links**
   (`features.public_notes: false`; turning a link off still works) and **no
   members** (`max_members: 0`). Each answers `402 FEATURE_NOT_IN_PLAN` with

@@ -148,11 +148,15 @@ async function ensureAccount(userId) {
     return account;
 }
 
-// Starts the Cloud trial for an account that has just proved it owns its
-// email address. Once per account: a trial that started (or a subscription)
-// is never restarted. Members are seats on someone else's account and an
-// admin needs no trial, so neither gets one. Never throws, since the caller
-// is a sign-up or verification that must succeed regardless.
+// Starts the Cloud trial for a verified account that never had one: on
+// verification, or when an account that verified before trials existed comes
+// back (see startTrialOnReturn). Once per account: a started trial
+// (trial_started_at), a subscription past or present, or a comp means no new
+// trial. A trial_ends_at without trial_started_at predates these rules, when
+// every sign-up got one from its creation date, so it counts as never
+// started. Members are seats on someone else's account and an admin needs no
+// trial, so neither gets one. Never throws, since the caller is a sign-up,
+// verification or request that must succeed regardless.
 async function startTrial(userId, { now = new Date() } = {}) {
     try {
         if (!isHostedMode()) return null;
@@ -161,16 +165,20 @@ async function startTrial(userId, { now = new Date() } = {}) {
 
         const { User } = models();
         const user = await User.findByPk(userId, {
-            attributes: ['id', 'created_by_user_id'],
+            attributes: ['id', 'created_by_user_id', 'email_verified'],
         });
-        if (!user || user.created_by_user_id) return null;
+        if (!user || user.created_by_user_id || !user.email_verified) {
+            return null;
+        }
         if (await isAdmin(userId)) return null;
 
         const account = await ensureAccount(userId);
-        if (!account || account.trial_started_at || account.trial_ends_at) {
-            return null;
-        }
-        if (account.status !== 'none' || account.provider_subscription_id) {
+        if (!account || account.trial_started_at) return null;
+        if (
+            account.status !== 'none' ||
+            account.provider_subscription_id ||
+            account.override_plan
+        ) {
             return null;
         }
 
@@ -184,6 +192,19 @@ async function startTrial(userId, { now = new Date() } = {}) {
         logError(error, `Could not start the trial for user ${userId}`);
         return null;
     }
+}
+
+// For an account that signs in (or is still signed in) with nothing
+// entitling it to the app: starts its trial if it never had one, so someone
+// who verified before trials existed gets one by coming back. Cheap for
+// everyone else: the entitlement lookup is cached, and only a 'free' account
+// that is not already in its read-only month goes any further.
+async function startTrialOnReturn(userId) {
+    if (!isHostedMode()) return null;
+    if ((getConfig().hosted.trialDays || 0) <= 0) return null;
+    const ent = await getEntitlements(userId);
+    if (ent.reason !== 'free' || ent.read_only) return null;
+    return startTrial(userId);
 }
 
 // Reasons an owner's plan counts as paid, so the members it added share it.
@@ -480,6 +501,7 @@ module.exports = {
     DELETION_NOTICE_DAYS,
     ensureAccount,
     startTrial,
+    startTrialOnReturn,
     getEntitlements,
     invalidate,
     hasFeature,
