@@ -69,7 +69,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
     const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [version, setVersion] = useState<string>('v0.86');
+    const [version, setVersion] = useState<string>('');
     const navigate = useNavigate();
 
     // Get shortcuts config, using defaults if not provided
@@ -218,7 +218,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
             {/* Version */}
             <div className="px-[14px] pt-[10px] flex justify-end">
                 <span className="text-[11px] text-gray-400 dark:text-gray-600 font-light italic opacity-60">
-                    {version}
+                    {version || '\u00a0'}
                 </span>
             </div>
 
@@ -334,7 +334,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
             {isFeedbackOpen && (
                 <FeedbackModal
                     onClose={() => setIsFeedbackOpen(false)}
-                    appVersion={version}
+                    appVersion={version || undefined}
                 />
             )}
         </div>
