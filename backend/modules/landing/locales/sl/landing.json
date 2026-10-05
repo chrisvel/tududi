@@ -27,7 +27,9 @@
     "ctaPrimary": "Začnite zdaj",
     "lede": "Zapišite vse, z UI načrtujte dan okoli koledarja in imejte področja, cilje, projekte, zapiske in navade v enem sistemu. Račun Cloud ustvarite v minuti.",
     "titleLine1": "Produktivnost, preprosto narejena",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Začnite brezplačni {{days}}-dnevni preizkus",
+    "cloudNoteTrial": "Brezplačno {{days}} dni, brez kartice. Nato mesečno ali letno, odpoved kadar koli."
   },
   "proof": {
     "stars": "zvezdic na GitHubu",
@@ -270,7 +272,9 @@
           "Posodobitve in dnevne varnostne kopije, poskrbljene za vas, z {{proStorageGb}} GB prostora",
           "Izvozite vse kadarkoli, izbrišite svoj račun sami"
         ],
-        "priceNote": "Vse vključeno. Prekličite kadarkoli."
+        "priceNote": "Vse vključeno. Prekličite kadarkoli.",
+        "actionTrial": "Preizkusite brezplačno →",
+        "priceNoteTrial": "{{days}} dni brezplačno, brez kartice. Odpoved kadar koli."
       }
     },
     "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 14-dnevna garancija vračila denarja, brez vprašanj.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Ne. Cloud stane {{monthly}} na mesec ali {{price}} na leto na osebo, in to je celoten cenik: brez brezplačne stopnje, brez preizkusne ure, brez kartice, obremenjene za nekaj, kar se tiho začne zaračunavati kasneje. Obstaja 14-dnevna garancija vračila denarja, če se izkaže, da vam ne ustreza, in obstaja živa predstavitev na tej strani, če želite najprej pogledati. Brezplačen način uporabe tududi je zagon na vašem lastnem strežniku, kar je enaka aplikacija.",
-        "q": "Ali obstaja brezplačen paket ali preizkusna doba na tududi Cloud?"
+        "q": "Ali obstaja brezplačen paket ali preizkusna doba na tududi Cloud?",
+        "aTrial": "Brezplačnega paketa ni, vsak nov račun pa dobi brezplačen {{days}}-dnevni preizkus, brez kartice. Preizkus vključuje vse razen pomočnika AI, javnih povezav do zapiskov in dodajanja članov. Če se ne naročite, je račun 30 dni samo za branje, da lahko izvozite podatke, nato pa se izbriše. Po preizkusu Cloud stane {{monthly}} na mesec ali {{price}} na leto na osebo. Brezplačen način uporabe tududi je, da ga poganjate na svojem strežniku, gre za isto aplikacijo."
       },
       "leaving": {
         "q": "Lahko odidem in kaj se zgodi z mojimi podatki?",
@@ -448,7 +453,9 @@
     "title": "Zakaj uporabljati tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Ne funkcije. Vsaka funkcija je tudi v samostojno gostovani različici.",
-    "whyTitle": "Za kaj dejansko plačujete"
+    "whyTitle": "Za kaj dejansko plačujete",
+    "ctaTrial": "Preizkusite brezplačno",
+    "pricingSubTrial": "Preizkusite brezplačno {{days}} dni, brez kartice. Nato je vse vključeno, odpoved kadar želite."
   },
   "finalCta": {
     "primary": "Začni",

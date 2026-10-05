@@ -27,7 +27,9 @@
     "ctaPrimary": "Zacznij teraz",
     "lede": "Zapisuj wszystko, planuj dzień z AI wokół kalendarza i trzymaj obszary, cele, projekty, notatki i nawyki w jednym systemie. Załóż konto Cloud w minutę.",
     "titleLine1": "Produktywność uproszczona",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Rozpocznij bezpłatny okres próbny ({{days}} dni)",
+    "cloudNoteTrial": "Bezpłatnie przez {{days}} dni, bez karty. Potem miesięcznie lub rocznie, rezygnacja w każdej chwili."
   },
   "proof": {
     "stars": "gwiazdek na GitHubie",
@@ -270,7 +272,9 @@
           "Aktualizacje i codzienne kopie zapasowe obsłużone za Ciebie, z {{proStorageGb}} GB miejsca",
           "Eksportuj wszystko w każdej chwili, usuń konto samodzielnie"
         ],
-        "priceNote": "Wszystko włączone. Anuluj w każdej chwili."
+        "priceNote": "Wszystko włączone. Anuluj w każdej chwili.",
+        "actionTrial": "Wypróbuj za darmo →",
+        "priceNoteTrial": "{{days}} dni za darmo, bez karty. Rezygnacja w każdej chwili."
       }
     },
     "fineprint": "Zrezygnuj w każdej chwili i wyeksportuj wszystko. Gdyby tududi Cloud kiedykolwiek został zamknięty, otrzymasz swoje dane i przewodnik migracji na własny serwer. Do przestrzeni i ruchu API stosuje się zasada fair use. 14-dniowa gwarancja zwrotu pieniędzy, bez pytań.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Nie. Cloud kosztuje {{monthly}} miesięcznie lub {{price}} rocznie za osobę, i to jest cała lista cen: żadnego darmowego poziomu, żadnego zegara próbnego, żadnej karty obciążonej za coś, co później dyskretnie zaczyna naliczać opłaty. Jest 14-dniowa gwarancja zwrotu pieniędzy, jeśli okaże się, że to nie dla Ciebie, i jest na tej stronie demo na żywo, jeśli chcesz najpierw popatrzeć. Darmowy sposób na używanie tududi to prowadzenie go na własnym serwerze, co jest tą samą aplikacją.",
-        "q": "Jest darmowy plan lub okres próbny w tududi Cloud?"
+        "q": "Jest darmowy plan lub okres próbny w tududi Cloud?",
+        "aTrial": "Nie ma darmowego planu, ale każde nowe konto dostaje bezpłatny okres próbny na {{days}} dni, bez karty. Okres próbny obejmuje wszystko poza asystentem AI, publicznymi linkami do notatek i dodawaniem członków. Jeśli nie wykupisz subskrypcji, konto przez 30 dni będzie tylko do odczytu, abyś mógł wyeksportować dane, a potem zostanie usunięte. Po okresie próbnym Cloud kosztuje {{monthly}} miesięcznie lub {{price}} rocznie za osobę. Darmowy sposób korzystania z tududi to uruchomienie go na własnym serwerze, to ta sama aplikacja."
       },
       "leaving": {
         "q": "Czy mogę odejść i co stanie się z moimi danymi?",
@@ -448,7 +453,9 @@
     "title": "Dlaczego korzystać z tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Nie funkcje. Każda funkcja jest też w wersji samodzielnie hostowanej.",
-    "whyTitle": "Za co właściwie płacisz"
+    "whyTitle": "Za co właściwie płacisz",
+    "ctaTrial": "Wypróbuj za darmo",
+    "pricingSubTrial": "Wypróbuj za darmo przez {{days}} dni, bez karty. Potem wszystko w cenie, rezygnujesz kiedy chcesz."
   },
   "finalCta": {
     "primary": "Zacznij",

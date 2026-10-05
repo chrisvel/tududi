@@ -27,7 +27,9 @@
     "ctaPrimary": "Mulai sekarang",
     "lede": "Catat apa saja, rencanakan hari dengan AI di sekitar kalender, dan simpan area, tujuan, proyek, catatan, dan kebiasaan dalam satu sistem. Buat akun Cloud dalam semenit.",
     "titleLine1": "Produktivitas dibuat sederhana",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Mulai uji coba gratis {{days}} hari",
+    "cloudNoteTrial": "Gratis selama {{days}} hari, tanpa kartu. Setelah itu bulanan atau tahunan, batalkan kapan saja."
   },
   "proof": {
     "stars": "bintang di GitHub",
@@ -270,7 +272,9 @@
           "Pembaruan dan cadangan harian yang diurus untuk Anda, dengan {{proStorageGb}} GB penyimpanan",
           "Ekspor semuanya kapan saja, hapus akun Anda sendiri"
         ],
-        "priceNote": "Semuanya termasuk. Batalkan kapan saja."
+        "priceNote": "Semuanya termasuk. Batalkan kapan saja.",
+        "actionTrial": "Coba gratis →",
+        "priceNoteTrial": "{{days}} hari gratis, tanpa kartu. Batalkan kapan saja."
       }
     },
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 14 hari, tanpa pertanyaan.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Tidak. Cloud berharga {{monthly}} per bulan atau {{price}} per tahun per orang, dan itulah seluruh daftar harganya: tidak ada tingkat gratis, tidak ada jam percobaan, tidak ada kartu yang dikenai biaya untuk sesuatu yang diam-diam mulai menagih nanti. Ada garansi uang kembali 14 hari jika ternyata tidak sesuai untuk Anda, dan ada demo langsung di halaman ini jika Anda ingin melihat-lihat dulu. Cara gratis untuk menggunakan tududi adalah menjalankannya di server Anda sendiri, yang merupakan aplikasi yang sama.",
-        "q": "Apakah ada paket gratis atau percobaan di tududi Cloud?"
+        "q": "Apakah ada paket gratis atau percobaan di tududi Cloud?",
+        "aTrial": "Tidak ada paket gratis, tetapi setiap akun baru mendapat uji coba gratis {{days}} hari, tanpa kartu. Uji coba mencakup semuanya kecuali asisten AI, tautan catatan publik, dan menambahkan anggota. Jika Anda tidak berlangganan, akun menjadi hanya-baca selama 30 hari agar Anda bisa mengekspor data, lalu dihapus. Setelah uji coba, Cloud seharga {{monthly}} per bulan atau {{price}} per tahun per orang. Cara gratis memakai tududi adalah menjalankannya di server Anda sendiri, aplikasinya sama."
       },
       "leaving": {
         "q": "Bisakah saya pergi, dan apa yang terjadi pada data saya?",
@@ -448,7 +453,9 @@
     "title": "Mengapa menggunakan tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Bukan fitur. Setiap fitur juga ada di build hosting sendiri.",
-    "whyTitle": "Yang sebenarnya Anda bayar"
+    "whyTitle": "Yang sebenarnya Anda bayar",
+    "ctaTrial": "Coba gratis",
+    "pricingSubTrial": "Coba gratis selama {{days}} hari, tanpa kartu. Setelah itu semua sudah termasuk, batalkan kapan pun."
   },
   "finalCta": {
     "primary": "Mulai",

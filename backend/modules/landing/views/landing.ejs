@@ -48,7 +48,7 @@
             { id: 'shutdown' },
         ]},
         { id: 'managed', items: [
-            { id: 'freePlan' },
+            { id: 'freePlan', answer: trialDays > 0 ? 'aTrial' : 'a' },
             { id: 'whyManaged' },
             { id: 'aiOptional' },
             { id: 'aiPrivacy' },
@@ -65,6 +65,7 @@
         price: money(personalPrice),
         monthly: money(pricing.monthly),
         proStorageGb: plans.proStorageGb,
+        days: trialDays,
     };
 
     // camelCase id -> kebab fragment, so #faq-commercial-use is something a
@@ -99,7 +100,7 @@
                         // Answers are plain text on purpose, so this is the
                         // rendered string verbatim - nothing to strip, nothing
                         // that can disagree with what the visitor reads.
-                        text: i18n.t('faq.items.' + item.id + '.a', faqVars),
+                        text: i18n.t('faq.items.' + item.id + '.' + (item.answer || 'a'), faqVars),
                     },
                 };
             });
@@ -290,7 +291,7 @@
                     page, on the pricing card and in the footer, where someone
                     who came looking for them will still find them. The stars
                     chip above stays, because that is proof rather than an exit. %>
-                <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('hero.ctaPrimary') %></a>
+                <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= trialDays > 0 ? t('hero.ctaTrial', faqVars) : t('hero.ctaPrimary') %></a>
                 <%# Rendered only when there is genuinely an instance to open.
                     demo.available is false while the container is being rebuilt
                     or if provisioning failed, and the whole button disappears
@@ -302,7 +303,7 @@
                 </a>
                 <% } %>
             </div>
-            <p class="hero-note"><i class="fas fa-cloud"></i><%= t('hero.cloudNote') %></p>
+            <p class="hero-note"><i class="fas fa-cloud"></i><%= trialDays > 0 ? t('hero.cloudNoteTrial', faqVars) : t('hero.cloudNote') %></p>
             <% if (demo && demo.available) { %>
             <p class="hero-note"><i class="fas fa-eye"></i><%= t('hero.demoNote') %></p>
             <% } %>
@@ -696,10 +697,10 @@
                         <h3><%= t('pricing.plans.cloud.name') %></h3>
                     </div>
                     <div class="plan-price">
-                        <%# One plan, and it is paid. There is no free tier and no
-                            trial, so nothing here may imply a way in without a
-                            card - the money-back guarantee in the fineprint is
-                            the only safety net we actually offer. %>
+                        <%# One plan, and it is paid. There is no free tier; the
+                            trial is mentioned only when TUDUDI_TRIAL_DAYS turns
+                            it on (trialDays), so nothing here may imply a way
+                            in without a card that the instance does not offer. %>
                         <div class="plan-amount"><span><%= money(pricing.monthly) %></span><span><%= t('pricing.perMonth') %></span></div>
                         <div class="plan-pro-line">
                             <span class="plan-pro-sep"><%= t('pricing.plans.cloud.or') %></span>
@@ -716,14 +717,14 @@
                         <% if (pricing.launchActive) { %>
                         <div class="plan-launch-note"><%= t('pricing.plans.cloud.launchNote') %></div>
                         <% } %>
-                        <div class="plan-price-note"><%= t('pricing.plans.cloud.priceNote') %></div>
+                        <div class="plan-price-note"><%= trialDays > 0 ? t('pricing.plans.cloud.priceNoteTrial', faqVars) : t('pricing.plans.cloud.priceNote') %></div>
                     </div>
                     <ul class="plan-features">
                         <% i18n.tList('pricing.plans.cloud.features', faqVars).forEach(function (feature) { %>
                         <li><i class="fas fa-check"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= t('pricing.plans.cloud.action') %></a>
+                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('pricing.plans.cloud.actionTrial', faqVars) : t('pricing.plans.cloud.action') %></a>
                 </div>
 
                 <%# Bullets here are work the visitor takes on, not benefits, so
@@ -847,7 +848,7 @@
                             h4 under the group's h3 keeps the outline unbroken. %>
                         <summary class="faq-q"><h4><%= t('faq.items.' + item.id + '.q', faqVars) %></h4></summary>
                         <div class="faq-a">
-                            <p><%= t('faq.items.' + item.id + '.a', faqVars) %></p>
+                            <p><%= t('faq.items.' + item.id + '.' + (item.answer || 'a'), faqVars) %></p>
                             <div class="faq-a-foot">
                                 <% if (item.link) { %>
                                 <a class="faq-a-link" href="<%= item.link.href %>"><%= t('faq.items.' + item.id + '.linkLabel') %><i class="fas fa-arrow-right"></i></a>

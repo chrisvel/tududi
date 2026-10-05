@@ -27,7 +27,9 @@
     "ctaPrimary": "Commencer maintenant",
     "lede": "Notez tout, planifiez la journée avec l’IA autour de votre agenda, et gardez domaines, objectifs, projets, notes et habitudes dans un seul système. Créez un compte Cloud en une minute.",
     "titleLine1": "La productivité en toute simplicité",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Commencez votre essai gratuit de {{days}} jours",
+    "cloudNoteTrial": "Gratuit pendant {{days}} jours, sans carte bancaire. Ensuite, au mois ou à l'année, résiliable à tout moment."
   },
   "proof": {
     "stars": "étoiles sur GitHub",
@@ -270,7 +272,9 @@
           "Mises à jour et sauvegardes quotidiennes prises en charge pour vous, avec {{proStorageGb}} Go de stockage",
           "Exportez tout à tout moment, supprimez votre compte vous-même"
         ],
-        "priceNote": "Tout est inclus. Résiliez à tout moment."
+        "priceNote": "Tout est inclus. Résiliez à tout moment.",
+        "actionTrial": "Commencer l'essai gratuit →",
+        "priceNoteTrial": "{{days}} jours gratuits, sans carte bancaire. Résiliable à tout moment."
       }
     },
     "fineprint": "Annulez à tout moment et exportez tout. Si tududi Cloud devait fermer, vous recevez vos données et un guide de migration vers l'auto-hébergement. Usage raisonnable pour le stockage et le volume d'API. Garantie satisfait ou remboursé 14 jours, sans question.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Non. Cloud coûte {{monthly}} par mois ou {{price}} par an par personne, et c'est toute la grille tarifaire : pas de forfait gratuit, pas de compte à rebours d'essai, pas de carte prélevée pour quelque chose qui commence discrètement à facturer plus tard. Il y a une garantie de remboursement de 14 jours si cela ne vous convient pas, et une démo en direct sur cette page si vous voulez d'abord jeter un œil. La façon gratuite d'utiliser tududi est de le faire tourner sur votre propre serveur, qui est la même application.",
-        "q": "Y a-t-il un forfait gratuit ou un essai sur tududi Cloud ?"
+        "q": "Y a-t-il un forfait gratuit ou un essai sur tududi Cloud ?",
+        "aTrial": "Il n'y a pas d'offre gratuite, mais chaque nouveau compte a droit à un essai gratuit de {{days}} jours, sans carte bancaire. L'essai comprend tout sauf l'assistant IA, les liens publics de notes et l'ajout de membres. Sans abonnement, le compte passe en lecture seule pendant 30 jours pour que vous puissiez exporter vos données, puis il est supprimé. Après l'essai, Cloud coûte {{monthly}} par mois ou {{price}} par an et par personne. La façon gratuite d'utiliser tududi est de l'héberger sur votre propre serveur, c'est la même application."
       },
       "leaving": {
         "q": "Puis-je partir, et que deviennent mes données ?",
@@ -448,7 +453,9 @@
     "title": "Pourquoi utiliser tududi Cloud ?",
     "whyEyebrow": "Cloud",
     "whySub": "Pas des fonctionnalités. Chaque fonctionnalité est aussi dans la version auto-hébergée.",
-    "whyTitle": "Ce que vous payez réellement"
+    "whyTitle": "Ce que vous payez réellement",
+    "ctaTrial": "Commencer l'essai gratuit",
+    "pricingSubTrial": "Essayez gratuitement pendant {{days}} jours, sans carte bancaire. Ensuite tout est inclus, résiliable quand vous voulez."
   },
   "finalCta": {
     "primary": "Commencer",

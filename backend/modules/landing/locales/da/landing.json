@@ -27,7 +27,9 @@
     "ctaPrimary": "Kom i gang nu",
     "lede": "Fang alt, planlæg dagen med AI omkring din kalender, og hold områder, mål, projekter, noter og vaner i ét system. Opret en Cloud-konto på et minut.",
     "titleLine1": "Produktivitet gjort enkel",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Start din gratis prøveperiode på {{days}} dage",
+    "cloudNoteTrial": "Gratis i {{days}} dage, uden betalingskort. Derefter månedligt eller årligt, opsig når som helst."
   },
   "proof": {
     "stars": "stjerner på GitHub",
@@ -270,7 +272,9 @@
           "Opdateringer og daglige sikkerhedskopier klaret for dig, med {{proStorageGb}} GB lagerplads",
           "Eksporter alt når som helst, slet din konto selv"
         ],
-        "priceNote": "Alt inkluderet. Opsig når som helst."
+        "priceNote": "Alt inkluderet. Opsig når som helst.",
+        "actionTrial": "Prøv gratis →",
+        "priceNoteTrial": "{{days}} dage gratis, uden betalingskort. Opsig når som helst."
       }
     },
     "fineprint": "Opsig når som helst og eksporter alt. Skulle tududi Cloud nogensinde lukke, får du dine data og en guide til selvhosting. Fair use gælder for lagerplads og API-volumen. 14 dages pengene-tilbage-garanti, ingen spørgsmål.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Nej. Cloud koster {{monthly}} om måneden eller {{price}} om året pr. person, og det er hele prislisten: ingen gratis plan, intet prøveur, intet kort belastet for noget, der senere stille begynder at fakturere. Der er en 14-dages penge-tilbage-garanti, hvis det ikke passer dig, og der er en live-demo på denne side, hvis du vil kigge først. Den gratis måde at bruge tududi er at køre det på din egen server, hvilket er samme applikation.",
-        "q": "Er der en gratis plan eller en prøveperiode på tududi Cloud?"
+        "q": "Er der en gratis plan eller en prøveperiode på tududi Cloud?",
+        "aTrial": "Der er ingen gratis plan, men alle nye konti får en gratis prøveperiode på {{days}} dage, uden betalingskort. Prøveperioden har alt undtagen AI-assistenten, offentlige notelinks og tilføjelse af medlemmer. Hvis du ikke abonnerer, bliver kontoen skrivebeskyttet i 30 dage, så du kan eksportere dine data, og slettes derefter. Efter prøveperioden koster Cloud {{monthly}} om måneden eller {{price}} om året pr. person. Den gratis måde at bruge tududi på er at køre det på din egen server, det er den samme applikation."
       },
       "leaving": {
         "q": "Kan jeg forlade tjenesten, og hvad sker der med mine data?",
@@ -448,7 +453,9 @@
     "title": "Hvorfor bruge tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Ikke funktioner. Hver funktion findes også i den selvhostede build.",
-    "whyTitle": "Hvad du egentlig betaler for"
+    "whyTitle": "Hvad du egentlig betaler for",
+    "ctaTrial": "Prøv gratis",
+    "pricingSubTrial": "Prøv gratis i {{days}} dage, uden betalingskort. Derefter er alt inkluderet, opsig når du vil."
   },
   "finalCta": {
     "primary": "Kom i gang",
