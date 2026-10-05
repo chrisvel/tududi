@@ -4,6 +4,7 @@ const { getConfig } = require('../../config/config');
 const { logError, logInfo } = require('../../services/logService');
 const { sendEmail } = require('../../services/emailService');
 const {
+    canonicalEmail,
     domainOf,
     isDisposableDomain,
     acceptsMail,
@@ -69,6 +70,21 @@ const checkSignupEmailDomain = async (email) => {
     return null;
 };
 
+// On a hosted instance one mailbox gets one account, so a "+tag" or Gmail
+// dots cannot open a second trial. A self-hosted instance may well want
+// alias accounts (for testing, or one per role), so it is not checked there.
+const isTakenMailbox = async (email, transaction = null) => {
+    if (getConfig().hosted?.enabled !== true) return false;
+    const canonical = canonicalEmail(email);
+    if (!canonical) return false;
+    const existing = await User.findOne({
+        where: { email_canonical: canonical },
+        attributes: ['id'],
+        transaction,
+    });
+    return !!existing;
+};
+
 const createUnverifiedUser = async (email, password, transaction = null) => {
     if (!validateEmail(email)) {
         throw new Error('Invalid email format');
@@ -82,7 +98,7 @@ const createUnverifiedUser = async (email, password, transaction = null) => {
         where: { email: email.trim().toLowerCase() },
         transaction,
     });
-    if (existingUser) {
+    if (existingUser || (await isTakenMailbox(email, transaction))) {
         throw new Error('Email already registered');
     }
 
@@ -139,6 +155,53 @@ const resendVerificationEmail = async (email) => {
     return { sent: !!result.success };
 };
 
+// One reminder, with a fresh link (the first one has expired by now), for a
+// self-registered hosted account that signed up between one and seven days
+// ago and has not verified. Members invited by an owner have their own
+// invitation and are left out.
+const sendVerificationReminders = async ({ now = new Date() } = {}) => {
+    const config = getConfig();
+    if (config.hosted?.enabled !== true) return [];
+    const { isEmailEnabled } = require('../../services/emailService');
+    if (!isEmailEnabled()) return [];
+
+    const { Op } = require('sequelize');
+    const DAY = 24 * 60 * 60 * 1000;
+    const users = await User.findAll({
+        where: {
+            email_verified: false,
+            email: { [Op.ne]: null },
+            created_by_user_id: null,
+            verification_reminder_sent_at: null,
+            created_at: {
+                [Op.lte]: new Date(now.getTime() - DAY),
+                [Op.gte]: new Date(now.getTime() - 7 * DAY),
+            },
+        },
+    });
+
+    const reminded = [];
+    for (const user of users) {
+        try {
+            const verificationToken = generateVerificationToken();
+            await user.update({
+                email_verification_token: verificationToken,
+                email_verification_token_expires_at: getTokenExpirationDate(),
+                verification_reminder_sent_at: now,
+            });
+            const result = await sendVerificationEmail(
+                user,
+                verificationToken,
+                { reminder: true }
+            );
+            if (result.success) reminded.push(user.id);
+        } catch (error) {
+            logError(error, `Failed to remind user ${user.id} to verify`);
+        }
+    }
+    return reminded;
+};
+
 const verifyUserEmail = async (token) => {
     if (!token) {
         throw new Error('Verification token is required');
@@ -170,10 +233,19 @@ const verifyUserEmail = async (token) => {
     user.email_verification_token_expires_at = null;
     await user.save();
 
+    // A Cloud trial starts only once the address is proven to be real.
+    await require('../../services/entitlementsService').startTrial(user.id);
+
     return user;
 };
 
-const sendVerificationEmail = async (user, verificationToken) => {
+// `reminder` is the follow-up for a sign-up that never verified: same link,
+// different opening.
+const sendVerificationEmail = async (
+    user,
+    verificationToken,
+    { reminder = false } = {}
+) => {
     const config = getConfig();
     const { isEmailEnabled } = require('../../services/emailService');
 
@@ -187,11 +259,16 @@ const sendVerificationEmail = async (user, verificationToken) => {
     const verificationUrl = `${config.backendUrl}/api/verify-email?token=${verificationToken}`;
     const tokenExpiryHours = config.registrationConfig.tokenExpiryHours;
 
-    const subject = 'Welcome to Tududi - Verify your email';
+    const subject = reminder
+        ? 'Reminder: verify your email to start using Tududi'
+        : 'Welcome to Tududi - Verify your email';
+    const opening = reminder
+        ? 'You signed up for Tududi a day or so ago, but your email address is not verified yet. Your account (and your free trial) starts as soon as you verify it.'
+        : 'Thank you for registering. To complete your registration and start using Tududi, please verify your email address by clicking the link below:';
 
-    const text = `Welcome to Tududi!
+    const text = `${reminder ? 'Hi,' : 'Welcome to Tududi!'}
 
-Thank you for registering. To complete your registration and start using Tududi, please verify your email address by clicking the link below:
+${opening}
 
 ${verificationUrl}
 
@@ -209,9 +286,9 @@ Best regards,
 The Tududi Team`;
 
     const html = `
-<p>Welcome to Tududi!</p>
+<p>${reminder ? 'Hi,' : 'Welcome to Tududi!'}</p>
 
-<p>Thank you for registering. To complete your registration and start using Tududi, please verify your email address by clicking the button below:</p>
+<p>${opening}</p>
 
 <p style="text-align: center; margin: 30px 0;">
     <a href="${verificationUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Verify Email Address</a>
@@ -289,10 +366,12 @@ module.exports = {
     setRegistrationEnabled,
     generateVerificationToken,
     createUnverifiedUser,
+    isTakenMailbox,
     checkSignupEmailDomain,
     verifyUserEmail,
     sendVerificationEmail,
     resendVerificationEmail,
+    sendVerificationReminders,
     isVerificationTokenValid,
     cleanupExpiredTokens,
 };

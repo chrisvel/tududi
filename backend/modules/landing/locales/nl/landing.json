@@ -27,7 +27,9 @@
     "ctaPrimary": "Begin nu",
     "lede": "Leg alles vast, plan je dag met AI rond je agenda en houd gebieden, doelen, projecten, notities en gewoonten in één systeem. Maak in een minuut een Cloud-account.",
     "titleLine1": "Productiviteit eenvoudig gemaakt",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Start je gratis proefperiode van {{days}} dagen",
+    "cloudNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Daarna per maand of per jaar, altijd opzegbaar."
   },
   "proof": {
     "stars": "sterren op GitHub",
@@ -270,7 +272,9 @@
           "Updates en dagelijkse backups voor je verzorgd, met {{proStorageGb}} GB opslag",
           "Exporteer alles op elk moment, verwijder je account zelf"
         ],
-        "priceNote": "Alles inbegrepen. Zeg op elk moment op."
+        "priceNote": "Alles inbegrepen. Zeg op elk moment op.",
+        "actionTrial": "Gratis proberen →",
+        "priceNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Altijd opzegbaar."
       }
     },
     "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 14 dagen geld-terug-garantie, zonder vragen.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Nee. Cloud kost {{monthly}} per maand of {{price}} per jaar per persoon, en dat is de hele prijslijst: geen gratis laag, geen proefklok, geen kaart belast voor iets dat later stilletjes begint te factureren. Er is een geld-terug-garantie van 14 dagen als het niet blijkt te passen, en er is een live demo op deze pagina als je eerst wilt rondkijken. De gratis manier om tududi te gebruiken is het op je eigen server te draaien, wat dezelfde applicatie is.",
-        "q": "Is er een gratis abonnement of een proefperiode op tududi Cloud?"
+        "q": "Is er een gratis abonnement of een proefperiode op tududi Cloud?",
+        "aTrial": "Er is geen gratis abonnement, maar elk nieuw account krijgt een gratis proefperiode van {{days}} dagen, zonder creditcard. De proefperiode bevat alles behalve de AI-assistent, openbare notitielinks en leden toevoegen. Neem je geen abonnement, dan wordt het account 30 dagen alleen-lezen zodat je je gegevens kunt exporteren, en daarna verwijderd. Na de proefperiode kost Cloud {{monthly}} per maand of {{price}} per jaar per persoon. Gratis gebruik je tududi door het op je eigen server te draaien, het is dezelfde applicatie."
       },
       "leaving": {
         "q": "Kan ik weg, en wat gebeurt er met mijn gegevens?",
@@ -448,7 +453,9 @@
     "title": "Waarom tududi Cloud gebruiken?",
     "whyEyebrow": "Cloud",
     "whySub": "Geen functies. Elke functie zit ook in de zelfgehoste build.",
-    "whyTitle": "Waarvoor je eigenlijk betaalt"
+    "whyTitle": "Waarvoor je eigenlijk betaalt",
+    "ctaTrial": "Gratis proberen",
+    "pricingSubTrial": "Probeer het {{days}} dagen gratis, zonder creditcard. Daarna zit alles erin, opzeggen wanneer je wilt."
   },
   "finalCta": {
     "primary": "Aan de slag",

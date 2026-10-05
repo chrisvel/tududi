@@ -27,7 +27,9 @@
     "ctaPrimary": "Kom igång nu",
     "lede": "Fånga allt, planera dagen med AI runt din kalender och håll områden, mål, projekt, anteckningar och vanor i ett system. Skapa ett Cloud-konto på en minut.",
     "titleLine1": "Produktivitet gjort enkel",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Starta din kostnadsfria provperiod på {{days}} dagar",
+    "cloudNoteTrial": "Gratis i {{days}} dagar, inget kort behövs. Sedan månadsvis eller årsvis, säg upp när som helst."
   },
   "proof": {
     "stars": "stjärnor på GitHub",
@@ -270,7 +272,9 @@
           "Uppdateringar och dagliga säkerhetskopior skötta för dig, med {{proStorageGb}} GB lagring",
           "Exportera allt när du vill, ta bort ditt konto själv"
         ],
-        "priceNote": "Allt ingår. Avsluta när du vill."
+        "priceNote": "Allt ingår. Avsluta när du vill.",
+        "actionTrial": "Prova gratis →",
+        "priceNoteTrial": "{{days}} dagar gratis, inget kort behövs. Säg upp när som helst."
       }
     },
     "fineprint": "Avsluta när som helst och exportera allt. Om tududi Cloud någonsin stänger får du dina data och en guide för att hosta själv. Skälig användning gäller för lagring och API-volym. 14 dagars pengarna-tillbaka-garanti, inga frågor.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Nej. Cloud kostar {{monthly}} i månaden eller {{price}} om året per person, och det är hela prislistan: ingen gratisnivå, ingen provklocka, inget kort debiterat för något som senare tyst börjar fakturera. Det finns en 14-dagars pengarna-tillbaka-garanti om det visar sig inte passa, och det finns en livedemo på denna sida om du vill titta runt först. Det gratis sättet att använda tududi är att köra det på din egen server, vilket är samma applikation.",
-        "q": "Finns det en gratisnivå eller provperiod på tududi Cloud?"
+        "q": "Finns det en gratisnivå eller provperiod på tududi Cloud?",
+        "aTrial": "Det finns ingen gratisplan, men varje nytt konto får en kostnadsfri provperiod på {{days}} dagar, utan kort. Provperioden har allt utom AI-assistenten, offentliga anteckningslänkar och att lägga till medlemmar. Om du inte prenumererar blir kontot skrivskyddat i 30 dagar så att du kan exportera dina data, och raderas sedan. Efter provperioden kostar Cloud {{monthly}} i månaden eller {{price}} om året per person. Det kostnadsfria sättet att använda tududi är att köra det på din egen server, det är samma applikation."
       },
       "leaving": {
         "q": "Kan jag lämna, och vad händer med mina data?",
@@ -448,7 +453,9 @@
     "title": "Varför använda tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Inte funktioner. Varje funktion finns även i den självhostade byggen.",
-    "whyTitle": "Vad du egentligen betalar för"
+    "whyTitle": "Vad du egentligen betalar för",
+    "ctaTrial": "Prova gratis",
+    "pricingSubTrial": "Prova gratis i {{days}} dagar, utan kort. Sedan ingår allt, säg upp när du vill."
   },
   "finalCta": {
     "primary": "Kom igång",

@@ -459,7 +459,45 @@ describe('Landing page', () => {
         );
     });
 
-    it('never implies Cloud is free or has a trial', async () => {
+    it('offers the trial everywhere it sells Cloud once trials are on', async () => {
+        const hosted = getConfig().hosted;
+        const saved = { enabled: hosted.enabled, trialDays: hosted.trialDays };
+        hosted.enabled = true;
+        hosted.trialDays = 14;
+        try {
+            const res = await request(app).get('/').set('Host', 'tududi.com');
+            const heroOpen = res.text.indexOf('<section class="hero"');
+            const hero = res.text.slice(
+                heroOpen,
+                res.text.indexOf('</section>', heroOpen)
+            );
+            expect(hero).toContain('Start your free 14-day trial');
+            expect(hero).toContain('Free for 14 days, no card needed.');
+            expect(res.text).toContain('Start free trial →');
+            expect(res.text).toContain('14-day free trial, no card needed');
+            expect(res.text).not.toContain('no trial clock');
+
+            const cloud = await request(app)
+                .get('/cloud')
+                .set('Host', 'tududi.com');
+            expect(cloud.text).toContain('Try it free for 14 days');
+
+            const terms = await request(app)
+                .get('/terms')
+                .set('Host', 'tududi.com');
+            expect(terms.text).toContain('free trial of 14 days');
+            const privacy = await request(app)
+                .get('/privacy')
+                .set('Host', 'tududi.com');
+            expect(privacy.text).toContain(
+                'Trial accounts that never subscribe'
+            );
+        } finally {
+            Object.assign(hosted, saved);
+        }
+    });
+
+    it('never implies Cloud is free or has a trial while trials are off', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
 
         // Scoped to where the offer is actually made. The FAQ says the words

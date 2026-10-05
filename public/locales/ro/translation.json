@@ -2527,7 +2527,9 @@
       "caldav": "sincronizarea CalDAV",
       "telegram": "botul Telegram",
       "backups_import": "importul de copii de rezervă",
-      "attachments": "atașamentele"
+      "attachments": "atașamentele",
+      "public_notes": "notițele publice",
+      "members": "adăugarea de membri"
     },
     "seatCovered": "Locul tău este plătit de {{name}}.",
     "workspaceOwner": "proprietarul spațiului de lucru",
@@ -2551,7 +2553,18 @@
     "perkExport": "Exportă totul în orice moment",
     "taxNote": "Plățile sunt gestionate de {{provider}}. Prețurile nu includ impozitele aplicabile. Poți anula în orice moment.",
     "notConfigured": "Subscrierile nu sunt disponibile încă pe această instanță. Te rugăm să contactezi suportul.",
-    "exportData": "Exportă datele tale"
+    "exportData": "Exportă datele tale",
+    "subscribe": "Abonează-te",
+    "readOnlyBanner": "Perioada de probă s-a încheiat, așa că datele tale sunt doar pentru citire. Abonează-te pentru a folosi în continuare tududi sau exportă-ți datele. Contul va fi șters pe {{date}}.",
+    "lockedAi": "Asistentul AI face parte din planul plătit.",
+    "lockedPublicNotes": "Linkurile publice către notițe fac parte din planul plătit.",
+    "lockedMembers": "Adăugarea de membri face parte din planul plătit.",
+    "trialEnded": "Perioada de probă s-a încheiat",
+    "onTrial": "Folosești perioada de probă gratuită",
+    "readOnlyUntil": "Datele tale sunt doar pentru citire până pe {{date}}, apoi contul este șters. Abonează-te pentru a folosi în continuare tududi Cloud.",
+    "trialIncludes": "Perioada de probă se încheie pe {{date}}. Asistentul AI, notițele publice și adăugarea de membri se deblochează când te abonezi.",
+    "backToApp": "Înapoi la tududi",
+    "trialBanner": "Perioadă de probă gratuită, zile rămase: {{count}}"
   },
   "demo": {
     "opening": "Deschiderea demo-ului...",

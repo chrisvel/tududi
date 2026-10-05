@@ -67,6 +67,18 @@ describe('SubscriptionGate', () => {
         expect(await screen.findByText('the app')).toBeInTheDocument();
     });
 
+    it('renders the app, read-only, after a trial ends unpaid', async () => {
+        mockStatus.mockResolvedValue({
+            subscription_required: true,
+            active: false,
+            read_only: true,
+            read_only_until: '2026-12-01T00:00:00Z',
+        });
+        renderGate();
+
+        expect(await screen.findByText('the app')).toBeInTheDocument();
+    });
+
     it('renders the app when billing is unavailable (self-hosted)', async () => {
         mockStatus.mockRejectedValue(new Error('Not found'));
         renderGate();

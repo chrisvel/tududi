@@ -43,7 +43,7 @@
         <h1><%= t('cloud.title') %></h1>
         <p><%= t('cloud.lede') %></p>
         <div class="hero-actions" style="justify-content:center;">
-            <a href="<%= appUrl %>/register" class="btn-primary"><%= t('cloud.ctaPrimary') %></a>
+            <a href="<%= appUrl %>/register" class="btn-primary"><%= trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('cloud.ctaPrimary') %></a>
             <a href="#cloud-pricing" class="btn-secondary"><%= t('cloud.ctaPricing') %></a>
         </div>
         <p class="hero-note" style="margin-top:16px;"><i class="fas fa-lock-open"></i><%= t('cloud.note') %></p>
@@ -73,7 +73,7 @@
             <div class="section-head">
                 <span class="eyebrow"><%= t('pricing.eyebrow') %></span>
                 <h2 class="section-title"><%= t('cloud.pricingTitle') %></h2>
-                <p class="section-sub"><%= t('cloud.pricingSub') %></p>
+                <p class="section-sub"><%= trialDays > 0 ? t('cloud.pricingSubTrial', { days: trialDays }) : t('cloud.pricingSub') %></p>
             </div>
 
             <div class="plan-grid" style="grid-template-columns:minmax(0,1fr); max-width:520px; margin:0 auto;">
@@ -105,7 +105,7 @@
                         <li><i class="fas fa-check"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= t('cloud.ctaPrimary') %></a>
+                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('cloud.ctaPrimary') %></a>
                 </div>
             </div>
 

@@ -2523,7 +2523,9 @@
       "caldav": "đồng bộ CalDAV",
       "telegram": "bot Telegram",
       "backups_import": "nhập bản sao lưu",
-      "attachments": "tệp đính kèm"
+      "attachments": "tệp đính kèm",
+      "public_notes": "ghi chú công khai",
+      "members": "thêm thành viên"
     },
     "seatCovered": "Chỗ của bạn do {{name}} trả phí.",
     "workspaceOwner": "chủ không gian làm việc",
@@ -2547,7 +2549,18 @@
     "perkExport": "Xuất mọi thứ bất cứ lúc nào",
     "taxNote": "Thanh toán được xử lý bởi {{provider}}. Giá chưa bao gồm thuế áp dụng. Hủy bất cứ lúc nào.",
     "notConfigured": "Đăng ký chưa có sẵn trên phiên bản này. Vui lòng liên hệ với hỗ trợ.",
-    "exportData": "Xuất dữ liệu của bạn"
+    "exportData": "Xuất dữ liệu của bạn",
+    "subscribe": "Đăng ký",
+    "readOnlyBanner": "Thời gian dùng thử đã kết thúc nên dữ liệu của bạn chỉ có thể xem. Hãy đăng ký để tiếp tục dùng tududi hoặc xuất dữ liệu của bạn. Tài khoản sẽ bị xóa vào {{date}}.",
+    "lockedAi": "Trợ lý AI thuộc gói trả phí.",
+    "lockedPublicNotes": "Liên kết ghi chú công khai thuộc gói trả phí.",
+    "lockedMembers": "Thêm thành viên thuộc gói trả phí.",
+    "trialEnded": "Thời gian dùng thử đã kết thúc",
+    "onTrial": "Bạn đang dùng thử miễn phí",
+    "readOnlyUntil": "Dữ liệu của bạn chỉ có thể xem đến {{date}}, sau đó tài khoản sẽ bị xóa. Hãy đăng ký để tiếp tục dùng tududi Cloud.",
+    "trialIncludes": "Thời gian dùng thử kết thúc vào {{date}}. Trợ lý AI, ghi chú công khai và thêm thành viên sẽ mở khi bạn đăng ký.",
+    "backToApp": "Quay lại tududi",
+    "trialBanner": "Dùng thử miễn phí, số ngày còn lại: {{count}}"
   },
   "demo": {
     "opening": "Đang mở bản demo...",

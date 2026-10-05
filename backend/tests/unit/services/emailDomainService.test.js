@@ -29,3 +29,27 @@ describe('emailDomainService.isDisposableDomain', () => {
         }
     );
 });
+
+describe('canonicalEmail', () => {
+    const { canonicalEmail } = require('../../../services/emailDomainService');
+
+    it('folds Gmail dots, +tags and googlemail into one mailbox', () => {
+        expect(canonicalEmail(' Jane.Doe+trial@GoogleMail.com ')).toBe(
+            'janedoe@gmail.com'
+        );
+        expect(canonicalEmail('j.a.n.e.doe@gmail.com')).toBe(
+            'janedoe@gmail.com'
+        );
+    });
+
+    it('drops +tags but keeps dots elsewhere', () => {
+        expect(canonicalEmail('first.last+x@fastmail.com')).toBe(
+            'first.last@fastmail.com'
+        );
+    });
+
+    it('leaves odd input alone', () => {
+        expect(canonicalEmail('+only@example.com')).toBe('+only@example.com');
+        expect(canonicalEmail('')).toBeNull();
+    });
+});

@@ -2523,7 +2523,9 @@
       "caldav": "CalDAV eşitlemeyi",
       "telegram": "Telegram botunu",
       "backups_import": "yedek içe aktarmayı",
-      "attachments": "ekleri"
+      "attachments": "ekleri",
+      "public_notes": "herkese açık notlar",
+      "members": "üye eklemek"
     },
     "seatCovered": "Koltuğunuzun ücretini {{name}} ödüyor.",
     "workspaceOwner": "çalışma alanının sahibi",
@@ -2547,7 +2549,18 @@
     "perkExport": "Her zaman her şeyi dışa aktar",
     "taxNote": "Ödemeler {{provider}} tarafından işlenir. Fiyatlar geçerli vergileri hariç tutar. İstediğiniz zaman iptal edin.",
     "notConfigured": "Bu örnekte abonelikler henüz mevcut değil. Lütfen destekle iletişime geçin.",
-    "exportData": "Verilerinizi dışa aktarın"
+    "exportData": "Verilerinizi dışa aktarın",
+    "subscribe": "Abone ol",
+    "readOnlyBanner": "Deneme süreniz sona erdi, bu yüzden verileriniz salt okunur. tududi'yi kullanmaya devam etmek için abone olun veya verilerinizi dışa aktarın. Hesap {{date}} tarihinde silinecek.",
+    "lockedAi": "Yapay zeka asistanı ücretli planın bir parçasıdır.",
+    "lockedPublicNotes": "Herkese açık not bağlantıları ücretli planın bir parçasıdır.",
+    "lockedMembers": "Üye eklemek ücretli planın bir parçasıdır.",
+    "trialEnded": "Deneme süreniz sona erdi",
+    "onTrial": "Ücretsiz deneme sürecindesiniz",
+    "readOnlyUntil": "Verileriniz {{date}} tarihine kadar salt okunur, ardından hesap silinir. tududi Cloud'u kullanmaya devam etmek için abone olun.",
+    "trialIncludes": "Deneme süreniz {{date}} tarihinde bitiyor. Yapay zeka asistanı, herkese açık notlar ve üye ekleme abone olduğunuzda açılır.",
+    "backToApp": "tududi'ye dön",
+    "trialBanner": "Ücretsiz deneme, kalan gün: {{count}}"
   },
   "demo": {
     "opening": "Demoyu açıyor...",

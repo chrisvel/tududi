@@ -181,6 +181,8 @@ async function resetPasswordWithToken(token, password) {
         throw new ValidationError('Reset link is invalid or has expired');
     }
 
+    const wasVerified = user.email_verified;
+
     // instance.update() only persists the columns it was handed, so the
     // digest is computed here instead of relying on the beforeValidate hook.
     await user.update({
@@ -192,6 +194,11 @@ async function resetPasswordWithToken(token, password) {
 
     // Whoever held the old password (or a stolen cookie) is signed out.
     await destroyUserSessions(user.id);
+
+    // Using the reset link proves the address, the same as verifying it.
+    if (!wasVerified) {
+        await require('../../services/entitlementsService').startTrial(user.id);
+    }
 
     return user;
 }

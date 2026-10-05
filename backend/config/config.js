@@ -147,6 +147,13 @@ const config = {
         trialDays: process.env.TUDUDI_TRIAL_DAYS
             ? parseInt(process.env.TUDUDI_TRIAL_DAYS, 10)
             : 14,
+        // After a trial ends without a subscription the account can still
+        // read (and export) its data for this many days, then it is deleted.
+        trialReadOnlyDays: process.env.TUDUDI_TRIAL_READ_ONLY_DAYS
+            ? parseInt(process.env.TUDUDI_TRIAL_READ_ONLY_DAYS, 10)
+            : 30,
+        deleteExpiredTrials:
+            process.env.TUDUDI_DELETE_EXPIRED_TRIALS !== 'false',
         graceDays: process.env.TUDUDI_PAST_DUE_GRACE_DAYS
             ? parseInt(process.env.TUDUDI_PAST_DUE_GRACE_DAYS, 10)
             : 14,
@@ -403,6 +410,15 @@ const config = {
                 parseInt(process.env.RATE_LIMIT_AUTH_EMAIL_WINDOW_MS) ||
                 15 * 60 * 1000, // 15 minutes
             max: parseInt(process.env.RATE_LIMIT_AUTH_EMAIL_MAX) || 10,
+        },
+
+        // Password sign-ups per IP on a hosted instance. Only accounts that
+        // were actually created count, so typos and refusals do not.
+        signup: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_SIGNUP_WINDOW_MS) ||
+                24 * 60 * 60 * 1000, // 24 hours
+            max: parseInt(process.env.RATE_LIMIT_SIGNUP_MAX) || 3,
         },
 
         // CalDAV Basic-auth attempts, per IP + username, per auth window

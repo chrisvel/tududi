@@ -33,6 +33,18 @@ module.exports = (sequelize) => {
                     isEmail: true,
                 },
             },
+            // The email with aliases folded away (see canonicalEmail), so a
+            // hosted instance can tell that two sign-ups are one mailbox.
+            email_canonical: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            // A sign-up that has not verified gets one reminder, with a new
+            // link, a day or so later.
+            verification_reminder_sent_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
             password: {
                 type: DataTypes.VIRTUAL,
                 allowNull: true,
@@ -309,6 +321,10 @@ module.exports = (sequelize) => {
                     fields: ['account_id'],
                     name: 'users_account_id',
                 },
+                {
+                    fields: ['email_canonical'],
+                    name: 'users_email_canonical',
+                },
             ],
             hooks: {
                 beforeValidate: async (user) => {
@@ -320,6 +336,18 @@ module.exports = (sequelize) => {
                             user.password,
                             10
                         );
+                    }
+                },
+                // beforeSave rather than beforeValidate: fields a save hook
+                // sets are persisted even by instance.update({ email }).
+                beforeSave: (user) => {
+                    if (user.isNewRecord || user.changed('email')) {
+                        const {
+                            canonicalEmail,
+                        } = require('../services/emailDomainService');
+                        user.email_canonical = user.email
+                            ? canonicalEmail(user.email)
+                            : null;
                     }
                 },
                 afterCreate: async (user, options) => {

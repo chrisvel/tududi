@@ -27,7 +27,9 @@
     "ctaPrimary": "Hemen başlayın",
     "lede": "Her şeyi yakala, günü yapay zekâyla takviminin etrafında planla; alanlar, hedefler, projeler, notlar ve alışkanlıklar tek sistemde. Bir dakikada Cloud hesabı aç.",
     "titleLine1": "Basitleştirilmiş verimlilik",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "{{days}} günlük ücretsiz denemeni başlat",
+    "cloudNoteTrial": "{{days}} gün ücretsiz, kart gerekmez. Sonra aylık ya da yıllık, istediğin zaman iptal et."
   },
   "proof": {
     "stars": "GitHub yıldızı",
@@ -270,7 +272,9 @@
           "Sizin için halledilmiş güncellemeler ve günlük yedeklemeler, {{proStorageGb}} GB depolama ile",
           "Her şeyi istediğiniz zaman dışa aktarın, hesabınızı kendiniz silin"
         ],
-        "priceNote": "Her şey dahil. İstediğiniz zaman iptal edin."
+        "priceNote": "Her şey dahil. İstediğiniz zaman iptal edin.",
+        "actionTrial": "Ücretsiz dene →",
+        "priceNoteTrial": "{{days}} gün ücretsiz, kart gerekmez. İstediğin zaman iptal et."
       }
     },
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 14 gün para iade garantisi, soru sorulmaz.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Hayır. Cloud kişi başı ayda {{monthly}} veya yılda {{price}}'dır, ve bu tüm fiyat listesi: ücretsiz katman yok, deneme saati yok, daha sonra sessizce faturalandırmaya başlayan bir şey için tahsil edilen kart yok. Size uymadığı ortaya çıkarsa 14 günlük para geri garantisi var, ve önce bakmak isterseniz bu sayfada canlı bir demo var. tududi'yi kullanmanın ücretsiz yolu, aynı uygulama olan kendi sunucunuzda çalıştırmaktır.",
-        "q": "tududi Cloud'da ücretsiz bir plan veya deneme var mı?"
+        "q": "tududi Cloud'da ücretsiz bir plan veya deneme var mı?",
+        "aTrial": "Ücretsiz plan yok, ama her yeni hesap kart gerektirmeyen {{days}} günlük ücretsiz deneme alır. Deneme, yapay zeka asistanı, herkese açık not bağlantıları ve üye ekleme dışında her şeyi içerir. Abone olmazsan hesap, verilerini dışa aktarabilmen için 30 gün salt okunur olur ve ardından silinir. Denemeden sonra Cloud kişi başı aylık {{monthly}} ya da yıllık {{price}}. tududi'yi ücretsiz kullanmanın yolu onu kendi sunucunda çalıştırmak, aynı uygulama."
       },
       "leaving": {
         "q": "Ayrılabilir miyim, verilerime ne olur?",
@@ -448,7 +453,9 @@
     "title": "Neden tududi Cloud kullanmalı?",
     "whyEyebrow": "Cloud",
     "whySub": "Özellikler değil. Her özellik kendi barındırılan sürümde de var.",
-    "whyTitle": "Gerçekte ne için ödüyorsunuz"
+    "whyTitle": "Gerçekte ne için ödüyorsunuz",
+    "ctaTrial": "Ücretsiz dene",
+    "pricingSubTrial": "{{days}} gün ücretsiz dene, kart gerekmez. Sonrasında her şey dahil, istediğin zaman iptal et."
   },
   "finalCta": {
     "primary": "Başlayın",

@@ -162,6 +162,14 @@ async function provisionUser(providerSlug, claims, req) {
                 }
             }
 
+            const { isTakenMailbox } = require('../auth/registrationService');
+            if (await isTakenMailbox(claims.email, transaction)) {
+                await transaction.rollback();
+                throw new OidcUserError(
+                    'An account already exists for this email address. Sign in with it instead.'
+                );
+            }
+
             user = await User.create(
                 {
                     ...nameFromClaims(claims),
@@ -214,6 +222,10 @@ async function provisionUser(providerSlug, claims, req) {
             } catch (err) {
                 logError(err, 'Failed to create self-person for new OIDC user');
             }
+            // The provider vouched for the address, so the trial starts now.
+            await require('../../services/entitlementsService').startTrial(
+                user.id
+            );
         }
 
         return { user, isNewUser };

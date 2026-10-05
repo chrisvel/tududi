@@ -2532,7 +2532,9 @@
       "caldav": "die CalDAV-Synchronisierung",
       "telegram": "den Telegram-Bot",
       "backups_import": "den Backup-Import",
-      "attachments": "Anhänge"
+      "attachments": "Anhänge",
+      "public_notes": "öffentliche Notizen",
+      "members": "das Hinzufügen von Mitgliedern"
     },
     "seatCovered": "Dein Platz wird von {{name}} bezahlt.",
     "workspaceOwner": "der Inhaberin oder dem Inhaber des Arbeitsbereichs",
@@ -2556,7 +2558,18 @@
     "perkExport": "Alles jederzeit exportieren",
     "taxNote": "Zahlungen werden von {{provider}} abgewickelt. Preise verstehen sich zuzüglich der geltenden Steuern. Jederzeit kündbar.",
     "notConfigured": "Abonnements sind auf dieser Instanz noch nicht verfügbar. Bitte kontaktieren Sie den Support.",
-    "exportData": "Exportieren Sie Ihre Daten"
+    "exportData": "Exportieren Sie Ihre Daten",
+    "subscribe": "Abonnieren",
+    "readOnlyBanner": "Ihre Testphase ist abgelaufen, Ihre Daten sind jetzt schreibgeschützt. Abonnieren Sie, um tududi weiter zu nutzen, oder exportieren Sie Ihre Daten. Das Konto wird am {{date}} gelöscht.",
+    "lockedAi": "Der KI-Assistent ist Teil des kostenpflichtigen Plans.",
+    "lockedPublicNotes": "Öffentliche Notiz-Links sind Teil des kostenpflichtigen Plans.",
+    "lockedMembers": "Das Hinzufügen von Mitgliedern ist Teil des kostenpflichtigen Plans.",
+    "trialEnded": "Ihre Testphase ist abgelaufen",
+    "onTrial": "Sie nutzen die kostenlose Testphase",
+    "readOnlyUntil": "Ihre Daten sind bis zum {{date}} schreibgeschützt, danach wird das Konto gelöscht. Abonnieren Sie, um tududi Cloud weiter zu nutzen.",
+    "trialIncludes": "Ihre Testphase endet am {{date}}. KI-Assistent, öffentliche Notizen und das Hinzufügen von Mitgliedern werden mit einem Abonnement freigeschaltet.",
+    "backToApp": "Zurück zu tududi",
+    "trialBanner": "Kostenlose Testphase, verbleibende Tage: {{count}}"
   },
   "demo": {
     "opening": "Öffne die Demo...",

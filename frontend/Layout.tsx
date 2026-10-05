@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import UpgradeModal from './components/Billing/UpgradeModal';
+import TrialBanner from './components/Billing/TrialBanner';
 import { SidebarProvider } from './contexts/SidebarContext';
 import Navbar from './components/Navbar';
 import CaptureHost from './components/Capture/CaptureHost';
@@ -517,6 +518,7 @@ const Layout: React.FC<LayoutProps> = ({
                             } md:pt-20 ${isUpcomingView ? 'md:px-6 lg:px-8' : 'md:px-4'} overflow-hidden`}
                         >
                             <div className="w-full h-full overflow-auto">
+                                <TrialBanner />
                                 <TaskRowExpansionProvider
                                     key={location.pathname}
                                 >

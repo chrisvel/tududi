@@ -27,7 +27,9 @@
     "ctaPrimary": "Começar agora",
     "lede": "Anote tudo, planeje o dia com IA em torno do seu calendário e mantenha áreas, metas, projetos, notas e hábitos num só sistema. Crie uma conta Cloud em um minuto.",
     "titleLine1": "Produtividade feita simples",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Comece seu teste grátis de {{days}} dias",
+    "cloudNoteTrial": "Grátis por {{days}} dias, sem cartão. Depois, mensal ou anual, cancele quando quiser."
   },
   "proof": {
     "stars": "estrelas no GitHub",
@@ -270,7 +272,9 @@
           "Atualizações e backups diários cuidados para você, com {{proStorageGb}} GB de armazenamento",
           "Exporte tudo a qualquer momento, exclua a sua conta você mesmo"
         ],
-        "priceNote": "Tudo incluído. Cancele a qualquer momento."
+        "priceNote": "Tudo incluído. Cancele a qualquer momento.",
+        "actionTrial": "Começar teste grátis →",
+        "priceNoteTrial": "{{days}} dias grátis, sem cartão. Cancele quando quiser."
       }
     },
     "fineprint": "Cancele a qualquer momento e exporte tudo. Se o tududi Cloud alguma vez encerrar, recebe os seus dados e um guia de migração para auto-alojamento. Aplica-se uso razoável ao armazenamento e ao volume de API. Garantia de reembolso de 14 dias, sem perguntas.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Não. O Cloud custa {{monthly}} por mês ou {{price}} por ano por pessoa, e essa é toda a lista de preços: sem plano gratuito, sem relógio de teste, sem cartão cobrado por algo que discretamente começa a faturar depois. Há uma garantia de reembolso de 14 dias se não for a sua praia, e há uma demo em tempo real nesta página se você quiser dar uma olhada antes. A forma gratuita de usar o tududi é rodá-lo no seu próprio servidor, que é a mesma aplicação.",
-        "q": "Existe um plano gratuito ou teste no tududi Cloud?"
+        "q": "Existe um plano gratuito ou teste no tududi Cloud?",
+        "aTrial": "Não há plano gratuito, mas toda conta nova ganha um teste grátis de {{days}} dias, sem cartão. O teste inclui tudo, exceto o assistente de IA, links públicos de notas e adicionar membros. Se você não assinar, a conta fica somente leitura por 30 dias para você exportar seus dados e depois é excluída. Após o teste, o Cloud custa {{monthly}} por mês ou {{price}} por ano por pessoa. A forma gratuita de usar o tududi é rodá-lo no seu próprio servidor, que é a mesma aplicação."
       },
       "leaving": {
         "q": "Posso sair, e o que acontece aos meus dados?",
@@ -448,7 +453,9 @@
     "title": "Por que usar o tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Não são recursos. Todo recurso também está na versão autoalojada.",
-    "whyTitle": "Pelo que você realmente está pagando"
+    "whyTitle": "Pelo que você realmente está pagando",
+    "ctaTrial": "Começar teste grátis",
+    "pricingSubTrial": "Experimente grátis por {{days}} dias, sem cartão. Depois tudo está incluído, cancele quando quiser."
   },
   "finalCta": {
     "primary": "Começar",

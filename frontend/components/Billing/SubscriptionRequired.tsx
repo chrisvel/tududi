@@ -54,7 +54,7 @@ const SubscriptionRequired: React.FC = () => {
                     const synced = await syncCheckout(
                         params.get('session_id') || undefined
                     );
-                    if (synced.active) {
+                    if (synced.active && synced.reason !== 'trial') {
                         navigate('/today', { replace: true });
                         return;
                     }
@@ -62,8 +62,12 @@ const SubscriptionRequired: React.FC = () => {
                     // fall through to the normal load
                 }
             }
+            // A trial account comes here on purpose, to subscribe, so only
+            // an account that already pays is sent back to the app.
             const s = await load();
-            if (s && s.active) navigate('/today', { replace: true });
+            if (s && s.active && s.reason !== 'trial') {
+                navigate('/today', { replace: true });
+            }
         };
         run();
     }, []);
@@ -104,6 +108,54 @@ const SubscriptionRequired: React.FC = () => {
               }).format(amount);
 
     const pro = catalog?.plans.find((p) => p.key === 'pro');
+    const onTrial = status?.reason === 'trial';
+    const readOnly = !!status?.read_only;
+    const formatDate = (value?: string | null) =>
+        value ? new Date(value).toLocaleDateString() : '';
+
+    // What the trial left out, when the visitor was sent here by trying it.
+    const lockedFeature = new URLSearchParams(window.location.search).get(
+        'feature'
+    );
+    const lockedMessage =
+        lockedFeature === 'ai'
+            ? t(
+                  'subscription.lockedAi',
+                  'The AI assistant is part of the paid plan.'
+              )
+            : lockedFeature === 'public_notes'
+              ? t(
+                    'subscription.lockedPublicNotes',
+                    'Public note links are part of the paid plan.'
+                )
+              : lockedFeature === 'members'
+                ? t(
+                      'subscription.lockedMembers',
+                      'Adding members is part of the paid plan.'
+                  )
+                : null;
+
+    const heading = readOnly
+        ? t('subscription.trialEnded', 'Your trial has ended')
+        : onTrial
+          ? t('subscription.onTrial', 'You are on the free trial')
+          : t('subscription.noActive', 'No active subscription');
+    const intro = readOnly
+        ? t('subscription.readOnlyUntil', {
+              defaultValue:
+                  'Your data is read-only until {{date}}, then the account is deleted. Subscribe to keep using tududi Cloud.',
+              date: formatDate(status?.read_only_until),
+          })
+        : onTrial
+          ? t('subscription.trialIncludes', {
+                defaultValue:
+                    'Your trial ends on {{date}}. The AI assistant, public notes and adding members unlock when you subscribe.',
+                date: formatDate(status?.trial_ends_at),
+            })
+          : t(
+                'subscription.chooseToContinue',
+                'Choose a plan to continue using tududi Cloud.'
+            );
     const perks = [
         t('subscription.perkUnlimited', 'Unlimited tasks, projects and notes'),
         t('subscription.perkStorage', 'Attachments and file uploads'),
@@ -129,14 +181,19 @@ const SubscriptionRequired: React.FC = () => {
                 </p>
 
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8">
+                    {lockedMessage && onTrial && (
+                        <p
+                            className="mb-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200"
+                            data-testid="subscription-locked-feature"
+                        >
+                            {lockedMessage}
+                        </p>
+                    )}
                     <p className="font-medium text-gray-800 dark:text-gray-100">
-                        {t('subscription.noActive', 'No active subscription')}
+                        {heading}
                     </p>
                     <p className="text-gray-600 dark:text-gray-400 mb-6">
-                        {t(
-                            'subscription.chooseToContinue',
-                            'Choose a plan to continue using tududi Cloud.'
-                        )}
+                        {intro}
                     </p>
 
                     {error && (
@@ -259,6 +316,16 @@ const SubscriptionRequired: React.FC = () => {
                 </div>
 
                 <div className="mt-6 flex flex-wrap gap-4 text-sm">
+                    {(onTrial || readOnly) && (
+                        <button
+                            type="button"
+                            onClick={() => navigate('/today')}
+                            className="text-blue-500 hover:text-blue-600"
+                            data-testid="subscription-back"
+                        >
+                            {t('subscription.backToApp', 'Back to tududi')}
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={() => navigate('/profile')}

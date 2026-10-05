@@ -73,6 +73,16 @@ class SubscriptionRequiredError extends AppError {
     }
 }
 
+// 402: the trial ended unpaid, so the account can read its data but no
+// longer change it.
+class TrialEndedError extends AppError {
+    constructor(
+        message = 'Your trial has ended. Subscribe to keep making changes.'
+    ) {
+        super(message, 402, 'TRIAL_ENDED');
+    }
+}
+
 class BillingNotConfiguredError extends AppError {
     constructor(message = 'Billing is not configured on this instance') {
         super(message, 503, 'BILLING_NOT_CONFIGURED');
@@ -96,5 +106,6 @@ module.exports = {
     PlanLimitError,
     FeatureNotInPlanError,
     SubscriptionRequiredError,
+    TrialEndedError,
     BillingNotConfiguredError,
 };

@@ -2524,7 +2524,9 @@
       "caldav": "a sincronização CalDAV",
       "telegram": "o bot do Telegram",
       "backups_import": "a importação de cópias de segurança",
-      "attachments": "os anexos"
+      "attachments": "os anexos",
+      "public_notes": "notas públicas",
+      "members": "adicionar membros"
     },
     "seatCovered": "O seu lugar é pago por {{name}}.",
     "workspaceOwner": "o titular do espaço de trabalho",
@@ -2548,7 +2550,18 @@
     "perkExport": "Exporte tudo a qualquer momento",
     "taxNote": "Os pagamentos são processados por {{provider}}. Os preços não incluem impostos aplicáveis. Cancele a qualquer momento.",
     "notConfigured": "Assinaturas ainda não estão disponíveis nesta instância. Por favor, entre em contato com o suporte.",
-    "exportData": "Exporte seus dados"
+    "exportData": "Exporte seus dados",
+    "subscribe": "Assinar",
+    "readOnlyBanner": "Seu teste terminou, então seus dados estão somente leitura. Assine para continuar usando o tududi ou exporte seus dados. A conta será excluída em {{date}}.",
+    "lockedAi": "O assistente de IA faz parte do plano pago.",
+    "lockedPublicNotes": "Links públicos de notas fazem parte do plano pago.",
+    "lockedMembers": "Adicionar membros faz parte do plano pago.",
+    "trialEnded": "Seu teste terminou",
+    "onTrial": "Você está no teste gratuito",
+    "readOnlyUntil": "Seus dados ficam somente leitura até {{date}}; depois a conta será excluída. Assine para continuar usando o tududi Cloud.",
+    "trialIncludes": "Seu teste termina em {{date}}. O assistente de IA, as notas públicas e adicionar membros são liberados quando você assina.",
+    "backToApp": "Voltar ao tududi",
+    "trialBanner": "Teste gratuito, dias restantes: {{count}}"
   },
   "demo": {
     "opening": "Abrindo a demonstração...",

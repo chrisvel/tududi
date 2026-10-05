@@ -168,6 +168,28 @@ const loginEmailLimiter = createAuthEmailLimiter('auth-login-email', {
     skipSuccessfulRequests: true,
 });
 
+// New accounts per IP on a hosted instance, on top of authLimiter's attempt
+// budget: someone farming trials gets a few accounts a day from one address,
+// not one per 15-minute window. Only created accounts count. Self-hosted
+// instances skip it, since a household often signs up from one address.
+const signupLimiter = rateLimit({
+    store: createRateLimitStore('signup'),
+    windowMs: rateLimitConfig.signup.windowMs,
+    max: rateLimitConfig.signup.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => skipInTest(req) || getConfig().hosted?.enabled !== true,
+    skipFailedRequests: true,
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Too many sign-ups',
+            message:
+                'Too many accounts were created from this network today. Please try again tomorrow.',
+            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+        });
+    },
+});
+
 /**
  * General API rate limiting for unauthenticated requests
  */
@@ -381,6 +403,7 @@ module.exports = {
     authEmailLimiter,
     loginLimiter,
     loginEmailLimiter,
+    signupLimiter,
     bearerFailureLimiter,
     passwordConfirmLimiter,
     uploadsLimiter,

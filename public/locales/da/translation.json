@@ -2523,7 +2523,9 @@
       "caldav": "CalDAV-synkronisering",
       "telegram": "Telegram-botten",
       "backups_import": "import af sikkerhedskopier",
-      "attachments": "vedhæftninger"
+      "attachments": "vedhæftninger",
+      "public_notes": "offentlige noter",
+      "members": "tilføjelse af medlemmer"
     },
     "seatCovered": "Din plads betales af {{name}}.",
     "workspaceOwner": "ejeren af arbejdsområdet",
@@ -2547,7 +2549,18 @@
     "perkExport": "Eksporter alt når som helst",
     "taxNote": "Betalinger håndteres af {{provider}}. Priser ekskluderer gældende skatter. Annuller når som helst.",
     "notConfigured": "Abonnementer er endnu ikke tilgængelige på denne instans. Kontakt venligst support.",
-    "exportData": "Eksporter dine data"
+    "exportData": "Eksporter dine data",
+    "subscribe": "Abonnér",
+    "readOnlyBanner": "Din prøveperiode er slut, så dine data er skrivebeskyttede. Abonnér for at fortsætte med tududi, eller eksportér dine data. Kontoen slettes den {{date}}.",
+    "lockedAi": "AI-assistenten er en del af den betalte plan.",
+    "lockedPublicNotes": "Offentlige notelinks er en del af den betalte plan.",
+    "lockedMembers": "Tilføjelse af medlemmer er en del af den betalte plan.",
+    "trialEnded": "Din prøveperiode er slut",
+    "onTrial": "Du er på den gratis prøveperiode",
+    "readOnlyUntil": "Dine data er skrivebeskyttede indtil {{date}}, derefter slettes kontoen. Abonnér for at fortsætte med tududi Cloud.",
+    "trialIncludes": "Din prøveperiode slutter den {{date}}. AI-assistenten, offentlige noter og tilføjelse af medlemmer låses op, når du abonnerer.",
+    "backToApp": "Tilbage til tududi",
+    "trialBanner": "Gratis prøveperiode, dage tilbage: {{count}}"
   },
   "demo": {
     "opening": "Åbner demoen...",

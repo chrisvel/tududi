@@ -5,6 +5,7 @@ const { isAdmin } = require('./rolesService');
 const { logError } = require('./logService');
 const {
     ForbiddenError,
+    FeatureNotInPlanError,
     PlanLimitError,
     SubscriptionRequiredError,
 } = require('../shared/errors');
@@ -42,6 +43,11 @@ async function assertCanAddSeat(ownerId) {
         throw new ForbiddenError(
             'Only the person who pays for this workspace can add members'
         );
+    }
+    // Said as a missing feature, so the app can offer the subscription page
+    // rather than treating the trial as having no access at all.
+    if (ent.reason === 'trial') {
+        throw new FeatureNotInPlanError('members', ent.plan);
     }
     if (!ADD_REASONS.includes(ent.reason)) {
         throw new SubscriptionRequiredError(

@@ -42,6 +42,9 @@
 <h2>5. How long we keep it</h2>
 <ul>
     <li>Your account and content: for as long as your account exists. When you delete your account, it is removed from the live database straight away.</li>
+    <% if (typeof trialDays !== 'undefined' && trialDays > 0) { %>
+    <li>Trial accounts that never subscribe: until 30 days after the trial ends, then the account and its content are deleted, after an email at least 7 days before. An account whose email is never verified gets one reminder and no trial.</li>
+    <% } %>
     <li>Backups: database backups are kept for up to <%= operator.backupDays %> days, after which deleted data is gone from them too.</li>
     <li>Request and security logs: only as long as needed to investigate problems, then rotated out.</li>
     <li>Billing records: as long as tax law requires (Lemon Squeezy holds the invoices).</li>

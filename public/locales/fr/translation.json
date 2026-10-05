@@ -2524,7 +2524,9 @@
       "caldav": "la synchronisation CalDAV",
       "telegram": "le bot Telegram",
       "backups_import": "l'import de sauvegardes",
-      "attachments": "les pièces jointes"
+      "attachments": "les pièces jointes",
+      "public_notes": "les notes publiques",
+      "members": "l'ajout de membres"
     },
     "seatCovered": "Votre place est payée par {{name}}.",
     "workspaceOwner": "la personne propriétaire de l'espace de travail",
@@ -2548,7 +2550,18 @@
     "perkExport": "Exporter tout à tout moment",
     "taxNote": "Les paiements sont gérés par {{provider}}. Les prix excluent les taxes applicables. Annulez à tout moment.",
     "notConfigured": "Les souscriptions ne sont pas encore disponibles sur cette instance. Veuillez contacter le support.",
-    "exportData": "Exporter vos données"
+    "exportData": "Exporter vos données",
+    "subscribe": "S'abonner",
+    "readOnlyBanner": "Votre essai est terminé : vos données sont en lecture seule. Abonnez-vous pour continuer à utiliser tududi, ou exportez vos données. Le compte sera supprimé le {{date}}.",
+    "lockedAi": "L'assistant IA fait partie de l'offre payante.",
+    "lockedPublicNotes": "Les liens publics de notes font partie de l'offre payante.",
+    "lockedMembers": "L'ajout de membres fait partie de l'offre payante.",
+    "trialEnded": "Votre essai est terminé",
+    "onTrial": "Vous profitez de l'essai gratuit",
+    "readOnlyUntil": "Vos données sont en lecture seule jusqu'au {{date}}, puis le compte sera supprimé. Abonnez-vous pour continuer à utiliser tududi Cloud.",
+    "trialIncludes": "Votre essai se termine le {{date}}. L'assistant IA, les notes publiques et l'ajout de membres se débloquent avec un abonnement.",
+    "backToApp": "Retour à tududi",
+    "trialBanner": "Essai gratuit, jours restants : {{count}}"
   },
   "demo": {
     "opening": "Ouverture de la démo...",

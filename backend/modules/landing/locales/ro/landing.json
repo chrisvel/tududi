@@ -27,7 +27,9 @@
     "ctaPrimary": "Începe acum",
     "lede": "Notează orice, planifică ziua cu AI în jurul calendarului și ține ariile, obiectivele, proiectele, notele și obiceiurile într-un singur sistem. Creează un cont Cloud într-un minut.",
     "titleLine1": "Productivitate simplificată",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Începe perioada de probă gratuită de {{days}} zile",
+    "cloudNoteTrial": "Gratuit {{days}} zile, fără card. Apoi lunar sau anual, anulezi oricând."
   },
   "proof": {
     "stars": "stele pe GitHub",
@@ -270,7 +272,9 @@
           "Actualizări și backupuri zilnice gestionate pentru tine, cu {{proStorageGb}} GB de spațiu",
           "Exportă totul oricând, șterge-ți contul singur"
         ],
-        "priceNote": "Totul inclus. Anulează oricând."
+        "priceNote": "Totul inclus. Anulează oricând.",
+        "actionTrial": "Încearcă gratuit →",
+        "priceNoteTrial": "{{days}} zile gratuit, fără card. Anulezi oricând."
       }
     },
     "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 14 de zile, fără întrebări.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Nu. Cloud costă {{monthly}} pe lună sau {{price}} pe an de persoană, și aceasta e toată lista de prețuri: fără nivel gratuit, fără ceas de probă, fără card taxat pentru ceva care începe discret să facturaze mai târziu. Există o garanție de rambursare de 14 de zile dacă se dovedește că nu ți se potrivește, și există un demo live pe această pagină dacă vrei să te uiți întâi. Modul gratuit de a folosi tududi este să-l rulezi pe propriul tău server, care e aceeași aplicație.",
-        "q": "Există un plan gratuit sau o probă pe tududi Cloud?"
+        "q": "Există un plan gratuit sau o probă pe tududi Cloud?",
+        "aTrial": "Nu există un plan gratuit, dar fiecare cont nou primește o perioadă de probă gratuită de {{days}} zile, fără card. Perioada de probă include tot, cu excepția asistentului AI, a linkurilor publice către notițe și a adăugării de membri. Dacă nu te abonezi, contul devine doar pentru citire timp de 30 de zile ca să-ți poți exporta datele, apoi este șters. După perioada de probă, Cloud costă {{monthly}} pe lună sau {{price}} pe an de persoană. Modul gratuit de a folosi tududi este să-l rulezi pe propriul server, este aceeași aplicație."
       },
       "leaving": {
         "q": "Pot pleca, și ce se întâmplă cu datele mele?",
@@ -448,7 +453,9 @@
     "title": "De ce să folosești tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Nu funcții. Fiecare funcție este și în versiunea auto-hostată.",
-    "whyTitle": "Pentru ce plătești de fapt"
+    "whyTitle": "Pentru ce plătești de fapt",
+    "ctaTrial": "Încearcă gratuit",
+    "pricingSubTrial": "Încearcă gratuit {{days}} zile, fără card. Apoi totul este inclus, anulezi când vrei."
   },
   "finalCta": {
     "primary": "Începe",

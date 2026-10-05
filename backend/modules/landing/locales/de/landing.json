@@ -27,7 +27,9 @@
     "ctaPrimary": "Jetzt starten",
     "lede": "Alles festhalten, den Tag mit KI rund um deinen Kalender planen und Bereiche, Ziele, Projekte, Notizen und Gewohnheiten in einem System. In einer Minute ein Cloud-Konto anlegen.",
     "titleLine1": "Produktivität ganz einfach",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "{{days}} Tage kostenlos testen",
+    "cloudNoteTrial": "{{days}} Tage kostenlos, ohne Kreditkarte. Danach monatlich oder jährlich, jederzeit kündbar."
   },
   "proof": {
     "stars": "Sterne auf GitHub",
@@ -270,7 +272,9 @@
           "Updates und tägliche Backups für dich erledigt, mit {{proStorageGb}} GB Speicher",
           "Exportiere jederzeit alles, lösche dein Konto selbst"
         ],
-        "priceNote": "Alles inklusive. Jederzeit kündbar."
+        "priceNote": "Alles inklusive. Jederzeit kündbar.",
+        "actionTrial": "Kostenlos testen →",
+        "priceNoteTrial": "{{days}} Tage kostenlos, ohne Kreditkarte. Jederzeit kündbar."
       }
     },
     "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 14 Tage Geld-zurück-Garantie, ohne Nachfragen.",
@@ -349,7 +353,8 @@
     "items": {
       "freePlan": {
         "a": "Nein. Cloud kostet {{monthly}} im Monat oder {{price}} im Jahr pro Person, und das ist die gesamte Preisliste: kein kostenloser Tarif, keine Probezeit, keine Karte, die für etwas belastet wird, das später still zu berechnen beginnt. Es gibt eine 14-tägige Geld-zurück-Garantie, falls es sich als unpassend erweist, und es gibt auf dieser Seite eine Live-Demo, falls du dir vorab einen Eindruck verschaffen möchtest. Der kostenlose Weg, tududi zu nutzen, ist, es auf deinem eigenen Server zu betreiben, was dieselbe Anwendung ist.",
-        "q": "Gibt es bei tududi Cloud einen kostenlosen Tarif oder eine Testphase?"
+        "q": "Gibt es bei tududi Cloud einen kostenlosen Tarif oder eine Testphase?",
+        "aTrial": "Einen kostenlosen Plan gibt es nicht, aber jedes neue Konto bekommt eine {{days}}-tägige kostenlose Testphase, ohne Kreditkarte. Die Testphase enthält alles außer dem KI-Assistenten, öffentlichen Notiz-Links und dem Hinzufügen von Mitgliedern. Wenn Sie nicht abonnieren, wird das Konto für 30 Tage schreibgeschützt, damit Sie Ihre Daten exportieren können, und danach gelöscht. Nach der Testphase kostet Cloud {{monthly}} pro Monat oder {{price}} pro Jahr und Person. Kostenlos nutzen Sie tududi, indem Sie es auf Ihrem eigenen Server betreiben, es ist dieselbe Anwendung."
       },
       "leaving": {
         "q": "Kann ich gehen, und was passiert mit meinen Daten?",
@@ -448,7 +453,9 @@
     "title": "Warum tududi Cloud nutzen?",
     "whyEyebrow": "Cloud",
     "whySub": "Keine Funktionen. Jede Funktion steckt auch im Self-Hosted-Build.",
-    "whyTitle": "Wofür du eigentlich bezahlst"
+    "whyTitle": "Wofür du eigentlich bezahlst",
+    "ctaTrial": "Kostenlos testen",
+    "pricingSubTrial": "Testen Sie {{days}} Tage kostenlos, ohne Kreditkarte. Danach ist alles inklusive, kündbar wann immer Sie möchten."
   },
   "finalCta": {
     "primary": "Loslegen",

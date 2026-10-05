@@ -53,7 +53,7 @@ const MCP_TOOL_COUNT = 59;
 // The facts the legal pages are written around. Kept here rather than in the
 // templates so a change of host, provider or backup schedule is one edit, and
 // LEGAL_UPDATED moves with it.
-const LEGAL_UPDATED = '3 October 2026';
+const LEGAL_UPDATED = '5 October 2026';
 const LEGAL_OPERATOR = {
     name: 'Chris Veleris',
     location: 'an individual based in Greece',
@@ -172,6 +172,16 @@ function createLandingRouter(landing) {
     // Whole-unit price with the right symbol for the configured currency,
     // so changing TUDUDI_PRICING_JSON's currency changes every price on the
     // page rather than leaving a dollar sign in front of euros.
+    // Days of free trial a new Cloud account gets, or 0. The pages only
+    // mention a trial when this instance actually starts one, so the copy can
+    // never run ahead of the TUDUDI_TRIAL_DAYS switch.
+    const cloudTrialDays = () => {
+        const hosted = getConfig().hosted || {};
+        return hosted.enabled === true && hosted.trialDays > 0
+            ? hosted.trialDays
+            : 0;
+    };
+
     const money = (amount) =>
         new Intl.NumberFormat('en', {
             style: 'currency',
@@ -214,6 +224,7 @@ function createLandingRouter(landing) {
                         plans.pro.limits.storage_mb / 1000
                     ),
                 },
+                trialDays: cloudTrialDays(),
                 appUrl,
                 siteOrigin: siteOrigin.replace(/\/$/, ''),
                 blogUrl: landing.blogUrl,
@@ -274,6 +285,7 @@ function createLandingRouter(landing) {
                         plans.pro.limits.storage_mb / 1000
                     ),
                 },
+                trialDays: cloudTrialDays(),
                 appUrl,
                 siteOrigin: siteOrigin.replace(/\/$/, ''),
                 blogUrl: landing.blogUrl,
@@ -443,6 +455,7 @@ function createLandingRouter(landing) {
                     legalDocs: LEGAL_DOCS,
                     legalUpdated: LEGAL_UPDATED,
                     operator: LEGAL_OPERATOR,
+                    trialDays: cloudTrialDays(),
                     canonicalUrl: `${siteOrigin.replace(/\/$/, '')}/${doc.slug}`,
                 },
                 { cache: cacheRenders, rmWhitespace: false }

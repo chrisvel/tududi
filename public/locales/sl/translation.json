@@ -2527,7 +2527,9 @@
       "caldav": "sinhronizacije CalDAV",
       "telegram": "bota Telegram",
       "backups_import": "uvoza varnostnih kopij",
-      "attachments": "prilog"
+      "attachments": "prilog",
+      "public_notes": "javne zapiske",
+      "members": "dodajanje članov"
     },
     "seatCovered": "Vaše mesto plačuje {{name}}.",
     "workspaceOwner": "lastnik delovnega prostora",
@@ -2551,7 +2553,18 @@
     "perkExport": "Izvozite vse kadarkoli",
     "taxNote": "Plačila obravnava {{provider}}. Cene ne vključujejo ustreznih davkov. Prekličite kadarkoli.",
     "notConfigured": "Naročnine na tej instanci še niso na voljo. Prosimo, kontaktirajte podporo.",
-    "exportData": "Izvozite svoje podatke"
+    "exportData": "Izvozite svoje podatke",
+    "subscribe": "Naroči se",
+    "readOnlyBanner": "Preizkusno obdobje se je izteklo, zato so vaši podatki samo za branje. Naročite se, da boste tududi lahko še naprej uporabljali, ali izvozite podatke. Račun bo izbrisan {{date}}.",
+    "lockedAi": "Pomočnik AI je del plačljivega paketa.",
+    "lockedPublicNotes": "Javne povezave do zapiskov so del plačljivega paketa.",
+    "lockedMembers": "Dodajanje članov je del plačljivega paketa.",
+    "trialEnded": "Preizkusno obdobje se je izteklo",
+    "onTrial": "Uporabljate brezplačno preizkusno obdobje",
+    "readOnlyUntil": "Vaši podatki so samo za branje do {{date}}, nato bo račun izbrisan. Naročite se, da boste tududi Cloud lahko še naprej uporabljali.",
+    "trialIncludes": "Preizkusno obdobje se izteče {{date}}. Pomočnik AI, javni zapiski in dodajanje članov se odklenejo z naročnino.",
+    "backToApp": "Nazaj v tududi",
+    "trialBanner": "Brezplačni preizkus, preostali dnevi: {{count}}"
   },
   "demo": {
     "opening": "Odpiranje demota...",
