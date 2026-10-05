@@ -12,6 +12,7 @@
     <link rel="alternate" hreflang="<%= l.htmlLang %>" href="<%= localeUrl(l.code) %>" />
     <% }); %>
     <link rel="alternate" hreflang="x-default" href="<%= localeUrl('en') %>" />
+    <%- include('partials/social-meta', { title: i18n.t('meta.title'), description: i18n.t('meta.description', { tools: mcpToolCount }), url: canonicalUrl }) %>
     <meta property="og:locale" content="<%= i18n.meta.ogLocale %>">
     <% locales.filter(function (l) { return l.code !== i18n.locale; }).forEach(function (l) { %>
     <meta property="og:locale:alternate" content="<%= l.ogLocale %>">

@@ -184,6 +184,31 @@ describe('Landing page', () => {
         expect(icon.status).toBe(200);
     });
 
+    it('gives the landing and cloud pages a link preview card', async () => {
+        for (const path of ['/', '/de', '/cloud']) {
+            const res = await request(app).get(path).set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain(
+                '<meta name="twitter:card" content="summary_large_image">'
+            );
+            expect(res.text).toMatch(
+                /<meta property="og:title" content="[^"]+">/
+            );
+            expect(res.text).toMatch(
+                /<meta property="og:description" content="[^"]+">/
+            );
+            // Crawlers need an absolute image URL; a relative one is ignored.
+            expect(res.text).toContain(
+                '<meta property="og:image" content="https://tududi.com/landing-assets/og-1.png">'
+            );
+        }
+        const image = await request(app)
+            .get('/landing-assets/og-1.png')
+            .set('Host', 'tududi.com');
+        expect(image.status).toBe(200);
+        expect(image.headers['content-type']).toBe('image/png');
+    });
+
     it('serves the cloud page, in English and in other locales', async () => {
         const en = await request(app).get('/cloud').set('Host', 'tududi.com');
         expect(en.status).toBe(200);

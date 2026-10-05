@@ -10,6 +10,7 @@
     <link rel="alternate" hreflang="<%= l.htmlLang %>" href="<%= pageUrl(l.code, '/cloud') %>" />
     <% }); %>
     <link rel="alternate" hreflang="x-default" href="<%= pageUrl('en', '/cloud') %>" />
+    <%- include('partials/social-meta', { title: i18n.t('cloud.metaTitle'), description: i18n.t('cloud.metaDescription'), url: canonicalUrl }) %>
     <meta property="og:locale" content="<%= i18n.meta.ogLocale %>">
     <link rel="icon" href="/landing-assets/favicon.ico">
     <%- include('partials/head-assets') %>
