@@ -297,6 +297,14 @@ function createLandingRouter(landing) {
         res.type('html').send(html);
     }
 
+    // Answered here rather than falling through to the app-host redirect:
+    // that sent crawlers to app.tududi.com/robots.txt, which is the SPA's
+    // HTML. X's crawler reads robots.txt before fetching a card's image, and
+    // without a usable one shared links got no card.
+    router.get('/robots.txt', (req, res) => {
+        res.type('text/plain').send('User-agent: *\nAllow: /\n');
+    });
+
     // Literal paths rather than '/:lang', so nothing outside this list is
     // ever answered with the marketing page.
     const landingPaths = [

@@ -184,6 +184,16 @@ describe('Landing page', () => {
         expect(icon.status).toBe(200);
     });
 
+    it('answers robots.txt itself instead of redirecting to the app', async () => {
+        // X's crawler reads robots.txt before fetching a card's image.
+        const res = await request(app)
+            .get('/robots.txt')
+            .set('Host', 'tududi.com');
+        expect(res.status).toBe(200);
+        expect(res.headers['content-type']).toMatch(/^text\/plain/);
+        expect(res.text).toContain('User-agent: *');
+    });
+
     it('gives the landing and cloud pages a link preview card', async () => {
         for (const path of ['/', '/de', '/cloud']) {
             const res = await request(app).get(path).set('Host', 'tududi.com');
