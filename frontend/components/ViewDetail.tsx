@@ -693,7 +693,7 @@ const ViewDetail: React.FC = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
                 {/* View Banner Header */}
-                <div className="rounded-xl mb-8 overflow-hidden">
+                <div className="rounded-xl mb-8">
                     <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl">
                         <div className="flex items-start justify-between gap-4">
                             <div className="min-w-0 flex-1">
