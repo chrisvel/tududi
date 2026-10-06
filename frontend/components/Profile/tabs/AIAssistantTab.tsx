@@ -7,6 +7,8 @@ import {
 } from '../../../utils/aiAssistantService';
 import { fetchBillingStatus } from '../../../utils/billingService';
 import UsageBar from '../../Shared/UsageBar';
+import TrialLockNotice from '../../Billing/TrialLockNotice';
+import { useTrialLock } from '../../../hooks/useTrialStatus';
 import type { ProfileFormData, Features } from '../types';
 
 type AiProviderField = 'ai_api_key' | 'ai_base_url' | 'ai_model';
@@ -69,6 +71,8 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
             .finally(() => setLoaded(true));
     }, [isActive, hosted, onLoadAiProviderSettings]);
 
+    const aiLocked = useTrialLock('ai');
+
     if (!isActive) return null;
 
     const aiEnabled = Boolean(formData.features?.ai_assistant_enabled);
@@ -86,6 +90,8 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
                     'Daily briefs, task insights, and project insights powered by any OpenAI-compatible model.'
                 )}
             </p>
+
+            <TrialLockNotice feature="ai" className="mb-6" />
 
             {hosted ? (
                 /* Hosted subscribers share the operator's own provider and
@@ -260,7 +266,11 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
                                     ? 'bg-blue-500'
                                     : 'bg-gray-300 dark:bg-gray-600'
                             }`}
-                            onClick={() => onToggleAi('ai_assistant_enabled')}
+                            onClick={() => {
+                                // Turning it off still works on the trial.
+                                if (aiLocked && !aiEnabled) return;
+                                onToggleAi('ai_assistant_enabled');
+                            }}
                         >
                             <span
                                 className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${

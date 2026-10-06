@@ -18,6 +18,8 @@ import {
     updateNotePublicLook,
 } from '../../utils/publicNotesService';
 import SelectMenu from '../Shared/SelectMenu';
+import TrialLockNotice from '../Billing/TrialLockNotice';
+import { useTrialLock } from '../../hooks/useTrialStatus';
 
 interface PublicShareModalProps {
     isOpen: boolean;
@@ -47,6 +49,7 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
     const [draft, setDraft] = useState<{ inherit: boolean } | null>(null);
     const [confirmRotate, setConfirmRotate] = useState(false);
     const linkRef = useRef<HTMLInputElement>(null);
+    const publicLocked = useTrialLock('public_notes');
 
     useEffect(() => {
         if (!isOpen || !noteUid) return;
@@ -114,6 +117,7 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
         setCopied(false);
         setError(null);
         if (next === 'anyone') {
+            if (publicLocked) return;
             // Ask about styling before making the link.
             setDraft({ inherit: true });
             return;
@@ -239,6 +243,7 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
                                             'notes.publicShare.anyone',
                                             'Anyone with the link'
                                         ),
+                                        disabled: publicLocked,
                                     },
                                 ]}
                             />
@@ -255,6 +260,12 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
                             </p>
                         </div>
                     </div>
+                    {access === 'restricted' && (
+                        <TrialLockNotice
+                            feature="public_notes"
+                            className="mt-3"
+                        />
+                    )}
                 </div>
 
                 {access === 'anyone' && share && (
