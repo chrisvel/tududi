@@ -14,7 +14,7 @@ import { Task } from '../../../entities/Task';
 import { Project } from '../../../entities/Project';
 import { useToast } from '../../Shared/ToastContext';
 import ConfirmDialog from '../../Shared/ConfirmDialog';
-import { isTaskCompleted } from '../../../constants/taskStatus';
+import { isTaskCompleted, isTaskDone } from '../../../constants/taskStatus';
 import {
     toggleTaskCompletion,
     updateTask,
@@ -65,6 +65,9 @@ export interface TaskRowProps {
     compact?: boolean;
     // Opt out of inline quick-edit: clicking the row opens the full page.
     disableExpand?: boolean;
+    // For pages whose onTaskUpdate only updates local state: the row saves a
+    // status picked from its status menu itself.
+    saveStatusChanges?: boolean;
 }
 
 const TaskRow: React.FC<TaskRowProps> = ({
@@ -81,6 +84,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
     compact = false,
     showSuggestionChips = false,
     disableExpand = false,
+    saveStatusChanges = false,
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -229,6 +233,32 @@ const TaskRow: React.FC<TaskRowProps> = ({
         } catch (error) {
             console.error('Task delete failed:', error);
             showErrorToast(t('errors.permissionDenied', 'Permission denied'));
+        }
+    };
+
+    const handleStatusUpdate = async (updated: Task) => {
+        if (!saveStatusChanges || !task.uid) return onTaskUpdate(updated);
+        try {
+            const response = await updateTask(task.uid, {
+                status: updated.status,
+            });
+            const merged: Task = {
+                ...task,
+                ...response,
+                subtasks: response.subtasks || task.subtasks || [],
+            };
+            // A recurring task comes back reopened for its next date, so a
+            // pick of Done goes through the page's completion handling.
+            if (onTaskCompletionToggle && isTaskDone(updated.status)) {
+                onTaskCompletionToggle(merged);
+            } else {
+                await onTaskUpdate(merged);
+            }
+        } catch (error) {
+            console.error('Task status update failed:', error);
+            showErrorToast(
+                t('task.statusUpdateError', 'Failed to update status')
+            );
         }
     };
 
@@ -381,7 +411,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
                     compact={compact}
                     onActivate={handleActivate}
                     onToggleCompletion={handleToggleCompletion}
-                    onTaskUpdate={onTaskUpdate}
+                    onTaskUpdate={handleStatusUpdate}
                     onMenuOpenChange={setIsStatusMenuOpen}
                     hasSubtasks={shouldShowSubtasksIcon}
                     showSubtasks={showSubtasks}

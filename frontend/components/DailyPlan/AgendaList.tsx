@@ -229,6 +229,7 @@ const AgendaList: React.FC<AgendaListProps> = ({
                                     }}
                                     onTaskDelete={onTaskDelete}
                                     compact
+                                    saveStatusChanges
                                 />
                             )}
                         </div>

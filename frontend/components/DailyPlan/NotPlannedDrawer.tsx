@@ -123,6 +123,7 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
                                             }}
                                             onTaskDelete={onTaskDelete}
                                             compact
+                                            saveStatusChanges
                                         />
                                     </div>
                                     <button

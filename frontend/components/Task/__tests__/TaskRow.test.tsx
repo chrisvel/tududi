@@ -83,10 +83,20 @@ jest.mock('../../Shared/MarkdownRenderer', () => ({
 }));
 
 // The status control + heavy editors are exercised elsewhere; keep this test
-// focused on row layout + expansion.
+// focused on row layout + expansion. The stub only picks a status.
 jest.mock('../TaskStatusControl', () => ({
     __esModule: true,
-    default: () => <div data-testid="status-control" />,
+    default: ({ task, onTaskUpdate }: any) => (
+        <div data-testid="status-control">
+            {['in_progress', 'done'].map((status) => (
+                <button
+                    key={status}
+                    aria-label={`pick ${status}`}
+                    onClick={() => onTaskUpdate?.({ ...task, status })}
+                />
+            ))}
+        </div>
+    ),
 }));
 
 const baseTask = (over: Partial<Task> = {}): Task => ({
@@ -383,5 +393,59 @@ describe('TaskRow', () => {
         );
         const payload = updateTaskMock.mock.calls[0][1];
         expect(payload).not.toHaveProperty('subtasks');
+    });
+
+    describe('status picked from the status menu (#1805)', () => {
+        const updateTaskMock = tasksService.updateTask as jest.Mock;
+        beforeEach(() => updateTaskMock.mockReset());
+
+        it('leaves saving to the page by default', () => {
+            const onTaskUpdate = jest.fn().mockResolvedValue(undefined);
+            renderRow(baseTask(), { onTaskUpdate });
+            fireEvent.click(screen.getByLabelText('pick in_progress'));
+            expect(updateTaskMock).not.toHaveBeenCalled();
+            expect(onTaskUpdate).toHaveBeenCalledWith(
+                expect.objectContaining({ status: 'in_progress' })
+            );
+        });
+
+        it('saves the status itself when the page asks it to', async () => {
+            updateTaskMock.mockResolvedValue({
+                ...baseTask(),
+                status: 'in_progress',
+            });
+            const onTaskUpdate = jest.fn().mockResolvedValue(undefined);
+            renderRow(baseTask(), { onTaskUpdate, saveStatusChanges: true });
+            fireEvent.click(screen.getByLabelText('pick in_progress'));
+            await waitFor(() =>
+                expect(onTaskUpdate).toHaveBeenCalledWith(
+                    expect.objectContaining({ status: 'in_progress' })
+                )
+            );
+            expect(updateTaskMock).toHaveBeenCalledWith('task-1', {
+                status: 'in_progress',
+            });
+        });
+
+        it('hands a Done pick to the completion handler', async () => {
+            updateTaskMock.mockResolvedValue({
+                ...baseTask(),
+                status: 'done',
+            });
+            const onTaskUpdate = jest.fn().mockResolvedValue(undefined);
+            const onTaskCompletionToggle = jest.fn();
+            renderRow(baseTask(), {
+                onTaskUpdate,
+                onTaskCompletionToggle,
+                saveStatusChanges: true,
+            });
+            fireEvent.click(screen.getByLabelText('pick done'));
+            await waitFor(() =>
+                expect(onTaskCompletionToggle).toHaveBeenCalledWith(
+                    expect.objectContaining({ status: 'done' })
+                )
+            );
+            expect(onTaskUpdate).not.toHaveBeenCalled();
+        });
     });
 });
