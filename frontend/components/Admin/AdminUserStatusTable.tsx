@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getApiPath } from '../../config/paths';
 import { handleAuthResponse } from '../../utils/authUtils';
@@ -7,6 +7,10 @@ import {
     SortHeader,
     useSortedRows,
 } from './SortableTable';
+import AdminUserFilter, {
+    filterUsers,
+    useUserFilterGroups,
+} from './AdminUserFilter';
 
 export interface AdminUserStatus {
     id: number;
@@ -47,6 +51,8 @@ const AdminUserStatusTable: React.FC = () => {
     const [users, setUsers] = useState<AdminUserStatus[] | null>(null);
     const [hosted, setHosted] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [filters, setFilters] = useState<string[]>([]);
+    const filterGroups = useUserFilterGroups(hosted);
 
     useEffect(() => {
         const load = async () => {
@@ -113,7 +119,11 @@ const AdminUserStatusTable: React.FC = () => {
         }
     };
 
-    const rows = users ?? [];
+    const rows = useMemo(
+        () => filterUsers(users ?? [], filterGroups, filters),
+        // filterGroups is rebuilt each render; hosted decides its shape
+        [users, filters, hosted]
+    );
     const { sorted, sortKey, sortDir, toggle } = useSortedRows(
         rows,
         {
@@ -144,9 +154,28 @@ const AdminUserStatusTable: React.FC = () => {
 
     return (
         <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                {t('admin.userStatus.title', 'Users')}
-            </h2>
+            <div className="flex items-center justify-between gap-3 mb-3">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {t('admin.userStatus.title', 'Users')}
+                    {users !== null && filters.length > 0 && (
+                        <span
+                            className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            data-testid="admin-user-filter-count"
+                        >
+                            {t('admin.userFilter.showing', {
+                                defaultValue: '{{shown}} of {{total}}',
+                                shown: rows.length,
+                                total: users.length,
+                            })}
+                        </span>
+                    )}
+                </h2>
+                <AdminUserFilter
+                    groups={filterGroups}
+                    selected={filters}
+                    onChange={setFilters}
+                />
+            </div>
             <div className={ADMIN_TABLE_WRAPPER}>
                 <table className="min-w-full text-sm">
                     <thead className="bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300">
@@ -228,6 +257,19 @@ const AdminUserStatusTable: React.FC = () => {
                                     colSpan={6}
                                 >
                                     {t('common.loading', 'Loading...')}
+                                </td>
+                            </tr>
+                        ) : sorted.length === 0 ? (
+                            <tr>
+                                <td
+                                    className="px-4 py-3 text-gray-500"
+                                    colSpan={6}
+                                    data-testid="admin-user-filter-empty"
+                                >
+                                    {t(
+                                        'admin.userFilter.empty',
+                                        'No users match these filters.'
+                                    )}
                                 </td>
                             </tr>
                         ) : (

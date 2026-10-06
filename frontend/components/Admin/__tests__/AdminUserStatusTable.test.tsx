@@ -126,4 +126,39 @@ describe('Admin user status table', () => {
             'trial@example.com',
         ]);
     });
+
+    it('filters by several choices, widening within a group and narrowing across', async () => {
+        render(<AdminUserStatusTable />);
+        await screen.findByTestId('admin-user-access-1');
+
+        fireEvent.click(screen.getByTestId('admin-user-filter'));
+        fireEvent.click(screen.getByTestId('admin-user-filter-verified'));
+        expect(emails()).toEqual(['trial@example.com', 'paying@example.com']);
+
+        fireEvent.click(screen.getByTestId('admin-user-filter-paid'));
+        expect(emails()).toEqual(['paying@example.com']);
+        expect(screen.getByTestId('admin-user-filter-count')).toHaveTextContent(
+            '1 of 3'
+        );
+
+        fireEvent.click(screen.getByTestId('admin-user-filter-trial'));
+        expect(emails()).toEqual(['trial@example.com', 'paying@example.com']);
+
+        fireEvent.click(screen.getByTestId('admin-user-filter-unverified'));
+        fireEvent.click(screen.getByTestId('admin-user-filter-paid'));
+        expect(emails()).toEqual(['new@example.com', 'trial@example.com']);
+
+        fireEvent.click(screen.getByTestId('admin-user-filter-clear'));
+        expect(emails()).toHaveLength(3);
+    });
+
+    it('shows an empty row when nothing matches', async () => {
+        render(<AdminUserStatusTable />);
+        await screen.findByTestId('admin-user-access-1');
+        fireEvent.click(screen.getByTestId('admin-user-filter'));
+        fireEvent.click(screen.getByTestId('admin-user-filter-member'));
+        expect(
+            screen.getByTestId('admin-user-filter-empty')
+        ).toBeInTheDocument();
+    });
 });
