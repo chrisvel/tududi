@@ -327,7 +327,7 @@ the `demo-reset` job lock, so several app containers cannot wipe it at once.
 The same image can serve the public marketing page, so a hosted deployment
 needs no second application for `example.com` beside `app.example.com`.
 The page lives in `backend/modules/landing/` (an EJS template, its own
-`locales/<code>/landing.json` catalogs in 25 languages, and a few assets)
+`locales/<code>/landing.json` catalogs in 26 languages, and a few assets)
 and is switched on per hostname:
 
 | Variable | Meaning |

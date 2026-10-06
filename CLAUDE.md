@@ -336,7 +336,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 **Key Capabilities:**
 - **Hierarchical Organization:** Areas > Goals > Projects > Tasks > Subtasks
 - **Smart Recurring Tasks:** Multiple patterns with parent-child tracking
-- **Multi-Language Support:** 25 languages via i18next
+- **Multi-Language Support:** 26 languages via i18next
 - **Collaboration:** Project sharing with granular permissions
 - **REST API:** Swagger docs + personal API tokens
 - **Telegram Integration:** Create tasks via messages, daily digests
@@ -354,7 +354,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - Webpack 5 (build) + webpack-dev-server (development)
 - Tailwind CSS 3.4 + Heroicons
 - Zustand (global state) + SWR (server state)
-- React Router 6, i18next (25 languages)
+- React Router 6, i18next (26 languages)
 
 **Backend:**
 - Express 4.21 + Sequelize 6.37 (ORM)

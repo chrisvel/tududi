@@ -43,6 +43,7 @@ const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
         { code: 'pt', name: t('profile.portuguese'), flag: '🇵🇹' },
         { code: 'ro', name: t('profile.romanian'), flag: '🇷🇴' },
         { code: 'ru', name: t('profile.russian'), flag: '🇷🇺' },
+        { code: 'sk', name: t('profile.slovak'), flag: '🇸🇰' },
         { code: 'sl', name: t('profile.slovenian'), flag: '🇸🇮' },
         { code: 'es', name: t('profile.spanish'), flag: '🇪🇸' },
         { code: 'sv', name: t('profile.swedish'), flag: '🇸🇪' },

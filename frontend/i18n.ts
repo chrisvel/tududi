@@ -69,6 +69,7 @@ i18nInstance
             'pl',
             'bg',
             'sl',
+            'sk',
         ],
         nonExplicitSupportedLngs: true,
         resources: devResources,

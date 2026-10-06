@@ -171,6 +171,14 @@ const LOCALES = [
         ogLocale: 'ru_RU',
     },
     {
+        code: 'sk',
+        englishName: 'Slovak',
+        nativeName: 'Slovenčina',
+        flag: '🇸🇰',
+        htmlLang: 'sk',
+        ogLocale: 'sk_SK',
+    },
+    {
         code: 'sl',
         englishName: 'Slovenian',
         nativeName: 'Slovenščina',
