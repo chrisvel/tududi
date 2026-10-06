@@ -20,7 +20,7 @@ import { fetchHabits, setHabitArchived } from '../../utils/habitsService';
 import {
     TIMES_OF_DAY,
     formatHabitTarget,
-    isHabitCompletedInPeriod,
+    isHabitDoneForNow,
     isQuitHabit,
 } from '../../utils/habitUtils';
 
@@ -72,9 +72,7 @@ const Habits: React.FC = () => {
 
     const stats = useMemo(() => {
         const building = habits.filter((h) => !isQuitHabit(h));
-        const doneNow = building.filter((h) =>
-            isHabitCompletedInPeriod(h)
-        ).length;
+        const doneNow = building.filter((h) => isHabitDoneForNow(h)).length;
         const strength =
             habits.length > 0
                 ? Math.round(
