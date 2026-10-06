@@ -15,22 +15,20 @@ const SidebarTrialCard: React.FC = () => {
 
     return (
         <div
-            className="mx-2.5 mb-2 rounded-lg bg-blue-600 dark:bg-blue-700 px-3 py-3 text-white shadow-sm"
+            className="mx-2.5 mb-2 flex items-center gap-2 rounded-lg bg-blue-50/70 px-3 py-2 dark:bg-blue-500/10"
             data-testid="trial-banner"
         >
-            <div className="flex items-start gap-2">
-                <SparklesIcon className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                <p className="text-sm font-medium leading-snug">
-                    {t('subscription.trialBanner', {
-                        defaultValue:
-                            "You're on the free trial, {{count}} days left",
-                        count: daysLeft(status.trial_ends_at),
-                    })}
-                </p>
-            </div>
+            <SparklesIcon className="h-4 w-4 flex-shrink-0 text-blue-400 dark:text-blue-300" />
+            <p className="flex-1 text-xs leading-snug text-blue-900/80 dark:text-blue-100/80">
+                {t('subscription.trialBanner', {
+                    defaultValue:
+                        "You're on the free trial, {{count}} days left",
+                    count: daysLeft(status.trial_ends_at),
+                })}
+            </p>
             <Link
                 to="/subscription/new"
-                className="mt-3 block w-full rounded-md bg-white px-3 py-1.5 text-center text-sm font-semibold text-blue-700 hover:bg-blue-50"
+                className="flex-shrink-0 text-xs font-medium text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
                 data-testid="trial-banner-subscribe"
             >
                 {t('subscription.subscribe', 'Subscribe')}
