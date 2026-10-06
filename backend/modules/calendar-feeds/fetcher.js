@@ -22,8 +22,10 @@ class FeedFetchError extends Error {}
 // resolves differently after the URL check still cannot reach the LAN.
 // CALDAV_ALLOW_PRIVATE_HOSTS opens private addresses here too (#1719), but
 // never link-local ones, where the cloud metadata service lives.
-const httpAgent = new http.Agent({ lookup: guardedLookup });
-const httpsAgent = new https.Agent({ lookup: guardedLookup });
+// keepAlive matches Node's global agent: without it some Docker hosts stall
+// on the last bytes of a Google Calendar feed until the timeout (#1790).
+const httpAgent = new http.Agent({ lookup: guardedLookup, keepAlive: true });
+const httpsAgent = new https.Agent({ lookup: guardedLookup, keepAlive: true });
 
 async function assertSafeFeedUrl(url) {
     if (allowPrivateHosts()) {

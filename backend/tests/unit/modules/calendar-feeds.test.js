@@ -203,4 +203,23 @@ describe('fetchFeed', () => {
             fetchFeed('http://rebind.example/cal.ics')
         ).rejects.toThrow('CALDAV_ALLOW_PRIVATE_HOSTS');
     });
+
+    it('fetches over keep-alive agents', async () => {
+        jest.spyOn(dns.promises, 'lookup').mockResolvedValue([
+            { address: '93.184.216.34', family: 4 },
+        ]);
+        const get = jest.spyOn(axios, 'get').mockResolvedValue({
+            status: 200,
+            headers: {},
+            data: ICS,
+        });
+
+        await expect(
+            fetchFeed('https://calendar.example/basic.ics')
+        ).resolves.toContain('BEGIN:VCALENDAR');
+
+        const config = get.mock.calls[0][1];
+        expect(config.httpsAgent.keepAlive).toBe(true);
+        expect(config.httpAgent.keepAlive).toBe(true);
+    });
 });
