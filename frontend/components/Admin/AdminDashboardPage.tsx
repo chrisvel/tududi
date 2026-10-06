@@ -13,6 +13,7 @@ import {
 import { getApiPath } from '../../config/paths';
 import { handleAuthResponse } from '../../utils/authUtils';
 import AdminBlogSettings from './AdminBlogSettings';
+import AdminUserStatusTable from './AdminUserStatusTable';
 
 interface Overview {
     users: { total: number; admins: number; verified: number; last24h: number };
@@ -209,6 +210,8 @@ const AdminDashboardPage: React.FC = () => {
                         : t('admin.dashboard.regClosed', 'Registration closed')}
                 </span>
             </div>
+
+            <AdminUserStatusTable />
 
             {blogOpen && (
                 <AdminBlogSettings onClose={() => setBlogOpen(false)} />

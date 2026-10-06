@@ -567,6 +567,51 @@ describe('Billing with hosted mode on', () => {
             expect(clear.status).toBe(200);
             expect(clear.body.status.plan).toBe('free');
         });
+
+        it('shows who is on the trial and how many days are left', async () => {
+            const DAY = 24 * 60 * 60 * 1000;
+            await BillingAccount.create({
+                user_id: user.id,
+                plan: 'free',
+                status: 'none',
+                trial_started_at: new Date(Date.now() - 2 * DAY),
+                trial_ends_at: new Date(Date.now() + 11.5 * DAY),
+            });
+
+            const list = await adminAgent.get('/api/admin/billing');
+            expect(list.status).toBe(200);
+            expect(list.body.on_trial).toBe(1);
+            const row = list.body.accounts.find((a) => a.user_id === user.id);
+            expect(row.access).toBe('trial');
+            expect(row.trial_days_left).toBe(12);
+
+            const trials = await adminAgent.get(
+                '/api/admin/billing?filter=trial'
+            );
+            expect(trials.body.accounts.map((a) => a.user_id)).toEqual([
+                user.id,
+            ]);
+        });
+
+        it('shows when an unpaid trial ended and the account goes', async () => {
+            const DAY = 24 * 60 * 60 * 1000;
+            await BillingAccount.create({
+                user_id: user.id,
+                plan: 'free',
+                status: 'none',
+                trial_started_at: new Date(Date.now() - 20 * DAY),
+                trial_ends_at: new Date(Date.now() - 6 * DAY),
+            });
+
+            const list = await adminAgent.get('/api/admin/billing');
+            const row = list.body.accounts.find((a) => a.user_id === user.id);
+            expect(row.access).toBe('free');
+            expect(row.trial_days_left).toBeNull();
+            expect(new Date(row.read_only_until).getTime()).toBeGreaterThan(
+                Date.now() + 23 * DAY
+            );
+            expect(list.body.on_trial).toBe(0);
+        });
     });
 
     describe('account deletion', () => {

@@ -42,6 +42,14 @@ const adminController = {
         }
     },
 
+    async userStatuses(req, res, next) {
+        try {
+            res.json(await adminService.userStatuses(getRequesterId(req)));
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async listWaitlist(req, res, next) {
         try {
             res.json(

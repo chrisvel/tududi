@@ -87,6 +87,7 @@ const ACCOUNT_ROUTES = [
 // owner with anything but a refusal.
 const SUPERADMIN_ROUTES = [
     ['get', '/api/admin/overview'],
+    ['get', '/api/admin/overview/users'],
     ['post', '/api/admin/set-admin-role'],
     ['post', '/api/admin/toggle-registration'],
     ['get', '/api/admin/oidc-config'],

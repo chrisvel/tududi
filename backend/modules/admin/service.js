@@ -376,6 +376,121 @@ class AdminService {
      */
     // One page's worth of numbers for the admin dashboard: who is here,
     // what is being sold, and who is waiting for it to open.
+    // Everyone on the instance with how they got here and where they stand:
+    // signed up themselves or added as a member, verified, on the trial
+    // (and the days left), paying, comped, or an ended trial waiting to be
+    // deleted. The admin dashboard lists it, newest first.
+    async userStatuses(requesterId) {
+        await this.verifyAdmin(requesterId);
+        const { User, Role, Account, BillingAccount } = require('../../models');
+        const entitlements = require('../../services/entitlementsService');
+        const hosted = entitlements.isHostedMode();
+        const now = new Date();
+        const DAY_MS = 24 * 60 * 60 * 1000;
+
+        const [users, adminRoles, accounts, billingRows, identityIds] =
+            await Promise.all([
+                User.findAll({
+                    attributes: [
+                        'id',
+                        'email',
+                        'name',
+                        'surname',
+                        'created_at',
+                        'email_verified',
+                        'password_digest',
+                        'account_id',
+                    ],
+                    order: [['created_at', 'DESC']],
+                }),
+                Role.findAll({
+                    where: { is_admin: true },
+                    attributes: ['user_id'],
+                    raw: true,
+                }),
+                hosted
+                    ? Account.findAll({
+                          attributes: ['id', 'owner_user_id'],
+                          raw: true,
+                      })
+                    : [],
+                hosted ? BillingAccount.findAll() : [],
+                adminRepository.findIdentityUserIds(null),
+            ]);
+
+        const adminIds = new Set(adminRoles.map((r) => r.user_id));
+        const ownerByAccount = new Map(
+            accounts.map((a) => [a.id, a.owner_user_id])
+        );
+        const billingByUser = new Map(billingRows.map((b) => [b.user_id, b]));
+        const emailById = new Map(users.map((u) => [u.id, u.email]));
+        const resolve = (userId) =>
+            entitlements.resolvePlan(billingByUser.get(userId) || null, null, {
+                isAdmin: adminIds.has(userId),
+                now,
+            });
+
+        return {
+            hosted,
+            users: users.map((u) => {
+                const billing = billingByUser.get(u.id) || null;
+                const ownerId = u.account_id
+                    ? ownerByAccount.get(u.account_id)
+                    : null;
+                const memberOf = ownerId && ownerId !== u.id ? ownerId : null;
+                let access = hosted ? resolve(u.id).reason : 'self_hosted';
+                if (access === 'free' && memberOf) access = 'member';
+
+                const trialEnd = billing?.trial_ends_at
+                    ? new Date(billing.trial_ends_at)
+                    : null;
+                const readOnly =
+                    access === 'free' && billing
+                        ? entitlements.readOnlyUntil(billing)
+                        : null;
+                // A member is paid for by the owner's subscription.
+                const payer = memberOf ? billingByUser.get(memberOf) : billing;
+                const payerReason = memberOf
+                    ? hosted
+                        ? resolve(memberOf).reason
+                        : null
+                    : access;
+
+                return {
+                    id: u.id,
+                    email: u.email ?? null,
+                    name: [u.name, u.surname].filter(Boolean).join(' ') || null,
+                    created_at: u.created_at,
+                    email_verified: !!u.email_verified,
+                    account_status: accountStatusOf(u, identityIds.has(u.id)),
+                    is_admin: adminIds.has(u.id),
+                    member_of: memberOf
+                        ? { id: memberOf, email: emailById.get(memberOf) }
+                        : null,
+                    access,
+                    trial_ends_at: trialEnd,
+                    trial_days_left:
+                        access === 'trial' && trialEnd
+                            ? Math.max(
+                                  1,
+                                  Math.ceil(
+                                      (trialEnd.getTime() - now.getTime()) /
+                                          DAY_MS
+                                  )
+                              )
+                            : null,
+                    read_only_until:
+                        readOnly && readOnly > now ? readOnly : null,
+                    paid:
+                        payerReason === 'subscription' ||
+                        payerReason === 'grace',
+                    subscription_status: payer?.status ?? null,
+                    ever_paid: !!payer?.provider_subscription_id,
+                };
+            }),
+        };
+    }
+
     async overview(requesterId) {
         await this.verifyAdmin(requesterId);
         const {

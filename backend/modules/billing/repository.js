@@ -49,10 +49,27 @@ class BillingRepository {
         }
     }
 
-    async listAccounts({ q, page = 1, limit = 50 }) {
+    // Accounts whose trial is still running: not paying and not comped.
+    trialWhere(now = new Date()) {
+        return {
+            trial_ends_at: { [Op.gt]: now },
+            status: { [Op.notIn]: ['active', 'trialing'] },
+            [Op.or]: [
+                { override_plan: null },
+                { override_expires_at: { [Op.lte]: now } },
+            ],
+        };
+    }
+
+    countTrials(now = new Date()) {
+        return BillingAccount.count({ where: this.trialWhere(now) });
+    }
+
+    async listAccounts({ q, page = 1, limit = 50, trial = false }) {
         const offset = (Math.max(1, page) - 1) * limit;
         const userWhere = q ? { email: { [Op.like]: `%${q}%` } } : undefined;
         const { rows, count } = await BillingAccount.findAndCountAll({
+            where: trial ? this.trialWhere() : undefined,
             include: [
                 {
                     model: User,
@@ -62,7 +79,9 @@ class BillingRepository {
                     required: true,
                 },
             ],
-            order: [['updated_at', 'DESC']],
+            order: trial
+                ? [['trial_ends_at', 'ASC']]
+                : [['updated_at', 'DESC']],
             limit,
             offset,
         });
