@@ -2030,7 +2030,14 @@
       "reason": "Reason (optional)",
       "overrideSaved": "Override saved",
       "overrideCleared": "Override removed",
-      "synced": "Synced from the payment provider"
+      "synced": "Synced from the payment provider",
+      "onTrial": "On trial",
+      "trialsOnly": "Trials only",
+      "trial": "Trial",
+      "trialDaysLeft_one": "{{count}} day left",
+      "trialDaysLeft_other": "{{count}} days left",
+      "trialEnded": "Trial ended",
+      "readOnlyUntil": "Read-only, deleted on {{date}}"
     },
     "manageUsers": "Manage users",
     "userManagement": "User Management",

@@ -23,6 +23,8 @@ const AdminBillingPage: React.FC = () => {
     const [accounts, setAccounts] = useState<AdminBillingAccount[]>([]);
     const [summary, setSummary] = useState<AdminBillingSummaryRow[]>([]);
     const [total, setTotal] = useState(0);
+    const [onTrial, setOnTrial] = useState(0);
+    const [trialsOnly, setTrialsOnly] = useState(false);
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState<AdminBillingAccount | null>(null);
@@ -35,17 +37,22 @@ const AdminBillingPage: React.FC = () => {
         async (q = query) => {
             setLoading(true);
             try {
-                const data = await fetchAdminBilling(q);
+                const data = await fetchAdminBilling(
+                    q,
+                    1,
+                    trialsOnly ? 'trial' : undefined
+                );
                 setAccounts(data.accounts);
                 setSummary(data.summary);
                 setTotal(data.total);
+                setOnTrial(data.on_trial ?? 0);
             } catch (err: any) {
                 showErrorToast(err.message || 'Failed to load billing');
             } finally {
                 setLoading(false);
             }
         },
-        [query, showErrorToast]
+        [query, trialsOnly, showErrorToast]
     );
 
     useEffect(() => {
@@ -141,7 +148,7 @@ const AdminBillingPage: React.FC = () => {
                 {t('admin.billing.title', 'Billing')}
             </h1>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                 {[
                     [t('admin.billing.accounts', 'Accounts'), total],
                     [
@@ -153,6 +160,7 @@ const AdminBillingPage: React.FC = () => {
                         activeSubscriptions,
                     ],
                     [t('admin.billing.pastDue', 'Past due'), pastDue],
+                    [t('admin.billing.onTrial', 'On trial'), onTrial],
                 ].map(([label, value]) => (
                     <div
                         key={String(label)}
@@ -191,6 +199,19 @@ const AdminBillingPage: React.FC = () => {
                     className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
                 >
                     {t('common.search', 'Search')}
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setTrialsOnly((on) => !on)}
+                    aria-pressed={trialsOnly}
+                    className={`px-4 py-2 rounded ${
+                        trialsOnly
+                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-100'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                    data-testid="admin-billing-trials-only"
+                >
+                    {t('admin.billing.trialsOnly', 'Trials only')}
                 </button>
             </form>
 
@@ -256,21 +277,62 @@ const AdminBillingPage: React.FC = () => {
                                         )}
                                     </td>
                                     <td className="px-4 py-2 capitalize">
-                                        {a.plan}
+                                        {a.access === 'trial'
+                                            ? t('admin.billing.trial', 'Trial')
+                                            : a.plan}
                                     </td>
                                     <td className="px-4 py-2">
-                                        <span
-                                            className={`px-2 py-0.5 rounded text-xs ${
-                                                a.status === 'past_due'
-                                                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200'
-                                                    : a.status === 'active' ||
-                                                        a.status === 'trialing'
-                                                      ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200'
-                                                      : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                                            }`}
-                                        >
-                                            {a.status}
-                                        </span>
+                                        {a.access === 'trial' &&
+                                        a.trial_days_left !== null ? (
+                                            <span
+                                                className="px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 whitespace-nowrap"
+                                                data-testid={`admin-billing-trial-${a.user_id}`}
+                                            >
+                                                {t(
+                                                    'admin.billing.trialDaysLeft',
+                                                    {
+                                                        defaultValue:
+                                                            '{{count}} days left',
+                                                        count: a.trial_days_left,
+                                                    }
+                                                )}
+                                            </span>
+                                        ) : a.read_only_until ? (
+                                            <span
+                                                className="px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 whitespace-nowrap"
+                                                title={t(
+                                                    'admin.billing.readOnlyUntil',
+                                                    {
+                                                        defaultValue:
+                                                            'Read-only, deleted on {{date}}',
+                                                        date: formatDate(
+                                                            a.read_only_until
+                                                        ),
+                                                    }
+                                                )}
+                                                data-testid={`admin-billing-trial-ended-${a.user_id}`}
+                                            >
+                                                {t(
+                                                    'admin.billing.trialEnded',
+                                                    'Trial ended'
+                                                )}
+                                            </span>
+                                        ) : (
+                                            <span
+                                                className={`px-2 py-0.5 rounded text-xs ${
+                                                    a.status === 'past_due'
+                                                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200'
+                                                        : a.status ===
+                                                                'active' ||
+                                                            a.status ===
+                                                                'trialing'
+                                                          ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200'
+                                                          : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+                                                }`}
+                                            >
+                                                {a.status}
+                                            </span>
+                                        )}
                                         {a.cancel_at_period_end && (
                                             <span className="ml-1 text-xs text-gray-500">
                                                 {t(
@@ -283,14 +345,20 @@ const AdminBillingPage: React.FC = () => {
                                     <td className="px-4 py-2 text-gray-600 dark:text-gray-400">
                                         {formatDate(
                                             a.current_period_end ||
+                                                a.read_only_until ||
                                                 a.trial_ends_at
                                         )}
                                     </td>
                                     <td className="px-4 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
                                         {a.ai_requests_this_month}{' '}
-                                        {t('admin.billing.requestsAbbr', 'reqs')}
+                                        {t(
+                                            'admin.billing.requestsAbbr',
+                                            'reqs'
+                                        )}
                                         {' · '}
-                                        {formatTokens(a.ai_tokens_this_month)}{' '}
+                                        {formatTokens(
+                                            a.ai_tokens_this_month
+                                        )}{' '}
                                         {t('admin.billing.tokensAbbr', 'tok')}
                                     </td>
                                     <td className="px-4 py-2">
