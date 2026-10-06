@@ -274,7 +274,8 @@
         ],
         "priceNote": "Todo incluido. Cancela cuando quieras.",
         "actionTrial": "Empezar prueba gratuita →",
-        "priceNoteTrial": "{{days}} días gratis, sin tarjeta. Cancela cuando quieras."
+        "priceNoteTrial": "{{days}} días gratis, sin tarjeta. Cancela cuando quieras.",
+        "trialNote": "La prueba incluye todo excepto el asistente de IA, los enlaces públicos a notas y añadir miembros."
       }
     },
     "fineprint": "Cancela cuando quieras y exporta todo. Si tududi Cloud cerrara algún día, recibirás tus datos y una guía para migrar a autoalojado. Se aplica uso razonable al almacenamiento y al volumen de API. Garantía de devolución de 14 días, sin preguntas.",
@@ -462,7 +463,9 @@
     "secondary": "Ver precios",
     "selfHostLink": "Lee la guía.",
     "sub": "Nosotros gestionamos el servidor, las actualizaciones y las copias de seguridad. Tú tienes el sistema, y una garantía de devolución de 14 días si no es para ti.",
-    "title": "Organízate en un minuto"
+    "title": "Organízate en un minuto",
+    "subTrial": "Nosotros gestionamos el servidor, las actualizaciones y las copias de seguridad. Pruébalo gratis durante {{days}} días, sin tarjeta.",
+    "primaryTrial": "Empezar prueba gratuita"
   },
   "contact": {
     "title": "Contáctanos",

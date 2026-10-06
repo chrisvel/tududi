@@ -274,7 +274,8 @@
         ],
         "priceNote": "Vse vključeno. Prekličite kadarkoli.",
         "actionTrial": "Preizkusite brezplačno →",
-        "priceNoteTrial": "{{days}} dni brezplačno, brez kartice. Odpoved kadar koli."
+        "priceNoteTrial": "{{days}} dni brezplačno, brez kartice. Odpoved kadar koli.",
+        "trialNote": "Preizkus vključuje vse razen pomočnika AI, javnih povezav do zapiskov in dodajanja članov."
       }
     },
     "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 14-dnevna garancija vračila denarja, brez vprašanj.",
@@ -462,7 +463,9 @@
     "secondary": "Poglej cene",
     "selfHostLink": "Preberi vodnik.",
     "sub": "Mi upravljamo strežnik, posodobitve in varnostne kopije. Vi dobite sistem, in 14-dnevno garancijo vračila denarja, če ni za vas.",
-    "title": "Organizirajte se v minuti"
+    "title": "Organizirajte se v minuti",
+    "subTrial": "Mi skrbimo za strežnik, posodobitve in varnostne kopije. Preizkusite brezplačno {{days}} dni, brez kartice.",
+    "primaryTrial": "Preizkusite brezplačno"
   },
   "contact": {
     "title": "Pišite nam",

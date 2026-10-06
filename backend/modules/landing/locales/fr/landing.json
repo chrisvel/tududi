@@ -274,7 +274,8 @@
         ],
         "priceNote": "Tout est inclus. Résiliez à tout moment.",
         "actionTrial": "Commencer l'essai gratuit →",
-        "priceNoteTrial": "{{days}} jours gratuits, sans carte bancaire. Résiliable à tout moment."
+        "priceNoteTrial": "{{days}} jours gratuits, sans carte bancaire. Résiliable à tout moment.",
+        "trialNote": "L'essai comprend tout, sauf l'assistant IA, les liens publics vers les notes et l'ajout de membres."
       }
     },
     "fineprint": "Annulez à tout moment et exportez tout. Si tududi Cloud devait fermer, vous recevez vos données et un guide de migration vers l'auto-hébergement. Usage raisonnable pour le stockage et le volume d'API. Garantie satisfait ou remboursé 14 jours, sans question.",
@@ -462,7 +463,9 @@
     "secondary": "Voir les prix",
     "selfHostLink": "Lire le guide.",
     "sub": "Nous gérons le serveur, les mises à jour et les sauvegardes. Vous avez le système, et une garantie de remboursement de 14 jours si cela ne vous convient pas.",
-    "title": "Organisez-vous en une minute"
+    "title": "Organisez-vous en une minute",
+    "subTrial": "Nous gérons le serveur, les mises à jour et les sauvegardes. Essayez gratuitement pendant {{days}} jours, sans carte.",
+    "primaryTrial": "Commencer l'essai gratuit"
   },
   "contact": {
     "title": "Nous contacter",

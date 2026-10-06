@@ -274,7 +274,8 @@
         ],
         "priceNote": "Her şey dahil. İstediğiniz zaman iptal edin.",
         "actionTrial": "Ücretsiz dene →",
-        "priceNoteTrial": "{{days}} gün ücretsiz, kart gerekmez. İstediğin zaman iptal et."
+        "priceNoteTrial": "{{days}} gün ücretsiz, kart gerekmez. İstediğin zaman iptal et.",
+        "trialNote": "Deneme süresi, AI asistanı, herkese açık not bağlantıları ve üye ekleme dışında her şeyi içerir."
       }
     },
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 14 gün para iade garantisi, soru sorulmaz.",
@@ -462,7 +463,9 @@
     "secondary": "Fiyatlara bakın",
     "selfHostLink": "Kılavuzu okuyun.",
     "sub": "Sunucuyu, güncellemeleri ve yedeklemeleri biz işletiriz. Siz sistemi alırsınız, ve size uymuyorsa 14 günlük para geri garantisi.",
-    "title": "Bir dakikada organize olun"
+    "title": "Bir dakikada organize olun",
+    "subTrial": "Sunucuyu, güncellemeleri ve yedeklemeleri biz yönetiyoruz. {{days}} gün ücretsiz deneyin, kart gerekmez.",
+    "primaryTrial": "Ücretsiz dene"
   },
   "contact": {
     "title": "Bize ulaşın",

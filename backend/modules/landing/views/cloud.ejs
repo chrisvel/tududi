@@ -99,6 +99,9 @@
                             <% } %>
                         </div>
                         <div class="plan-price-note"><%= t('cloud.priceNote') %></div>
+                        <% if (trialDays > 0) { %>
+                        <div class="plan-launch-note"><%= t('pricing.plans.cloud.trialNote') %></div>
+                        <% } %>
                     </div>
                     <ul class="plan-features">
                         <% i18n.tList('cloud.includes').forEach(function (feature) { %>

@@ -274,7 +274,8 @@
         ],
         "priceNote": "Semuanya termasuk. Batalkan kapan saja.",
         "actionTrial": "Coba gratis →",
-        "priceNoteTrial": "{{days}} hari gratis, tanpa kartu. Batalkan kapan saja."
+        "priceNoteTrial": "{{days}} hari gratis, tanpa kartu. Batalkan kapan saja.",
+        "trialNote": "Uji coba mencakup semuanya kecuali asisten AI, tautan catatan publik, dan menambahkan anggota."
       }
     },
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 14 hari, tanpa pertanyaan.",
@@ -462,7 +463,9 @@
     "secondary": "Lihat harga",
     "selfHostLink": "Baca panduannya.",
     "sub": "Kami menjalankan server, pembaruan, dan cadangan. Anda mendapatkan sistemnya, dan garansi uang kembali 14 hari jika tidak cocok untuk Anda.",
-    "title": "Terorganisir dalam satu menit"
+    "title": "Terorganisir dalam satu menit",
+    "subTrial": "Kami menjalankan server, pembaruan, dan cadangan. Coba gratis selama {{days}} hari, tanpa kartu.",
+    "primaryTrial": "Coba gratis"
   },
   "contact": {
     "title": "Hubungi kami",

@@ -718,6 +718,9 @@
                         <div class="plan-launch-note"><%= t('pricing.plans.cloud.launchNote') %></div>
                         <% } %>
                         <div class="plan-price-note"><%= trialDays > 0 ? t('pricing.plans.cloud.priceNoteTrial', faqVars) : t('pricing.plans.cloud.priceNote') %></div>
+                        <% if (trialDays > 0) { %>
+                        <div class="plan-launch-note"><%= t('pricing.plans.cloud.trialNote') %></div>
+                        <% } %>
                     </div>
                     <ul class="plan-features">
                         <% i18n.tList('pricing.plans.cloud.features', faqVars).forEach(function (feature) { %>
@@ -878,9 +881,9 @@
         <div class="container-sm">
             <div class="closing" style="margin-top:0;">
                 <h2 class="section-title" style="font-size:32px; margin-bottom:14px;"><%= t('finalCta.title') %></h2>
-                <p><%= t('finalCta.sub') %></p>
+                <p><%= trialDays > 0 ? t('finalCta.subTrial', faqVars) : t('finalCta.sub') %></p>
                 <div class="closing-actions">
-                    <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('finalCta.primary') %></a>
+                    <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= trialDays > 0 ? t('finalCta.primaryTrial') : t('finalCta.primary') %></a>
                     <a href="#pricing" class="btn-secondary"><%= t('finalCta.secondary') %></a>
                 </div>
             </div>

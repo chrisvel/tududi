@@ -274,7 +274,8 @@
         ],
         "priceNote": "Totul inclus. Anulează oricând.",
         "actionTrial": "Încearcă gratuit →",
-        "priceNoteTrial": "{{days}} zile gratuit, fără card. Anulezi oricând."
+        "priceNoteTrial": "{{days}} zile gratuit, fără card. Anulezi oricând.",
+        "trialNote": "Perioada de probă include totul, cu excepția asistentului AI, a linkurilor publice către notițe și a adăugării de membri."
       }
     },
     "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 14 de zile, fără întrebări.",
@@ -462,7 +463,9 @@
     "secondary": "Vezi prețurile",
     "selfHostLink": "Citește ghidul.",
     "sub": "Noi administrăm serverul, actualizările și backupurile. Tu ai sistemul, și o garanție de rambursare de 14 de zile dacă nu e pentru tine.",
-    "title": "Organizează-te într-un minut"
+    "title": "Organizează-te într-un minut",
+    "subTrial": "Noi ne ocupăm de server, actualizări și copii de rezervă. Încearcă gratuit {{days}} zile, fără card.",
+    "primaryTrial": "Încearcă gratuit"
   },
   "contact": {
     "title": "Contactează-ne",

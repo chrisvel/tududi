@@ -274,7 +274,8 @@
         ],
         "priceNote": "Alles inbegrepen. Zeg op elk moment op.",
         "actionTrial": "Gratis proberen →",
-        "priceNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Altijd opzegbaar."
+        "priceNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Altijd opzegbaar.",
+        "trialNote": "De proefperiode bevat alles behalve de AI-assistent, openbare notitielinks en het toevoegen van leden."
       }
     },
     "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 14 dagen geld-terug-garantie, zonder vragen.",
@@ -462,7 +463,9 @@
     "secondary": "Bekijk prijzen",
     "selfHostLink": "Lees de gids.",
     "sub": "Wij beheren de server, de updates en de backups. Jij krijgt het systeem, en een geld-terug-garantie van 14 dagen als het niet voor jou is.",
-    "title": "Organiseer jezelf in een minuut"
+    "title": "Organiseer jezelf in een minuut",
+    "subTrial": "Wij draaien de server, de updates en de back-ups. Probeer het {{days}} dagen gratis, zonder kaart.",
+    "primaryTrial": "Gratis proberen"
   },
   "contact": {
     "title": "Neem contact op",

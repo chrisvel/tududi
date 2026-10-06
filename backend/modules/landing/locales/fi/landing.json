@@ -274,7 +274,8 @@
         ],
         "priceNote": "Kaikki mukana. Peruuta milloin tahansa.",
         "actionTrial": "Kokeile ilmaiseksi →",
-        "priceNoteTrial": "{{days}} päivää ilmaiseksi, ei maksukorttia. Peru milloin tahansa."
+        "priceNoteTrial": "{{days}} päivää ilmaiseksi, ei maksukorttia. Peru milloin tahansa.",
+        "trialNote": "Kokeilujaksossa on kaikki paitsi tekoälyavustaja, julkiset muistiinpanolinkit ja jäsenten lisääminen."
       }
     },
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 14 päivän rahat takaisin -takuu, ilman kysymyksiä.",
@@ -462,7 +463,9 @@
     "secondary": "Katso hinnat",
     "selfHostLink": "Lue opas.",
     "sub": "Me ylläpidämme palvelinta, päivityksiä ja varmuuskopioita. Sinä saat järjestelmän, ja 14 päivän rahat takaisin -takuun, jos se ei sopinut sinulle.",
-    "title": "Järjestäydy minuutissa"
+    "title": "Järjestäydy minuutissa",
+    "subTrial": "Me ylläpidämme palvelinta, päivityksiä ja varmuuskopioita. Kokeile ilmaiseksi {{days}} päivää, ilman korttia.",
+    "primaryTrial": "Kokeile ilmaiseksi"
   },
   "contact": {
     "title": "Ota yhteyttä",

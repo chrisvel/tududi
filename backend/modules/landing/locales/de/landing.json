@@ -274,7 +274,8 @@
         ],
         "priceNote": "Alles inklusive. Jederzeit kündbar.",
         "actionTrial": "Kostenlos testen →",
-        "priceNoteTrial": "{{days}} Tage kostenlos, ohne Kreditkarte. Jederzeit kündbar."
+        "priceNoteTrial": "{{days}} Tage kostenlos, ohne Kreditkarte. Jederzeit kündbar.",
+        "trialNote": "Die Testphase enthält alles außer dem KI-Assistenten, öffentlichen Notizlinks und dem Hinzufügen von Mitgliedern."
       }
     },
     "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 14 Tage Geld-zurück-Garantie, ohne Nachfragen.",
@@ -462,7 +463,9 @@
     "secondary": "Preise ansehen",
     "selfHostLink": "Lies die Anleitung.",
     "sub": "Wir betreiben den Server, die Updates und die Backups. Du bekommst das System, und eine 14-tägige Geld-zurück-Garantie, falls es nichts für dich ist.",
-    "title": "In einer Minute organisiert sein"
+    "title": "In einer Minute organisiert sein",
+    "subTrial": "Wir betreiben den Server, die Updates und die Backups. Testen Sie {{days}} Tage kostenlos, ohne Karte.",
+    "primaryTrial": "Kostenlos testen"
   },
   "contact": {
     "title": "Kontakt",
