@@ -4,6 +4,7 @@ import {
     dayFraction,
     formatHabitTarget,
     isHabitCompletedInPeriod,
+    isHabitDoneForNow,
     isScheduledOn,
     totalsByDay,
 } from '../habitUtils';
@@ -130,5 +131,56 @@ describe('isHabitCompletedInPeriod', () => {
                 habit({ habit_progress: { ...progress, met: true } })
             )
         ).toBe(true);
+    });
+});
+
+describe('isHabitDoneForNow', () => {
+    const progress = {
+        period_start: '2026-09-07',
+        period_end: '2026-09-13',
+        today: '2026-09-10',
+        first_day: '2026-09-01',
+        progress: 1,
+        check_ins: 1,
+        today_check_ins: 1,
+        goal: 3,
+        met: false,
+        skipped: false,
+        scheduled_today: true,
+        multiple_per_day: false,
+    };
+
+    it('counts a weekly habit checked in today before the week is met', () => {
+        expect(
+            isHabitDoneForNow(
+                habit({
+                    habit_frequency_period: 'weekly',
+                    habit_target_count: 3,
+                    habit_progress: progress,
+                })
+            )
+        ).toBe(true);
+    });
+
+    it('needs the daily goal when several check-ins a day count', () => {
+        expect(
+            isHabitDoneForNow(
+                habit({
+                    habit_target_count: 3,
+                    habit_progress: { ...progress, multiple_per_day: true },
+                })
+            )
+        ).toBe(false);
+    });
+
+    it('is not done without a check-in today', () => {
+        expect(
+            isHabitDoneForNow(
+                habit({
+                    habit_frequency_period: 'weekly',
+                    habit_progress: { ...progress, today_check_ins: 0 },
+                })
+            )
+        ).toBe(false);
     });
 });
