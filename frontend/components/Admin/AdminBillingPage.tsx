@@ -16,6 +16,11 @@ import {
     AdminBillingSummaryRow,
 } from '../../utils/adminBillingService';
 import { FORM } from '../../constants/formClasses';
+import {
+    ADMIN_TABLE_WRAPPER,
+    SortHeader,
+    useSortedRows,
+} from './SortableTable';
 
 const AdminBillingPage: React.FC = () => {
     const { t } = useTranslation();
@@ -32,6 +37,22 @@ const AdminBillingPage: React.FC = () => {
     const [overrideExpires, setOverrideExpires] = useState('');
     const [overrideReason, setOverrideReason] = useState('');
     const [busyUser, setBusyUser] = useState<number | null>(null);
+    const { sorted, sortKey, sortDir, toggle } = useSortedRows(accounts, {
+        user: (a) => a.email,
+        plan: (a) => (a.access === 'trial' ? 'trial' : a.plan),
+        // Trials by days left, then everyone else by status
+        status: (a) =>
+            a.trial_days_left !== null
+                ? `0-${String(a.trial_days_left).padStart(4, '0')}`
+                : `1-${a.read_only_until ? 'ended' : a.status}`,
+        until: (a) => {
+            const date =
+                a.current_period_end || a.read_only_until || a.trial_ends_at;
+            return date ? new Date(date).getTime() : null;
+        },
+        ai: (a) => a.ai_tokens_this_month,
+        override: (a) => a.override_plan,
+    });
 
     const load = useCallback(
         async (q = query) => {
@@ -215,28 +236,55 @@ const AdminBillingPage: React.FC = () => {
                 </button>
             </form>
 
-            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className={ADMIN_TABLE_WRAPPER}>
                 <table className="min-w-full text-sm">
                     <thead className="bg-gray-50 dark:bg-gray-900 text-left text-gray-600 dark:text-gray-300">
                         <tr>
-                            <th className="px-4 py-2">
-                                {t('admin.billing.user', 'User')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.billing.plan', 'Plan')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.billing.status', 'Status')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.billing.until', 'Until')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.billing.aiUsage', 'AI usage (month)')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.billing.override', 'Override')}
-                            </th>
+                            <SortHeader
+                                column="user"
+                                label={t('admin.billing.user', 'User')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="plan"
+                                label={t('admin.billing.plan', 'Plan')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="status"
+                                label={t('admin.billing.status', 'Status')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="until"
+                                label={t('admin.billing.until', 'Until')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="ai"
+                                label={t(
+                                    'admin.billing.aiUsage',
+                                    'AI usage (month)'
+                                )}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="override"
+                                label={t('admin.billing.override', 'Override')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
                             <th className="px-4 py-2"></th>
                         </tr>
                     </thead>
@@ -263,7 +311,7 @@ const AdminBillingPage: React.FC = () => {
                                 </td>
                             </tr>
                         ) : (
-                            accounts.map((a) => (
+                            sorted.map((a) => (
                                 <tr
                                     key={a.user_id}
                                     className="text-gray-900 dark:text-gray-100"

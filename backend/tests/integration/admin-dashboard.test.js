@@ -1,6 +1,8 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Role, WaitlistSubscriber } = require('../../models');
+const { Role, WaitlistSubscriber, BillingAccount } = require('../../models');
+const { getConfig } = require('../../config/config');
+const entitlements = require('../../services/entitlementsService');
 const { createTestUser } = require('../helpers/testUtils');
 
 const login = async (user) => {
@@ -41,6 +43,58 @@ describe('Admin dashboard', () => {
         expect(res.body.billing).toHaveProperty('paying');
         expect(res.body.instance).toHaveProperty('registration_enabled');
         expect(typeof res.body.instance.version).toBe('string');
+    });
+
+    it('lists users with their trial, days left and payment', async () => {
+        const hosted = getConfig().hosted;
+        const saved = { enabled: hosted.enabled };
+        hosted.enabled = true;
+        entitlements.invalidate();
+        const DAY = 24 * 60 * 60 * 1000;
+        try {
+            await BillingAccount.create({
+                user_id: plain.id,
+                plan: 'free',
+                status: 'none',
+                trial_started_at: new Date(Date.now() - DAY),
+                trial_ends_at: new Date(Date.now() + 9.5 * DAY),
+            });
+            const payer = await createTestUser({
+                email: `pay_${Date.now()}@example.com`,
+            });
+            await BillingAccount.create({
+                user_id: payer.id,
+                plan: 'pro',
+                status: 'active',
+                provider_subscription_id: 'sub_1',
+            });
+
+            const res = await adminAgent.get('/api/admin/overview/users');
+            expect(res.status).toBe(200);
+            expect(res.body.hosted).toBe(true);
+            const byId = new Map(res.body.users.map((u) => [u.id, u]));
+
+            const trial = byId.get(plain.id);
+            expect(trial.access).toBe('trial');
+            expect(trial.trial_days_left).toBe(10);
+            expect(trial.paid).toBe(false);
+            expect(trial).not.toHaveProperty('password_digest');
+
+            const paying = byId.get(payer.id);
+            expect(paying.access).toBe('subscription');
+            expect(paying.paid).toBe(true);
+            expect(paying.trial_days_left).toBeNull();
+
+            expect(byId.get(admin.id).access).toBe('admin');
+        } finally {
+            Object.assign(hosted, saved);
+            entitlements.invalidate();
+        }
+    });
+
+    it('keeps the user list from regular users', async () => {
+        const res = await plainAgent.get('/api/admin/overview/users');
+        expect(res.status).toBe(403);
     });
 
     it('lists the waitlist newest first', async () => {

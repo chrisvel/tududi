@@ -3,6 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import {
+    ADMIN_TABLE_WRAPPER,
+    SortHeader,
+    useSortedRows,
+} from './SortableTable';
+import {
     fetchAdminAiUsage,
     AdminAiUsageUser,
 } from '../../utils/adminAiUsageService';
@@ -15,6 +20,13 @@ const AdminAiUsagePage: React.FC = () => {
     const [total, setTotal] = useState(0);
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
+    const { sorted, sortKey, sortDir, toggle } = useSortedRows(users, {
+        user: (u) => u.email,
+        plan: (u) => u.plan,
+        used: (u) => u.ai_credits_used_this_month,
+        limit: (u) => u.ai_credits_limit ?? Infinity,
+        remaining: (u) => u.ai_credits_remaining ?? Infinity,
+    });
 
     const load = useCallback(
         async (q = query) => {
@@ -95,25 +107,48 @@ const AdminAiUsagePage: React.FC = () => {
                 </button>
             </form>
 
-            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className={ADMIN_TABLE_WRAPPER}>
                 <table className="min-w-full text-sm">
                     <thead className="bg-gray-50 dark:bg-gray-900 text-left text-gray-600 dark:text-gray-300">
                         <tr>
-                            <th className="px-4 py-2">
-                                {t('admin.aiUsage.user', 'User')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.aiUsage.plan', 'Plan')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.aiUsage.used', 'Used')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.aiUsage.limit', 'Limit')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.aiUsage.remaining', 'Remaining')}
-                            </th>
+                            <SortHeader
+                                column="user"
+                                label={t('admin.aiUsage.user', 'User')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="plan"
+                                label={t('admin.aiUsage.plan', 'Plan')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="used"
+                                label={t('admin.aiUsage.used', 'Used')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="limit"
+                                label={t('admin.aiUsage.limit', 'Limit')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="remaining"
+                                label={t(
+                                    'admin.aiUsage.remaining',
+                                    'Remaining'
+                                )}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -136,7 +171,7 @@ const AdminAiUsagePage: React.FC = () => {
                                 </td>
                             </tr>
                         ) : (
-                            users.map((u) => (
+                            sorted.map((u) => (
                                 <tr
                                     key={u.id}
                                     className="text-gray-900 dark:text-gray-100"

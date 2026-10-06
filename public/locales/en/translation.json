@@ -2240,6 +2240,30 @@
       "postCount": "Posts: {{count}}",
       "open": "Open the blog",
       "preview": "Preview in the app"
+    },
+    "userStatus": {
+      "title": "Users",
+      "user": "User",
+      "signedUp": "Signed up",
+      "verified": "Verified",
+      "status": "Status",
+      "daysLeft": "Trial days left",
+      "paid": "Paid",
+      "trial": "Trial",
+      "subscribed": "Subscribed",
+      "pastDue": "Past due",
+      "comped": "Comped",
+      "admin": "Admin",
+      "member": "Member",
+      "trialEnded": "Trial ended",
+      "free": "No plan",
+      "addedBy": "Added by {{email}}",
+      "selfSignUp": "Signed up",
+      "deletedOn": "Deleted on {{date}}",
+      "paidByOwner": "Yes, by owner",
+      "paidYes": "Yes",
+      "paidBefore": "Not now, paid before",
+      "paidNo": "No"
     }
   },
   "billing": {

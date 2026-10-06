@@ -37,6 +37,11 @@ import {
 } from '../../entities/Role';
 import { useStore } from '../../store/useStore';
 import { FORM } from '../../constants/formClasses';
+import {
+    ADMIN_TABLE_WRAPPER,
+    SortHeader,
+    useSortedRows,
+} from './SortableTable';
 
 type AccountStatus = 'active' | 'invited' | 'no_sign_in';
 
@@ -813,6 +818,14 @@ const AdminUsersPanel: React.FC<{
     const [users, setUsers] = useState<AdminUserItem[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const { sorted, sortKey, sortDir, toggle } = useSortedRows(users ?? [], {
+        email: (u) => u.email,
+        name: (u) => u.name,
+        surname: (u) => u.surname,
+        created: (u) => new Date(u.created_at).getTime(),
+        verified: (u) => (u.email ? Number(!!u.email_verified) : null),
+        role: (u) => u.role,
+    });
     const [addOpen, setAddOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<AdminUserItem | null>(null);
     const [signInLinkUser, setSignInLinkUser] = useState<AdminUserItem | null>(
@@ -892,28 +905,58 @@ const AdminUsersPanel: React.FC<{
                     </div>
                 )}
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className={ADMIN_TABLE_WRAPPER}>
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead className="bg-gray-50 dark:bg-gray-900">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.email', 'Email')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.name', 'Name')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.surname', 'Surname')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.created', 'Created')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.verified', 'Verified')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.role', 'Role')}
-                                </th>
+                                <SortHeader
+                                    column="email"
+                                    label={t('admin.email', 'Email')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="name"
+                                    label={t('admin.name', 'Name')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="surname"
+                                    label={t('admin.surname', 'Surname')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="created"
+                                    label={t('admin.created', 'Created')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="verified"
+                                    label={t('admin.verified', 'Verified')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="role"
+                                    label={t('admin.role', 'Role')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     {t('admin.actions', 'Actions')}
                                 </th>
@@ -945,7 +988,7 @@ const AdminUsersPanel: React.FC<{
                             )}
                             {!loading &&
                                 users &&
-                                users.map((u) => (
+                                sorted.map((u) => (
                                     <tr
                                         key={u.id}
                                         className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150"

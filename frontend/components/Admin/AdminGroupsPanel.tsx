@@ -22,6 +22,11 @@ import {
     removeGroupMember,
     updateAdminGroup,
 } from '../../utils/groupsService';
+import {
+    ADMIN_TABLE_WRAPPER,
+    SortHeader,
+    useSortedRows,
+} from './SortableTable';
 
 const MAX_SUGGESTIONS = 8;
 
@@ -506,6 +511,12 @@ const AdminGroupsPanel: React.FC = () => {
         }
     };
 
+    const { sorted, sortKey, sortDir, toggle } = useSortedRows(groups ?? [], {
+        name: (g) => g.name,
+        members: (g) => g.member_count,
+        shares: (g) => g.share_count,
+    });
+
     const headerCell =
         'px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider';
 
@@ -533,19 +544,34 @@ const AdminGroupsPanel: React.FC = () => {
                 </div>
             )}
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className={ADMIN_TABLE_WRAPPER}>
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gray-50 dark:bg-gray-900">
                         <tr>
-                            <th className={headerCell}>
-                                {t('admin.groups.name', 'Name')}
-                            </th>
-                            <th className={headerCell}>
-                                {t('admin.groups.members', 'Members')}
-                            </th>
-                            <th className={headerCell}>
-                                {t('admin.groups.shares', 'Shared items')}
-                            </th>
+                            <SortHeader
+                                column="name"
+                                label={t('admin.groups.name', 'Name')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                                className={headerCell}
+                            />
+                            <SortHeader
+                                column="members"
+                                label={t('admin.groups.members', 'Members')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                                className={headerCell}
+                            />
+                            <SortHeader
+                                column="shares"
+                                label={t('admin.groups.shares', 'Shared items')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                                className={headerCell}
+                            />
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {t('admin.actions', 'Actions')}
                             </th>
@@ -581,7 +607,7 @@ const AdminGroupsPanel: React.FC = () => {
                         )}
                         {!loading &&
                             groups &&
-                            groups.map((g) => (
+                            sorted.map((g) => (
                                 <tr
                                     key={g.uid}
                                     data-testid={`group-row-${g.uid}`}

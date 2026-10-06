@@ -9,6 +9,7 @@ const adminController = require('./controller');
 
 router.post('/admin/set-admin-role', adminController.setAdminRole);
 router.get('/admin/overview', adminController.overview);
+router.get('/admin/overview/users', adminController.userStatuses);
 router.get('/admin/waitlist', adminController.listWaitlist);
 router.get('/admin/waitlist/export', adminController.exportWaitlist);
 router.delete('/admin/waitlist/:id', adminController.deleteWaitlistEntry);
