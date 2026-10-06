@@ -6,6 +6,7 @@ import { Tag } from '../entities/Tag';
 import { Person } from '../entities/Person';
 import SidebarAreas from './Sidebar/SidebarAreas';
 import SidebarFooter from './Sidebar/SidebarFooter';
+import SidebarTrialCard from './Billing/SidebarTrialCard';
 import SidebarNav from './Sidebar/SidebarNav';
 import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarHabits from './Sidebar/SidebarHabits';
@@ -227,6 +228,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         </div>
                     </div>
 
+                    <SidebarTrialCard />
                     <SidebarFooter
                         currentUser={currentUser}
                         isDarkMode={isDarkMode}

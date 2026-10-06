@@ -30,6 +30,8 @@ import {
     TaskInsightLink,
     TaskInsightsRequest,
 } from '../../utils/aiAssistantService';
+import TrialLockNotice from '../Billing/TrialLockNotice';
+import { useTrialLock } from '../../hooks/useTrialStatus';
 
 export interface TaskAIInsightsHandle {
     activate: () => void;
@@ -168,6 +170,10 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
         const [isLoading, setIsLoading] = useState(false);
         const [error, setError] = useState<string | null>(null);
         const [lowContext, setLowContext] = useState(false);
+        // On the trial the ✨ button opens a lock box instead of asking for
+        // insights the plan would refuse.
+        const aiLocked = useTrialLock('ai');
+        const [showLock, setShowLock] = useState(false);
 
         const buildPayload = (): TaskInsightsRequest => ({
             taskUid: task.uid,
@@ -214,6 +220,10 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
         // Expose activate() to parent via ref for the header ✨ button
         useImperativeHandle(ref, () => ({
             activate: () => {
+                if (aiLocked) {
+                    setShowLock((open) => !open);
+                    return;
+                }
                 if (isInitializing || isLoading) return;
                 if (dismissed) {
                     show();
@@ -270,6 +280,10 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
                 cancelled = true;
             };
         }, [task.uid]);
+
+        if (aiLocked) {
+            return showLock ? <TrialLockNotice feature="ai" /> : null;
+        }
 
         // Hide entirely when initializing, dismissed, or nothing to show yet
         if (isInitializing || (dismissed && !isLoading) || (!insights && !isLoading && !error)) {

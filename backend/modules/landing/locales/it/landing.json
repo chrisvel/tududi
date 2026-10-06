@@ -274,7 +274,8 @@
         ],
         "priceNote": "Tutto incluso. Cancella in qualsiasi momento.",
         "actionTrial": "Inizia la prova gratuita →",
-        "priceNoteTrial": "{{days}} giorni gratis, senza carta. Disdici quando vuoi."
+        "priceNoteTrial": "{{days}} giorni gratis, senza carta. Disdici quando vuoi.",
+        "trialNote": "La prova include tutto tranne l'assistente IA, i link pubblici alle note e l'aggiunta di membri."
       }
     },
     "fineprint": "Annulla quando vuoi ed esporta tutto. Se tududi Cloud dovesse mai chiudere, ricevi i tuoi dati e una guida alla migrazione self-hosted. Per spazio e volume API vale il fair use. Garanzia soddisfatti o rimborsati di 14 giorni, senza domande.",
@@ -462,7 +463,9 @@
     "secondary": "Vedi i prezzi",
     "selfHostLink": "Leggi la guida.",
     "sub": "Gestiamo noi il server, gli aggiornamenti e i backup. Tu hai il sistema, e una garanzia di rimborso di 14 giorni se non è per te.",
-    "title": "Organizzati in un minuto"
+    "title": "Organizzati in un minuto",
+    "subTrial": "Gestiamo noi il server, gli aggiornamenti e i backup. Provalo gratis per {{days}} giorni, senza carta.",
+    "primaryTrial": "Inizia la prova gratuita"
   },
   "contact": {
     "title": "Contattaci",

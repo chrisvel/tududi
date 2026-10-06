@@ -275,7 +275,8 @@
         ],
         "action": "Get started →",
         "actionTrial": "Start free trial →",
-        "priceNoteTrial": "{{days}} days free, no card needed. Cancel any time."
+        "priceNoteTrial": "{{days}} days free, no card needed. Cancel any time.",
+        "trialNote": "The trial has everything except the AI assistant, public note links and adding members."
       }
     },
     "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",
@@ -462,7 +463,9 @@
     "sub": "We run the server, the updates and the backups. You get the system, and a 14-day money-back guarantee if it is not for you.",
     "primary": "Get started",
     "secondary": "See pricing",
-    "selfHostLink": "Read the guide."
+    "selfHostLink": "Read the guide.",
+    "subTrial": "We run the server, the updates and the backups. Try it free for {{days}} days, no card needed.",
+    "primaryTrial": "Start free trial"
   },
   "contact": {
     "title": "Contact us",

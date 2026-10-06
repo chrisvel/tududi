@@ -2623,7 +2623,12 @@
     "trialIncludes": "Your trial ends on {{date}}. The AI assistant, public notes and adding members unlock when you subscribe.",
     "backToApp": "Back to tududi",
     "trialBanner_one": "You're on the free trial, {{count}} day left",
-    "trialBanner_other": "You're on the free trial, {{count}} days left"
+    "trialBanner_other": "You're on the free trial, {{count}} days left",
+    "trialLock": {
+      "ai": "The AI assistant is not part of the free trial. Subscribe to turn it on.",
+      "publicNotes": "Public note links are not part of the free trial. Subscribe to share notes with anyone.",
+      "members": "Adding members is not part of the free trial. Subscribe to add family members or teammates."
+    }
   },
   "demo": {
     "opening": "Opening the demo...",

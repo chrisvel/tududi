@@ -274,7 +274,8 @@
         ],
         "priceNote": "Allt ingår. Avsluta när du vill.",
         "actionTrial": "Prova gratis →",
-        "priceNoteTrial": "{{days}} dagar gratis, inget kort behövs. Säg upp när som helst."
+        "priceNoteTrial": "{{days}} dagar gratis, inget kort behövs. Säg upp när som helst.",
+        "trialNote": "Provperioden har allt utom AI-assistenten, offentliga anteckningslänkar och att lägga till medlemmar."
       }
     },
     "fineprint": "Avsluta när som helst och exportera allt. Om tududi Cloud någonsin stänger får du dina data och en guide för att hosta själv. Skälig användning gäller för lagring och API-volym. 14 dagars pengarna-tillbaka-garanti, inga frågor.",
@@ -462,7 +463,9 @@
     "secondary": "Se priser",
     "selfHostLink": "Läs guiden.",
     "sub": "Vi driver servern, uppdateringarna och säkerhetskopiorna. Du får systemet, och en 14-dagars pengarna-tillbaka-garanti om det inte är för dig.",
-    "title": "Bli organiserad på en minut"
+    "title": "Bli organiserad på en minut",
+    "subTrial": "Vi driver servern, uppdateringarna och säkerhetskopiorna. Prova gratis i {{days}} dagar, utan kort.",
+    "primaryTrial": "Prova gratis"
   },
   "contact": {
     "title": "Kontakta oss",

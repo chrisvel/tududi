@@ -5,7 +5,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CollisionDetection,
@@ -52,6 +52,7 @@ import { useToast } from '../Shared/ToastContext';
 import { useStore } from '../../store/useStore';
 import {
     EllipsisHorizontalIcon,
+    LockClosedIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
 import PlanTips from './PlanTips';
@@ -59,6 +60,7 @@ import { buildTips, rescheduleMissed } from './tips';
 import CandidateList, { CandidateFilter } from './CandidateList';
 import DayTimeline, { PX_PER_MINUTE } from './DayTimeline';
 import PlanList from './PlanList';
+import { useAiAllowed, useTrialLock } from '../../hooks/useTrialStatus';
 import {
     DEFAULT_DURATION,
     SLOT_MINUTES,
@@ -172,9 +174,12 @@ const PlanMyDay: React.FC = () => {
     const [now, setNow] = useState(() =>
         minuteOfDay(new Date(), getUserTimezone())
     );
-    const aiEnabled = useStore(
+    const aiSwitch = useStore(
         (state) => state.userSettingsStore.aiAssistantEnabled
     );
+    const aiAllowed = useAiAllowed();
+    const aiLocked = useTrialLock('ai');
+    const aiEnabled = aiSwitch && aiAllowed;
     const calendarEnabled = useStore(
         (state) => state.userSettingsStore.calendarEnabled
     );
@@ -978,6 +983,20 @@ const PlanMyDay: React.FC = () => {
                                 </div>
                             )}
                         </div>
+                        {aiSwitch && aiLocked && (
+                            <Link
+                                to="/subscription/new?feature=ai"
+                                className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg bg-blue-50 px-3.5 text-sm font-medium text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-200 dark:hover:bg-blue-900/50"
+                                title={t(
+                                    'subscription.trialLock.ai',
+                                    'The AI assistant is not part of the free trial. Subscribe to turn it on.'
+                                )}
+                                data-testid="ai-draft-locked"
+                            >
+                                <LockClosedIcon className="h-4 w-4" />
+                                {t('dailyPlan.ai.draft', 'Draft with AI')}
+                            </Link>
+                        )}
                         {aiEnabled && (
                             <div className="relative" ref={draftMenuRef}>
                                 <button

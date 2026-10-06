@@ -15,6 +15,8 @@ import { useTranslation } from 'react-i18next';
 import { useCan } from '../../hooks/useCan';
 import { useStore } from '../../store/useStore';
 import MemberModal from './MemberModal';
+import TrialLockNotice from '../Billing/TrialLockNotice';
+import { useTrialLock } from '../../hooks/useTrialStatus';
 import { CreatedMember } from '../../utils/membersService';
 
 type PeopleFilter = 'all' | 'members' | 'contacts';
@@ -37,7 +39,8 @@ const PeopleList: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
     const { t } = useTranslation();
     const canCreatePeople = useCan('create_people');
-    const canInvite = useCan('invite_members');
+    const membersLocked = useTrialLock('members');
+    const canInvite = useCan('invite_members') && !membersLocked;
     const [filter, setFilter] = useState<PeopleFilter>('all');
     const [memberModal, setMemberModal] = useState<{ open: boolean; person: Person | null }>({
         open: false,
@@ -208,6 +211,7 @@ const PeopleList: React.FC = () => {
                     </div>
                 </div>
 
+                <TrialLockNotice feature="members" className="mb-6" />
                 <div role="tablist" className="flex space-x-6 border-b border-gray-200 dark:border-gray-700 mb-6" data-testid="people-filters">
                     {([
                         ['all', t('people.filterAll', 'All'), visiblePeople.length],

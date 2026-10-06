@@ -45,6 +45,7 @@ import {
     minuteOfDay,
     intlLocale,
 } from './planUtils';
+import { useAiAllowed } from '../../hooks/useTrialStatus';
 
 const isRecurring = (task: Task): boolean =>
     !task.habit_mode &&
@@ -63,6 +64,7 @@ const movedPastDay = (
 };
 
 const TodayPage: React.FC = () => {
+    const aiAllowed = useAiAllowed();
     const { t, i18n } = useTranslation();
     const { showErrorToast, showUndoToast } = useToast();
     const setProgress = useDailyPlanProgress((s) => s.setProgress);
@@ -367,9 +369,9 @@ const TodayPage: React.FC = () => {
         ? Math.round((doneCount / items.length) * 100)
         : 0;
     const range = dayRange(items, events, planResponse?.day_hours);
-    const aiEnabled = useStore(
-        (state) => state.userSettingsStore.aiAssistantEnabled
-    );
+    const aiEnabled =
+        useStore((state) => state.userSettingsStore.aiAssistantEnabled) &&
+        aiAllowed;
     const tips =
         aiEnabled && started
             ? buildTips({

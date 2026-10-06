@@ -274,7 +274,8 @@
         ],
         "priceNote": "Wszystko włączone. Anuluj w każdej chwili.",
         "actionTrial": "Wypróbuj za darmo →",
-        "priceNoteTrial": "{{days}} dni za darmo, bez karty. Rezygnacja w każdej chwili."
+        "priceNoteTrial": "{{days}} dni za darmo, bez karty. Rezygnacja w każdej chwili.",
+        "trialNote": "Okres próbny obejmuje wszystko poza asystentem AI, publicznymi linkami do notatek i dodawaniem członków."
       }
     },
     "fineprint": "Zrezygnuj w każdej chwili i wyeksportuj wszystko. Gdyby tududi Cloud kiedykolwiek został zamknięty, otrzymasz swoje dane i przewodnik migracji na własny serwer. Do przestrzeni i ruchu API stosuje się zasada fair use. 14-dniowa gwarancja zwrotu pieniędzy, bez pytań.",
@@ -462,7 +463,9 @@
     "secondary": "Zobacz cenniki",
     "selfHostLink": "Przeczytaj przewodnik.",
     "sub": "Prowadzimy serwer, aktualizacje i kopie zapasowe. Ty otrzymujesz system i 14-dniową gwarancję zwrotu pieniędzy, jeśli to nie dla Ciebie.",
-    "title": "Zorganizuj się w minutę"
+    "title": "Zorganizuj się w minutę",
+    "subTrial": "Utrzymujemy serwer, aktualizacje i kopie zapasowe. Wypróbuj za darmo przez {{days}} dni, bez karty.",
+    "primaryTrial": "Wypróbuj za darmo"
   },
   "contact": {
     "title": "Skontaktuj się z nami",

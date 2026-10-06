@@ -274,7 +274,8 @@
         ],
         "priceNote": "Mọi thứ đều được bao gồm. Hủy bất cứ lúc nào.",
         "actionTrial": "Dùng thử miễn phí →",
-        "priceNoteTrial": "{{days}} ngày miễn phí, không cần thẻ. Hủy bất cứ lúc nào."
+        "priceNoteTrial": "{{days}} ngày miễn phí, không cần thẻ. Hủy bất cứ lúc nào.",
+        "trialNote": "Bản dùng thử có mọi thứ trừ trợ lý AI, liên kết ghi chú công khai và thêm thành viên."
       }
     },
     "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 14 ngày, không cần lý do.",
@@ -462,7 +463,9 @@
     "secondary": "Xem giá",
     "selfHostLink": "Đọc hướng dẫn.",
     "sub": "Chúng tôi vận hành máy chủ, các bản cập nhật và bản sao lưu. Bạn có được hệ thống, và một bảo đảm hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn.",
-    "title": "Tổ chức mọi thứ trong một phút"
+    "title": "Tổ chức mọi thứ trong một phút",
+    "subTrial": "Chúng tôi vận hành máy chủ, cập nhật và sao lưu. Dùng thử miễn phí {{days}} ngày, không cần thẻ.",
+    "primaryTrial": "Dùng thử miễn phí"
   },
   "contact": {
     "title": "Liên hệ với chúng tôi",

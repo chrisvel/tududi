@@ -274,7 +274,8 @@
         ],
         "priceNote": "Alt inkluderet. Opsig når som helst.",
         "actionTrial": "Prøv gratis →",
-        "priceNoteTrial": "{{days}} dage gratis, uden betalingskort. Opsig når som helst."
+        "priceNoteTrial": "{{days}} dage gratis, uden betalingskort. Opsig når som helst.",
+        "trialNote": "Prøveperioden har alt undtagen AI-assistenten, offentlige notelinks og tilføjelse af medlemmer."
       }
     },
     "fineprint": "Opsig når som helst og eksporter alt. Skulle tududi Cloud nogensinde lukke, får du dine data og en guide til selvhosting. Fair use gælder for lagerplads og API-volumen. 14 dages pengene-tilbage-garanti, ingen spørgsmål.",
@@ -462,7 +463,9 @@
     "secondary": "Se priser",
     "selfHostLink": "Læs guiden.",
     "sub": "Vi driver serveren, opdateringerne og sikkerhedskopierne. Du får systemet, og en 14-dages penge-tilbage-garanti, hvis det ikke er for dig.",
-    "title": "Bliv organiseret på et minut"
+    "title": "Bliv organiseret på et minut",
+    "subTrial": "Vi kører serveren, opdateringerne og sikkerhedskopierne. Prøv gratis i {{days}} dage, uden betalingskort.",
+    "primaryTrial": "Prøv gratis"
   },
   "contact": {
     "title": "Kontakt os",
