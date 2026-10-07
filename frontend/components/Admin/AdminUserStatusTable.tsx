@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getApiPath } from '../../config/paths';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { handleAuthResponse } from '../../utils/authUtils';
 import {
     ADMIN_TABLE_WRAPPER,
@@ -30,7 +31,27 @@ export interface AdminUserStatus {
     paid: boolean;
     subscription_status: string | null;
     ever_paid: boolean;
+    usage: {
+        total: number;
+        counts: Partial<Record<UsageKind, number>>;
+        last_created_at: string | null;
+    };
 }
+
+// What the breakdown lists, in order, with the English fallback label.
+const USAGE_KINDS = {
+    tasks: 'Tasks',
+    habits: 'Habits',
+    projects: 'Projects',
+    notes: 'Notes',
+    areas: 'Areas',
+    goals: 'Goals',
+    tags: 'Tags',
+    people: 'People',
+    views: 'Views',
+    inbox: 'Inbox',
+} as const;
+type UsageKind = keyof typeof USAGE_KINDS;
 
 const BADGE = 'inline-flex px-2 py-0.5 rounded-full text-xs font-medium';
 const TONE = {
@@ -42,6 +63,7 @@ const TONE = {
 };
 
 const cell = 'px-4 py-2 whitespace-nowrap';
+const COLUMNS = 7;
 const headerCell = 'px-4 py-2 text-left font-medium';
 
 // Who is on the instance and where each of them stands: signed up or added
@@ -52,6 +74,7 @@ const AdminUserStatusTable: React.FC = () => {
     const [hosted, setHosted] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState<string[]>([]);
+    const [expanded, setExpanded] = useState<number | null>(null);
     const filterGroups = useUserFilterGroups(hosted);
 
     useEffect(() => {
@@ -130,6 +153,7 @@ const AdminUserStatusTable: React.FC = () => {
             user: (u) => u.email ?? u.name,
             signedUp: (u) => new Date(u.created_at).getTime(),
             verified: (u) => (u.email ? Number(u.email_verified) : null),
+            items: (u) => u.usage.total,
             status: (u) => statusOf(u).label,
             daysLeft: (u) => u.trial_days_left,
             paid: (u) => (u.paid ? 2 : u.ever_paid ? 1 : 0),
@@ -210,6 +234,14 @@ const AdminUserStatusTable: React.FC = () => {
                                 onSort={toggle}
                                 className={headerCell}
                             />
+                            <SortHeader
+                                column="items"
+                                label={t('admin.userStatus.items', 'Items')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                                className={headerCell}
+                            />
                             {hosted && (
                                 <>
                                     <SortHeader
@@ -254,7 +286,7 @@ const AdminUserStatusTable: React.FC = () => {
                             <tr>
                                 <td
                                     className="px-4 py-3 text-gray-500"
-                                    colSpan={6}
+                                    colSpan={COLUMNS}
                                 >
                                     {t('common.loading', 'Loading...')}
                                 </td>
@@ -263,7 +295,7 @@ const AdminUserStatusTable: React.FC = () => {
                             <tr>
                                 <td
                                     className="px-4 py-3 text-gray-500"
-                                    colSpan={6}
+                                    colSpan={COLUMNS}
                                     data-testid="admin-user-filter-empty"
                                 >
                                     {t(
@@ -275,163 +307,268 @@ const AdminUserStatusTable: React.FC = () => {
                         ) : (
                             sorted.map((u) => {
                                 const status = statusOf(u);
+                                const open = expanded === u.id;
                                 return (
-                                    <tr
-                                        key={u.id}
-                                        className="text-gray-900 dark:text-gray-100"
-                                        data-testid={`admin-user-status-${u.id}`}
-                                    >
-                                        <td className="px-4 py-2">
-                                            <div>
-                                                {u.email ?? (
-                                                    <span className="italic text-gray-400">
+                                    <Fragment key={u.id}>
+                                        <tr
+                                            className="text-gray-900 dark:text-gray-100"
+                                            data-testid={`admin-user-status-${u.id}`}
+                                        >
+                                            <td className="px-4 py-2">
+                                                <div>
+                                                    {u.email ?? (
+                                                        <span className="italic text-gray-400">
+                                                            {t(
+                                                                'admin.noEmail',
+                                                                'No email'
+                                                            )}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {u.name && (
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                        {u.name}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td
+                                                className={`${cell} text-gray-600 dark:text-gray-300`}
+                                            >
+                                                <div>
+                                                    {formatDate(u.created_at)}
+                                                </div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {u.member_of
+                                                        ? t(
+                                                              'admin.userStatus.addedBy',
+                                                              {
+                                                                  defaultValue:
+                                                                      'Added by {{email}}',
+                                                                  email:
+                                                                      u
+                                                                          .member_of
+                                                                          .email ??
+                                                                      '-',
+                                                              }
+                                                          )
+                                                        : u.account_status ===
+                                                            'invited'
+                                                          ? t(
+                                                                'admin.status.invited',
+                                                                'Invitation pending'
+                                                            )
+                                                          : t(
+                                                                'admin.userStatus.selfSignUp',
+                                                                'Signed up'
+                                                            )}
+                                                </div>
+                                            </td>
+                                            <td className={cell}>
+                                                {!u.email ? (
+                                                    <span className="text-gray-400">
+                                                        -
+                                                    </span>
+                                                ) : u.email_verified ? (
+                                                    <span
+                                                        className={`${BADGE} ${TONE.green}`}
+                                                    >
                                                         {t(
-                                                            'admin.noEmail',
-                                                            'No email'
+                                                            'admin.verifiedYes',
+                                                            'Verified'
+                                                        )}
+                                                    </span>
+                                                ) : (
+                                                    <span
+                                                        className={`${BADGE} ${TONE.amber}`}
+                                                    >
+                                                        {t(
+                                                            'admin.verifiedNo',
+                                                            'Not verified'
                                                         )}
                                                     </span>
                                                 )}
-                                            </div>
-                                            {u.name && (
-                                                <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                    {u.name}
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td
-                                            className={`${cell} text-gray-600 dark:text-gray-300`}
-                                        >
-                                            <div>
-                                                {formatDate(u.created_at)}
-                                            </div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                {u.member_of
-                                                    ? t(
-                                                          'admin.userStatus.addedBy',
-                                                          {
-                                                              defaultValue:
-                                                                  'Added by {{email}}',
-                                                              email:
-                                                                  u.member_of
-                                                                      .email ??
-                                                                  '-',
-                                                          }
-                                                      )
-                                                    : u.account_status ===
-                                                        'invited'
-                                                      ? t(
-                                                            'admin.status.invited',
-                                                            'Invitation pending'
-                                                        )
-                                                      : t(
-                                                            'admin.userStatus.selfSignUp',
-                                                            'Signed up'
-                                                        )}
-                                            </div>
-                                        </td>
-                                        <td className={cell}>
-                                            {!u.email ? (
-                                                <span className="text-gray-400">
-                                                    -
-                                                </span>
-                                            ) : u.email_verified ? (
-                                                <span
-                                                    className={`${BADGE} ${TONE.green}`}
-                                                >
-                                                    {t(
-                                                        'admin.verifiedYes',
-                                                        'Verified'
-                                                    )}
-                                                </span>
-                                            ) : (
-                                                <span
-                                                    className={`${BADGE} ${TONE.amber}`}
-                                                >
-                                                    {t(
-                                                        'admin.verifiedNo',
-                                                        'Not verified'
-                                                    )}
-                                                </span>
-                                            )}
-                                        </td>
-                                        {hosted && (
-                                            <>
-                                                <td className={cell}>
-                                                    <span
-                                                        className={`${BADGE} ${status.tone}`}
-                                                        data-testid={`admin-user-access-${u.id}`}
+                                            </td>
+                                            <td
+                                                className={cell}
+                                                data-testid={`admin-user-items-${u.id}`}
+                                            >
+                                                {u.usage.total > 0 ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setExpanded(
+                                                                open
+                                                                    ? null
+                                                                    : u.id
+                                                            )
+                                                        }
+                                                        aria-expanded={open}
+                                                        className="inline-flex items-center gap-1 font-medium text-blue-700 dark:text-blue-300 hover:underline"
                                                     >
-                                                        {status.label}
+                                                        {t(
+                                                            'admin.userStatus.itemsCreated',
+                                                            {
+                                                                defaultValue:
+                                                                    '{{count}} items',
+                                                                count: u.usage
+                                                                    .total,
+                                                            }
+                                                        )}
+                                                        <ChevronDownIcon
+                                                            className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`}
+                                                        />
+                                                    </button>
+                                                ) : (
+                                                    <span className="text-gray-400">
+                                                        {t(
+                                                            'admin.userStatus.nothingCreated',
+                                                            'Nothing yet'
+                                                        )}
                                                     </span>
-                                                    {u.read_only_until && (
-                                                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                                            {t(
-                                                                'admin.userStatus.deletedOn',
+                                                )}
+                                                {u.usage.last_created_at && (
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                        {t(
+                                                            'admin.userStatus.lastCreated',
+                                                            {
+                                                                defaultValue:
+                                                                    'Last on {{date}}',
+                                                                date: formatDate(
+                                                                    u.usage
+                                                                        .last_created_at
+                                                                ),
+                                                            }
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            {hosted && (
+                                                <>
+                                                    <td className={cell}>
+                                                        <span
+                                                            className={`${BADGE} ${status.tone}`}
+                                                            data-testid={`admin-user-access-${u.id}`}
+                                                        >
+                                                            {status.label}
+                                                        </span>
+                                                        {u.read_only_until && (
+                                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                                                {t(
+                                                                    'admin.userStatus.deletedOn',
+                                                                    {
+                                                                        defaultValue:
+                                                                            'Deleted on {{date}}',
+                                                                        date: formatDate(
+                                                                            u.read_only_until
+                                                                        ),
+                                                                    }
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td
+                                                        className={cell}
+                                                        data-testid={`admin-user-days-${u.id}`}
+                                                    >
+                                                        {u.trial_days_left !==
+                                                        null ? (
+                                                            <span className="font-medium text-blue-700 dark:text-blue-300">
                                                                 {
-                                                                    defaultValue:
-                                                                        'Deleted on {{date}}',
-                                                                    date: formatDate(
-                                                                        u.read_only_until
-                                                                    ),
+                                                                    u.trial_days_left
                                                                 }
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </td>
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-gray-400">
+                                                                -
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    <td
+                                                        className={cell}
+                                                        data-testid={`admin-user-paid-${u.id}`}
+                                                    >
+                                                        {u.paid ? (
+                                                            <span
+                                                                className={`${BADGE} ${TONE.green}`}
+                                                            >
+                                                                {u.member_of
+                                                                    ? t(
+                                                                          'admin.userStatus.paidByOwner',
+                                                                          'Yes, by owner'
+                                                                      )
+                                                                    : t(
+                                                                          'admin.userStatus.paidYes',
+                                                                          'Yes'
+                                                                      )}
+                                                            </span>
+                                                        ) : u.ever_paid ? (
+                                                            <span
+                                                                className={`${BADGE} ${TONE.amber}`}
+                                                            >
+                                                                {t(
+                                                                    'admin.userStatus.paidBefore',
+                                                                    'Not now, paid before'
+                                                                )}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-gray-500 dark:text-gray-400">
+                                                                {t(
+                                                                    'admin.userStatus.paidNo',
+                                                                    'No'
+                                                                )}
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                </>
+                                            )}
+                                        </tr>
+                                        {open && (
+                                            <tr
+                                                className="bg-gray-50 dark:bg-gray-900/50"
+                                                data-testid={`admin-user-usage-${u.id}`}
+                                            >
                                                 <td
-                                                    className={cell}
-                                                    data-testid={`admin-user-days-${u.id}`}
+                                                    colSpan={COLUMNS}
+                                                    className="px-4 py-3"
                                                 >
-                                                    {u.trial_days_left !==
-                                                    null ? (
-                                                        <span className="font-medium text-blue-700 dark:text-blue-300">
-                                                            {u.trial_days_left}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-gray-400">
-                                                            -
-                                                        </span>
-                                                    )}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {(
+                                                            Object.entries(
+                                                                USAGE_KINDS
+                                                            ) as [
+                                                                UsageKind,
+                                                                string,
+                                                            ][]
+                                                        ).map(
+                                                            ([kind, label]) => {
+                                                                const n =
+                                                                    u.usage
+                                                                        .counts[
+                                                                        kind
+                                                                    ] ?? 0;
+                                                                return (
+                                                                    <span
+                                                                        key={
+                                                                            kind
+                                                                        }
+                                                                        className={`${BADGE} ${n > 0 ? TONE.blue : TONE.gray}`}
+                                                                    >
+                                                                        {t(
+                                                                            `admin.userStatus.kinds.${kind}`,
+                                                                            label
+                                                                        )}
+                                                                        <span className="ml-1.5 font-semibold">
+                                                                            {n}
+                                                                        </span>
+                                                                    </span>
+                                                                );
+                                                            }
+                                                        )}
+                                                    </div>
                                                 </td>
-                                                <td
-                                                    className={cell}
-                                                    data-testid={`admin-user-paid-${u.id}`}
-                                                >
-                                                    {u.paid ? (
-                                                        <span
-                                                            className={`${BADGE} ${TONE.green}`}
-                                                        >
-                                                            {u.member_of
-                                                                ? t(
-                                                                      'admin.userStatus.paidByOwner',
-                                                                      'Yes, by owner'
-                                                                  )
-                                                                : t(
-                                                                      'admin.userStatus.paidYes',
-                                                                      'Yes'
-                                                                  )}
-                                                        </span>
-                                                    ) : u.ever_paid ? (
-                                                        <span
-                                                            className={`${BADGE} ${TONE.amber}`}
-                                                        >
-                                                            {t(
-                                                                'admin.userStatus.paidBefore',
-                                                                'Not now, paid before'
-                                                            )}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-gray-500 dark:text-gray-400">
-                                                            {t(
-                                                                'admin.userStatus.paidNo',
-                                                                'No'
-                                                            )}
-                                                        </span>
-                                                    )}
-                                                </td>
-                                            </>
+                                            </tr>
                                         )}
-                                    </tr>
+                                    </Fragment>
                                 );
                             })
                         )}
