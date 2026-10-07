@@ -1,6 +1,7 @@
 'use strict';
 
 const inboxService = require('./service');
+const inboxAi = require('./ai');
 const { validateReferenceDate } = require('./validation');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
@@ -105,6 +106,33 @@ const inboxController = {
                 timezone: req.currentUser?.timezone || 'UTC',
                 parseDates: parse_dates !== false,
             });
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async dismissAiSuggestion(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await inboxService.dismissAiSuggestion(
+                userId,
+                req.params.uid
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async aiSuggest(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await inboxAi.suggestForItems(
+                userId,
+                req.body?.item_uids,
+                { regenerate: req.body?.regenerate === true }
+            );
             res.json(result);
         } catch (error) {
             next(error);

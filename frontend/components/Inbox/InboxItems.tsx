@@ -10,11 +10,20 @@ import {
     deleteInboxItemWithStore,
     updateInboxItemWithStore,
     ProcessedInto,
+    suggestInboxWithAi,
+    dismissInboxAiSuggestion,
+    InboxAiSuggestion,
 } from '../../utils/inboxService';
 import InboxItemDetail from './InboxItemDetail';
+import InboxAiProgress from './InboxAiProgress';
+import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
-import { InboxIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+import {
+    InboxIcon,
+    InformationCircleIcon,
+    SparklesIcon,
+} from '@heroicons/react/24/outline';
 import LoadingScreen from '../Shared/LoadingScreen';
 import ProjectModal from '../Project/ProjectModal';
 import NoteModal from '../Note/NoteModal';
@@ -32,6 +41,7 @@ import {
     updateUiSettings,
 } from '../../utils/profileService';
 import { useStore } from '../../store/useStore';
+import { fetchAIConfig } from '../../utils/aiAssistantService';
 const InboxItems: React.FC = () => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
@@ -74,6 +84,104 @@ const InboxItems: React.FC = () => {
     const [currentConversionItemUid, setCurrentConversionItemUid] = useState<
         string | null
     >(null);
+
+    // AI assist shows whenever a provider is set up: always on hosted, and
+    // on self-hosted once a key is saved in Profile -> AI Assistant (or the
+    // server's .env). It does not depend on the AI assistant switch.
+    const [aiEnabled, setAiEnabled] = useState(false);
+    useEffect(() => {
+        let cancelled = false;
+        fetchAIConfig()
+            .then((config) => {
+                if (!cancelled) setAiEnabled(config?.api_key_set === true);
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+    // Suggestions from this visit on top of the ones saved with the items
+    // (item.ai_suggestion); null means dismissed here.
+    const [aiSuggestions, setAiSuggestions] = useState<
+        Record<string, InboxAiSuggestion | null>
+    >({});
+    const suggestionFor = (item: {
+        uid?: string;
+        ai_suggestion?: InboxAiSuggestion | null;
+    }) => {
+        if (!item.uid) return undefined;
+        const local = aiSuggestions[item.uid];
+        if (local !== undefined) return local ?? undefined;
+        return item.ai_suggestion ?? undefined;
+    };
+    // Asking again replaces saved suggestions, so it is confirmed first.
+    const [regenerateRequest, setRegenerateRequest] = useState<{
+        uids: string[];
+        scope: 'all' | 'item';
+    } | null>(null);
+    // Single items being analyzed, and whether the whole list is; each shows
+    // its own progress line.
+    const [aiPending, setAiPending] = useState<Set<string>>(new Set());
+    const [assistingAll, setAssistingAll] = useState(false);
+
+    const requestAiSuggestions = async (
+        uids: string[],
+        scope: 'all' | 'item' = 'item',
+        regenerate = false
+    ) => {
+        if (uids.length === 0) return;
+        if (scope === 'all') setAssistingAll(true);
+        else setAiPending((prev) => new Set([...prev, ...uids]));
+        try {
+            const suggestions = await suggestInboxWithAi(uids, { regenerate });
+            setAiSuggestions((prev) => {
+                const next = { ...prev };
+                suggestions.forEach((s) => {
+                    next[s.item_uid] = s;
+                });
+                return next;
+            });
+            if (suggestions.length === 0) {
+                showErrorToast(
+                    t('inbox.ai.noSuggestions', 'The AI had no suggestions.')
+                );
+            }
+        } catch (error) {
+            showErrorToast(
+                error instanceof Error && error.message
+                    ? error.message
+                    : t('inbox.ai.failed', 'Could not get AI suggestions.')
+            );
+        } finally {
+            if (scope === 'all') setAssistingAll(false);
+            setAiPending((prev) => {
+                const next = new Set(prev);
+                uids.forEach((uid) => next.delete(uid));
+                return next;
+            });
+        }
+    };
+
+    // Ask about these items, or confirm first when any already has a
+    // suggestion, since asking again replaces it.
+    const startAiAssist = (uids: string[], scope: 'all' | 'item') => {
+        const byUid = new Map(inboxItems.map((item) => [item.uid, item]));
+        const hasSaved = uids.some((uid) => {
+            const item = byUid.get(uid);
+            return !!item && !!suggestionFor(item);
+        });
+        if (hasSaved) setRegenerateRequest({ uids, scope });
+        else void requestAiSuggestions(uids, scope);
+    };
+
+    const dismissAiSuggestion = (uid: string) => {
+        setAiSuggestions((prev) => ({ ...prev, [uid]: null }));
+        dismissInboxAiSuggestion(uid).catch(() => {
+            showErrorToast(
+                t('inbox.ai.dismissFailed', 'Could not dismiss the suggestion.')
+            );
+        });
+    };
 
     useEffect(() => {
         const urlPageSize = searchParams.get('loaded');
@@ -236,6 +344,13 @@ const InboxItems: React.FC = () => {
     ): Promise<void> => {
         try {
             await updateInboxItemWithStore(uid, newContent);
+            // The server drops a suggestion for changed text; show what it
+            // returned instead of the one from this visit.
+            setAiSuggestions((prev) => {
+                const next = { ...prev };
+                delete next[uid];
+                return next;
+            });
             showSuccessToast(t('inbox.itemUpdated'));
         } catch (error) {
             console.error('Failed to update inbox item:', error);
@@ -288,7 +403,9 @@ const InboxItems: React.FC = () => {
             }
 
             if (options.navigateAfterCreate && createdTask.uid) {
-                navigate(`/task/${createdTask.uid}`, { state: { from: location.pathname + location.search } });
+                navigate(`/task/${createdTask.uid}`, {
+                    state: { from: location.pathname + location.search },
+                });
             }
 
             return createdTask;
@@ -382,7 +499,8 @@ const InboxItems: React.FC = () => {
             const updatedProjects = await fetchProjects();
             setProjects(updatedProjects);
 
-            const { setProjects: setGlobalProjects } = useStore.getState().projectsStore;
+            const { setProjects: setGlobalProjects } =
+                useStore.getState().projectsStore;
             setGlobalProjects(updatedProjects);
 
             if (currentConversionItemUid !== null) {
@@ -511,7 +629,9 @@ const InboxItems: React.FC = () => {
                 {/* ── Info banner ──────────────────────────────────────────── */}
                 <div
                     className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                        isInfoExpanded ? 'max-h-48 opacity-100 mb-5' : 'max-h-0 opacity-0 mb-0'
+                        isInfoExpanded
+                            ? 'max-h-48 opacity-100 mb-5'
+                            : 'max-h-0 opacity-0 mb-0'
                     }`}
                 >
                     <div className="flex gap-3 px-4 py-3.5 bg-blue-50/60 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800/20">
@@ -521,10 +641,18 @@ const InboxItems: React.FC = () => {
                                 'inbox.infoShort',
                                 'Inbox is where uncategorized thoughts land — jot things down, sort them later.'
                             )}{' '}
-                            <span className="text-blue-600 dark:text-blue-400 font-semibold">#tag</span>
-                            {' '}{t('inbox.shortcutTag', 'to label with a tag')},{' '}
-                            <span className="text-green-700 dark:text-green-400 font-semibold">+Project</span>
-                            {' '}{t('inbox.shortcutProject', 'to assign to a project')}.
+                            <span className="text-blue-600 dark:text-blue-400 font-semibold">
+                                #tag
+                            </span>{' '}
+                            {t('inbox.shortcutTag', 'to label with a tag')},{' '}
+                            <span className="text-green-700 dark:text-green-400 font-semibold">
+                                +Project
+                            </span>{' '}
+                            {t(
+                                'inbox.shortcutProject',
+                                'to assign to a project'
+                            )}
+                            .
                         </div>
                     </div>
                 </div>
@@ -549,39 +677,79 @@ const InboxItems: React.FC = () => {
                 {inboxItems.length > 0 && (
                     <div className="w-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-1.5">
                         {/* Recently captured – collapsible header */}
-                        <button
-                            onClick={() =>
-                                setInboxListExpanded((prev) => {
-                                    const next = !prev;
-                                    updateUiSettings({
-                                        inbox: { recentlyCapturedExpanded: next },
-                                    }).catch(() => {});
-                                    return next;
-                                })
-                            }
-                            className="flex items-center gap-2.5 w-full px-4 py-2.5 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
-                        >
-                            <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                                {t('inbox.recentlyCaptured', 'Recently captured')}
-                            </span>
-                            <span className="text-[11px] text-gray-400 dark:text-gray-500">
-                                {inboxItems.length}
-                            </span>
-
-                            <span className="flex-1" />
-
-                            <svg
-                                className={`w-3 h-3 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${inboxListExpanded ? 'rotate-90' : ''}`}
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() =>
+                                    setInboxListExpanded((prev) => {
+                                        const next = !prev;
+                                        updateUiSettings({
+                                            inbox: {
+                                                recentlyCapturedExpanded: next,
+                                            },
+                                        }).catch(() => {});
+                                        return next;
+                                    })
+                                }
+                                className="flex flex-1 min-w-0 items-center gap-2.5 px-4 py-2.5 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
                             >
-                                <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
+                                <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                                    {t(
+                                        'inbox.recentlyCaptured',
+                                        'Recently captured'
+                                    )}
+                                </span>
+                                <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                                    {inboxItems.length}
+                                </span>
+
+                                <span className="flex-1" />
+
+                                <svg
+                                    className={`w-3 h-3 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${inboxListExpanded ? 'rotate-90' : ''}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </button>
+                            {aiEnabled && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setInboxListExpanded(true);
+                                        startAiAssist(
+                                            inboxItems
+                                                .map((item) => item.uid)
+                                                .filter(
+                                                    (uid): uid is string =>
+                                                        !!uid
+                                                ),
+                                            'all'
+                                        );
+                                    }}
+                                    disabled={assistingAll}
+                                    className="mr-1.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-violet-100 px-3 py-1.5 text-xs font-medium text-violet-700 hover:bg-violet-200 disabled:opacity-60 dark:bg-violet-500/20 dark:text-violet-200 dark:hover:bg-violet-500/30"
+                                    data-testid="inbox-ai-assist"
+                                >
+                                    <SparklesIcon
+                                        className={`h-3.5 w-3.5 ${assistingAll ? 'animate-pulse' : ''}`}
+                                    />
+                                    {assistingAll
+                                        ? t('inbox.ai.assisting', 'Thinking…')
+                                        : t('inbox.ai.assist', 'AI assist')}
+                                </button>
+                            )}
+                        </div>
+
+                        {assistingAll && (
+                            <div className="px-2.5 pb-1.5">
+                                <InboxAiProgress scope="all" />
+                            </div>
+                        )}
 
                         {inboxListExpanded && (
                             <div className="flex flex-col">
@@ -593,10 +761,24 @@ const InboxItems: React.FC = () => {
                                         onDelete={handleDeleteItem}
                                         onUpdate={handleUpdateItem}
                                         openTaskModal={handleOpenTaskModal}
-                                        openProjectModal={handleOpenProjectModal}
+                                        openProjectModal={
+                                            handleOpenProjectModal
+                                        }
                                         openNoteModal={handleOpenNoteModal}
                                         projects={projects}
                                         isNew={item.uid === lastAddedUid}
+                                        aiEnabled={aiEnabled}
+                                        aiSuggestion={suggestionFor(item)}
+                                        aiPending={
+                                            !!item.uid &&
+                                            aiPending.has(item.uid)
+                                        }
+                                        onAiSuggest={(uid) =>
+                                            startAiAssist([uid], 'item')
+                                        }
+                                        onDismissAiSuggestion={
+                                            dismissAiSuggestion
+                                        }
                                     />
                                 ))}
 
@@ -610,16 +792,38 @@ const InboxItems: React.FC = () => {
                                         >
                                             {isLoading ? (
                                                 <>
-                                                    <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                    <svg
+                                                        className="animate-spin h-3.5 w-3.5"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <circle
+                                                            className="opacity-25"
+                                                            cx="12"
+                                                            cy="12"
+                                                            r="10"
+                                                            stroke="currentColor"
+                                                            strokeWidth="4"
+                                                        />
+                                                        <path
+                                                            className="opacity-75"
+                                                            fill="currentColor"
+                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                        />
                                                     </svg>
-                                                    {t('inbox.loading', 'Loading…')}
+                                                    {t(
+                                                        'inbox.loading',
+                                                        'Loading…'
+                                                    )}
                                                 </>
                                             ) : (
                                                 <>
                                                     <InboxIcon className="h-3.5 w-3.5" />
-                                                    {t('inbox.loadMore', 'Load more')}
+                                                    {t(
+                                                        'inbox.loadMore',
+                                                        'Load more'
+                                                    )}
                                                 </>
                                             )}
                                         </button>
@@ -631,7 +835,10 @@ const InboxItems: React.FC = () => {
                                     {t(
                                         'inbox.showingItems',
                                         'Showing {{current}} of {{total}} items',
-                                        { current: inboxItems.length, total: pagination.total }
+                                        {
+                                            current: inboxItems.length,
+                                            total: pagination.total,
+                                        }
                                     )}
                                 </div>
                             </div>
@@ -691,6 +898,35 @@ const InboxItems: React.FC = () => {
                         return null;
                     }
                 })()}
+
+                {regenerateRequest && (
+                    <ConfirmDialog
+                        title={t(
+                            'inbox.ai.regenerateTitle',
+                            'Regenerate AI suggestions?'
+                        )}
+                        message={
+                            regenerateRequest.scope === 'all'
+                                ? t(
+                                      'inbox.ai.regenerateAll',
+                                      'The AI will look at your inbox again and replace the current suggestions.'
+                                  )
+                                : t(
+                                      'inbox.ai.regenerateItem',
+                                      'The AI will look at this item again and replace its current suggestion.'
+                                  )
+                        }
+                        confirmButtonText={t('inbox.ai.yes', 'Yes')}
+                        cancelButtonText={t('inbox.ai.no', 'No')}
+                        confirmButtonClassName="bg-violet-600 hover:bg-violet-700"
+                        onConfirm={() => {
+                            const { uids, scope } = regenerateRequest;
+                            setRegenerateRequest(null);
+                            void requestAiSuggestions(uids, scope, true);
+                        }}
+                        onCancel={() => setRegenerateRequest(null)}
+                    />
+                )}
             </div>
         </div>
     );
