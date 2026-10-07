@@ -21,6 +21,7 @@ import { getCurrentUser } from '../../utils/userUtils';
 import Tooltip from '../Shared/Tooltip';
 import EntityCard from '../Shared/EntityCard';
 import { PROJECT_TABLE_GRID } from './projectTableLayout';
+import { getProjectStatusTint } from './projectStatusStyles';
 import { avatarTint } from '../../utils/avatarTint';
 import { differenceInCalendarDays } from 'date-fns';
 import { listShares, ListSharesResponseRow } from '../../utils/sharesService';
@@ -82,23 +83,6 @@ const getStatusLabel = (status: ProjectStatus | undefined, t: any): string => {
             return t('projectStatus.cancelled', 'Cancelled');
         default:
             return t('projectStatus.not_started', 'Not Started');
-    }
-};
-
-const getStatusTint = (status: ProjectStatus | undefined): string => {
-    switch (status) {
-        case 'in_progress':
-            return 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300';
-        case 'done':
-            return 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300';
-        case 'waiting':
-            return 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300';
-        case 'planned':
-            return 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300';
-        case 'cancelled':
-            return 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300';
-        default:
-            return 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
     }
 };
 
@@ -623,7 +607,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             <div className="flex">
                 {renderStatusPicker(
                     getStatusLabel(project.status, t),
-                    `rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-opacity hover:opacity-80 ${getStatusTint(project.status)}`,
+                    `rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-opacity hover:opacity-80 ${getProjectStatusTint(project.status)}`,
                     'left-0 top-full mt-1'
                 )}
             </div>
