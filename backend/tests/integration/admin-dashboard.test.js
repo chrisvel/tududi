@@ -54,6 +54,64 @@ describe('Admin dashboard', () => {
         expect(typeof res.body.instance.version).toBe('string');
     });
 
+    it('reports 14 days of signups, activation and active users', async () => {
+        await Task.create({ name: 'First', user_id: plain.id });
+
+        const res = await adminAgent.get('/api/admin/overview');
+        expect(res.status).toBe(200);
+        const { trends } = res.body;
+        expect(trends.days).toHaveLength(14);
+        expect(trends.days[13].date).toBe(
+            new Date().toISOString().slice(0, 10)
+        );
+        expect(trends.days[13].signups).toBeGreaterThanOrEqual(2);
+        expect(trends.signups.last7d).toBe(
+            trends.days.slice(7).reduce((n, d) => n + d.signups, 0)
+        );
+        expect(trends.activation.new_users).toBeGreaterThanOrEqual(2);
+        expect(trends.activation.activated).toBeGreaterThanOrEqual(1);
+        expect(trends.activation.activated).toBeLessThan(
+            trends.activation.new_users
+        );
+        expect(trends.active_users_7d).toBeGreaterThanOrEqual(1);
+        expect(trends.billing).toBeNull();
+    });
+
+    it('adds trial and churn signals on a hosted instance', async () => {
+        const hosted = getConfig().hosted;
+        const saved = { enabled: hosted.enabled };
+        hosted.enabled = true;
+        entitlements.invalidate();
+        const DAY = 24 * 60 * 60 * 1000;
+        try {
+            await BillingAccount.create({
+                user_id: plain.id,
+                plan: 'free',
+                status: 'none',
+                trial_started_at: new Date(Date.now() - DAY),
+                trial_ends_at: new Date(Date.now() + 3 * DAY),
+            });
+            await BillingAccount.create({
+                user_id: admin.id,
+                plan: 'pro',
+                status: 'canceled',
+                canceled_at: new Date(Date.now() - DAY),
+                last_payment_failed_at: new Date(Date.now() - 2 * DAY),
+            });
+
+            const res = await adminAgent.get('/api/admin/overview');
+            expect(res.body.trends.billing).toEqual({
+                trials_started_7d: 1,
+                trials_ending_7d: 1,
+                canceled_7d: 1,
+                payment_failed_7d: 1,
+            });
+        } finally {
+            Object.assign(hosted, saved);
+            entitlements.invalidate();
+        }
+    });
+
     it('lists users with their trial, days left and payment', async () => {
         const hosted = getConfig().hosted;
         const saved = { enabled: hosted.enabled };
