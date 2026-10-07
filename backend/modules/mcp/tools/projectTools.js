@@ -1,7 +1,7 @@
 'use strict';
 
 const entitlements = require('../../../services/entitlementsService');
-const { Project, Area, Tag, Goal } = require('../../../models');
+const { sequelize, Project, Area, Tag, Goal } = require('../../../models');
 const { Op } = require('sequelize');
 const projectsRepository = require('../../projects/repository');
 const permissionsService = require('../../../services/permissionsService');
@@ -9,6 +9,7 @@ const rolesService = require('../../../services/rolesService');
 const {
     syncProjectSharesFromContainer,
 } = require('../../../services/containerShareSync');
+const { resolveTagsForTransaction } = require('./tagResolver');
 
 const goalInputProperties = {
     goal_id: {
@@ -276,18 +277,22 @@ function registerProjectTools(server, context, tools) {
 
             await rolesService.assertCan(context.userId, 'create_projects');
             await entitlements.assertCanCreate(context.userId, 'project');
-            const project = await Project.create(projectData);
+            const project = await sequelize.transaction(async (transaction) => {
+                const project = await Project.create(projectData, {
+                    transaction,
+                });
 
-            if (params.tags && params.tags.length > 0) {
-                const tagInstances = [];
-                for (const tagName of params.tags) {
-                    const [tag] = await Tag.findOrCreate({
-                        where: { name: tagName, user_id: context.userId },
-                    });
-                    tagInstances.push(tag);
+                const tagInstances = await resolveTagsForTransaction(
+                    params.tags,
+                    context.userId,
+                    transaction
+                );
+                if (tagInstances !== undefined) {
+                    await project.setTags(tagInstances, { transaction });
                 }
-                await project.setTags(tagInstances);
-            }
+
+                return project;
+            });
 
             if (projectData.area_id || projectData.goal_id) {
                 await syncProjectSharesFromContainer(project.id);
