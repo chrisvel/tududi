@@ -1416,6 +1416,14 @@
     "placeholder": "Add a subtask..."
   },
   "projects": {
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "summary": "Summary",
+      "members": "Members",
+      "due": "Due",
+      "progress": "Progress"
+    },
     "addProject": "Add Project",
     "loading": "Loading projects...",
     "error": "Error loading projects",
