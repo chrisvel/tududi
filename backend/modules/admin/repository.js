@@ -87,6 +87,38 @@ class AdminRepository {
         return byUser;
     }
 
+    // Users who created a task, project, note, area or inbox item since
+    // `since`, optionally only among `userIds`. Signup seeds none of these,
+    // so a row means the person did something. Recurring instances are
+    // made by the scheduler and do not count.
+    async findCreatorIdsSince(since, userIds = null) {
+        const models = require('../../models');
+        const { Op } = require('sequelize');
+        const kinds = [
+            ['Task', { recurring_parent_id: null }],
+            ['Project', {}],
+            ['Note', {}],
+            ['Area', {}],
+            ['InboxItem', {}],
+        ];
+        const scope = userIds ? { user_id: userIds } : {};
+        const results = await Promise.all(
+            kinds.map(([modelName, where]) =>
+                models[modelName].findAll({
+                    attributes: ['user_id'],
+                    where: {
+                        ...where,
+                        ...scope,
+                        created_at: { [Op.gte]: since },
+                    },
+                    group: ['user_id'],
+                    raw: true,
+                })
+            )
+        );
+        return new Set(results.flat().map((row) => row.user_id));
+    }
+
     async findAccountOwnerIds(accountIds = null) {
         const { Account } = require('../../models');
         const rows = await Account.findAll({

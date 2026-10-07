@@ -2301,6 +2301,21 @@
       "paid": "Paying",
       "paidBefore": "Paid before",
       "neverPaid": "Never paid"
+    },
+    "trends": {
+      "title": "Last 7 days",
+      "signups": "signups",
+      "vsLastWeek": "{{diff}} vs last week",
+      "chartLabel": "Signups per day",
+      "barTitle": "{{date}}: {{n}} signups ({{prev}} a week before)",
+      "activation": "Activated",
+      "activationHint": "{{n}} of {{total}} new users created something",
+      "active": "Active users",
+      "activeHint": "created something this week",
+      "waitlist": "Waitlist joins",
+      "trialsStarted": "Trials started",
+      "trialsEnding": "Trials ending in 7 days",
+      "churn": "Canceled · failed payments"
     }
   },
   "billing": {

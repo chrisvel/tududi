@@ -502,6 +502,125 @@ class AdminService {
         };
     }
 
+    // The last 14 days as UTC days, oldest first, so the dashboard can show
+    // this week next to the one before. Signups and waitlist joins per day,
+    // how many of this week's signups did anything, who was active, and on
+    // a hosted instance the trial and churn signals for the same window.
+    async trends(now = new Date()) {
+        const {
+            User,
+            WaitlistSubscriber,
+            BillingAccount,
+        } = require('../../models');
+        const entitlements = require('../../services/entitlementsService');
+        const { Op } = require('sequelize');
+        const DAY_MS = 24 * 60 * 60 * 1000;
+        const DAYS = 14;
+
+        const today = new Date(
+            Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+        );
+        const start = new Date(today.getTime() - (DAYS - 1) * DAY_MS);
+        const weekStart = new Date(today.getTime() - 6 * DAY_MS);
+        const weekAhead = new Date(now.getTime() + 7 * DAY_MS);
+        const hosted = entitlements.isHostedMode();
+
+        const [
+            signups,
+            joins,
+            active,
+            trialsStarted,
+            trialsEnding,
+            canceled,
+            failed,
+        ] = await Promise.all([
+            User.findAll({
+                attributes: ['id', 'created_at'],
+                where: { created_at: { [Op.gte]: start } },
+                raw: true,
+            }),
+            WaitlistSubscriber.findAll({
+                attributes: ['created_at'],
+                where: { created_at: { [Op.gte]: start } },
+                raw: true,
+            }),
+            adminRepository.findCreatorIdsSince(weekStart),
+            hosted
+                ? BillingAccount.count({
+                      where: { trial_started_at: { [Op.gte]: weekStart } },
+                  })
+                : 0,
+            hosted
+                ? BillingAccount.count({
+                      where: {
+                          trial_ends_at: { [Op.between]: [now, weekAhead] },
+                          status: { [Op.notIn]: ['active', 'past_due'] },
+                      },
+                  })
+                : 0,
+            hosted
+                ? BillingAccount.count({
+                      where: { canceled_at: { [Op.gte]: weekStart } },
+                  })
+                : 0,
+            hosted
+                ? BillingAccount.count({
+                      where: {
+                          last_payment_failed_at: { [Op.gte]: weekStart },
+                      },
+                  })
+                : 0,
+        ]);
+
+        const dayKey = (value) => new Date(value).toISOString().slice(0, 10);
+        const days = Array.from({ length: DAYS }, (_, i) => ({
+            date: dayKey(start.getTime() + i * DAY_MS),
+            signups: 0,
+            waitlist: 0,
+        }));
+        const byDate = new Map(days.map((d) => [d.date, d]));
+        for (const u of signups) {
+            const day = byDate.get(dayKey(u.created_at));
+            if (day) day.signups += 1;
+        }
+        for (const w of joins) {
+            const day = byDate.get(dayKey(w.created_at));
+            if (day) day.waitlist += 1;
+        }
+
+        const sum = (list, field) => list.reduce((n, d) => n + d[field], 0);
+        const thisWeek = days.slice(7);
+        const lastWeek = days.slice(0, 7);
+        const newIds = signups
+            .filter((u) => new Date(u.created_at) >= weekStart)
+            .map((u) => u.id);
+        const activated = newIds.length
+            ? await adminRepository.findCreatorIdsSince(weekStart, newIds)
+            : new Set();
+
+        return {
+            days,
+            signups: {
+                last7d: sum(thisWeek, 'signups'),
+                prev7d: sum(lastWeek, 'signups'),
+            },
+            waitlist: {
+                last7d: sum(thisWeek, 'waitlist'),
+                prev7d: sum(lastWeek, 'waitlist'),
+            },
+            activation: { new_users: newIds.length, activated: activated.size },
+            active_users_7d: active.size,
+            billing: hosted
+                ? {
+                      trials_started_7d: trialsStarted,
+                      trials_ending_7d: trialsEnding,
+                      canceled_7d: canceled,
+                      payment_failed_7d: failed,
+                  }
+                : null,
+        };
+    }
+
     async overview(requesterId) {
         await this.verifyAdmin(requesterId);
         const {
@@ -536,6 +655,7 @@ class AdminService {
             paying,
             registrationSetting,
             openFeedback,
+            trends,
         ] = await Promise.all([
             User.count(),
             Role.count({ where: { is_admin: true } }),
@@ -553,6 +673,7 @@ class AdminService {
             }),
             Setting.findOne({ where: { key: 'registration_enabled' } }),
             Feedback.count({ where: { resolved_at: null } }),
+            this.trends(),
         ]);
 
         return {
@@ -560,6 +681,7 @@ class AdminService {
             content: { tasks, projects, notes },
             waitlist: { total: waitlist, last7d: waitlistWeek },
             feedback: { open: openFeedback },
+            trends,
             billing: {
                 paying,
                 hosted: config.hosted?.enabled === true,
