@@ -13,7 +13,8 @@
     "faq": "FAQ",
     "signIn": "Prihlásiť sa",
     "toggle": "Prepnúť navigáciu",
-    "plan": "Naplánujte si deň"
+    "plan": "Naplánujte si deň",
+    "blog": "Blog"
   },
   "hero": {
     "badgeStars": "hviezdičiek na GitHube",
@@ -27,7 +28,9 @@
     "ctaDemo": "Vyskúšajte živé demo",
     "demoNote": "Skutočná hostovaná inštancia s ukážkovými dátami, zdieľaná a pravidelne obnovovaná",
     "screenshotAlt": "Rozhranie tududi so zobrazením Dnes a naplánovanými úlohami",
-    "cloudNote": "Žiadny server na nastavovanie. Mesačne alebo ročne a zrušiť môžete kedykoľvek."
+    "cloudNote": "Žiadny server na nastavovanie. Mesačne alebo ročne a zrušiť môžete kedykoľvek.",
+    "cloudNoteTrial": "{{days}} dní zadarmo, bez platobnej karty. Potom mesačne alebo ročne, zrušiť môžete kedykoľvek.",
+    "ctaTrial": "Vyskúšajte {{days}} dní zadarmo"
   },
   "proof": {
     "stars": "hviezdičiek na GitHube",
@@ -264,14 +267,18 @@
         "or": "alebo",
         "launchNote": "Zavádzacia ročná cena, ktorá vám zostane, kým budete predplatiteľom.",
         "priceNote": "Všetko v cene. Zrušiť môžete kedykoľvek.",
+        "priceNoteTrial": "{{days}} dní zadarmo, bez platobnej karty. Zrušiť môžete kedykoľvek.",
+        "trialNote": "Skúšobná verzia obsahuje všetko okrem AI asistenta, verejných odkazov na poznámky a pridávania členov.",
         "features": [
           "Spustené za minútu, bez nastavovania servera",
           "Neobmedzené úlohy, projekty a poznámky, plus prílohy",
+          "Pridajte členov rodiny alebo kolegov, každý ako miesto za rovnakú cenu",
           "Plánovanie dňa s AI, MCP, kalendárové feedy, CalDAV a Telegram bot",
           "Aktualizácie a denné zálohy za vás, s úložiskom {{proStorageGb}} GB",
           "Všetko kedykoľvek exportujete a účet si zrušíte sami"
         ],
-        "action": "Začať →"
+        "action": "Začať →",
+        "actionTrial": "Vyskúšať zadarmo →"
       }
     },
     "fineprint": "Zrušiť môžete kedykoľvek a všetko si exportovať. Ak by tududi Cloud niekedy skončil, dostanete svoje dáta a návod na migráciu na vlastný server. Na úložisko a objem API sa vzťahuje primerané používanie. 14-dňová záruka vrátenia peňazí bez otázok.",
@@ -348,7 +355,8 @@
       },
       "freePlan": {
         "q": "Existuje v tududi Cloud bezplatný plán alebo skúšobná verzia?",
-        "a": "Nie. Cloud stojí {{monthly}} mesačne alebo {{price}} ročne a to je celý cenník: žiadna bezplatná úroveň, žiadne odpočítavanie skúšobnej doby, žiadna karta zadaná za niečo, čo vám neskôr potichu začne účtovať. Ak vám služba nebude vyhovovať, platí 14-dňová záruka vrátenia peňazí, a ak sa chcete najprv poobzerať, na tejto stránke nájdete živé demo. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri – je to tá istá aplikácia."
+        "a": "Nie. Cloud stojí {{monthly}} mesačne alebo {{price}} ročne a to je celý cenník: žiadna bezplatná úroveň, žiadne odpočítavanie skúšobnej doby, žiadna karta zadaná za niečo, čo vám neskôr potichu začne účtovať. Ak vám služba nebude vyhovovať, platí 14-dňová záruka vrátenia peňazí, a ak sa chcete najprv poobzerať, na tejto stránke nájdete živé demo. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri – je to tá istá aplikácia.",
+        "aTrial": "Bezplatná úroveň neexistuje, ale každý nový účet dostane {{days}}-dňovú skúšobnú verziu zadarmo, bez platobnej karty. Skúšobná verzia obsahuje všetko okrem AI asistenta, verejných odkazov na poznámky a pridávania členov. Ak si predplatné nezaplatíte, účet bude 30 dní len na čítanie, aby ste si mohli exportovať dáta, a potom sa vymaže. Po skúšobnej dobe stojí Cloud {{monthly}} mesačne alebo {{price}} ročne na osobu. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri – je to tá istá aplikácia."
       },
       "leaving": {
         "q": "Môžem odísť a čo sa stane s mojimi dátami?",
@@ -384,7 +392,8 @@
     "linkTerms": "Podmienky",
     "linkPrivacy": "Ochrana súkromia",
     "linkRefunds": "Vrátenie peňazí",
-    "linkContact": "Kontakt"
+    "linkContact": "Kontakt",
+    "linkCookies": "Nastavenia cookies"
   },
   "js": {
     "showFewer": "Zobraziť menej",
@@ -430,6 +439,7 @@
     },
     "pricingTitle": "Jeden plán, dva spôsoby platby",
     "pricingSub": "Všetko v cene. Zrušiť môžete, kedykoľvek chcete.",
+    "pricingSubTrial": "Vyskúšajte {{days}} dní zadarmo, bez platobnej karty. Potom je všetko v cene a zrušiť môžete, kedykoľvek chcete.",
     "orAnnual": "alebo",
     "priceNote": "Účtuje náš platobný poskytovateľ. Ceny sú bez príslušných daní.",
     "includes": [
@@ -440,12 +450,15 @@
       "Podpora e-mailom",
       "Export všetkého kedykoľvek"
     ],
-    "selfHostLine": "Chcete si server radšej prevádzkovať sami? Je to zadarmo a je to tá istá aplikácia."
+    "selfHostLine": "Chcete si server radšej prevádzkovať sami? Je to zadarmo a je to tá istá aplikácia.",
+    "ctaTrial": "Vyskúšať zadarmo"
   },
   "finalCta": {
     "title": "Usporiadajte si to za minútu",
     "sub": "Server, aktualizácie a zálohy prevádzkujeme my. Vy dostanete systém a 14-dňovú záruku vrátenia peňazí, ak vám nebude vyhovovať.",
+    "subTrial": "Server, aktualizácie a zálohy prevádzkujeme my. Vyskúšajte {{days}} dní zadarmo, bez platobnej karty.",
     "primary": "Začať",
+    "primaryTrial": "Vyskúšať zadarmo",
     "secondary": "Pozrieť cenník",
     "selfHostLink": "Prečítajte si návod."
   },
@@ -497,5 +510,11 @@
         "alt": "Dnes s nasledujúcou úlohou, programom dňa a stretnutiami z dvoch kalendárov"
       }
     }
+  },
+  "consent": {
+    "label": "Voľba cookies",
+    "body": "Na zlepšenie vašej skúsenosti s touto stránkou používame cookies. Nastavia sa, len ak ich prijmete.",
+    "accept": "Prijať",
+    "decline": "Odmietnuť"
   }
 }
