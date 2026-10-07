@@ -1163,6 +1163,15 @@
     "failedToDeleteTag": "Failed to delete tag."
   },
   "inbox": {
+    "explicitTaskHint": "Will create a task. Save as Inbox overrides =Task.",
+    "forceInbox": "Save as Inbox (ignore =Task)",
+    "directTaskCreated": "Task created:",
+    "captureUnexpectedResult": "The server did not return a created task.",
+    "captureFailed": "Could not create task: {{message}}",
+    "captureEmptyTitle": "Enter a task name in addition to the directive and metadata.",
+    "captureMultipleProjects": "Use only one project reference for a task.",
+    "captureProjectUnavailable": "The referenced project does not exist or you cannot add tasks to it.",
+    "captureProjectAmbiguous": "More than one writable project has that name. Use a unique project name.",
     "title": "Inbox",
     "empty": "Your inbox is empty",
     "emptyItem": "(Empty item)",

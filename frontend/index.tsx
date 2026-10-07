@@ -41,24 +41,37 @@ if (!isBlogSite) {
 
 // The blog host has no app to cache or work offline.
 if ('serviceWorker' in navigator && !isBlogSite) {
+    if (!isDevelopment) {
+        window.addEventListener('online', () => {
+            navigator.serviceWorker.controller?.postMessage({
+                type: 'REPLAY_QUEUE',
+            });
+        });
+    }
     window.addEventListener('load', () => {
         // Development gets the worker only for push notifications; caching
         // and the offline queue would fight hot reloading.
         const swUrl = isDevelopment ? '/sw.js?push-only' : '/sw.js';
-        navigator.serviceWorker.register(swUrl).then((registration) => {
-            registration.addEventListener('updatefound', () => {
-                const newWorker = registration.installing;
-                if (newWorker) {
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            newWorker.postMessage({ type: 'SKIP_WAITING' });
-                        }
-                    });
-                }
+        navigator.serviceWorker
+            .register(swUrl)
+            .then((registration) => {
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                            if (
+                                newWorker.state === 'installed' &&
+                                navigator.serviceWorker.controller
+                            ) {
+                                newWorker.postMessage({ type: 'SKIP_WAITING' });
+                            }
+                        });
+                    }
+                });
+            })
+            .catch(() => {
+                // Non-fatal: app functions without service worker
             });
-        }).catch(() => {
-            // Non-fatal: app functions without service worker
-        });
 
         navigator.serviceWorker.addEventListener('message', (event) => {
             if (event.data?.type === 'SYNC_COMPLETE') {

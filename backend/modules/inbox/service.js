@@ -69,16 +69,20 @@ class InboxService {
         };
     }
 
-    async create(userId, { content, source }) {
+    async create(userId, { content, source }, options = {}) {
         const validatedContent = validateContent(content);
         const validatedSource = validateSource(source);
         const title = buildTitleFromContent(validatedContent);
 
-        const item = await inboxRepository.createForUser(userId, {
-            content: validatedContent,
-            title,
-            source: validatedSource,
-        });
+        const item = await inboxRepository.createForUser(
+            userId,
+            {
+                content: validatedContent,
+                title,
+                source: validatedSource,
+            },
+            options
+        );
 
         return { ..._.pick(item, PUBLIC_ATTRIBUTES), attachments: [] };
     }

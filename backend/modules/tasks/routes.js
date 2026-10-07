@@ -53,11 +53,9 @@ const {
     validateAssignee,
     getRecurringParentEndDate,
 } = require('./utils/validation');
-const {
-    buildTaskAttributes,
-    buildUpdateAttributes,
-} = require('./core/builders');
-const { createSubtasks, updateSubtasks } = require('./operations/subtasks');
+const { buildUpdateAttributes } = require('./core/builders');
+const { updateSubtasks } = require('./operations/subtasks');
+const { createTask } = require('./operations/create');
 const { requireQuota } = require('../../middleware/entitlements');
 const { handleCompletionStatus } = require('./operations/completion');
 const { captureOldValues, logTaskChanges } = require('./utils/logging');
@@ -382,105 +380,7 @@ router.post(
     ),
     async (req, res) => {
         try {
-            const {
-                name,
-                project_id,
-                project_uid,
-                area_id,
-                area_uid,
-                goal_id,
-                parent_task_id,
-                tags,
-                Tags,
-                subtasks,
-            } = req.body;
-            const tagsData = tags || Tags;
-
-            if (!name || name.trim() === '') {
-                return res
-                    .status(400)
-                    .json({ error: 'Task name is required.' });
-            }
-
-            const timezone = getSafeTimezone(req.currentUser.timezone);
-            const taskAttributes = buildTaskAttributes(
-                req.body,
-                req.currentUser.id,
-                timezone
-            );
-
-            try {
-                // Fetch parent end date if this is a recurring instance
-                const recurringParentEndDate = await getRecurringParentEndDate(
-                    req.body.recurring_parent_id,
-                    req.currentUser.id
-                );
-
-                validateDeferUntilAndDueDate(
-                    taskAttributes.defer_until,
-                    taskAttributes.due_date,
-                    recurringParentEndDate
-                );
-            } catch (error) {
-                return res.status(400).json({ error: error.message });
-            }
-
-            try {
-                const validProjectId = await validateProjectAccess(
-                    project_uid || project_id,
-                    req.currentUser.id
-                );
-                if (validProjectId) taskAttributes.project_id = validProjectId;
-            } catch (error) {
-                return res
-                    .status(error.message === 'Forbidden' ? 403 : 400)
-                    .json({ error: error.message });
-            }
-
-            try {
-                const validAreaId = await validateAreaAccess(
-                    area_uid || area_id,
-                    req.currentUser.id
-                );
-                if (validAreaId) taskAttributes.area_id = validAreaId;
-            } catch (error) {
-                return res.status(400).json({ error: error.message });
-            }
-
-            try {
-                const validParentId = await validateParentTaskAccess(
-                    parent_task_id,
-                    req.currentUser.id
-                );
-                if (validParentId)
-                    taskAttributes.parent_task_id = validParentId;
-            } catch (error) {
-                return res.status(400).json({ error: error.message });
-            }
-
-            try {
-                const validGoalId = await validateGoalAccess(
-                    goal_id,
-                    req.currentUser.id
-                );
-                if (validGoalId) taskAttributes.goal_id = validGoalId;
-            } catch (error) {
-                return res.status(400).json({ error: error.message });
-            }
-
-            try {
-                await validateAssignee(
-                    taskAttributes.assigned_to,
-                    req.currentUser.id,
-                    { projectId: taskAttributes.project_id }
-                );
-            } catch (error) {
-                return res.status(400).json({ error: error.message });
-            }
-
-            const task = await taskRepository.create(taskAttributes);
-            await updateTaskTags(task, tagsData, req.currentUser.id);
-            await createSubtasks(task.id, subtasks, req.currentUser.id);
+            const task = await createTask(req.body, req.currentUser);
 
             const taskWithAssociations = await taskRepository.findById(
                 task.id,
@@ -536,6 +436,9 @@ router.post(
             logError('Error creating task:', error);
             logError('Error stack:', error.stack);
             logError('Error name:', error.name);
+            if (error.isOperational) {
+                return res.status(error.statusCode).json(error.toJSON());
+            }
             res.status(400).json({
                 error: 'There was a problem creating the task.',
                 details: error.errors

@@ -71,6 +71,7 @@ const CLEANUP_TABLES = [
     'views',
     'api_tokens',
     'backups',
+    'capture_receipts',
     'inbox_items',
     'tasks',
     'notes',

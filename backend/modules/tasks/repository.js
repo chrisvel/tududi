@@ -117,9 +117,9 @@ class TaskRepository {
         return await this.model.destroy(conditions);
     }
 
-    async createMany(tasksData) {
+    async createMany(tasksData, options = {}) {
         return await Promise.all(
-            tasksData.map((taskData) => this.model.create(taskData))
+            tasksData.map((taskData) => this.model.create(taskData, options))
         );
     }
 
