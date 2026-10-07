@@ -683,7 +683,7 @@ const Projects: React.FC = () => {
 
     const projectsContainerClass =
         viewMode === 'cards'
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
             : 'flex flex-col space-y-1';
 
     if (isLoading) {
@@ -789,7 +789,7 @@ const Projects: React.FC = () => {
                                     'projects.fromTemplate',
                                     'From Template'
                                 )}
-                                className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                                className="flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                             >
                                 <RectangleStackIcon className="h-5 w-5 sm:h-4 sm:w-4" />
                                 <span className="hidden sm:inline">

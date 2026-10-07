@@ -19,6 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import { getCurrentUser } from '../../utils/userUtils';
 import Tooltip from '../Shared/Tooltip';
+import EntityCard from '../Shared/EntityCard';
+import { avatarTint } from '../../utils/avatarTint';
 import { differenceInCalendarDays } from 'date-fns';
 import { listShares, ListSharesResponseRow } from '../../utils/sharesService';
 import {
@@ -130,16 +132,15 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     const descriptionText = project.description?.trim();
     const listTitleClasses =
         'block w-full text-md font-semibold text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-200 transition-colors truncate';
+    const projectPath = project.uid
+        ? `/project/${project.uid}-${project.name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '')}`
+        : `/project/${project.id}`;
     const listTitleLink = (
         <Link
-            to={
-                project.uid
-                    ? `/project/${project.uid}-${project.name
-                          .toLowerCase()
-                          .replace(/[^a-z0-9]+/g, '-')
-                          .replace(/^-|-$/g, '')}`
-                    : `/project/${project.id}`
-            }
+            to={projectPath}
             className={listTitleClasses}
         >
             {project.name}
@@ -292,366 +293,265 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         if (!namePart) return email;
         return namePart.charAt(0).toUpperCase() + namePart.slice(1);
     };
-    return (
-        <div
-            className={`${
-                viewMode === 'cards'
-                    ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out'
-                    : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out border-l-4'
-            }`}
-            style={{
-                minHeight: viewMode === 'cards' ? '260px' : 'auto',
-                maxHeight: viewMode === 'cards' ? '260px' : 'auto',
-                ...(viewMode === 'list'
-                    ? { borderLeftColor: project.color || 'transparent' }
-                    : {}),
-            }}
-        >
-            {viewMode === 'cards' && (
-                <div className="relative">
-                    <Link
-                        to={
-                            project.uid
-                                ? `/project/${project.uid}-${project.name
-                                      .toLowerCase()
-                                      .replace(/[^a-z0-9]+/g, '-')
-                                      .replace(/^-|-$/g, '')}`
-                                : `/project/${project.id}`
-                        }
-                        className="block"
-                    >
-                        <div
-                            className="relative h-40 overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-700"
+    if (viewMode === 'cards') {
+        const taskStatus = (project as any).task_status as
+            | { done: number; total: number }
+            | undefined;
+        const area = (project as any).Area ?? project.area;
+        const { icon: StatusIcon } = getStatusIcon(project.status);
+
+        return (
+            <EntityCard
+                to={projectPath}
+                title={project.name}
+                description={descriptionText}
+                testId={`project-card-${project.id}`}
+                actions={
+                    <div className="relative dropdown-container">
+                        <button
+                            className="p-1 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-200 dark:hover:text-gray-200 dark:hover:bg-gray-800 opacity-60 group-hover:opacity-100 focus:opacity-100 focus:outline-none transition"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const projectId = project.id;
+                                if (projectId !== undefined) {
+                                    setActiveDropdown(
+                                        activeDropdown === projectId
+                                            ? null
+                                            : projectId
+                                    );
+                                }
+                            }}
+                            aria-label={t(
+                                'projectItem.toggleDropdownMenu'
+                            )}
+                            data-testid={`project-dropdown-${project.id}`}
                         >
-                            {project.image_url ? (
-                                <img
-                                    src={project.image_url}
-                                    alt={project.name}
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-full" />
-                            )}
-                            {project.color && (
-                                <div
-                                    className="absolute top-3 left-3 w-6 h-6 rounded-full ring-1 ring-black/30 shadow-md select-none"
-                                    style={{ backgroundColor: project.color }}
-                                />
-                            )}
-                        </div>
-                    </Link>
-                    {/* Overlay buttons positioned from outer relative div so dropdowns are not clipped by overflow-hidden */}
-                    <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
-                                {project.is_shared && (
-                                    <ShareIcon
-                                        className="h-4 w-4 text-green-400 drop-shadow-sm"
-                                        title={t(
-                                            'projectItem.sharedProject',
-                                            'Shared with team'
-                                        )}
-                                    />
-                                )}
-                                <div className="relative" ref={statusDropdownRef}>
+                            <EllipsisVerticalIcon className="h-5 w-5" />
+                        </button>
+                        {project.id !== undefined &&
+                            activeDropdown === project.id && (
+                                <div className="absolute right-0 top-8 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
                                     <button
-                                        className="p-1 rounded-full hover:bg-black/40 backdrop-blur-sm transition-colors"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            setStatusDropdownOpen((prev) => !prev);
+                                            if (!isOwner) {
+                                                showErrorToast(
+                                                    t(
+                                                        'errors.permissionDenied',
+                                                        'Permission denied'
+                                                    )
+                                                );
+                                                setActiveDropdown(
+                                                    null
+                                                );
+                                                return;
+                                            }
+                                            handleEditProject(
+                                                project
+                                            );
                                             setActiveDropdown(null);
                                         }}
-                                        title={getStatusLabel(project.status, t)}
-                                        aria-label={t('projectItem.changeStatus', 'Change status')}
+                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                        data-testid={`project-edit-${project.id}`}
                                     >
-                                        {(() => {
-                                            const { icon: StatusIcon } = getStatusIcon(project.status);
-                                            return <StatusIcon className="h-4 w-4 text-white/80 drop-shadow-sm" />;
-                                        })()}
+                                        {t('projectItem.edit')}
                                     </button>
-                                    {statusDropdownOpen && (
-                                        <div className="absolute right-0 top-8 z-50 min-w-[10rem] bg-white dark:bg-gray-800 shadow-xl rounded-md border border-gray-200 dark:border-gray-600 overflow-hidden">
-                                            {statusOptions.map(({ value, label, Icon }) => (
-                                                <button
-                                                    key={value}
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        onStatusChange(project, value);
-                                                        setStatusDropdownOpen(false);
-                                                    }}
-                                                    className={`flex items-center gap-2 px-3 py-2 text-sm w-full text-left transition-colors ${
-                                                        project.status === value
-                                                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                                    }`}
-                                                >
-                                                    <Icon className="h-4 w-4 flex-shrink-0" />
-                                                    <span>{label}</span>
-                                                </button>
-                                            ))}
-                                        </div>
+                                    {isOwner && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                onOpenShare(
+                                                    project
+                                                );
+                                                setActiveDropdown(
+                                                    null
+                                                );
+                                            }}
+                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                        >
+                                            {t(
+                                                'projectItem.share',
+                                                'Share'
+                                            )}
+                                        </button>
                                     )}
-                                </div>
-                                <div className="relative dropdown-container">
+                                    {isOwner && onSaveAsTemplate && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                onSaveAsTemplate(project);
+                                                setActiveDropdown(null);
+                                            }}
+                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                        >
+                                            {t('projectItem.saveAsTemplate', 'Save as Template')}
+                                        </button>
+                                    )}
                                     <button
-                                        className="p-1.5 rounded-full bg-black/30 text-white hover:bg-black/60 focus:outline-none backdrop-blur-sm"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            const projectId = project.id;
-                                            if (projectId !== undefined) {
-                                                setActiveDropdown(
-                                                    activeDropdown === projectId
-                                                        ? null
-                                                        : projectId
+                                            if (
+                                                project.id ===
+                                                    undefined ||
+                                                project.id === null
+                                            ) {
+                                                console.error(
+                                                    'Cannot delete project: Invalid ID',
+                                                    project
                                                 );
+                                                return;
                                             }
+                                            setProjectToDelete(
+                                                project
+                                            );
+                                            setIsConfirmDialogOpen(
+                                                true
+                                            );
+                                            setActiveDropdown(null);
                                         }}
-                                        aria-label={t(
-                                            'projectItem.toggleDropdownMenu'
-                                        )}
-                                        data-testid={`project-dropdown-${project.id}`}
+                                        className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                        data-testid={`project-delete-${project.id}`}
                                     >
-                                        <EllipsisVerticalIcon className="h-5 w-5" />
+                                        {t('projectItem.delete')}
                                     </button>
-                                    {project.id !== undefined &&
-                                        activeDropdown === project.id && (
-                                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        if (!isOwner) {
-                                                            showErrorToast(
-                                                                t(
-                                                                    'errors.permissionDenied',
-                                                                    'Permission denied'
-                                                                )
-                                                            );
-                                                            setActiveDropdown(
-                                                                null
-                                                            );
-                                                            return;
-                                                        }
-                                                        handleEditProject(
-                                                            project
-                                                        );
-                                                        setActiveDropdown(null);
-                                                    }}
-                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                    data-testid={`project-edit-${project.id}`}
-                                                >
-                                                    {t('projectItem.edit')}
-                                                </button>
-                                                {isOwner && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            e.stopPropagation();
-                                                            onOpenShare(
-                                                                project
-                                                            );
-                                                            setActiveDropdown(
-                                                                null
-                                                            );
-                                                        }}
-                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                    >
-                                                        {t(
-                                                            'projectItem.share',
-                                                            'Share'
-                                                        )}
-                                                    </button>
-                                                )}
-                                                {isOwner && onSaveAsTemplate && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            e.stopPropagation();
-                                                            onSaveAsTemplate(project);
-                                                            setActiveDropdown(null);
-                                                        }}
-                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                    >
-                                                        {t('projectItem.saveAsTemplate', 'Save as Template')}
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        if (
-                                                            project.id ===
-                                                                undefined ||
-                                                            project.id === null
-                                                        ) {
-                                                            console.error(
-                                                                'Cannot delete project: Invalid ID',
-                                                                project
-                                                            );
-                                                            return;
-                                                        }
-                                                        setProjectToDelete(
-                                                            project
-                                                        );
-                                                        setIsConfirmDialogOpen(
-                                                            true
-                                                        );
-                                                        setActiveDropdown(null);
-                                                    }}
-                                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                    data-testid={`project-delete-${project.id}`}
-                                                >
-                                                    {t('projectItem.delete')}
-                                                </button>
-                                            </div>
-                                        )}
                                 </div>
-                            </div>
+                            )}
                     </div>
-            )}
-
-            {viewMode === 'cards' && (
-                <div className="flex flex-1 flex-col px-4 pt-3 pb-4">
-                    <div className="space-y-0.5 flex-1">
-                        <Tooltip
-                            content={
-                                <div className="max-w-xs space-y-1 text-white">
-                                    <p className="text-sm font-semibold text-white">
-                                        {project.name}
-                                    </p>
-                                    {descriptionText && (
-                                        <p className="text-sm text-white/90">
-                                            {descriptionText}
-                                        </p>
-                                    )}
-                                </div>
-                            }
-                            className="w-full"
-                        >
-                            <Link
-                                to={
-                                    project.uid
-                                        ? `/project/${project.uid}-${project.name
-                                              .toLowerCase()
-                                              .replace(/[^a-z0-9]+/g, '-')
-                                              .replace(/^-|-$/g, '')}`
-                                        : `/project/${project.id}`
-                                }
-                                className="block text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate"
-                            >
-                                {project.name}
-                            </Link>
-                        </Tooltip>
-                    </div>
-                    <div className="mt-auto pt-2 space-y-2">
-                        <div className="flex items-center space-x-2">
-                            <div
-                                className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 cursor-help overflow-hidden"
-                                title={
-                                    (project as any).task_status
-                                        ? `${(project as any).task_status.done} of ${(project as any).task_status.total} tasks completed (${getCompletionPercentage()}%)`
-                                        : t(
-                                              'projectItem.completionPercentage',
-                                              {
-                                                  percentage:
-                                                      getCompletionPercentage(),
-                                              }
-                                          )
-                                }
-                            >
-                                <div
-                                    className="bg-blue-500 h-1 rounded-full transition-all duration-300"
-                                    style={{
-                                        width: `${getCompletionPercentage()}%`,
-                                    }}
-                                ></div>
-                            </div>
-                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-                                {(project as any).task_status
-                                    ? `${(project as any).task_status.done}/${(project as any).task_status.total}`
-                                    : '0/0'}
+                }
+                progress={{
+                    done: taskStatus?.done ?? 0,
+                    total: taskStatus?.total ?? 0,
+                    title: t('projectItem.completionPercentage', {
+                        percentage: getCompletionPercentage(),
+                    }),
+                }}
+                details={
+                    <>
+                        {dueInfo.isOverdue ? (
+                            <span className="inline-flex min-w-0 items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700 dark:bg-red-900/40 dark:text-red-300">
+                                <ExclamationTriangleIcon className="h-3 w-3 flex-shrink-0" />
+                                <span className="truncate">{dueInfo.text}</span>
                             </span>
+                        ) : (
+                            <span className="truncate">{dueInfo.text}</span>
+                        )}
+                        <div className="relative flex-shrink-0" ref={statusDropdownRef}>
+                            <button
+                                className="flex items-center gap-1 rounded px-1 py-0.5 hover:bg-gray-200 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setStatusDropdownOpen((prev) => !prev);
+                                    setActiveDropdown(null);
+                                }}
+                                aria-label={t('projectItem.changeStatus', 'Change status')}
+                            >
+                                <StatusIcon className="h-3.5 w-3.5" />
+                                <span>{getStatusLabel(project.status, t)}</span>
+                            </button>
+                            {statusDropdownOpen && (
+                                <div className="absolute right-0 bottom-full mb-1 z-50 min-w-[10rem] bg-white dark:bg-gray-800 shadow-xl rounded-md border border-gray-200 dark:border-gray-600 overflow-hidden">
+                                    {statusOptions.map(({ value, label, Icon }) => (
+                                        <button
+                                            key={value}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                onStatusChange(project, value);
+                                                setStatusDropdownOpen(false);
+                                            }}
+                                            className={`flex items-center gap-2 px-3 py-2 text-sm w-full text-left transition-colors ${
+                                                project.status === value
+                                                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                            }`}
+                                        >
+                                            <Icon className="h-4 w-4 flex-shrink-0" />
+                                            <span>{label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                        <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
-                            <div className="flex items-center min-w-0">
-                                {dueInfo.isOverdue ? (
-                                    <span className="inline-flex items-center space-x-1 rounded-full bg-red-100 px-2 py-0.5 text-red-700 dark:bg-red-900/40 dark:text-red-300 font-semibold text-[11px] leading-snug">
-                                        <ExclamationTriangleIcon
-                                            className="h-3 w-3 flex-shrink-0"
-                                            style={{ marginTop: '1px' }}
-                                        />
-                                        <span>{dueInfo.text}</span>
-                                    </span>
-                                ) : (
-                                    <span className="truncate">
-                                        {dueInfo.text}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="flex items-center justify-end min-w-0 h-7">
-                                {project.is_shared && (
-                                    <div className="flex items-center -space-x-2 h-full">
-                                        <>
-                                            {shareAvatars.avatars.map(
-                                                (share) => (
-                                                    <Tooltip
-                                                        key={`${project.uid}-${share.user_id}`}
-                                                        content={
-                                                            share.email
-                                                                ? getShareDisplayName(
-                                                                      share.email
-                                                                  )
-                                                                : t(
-                                                                      'projectItem.sharedUser',
-                                                                      'Shared user'
-                                                                  )
-                                                        }
-                                                    >
-                                                        {share.avatar_image ? (
-                                                            <img
-                                                                src={getApiPath(
-                                                                    share.avatar_image
-                                                                )}
-                                                                alt={getShareDisplayName(
-                                                                    share.email
-                                                                )}
-                                                                className="h-7 w-7 rounded-full border-2 border-white object-cover shadow-sm dark:border-gray-900"
-                                                            />
-                                                        ) : (
-                                                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-blue-500 to-purple-500 text-xs font-semibold text-white shadow-sm dark:border-gray-900">
-                                                                {getShareInitials(
-                                                                    share.email
-                                                                )}
-                                                            </span>
-                                                        )}
-                                                    </Tooltip>
-                                                )
-                                            )}
-                                            {shareAvatars.remaining > 0 && (
-                                                <Tooltip
-                                                    content={t(
-                                                        'projectItem.moreSharedUsers',
-                                                        '+{{count}} more users',
-                                                        {
-                                                            count: shareAvatars.remaining,
-                                                        }
+                    </>
+                }
+                people={
+                    project.is_shared ? (
+                        <div className="flex h-7 items-center gap-1">
+                            <>
+                                {shareAvatars.avatars.map(
+                                    (share) => (
+                                        <Tooltip
+                                            key={`${project.uid}-${share.user_id}`}
+                                            content={
+                                                share.email
+                                                    ? getShareDisplayName(
+                                                          share.email
+                                                      )
+                                                    : t(
+                                                          'projectItem.sharedUser',
+                                                          'Shared user'
+                                                      )
+                                            }
+                                        >
+                                            {share.avatar_image ? (
+                                                <img
+                                                    src={getApiPath(
+                                                        share.avatar_image
                                                     )}
-                                                >
-                                                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-semibold text-gray-700 shadow-sm dark:border-gray-900 dark:bg-gray-700 dark:text-gray-200">
-                                                        +
-                                                        {shareAvatars.remaining}
-                                                    </span>
-                                                </Tooltip>
+                                                    alt={getShareDisplayName(
+                                                        share.email
+                                                    )}
+                                                    className="h-7 w-7 rounded-full object-cover ring-2 ring-gray-50 dark:ring-gray-900"
+                                                />
+                                            ) : (
+                                                <span
+ className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ring-2 ring-gray-50 dark:ring-gray-900 ${avatarTint(share.email || String(share.user_id))}`}
+>
+                                                    {getShareInitials(
+                                                        share.email
+                                                    )}
+                                                </span>
                                             )}
-                                        </>
-                                    </div>
+                                        </Tooltip>
+                                    )
                                 )}
-                            </div>
+                                {shareAvatars.remaining > 0 && (
+                                    <Tooltip
+                                        content={t(
+                                            'projectItem.moreSharedUsers',
+                                            '+{{count}} more users',
+                                            {
+                                                count: shareAvatars.remaining,
+                                            }
+                                        )}
+                                    >
+                                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-700 dark:bg-gray-700 dark:text-gray-200 ring-2 ring-gray-50 dark:ring-gray-900">
+                                            +
+                                            {shareAvatars.remaining}
+                                        </span>
+                                    </Tooltip>
+                                )}
+                            </>
                         </div>
-                    </div>
-                </div>
-            )}
+                    ) : undefined
+                }
+                pill={area?.name ? { label: area.name, color: area.color } : null}
+            />
+        );
+    }
+
+
+    return (
+        <div
+            className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out border-l-4"
+            style={{ borderLeftColor: project.color || 'transparent' }}
+        >
 
             {viewMode === 'list' && (
                 <Link
