@@ -215,8 +215,11 @@ if (at === -1) {
   process.exit(0);
 }
 
-const body = text.slice(at + heading.length).replace(/^\s*/, '');
-const nextHeading = body.indexOf('\n## ');
+// Up to the next heading. Searching after trimming missed a heading right
+// below Unreleased, so the last version's heading counted as unreleased text
+// and every release stacked another empty heading on top (#1817).
+const body = text.slice(at + heading.length);
+const nextHeading = body.search(/^## /m);
 const unreleased = (nextHeading === -1 ? body : body.slice(0, nextHeading)).trim();
 if (!unreleased) {
   console.error(`"${heading}" is empty; leaving ${file} alone.`);

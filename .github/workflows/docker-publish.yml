@@ -242,42 +242,20 @@ jobs:
           ref: refs/tags/v${{ needs.publish.outputs.version }}
           fetch-depth: 0
 
+      # Every release gets GitHub's generated notes (merged PRs since the
+      # previous tag), with the version's CHANGELOG.md section on top when
+      # one was written.
       - name: Build release notes
-        id: notes
         env:
+          GH_TOKEN: ${{ github.token }}
           VERSION: ${{ needs.publish.outputs.version }}
-          PRERELEASE: ${{ needs.publish.outputs.prerelease }}
-        run: |
-          # A stable release documents itself: CHANGELOG.md carries a section
-          # written by hand, and that is the release body. Pre-releases are
-          # cut too often to justify that, so they get generated notes.
-          NOTES_FILE="release-notes.md"
-          if [ "$PRERELEASE" = "false" ] && [ -f CHANGELOG.md ]; then
-            awk -v v="$VERSION" '
-              $0 == "## " v { found = 1; next }
-              found && /^## / { exit }
-              found { print }
-            ' CHANGELOG.md > "$NOTES_FILE"
-          fi
-          if [ -s "$NOTES_FILE" ]; then
-            echo "Using the CHANGELOG.md section for $VERSION"
-            echo "generate=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "No CHANGELOG.md section for $VERSION; generating notes"
-            printf '' > "$NOTES_FILE"
-            echo "generate=true" >> "$GITHUB_OUTPUT"
-          fi
-          {
-            echo ""
-            echo "Docker image: \`docker pull chrisvel/tududi:$VERSION\`"
-          } >> "$NOTES_FILE"
+        run: ./scripts/release-notes.sh "$VERSION" > release-notes.md
 
       - name: Create the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: v${{ needs.publish.outputs.version }}
           PRERELEASE: ${{ needs.publish.outputs.prerelease }}
-          GENERATE: ${{ steps.notes.outputs.generate }}
         run: |
           # Re-running the workflow on a tag that already has a release must
           # update it rather than fail the run.
@@ -292,9 +270,6 @@ jobs:
             set -- "$@" --prerelease
           else
             set -- "$@" --latest
-          fi
-          if [ "$ACTION" = "create" ] && [ "$GENERATE" = "true" ]; then
-            set -- "$@" --generate-notes
           fi
           gh release "$ACTION" "$@"
           gh release view "$TAG" --json tagName,isPrerelease,url \
