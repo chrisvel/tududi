@@ -2264,7 +2264,24 @@
       "paidByOwner": "Yes, by owner",
       "paidYes": "Yes",
       "paidBefore": "Not now, paid before",
-      "paidNo": "No"
+      "paidNo": "No",
+      "items": "Items",
+      "itemsCreated_one": "{{count}} item",
+      "itemsCreated_other": "{{count}} items",
+      "lastCreated": "Last on {{date}}",
+      "nothingCreated": "Nothing yet",
+      "kinds": {
+        "tasks": "Tasks",
+        "habits": "Habits",
+        "projects": "Projects",
+        "notes": "Notes",
+        "areas": "Areas",
+        "goals": "Goals",
+        "tags": "Tags",
+        "people": "People",
+        "views": "Views",
+        "inbox": "Inbox"
+      }
     },
     "userFilter": {
       "filter": "Filter",

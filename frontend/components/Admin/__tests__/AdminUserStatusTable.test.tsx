@@ -35,6 +35,7 @@ const user = (overrides: Record<string, unknown>) => ({
     paid: false,
     subscription_status: null,
     ever_paid: false,
+    usage: { total: 0, counts: {}, last_created_at: null },
     ...overrides,
 });
 
@@ -53,6 +54,11 @@ const users = [
         paid: true,
         ever_paid: true,
         created_at: '2026-09-01T10:00:00.000Z',
+        usage: {
+            total: 12,
+            counts: { tasks: 9, projects: 2, tags: 1 },
+            last_created_at: '2026-10-06T10:00:00.000Z',
+        },
     }),
     user({
         id: 3,
@@ -161,4 +167,23 @@ describe('Admin user status table', () => {
             screen.getByTestId('admin-user-filter-empty')
         ).toBeInTheDocument();
     });
+});
+
+it('sums the items each user created and opens the breakdown on click', async () => {
+    render(<AdminUserStatusTable />);
+
+    const button = await screen.findByRole('button', { name: /12 items/ });
+    expect(screen.getByTestId('admin-user-items-1')).toHaveTextContent(
+        'Nothing yet'
+    );
+    expect(screen.queryByTestId('admin-user-usage-2')).toBeNull();
+
+    fireEvent.click(button);
+    const details = screen.getByTestId('admin-user-usage-2');
+    expect(details).toHaveTextContent('Tasks9');
+    expect(details).toHaveTextContent('Projects2');
+    expect(details).toHaveTextContent('Habits0');
+
+    fireEvent.click(button);
+    expect(screen.queryByTestId('admin-user-usage-2')).toBeNull();
 });

@@ -1,6 +1,15 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Role, WaitlistSubscriber, BillingAccount } = require('../../models');
+const {
+    Role,
+    WaitlistSubscriber,
+    BillingAccount,
+    Project,
+    Task,
+    Note,
+    Tag,
+    Person,
+} = require('../../models');
 const { getConfig } = require('../../config/config');
 const entitlements = require('../../services/entitlementsService');
 const { createTestUser } = require('../helpers/testUtils');
@@ -90,6 +99,50 @@ describe('Admin dashboard', () => {
             Object.assign(hosted, saved);
             entitlements.invalidate();
         }
+    });
+
+    it('counts the items each user created', async () => {
+        const project = await Project.create({
+            name: 'P',
+            user_id: plain.id,
+        });
+        const parent = await Task.create({
+            name: 'Weekly',
+            user_id: plain.id,
+            project_id: project.id,
+            recurrence_type: 'weekly',
+        });
+        await Task.create({
+            name: 'Generated',
+            user_id: plain.id,
+            recurring_parent_id: parent.id,
+        });
+        await Task.create({ name: 'Run', user_id: plain.id, habit_mode: true });
+        await Note.create({ title: 'N', content: 'x', user_id: plain.id });
+        await Tag.create({ name: 'home', user_id: plain.id });
+        await Person.create({ name: 'Alex', user_id: plain.id });
+
+        const res = await adminAgent.get('/api/admin/overview/users');
+        expect(res.status).toBe(200);
+        const byId = new Map(res.body.users.map((u) => [u.id, u]));
+
+        const usage = byId.get(plain.id).usage;
+        expect(usage.counts).toEqual({
+            tasks: 1,
+            habits: 1,
+            projects: 1,
+            notes: 1,
+            tags: 1,
+            people: 1,
+        });
+        expect(usage.total).toBe(6);
+        expect(usage.last_created_at).not.toBeNull();
+
+        expect(byId.get(admin.id).usage).toEqual({
+            total: 0,
+            counts: {},
+            last_created_at: null,
+        });
     });
 
     it('keeps the user list from regular users', async () => {

@@ -388,7 +388,7 @@ class AdminService {
         const now = new Date();
         const DAY_MS = 24 * 60 * 60 * 1000;
 
-        const [users, adminRoles, accounts, billingRows, identityIds] =
+        const [users, adminRoles, accounts, billingRows, identityIds, usage] =
             await Promise.all([
                 User.findAll({
                     attributes: [
@@ -416,6 +416,7 @@ class AdminService {
                     : [],
                 hosted ? BillingAccount.findAll() : [],
                 adminRepository.findIdentityUserIds(null),
+                adminRepository.countItemsByUser(),
             ]);
 
         const adminIds = new Set(adminRoles.map((r) => r.user_id));
@@ -429,6 +430,15 @@ class AdminService {
                 isAdmin: adminIds.has(userId),
                 now,
             });
+
+        const usageOf = (entry) => {
+            const counts = entry?.counts || {};
+            return {
+                total: Object.values(counts).reduce((a, b) => a + b, 0),
+                counts,
+                last_created_at: entry?.last ?? null,
+            };
+        };
 
         return {
             hosted,
@@ -486,6 +496,7 @@ class AdminService {
                         payerReason === 'grace',
                     subscription_status: payer?.status ?? null,
                     ever_paid: !!payer?.provider_subscription_id,
+                    usage: usageOf(usage.get(u.id)),
                 };
             }),
         };

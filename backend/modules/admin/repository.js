@@ -23,6 +23,70 @@ class AdminRepository {
         });
     }
 
+    // Items each user created, per kind, plus when they last created one.
+    // Recurring instances, system tags and self-people are made by the app,
+    // not the user, so none of them count.
+    async countItemsByUser() {
+        const models = require('../../models');
+        const { Op, fn, col } = require('sequelize');
+        const kinds = [
+            ['tasks', 'Task', { habit_mode: false, recurring_parent_id: null }],
+            ['habits', 'Task', { habit_mode: true, recurring_parent_id: null }],
+            ['projects', 'Project', {}],
+            ['notes', 'Note', {}],
+            ['areas', 'Area', {}],
+            ['goals', 'Goal', {}],
+            ['tags', 'Tag', { tag_type: { [Op.ne]: 'system' } }],
+            [
+                'people',
+                'Person',
+                {
+                    [Op.or]: [
+                        { linked_user_id: null },
+                        {
+                            linked_user_id: {
+                                [Op.ne]: col('Person.user_id'),
+                            },
+                        },
+                    ],
+                },
+            ],
+            ['views', 'View', {}],
+            ['inbox', 'InboxItem', {}],
+        ];
+
+        const results = await Promise.all(
+            kinds.map(([, modelName, where]) =>
+                models[modelName].findAll({
+                    attributes: [
+                        'user_id',
+                        [fn('COUNT', col('id')), 'count'],
+                        [fn('MAX', col('created_at')), 'last'],
+                    ],
+                    where,
+                    group: ['user_id'],
+                    raw: true,
+                })
+            )
+        );
+
+        const byUser = new Map();
+        kinds.forEach(([kind], i) => {
+            for (const row of results[i]) {
+                if (!byUser.has(row.user_id)) {
+                    byUser.set(row.user_id, { counts: {}, last: null });
+                }
+                const entry = byUser.get(row.user_id);
+                entry.counts[kind] = Number(row.count);
+                const last = row.last ? new Date(row.last) : null;
+                if (last && (!entry.last || last > entry.last)) {
+                    entry.last = last;
+                }
+            }
+        });
+        return byUser;
+    }
+
     async findAccountOwnerIds(accountIds = null) {
         const { Account } = require('../../models');
         const rows = await Account.findAll({
