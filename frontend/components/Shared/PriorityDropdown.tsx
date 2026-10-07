@@ -163,6 +163,7 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
                 createPortal(
                     <div
                         ref={menuRef}
+                        data-portal-menu
                         className="fixed z-[10050] whitespace-nowrap bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600"
                         style={{
                             top: `${position.top}px`,

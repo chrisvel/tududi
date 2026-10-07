@@ -1,8 +1,71 @@
 import { InboxItem } from '../entities/InboxItem';
+import { InboxAttachment } from '../entities/Attachment';
+import { Task, RecurrenceType } from '../entities/Task';
 import { useStore } from '../store/useStore';
 import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
+
+export interface InboxRecurrence {
+    recurrence_type: RecurrenceType;
+    recurrence_interval?: number;
+    recurrence_weekday?: number;
+    recurrence_weekdays?: number[];
+    recurrence_month_day?: number;
+    recurrence_week_of_month?: number;
+}
+
+export interface InboxAnalysis {
+    parsed_tags: string[];
+    parsed_projects: string[];
+    cleaned_content: string;
+    parsed_due_date: string | null;
+    parsed_date_text: string | null;
+    parsed_recurrence: InboxRecurrence | null;
+    parsed_person: string | null;
+    parsed_assignee: { uid: string; name: string } | null;
+    suggested_type: 'task' | 'note' | null;
+    suggested_reason: string | null;
+}
+
+// Relative dates in an older inbox item ("tomorrow") resolve against
+// referenceDate, so pass the item's created_at when converting it.
+export const analyzeInboxText = async (
+    content: string,
+    options: { referenceDate?: string; parseDates?: boolean } = {}
+): Promise<InboxAnalysis> => {
+    const response = await fetch(getApiPath('inbox/analyze-text'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({
+            content,
+            reference_date: options.referenceDate,
+            parse_dates: options.parseDates,
+        }),
+    });
+    await handleAuthResponse(response, 'Failed to analyze text.');
+    return response.json();
+};
+
+// Copy the parsed due date, recurrence and assignee onto a task draft.
+export const applyAnalysisToTask = (
+    task: Task,
+    analysis: InboxAnalysis | null | undefined
+): Task => {
+    if (!analysis) return task;
+    const next: Task = { ...task };
+    if (analysis.parsed_due_date) {
+        next.due_date = analysis.parsed_due_date;
+    }
+    if (analysis.parsed_recurrence) {
+        Object.assign(next, analysis.parsed_recurrence);
+    }
+    if (analysis.parsed_assignee) {
+        next.assigned_to = analysis.parsed_assignee.uid;
+    }
+    return next;
+};
 
 // API functions
 export const fetchInboxItems = async (
@@ -16,7 +79,6 @@ export const fetchInboxItems = async (
         offset: number;
         hasMore: boolean;
     };
-    trashedCount?: number;
 }> => {
     const params = new URLSearchParams({
         limit: limit.toString(),
@@ -84,14 +146,26 @@ export const updateInboxItem = async (
     return await response.json();
 };
 
-export const processInboxItem = async (itemUid: string): Promise<InboxItem> => {
+// What an item became when it was processed. The item's files move onto it.
+export type ProcessedInto =
+    | { task_uid: string }
+    | { project_uid: string }
+    | { note_uid: string };
+
+export const processInboxItem = async (
+    itemUid: string,
+    into?: ProcessedInto
+): Promise<InboxItem> => {
     const response = await fetch(getApiPath(`inbox/${itemUid}/process`), {
         method: 'PATCH',
         credentials: 'include',
-        headers: {
-            Accept: 'application/json',
-            'x-csrf-token': await getCsrfToken(),
-        },
+        headers: into
+            ? await getPostHeadersWithCsrf()
+            : {
+                  Accept: 'application/json',
+                  'x-csrf-token': await getCsrfToken(),
+              },
+        body: into ? JSON.stringify(into) : undefined,
     });
 
     await handleAuthResponse(response, 'Failed to process inbox item.');
@@ -109,32 +183,6 @@ export const deleteInboxItem = async (itemUid: string): Promise<void> => {
     });
 
     await handleAuthResponse(response, 'Failed to delete inbox item.');
-};
-
-export const trashInboxItem = async (itemUid: string): Promise<InboxItem> => {
-    const response = await fetch(getApiPath(`inbox/${itemUid}/trash`), {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-            Accept: 'application/json',
-            'x-csrf-token': await getCsrfToken(),
-        },
-    });
-    await handleAuthResponse(response, 'Failed to trash inbox item.');
-    return await response.json();
-};
-
-export const restoreInboxItems = async (itemUid: string): Promise<InboxItem> => {
-    const response = await fetch(getApiPath(`inbox/${itemUid}/restore`), {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-            Accept: 'application/json',
-            'x-csrf-token': await getCsrfToken(),
-        },
-    });
-    await handleAuthResponse(response, 'Failed to restore inbox item.');
-    return await response.json();
 };
 
 // Track last check time to detect new items
@@ -202,9 +250,6 @@ export const loadInboxItemsToStore = async (
         inboxStore.setInboxItems(items);
         inboxStore.setPagination(pagination);
         inboxStore.setError(false);
-        if (typeof result.trashedCount === 'number') {
-            inboxStore.setTrashedCount(result.trashedCount);
-        }
     } catch (error) {
         console.error('Failed to load inbox items:', error);
         inboxStore.setError(true);
@@ -275,12 +320,13 @@ export const updateInboxItemWithStore = async (
 };
 
 export const processInboxItemWithStore = async (
-    itemUid: string
+    itemUid: string,
+    into?: ProcessedInto
 ): Promise<InboxItem> => {
     const inboxStore = useStore.getState().inboxStore;
 
     try {
-        const processedItem = await processInboxItem(itemUid);
+        const processedItem = await processInboxItem(itemUid, into);
         inboxStore.removeInboxItemByUid(itemUid);
         return processedItem;
     } catch (error) {
@@ -303,46 +349,29 @@ export const deleteInboxItemWithStore = async (
     }
 };
 
-export const trashInboxItemWithStore = async (itemUid: string): Promise<void> => {
-    const inboxStore = useStore.getState().inboxStore;
-    try {
-        await trashInboxItem(itemUid);
-        inboxStore.removeInboxItemByUid(itemUid);
-        inboxStore.setTrashedCount(inboxStore.trashedCount + 1);
-    } catch (error) {
-        console.error('Failed to trash inbox item:', error);
-        throw error;
+export const uploadInboxAttachment = async (
+    itemUid: string,
+    file: File
+): Promise<InboxAttachment> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(getApiPath(`inbox/${itemUid}/attachments`), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'x-csrf-token': await getCsrfToken() },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to upload attachment');
     }
+    return await response.json();
 };
 
-export const restoreInboxItemWithStore = async (itemUid: string): Promise<void> => {
-    const inboxStore = useStore.getState().inboxStore;
-    try {
-        const restored = await restoreInboxItems(itemUid);
-        inboxStore.addInboxItem(restored);
-        inboxStore.setTrashedCount(Math.max(0, inboxStore.trashedCount - 1));
-    } catch (error) {
-        console.error('Failed to restore inbox item:', error);
-        throw error;
-    }
-};
-
-export const restoreAllTrashedWithStore = async (): Promise<void> => {
-    const inboxStore = useStore.getState().inboxStore;
-    try {
-        const response = await fetch(getApiPath('inbox/restore-all'), {
-            method: 'PATCH',
-            credentials: 'include',
-            headers: {
-                Accept: 'application/json',
-                'x-csrf-token': await getCsrfToken(),
-            },
-        });
-        await handleAuthResponse(response, 'Failed to restore items.');
-        inboxStore.setTrashedCount(0);
-        await loadInboxItemsToStore(true);
-    } catch (error) {
-        console.error('Failed to restore all trashed items:', error);
-        throw error;
-    }
-};
+export const getInboxAttachmentDownloadUrl = (
+    itemUid: string,
+    attachmentUid: string
+): string =>
+    getApiPath(`inbox/${itemUid}/attachments/${attachmentUid}/download`);

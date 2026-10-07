@@ -19,6 +19,12 @@ const {
 } = require('../../modules/caldav/utils/href-utils');
 
 jest.mock('axios');
+// The fake calendar host does not resolve, and these tests are about sync
+// behavior, not the address guard (see caldav-safe-request.test.js).
+jest.mock('../../modules/url/ssrfGuard', () => ({
+    ...jest.requireActual('../../modules/url/ssrfGuard'),
+    assertPublicHostname: jest.fn().mockResolvedValue(undefined),
+}));
 
 // A "ghost task" (#1371) is a task that comes back after every delete. It is
 // created by a CalDAV client such as tasks.org, so its VTODO lives at a path the

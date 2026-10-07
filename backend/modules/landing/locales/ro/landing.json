@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Schimbă limba",
     "langSwitcherCurrent": "Limba: {{name}}",
-    "description": "Arii, obiective, proiecte și sarcini, plus notițe și obiceiuri, într-un singur sistem. Configurează un cont tududi Cloud într-un minut. Un server MCP care expune {{tools}} unelte permite agenților AI să lucreze pe lista ta. Auto-hostarea e disponibilă dacă preferi să rulezi serverul tu însuți.",
+    "description": "Notează orice, planifică ziua cu AI în jurul calendarului și ține ariile, obiectivele, proiectele, notele și obiceiurile într-un singur sistem. Un server MCP cu {{tools}} instrumente le permite agenților AI să lucreze cu lista ta. Un cont tududi Cloud se creează într-un minut.",
     "title": "tududi: manager de sarcini și sistem de gestionare a vieții, cu MCP pentru agenți AI"
   },
   "nav": {
@@ -11,25 +11,25 @@
     "ai": "IA și MCP",
     "pricing": "Prețuri",
     "faq": "FAQ",
-    "docs": "Documentație",
-    "changelog": "Modificări",
+    "blog": "Blog",
     "signIn": "Autentificare",
     "toggle": "Deschide meniul",
-    "selfHostGuide": "Ghid de auto-hostare"
+    "plan": "Planifică-ți ziua"
   },
   "hero": {
     "badgeStars": "stele pe GitHub",
     "badgeMcp": "Server MCP integrat",
-    "starsLoading": "Se încarcă numărul de stele",
+    "badgeCloudOpen": "tududi Cloud este acum deschis",
     "ctaDemo": "Încearcă demo-ul live",
     "demoNote": "O instanță găzduită reală, cu date de exemplu, partajată și resetată periodic",
     "screenshotAlt": "Interfața tududi, cu vizualizarea Astăzi și sarcinile planificate",
-    "ctaWaitlist": "Înscrie-te pe lista de așteptare",
     "cloudNote": "Niciun server de configurat. Lunar sau anual, și poți anula oricând.",
-    "ctaPrimary": "Începe pe tududi Cloud",
-    "lede": "Arii, obiective, proiecte, sarcini, notițe și obiceiuri, într-un singur sistem. Creează un cont Cloud într-un minut.",
+    "ctaPrimary": "Începe acum",
+    "lede": "Notează orice, planifică ziua cu AI în jurul calendarului și ține ariile, obiectivele, proiectele, notele și obiceiurile într-un singur sistem. Creează un cont Cloud într-un minut.",
     "titleLine1": "Productivitate simplificată",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Începe perioada de probă gratuită de {{days}} zile",
+    "cloudNoteTrial": "Gratuit {{days}} zile, fără card. Apoi lunar sau anual, anulezi oricând."
   },
   "proof": {
     "stars": "stele pe GitHub",
@@ -37,7 +37,6 @@
     "languages": "{{count}} limbi",
     "dockerPulls": "descărcări Docker",
     "discord": "membri pe Discord",
-    "discordAlt": "Discord: {{count}} membri",
     "minute": "Configurat într-un minut"
   },
   "press": {
@@ -63,16 +62,11 @@
         "body": "Construit pe Model Context Protocol, deschis. Funcționează cu Claude și cu alți clienți MCP."
       }
     },
-    "configTitle": "Conectează-l la Claude Desktop",
     "footnoteClients": "La fel funcționează cu Cursor, Windsurf, Cline și orice alt client MCP.",
     "footnoteDocsLink": "Citește documentația MCP →",
     "assistantTitle": "Asistent IA",
     "assistantLede": "Un strat separat și opțional care îți citește datele și îți întoarce rezumate în limbaj obișnuit. Funcționează cu orice furnizor compatibil OpenAI, inclusiv găzduit de tine, precum Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Rezumatul dimineții",
-        "body": "Un rezumat matinal cu sarcina ta principală și semnalele de risc pe care merită să le știi."
-      },
       "task": {
         "title": "Analiza sarcinii",
         "body": "Pași următori sugerați pentru o anumită sarcină, generați la cerere."
@@ -80,11 +74,16 @@
       "project": {
         "title": "Analiza proiectului",
         "body": "O evaluare rapidă a stării unui proiect: ce avansează și ce s-a blocat."
+      },
+      "plan": {
+        "title": "Planifică-ți ziua",
+        "body": "Îți împarte ziua în timpul liber din jurul întâlnirilor, cu un motiv pentru fiecare bloc."
+      },
+      "wrapUp": {
+        "title": "Rezumatul zilei",
+        "body": "La final de zi: ce s-a făcut, un tipar de reținut și ce trece pe mâine."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Îndreaptă TUDUDI_URL către propria ta instanță în schimb. Restul este identic.",
-    "configSelfHostTab": "Îl găzduiești tu însuți?",
     "demo": {
       "answer1Html": "Începe cu <strong>Publică migrarea de facturare</strong>. Este scadentă azi, iar trei sarcini din <strong>Plăți</strong> așteaptă în urma ei.",
       "answer2Html": "Făcut. <strong>Revizuiește schița de redesign</strong> este acum scadentă vineri, iar <strong>Deblochează coada Plăți</strong> se află în proiectul Plăți, scadentă azi.",
@@ -120,13 +119,36 @@
     "eyebrow": "Funcții",
     "title": "Un sistem complet pentru o viață organizată",
     "showAll": "Arată toate cele {{count}} funcții",
+    "preview": "Previzualizare",
+    "closePreview": "Închide previzualizarea",
     "groups": {
+      "planDay": "Notează și planifică",
       "planFocus": "Planificare și concentrare",
       "tasksProjects": "Sarcini și proiecte",
       "accessAnywhere": "Acces de oriunde",
       "privacyCollab": "Confidențialitate și colaborare"
     },
     "cards": {
+      "capture": {
+        "title": "O casetă pentru tot",
+        "body": "Adaugă elemente în inbox, sarcini, note sau proiecte de oriunde, cu fișiere. O captură lipită devine chiar elementul."
+      },
+      "nlpDates": {
+        "title": "Date în cuvinte simple",
+        "body": "„tomorrow”, „next fri”, „every weekday”: datele și repetările sunt citite în timp ce scrii, alături de #etichete, +Proiect și @persoană."
+      },
+      "planMyDay": {
+        "title": "Planifică-ți ziua",
+        "body": "Un planificator care pune sarcinile în timpul liber din jurul întâlnirilor, cu durate, sugestii ordonate și sfaturi."
+      },
+      "todayCalendar": {
+        "title": "Azi cu calendarul tău",
+        "body": "Conectează calendare Google, Apple sau Outlook și vezi întâlnirile lângă sarcini, cu blocul curent sus."
+      },
+      "aiPlanning": {
+        "title": "Planificarea zilei cu AI",
+        "body": "Schițează ziua cu AI, primește estimări de durată și un rezumat de seară care duce mai departe ce a rămas."
+      },
       "goals": {
         "title": "Obiective",
         "body": "Stabilește rezultate pentru un sezon sau un an și vezi ce Domenii și Proiecte le duc cu adevărat înainte."
@@ -146,10 +168,6 @@
       "matrixKanban": {
         "title": "Matricea Eisenhower și Kanban",
         "body": "Treci la o matrice Eisenhower sau la o tablă Kanban când întrebarea este pur și simplu: ce fac acum."
-      },
-      "dueDates": {
-        "title": "Termene inteligente",
-        "body": "Clasificare automată: prioritățile de azi, termenele care se apropie și sarcinile pentru cândva."
       },
       "insights": {
         "title": "Statistici de productivitate",
@@ -211,10 +229,6 @@
         "title": "Acces API și Swagger",
         "body": "Documentație Swagger cu versiuni și jetoane personale de acces pentru integrări proprii."
       },
-      "responsive": {
-        "title": "Design adaptabil",
-        "body": "Un aranjament care se adaptează curat de la un ecran lat de birou până la telefonul din buzunar."
-      },
       "privacy": {
         "title": "Confidențialitate și control",
         "body": "Păstrează-ți datele private. Găzduiește singur pentru control deplin sau alege o instanță Administrată cu copii de siguranță criptate."
@@ -226,26 +240,12 @@
     },
     "sub": "tududi combină obiective, proiecte, sarcini, notițe și vizualizări inteligente într-un singur sistem calm și concentrat. Lasă-ne pe noi să-l administrăm pentru tine, sau administrează-l tu, dacă preferi."
   },
-  "selfHost": {
-    "eyebrow": "Găzduiește singur",
-    "title": "Rulează-l pe serverul tău",
-    "cardTitle": "Instalare cu Docker",
-    "step1": "Descarcă imaginea Docker",
-    "step2": "Pornește containerul",
-    "step3Prefix": "Accesează la",
-    "linkGithub": "Vezi pe GitHub",
-    "cardSub": "Pentru cei care rulează deja Docker",
-    "ctaCloud": "Începe pe Cloud",
-    "linkDocs": "Citește ghidul de auto-hostare",
-    "showCommands": "Arată comenzile de instalare",
-    "sub": "Auto-hostarea e pentru cei care rulează deja Docker și un reverse proxy. Dacă vrei tududi fără să devii administratorul de sistem, folosește Cloud."
-  },
   "pricing": {
     "eyebrow": "Prețuri",
     "title": "Alege cum folosești tududi",
     "mostPopular": "CEL MAI ALES",
     "earlyBird": "PREȚ DE LANSARE",
-    "perYear": "/an",
+    "perYear": "/an de persoană",
     "plans": {
       "selfHosted": {
         "action": "Citește ghidul de auto-hostare →",
@@ -263,62 +263,58 @@
         "name": "Cloud",
         "or": "sau",
         "launchNote": "Preț anual early bird, al tău atât timp cât rămâi abonat.",
-        "comingSoon": "Se deschide în câteva zile",
-        "comingSoonNote": "Mutăm Cloud pe o infrastructură nouă. Lasă-ți adresa de e-mail mai jos și te anunțăm imediat ce revine.",
-        "notifySubmit": "Anunță-mă",
         "action": "Începe →",
         "features": [
           "Funcțional într-un minut, fără server de configurat",
           "Sarcini, proiecte și notițe nelimitate, plus atașamente",
-          "Asistent AI, MCP, sincronizare CalDAV și botul de Telegram",
+          "Adaugă membri ai familiei sau colegi, fiecare un loc la același preț",
+          "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
           "Actualizări și backupuri zilnice gestionate pentru tine, cu {{proStorageGb}} GB de spațiu",
           "Exportă totul oricând, șterge-ți contul singur"
         ],
-        "priceNote": "Totul inclus. Anulează oricând."
+        "priceNote": "Totul inclus. Anulează oricând.",
+        "actionTrial": "Încearcă gratuit →",
+        "priceNoteTrial": "{{days}} zile gratuit, fără card. Anulezi oricând.",
+        "trialNote": "Perioada de probă include totul, cu excepția asistentului AI, a linkurilor publice către notițe și a adăugării de membri."
       }
     },
-    "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 30 de zile, fără întrebări.",
-    "perMonth": "/lună",
+    "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 14 de zile, fără întrebări.",
+    "perMonth": "/lună de persoană",
     "sub": "Un plan găzduit, sau rulează-l tu, dacă preferi să te ocupi de operare."
   },
   "compare": {
     "title": "Comparație rapidă",
+    "sub": "Cum se compară tududi Cloud cu aplicațiile cu care este comparat cel mai des, pe planurile individuale.",
+    "footnote": "Todoist Pro, TickTick Premium și Notion Plus, din paginile lor publice de prețuri în septembrie 2026. Verifică site-urile lor pentru prețurile actuale. Prețurile lor sunt prețurile de listă din SUA, în dolari.",
     "rows": {
-      "openSource": "Nucleu cu sursă deschisă",
-      "commercialUse": "Uz comercial",
-      "infraControl": "Control deplin asupra infrastructurii",
-      "dataOnHardware": "Datele rămân pe hardware-ul tău",
-      "noRecurring": "Fără cost recurent",
-      "noSetup": "Fără configurare de server",
-      "managedUpdates": "Actualizări administrate",
-      "autoBackups": "Copii de siguranță automate",
-      "pricing": "Preț",
-      "exportAnytime": "Exportă totul oricând",
-      "proFeatures": "Asistent AI, MCP, CalDAV, Telegram",
-      "startMinute": "Începe într-un minut",
-      "storage": "Spațiu pentru atașamente",
-      "support": "Suport"
+      "price": "Preț, facturare anuală",
+      "aiIncluded": "AI inclus",
+      "dayPlanner": "Planifică ziua după calendar",
+      "habits": "Urmărirea obiceiurilor",
+      "goals": "Obiective, arii și proiecte",
+      "notes": "Notițe lângă sarcini",
+      "matrix": "Matricea Eisenhower",
+      "kanban": "Panouri Kanban",
+      "views": "Vizualizări inteligente salvate",
+      "people": "Atribuirea sarcinilor persoanelor",
+      "telegram": "Captură din Telegram",
+      "caldav": "Sincronizare sarcini prin CalDAV",
+      "mcp": "Server MCP pentru agenți AI"
     },
     "values": {
-      "community": "Comunitate",
-      "email": "E-mail",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/lună sau {{price}}/an",
-      "selfCost": "Gratuit, plus găzduirea ta",
-      "yourDisk": "Propriul tău disc"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Auto-hostare",
-    "sub": "Aceeași aplicație în ambele cazuri. Ce diferă este cine o administrează, și cât te costă asta."
+      "perYear": "{{price}}/an",
+      "businessOnly": "Doar planul Business",
+      "separateApp": "Aplicație separată",
+      "diy": "Construiești singur"
+    }
   },
   "waitlist": {
-    "title": "Încă nu te-ai hotărât?",
-    "sub": "Lasă-ți e-mailul pentru notele de lansare și câte o noutate ocazională. Fără spam, dezabonare cu un clic.",
     "placeholder": "tu@email.com",
-    "inputLabel": "Adresă de e-mail",
-    "submit": "Anunță-mă",
-    "note": "Păstrăm adresa ta și data la care ne-ai dat-o, ca să îți trimitem notele de versiune și nimic altceva. Nu o împărtășim niciodată.",
-    "joined": "Ești pe listă. Îți scriem când se deschide tududi Cloud."
+    "inputLabel": "Adresă de e-mail"
+  },
+  "signup": {
+    "note": "Păstrăm adresa ta și data la care ne-ai dat-o doar pentru a trimite noutăți și actualizări. Nu o împărtășim niciodată.",
+    "joined": "Te-ai abonat. Noutățile și actualizările vor sosi pe e-mail."
   },
   "langs": {
     "heading": "Disponibil în {{count}} limbi în toată lumea"
@@ -329,19 +325,25 @@
   },
   "footer": {
     "colProduct": "Produs",
-    "colResources": "Resurse",
     "colCommunity": "Comunitate și suport",
     "colSupport": "Susține",
-    "linkRoadmap": "Plan de dezvoltare",
-    "linkIssues": "Sesizări",
-    "linkEmail": "E-mail",
     "linkCoffee": "Oferă-ne o cafea",
-    "subTitle": "Note de lansare prin e-mail",
-    "subBody": "Note de lansare ocazionale. Fără marketing, dezabonează-te oricând.",
+    "subTitle": "Noutăți și actualizări pe e-mail",
+    "subBody": "Noutăți și actualizări ocazionale despre produs. Fără spam, dezabonare oricând.",
     "subSubmit": "Mă înscriu",
     "rights": "Toate drepturile rezervate.",
-    "linkLicence": "Licență MIT",
-    "tagline": "Un sistem deschis pentru organizarea vieții și a muncii. Găzduit de noi, sau pe propriul tău server."
+    "tagline": "Un sistem calm și complet pentru organizarea vieții și a muncii.",
+    "linkTerms": "Termeni",
+    "linkPrivacy": "Confidențialitate",
+    "linkRefunds": "Rambursări",
+    "linkContact": "Contact",
+    "linkCookies": "Setări cookie-uri"
+  },
+  "consent": {
+    "label": "Alegerea cookie-urilor",
+    "body": "Folosim cookie-uri pentru a-ți îmbunătăți experiența pe acest site. Sunt setate doar dacă le accepți.",
+    "accept": "Accept",
+    "decline": "Refuz"
   },
   "js": {
     "showFewer": "Arată mai puține",
@@ -351,8 +353,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nu. Cloud costă {{monthly}} pe lună sau {{price}} pe an, și aceasta e toată lista de prețuri: fără nivel gratuit, fără ceas de probă, fără card taxat pentru ceva care începe discret să facturaze mai târziu. Există o garanție de rambursare de 30 de zile dacă se dovedește că nu ți se potrivește, și există un demo live pe această pagină dacă vrei să te uiți întâi. Modul gratuit de a folosi tududi este să-l rulezi pe propriul tău server, care e aceeași aplicație.",
-        "q": "Există un plan gratuit sau o probă pe tududi Cloud?"
+        "a": "Nu. Cloud costă {{monthly}} pe lună sau {{price}} pe an de persoană, și aceasta e toată lista de prețuri: fără nivel gratuit, fără ceas de probă, fără card taxat pentru ceva care începe discret să facturaze mai târziu. Există o garanție de rambursare de 14 de zile dacă se dovedește că nu ți se potrivește, și există un demo live pe această pagină dacă vrei să te uiți întâi. Modul gratuit de a folosi tududi este să-l rulezi pe propriul tău server, care e aceeași aplicație.",
+        "q": "Există un plan gratuit sau o probă pe tududi Cloud?",
+        "aTrial": "Nu există un plan gratuit, dar fiecare cont nou primește o perioadă de probă gratuită de {{days}} zile, fără card. Perioada de probă include tot, cu excepția asistentului AI, a linkurilor publice către notițe și a adăugării de membri. Dacă nu te abonezi, contul devine doar pentru citire timp de 30 de zile ca să-ți poți exporta datele, apoi este șters. După perioada de probă, Cloud costă {{monthly}} pe lună sau {{price}} pe an de persoană. Modul gratuit de a folosi tududi este să-l rulezi pe propriul server, este aceeași aplicație."
       },
       "leaving": {
         "q": "Pot pleca, și ce se întâmplă cu datele mele?",
@@ -370,10 +373,6 @@
         "a": "Da, și nu trebuie să cumperi nimic în prealabil. Licența MIT permite utilizarea comercială, inclusiv în interiorul unei companii și într-un produs comercial, fără prag de venituri și fără nimic de raportat. Dacă departamentul tău financiar are nevoie de o factură, un abonament Cloud este facturat prin furnizorul nostru de plăți și produce una. Nimic pe această pagină nu vinde o permisiune, pentru că permisiunea aceea e deja a ta.",
         "q": "Pot folosi tududi la muncă, sau în firma mea?"
       },
-      "dataLocation": {
-        "a": "Totul trăiește într-un singur fișier de bază de date SQLite în interiorul volumului montat de tine. A face backup înseamnă a copia acel fișier undeva sigur, iar a-l restaura înseamnă a-l copia înapoi. tududi face și automat un instantaneu al bazei de date înainte de a aplica migrări, păstrând copii recente. Nu există un format proprietar și niciun pas de export între tine și propriile tale date.",
-        "q": "Unde sunt datele mele, și cum le fac backup?"
-      },
       "licence": {
         "a": "Aplicația e open source sub licența MIT, așa că poți s-o rulezi pe propriul tău server gratuit, s-o modifici și să construiești pe ea fără să plătești pe nimeni. Nu există limite de locuri și nici funcții reținute: versiunea auto-hostată e produsul complet. tududi Cloud e un serviciu plătit, pentru că găzduirea, backupurile și e-mailul costă bani de întreținut. Plătești pentru munca operațională, niciodată pentru accesul la software.",
         "q": "Este tududi cu adevărat gratuit?"
@@ -387,23 +386,6 @@
         "a": "MCP este Model Context Protocol, un standard deschis pentru a conecta agenți AI la sisteme reale. tududi vine cu un server MCP care expune {{tools}} unelte pentru sarcini, proiecte, arii, obiective, obiceiuri, notițe, persoane, etichete, vizualizări, inbox-ul, căutarea și metricile, ca un agent să poată capta, găsi, actualiza și finaliza munca, nu doar să vorbească despre ea. Este opțional, vine cu Cloud și cu fiecare instanță auto-hostată, și funcționează cu Claude Desktop, Cursor, Windsurf, Cline, sau orice alt client MCP.",
         "q": "Ce este MCP, și ce poate face de fapt un agent?"
       },
-      "mobile": {
-        "a": "tududi se instalează ca un PWA, nu ca o aplicație nativă. Adaugă-l pe ecranul de start pe Android sau iOS, sau instalează-l pe desktop, și se comportă ca o aplicație: citește din cache când ești offline și sincronizează modificările tale la reconectare. Nu e nimic de descărcat din App Store sau Play Store.",
-        "q": "Există o aplicație mobilă?"
-      },
-      "multiUser": {
-        "a": "Da. O singură instanță poate găzdui mai mulți utilizatori, iar proiectele pot fi partajate cu acces doar-citire sau citire-scriere, pe care sarcinile și notițele din interior le preiau. Auto-înregistrarea e dezactivată implicit, așa că un admin creează conturile sau deschide deliberat înregistrările. Nimeni nu intră pentru că ai uitat să închizi o ușă.",
-        "q": "Pot mai multe persoane partaja o instanță?"
-      },
-      "requirements": {
-        "a": "Docker, un loc persistent pentru a stoca baza de date, un reverse proxy cu TLS în față, și disciplina de a aplica actualizări și de a păstra backupuri. Funcționează confortabil pe un VPS mic sau pe o maşină din propria ta rețea, iar comenzile sunt în secțiunea Auto-hostare și în documentație. Majoritatea oamenilor sunt mai bine serviți de Cloud, care e aceeași aplicație fără toată acea muncă.",
-        "linkLabel": "Citește documentația",
-        "q": "De ce am nevoie pentru a-l găzdui eu însumi?"
-      },
-      "reverseProxy": {
-        "a": "Da, și acesta e modul normal de a-l rula. Setează TUDUDI_TRUST_PROXY astfel încât aplicația să aibă încredere în headerele retransmise de nginx, Caddy sau Traefik. Dacă omiți asta, autentificările și logarea IP-urilor se comportă ciudat, într-un mod dificil de diagnosticat, așa că aplicația generează o eroare specifică în loc să eșueze silențios. Valorile acceptate sunt documentate în README.",
-        "q": "Funcționează în spatele unui reverse proxy?"
-      },
       "shutdown": {
         "a": "Aplicația e licențiată MIT și codul sursă e public, așa că nu îți poate fi retrasă. Oricine poate continua să o ruleze, și poți face un fork. Pe tududi Cloud datele tale trăiesc într-o bază de date tududi standard, nu într-un format proprietar, așa că, dacă serviciul s-ar închide vreodată, ai primi datele tale și un ghid pentru a le muta pe propriul tău server.",
         "q": "Ce se întâmplă cu datele mele dacă tududi dispare?"
@@ -416,8 +398,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "AI, MCP și Cloud",
-      "project": "Licență și proiect",
-      "selfHost": "Auto-hostare și date"
+      "project": "Licență și proiect"
     },
     "permalink": "Link către acest răspuns",
     "sub": "Licența, AI-ul, și ce se întâmplă cu datele tale. Dacă lipsește ceva, întreabă pe Discord.",
@@ -428,8 +409,9 @@
     "ctaPrimary": "Începe",
     "includes": [
       "Sarcini, proiecte și notițe nelimitate",
+      "Adaugă membri ai familiei sau colegi, fiecare un loc la același preț",
       "Atașamente și încărcare de fișiere",
-      "Asistent AI, MCP, sincronizare CalDAV și botul de Telegram",
+      "Planificarea zilei cu AI, MCP, calendare, CalDAV și botul Telegram",
       "Backupuri zilnice și actualizări administrate",
       "Suport prin e-mail",
       "Exportă totul, oricând"
@@ -472,14 +454,66 @@
     "title": "De ce să folosești tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Nu funcții. Fiecare funcție este și în versiunea auto-hostată.",
-    "whyTitle": "Pentru ce plătești de fapt"
+    "whyTitle": "Pentru ce plătești de fapt",
+    "ctaTrial": "Încearcă gratuit",
+    "pricingSubTrial": "Încearcă gratuit {{days}} zile, fără card. Apoi totul este inclus, anulezi când vrei."
   },
   "finalCta": {
     "primary": "Începe",
     "secondary": "Vezi prețurile",
     "selfHostLink": "Citește ghidul.",
-    "selfHostPrefix": "Preferi să-l rulezi pe propriul tău server?",
-    "sub": "Noi administrăm serverul, actualizările și backupurile. Tu ai sistemul, și o garanție de rambursare de 30 de zile dacă nu e pentru tine.",
-    "title": "Organizează-te într-un minut"
+    "sub": "Noi administrăm serverul, actualizările și backupurile. Tu ai sistemul, și o garanție de rambursare de 14 de zile dacă nu e pentru tine.",
+    "title": "Organizează-te într-un minut",
+    "subTrial": "Noi ne ocupăm de server, actualizări și copii de rezervă. Încearcă gratuit {{days}} zile, fără card.",
+    "primaryTrial": "Încearcă gratuit"
+  },
+  "contact": {
+    "title": "Contactează-ne",
+    "lede": "Întrebări despre tududi Cloud, facturare sau contul tău? Trimite-ne un mesaj și îți răspundem pe e-mail.",
+    "name": "Nume",
+    "email": "E-mail",
+    "message": "Mesaj",
+    "submit": "Trimite mesajul",
+    "sent": "Mulțumim, mesajul tău e pe drum. Îți răspundem pe e-mail.",
+    "invalid": "Completează numele, o adresă de e-mail validă și un mesaj.",
+    "failed": "Mesajul nu a putut fi trimis acum. Scrie-ne la"
+  },
+  "plan": {
+    "eyebrow": "Planifică-ți ziua",
+    "title": "De la un gând trecător la o zi încheiată",
+    "sub": "Notează lucrurile imediat ce apar, planifică ziua în jurul întâlnirilor cu AI și parcurge-o bloc cu bloc.",
+    "stepLabel": "Pasul {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Notează orice, cu vorbele tale",
+        "body": "O singură casetă de adăugare pentru inbox, sarcini, note și proiecte, peste tot în aplicație. Scrie cum gândești și tududi completează restul.",
+        "points": [
+          "„next fri”, „in 3 days” sau „every first monday” stabilește data sau repetarea",
+          "#etichete, +Proiect și @persoană sunt recunoscute în timp ce scrii",
+          "Lipește o captură de ecran sau trage fișiere și merg odată cu ea"
+        ],
+        "alt": "Caseta de adăugare transformă o frază într-o sarcină recurentă cu etichetă și proiect"
+      },
+      "plan": {
+        "title": "Planifică-ți ziua, cu AI (sau fără)",
+        "body": "Planificatorul arată ce încape azi, în ordinea aleasă de tine. Dă fiecărei sarcini o durată și pune-o în timpul liber dintre întâlniri sau lasă AI să schițeze toată ziua.",
+        "points": [
+          "Sugestii ordonate: întârziate, scadente azi, în lucru, apoi restul",
+          "Schița cu AI umple timpul liber din jurul întâlnirilor, iar Anulează revine",
+          "Sfaturile semnalează o zi supraîncărcată și golurile în care încape o sarcină"
+        ],
+        "alt": "Planificatorul zilei cu sarcini și întâlniri pe aceeași axă a timpului"
+      },
+      "today": {
+        "title": "Azi, cu calendarul tău",
+        "body": "Pornește ziua și Azi arată doar ce ți-ai propus: blocul curent, apoi agenda, cu întâlnirile din Google, Apple sau Outlook între ele.",
+        "points": [
+          "Marchează ca făcut sau amână din cardul Acum",
+          "Calendare doar în citire, stocate criptat",
+          "Un rezumat AI la final de zi mută ce a rămas pe mâine"
+        ],
+        "alt": "Azi cu următoarea sarcină, agenda și întâlniri din două calendare"
+      }
+    }
   }
 }

@@ -26,7 +26,8 @@ The catalog lives in `backend/config/plans.js`:
 | Projects | 10 | unlimited |
 | Notes | 50 | unlimited |
 | Attachment storage | 50 MB | 5 GB |
-| AI requests per day | 0 | 200 |
+| AI requests per month | 0 | 200 |
+| Members an owner may add, each a paid seat (`max_members`) | 0 | 10 |
 | AI assistant, MCP, CalDAV, Telegram, backup import | no | yes |
 
 `null` means unlimited. Override any number with `TUDUDI_PLANS_JSON`, a JSON
@@ -40,10 +41,49 @@ Other knobs:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `TUDUDI_TRIAL_DAYS` | `14` | new accounts get Pro for this long, counted from the account creation date |
+| `TUDUDI_TRIAL_DAYS` | `14` | a self-registered account gets the trial plan for this long, counted from when it verifies its email (SSO sign-ups: from creation). `0` turns trials off |
+| `TUDUDI_TRIAL_READ_ONLY_DAYS` | `30` | with `TUDUDI_REQUIRE_SUBSCRIPTION`, how long an unpaid ended trial stays readable before the account is deleted |
+| `TUDUDI_DELETE_EXPIRED_TRIALS` | `true` | set `false` to keep ended trials read-only instead of deleting them; past the window they get the usual 402 wall |
+| `RATE_LIMIT_SIGNUP_MAX` / `RATE_LIMIT_SIGNUP_WINDOW_MS` | `3` / 24 h | password sign-ups per IP on a hosted instance; only created accounts count |
 | `TUDUDI_PAST_DUE_GRACE_DAYS` | `14` | after a failed payment, Pro continues this long past the period end |
 | `TUDUDI_HOSTED_EXEMPT_ADMINS` | `true` | admins are treated as Pro |
 | `TUDUDI_REQUIRE_SUBSCRIPTION` | `false` | sell access rather than upgrades: see below |
+
+## Trials
+
+A trial is its own plan (`trial` in `config/plans.js`): Pro, minus what costs
+money or can be abused by someone who signed up only to misuse it.
+
+- **Starts on email verification**, once per account. Signing up does not
+  start it, so an address that never receives mail never gets one. Members
+  added by an owner and admins never get a trial.
+- **Returning accounts get one too.** A verified account that never had a
+  trial under these rules, never subscribed and has no comp gets its trial on
+  its first request after trials are switched on (`startTrialOnReturn`, run
+  by the subscription gate). A `trial_ends_at` with no `trial_started_at`
+  dates from before these rules and counts as never started.
+- **No AI** (`features.ai: false`, AI budgets `0`), **no public note links**
+  (`features.public_notes: false`; turning a link off still works) and **no
+  members** (`max_members: 0`). Each answers `402 FEATURE_NOT_IN_PLAN` with
+  `details.plan: "trial"`, and the app sends the browser to
+  `/subscription/new?feature=<name>`.
+- **One trial per mailbox.** `users.email_canonical` folds `+tags`, Gmail dots
+  and googlemail.com, and a hosted sign-up (password or SSO) whose mailbox
+  already has an account is refused. Self-hosted instances skip this check.
+- **Always visible.** During the trial a bar on every page counts the days
+  left and links to `/subscription/new`.
+- **Then read-only.** With `TUDUDI_REQUIRE_SUBSCRIPTION`, an ended, never-paid
+  trial can still `GET` everything (and export) for
+  `TUDUDI_TRIAL_READ_ONLY_DAYS`; writes answer `402 TRIAL_ENDED`.
+- **Warned, then deleted.** The daily `account_lifecycle` job (03:00 UTC)
+  emails a deletion warning when deletion is a week or less away, and deletes
+  only accounts warned at least 7 days earlier; a late warning pushes the date
+  back. No email, no warning, so no deletion. It only touches accounts whose
+  trial started under these rules (`billing_accounts.trial_started_at`), that
+  never subscribed, have no override and no members, and are not admins.
+- **Verification reminder.** The same job sends one reminder, with a fresh
+  link, to a self-registered sign-up that has not verified 1 to 7 days after
+  signing up (`users.verification_reminder_sent_at`).
 
 ## Selling access rather than upgrades
 
@@ -65,6 +105,66 @@ make it theirs in name only:
 The flag is meaningless when hosted mode is off, so a self-hosted instance
 is never gated. Leave it unset for the usual free-tier-plus-Pro shape.
 
+## Accounts: customers are admins of their own
+
+On a hosted instance every customer owns an **account**
+(`backend/services/accountsService.js`, table `accounts`, `users.account_id`).
+Whoever signs up owns a new account and is an **admin** of it (role
+`account_admin`, shown as "Admin"). Members added to it, by the owner or by
+any other admin of the account, join the same account; a partner with an
+email, or a child without one.
+
+Admins of an account open **Access** (Users, Groups, Roles) and see only their
+own account there. They add and remove members, make a member an admin or
+take that back, set permissions, set a password for a user or guest, and
+manage the account's groups (group names are unique per account, and a group
+only takes and is shared with from its own account). They do not see each
+other's tasks, notes or projects unless those are shared. The owner always
+stays an admin, and no other admin can remove it, change its email or set its
+password. Only the owner manages billing.
+
+The instance admin is the **Superadmin** (`is_admin`), and there is only one:
+making a second is refused, including through an OIDC admin email domain.
+Every other admin page (dashboard, billing, AI usage, feedback, waitlist,
+registration, OIDC) is the superadmin's alone. A customer never gets
+`is_admin`, which would bypass every access check.
+`cloud-superadmin-isolation.test.js` and `cloud-accounts.test.js` check that
+an account admin is refused every superadmin route, never sees another account
+or the superadmin, and that a member who is not an admin is refused Access.
+
+Accounts exist only with hosted mode on. The migration adds the empty table
+and columns everywhere; when a hosted instance starts, every user without an
+account is put into one (members join their creator's account, everyone else
+owns one) and groups join their creator's account. Accounts the superadmin
+creates stand on their own. When an owner's account is deleted its members
+stay and each gets an account of its own.
+
+Each member is one more seat, paid by the account owner whichever admin added
+it. The owner's subscription quantity is the owner plus the other members of
+its account (`billing_accounts.seat_quantity`, the provider line item in
+`provider_subscription_item_id`), kept in line by
+`backend/services/seatsService.js`:
+
+- **Adding** a member raises the quantity first, through the provider
+  (`updateSeats`, `PATCH /subscription-items/:id` on Lemon Squeezy). If the
+  provider refuses, nothing is created. The change is prorated onto the next
+  invoice, so nothing is charged on the spot.
+- **Removing** a member (`DELETE /api/members/:id`, the member deleting
+  their own account, or an admin deleting it) lowers the quantity again. A
+  failed decrease is logged and corrected by the next sync.
+- **Webhooks**: a new or changed subscription is brought up to the members
+  the owner already has, so an owner who resubscribes is billed for them.
+- **Who may add**: an admin of an account whose owner has a subscription, its
+  grace window, or an admin override, and only up to `max_members`. Without one the request
+  answers `402 SUBSCRIPTION_REQUIRED`; past the limit `402
+  PLAN_LIMIT_REACHED`.
+
+A member with nothing of its own is covered by its account owner: `getEntitlements`
+returns the owner's plan with `reason: 'seat'` and `seat_owner`. When the
+owner stops paying, its members hit the paywall with it (export stays open).
+Accounts the instance admin creates are not covered this way, since the admin
+pays for nothing; give those an override instead.
+
 ## How limits are enforced
 
 `backend/services/entitlementsService.js` answers "what may this user do"
@@ -80,7 +180,7 @@ and `details: { resource, limit, current, plan }`; plan-only features answer
 `402` with `code: FEATURE_NOT_IN_PLAN`.
 
 Stock limits (tasks, projects, notes, storage) are counted live, so
-completing tasks or deleting attachments frees quota immediately. Per-day
+completing tasks or deleting attachments frees quota immediately. Per-month
 budgets (AI requests) use the `usage_counters` table.
 
 ## Tables
@@ -89,7 +189,7 @@ budgets (AI requests) use the `usage_counters` table.
   state as reported by Stripe, the local trial end, and the admin override.
 - `billing_events`: every Stripe webhook event id, so redeliveries are
   applied once.
-- `usage_counters`: `(user, metric, day)` counters.
+- `usage_counters`: `(user, metric, month)` counters.
 
 All three are removed with the account by `services/accountErasureService.js`.
 
@@ -155,7 +255,7 @@ Endpoints (all 404 on a self-hosted instance):
 | `POST /api/billing/checkout` `{ interval: "month" \| "year" }` | checkout URL |
 | `POST /api/billing/portal` | customer portal URL |
 | `POST /api/billing/sync` `{ session_id? }` | re-read the subscription from the provider (the checkout redirect can beat the webhook) |
-| `GET /api/admin/billing` | overview and account list (admin) |
+| `GET /api/admin/billing` | overview and account list, each with this month's AI request/token usage (admin) |
 | `PUT /api/admin/billing/:userId/override` `{ plan, expires_at?, reason? }` | comp or restrict an account (admin) |
 | `DELETE /api/admin/billing/:userId/override` | remove the override (admin) |
 | `POST /api/admin/billing/:userId/sync` | force a re-read from the provider (admin) |
@@ -182,6 +282,21 @@ not need to be on Cloudflare DNS). The forms send the token as
 `code: CAPTCHA_FAILED`. If Cloudflare itself is unreachable the request is
 let through and logged, so an outage there never locks people out; the
 rate limiters still apply. Unset (the default) means no captcha anywhere.
+
+## Google sign-in
+
+Google is configured as an ordinary OIDC provider (see
+[OIDC/SSO](10-oidc-sso.md#google)) with slug `google`, which gives its button
+the Google mark on both the login and the register page. On a hosted
+instance a first Google sign-in creates an account only while registration
+is enabled, skips the captcha (Google has already vouched for the person) and
+then meets the same subscription gate as any other new account.
+
+The Google OAuth client needs `https://<app host>/api/oidc/callback/google`
+as a redirect URI, and `BASE_URL` must be the app's public URL because the
+callback is built from it. On the consent screen, publish the app (a client
+left in testing admits only its listed test users) and link the landing
+page's `/privacy` and `/terms`.
 
 ## Public demo
 
@@ -233,38 +348,24 @@ Awesome from cdnjs, Google Analytics, the GitHub API for the star count).
 `node backend/scripts/landing-i18n-check.js` reports locale keys that are
 missing or whose `{{placeholders}}` differ from English.
 
-### Waitlist
+### Release-notes signup
 
-`cloudOpen` in the pricing config says whether Cloud is selling. It ships
-false, and is reopened with `TUDUDI_PRICING_JSON='{"cloudOpen":true}'`.
+The page's signup section and its footer take an email for release notes.
+Both post to `POST /waitlist` on the landing host, never to a third party,
+and write one `waitlist_subscribers` row per address (the name is older than
+the feature), counting a repeat submission in `submission_count` rather than
+adding a row. The answer is the same redirect whether the address was new,
+already listed or malformed, so the form cannot be used to find out who has
+signed up. `source` records which form it was (`waitlist`, `footer`, and
+older rows may say `hero`, `cloud`, `pricing` or `app`).
 
-While it is false:
-
-- every "start on tududi Cloud" call to action becomes "join the waitlist"
-  and points at the page's own `#waitlist` form, and the Cloud pricing card
-  swaps its price and register link for an "opening soon" notice with its
-  own capture form;
-- in hosted mode registration is closed with it, whatever the admin toggle
-  says, so a direct link to `app.example.com/register` cannot open an
-  account that a payment provider is not ready to charge. SSO provisioning
-  of new accounts is closed too; existing accounts sign in as usual. A
-  self-hosted instance is untouched, since hosted mode is off there;
-- the register page shows the same "opening in a few days" copy and capture
-  form rather than the generic "registration closed" notice.
-
-Every form posts to tududi itself, never to a third party: the marketing
-page's to `POST /waitlist` on the landing host, the register page's to
-`POST /api/waitlist`. Both write one `waitlist_subscribers` row per
-address, counting a repeat submission in `submission_count` rather than
-adding a row, and both answer identically whether the address was new,
-already listed or malformed, so neither can be used to find out who has
-signed up. `source` records which form it was (`hero`, `waitlist`,
-`footer`, `cloud`, `pricing`, `app`).
+Every Cloud call to action links to `/register` on the app. Registration on
+a hosted instance follows the admin toggle (`registration_enabled`) alone,
+which is also the way to close it quickly.
 
 Admins read the list at `/admin/waitlist` in the app: newest first, search
-by address, and "Export CSV" (`GET /api/admin/waitlist/export`) for the
-whole list on launch day. The dashboard shows the total and the last seven
-days beside it.
+by address, and "Export CSV" (`GET /api/admin/waitlist/export`). The
+dashboard shows the total and the last seven days beside it.
 
 ## Deploying on one machine
 

@@ -1,0 +1,511 @@
+const request = require('supertest');
+const moment = require('moment-timezone');
+const app = require('../../app');
+const {
+    Task,
+    Tag,
+    Project,
+    InboxItem,
+    DailyPlan,
+    DailyPlanItem,
+} = require('../../models');
+const { createTestUser } = require('../helpers/testUtils');
+
+describe('Daily plan routes', () => {
+    let user, agent, today;
+
+    beforeEach(async () => {
+        user = await createTestUser({
+            email: 'planner@example.com',
+            timezone: 'Europe/Athens',
+        });
+        agent = request.agent(app);
+        await agent.post('/api/login').send({
+            email: 'planner@example.com',
+            password: 'password123',
+        });
+        today = moment.tz('Europe/Athens').format('YYYY-MM-DD');
+    });
+
+    const makeTask = (attrs = {}) =>
+        Task.create({ name: 'A task', user_id: user.id, ...attrs });
+
+    it('returns no plan for a day that was never planned', async () => {
+        const res = await agent.get('/api/daily-plan');
+
+        expect(res.status).toBe(200);
+        expect(res.body.date).toBe(today);
+        expect(res.body.plan).toBeNull();
+    });
+
+    it('saves items in the order sent, filling durations from the estimate', async () => {
+        const first = await makeTask({
+            name: 'Write spec',
+            estimated_minutes: 60,
+        });
+        const second = await makeTask({ name: 'Pay invoice' });
+
+        const res = await agent.put(`/api/daily-plan/${today}`).send({
+            items: [
+                { task_uid: second.uid, start_minute: 600 },
+                { task_uid: first.uid, start_minute: 480 },
+            ],
+        });
+
+        expect(res.status).toBe(200);
+        expect(res.body.plan.started_at).toBeNull();
+        expect(res.body.plan.items.map((i) => i.task_uid)).toEqual([
+            second.uid,
+            first.uid,
+        ]);
+        expect(res.body.plan.items[0].duration_minutes).toBe(30);
+        expect(res.body.plan.items[1].duration_minutes).toBe(60);
+        expect(res.body.plan.items[1].task.name).toBe('Write spec');
+    });
+
+    it('replaces the previous items on every save', async () => {
+        const a = await makeTask();
+        const b = await makeTask();
+        await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: a.uid }, { task_uid: b.uid }] });
+
+        const res = await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: b.uid, start_minute: null }] });
+
+        expect(res.body.plan.items).toHaveLength(1);
+        expect(await DailyPlanItem.count()).toBe(1);
+    });
+
+    it('rejects overlapping time slots', async () => {
+        const a = await makeTask();
+        const b = await makeTask();
+
+        const res = await agent.put(`/api/daily-plan/${today}`).send({
+            items: [
+                { task_uid: a.uid, start_minute: 540, duration_minutes: 60 },
+                { task_uid: b.uid, start_minute: 570, duration_minutes: 30 },
+            ],
+        });
+
+        expect(res.status).toBe(400);
+        expect(await DailyPlanItem.count()).toBe(0);
+    });
+
+    it('rejects a slot that runs past midnight', async () => {
+        const a = await makeTask();
+
+        const res = await agent.put(`/api/daily-plan/${today}`).send({
+            items: [
+                { task_uid: a.uid, start_minute: 1410, duration_minutes: 60 },
+            ],
+        });
+
+        expect(res.status).toBe(400);
+    });
+
+    it('rejects the same task twice', async () => {
+        const a = await makeTask();
+
+        const res = await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: a.uid }, { task_uid: a.uid }] });
+
+        expect(res.status).toBe(400);
+    });
+
+    it("does not let a user plan someone else's task", async () => {
+        const other = await createTestUser({ email: 'not-mine@example.com' });
+        const foreign = await Task.create({
+            name: 'Private',
+            user_id: other.id,
+        });
+
+        const res = await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: foreign.uid }] });
+
+        expect(res.status).toBe(404);
+        expect(await DailyPlanItem.count()).toBe(0);
+    });
+
+    it('rejects a malformed date', async () => {
+        const res = await agent
+            .put('/api/daily-plan/24-09-2026')
+            .send({ items: [] });
+
+        expect(res.status).toBe(400);
+    });
+
+    it('starts the day and keeps the first start time', async () => {
+        const a = await makeTask();
+        await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: a.uid }] });
+
+        const started = await agent.post(`/api/daily-plan/${today}/start`);
+        const again = await agent.post(`/api/daily-plan/${today}/start`);
+
+        expect(started.status).toBe(200);
+        expect(started.body.plan.started_at).toBeTruthy();
+        expect(again.body.plan.started_at).toBe(started.body.plan.started_at);
+    });
+
+    it('clears a plan', async () => {
+        const a = await makeTask();
+        await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: a.uid }] });
+
+        const res = await agent.delete(`/api/daily-plan/${today}`);
+
+        expect(res.status).toBe(200);
+        expect(await DailyPlan.count()).toBe(0);
+        expect(await DailyPlanItem.count()).toBe(0);
+    });
+
+    it('lists candidates grouped once each, plus open inbox items', async () => {
+        const yesterday = moment
+            .tz('Europe/Athens')
+            .subtract(3, 'days')
+            .format('YYYY-MM-DD');
+        const overdue = await agent
+            .post('/api/task')
+            .send({ name: 'Renew insurance', due_date: yesterday });
+        await InboxItem.create({
+            content: 'Call the plumber',
+            source: 'web',
+            user_id: user.id,
+        });
+
+        const res = await agent.get('/api/daily-plan/candidates');
+
+        expect(res.status).toBe(200);
+        expect(res.body.overdue.map((t) => t.uid)).toContain(overdue.body.uid);
+        const allUids = [
+            ...res.body.in_progress,
+            ...res.body.overdue,
+            ...res.body.due_today,
+            ...res.body.suggested,
+        ].map((t) => t.uid);
+        expect(new Set(allUids).size).toBe(allUids.length);
+        expect(res.body.inbox_count).toBe(1);
+        expect(res.body.inbox[0].content).toBe('Call the plumber');
+    });
+
+    it('ranks candidates: overdue first, then priority, then project tasks', async () => {
+        const project = await Project.create({
+            name: 'Home',
+            user_id: user.id,
+            status: 'in_progress',
+        });
+        const lastWeek = moment
+            .tz('Europe/Athens')
+            .subtract(7, 'days')
+            .format('YYYY-MM-DD');
+        const startedLate = await makeTask({
+            name: 'Started but late',
+            status: Task.STATUS.IN_PROGRESS,
+            due_date: lastWeek,
+        });
+        const looseLow = await makeTask({ name: 'Loose low', priority: 0 });
+        const looseHigh = await makeTask({ name: 'Loose high', priority: 2 });
+        const projectLow = await makeTask({
+            name: 'Project low',
+            priority: 0,
+            project_id: project.id,
+        });
+        const projectHigh = await makeTask({
+            name: 'Project high',
+            priority: 2,
+            project_id: project.id,
+        });
+
+        const res = await agent.get('/api/daily-plan/candidates');
+
+        expect(res.status).toBe(200);
+        expect(res.body.overdue.map((t) => t.uid)).toEqual([startedLate.uid]);
+        expect(res.body.in_progress).toEqual([]);
+        expect(res.body.ranked).toEqual([
+            startedLate.uid,
+            projectHigh.uid,
+            looseHigh.uid,
+            projectLow.uid,
+            looseLow.uid,
+        ]);
+    });
+
+    it('lists open tasks tagged #today first, out of their other groups', async () => {
+        const tag = await Tag.create({ name: 'Today', user_id: user.id });
+        const lastWeek = moment
+            .tz('Europe/Athens')
+            .subtract(7, 'days')
+            .format('YYYY-MM-DD');
+        const late = await makeTask({
+            name: 'Late, high',
+            priority: 2,
+            due_date: lastWeek,
+        });
+        const tagged = await makeTask({ name: 'Tagged, low', priority: 0 });
+        const taggedLate = await makeTask({
+            name: 'Tagged and late',
+            priority: 2,
+            due_date: lastWeek,
+        });
+        const taggedDone = await makeTask({
+            name: 'Tagged but done',
+            status: Task.STATUS.DONE,
+        });
+        await tagged.addTag(tag);
+        await taggedLate.addTag(tag);
+        await taggedDone.addTag(tag);
+
+        const res = await agent.get('/api/daily-plan/candidates');
+
+        expect(res.status).toBe(200);
+        expect(res.body.tagged_today.map((t) => t.uid).sort()).toEqual(
+            [tagged.uid, taggedLate.uid].sort()
+        );
+        expect(res.body.overdue.map((t) => t.uid)).toEqual([late.uid]);
+        expect(res.body.ranked.slice(0, 3)).toEqual([
+            taggedLate.uid,
+            tagged.uid,
+            late.uid,
+        ]);
+    });
+
+    it('saves a custom ranking and uses it for candidates', async () => {
+        const project = await Project.create({
+            name: 'Work',
+            user_id: user.id,
+            status: 'in_progress',
+        });
+        const loose = await makeTask({ name: 'Loose', priority: 0 });
+        const inProject = await makeTask({
+            name: 'In project',
+            priority: 0,
+            project_id: project.id,
+        });
+        await makeTask({ name: 'Filler one' });
+
+        const initial = await agent.get('/api/daily-plan/ranking');
+        expect(initial.status).toBe(200);
+        expect(initial.body.order).toEqual(initial.body.default_order);
+
+        const order = [
+            'suggested:none',
+            ...initial.body.default_order.filter(
+                (key) => key !== 'suggested:none'
+            ),
+        ];
+        const saved = await agent
+            .put('/api/daily-plan/ranking')
+            .send({ order });
+        expect(saved.status).toBe(200);
+        expect(saved.body.order).toEqual(order);
+
+        const res = await agent.get('/api/daily-plan/candidates');
+        const ranked = res.body.ranked;
+        expect(ranked.indexOf(loose.uid)).toBeLessThan(
+            ranked.indexOf(inProject.uid)
+        );
+    });
+
+    it('keeps the saved ranking when the profile form saves ui_settings', async () => {
+        const initial = await agent.get('/api/daily-plan/ranking');
+        const order = [...initial.body.default_order].reverse();
+        await agent.put('/api/daily-plan/ranking').send({ order });
+
+        const res = await agent.patch('/api/profile').send({
+            ui_settings: { appearance: { theme: 'dark' } },
+        });
+        expect(res.status).toBe(200);
+
+        const after = await agent.get('/api/daily-plan/ranking');
+        expect(after.body.order).toEqual(order);
+    });
+
+    it('keeps the saved ranking when a UI toggle saves ui_settings', async () => {
+        const initial = await agent.get('/api/daily-plan/ranking');
+        const order = [...initial.body.default_order].reverse();
+        await agent.put('/api/daily-plan/ranking').send({ order });
+
+        const res = await agent
+            .put('/api/profile/ui-settings')
+            .send({ appearance: { theme: 'dark' } });
+        expect(res.status).toBe(200);
+
+        const after = await agent.get('/api/daily-plan/ranking');
+        expect(after.body.order).toEqual(order);
+    });
+
+    it('groups candidates by their own due date, not their project', async () => {
+        const lateProject = await Project.create({
+            name: 'Late project',
+            user_id: user.id,
+            status: 'in_progress',
+            due_date_at: moment().subtract(5, 'days').toDate(),
+        });
+        const undated = await makeTask({
+            name: 'No date',
+            project_id: lateProject.id,
+        });
+        const late = await makeTask({
+            name: 'Late itself',
+            project_id: lateProject.id,
+            due_date: moment().subtract(2, 'days').toDate(),
+        });
+
+        const res = await agent.get('/api/daily-plan/candidates');
+        const uids = (group) => res.body[group].map((task) => task.uid);
+
+        expect(uids('overdue')).toContain(late.uid);
+        expect(uids('overdue')).not.toContain(undated.uid);
+        expect(uids('suggested')).toContain(undated.uid);
+    });
+
+    it('keeps the real name of recurring tasks in candidates and the plan', async () => {
+        const recurring = await makeTask({
+            name: 'Water plants',
+            recurrence_type: 'weekly',
+            due_date: moment().toDate(),
+        });
+
+        const candidates = await agent.get('/api/daily-plan/candidates');
+        const listed = [
+            ...candidates.body.in_progress,
+            ...candidates.body.overdue,
+            ...candidates.body.due_today,
+            ...candidates.body.suggested,
+        ].find((task) => task.uid === recurring.uid);
+        expect(listed.name).toBe('Water plants');
+
+        const plan = await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: recurring.uid }] });
+        expect(plan.body.plan.items[0].task.name).toBe('Water plants');
+    });
+
+    it('marks a recurring task done for the day once its occurrence is completed', async () => {
+        const noon = moment.tz(today, 'Europe/Athens').hour(12).toDate();
+        const recurring = await makeTask({
+            name: 'Water plants',
+            recurrence_type: 'daily',
+            recurrence_interval: 1,
+            due_date: noon,
+        });
+        const other = await makeTask({ name: 'Write spec' });
+        await agent.put(`/api/daily-plan/${today}`).send({
+            items: [{ task_uid: recurring.uid }, { task_uid: other.uid }],
+        });
+
+        const completed = await agent
+            .patch(`/api/task/${recurring.uid}`)
+            .send({ status: 'done' });
+        expect(completed.status).toBe(200);
+        expect(completed.body.due_date > today).toBe(true);
+
+        const res = await agent.get('/api/daily-plan');
+        const [first, second] = res.body.plan.items;
+        expect(first.task_uid).toBe(recurring.uid);
+        expect(first.occurrence_done).toBe(true);
+        expect(first.task.status).toBe(Task.STATUS.NOT_STARTED);
+        expect(second.occurrence_done).toBe(false);
+    });
+
+    it('does not count a completion once its due date is back on the day', async () => {
+        const noon = moment.tz(today, 'Europe/Athens').hour(12).toDate();
+        const recurring = await makeTask({
+            recurrence_type: 'daily',
+            recurrence_interval: 1,
+            due_date: noon,
+        });
+        await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: recurring.uid }] });
+        await agent
+            .patch(`/api/task/${recurring.uid}`)
+            .send({ status: 'done' });
+        // Undoing the completion puts the old due date back.
+        await Task.update({ due_date: noon }, { where: { id: recurring.id } });
+
+        const res = await agent.get('/api/daily-plan');
+        expect(res.body.plan.items[0].occurrence_done).toBe(false);
+    });
+
+    it('saves the day hours and returns them with the plan', async () => {
+        const initial = await agent.get('/api/daily-plan');
+        expect(initial.body.day_hours).toEqual({ start: 480, end: 1080 });
+
+        const saved = await agent
+            .put('/api/daily-plan/hours')
+            .send({ start: 17 * 60, end: 24 * 60 });
+        expect(saved.status).toBe(200);
+        expect(saved.body).toEqual({ start: 1020, end: 1440 });
+
+        await agent
+            .put('/api/profile/ui-settings')
+            .send({ appearance: { theme: 'dark' } });
+        const order = [
+            ...(await agent.get('/api/daily-plan/ranking')).body.default_order,
+        ].reverse();
+        await agent.put('/api/daily-plan/ranking').send({ order });
+
+        const after = await agent.get('/api/daily-plan');
+        expect(after.body.day_hours).toEqual({ start: 1020, end: 1440 });
+        const hours = await agent.get('/api/daily-plan/hours');
+        expect(hours.body).toEqual({ start: 1020, end: 1440 });
+    });
+
+    it.each([
+        [{ start: 600, end: 600 }],
+        [{ start: 600, end: 500 }],
+        [{ start: 615, end: 1080 }],
+        [{ start: 0, end: 1500 }],
+        [{ start: '480', end: 1080 }],
+        [{}],
+    ])('rejects invalid day hours %j', async (body) => {
+        const res = await agent.put('/api/daily-plan/hours').send(body);
+        expect(res.status).toBe(400);
+    });
+
+    it('rejects a ranking that does not list every bucket once', async () => {
+        const res = await agent
+            .put('/api/daily-plan/ranking')
+            .send({ order: ['overdue:project', 'overdue:project'] });
+
+        expect(res.status).toBe(400);
+    });
+});
+
+describe('Task estimated_minutes', () => {
+    let agent;
+
+    beforeEach(async () => {
+        await createTestUser({ email: 'estimates@example.com' });
+        agent = request.agent(app);
+        await agent.post('/api/login').send({
+            email: 'estimates@example.com',
+            password: 'password123',
+        });
+    });
+
+    it('saves, clears and validates the estimate', async () => {
+        const created = await agent
+            .post('/api/task')
+            .send({ name: 'Estimate me', estimated_minutes: 45 });
+        expect(created.body.estimated_minutes).toBe(45);
+
+        const bad = await agent
+            .patch(`/api/task/${created.body.uid}`)
+            .send({ estimated_minutes: 3 });
+        expect(bad.status).toBe(400);
+
+        const cleared = await agent
+            .patch(`/api/task/${created.body.uid}`)
+            .send({ estimated_minutes: null });
+        expect(cleared.status).toBe(200);
+        expect(cleared.body.estimated_minutes).toBeNull();
+    });
+});

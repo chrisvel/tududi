@@ -1,157 +1,198 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Task } from '../../entities/Task';
 import {
-    CheckCircleIcon,
     FireIcon,
     TrophyIcon,
+    BoltIcon,
+    BellIcon,
 } from '@heroicons/react/24/outline';
-import { CheckCircleIcon as CheckCircleSolid } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
-import { fetchHabitCompletions } from '../../utils/habitsService';
-import { isHabitCompletedInPeriod } from '../../utils/habitUtils';
+import {
+    fetchHabitCompletions,
+    HabitCompletion,
+} from '../../utils/habitsService';
+import {
+    dayFraction,
+    formatHabitTarget,
+    habitAccentStyle,
+    isHabitCompletedInPeriod,
+    isQuitHabit,
+    isScheduledOn,
+    periodNoun,
+    toDayKey,
+    totalsByDay,
+} from '../../utils/habitUtils';
+import HabitCheckIn from './HabitCheckIn';
+import { ACCENT, SURFACE } from '../../constants/colorPalette';
+import HabitProgressBar from './HabitProgressBar';
 
 interface HabitCardProps {
     habit: Task;
-    onComplete: (uid: string) => void;
-    onEdit: (habit: Task) => void;
-}
-
-function toLocalDateKey(date: Date): string {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    onCheckIn: (habit: Task, options?: { value?: number }) => Promise<void>;
+    onOpen: (habit: Task) => void;
 }
 
 const DAYS = 30;
 
-const last30Days = (): { key: string; date: Date }[] => {
+const lastDays = (): Date[] => {
     const today = new Date();
     return Array.from({ length: DAYS }, (_, i) => {
         const d = new Date(today);
         d.setDate(today.getDate() - (DAYS - 1 - i));
-        return { key: toLocalDateKey(d), date: d };
+        return d;
     });
 };
 
-const HabitCard: React.FC<HabitCardProps> = ({ habit, onComplete, onEdit }) => {
+const HabitCard: React.FC<HabitCardProps> = ({ habit, onCheckIn, onOpen }) => {
     const { t } = useTranslation();
-
-    const [completedDays, setCompletedDays] = useState<Set<string>>(new Set());
+    const [completions, setCompletions] = useState<HabitCompletion[]>([]);
     const [loadingDots, setLoadingDots] = useState(true);
+    const quit = isQuitHabit(habit);
 
+    // Reload the strip whenever the server-side counters move.
+    const version = `${habit.habit_total_completions}-${habit.habit_last_completion_at}-${habit.habit_progress?.skipped}`;
     useEffect(() => {
         if (!habit.uid) return;
         const end = new Date();
         const start = new Date();
         start.setDate(start.getDate() - (DAYS - 1));
         start.setHours(0, 0, 0, 0);
-
         fetchHabitCompletions(habit.uid, start, end)
-            .then((completions) => {
-                const keys = new Set(
-                    completions
-                        .filter((c) => !c.skipped)
-                        .map((c) => toLocalDateKey(new Date(c.completed_at)))
-                );
-                setCompletedDays(keys);
-            })
+            .then(setCompletions)
             .catch(() => {})
             .finally(() => setLoadingDots(false));
-    }, [habit.uid]);
+    }, [habit.uid, version]);
 
-    const days = last30Days();
+    const totals = useMemo(
+        () => totalsByDay(habit, completions),
+        [habit, completions]
+    );
+    const days = lastDays();
+    const todayKey = toDayKey(new Date());
+    const createdKey = habit.created_at
+        ? toDayKey(new Date(habit.created_at))
+        : '';
+    const done = isHabitCompletedInPeriod(habit);
+    const streak = habit.habit_current_streak ?? 0;
+    const best = habit.habit_best_streak ?? 0;
 
-    const isCompletedToday = isHabitCompletedInPeriod(habit);
+    const dotClass = (date: Date) => {
+        const key = toDayKey(date);
+        const dayTotals = totals.get(key);
+        if (loadingDots) return 'bg-gray-100 dark:bg-gray-700 animate-pulse';
+        if (quit) {
+            if (dayTotals && dayTotals.checkIns > 0) {
+                return 'bg-red-400 dark:bg-red-500';
+            }
+            return key >= createdKey
+                ? ACCENT.bg
+                : 'bg-gray-100 dark:bg-gray-600/50';
+        }
+        if (dayTotals?.skipped && dayTotals.checkIns === 0) {
+            return 'bg-sky-200 dark:bg-sky-800';
+        }
+        if (!isScheduledOn(habit, date)) {
+            return 'bg-gray-50 dark:bg-gray-800';
+        }
+        return dayFraction(habit, dayTotals) > 0
+            ? ACCENT.bg
+            : 'bg-gray-100 dark:bg-gray-600/50';
+    };
 
-    const frequencyLabel =
-        habit.habit_target_count && habit.habit_frequency_period
-            ? `${habit.habit_target_count}× per ${habit.habit_frequency_period}`
-            : null;
+    const dotOpacity = (date: Date) => {
+        if (loadingDots) return 1;
+        if (quit) {
+            const slipped = (totals.get(toDayKey(date))?.checkIns ?? 0) > 0;
+            return slipped || toDayKey(date) < createdKey ? 1 : 0.55;
+        }
+        const fraction = dayFraction(habit, totals.get(toDayKey(date)));
+        return fraction > 0 ? 0.35 + fraction * 0.65 : 1;
+    };
 
     const stats = [
         {
             icon: <FireIcon className="h-3.5 w-3.5" />,
-            count: habit.habit_current_streak ?? 0,
-            label: t('habits.stats.streak', 'streak'),
+            value: streak,
+            label: quit
+                ? t('habits.stats.clean', 'clean {{unit}}', {
+                      unit: periodNoun(t, habit, streak),
+                  })
+                : periodNoun(t, habit, streak),
         },
         {
             icon: <TrophyIcon className="h-3.5 w-3.5" />,
-            count: habit.habit_best_streak ?? 0,
+            value: best,
             label: t('habits.stats.best', 'best'),
         },
         {
-            icon: <CheckCircleIcon className="h-3.5 w-3.5" />,
-            count: habit.habit_total_completions ?? 0,
-            label: t('habits.stats.done', 'done'),
+            icon: <BoltIcon className="h-3.5 w-3.5" />,
+            value: `${Math.round(habit.habit_strength ?? 0)}%`,
+            label: t('habits.stats.strength', 'strength'),
         },
     ];
 
-    const todayKey = toLocalDateKey(new Date());
-
     return (
         <div
-            className={`rounded-xl shadow-sm flex flex-col cursor-pointer hover:shadow-md transition-shadow border ${
-                isCompletedToday
-                    ? 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800'
-                    : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+            className={`rounded-xl shadow-sm flex flex-col overflow-hidden cursor-pointer hover:shadow-md transition-shadow ${
+                done ? `${ACCENT.surface} ${SURFACE.outline}` : SURFACE.card
             }`}
-            onClick={() => onEdit(habit)}
+            onClick={() => onOpen(habit)}
+            style={habitAccentStyle(habit)}
         >
-            {/* Name + complete button */}
-            <div className="px-5 pt-5 pb-3 flex items-start justify-between gap-3">
+            <div className={`h-1 ${ACCENT.bg}`} aria-hidden="true" />
+            <div className="px-5 pt-4 pb-3 flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                     <h3
-                        className={`text-sm font-semibold tracking-wide leading-snug ${
-                            isCompletedToday
-                                ? 'text-green-800 dark:text-green-200'
+                        className={`flex items-baseline gap-2 text-sm font-semibold tracking-wide leading-snug break-words ${
+                            done
+                                ? ACCENT.text
                                 : 'text-gray-800 dark:text-gray-100'
                         }`}
                     >
-                        {habit.name}
+                        <span
+                            className={`shrink-0 w-2.5 h-2.5 rounded-full ${ACCENT.bg}`}
+                            aria-hidden="true"
+                        />
+                        <span className="min-w-0">{habit.name}</span>
                     </h3>
-                    {frequencyLabel && (
-                        <p
-                            className={`text-xs mt-1.5 ${
-                                isCompletedToday
-                                    ? 'text-green-600/70 dark:text-green-400/60'
-                                    : 'text-gray-400 dark:text-gray-500'
-                            }`}
-                        >
-                            {frequencyLabel}
-                        </p>
-                    )}
+                    <p className="flex items-center gap-1.5 text-xs mt-1.5 text-gray-400 dark:text-gray-500">
+                        {quit && (
+                            <span className="px-1.5 py-px rounded bg-red-50 dark:bg-red-950/50 text-red-500 dark:text-red-400 text-[10px] font-medium uppercase tracking-wide">
+                                {t('habits.quit', 'Quit')}
+                            </span>
+                        )}
+                        <span className="truncate">
+                            {formatHabitTarget(t, habit)}
+                        </span>
+                        {habit.habit_reminder_time && (
+                            <span className="flex items-center gap-0.5 shrink-0">
+                                <BellIcon className="h-3 w-3" />
+                                {habit.habit_reminder_time}
+                            </span>
+                        )}
+                    </p>
                 </div>
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        if (!isCompletedToday) onComplete(habit.uid!);
-                    }}
-                    className={`shrink-0 p-1 rounded-full transition-colors ${
-                        isCompletedToday
-                            ? 'text-green-500 dark:text-green-400 cursor-default'
-                            : 'text-gray-300 dark:text-gray-600 hover:text-green-500 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-950'
-                    }`}
-                    title={
-                        isCompletedToday
-                            ? t('habits.completedToday', 'Completed today')
-                            : t('habits.complete', 'Complete habit')
-                    }
-                >
-                    {isCompletedToday ? (
-                        <CheckCircleSolid className="w-6 h-6" />
-                    ) : (
-                        <CheckCircleIcon className="w-6 h-6" />
-                    )}
-                </button>
+                <HabitCheckIn
+                    habit={habit}
+                    onCheckIn={(options) => onCheckIn(habit, options)}
+                />
             </div>
 
-            {/* 30-day completion diagram */}
+            {!quit && habit.habit_progress && (
+                <div className="px-5 pb-3">
+                    <HabitProgressBar habit={habit} />
+                </div>
+            )}
+
             <div className="px-5 pb-4">
                 <div
                     className="grid gap-[3px]"
-                    style={{ gridTemplateColumns: `repeat(${DAYS}, minmax(0, 1fr))` }}
+                    style={{
+                        gridTemplateColumns: `repeat(${DAYS}, minmax(0, 1fr))`,
+                    }}
                 >
-                    {days.map(({ key, date }) => {
-                        const done = completedDays.has(key);
-                        const isToday = key === todayKey;
+                    {days.map((date) => {
+                        const key = toDayKey(date);
                         return (
                             <div
                                 key={key}
@@ -159,53 +200,39 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onComplete, onEdit }) => {
                                     month: 'short',
                                     day: 'numeric',
                                 })}
-                                className={`aspect-square rounded-[2px] transition-colors ${
-                                    loadingDots
-                                        ? 'bg-gray-100 dark:bg-gray-700 animate-pulse'
-                                        : done
-                                          ? isCompletedToday && isToday
-                                              ? 'bg-green-500 dark:bg-green-400'
-                                              : 'bg-green-400 dark:bg-green-500'
-                                          : isToday
-                                            ? 'bg-gray-200 dark:bg-gray-600 ring-1 ring-gray-400 dark:ring-gray-500'
-                                            : 'bg-gray-100 dark:bg-gray-700'
+                                className={`aspect-square rounded-[2px] transition-colors ${dotClass(date)} ${
+                                    key === todayKey
+                                        ? 'outline outline-1 outline-offset-1 outline-gray-300 dark:outline-gray-500'
+                                        : ''
                                 }`}
+                                style={{ opacity: dotOpacity(date) }}
                             />
                         );
                     })}
                 </div>
             </div>
 
-            {/* Stats footer */}
             <div
-                className={`mt-auto rounded-b-xl flex items-stretch divide-x ${
-                    isCompletedToday
-                        ? 'bg-green-100/70 dark:bg-green-900/40 border-t border-green-200 dark:border-green-800 divide-green-200 dark:divide-green-800'
-                        : 'bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-600 divide-gray-200 dark:divide-gray-600'
+                className={`mt-auto rounded-b-xl flex items-stretch ${
+                    done ? ACCENT.surfaceStrong : ACCENT.strip
                 }`}
             >
-                {stats.map(({ icon, count, label }) => (
+                {stats.map(({ icon, value, label }) => (
                     <div
                         key={label}
                         className="flex-1 flex flex-col items-center py-3 gap-1"
                     >
                         <span
-                            className={`text-base font-semibold leading-none ${
-                                isCompletedToday
-                                    ? 'text-green-700 dark:text-green-300'
+                            className={`text-base font-semibold leading-none tabular-nums ${
+                                done
+                                    ? ACCENT.text
                                     : 'text-gray-700 dark:text-gray-200'
                             }`}
                         >
-                            {count}
+                            {value}
                         </span>
-                        <span
-                            className={`flex items-center gap-1 text-[10px] leading-none ${
-                                isCompletedToday
-                                    ? 'text-green-600/60 dark:text-green-400/60'
-                                    : 'text-gray-400 dark:text-gray-500'
-                            }`}
-                        >
-                            {icon}
+                        <span className="flex items-center gap-1 text-[10px] leading-none text-gray-400 dark:text-gray-500">
+                            <span className={ACCENT.text}>{icon}</span>
                             {label}
                         </span>
                     </div>

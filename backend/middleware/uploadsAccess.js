@@ -1,12 +1,16 @@
 const { Op } = require('sequelize');
 const {
     TaskAttachment,
+    InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
+    Note,
     Task,
     Project,
     User,
-    Permission,
 } = require('../models');
 const permissionsService = require('../services/permissionsService');
+const permissionSources = require('../services/permissionSources');
 const { getAuthenticatedUserId } = require('../utils/request-utils');
 
 const LEVELS = { none: 0, ro: 1, rw: 2, admin: 3 };
@@ -29,42 +33,80 @@ const canAccessTaskFile = async (userId, filename) => {
     return hasReadAccess(userId, 'task', attachment.Task.uid);
 };
 
-const canAccessProjectFile = async (userId, filename) => {
-    const project = await Project.findOne({
-        where: { image_url: `/api/uploads/projects/${filename}` },
-        attributes: ['uid'],
+// Inbox items are never shared, so only the owner can read their files.
+const canAccessInboxFile = async (userId, filename) => {
+    const attachment = await InboxItemAttachment.findOne({
+        where: { stored_filename: filename },
+        attributes: ['user_id'],
+        raw: true,
     });
-    if (!project) return false;
-    return hasReadAccess(userId, 'project', project.uid);
+    return !!attachment && attachment.user_id === userId;
+};
+
+// Project and note files follow the project or note they belong to.
+const canAccessProjectAttachment = async (userId, filename) => {
+    const attachment = await ProjectAttachment.findOne({
+        where: { stored_filename: filename },
+        include: [{ model: Project, required: true, attributes: ['uid'] }],
+    });
+    if (!attachment) return false;
+    return hasReadAccess(userId, 'project', attachment.Project.uid);
+};
+
+const canAccessNoteAttachment = async (userId, filename) => {
+    const attachment = await NoteAttachment.findOne({
+        where: { stored_filename: filename },
+        include: [{ model: Note, required: true, attributes: ['uid'] }],
+    });
+    if (!attachment) return false;
+    return hasReadAccess(userId, 'note', attachment.Note.uid);
+};
+
+// Several projects can point at the same cover image (a restored backup, or
+// image_url set over MCP), so every project using it is checked. The image also shows on the
+// cards of a project's tasks, so someone with a task assigned to them in the
+// project sees it too.
+const canAccessProjectFile = async (userId, filename) => {
+    const projects = await Project.findAll({
+        where: { image_url: `/api/uploads/projects/${filename}` },
+        attributes: ['id', 'uid'],
+        raw: true,
+    });
+    for (const project of projects) {
+        if (await hasReadAccess(userId, 'project', project.uid)) return true;
+    }
+    if (projects.length === 0) return false;
+
+    const myPersonUids = await permissionsService.getMyPersonUids(userId);
+    if (myPersonUids.length === 0) return false;
+    const assigned = await Task.count({
+        where: {
+            project_id: { [Op.in]: projects.map((p) => p.id) },
+            assigned_to: { [Op.in]: myPersonUids },
+        },
+    });
+    return assigned > 0;
 };
 
 // Two users are collaborators when either has accepted a share from the
 // other, or both hold accepted access to the same shared resource.
 const areCollaborators = async (userId, otherUserId) => {
-    const directShare = await Permission.count({
-        where: {
-            status: 'accepted',
-            [Op.or]: [
-                { user_id: userId, granted_by_user_id: otherUserId },
-                { user_id: otherUserId, granted_by_user_id: userId },
-            ],
-        },
+    const directShare = await permissionSources.countAccepted({
+        [Op.or]: [
+            { user_id: userId, granted_by_user_id: otherUserId },
+            { user_id: otherUserId, granted_by_user_id: userId },
+        ],
     });
     if (directShare > 0) return true;
 
-    const mine = await Permission.findAll({
-        where: { user_id: userId, status: 'accepted' },
-        attributes: ['resource_uid'],
-        raw: true,
-    });
+    const mine = await permissionSources.findAccepted({ user_id: userId }, [
+        'resource_uid',
+    ]);
     if (mine.length === 0) return false;
 
-    const common = await Permission.count({
-        where: {
-            user_id: otherUserId,
-            status: 'accepted',
-            resource_uid: { [Op.in]: mine.map((p) => p.resource_uid) },
-        },
+    const common = await permissionSources.countAccepted({
+        user_id: otherUserId,
+        resource_uid: { [Op.in]: mine.map((p) => p.resource_uid) },
     });
     return common > 0;
 };
@@ -88,15 +130,45 @@ const canAccessAvatarFile = async (userId, filename) => {
 // enough to read them - access must be scoped to the resource the file
 // belongs to, matching the checks the /attachments/:uid/download endpoint
 // already performs (GHSA-49fc-pf7x-cj8x).
+//
+// express.static decodes and normalizes the path after this check runs, so
+// the check has to see the same path the static handler will serve. Anything
+// that isn't exactly /<category>/<filename> after one round of decoding is
+// refused, otherwise "/tasks/<my-file>/../<their-file>" passes the check for
+// my file and then resolves to theirs.
+const resolveUploadTarget = (rawPath) => {
+    let decoded;
+    try {
+        decoded = decodeURIComponent(rawPath);
+    } catch (_) {
+        return null;
+    }
+    if (decoded.includes('\0') || decoded.includes('\\')) return null;
+
+    const segments = decoded.split('/').filter(Boolean);
+    if (segments.length !== 2) return null;
+    if (segments.some((segment) => segment === '.' || segment === '..')) {
+        return null;
+    }
+
+    return { category: segments[0], filename: segments[1] };
+};
+
 const uploadsAccessControl = async (req, res, next) => {
     try {
         const userId = getAuthenticatedUserId(req);
-        const segments = req.path.split('/').filter(Boolean);
-        const [category, filename] = segments;
+        const target = resolveUploadTarget(req.path);
 
         let allowed = false;
+        const { category, filename } = target || {};
         if (category === 'tasks' && filename) {
             allowed = await canAccessTaskFile(userId, filename);
+        } else if (category === 'inbox' && filename) {
+            allowed = await canAccessInboxFile(userId, filename);
+        } else if (category === 'project-files' && filename) {
+            allowed = await canAccessProjectAttachment(userId, filename);
+        } else if (category === 'note-files' && filename) {
+            allowed = await canAccessNoteAttachment(userId, filename);
         } else if (category === 'projects' && filename) {
             allowed = await canAccessProjectFile(userId, filename);
         } else if (category === 'avatars' && filename) {
@@ -115,4 +187,4 @@ const uploadsAccessControl = async (req, res, next) => {
     }
 };
 
-module.exports = { uploadsAccessControl };
+module.exports = { uploadsAccessControl, resolveUploadTarget };

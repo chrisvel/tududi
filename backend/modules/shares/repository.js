@@ -4,6 +4,9 @@ const { Op } = require('sequelize');
 const {
     User,
     Permission,
+    UserGroup,
+    GroupShare,
+    GroupPermission,
     Project,
     Task,
     Note,
@@ -65,6 +68,15 @@ class SharesRepository {
 
     async findUserById(id, attributes = ['id', 'email', 'avatar_image']) {
         return User.findByPk(id, { attributes });
+    }
+
+    async findCandidateUsers(ids) {
+        if (ids.length === 0) return [];
+        return User.findAll({
+            where: { id: ids },
+            attributes: ['id', 'uid', 'name', 'surname', 'email'],
+            raw: true,
+        });
     }
 
     async findUsersByIds(ids) {
@@ -148,6 +160,70 @@ class SharesRepository {
     async deleteInvitationSet(invitation) {
         return Permission.destroy({
             where: this.invitationSetWhere(invitation),
+        });
+    }
+
+    groupInvitationInclude() {
+        return [
+            {
+                model: GroupShare,
+                as: 'GroupShare',
+                required: true,
+                include: [
+                    {
+                        model: UserGroup,
+                        as: 'Group',
+                        required: true,
+                        attributes: ['uid', 'name'],
+                    },
+                ],
+            },
+        ];
+    }
+
+    async findPendingGroupInvitations(userId) {
+        return GroupPermission.findAll({
+            where: {
+                user_id: userId,
+                propagation: 'direct',
+                status: 'pending',
+            },
+            include: this.groupInvitationInclude(),
+            order: [['created_at', 'DESC']],
+        });
+    }
+
+    async findPendingGroupInvitation(userId, groupPermissionId) {
+        return GroupPermission.findOne({
+            where: {
+                id: groupPermissionId,
+                user_id: userId,
+                propagation: 'direct',
+                status: 'pending',
+            },
+        });
+    }
+
+    // A group grant and everything it cascaded to share one group_share_id,
+    // so answering the root row moves the member's whole set together.
+    groupInvitationSetWhere(invitation) {
+        return {
+            user_id: invitation.user_id,
+            group_share_id: invitation.group_share_id,
+            status: 'pending',
+        };
+    }
+
+    async acceptGroupInvitationSet(invitation) {
+        return GroupPermission.update(
+            { status: 'accepted' },
+            { where: this.groupInvitationSetWhere(invitation) }
+        );
+    }
+
+    async deleteGroupInvitationSet(invitation) {
+        return GroupPermission.destroy({
+            where: this.groupInvitationSetWhere(invitation),
         });
     }
 }

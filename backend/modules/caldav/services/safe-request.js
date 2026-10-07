@@ -1,0 +1,200 @@
+const axios = require('axios');
+const dns = require('dns');
+const net = require('net');
+const http = require('http');
+const https = require('https');
+const { URL } = require('url');
+const { AppError } = require('../../../shared/errors');
+const { getConfig } = require('../../../config/config');
+const {
+    UnsafeUrlError,
+    assertPublicHostname,
+    isPrivateOrReservedIp,
+    isLinkLocalIp,
+} = require('../../url/ssrfGuard');
+
+const MAX_REDIRECTS = 5;
+const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
+// Self-hosted CalDAV servers (Baikal, Nextcloud, Radicale) on the same LAN
+// are a very common setup, so the block is named as a setting to change
+// rather than a dead end (#1518).
+const PRIVATE_ADDRESS_MESSAGE =
+    'Cannot connect to private, local, or internal network addresses. ' +
+    'If this server is on your own network, ask your administrator to set ' +
+    'CALDAV_ALLOW_PRIVATE_HOSTS=true.';
+
+const allowPrivateHosts = () => !!getConfig().caldav?.allowPrivateHosts;
+
+// Allowing private hosts is for CalDAV servers on the same network. It never
+// opens link-local addresses, where the cloud metadata service lives.
+const LINK_LOCAL_MESSAGE =
+    'Cannot connect to link-local or cloud metadata addresses.';
+
+async function assertNotLinkLocal(hostname) {
+    const bare =
+        hostname.startsWith('[') && hostname.endsWith(']')
+            ? hostname.slice(1, -1)
+            : hostname;
+    let addresses;
+    if (net.isIP(bare)) {
+        addresses = [{ address: bare }];
+    } else {
+        try {
+            addresses = await dns.promises.lookup(bare, { all: true });
+        } catch {
+            return; // Unresolvable: the request itself will fail.
+        }
+    }
+    if (addresses.some(({ address }) => isLinkLocalIp(address))) {
+        throw new AppError(LINK_LOCAL_MESSAGE, 400);
+    }
+}
+
+// A remote calendar URL is user input that drives a server-side request, so
+// it is checked before every request (not only when it is saved) and again
+// for every redirect hop. Public hostnames are resolved and every address must
+// be public; IP literals are checked directly.
+async function assertSafeCalDavUrl(urlLike, { requireHttps = false } = {}) {
+    let parsed;
+    try {
+        parsed = new URL(urlLike);
+    } catch {
+        throw new AppError('Invalid URL format', 400);
+    }
+
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+        throw new AppError('Only HTTP and HTTPS protocols are allowed', 400);
+    }
+
+    if (allowPrivateHosts()) {
+        await assertNotLinkLocal(parsed.hostname);
+        return parsed;
+    }
+
+    if (requireHttps && parsed.protocol !== 'https:') {
+        throw new AppError(
+            'CalDAV servers must use HTTPS so credentials are not sent in clear text',
+            400
+        );
+    }
+
+    try {
+        await assertPublicHostname(parsed.hostname);
+    } catch (error) {
+        if (error instanceof UnsafeUrlError) {
+            throw new AppError(PRIVATE_ADDRESS_MESSAGE, 400);
+        }
+        throw error;
+    }
+
+    return parsed;
+}
+
+// Resolves at connect time and refuses private addresses, which closes the
+// gap between the check above and the socket being opened (DNS rebinding).
+function guardedLookup(hostname, options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = {};
+    } else if (typeof options === 'number') {
+        options = { family: options };
+    }
+
+    dns.lookup(hostname, { ...options, all: true }, (error, addresses) => {
+        if (error) return callback(error);
+
+        if (addresses.some(({ address }) => isLinkLocalIp(address))) {
+            return callback(new AppError(LINK_LOCAL_MESSAGE, 400));
+        }
+
+        if (
+            !allowPrivateHosts() &&
+            addresses.some(({ address }) => isPrivateOrReservedIp(address))
+        ) {
+            return callback(new AppError(PRIVATE_ADDRESS_MESSAGE, 400));
+        }
+
+        if (options && options.all) return callback(null, addresses);
+        return callback(null, addresses[0].address, addresses[0].family);
+    });
+}
+
+const httpAgent = new http.Agent({ lookup: guardedLookup });
+const httpsAgent = new https.Agent({ lookup: guardedLookup });
+
+function withoutCredentials(config) {
+    const next = { ...config };
+    delete next.auth;
+    if (next.headers) {
+        next.headers = Object.fromEntries(
+            Object.entries(next.headers).filter(
+                ([name]) => name.toLowerCase() !== 'authorization'
+            )
+        );
+    }
+    return next;
+}
+
+// Drop-in replacement for axios(config) for remote CalDAV servers. Redirects
+// are followed by hand so each hop is validated, and credentials are not
+// forwarded to a different origin.
+async function safeRequest(config, { requireHttps = false } = {}) {
+    let requestConfig = { ...config };
+    let url = config.url;
+    const originalOrigin = new URL(url).origin;
+    const callerValidateStatus =
+        config.validateStatus || ((status) => status >= 200 && status < 300);
+
+    for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+        await assertSafeCalDavUrl(url, { requireHttps });
+
+        const response = await axios({
+            ...requestConfig,
+            url,
+            maxRedirects: 0,
+            httpAgent,
+            httpsAgent,
+            validateStatus: (status) =>
+                REDIRECT_STATUSES.has(status) || callerValidateStatus(status),
+        });
+
+        if (!REDIRECT_STATUSES.has(response.status)) {
+            return response;
+        }
+
+        const location = response.headers?.location;
+        if (!location) {
+            throw new AppError(
+                'Remote CalDAV server sent a redirect without a location',
+                502
+            );
+        }
+
+        const next = new URL(location, url);
+        if (next.origin !== originalOrigin) {
+            requestConfig = withoutCredentials(requestConfig);
+        }
+
+        const method = (requestConfig.method || 'GET').toUpperCase();
+        if (
+            response.status === 303 ||
+            (['301', '302'].includes(String(response.status)) &&
+                method === 'POST')
+        ) {
+            requestConfig = { ...requestConfig, method: 'GET' };
+            delete requestConfig.data;
+        }
+
+        url = next.href;
+    }
+
+    throw new AppError('Remote CalDAV server redirected too many times', 502);
+}
+
+module.exports = {
+    assertSafeCalDavUrl,
+    safeRequest,
+    guardedLookup,
+    allowPrivateHosts,
+    PRIVATE_ADDRESS_MESSAGE,
+};

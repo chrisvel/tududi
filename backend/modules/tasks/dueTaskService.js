@@ -4,6 +4,7 @@ const { logError } = require('../../services/logService');
 const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
+    shouldSendPushNotification,
 } = require('../../utils/notificationPreferences');
 const telegramPoller = require('../telegram/telegramPoller');
 
@@ -20,7 +21,11 @@ async function checkDueTasks() {
                     [Op.lte]: tomorrow,
                 },
                 status: {
-                    [Op.ne]: 2,
+                    [Op.notIn]: [
+                        Task.STATUS.DONE,
+                        Task.STATUS.ARCHIVED,
+                        Task.STATUS.CANCELLED,
+                    ],
                 },
             },
             include: [
@@ -141,7 +146,12 @@ async function checkDueTasks() {
                         title,
                         message,
                         level,
-                        sources: [],
+                        sources: shouldSendPushNotification(
+                            user,
+                            notificationType
+                        )
+                            ? ['push']
+                            : [],
                         data: {
                             taskUid: task.uid,
                             taskName: task.name,

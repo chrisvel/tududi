@@ -38,7 +38,7 @@ module.exports = (sequelize) => {
                 allowNull: true,
             },
             picture: {
-                type: DataTypes.STRING,
+                type: DataTypes.TEXT,
                 allowNull: true,
             },
             raw_claims: {

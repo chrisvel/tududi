@@ -1,8 +1,9 @@
 const request = require('supertest');
+const http = require('http');
 const app = require('../../app');
 const path = require('path');
 const fs = require('fs').promises;
-const { Task, TaskAttachment, Project } = require('../../models');
+const { Task, TaskAttachment, Project, Person } = require('../../models');
 const {
     createTestUser,
     acceptAllInvitations,
@@ -52,7 +53,9 @@ describe('GET /api/uploads/:category/:filename', () => {
         });
 
         afterEach(async () => {
-            await fs.rm(taskUploadDir, { recursive: true, force: true });
+            await fs.rm(path.join(taskUploadDir, 'task-static-test.pdf'), {
+                force: true,
+            });
         });
 
         it('should require authentication', async () => {
@@ -131,9 +134,14 @@ describe('GET /api/uploads/:category/:filename', () => {
 
     describe('Content-Disposition (GHSA-43p8-ch4p-gqg4)', () => {
         const taskUploadDir = path.join(uploadsDir, 'tasks');
+        const createdFiles = [];
 
         afterEach(async () => {
-            await fs.rm(taskUploadDir, { recursive: true, force: true });
+            await Promise.all(
+                createdFiles
+                    .splice(0)
+                    .map((file) => fs.rm(file, { force: true }))
+            );
         });
 
         const createAttachment = async (
@@ -142,6 +150,7 @@ describe('GET /api/uploads/:category/:filename', () => {
             content = 'file content'
         ) => {
             await fs.mkdir(taskUploadDir, { recursive: true });
+            createdFiles.push(path.join(taskUploadDir, storedFilename));
             await fs.writeFile(
                 path.join(taskUploadDir, storedFilename),
                 content
@@ -257,11 +266,99 @@ describe('GET /api/uploads/:category/:filename', () => {
         });
 
         afterEach(async () => {
-            await fs.rm(projectUploadDir, { recursive: true, force: true });
+            await fs.rm(
+                path.join(projectUploadDir, 'project-static-test.png'),
+                {
+                    force: true,
+                }
+            );
         });
+
+        const loginNewUser = async (prefix) => {
+            const user = await createTestUser({
+                email: `${prefix}_${Date.now()}@test.com`,
+            });
+            const agent = request.agent(app);
+            await agent
+                .post('/api/login')
+                .send({ email: user.email, password: 'password123' });
+            return { user, agent };
+        };
 
         it('should allow the owner to fetch their project image', async () => {
             const response = await ownerAgent.get(
+                '/api/uploads/projects/project-static-test.png'
+            );
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should allow a user the project is shared with to fetch its image', async () => {
+            const project = await Project.findOne({
+                where: {
+                    image_url: '/api/uploads/projects/project-static-test.png',
+                },
+            });
+            const { user, agent } = await loginNewUser('uploads-shared-proj');
+
+            await ownerAgent.post('/api/shares').send({
+                resource_type: 'project',
+                resource_uid: project.uid,
+                target_user_email: user.email,
+                access_level: 'ro',
+            });
+            await acceptAllInvitations(agent);
+
+            const response = await agent.get(
+                '/api/uploads/projects/project-static-test.png'
+            );
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should allow a user shared on any project that uses the image (#1674)', async () => {
+            // A second project with the same cover image, shared with the
+            // user. The first one, created in beforeEach, is not shared.
+            const copy = await Project.create({
+                name: 'Restored copy with the same banner',
+                user_id: owner.id,
+                image_url: '/api/uploads/projects/project-static-test.png',
+            });
+            const { user, agent } = await loginNewUser('uploads-copy-proj');
+
+            await ownerAgent.post('/api/shares').send({
+                resource_type: 'project',
+                resource_uid: copy.uid,
+                target_user_email: user.email,
+                access_level: 'ro',
+            });
+            await acceptAllInvitations(agent);
+
+            const response = await agent.get(
+                '/api/uploads/projects/project-static-test.png'
+            );
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should allow a user with a task assigned to them in the project (#1674)', async () => {
+            const project = await Project.findOne({
+                where: {
+                    image_url: '/api/uploads/projects/project-static-test.png',
+                },
+            });
+            const { user, agent } = await loginNewUser('uploads-assignee-proj');
+            const person = await Person.findOne({
+                where: { linked_user_id: user.id },
+            });
+            await Task.create({
+                name: 'Assigned task in the project',
+                user_id: owner.id,
+                project_id: project.id,
+                assigned_to: person.uid,
+            });
+
+            const response = await agent.get(
                 '/api/uploads/projects/project-static-test.png'
             );
 
@@ -357,6 +454,153 @@ describe('GET /api/uploads/:category/:filename', () => {
 
             const response = await otherAgent.get(
                 '/api/uploads/avatars/avatar-static-test.png'
+            );
+
+            expect(response.status).toBe(403);
+        });
+    });
+
+    describe('path traversal inside the uploads root', () => {
+        const taskUploadDir = path.join(uploadsDir, 'tasks');
+        let server;
+        let attackerCookie;
+
+        // HTTP clients normalize dot segments before sending, which hides the
+        // bug, so these requests go over a raw socket with the path untouched.
+        const rawGet = (rawPath) =>
+            new Promise((resolve, reject) => {
+                const req = http.request(
+                    {
+                        host: '127.0.0.1',
+                        port: server.address().port,
+                        path: rawPath,
+                        method: 'GET',
+                        headers: { Cookie: attackerCookie },
+                    },
+                    (res) => {
+                        let body = '';
+                        res.on('data', (chunk) => (body += chunk));
+                        res.on('end', () =>
+                            resolve({ status: res.statusCode, text: body })
+                        );
+                    }
+                );
+                req.on('error', reject);
+                req.end();
+            });
+
+        beforeAll(
+            () =>
+                new Promise((resolve) => {
+                    server = app.listen(0, '127.0.0.1', resolve);
+                })
+        );
+
+        afterAll(() => new Promise((resolve) => server.close(resolve)));
+
+        beforeEach(async () => {
+            await fs.mkdir(taskUploadDir, { recursive: true });
+            await fs.writeFile(
+                path.join(taskUploadDir, 'task-victim-secret.pdf'),
+                'victim private content'
+            );
+            await TaskAttachment.create({
+                task_id: task.id,
+                user_id: owner.id,
+                original_filename: 'victim.pdf',
+                stored_filename: 'task-victim-secret.pdf',
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: 'tasks/task-victim-secret.pdf',
+            });
+
+            const attacker = await createTestUser({
+                email: `uploads-attacker_${Date.now()}@test.com`,
+            });
+            const attackerTask = await Task.create({
+                name: 'Attacker task',
+                user_id: attacker.id,
+            });
+            await fs.writeFile(
+                path.join(taskUploadDir, 'task-attacker-own.pdf'),
+                'attacker own content'
+            );
+            await TaskAttachment.create({
+                task_id: attackerTask.id,
+                user_id: attacker.id,
+                original_filename: 'own.pdf',
+                stored_filename: 'task-attacker-own.pdf',
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: 'tasks/task-attacker-own.pdf',
+            });
+
+            const login = await request(app)
+                .post('/api/login')
+                .send({ email: attacker.email, password: 'password123' });
+            attackerCookie = login.headers['set-cookie']
+                .map((cookie) => cookie.split(';')[0])
+                .join('; ');
+        });
+
+        // Other test files use this folder at the same time, so only this
+        // block's own files are removed, never the folder.
+        afterEach(async () => {
+            await Promise.all(
+                ['task-victim-secret.pdf', 'task-attacker-own.pdf'].map(
+                    (name) =>
+                        fs.rm(path.join(taskUploadDir, name), { force: true })
+                )
+            );
+        });
+
+        it('still serves the attacker their own attachment', async () => {
+            const response = await rawGet(
+                '/api/uploads/tasks/task-attacker-own.pdf'
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.text).toBe('attacker own content');
+        });
+
+        it.each([
+            [
+                'literal dot segments',
+                'task-attacker-own.pdf/../task-victim-secret.pdf',
+            ],
+            [
+                'encoded dot segments',
+                'task-attacker-own.pdf/%2e%2e/task-victim-secret.pdf',
+            ],
+            [
+                'encoded slashes',
+                'task-attacker-own.pdf%2f..%2ftask-victim-secret.pdf',
+            ],
+            [
+                'encoded backslashes',
+                'task-attacker-own.pdf%5c..%5ctask-victim-secret.pdf',
+            ],
+        ])(
+            'should not serve another user file through %s',
+            async (_label, suffix) => {
+                const response = await rawGet(`/api/uploads/tasks/${suffix}`);
+
+                expect([400, 403]).toContain(response.status);
+                expect(response.text).not.toContain('victim private content');
+            }
+        );
+
+        it('should reject extra path segments after a valid file', async () => {
+            const response = await rawGet(
+                '/api/uploads/tasks/task-attacker-own.pdf/extra'
+            );
+
+            expect(response.status).toBe(403);
+        });
+
+        it('should reject a malformed percent-encoding', async () => {
+            const response = await rawGet(
+                '/api/uploads/tasks/task-attacker-own.pdf%zz'
             );
 
             expect(response.status).toBe(403);

@@ -9,7 +9,13 @@ const {
     Note,
     Person,
     RecurringCompletion,
+    Role,
     TaskAttachment,
+    InboxItem,
+    InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
+    User,
 } = require('../../models');
 const { getConfig } = require('../../config/config');
 const {
@@ -102,6 +108,33 @@ async function seedSource(user) {
     });
     await note.setTags([tag.id]);
 
+    // Files stored on disk and referenced by URL (project cover image,
+    // user avatar) rather than embedded in the backup like task attachments.
+    const projectImagesDir = path.join(config.uploadPath, 'projects');
+    await fs.mkdir(projectImagesDir, { recursive: true });
+    const projectImageFile = `roundtrip-project-${Date.now()}.png`;
+    await fs.writeFile(
+        path.join(projectImagesDir, projectImageFile),
+        'project image bytes'
+    );
+    await project.update({
+        image_url: `/api/uploads/projects/${projectImageFile}`,
+    });
+
+    const avatarsDir = path.join(config.uploadPath, 'avatars');
+    await fs.mkdir(avatarsDir, { recursive: true });
+    const avatarFile = `roundtrip-avatar-${Date.now()}.png`;
+    await fs.writeFile(path.join(avatarsDir, avatarFile), 'avatar bytes');
+    await user.update({
+        avatar_image: `/uploads/avatars/${avatarFile}`,
+        appearance: 'dark',
+        features: {
+            ...user.features,
+            kanban_enabled: true,
+            eisenhower_enabled: true,
+        },
+    });
+
     return {
         area,
         goal,
@@ -152,6 +185,14 @@ describe('Backup export and import round trip (format 2)', () => {
         expect(project.area_uid).toBe(seeded.area.uid);
         expect(project.goal_uid).toBe(seeded.goal.uid);
         expect(project.tag_uids).toEqual([seeded.tag.uid]);
+        expect(Buffer.from(project.cover_image.data, 'base64').toString()).toBe(
+            'project image bytes'
+        );
+
+        expect(backup.user.appearance).toBe('dark');
+        expect(
+            Buffer.from(backup.user.avatar_image_data.data, 'base64').toString()
+        ).toBe('avatar bytes');
 
         const parent = backup.data.tasks.find((t) => t.name === 'Parent');
         expect(parent.project_uid).toBe(seeded.project.uid);
@@ -177,6 +218,11 @@ describe('Backup export and import round trip (format 2)', () => {
         await peopleService.createSelfPerson(target);
         // Cross-instance case: the source account is gone, so the backup's
         // uids are free and are kept.
+        // The source is the only admin, and the last admin cannot be erased.
+        await Role.update(
+            { role: 'admin', is_admin: true },
+            { where: { user_id: target.id } }
+        );
         await eraseUserAccount(source.id);
 
         const stats = await importUserData(target.id, backup);
@@ -198,6 +244,34 @@ describe('Backup export and import round trip (format 2)', () => {
         expect((await project.getTags()).map((t) => t.name)).toEqual([
             'urgent',
         ]);
+        expect(project.image_url).toMatch(/^\/api\/uploads\/projects\//);
+        const projectImageContent = await fs.readFile(
+            path.join(
+                config.uploadPath,
+                'projects',
+                path.basename(project.image_url)
+            ),
+            'utf8'
+        );
+        expect(projectImageContent).toBe('project image bytes');
+
+        // The target's own profile picks up the backed-up account details
+        // (#1603), but never the source's email/password.
+        const updatedTarget = await User.findByPk(target.id);
+        expect(updatedTarget.appearance).toBe('dark');
+        expect(updatedTarget.features.kanban_enabled).toBe(true);
+        expect(updatedTarget.features.eisenhower_enabled).toBe(true);
+        expect(updatedTarget.email).toBe(target.email);
+        expect(updatedTarget.avatar_image).toMatch(/^\/uploads\/avatars\//);
+        const avatarContent = await fs.readFile(
+            path.join(
+                config.uploadPath,
+                'avatars',
+                path.basename(updatedTarget.avatar_image)
+            ),
+            'utf8'
+        );
+        expect(avatarContent).toBe('avatar bytes');
 
         const parent = await Task.findOne({
             where: { user_id: target.id, name: 'Parent' },
@@ -282,6 +356,30 @@ describe('Backup export and import round trip (format 2)', () => {
         );
     });
 
+    it('reports zeroed stats for every category when the backup has no rows', async () => {
+        const empty = {
+            version: '2',
+            data: { projects: [], tasks: [], notes: [] },
+        };
+
+        const stats = await importUserData(target.id, empty);
+
+        for (const key of ['tasks', 'projects', 'notes', 'tags', 'areas']) {
+            expect(stats[key]).toEqual({ created: 0, skipped: 0 });
+        }
+    });
+
+    it('does not touch the account profile when merge is disabled', async () => {
+        const backup = await exportUserData(source.id);
+        await peopleService.createSelfPerson(target);
+
+        await importUserData(target.id, backup, { merge: false });
+
+        const untouchedTarget = await User.findByPk(target.id);
+        expect(untouchedTarget.appearance).toBe('light');
+        expect(untouchedTarget.avatar_image).toBeFalsy();
+    });
+
     it('never links a legacy backup to another user rows by numeric id', async () => {
         // A format-1 backup carries the source's numeric ids and no uids
         const legacy = {
@@ -320,5 +418,115 @@ describe('Backup export and import round trip (format 2)', () => {
         const task = await Task.findOne({ where: { uid: 'legacy-task' } });
         expect(task.project_id).toBeNull();
         expect(task.parent_task_id).toBeNull();
+    });
+
+    it('carries inbox item files through export and import', async () => {
+        const inboxDir = path.join(config.uploadPath, 'inbox');
+        await fs.mkdir(inboxDir, { recursive: true });
+        await fs.writeFile(
+            path.join(inboxDir, 'inbox-roundtrip.png'),
+            'inbox bytes'
+        );
+        const item = await InboxItem.create({
+            content: 'Receipt',
+            title: 'Receipt',
+            source: 'web',
+            user_id: source.id,
+        });
+        await InboxItemAttachment.create({
+            inbox_item_id: item.id,
+            user_id: source.id,
+            original_filename: 'receipt.png',
+            stored_filename: 'inbox-roundtrip.png',
+            file_size: 11,
+            mime_type: 'image/png',
+            file_path: 'inbox/inbox-roundtrip.png',
+        });
+
+        const backup = await exportUserData(source.id);
+        const exported = backup.data.inbox_items.find(
+            (entry) => entry.uid === item.uid
+        );
+        expect(exported.attachments).toHaveLength(1);
+        expect(exported.Attachments).toBeUndefined();
+
+        await importUserData(target.id, backup);
+
+        const imported = await InboxItemAttachment.findOne({
+            where: { user_id: target.id },
+        });
+        expect(imported.original_filename).toBe('receipt.png');
+        expect(imported.file_path).toMatch(/^inbox\//);
+        const content = await fs.readFile(
+            path.join(config.uploadPath, imported.file_path),
+            'utf8'
+        );
+        expect(content).toBe('inbox bytes');
+    });
+
+    it('carries project and note files through, relinking the note text', async () => {
+        for (const dir of ['project-files', 'note-files']) {
+            await fs.mkdir(path.join(config.uploadPath, dir), {
+                recursive: true,
+            });
+        }
+        await fs.writeFile(
+            path.join(config.uploadPath, 'project-files', 'project-rt.pdf'),
+            'project bytes'
+        );
+        await fs.writeFile(
+            path.join(config.uploadPath, 'note-files', 'note-rt.png'),
+            'note bytes'
+        );
+        const project = await Project.create({
+            name: 'Files project',
+            user_id: source.id,
+        });
+        await ProjectAttachment.create({
+            project_id: project.id,
+            user_id: source.id,
+            original_filename: 'brief.pdf',
+            stored_filename: 'project-rt.pdf',
+            file_size: 13,
+            mime_type: 'application/pdf',
+            file_path: 'project-files/project-rt.pdf',
+        });
+        const note = await Note.create({
+            title: 'Files note',
+            content: 'See ![shot](/api/uploads/note-files/note-rt.png)',
+            user_id: source.id,
+        });
+        await NoteAttachment.create({
+            note_id: note.id,
+            user_id: source.id,
+            original_filename: 'shot.png',
+            stored_filename: 'note-rt.png',
+            file_size: 10,
+            mime_type: 'image/png',
+            file_path: 'note-files/note-rt.png',
+        });
+
+        const backup = await exportUserData(source.id);
+        // Import next to the source, so every stored name must be new.
+        await importUserData(target.id, backup);
+
+        const projectFile = await ProjectAttachment.findOne({
+            where: { user_id: target.id },
+        });
+        expect(projectFile.original_filename).toBe('brief.pdf');
+        expect(projectFile.stored_filename).not.toBe('project-rt.pdf');
+
+        const noteFile = await NoteAttachment.findOne({
+            where: { user_id: target.id },
+        });
+        const importedNote = await Note.findByPk(noteFile.note_id);
+        expect(importedNote.content).toBe(
+            `See ![shot](/api/uploads/note-files/${noteFile.stored_filename})`
+        );
+        const content = await fs.readFile(
+            path.join(config.uploadPath, noteFile.file_path),
+            'utf8'
+        );
+        expect(content).toBe('note bytes');
     });
 });

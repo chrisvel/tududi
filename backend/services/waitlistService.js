@@ -2,6 +2,13 @@
 
 const { Op } = require('sequelize');
 const { logError } = require('./logService');
+const { getConfig } = require('../config/config');
+const {
+    domainOf,
+    isReservedDomain,
+    isDisposableDomain,
+    acceptsMail,
+} = require('./emailDomainService');
 
 // People who asked to be told when Cloud opens. Three doors lead here: the
 // marketing page's forms, the pricing card while Cloud is shut, and the
@@ -20,7 +27,9 @@ const normalizeEmail = (value) =>
         .toLowerCase();
 
 const isValidEmail = (email) =>
-    email.length <= MAX_EMAIL_LENGTH && EMAIL_SHAPE.test(email);
+    email.length <= MAX_EMAIL_LENGTH &&
+    EMAIL_SHAPE.test(email) &&
+    !isReservedDomain(domainOf(email));
 
 // Never throws: a capture failure must not show a stranger a stack trace,
 // and it must not lose the page they were on either.
@@ -32,7 +41,15 @@ async function capture({
     ip = null,
 }) {
     const address = normalizeEmail(email);
-    if (!isValidEmail(address)) return { accepted: false, created: false };
+    if (!isValidEmail(address) || isDisposableDomain(domainOf(address))) {
+        return { accepted: false, created: false };
+    }
+    if (
+        getConfig().waitlist.mxCheck &&
+        !(await acceptsMail(domainOf(address)))
+    ) {
+        return { accepted: false, created: false };
+    }
 
     try {
         const { WaitlistSubscriber } = require('../models');
@@ -150,5 +167,6 @@ module.exports = {
     remove,
     toCsv,
     isValidEmail,
+    acceptsMail,
     normalizeEmail,
 };

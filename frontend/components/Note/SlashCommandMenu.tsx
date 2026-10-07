@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { EditorView } from '@codemirror/view';
+import { formatLongDate } from '../../utils/dateUtils';
 
 export interface SlashCommand {
     id: string;
@@ -182,12 +183,48 @@ export const SLASH_COMMANDS: SlashCommand[] = [
         icon: '🚨',
         insert: makeInserter('> [!DANGER]\n> '),
     },
+    {
+        id: 'table',
+        label: 'Table',
+        description: '3x3 table',
+        keywords: ['table', 'grid'],
+        icon: '▦',
+        insert: makeInserter(
+            '| Column 1 | Column 2 | Column 3 |\n| --- | --- | --- |\n|  |  |  |\n|  |  |  |\n'
+        ),
+    },
+    {
+        id: 'mermaid',
+        label: 'Diagram',
+        description: 'Mermaid flowchart',
+        keywords: ['mermaid', 'diagram', 'flowchart', 'chart'],
+        icon: '◇',
+        insert: makeInserter('```mermaid\ngraph TD\n    A --> B\n```', -4),
+    },
+    {
+        id: 'date',
+        label: "Today's Date",
+        description: 'Insert the current date',
+        keywords: ['date', 'today', 'now'],
+        icon: '📅',
+        insert: (view, from, to) => {
+            const text = formatLongDate(new Date());
+            view.dispatch({
+                changes: { from, to, insert: text },
+                selection: { anchor: from + text.length },
+            });
+            view.focus();
+        },
+    },
 ];
 
-function filterCommands(filter: string): SlashCommand[] {
-    if (!filter) return SLASH_COMMANDS;
+function filterCommands(
+    filter: string,
+    all: SlashCommand[] = SLASH_COMMANDS
+): SlashCommand[] {
+    if (!filter) return all;
     const q = filter.toLowerCase();
-    return SLASH_COMMANDS.filter(
+    return all.filter(
         (cmd) =>
             cmd.label.toLowerCase().includes(q) ||
             cmd.keywords.some((k) => k.includes(q))
@@ -202,6 +239,9 @@ interface SlashCommandMenuProps {
     slashTo: number;
     view: EditorView;
     onClose: () => void;
+    // Commands that depend on where the editor is used, such as adding a
+    // file to a saved note.
+    extraCommands?: SlashCommand[];
 }
 
 const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({
@@ -212,14 +252,21 @@ const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({
     slashTo,
     view,
     onClose,
+    extraCommands = [],
 }) => {
-    const commands = filterCommands(filter);
+    const commands = filterCommands(filter, [
+        ...SLASH_COMMANDS,
+        ...extraCommands,
+    ]);
     const [activeIndex, setActiveIndex] = useState(0);
     const listRef = useRef<HTMLDivElement>(null);
     const activeItemRef = useRef<HTMLButtonElement | null>(null);
 
     // Clamp activeIndex when filtered list shrinks
-    const clampedIndex = Math.min(activeIndex, Math.max(0, commands.length - 1));
+    const clampedIndex = Math.min(
+        activeIndex,
+        Math.max(0, commands.length - 1)
+    );
 
     useEffect(() => {
         setActiveIndex(0);
@@ -243,7 +290,9 @@ const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({
                 setActiveIndex((i) => (i + 1) % commands.length);
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                setActiveIndex((i) => (i - 1 + commands.length) % commands.length);
+                setActiveIndex(
+                    (i) => (i - 1 + commands.length) % commands.length
+                );
             } else if (e.key === 'Enter' || e.key === 'Tab') {
                 e.preventDefault();
                 const cmd = commands[clampedIndex];
@@ -268,7 +317,13 @@ const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({
         <div
             ref={listRef}
             className="fixed z-[300] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl overflow-y-auto"
-            style={{ left: x, top, minWidth: 220, maxWidth: 320, maxHeight: 352 }}
+            style={{
+                left: x,
+                top,
+                minWidth: 220,
+                maxWidth: 320,
+                maxHeight: 352,
+            }}
             onMouseDown={(e) => e.preventDefault()}
         >
             {commands.map((cmd, i) => (

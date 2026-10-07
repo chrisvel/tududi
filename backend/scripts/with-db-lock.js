@@ -14,6 +14,7 @@ const { spawn } = require('child_process');
 const { Sequelize } = require('sequelize');
 const { buildSequelizeOptions } = require('../config/db');
 const { getConfig } = require('../config/config');
+const { guardAgainstAccidentalDialectSwitch } = require('./lib/dialectGuard');
 
 // Any fixed key works; it only has to be the same in every process.
 const SCHEMA_LOCK_KEY = 7263001;
@@ -40,6 +41,11 @@ async function main() {
     if (config.db.dialect !== 'postgres') {
         process.exit(await runCommand(argv));
     }
+
+    // Must run before the advisory-lock connection below: otherwise an
+    // unreachable/misconfigured PostgreSQL URL fails with a bare connection
+    // error before the operator ever sees why PostgreSQL was selected at all.
+    guardAgainstAccidentalDialectSwitch(config.db.dialect);
 
     const sequelize = new Sequelize(buildSequelizeOptions({ logging: false }));
     let exitCode = 1;

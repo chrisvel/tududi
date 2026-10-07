@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Changer de langue",
     "langSwitcherCurrent": "Langue : {{name}}",
-    "description": "Domaines, objectifs, projets et tâches, ainsi que notes et habitudes, dans un seul système. Configurez un compte tududi Cloud en une minute. Un serveur MCP exposant {{tools}} outils permet aux agents IA de gérer votre liste. L'auto-hébergement est disponible si vous préférez faire tourner le serveur vous-même.",
+    "description": "Notez tout, planifiez la journée avec l’IA autour de votre agenda, et gardez domaines, objectifs, projets, notes et habitudes dans un seul système. Un serveur MCP exposant {{tools}} outils laisse les agents IA travailler sur votre liste. Un compte tududi Cloud se crée en une minute.",
     "title": "tududi : gestionnaire de tâches et système de gestion de vie, avec MCP pour les agents IA"
   },
   "nav": {
@@ -11,25 +11,25 @@
     "ai": "IA & MCP",
     "pricing": "Tarifs",
     "faq": "FAQ",
-    "docs": "Docs",
-    "changelog": "Nouveautés",
+    "blog": "Blog",
     "signIn": "Se connecter",
     "toggle": "Afficher le menu",
-    "selfHostGuide": "Guide d'auto-hébergement"
+    "plan": "Planifier la journée"
   },
   "hero": {
     "badgeStars": "étoiles sur GitHub",
     "badgeMcp": "Serveur MCP intégré",
-    "starsLoading": "Chargement du nombre d'étoiles",
+    "badgeCloudOpen": "tududi Cloud est ouvert",
     "ctaDemo": "Essayer la démo en direct",
     "demoNote": "Une véritable instance hébergée, remplie de données d'exemple, partagée et réinitialisée régulièrement",
     "screenshotAlt": "L'interface de tududi, affichant la vue Aujourd'hui et ses tâches planifiées",
-    "ctaWaitlist": "Rejoindre la liste d'attente",
     "cloudNote": "Aucun serveur à configurer. Mensuel ou annuel, résiliable à tout moment.",
-    "ctaPrimary": "Démarrer sur tududi Cloud",
-    "lede": "Domaines, objectifs, projets, tâches, notes et habitudes, dans un seul système. Créez un compte Cloud en une minute.",
+    "ctaPrimary": "Commencer maintenant",
+    "lede": "Notez tout, planifiez la journée avec l’IA autour de votre agenda, et gardez domaines, objectifs, projets, notes et habitudes dans un seul système. Créez un compte Cloud en une minute.",
     "titleLine1": "La productivité en toute simplicité",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Commencez votre essai gratuit de {{days}} jours",
+    "cloudNoteTrial": "Gratuit pendant {{days}} jours, sans carte bancaire. Ensuite, au mois ou à l'année, résiliable à tout moment."
   },
   "proof": {
     "stars": "étoiles sur GitHub",
@@ -37,7 +37,6 @@
     "languages": "{{count}} langues",
     "dockerPulls": "téléchargements Docker",
     "discord": "membres sur Discord",
-    "discordAlt": "Discord : {{count}} membres",
     "minute": "Configuré en une minute"
   },
   "press": {
@@ -63,16 +62,11 @@
         "body": "Construit sur le Model Context Protocol ouvert. Fonctionne avec Claude et les autres clients MCP."
       }
     },
-    "configTitle": "Connectez-le à Claude Desktop",
     "footnoteClients": "Cela fonctionne pareil avec Cursor, Windsurf, Cline et tout autre client MCP.",
     "footnoteDocsLink": "Lire la documentation MCP →",
     "assistantTitle": "Assistant IA",
     "assistantLede": "Une couche séparée et optionnelle qui lit vos données et vous renvoie des résumés en langage clair. Compatible avec tout fournisseur compatible OpenAI, y compris auto-hébergé comme Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Point du matin",
-        "body": "Un résumé matinal avec votre tâche prioritaire et les points de vigilance à connaître."
-      },
       "task": {
         "title": "Analyse de tâche",
         "body": "Des prochaines étapes suggérées pour une tâche précise, générées à la demande."
@@ -80,11 +74,16 @@
       "project": {
         "title": "Analyse de projet",
         "body": "Un diagnostic rapide de l'état d'un projet : ce qui avance, ce qui bloque."
+      },
+      "plan": {
+        "title": "Planifier la journée",
+        "body": "Répartit votre journée dans le temps libre autour de vos réunions, avec une raison pour chaque bloc."
+      },
+      "wrapUp": {
+        "title": "Bilan de la journée",
+        "body": "En fin de journée : ce qui est fait, une tendance à noter et ce qu’il faut reporter à demain."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Pointez plutôt TUDUDI_URL vers votre propre instance. Tout le reste est identique.",
-    "configSelfHostTab": "Vous l'hébergez vous-même ?",
     "demo": {
       "answer1Html": "Commencez par <strong>Déployer la migration de facturation</strong>. Elle est due aujourd'hui, et trois tâches dans <strong>Paiements</strong> attendent derrière elle.",
       "answer2Html": "Fait. <strong>Revoir la maquette de refonte</strong> est maintenant due vendredi, et <strong>Débloquer la file Paiements</strong> se trouve dans le projet Paiements, dû aujourd'hui.",
@@ -120,13 +119,36 @@
     "eyebrow": "Fonctionnalités",
     "title": "Un système complet pour une vie organisée",
     "showAll": "Afficher les {{count}} fonctionnalités",
+    "preview": "Aperçu",
+    "closePreview": "Fermer l'aperçu",
     "groups": {
+      "planDay": "Noter & planifier",
       "planFocus": "Planifier & se concentrer",
       "tasksProjects": "Tâches & projets",
       "accessAnywhere": "Accès partout",
       "privacyCollab": "Confidentialité & collaboration"
     },
     "cards": {
+      "capture": {
+        "title": "Une zone pour tout",
+        "body": "Ajoutez éléments de boîte de réception, tâches, notes ou projets de partout, avec fichiers. Une capture collée devient l’élément."
+      },
+      "nlpDates": {
+        "title": "Des dates en mots simples",
+        "body": "« tomorrow », « next fri », « every weekday » : dates et répétitions sont lues pendant la saisie, avec #tags, +Projet et @personne."
+      },
+      "planMyDay": {
+        "title": "Planifier la journée",
+        "body": "Un planificateur qui place les tâches dans le temps libre autour de vos réunions, avec durées, suggestions classées et conseils."
+      },
+      "todayCalendar": {
+        "title": "Aujourd’hui avec votre agenda",
+        "body": "Connectez Google, Apple ou Outlook et voyez vos réunions à côté de vos tâches, le bloc en cours en haut."
+      },
+      "aiPlanning": {
+        "title": "Planification par IA",
+        "body": "Esquissez la journée avec l’IA, obtenez des durées estimées et un bilan du soir qui reporte l’inachevé."
+      },
       "goals": {
         "title": "Objectifs",
         "body": "Définissez des résultats pour une saison ou une année, et voyez quels Domaines et Projets les font réellement avancer."
@@ -146,10 +168,6 @@
       "matrixKanban": {
         "title": "Matrice d'Eisenhower & Kanban",
         "body": "Basculez vers une matrice d'Eisenhower ou un tableau Kanban quand la question est simplement : que fais-je maintenant."
-      },
-      "dueDates": {
-        "title": "Échéances intelligentes",
-        "body": "Classement automatique : les priorités du jour, les échéances à venir et les tâches pour plus tard."
       },
       "insights": {
         "title": "Analyses de productivité",
@@ -211,10 +229,6 @@
         "title": "Accès API & Swagger",
         "body": "Une documentation Swagger versionnée et des jetons d'accès personnels pour vos intégrations sur mesure."
       },
-      "responsive": {
-        "title": "Design adaptatif",
-        "body": "Une mise en page qui s'adapte proprement d'un grand écran de bureau au téléphone dans votre poche."
-      },
       "privacy": {
         "title": "Confidentialité et contrôle",
         "body": "Gardez vos données privées. Auto-hébergez pour un contrôle total, ou choisissez une instance Infogérée avec sauvegardes chiffrées."
@@ -226,26 +240,12 @@
     },
     "sub": "tududi combine objectifs, projets, tâches, notes et vues intelligentes en un seul système calme et concentré. Laissez-nous le gérer pour vous, ou gérez-le vous-même si vous préférez."
   },
-  "selfHost": {
-    "eyebrow": "Auto-hébergement",
-    "title": "Installez-le sur votre propre serveur",
-    "cardTitle": "Installation Docker",
-    "step1": "Récupérez l'image Docker",
-    "step2": "Lancez le conteneur",
-    "step3Prefix": "Accédez-y sur",
-    "linkGithub": "Voir sur GitHub",
-    "cardSub": "Pour les personnes qui utilisent déjà Docker",
-    "ctaCloud": "Commencer sur Cloud",
-    "linkDocs": "Lire le guide d'auto-hébergement",
-    "showCommands": "Afficher les commandes d'installation",
-    "sub": "L'auto-hébergement est fait pour les personnes qui utilisent déjà Docker et un reverse proxy. Si vous voulez tududi sans devenir l'administrateur système, utilisez Cloud."
-  },
   "pricing": {
     "eyebrow": "Tarifs",
     "title": "Choisissez comment utiliser tududi",
     "mostPopular": "LE PLUS CHOISI",
     "earlyBird": "LANCEMENT",
-    "perYear": "/an",
+    "perYear": "/an par personne",
     "plans": {
       "selfHosted": {
         "action": "Lire le guide d'auto-hébergement →",
@@ -263,62 +263,58 @@
         "name": "Cloud",
         "or": "ou",
         "launchNote": "Tarif annuel early bird, conservé tant que vous restez abonné.",
-        "comingSoon": "Ouverture dans quelques jours",
-        "comingSoonNote": "Nous migrons Cloud vers une nouvelle infrastructure. Laissez votre e-mail ci-dessous et nous vous préviendrons dès son retour.",
-        "notifySubmit": "Prévenez-moi",
         "action": "Commencer →",
         "features": [
           "Opérationnel en une minute, sans serveur à configurer",
           "Tâches, projets et notes illimités, plus les pièces jointes",
-          "Assistant IA, MCP, synchronisation CalDAV et le bot Telegram",
+          "Ajoutez des membres de votre famille ou de votre équipe, chacun une place au même prix",
+          "Planification par IA, MCP, flux d’agenda, CalDAV et le bot Telegram",
           "Mises à jour et sauvegardes quotidiennes prises en charge pour vous, avec {{proStorageGb}} Go de stockage",
           "Exportez tout à tout moment, supprimez votre compte vous-même"
         ],
-        "priceNote": "Tout est inclus. Résiliez à tout moment."
+        "priceNote": "Tout est inclus. Résiliez à tout moment.",
+        "actionTrial": "Commencer l'essai gratuit →",
+        "priceNoteTrial": "{{days}} jours gratuits, sans carte bancaire. Résiliable à tout moment.",
+        "trialNote": "L'essai comprend tout, sauf l'assistant IA, les liens publics vers les notes et l'ajout de membres."
       }
     },
-    "fineprint": "Annulez à tout moment et exportez tout. Si tududi Cloud devait fermer, vous recevez vos données et un guide de migration vers l'auto-hébergement. Usage raisonnable pour le stockage et le volume d'API. Garantie satisfait ou remboursé 30 jours, sans question.",
-    "perMonth": "/mois",
+    "fineprint": "Annulez à tout moment et exportez tout. Si tududi Cloud devait fermer, vous recevez vos données et un guide de migration vers l'auto-hébergement. Usage raisonnable pour le stockage et le volume d'API. Garantie satisfait ou remboursé 14 jours, sans question.",
+    "perMonth": "/mois par personne",
     "sub": "Un forfait hébergé, ou faites tourner le serveur vous-même si vous préférez gérer l'exploitation."
   },
   "compare": {
     "title": "Comparatif rapide",
+    "sub": "Comment tududi Cloud se compare aux applications auxquelles on le compare le plus, sur leurs offres individuelles.",
+    "footnote": "Todoist Pro, TickTick Premium et Notion Plus, d’après leurs pages de tarifs publiques en septembre 2026. Vérifiez leurs sites pour les prix actuels. Leurs prix sont les tarifs américains en dollars.",
     "rows": {
-      "openSource": "Cœur open source",
-      "commercialUse": "Usage commercial",
-      "infraControl": "Contrôle total de l'infrastructure",
-      "dataOnHardware": "Données sur votre propre matériel",
-      "noRecurring": "Aucun coût récurrent",
-      "noSetup": "Aucune installation de serveur",
-      "managedUpdates": "Mises à jour gérées",
-      "autoBackups": "Sauvegardes automatiques",
-      "pricing": "Tarif",
-      "exportAnytime": "Exportez tout à tout moment",
-      "proFeatures": "Assistant IA, MCP, CalDAV, Telegram",
-      "startMinute": "Démarrez en une minute",
-      "storage": "Stockage des pièces jointes",
-      "support": "Support"
+      "price": "Prix, facturé à l’année",
+      "aiIncluded": "IA incluse",
+      "dayPlanner": "Planifier la journée autour de l’agenda",
+      "habits": "Suivi des habitudes",
+      "goals": "Objectifs, domaines et projets",
+      "notes": "Notes à côté des tâches",
+      "matrix": "Matrice d'Eisenhower",
+      "kanban": "Tableaux Kanban",
+      "views": "Vues intelligentes enregistrées",
+      "people": "Assigner des tâches à des personnes",
+      "telegram": "Capture depuis Telegram",
+      "caldav": "Synchronisation des tâches via CalDAV",
+      "mcp": "Serveur MCP pour agents IA"
     },
     "values": {
-      "community": "Communauté",
-      "email": "E-mail",
-      "gigabytes": "{{count}} Go",
-      "perMonthOrYear": "{{monthly}}/mois ou {{price}}/an",
-      "selfCost": "Gratuit, plus votre hébergement",
-      "yourDisk": "Votre propre disque"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Auto-hébergement",
-    "sub": "La même application dans les deux cas. Ce qui change, c'est qui la gère, et ce que cela vous coûte."
+      "perYear": "{{price}}/an",
+      "businessOnly": "Offre Business uniquement",
+      "separateApp": "Application séparée",
+      "diy": "À construire soi-même"
+    }
   },
   "waitlist": {
-    "title": "Pas encore prêt ?",
-    "sub": "Laissez votre e-mail pour recevoir les notes de version et une nouvelle de temps en temps. Pas de spam, désinscription en un clic.",
     "placeholder": "vous@email.com",
-    "inputLabel": "Adresse e-mail",
-    "submit": "Prévenez-moi",
-    "note": "Nous conservons votre adresse et la date à laquelle vous nous l'avez donnée, uniquement pour vous envoyer les notes de version. Nous ne la partageons jamais.",
-    "joined": "Vous êtes sur la liste. Nous vous écrirons à l'ouverture de tududi Cloud."
+    "inputLabel": "Adresse e-mail"
+  },
+  "signup": {
+    "note": "Nous conservons votre adresse et la date à laquelle vous l’avez donnée, uniquement pour vous envoyer des actualités et nouveautés. Nous ne la partageons jamais.",
+    "joined": "Vous êtes inscrit. Les actualités et nouveautés arriveront par e-mail."
   },
   "langs": {
     "heading": "L'application tududi est disponible en {{count}} langues dans le monde"
@@ -329,19 +325,25 @@
   },
   "footer": {
     "colProduct": "Produit",
-    "colResources": "Ressources",
     "colCommunity": "Communauté & support",
     "colSupport": "Soutenir",
-    "linkRoadmap": "Feuille de route",
-    "linkIssues": "Tickets",
-    "linkEmail": "E-mail",
     "linkCoffee": "Offrir un café",
-    "subTitle": "Notes de version par e-mail",
-    "subBody": "Des notes de version occasionnelles. Pas de marketing, désinscription à tout moment.",
+    "subTitle": "Actualités et nouveautés par e-mail",
+    "subBody": "Des actualités et nouveautés produit de temps en temps. Pas de spam, désinscription à tout moment.",
     "subSubmit": "Je m'inscris",
     "rights": "Tous droits réservés.",
-    "linkLicence": "Licence MIT",
-    "tagline": "Un système ouvert pour organiser sa vie et son travail. Hébergé par nous, ou sur votre propre serveur."
+    "tagline": "Un système calme et complet pour organiser la vie et le travail.",
+    "linkTerms": "Conditions",
+    "linkPrivacy": "Confidentialité",
+    "linkRefunds": "Remboursements",
+    "linkContact": "Contact",
+    "linkCookies": "Paramètres des cookies"
+  },
+  "consent": {
+    "label": "Choix des cookies",
+    "body": "Nous utilisons des cookies pour améliorer votre expérience sur ce site. Ils ne sont déposés que si vous les acceptez.",
+    "accept": "Accepter",
+    "decline": "Refuser"
   },
   "js": {
     "showFewer": "Afficher moins",
@@ -351,8 +353,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Non. Cloud coûte {{monthly}} par mois ou {{price}} par an, et c'est toute la grille tarifaire : pas de forfait gratuit, pas de compte à rebours d'essai, pas de carte prélevée pour quelque chose qui commence discrètement à facturer plus tard. Il y a une garantie de remboursement de 30 jours si cela ne vous convient pas, et une démo en direct sur cette page si vous voulez d'abord jeter un œil. La façon gratuite d'utiliser tududi est de le faire tourner sur votre propre serveur, qui est la même application.",
-        "q": "Y a-t-il un forfait gratuit ou un essai sur tududi Cloud ?"
+        "a": "Non. Cloud coûte {{monthly}} par mois ou {{price}} par an par personne, et c'est toute la grille tarifaire : pas de forfait gratuit, pas de compte à rebours d'essai, pas de carte prélevée pour quelque chose qui commence discrètement à facturer plus tard. Il y a une garantie de remboursement de 14 jours si cela ne vous convient pas, et une démo en direct sur cette page si vous voulez d'abord jeter un œil. La façon gratuite d'utiliser tududi est de le faire tourner sur votre propre serveur, qui est la même application.",
+        "q": "Y a-t-il un forfait gratuit ou un essai sur tududi Cloud ?",
+        "aTrial": "Il n'y a pas d'offre gratuite, mais chaque nouveau compte a droit à un essai gratuit de {{days}} jours, sans carte bancaire. L'essai comprend tout sauf l'assistant IA, les liens publics de notes et l'ajout de membres. Sans abonnement, le compte passe en lecture seule pendant 30 jours pour que vous puissiez exporter vos données, puis il est supprimé. Après l'essai, Cloud coûte {{monthly}} par mois ou {{price}} par an et par personne. La façon gratuite d'utiliser tududi est de l'héberger sur votre propre serveur, c'est la même application."
       },
       "leaving": {
         "q": "Puis-je partir, et que deviennent mes données ?",
@@ -370,10 +373,6 @@
         "a": "Oui, et vous n'avez rien à acheter au préalable. La licence MIT autorise l'usage commercial, y compris dans une entreprise et dans un produit commercial, sans seuil de revenu et sans rien à déclarer. Si votre service comptable a besoin d'une facture, un abonnement Cloud est facturé via notre prestataire de paiement et en produit une. Rien sur cette page ne vend une permission, parce que cette permission est déjà la vôtre.",
         "q": "Puis-je utiliser tududi au travail, ou dans mon entreprise ?"
       },
-      "dataLocation": {
-        "a": "Tout est stocké dans un unique fichier de base de données SQLite, à l'intérieur du volume que vous avez monté. Le sauvegarder consiste à copier ce fichier en lieu sûr, et le restaurer consiste à le recopier. tududi prend aussi automatiquement un instantané de la base avant d'appliquer des migrations, en conservant les copies récentes. Il n'y a pas de format propriétaire ni d'étape d'export entre vous et vos propres données.",
-        "q": "Où sont mes données, et comment les sauvegarder ?"
-      },
       "licence": {
         "a": "L'application est open source sous licence MIT, vous pouvez donc la faire tourner sur votre propre serveur gratuitement, la modifier et construire dessus sans payer personne. Il n'y a ni nombre de sièges ni fonctionnalités retenues : la version auto-hébergée est le produit complet. tududi Cloud est un service payant, car l'hébergement, les sauvegardes et les e-mails coûtent de l'argent à faire tourner. Vous payez pour le travail d'exploitation, jamais pour l'accès au logiciel.",
         "q": "tududi est-il vraiment gratuit ?"
@@ -387,23 +386,6 @@
         "a": "MCP est le Model Context Protocol, un standard ouvert pour connecter des agents IA à de vrais systèmes. tududi propose un serveur MCP exposant {{tools}} outils couvrant les tâches, projets, domaines, objectifs, habitudes, notes, personnes, tags, vues, la boîte de réception, la recherche et les métriques, pour qu'un agent puisse capturer, retrouver, mettre à jour et terminer du travail plutôt que simplement en parler. C'est optionnel, c'est inclus avec Cloud et avec chaque instance auto-hébergée, et cela fonctionne avec Claude Desktop, Cursor, Windsurf, Cline, ou tout autre client MCP.",
         "q": "Qu'est-ce que MCP, et que peut réellement faire un agent ?"
       },
-      "mobile": {
-        "a": "tududi s'installe comme une PWA plutôt qu'une application native. Ajoutez-la à votre écran d'accueil sur Android ou iOS, ou installez-la sur un ordinateur, et elle se comporte comme une application : elle lit depuis le cache hors ligne et synchronise vos modifications à la reconnexion. Il n'y a rien à télécharger sur l'App Store ou le Play Store.",
-        "q": "Y a-t-il une application mobile ?"
-      },
-      "multiUser": {
-        "a": "Oui. Une seule instance peut héberger plusieurs utilisateurs, et les projets peuvent être partagés avec un accès en lecture seule ou en lecture-écriture, que les tâches et notes qu'ils contiennent héritent. L'auto-inscription est désactivée par défaut, donc un administrateur crée les comptes ou ouvre délibérément les inscriptions. Personne n'entre parce que vous avez oublié de fermer une porte.",
-        "q": "Plusieurs personnes peuvent-elles partager une même instance ?"
-      },
-      "requirements": {
-        "a": "Docker, un endroit persistant pour stocker la base de données, un reverse proxy avec TLS devant, et la discipline d'appliquer les mises à jour et de garder des sauvegardes. C'est confortable sur un petit VPS ou une machine de votre propre réseau, et les commandes se trouvent dans la section Auto-hébergement et la documentation. La plupart des gens sont mieux servis par Cloud, qui est la même application sans tout ce travail.",
-        "linkLabel": "Lire la documentation",
-        "q": "De quoi ai-je besoin pour l'héberger moi-même ?"
-      },
-      "reverseProxy": {
-        "a": "Oui, et c'est la façon normale de le faire tourner. Définissez TUDUDI_TRUST_PROXY pour que l'application fasse confiance aux en-têtes transmis par nginx, Caddy ou Traefik. Si vous l'omettez, les connexions et la journalisation des IP se comportent bizarrement, de façon difficile à diagnostiquer, donc l'application lève une erreur précise plutôt que d'échouer silencieusement. Les valeurs acceptées sont documentées dans le README.",
-        "q": "Cela fonctionne-t-il derrière un reverse proxy ?"
-      },
       "shutdown": {
         "a": "L'application est sous licence MIT et le code source est public, elle ne peut donc pas vous être retirée. Chacun peut continuer à la faire tourner, et vous pouvez la forker. Sur tududi Cloud, vos données vivent dans une base tududi standard plutôt qu'un format propriétaire, donc si le service devait fermer un jour, vous récupéreriez vos données et un guide pour les faire migrer sur votre propre serveur.",
         "q": "Qu'advient-il de mes données si tududi disparaît ?"
@@ -416,8 +398,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "IA, MCP et Cloud",
-      "project": "Licence et projet",
-      "selfHost": "Auto-hébergement et données"
+      "project": "Licence et projet"
     },
     "permalink": "Lien vers cette réponse",
     "sub": "La licence, l'IA, et ce qu'il advient de vos données. S'il manque quelque chose, demandez sur Discord.",
@@ -428,8 +409,9 @@
     "ctaPrimary": "Commencer",
     "includes": [
       "Tâches, projets et notes illimités",
+      "Ajoutez des membres de votre famille ou de votre équipe, chacun une place au même prix",
       "Pièces jointes et envoi de fichiers",
-      "Assistant IA, MCP, synchronisation CalDAV et le bot Telegram",
+      "Planification par IA, MCP, flux d’agenda, CalDAV et le bot Telegram",
       "Sauvegardes quotidiennes et mises à jour gérées",
       "Support par e-mail",
       "Exportez tout, à tout moment"
@@ -472,14 +454,66 @@
     "title": "Pourquoi utiliser tududi Cloud ?",
     "whyEyebrow": "Cloud",
     "whySub": "Pas des fonctionnalités. Chaque fonctionnalité est aussi dans la version auto-hébergée.",
-    "whyTitle": "Ce que vous payez réellement"
+    "whyTitle": "Ce que vous payez réellement",
+    "ctaTrial": "Commencer l'essai gratuit",
+    "pricingSubTrial": "Essayez gratuitement pendant {{days}} jours, sans carte bancaire. Ensuite tout est inclus, résiliable quand vous voulez."
   },
   "finalCta": {
     "primary": "Commencer",
     "secondary": "Voir les prix",
     "selfHostLink": "Lire le guide.",
-    "selfHostPrefix": "Vous préférez le faire tourner sur votre propre serveur ?",
-    "sub": "Nous gérons le serveur, les mises à jour et les sauvegardes. Vous avez le système, et une garantie de remboursement de 30 jours si cela ne vous convient pas.",
-    "title": "Organisez-vous en une minute"
+    "sub": "Nous gérons le serveur, les mises à jour et les sauvegardes. Vous avez le système, et une garantie de remboursement de 14 jours si cela ne vous convient pas.",
+    "title": "Organisez-vous en une minute",
+    "subTrial": "Nous gérons le serveur, les mises à jour et les sauvegardes. Essayez gratuitement pendant {{days}} jours, sans carte.",
+    "primaryTrial": "Commencer l'essai gratuit"
+  },
+  "contact": {
+    "title": "Nous contacter",
+    "lede": "Des questions sur tududi Cloud, la facturation ou votre compte ? Envoyez-nous un message et nous vous répondrons par e-mail.",
+    "name": "Nom",
+    "email": "E-mail",
+    "message": "Message",
+    "submit": "Envoyer le message",
+    "sent": "Merci, votre message est en route. Nous vous répondrons par e-mail.",
+    "invalid": "Veuillez indiquer votre nom, une adresse e-mail valide et un message.",
+    "failed": "Votre message n’a pas pu être envoyé pour le moment. Écrivez-nous à"
+  },
+  "plan": {
+    "eyebrow": "Planifier la journée",
+    "title": "D’une idée qui passe à une journée bouclée",
+    "sub": "Notez les choses dès qu’elles surgissent, planifiez la journée autour de vos réunions avec l’IA, puis avancez bloc par bloc.",
+    "stepLabel": "Étape {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Tout noter, avec vos mots",
+        "body": "Une seule zone d’ajout pour la boîte de réception, les tâches, les notes et les projets, partout dans l’app. Écrivez comme vous pensez, tududi complète le reste.",
+        "points": [
+          "« next fri », « in 3 days » ou « every first monday » fixe la date ou la répétition",
+          "#tags, +Projet et @personne sont reconnus pendant la saisie",
+          "Collez une capture ou déposez des fichiers, ils suivent"
+        ],
+        "alt": "La zone d’ajout transforme une phrase en tâche récurrente avec un tag et un projet"
+      },
+      "plan": {
+        "title": "Planifier la journée, avec l’IA (ou pas)",
+        "body": "Le planificateur montre ce qui peut tenir aujourd’hui, dans l’ordre que vous choisissez. Donnez une durée à chaque tâche et placez-la entre vos réunions, ou laissez l’IA esquisser toute la journée.",
+        "points": [
+          "Suggestions classées : en retard, dues aujourd’hui, en cours, puis le reste",
+          "Esquisser avec l’IA remplit le temps libre autour des réunions, Annuler rétablit tout",
+          "Des conseils signalent une journée surchargée et les créneaux où une tâche tient"
+        ],
+        "alt": "Le planificateur avec tâches et réunions sur une même frise"
+      },
+      "today": {
+        "title": "Aujourd’hui, avec votre agenda",
+        "body": "Lancez la journée et Aujourd’hui ne montre que vos engagements : le bloc en cours, puis l’agenda, avec vos réunions Google, Apple ou Outlook entre les deux.",
+        "points": [
+          "Terminer ou reporter depuis la carte Maintenant",
+          "Flux d’agenda en lecture seule, stockés chiffrés",
+          "Un bilan IA en fin de journée reporte le travail inachevé au lendemain"
+        ],
+        "alt": "Aujourd’hui avec la tâche suivante, l’agenda et les réunions de deux agendas"
+      }
+    }
   }
 }

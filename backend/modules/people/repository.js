@@ -1,6 +1,7 @@
 'use strict';
 
-const { Person, Task, Project, Permission } = require('../../models');
+const { Person, Task, Project, User, OIDCIdentity } = require('../../models');
+const permissionSources = require('../../services/permissionSources');
 const { Op } = require('sequelize');
 
 class PeopleRepository {
@@ -29,6 +30,38 @@ class PeopleRepository {
 
     async findByUid(userId, uid) {
         return Person.findOne({ where: { uid, user_id: userId } });
+    }
+
+    // A person whoever owns it, for the callers that decide for themselves
+    // whether it may be shown.
+    async findAnyByUid(uid) {
+        return Person.findOne({ where: { uid } });
+    }
+
+    // What decides whether an account can sign in yet.
+    async findAccountSignInFacts(userIds) {
+        if (!userIds.length) return { users: [], identityUserIds: new Set() };
+        const [users, identities] = await Promise.all([
+            User.findAll({
+                where: { id: userIds },
+                attributes: [
+                    'id',
+                    'email',
+                    'password_digest',
+                    'email_verified',
+                ],
+                raw: true,
+            }),
+            OIDCIdentity.findAll({
+                where: { user_id: userIds },
+                attributes: ['user_id'],
+                raw: true,
+            }),
+        ]);
+        return {
+            users,
+            identityUserIds: new Set(identities.map((i) => i.user_id)),
+        };
     }
 
     async nameExists(userId, name, excludeUid = null) {
@@ -72,25 +105,22 @@ class PeopleRepository {
     }
 
     async findProjectCollaboratorUserIds(projectUid) {
-        const rows = await Permission.findAll({
-            where: {
-                resource_type: 'project',
-                resource_uid: projectUid,
-                propagation: 'direct',
-                status: 'accepted',
-            },
-            attributes: ['user_id'],
-            raw: true,
-        });
+        const rows = await permissionSources.findAccepted(
+            { resource_type: 'project', resource_uid: projectUid },
+            ['user_id']
+        );
         return Array.from(new Set(rows.map((r) => r.user_id)));
     }
 
+    // Only each user's canonical self-person. Other users' contact cards that
+    // happen to link the same account are private to their owners.
     async findSelfPeopleByUserIds(userIds) {
         if (!userIds.length) return [];
-        return Person.findAll({
+        const people = await Person.findAll({
             where: { linked_user_id: userIds },
             order: [['name', 'ASC']],
         });
+        return people.filter((p) => p.user_id === p.linked_user_id);
     }
 }
 

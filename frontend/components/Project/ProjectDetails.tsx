@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getCsrfToken } from '../../utils/csrfService';
@@ -31,13 +37,18 @@ import {
     deleteProject,
     fetchProjects,
 } from '../../utils/projectsService';
-import { createTask, deleteTask } from '../../utils/tasksService';
+import {
+    createTask,
+    deleteTask,
+    fetchTaskOrder,
+    saveTaskOrder,
+} from '../../utils/tasksService';
+import { mergeVisibleOrder } from '../Shared/sortableList';
 import {
     updateNote,
     deleteNote as apiDeleteNote,
 } from '../../utils/notesService';
 import { createNote } from '../../utils/notesService';
-import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import IconSortDropdown from '../Shared/IconSortDropdown';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
@@ -48,6 +59,8 @@ import BannerEditModal from './BannerEditModal';
 import ProjectShareModal from './ProjectShareModal';
 import ProjectTasksSection from './ProjectTasksSection';
 import ProjectNotesSection from './ProjectNotesSection';
+import AttachmentsPanel from '../Shared/AttachmentsPanel';
+import { ownerAttachmentsApi } from '../../utils/attachmentsService';
 import { useProjectMetrics } from './useProjectMetrics';
 import { saveProjectAsTemplate } from '../../utils/templatesService';
 
@@ -73,7 +86,32 @@ const ProjectDetails: React.FC = () => {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isBannerEditModalOpen, setIsBannerEditModalOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
+    const [activeTab, setActiveTab] = useState<
+        'tasks' | 'notes' | 'attachments'
+    >('tasks');
+    const [attachmentCount, setAttachmentCount] = useState(0);
+    const attachmentsApi = useMemo(
+        () =>
+            project?.uid ? ownerAttachmentsApi('project', project.uid) : null,
+        [project?.uid]
+    );
+
+    // The tab shows how many files there are before it is opened.
+    useEffect(() => {
+        if (!attachmentsApi) return;
+        let cancelled = false;
+        attachmentsApi
+            .list()
+            .then((list) => {
+                if (!cancelled) setAttachmentCount(list.length);
+            })
+            .catch(() => {
+                // The tab still works; the count just stays hidden.
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [attachmentsApi]);
     const [taskStatusFilter, setTaskStatusFilter] = useState<
         'all' | 'active' | 'completed'
     >(() => {
@@ -81,10 +119,9 @@ const ProjectDetails: React.FC = () => {
         return (saved as 'all' | 'active' | 'completed') || 'active';
     });
     const [showMetrics, setShowMetrics] = useState(true);
-    const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
-    const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
-    const hasCheckedAutoSuggest = useRef(false);
     const [orderBy, setOrderBy] = useState<string>('status:inProgressFirst');
+    // Task uids in the user's manual order for this project.
+    const [taskOrder, setTaskOrder] = useState<string[]>([]);
     const [taskSearchQuery, setTaskSearchQuery] = useState('');
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [aiInsightsActive, setAiInsightsActive] = useState(false);
@@ -107,6 +144,7 @@ const ProjectDetails: React.FC = () => {
             },
             { value: 'due_date:asc', label: t('sort.due_date', 'Due Date') },
             { value: 'priority:desc', label: t('sort.priority', 'Priority') },
+            { value: 'custom:asc', label: t('sort.custom', 'Custom') },
         ],
         [t]
     );
@@ -116,13 +154,6 @@ const ProjectDetails: React.FC = () => {
             areasStore.loadAreas();
         }
     }, [areasStore]);
-
-    useEffect(() => {
-        if (!hasCheckedAutoSuggest.current) {
-            hasCheckedAutoSuggest.current = true;
-            getAutoSuggestNextActionsEnabled().then(setAutoSuggestEnabled);
-        }
-    }, []);
 
     useEffect(() => {
         // Load persisted UI options (local or remote)
@@ -242,6 +273,14 @@ const ProjectDetails: React.FC = () => {
                 const projectData = await fetchProjectBySlug(uidSlug);
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
+                if (projectData.uid) {
+                    fetchTaskOrder({
+                        scope: 'project',
+                        project_uid: projectData.uid,
+                    })
+                        .then(setTaskOrder)
+                        .catch(() => setTaskOrder([]));
+                }
                 const savedSort = localStorage.getItem('project_order_by');
                 if (!savedSort && projectData.task_sort_order) {
                     setOrderBy(projectData.task_sort_order);
@@ -262,20 +301,6 @@ const ProjectDetails: React.FC = () => {
         };
         loadProjectData();
     }, [uidSlug]);
-
-    useEffect(() => {
-        if (
-            project &&
-            tasks.length === 0 &&
-            !loading &&
-            taskStatusFilter === 'active' &&
-            autoSuggestEnabled
-        ) {
-            setShowAutoSuggestForm(true);
-        } else {
-            setShowAutoSuggestForm(false);
-        }
-    }, [project, tasks.length, loading, taskStatusFilter, autoSuggestEnabled]);
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) throw new Error('Cannot create task: Project is missing');
@@ -411,9 +436,18 @@ const ProjectDetails: React.FC = () => {
         if (!project?.uid) return;
         try {
             await saveProjectAsTemplate(project.uid, { name: project.name });
-            showSuccessToast(t('projects.savedAsTemplate', '"{{name}}" saved as template.', { name: project.name }));
+            showSuccessToast(
+                t('projects.savedAsTemplate', '"{{name}}" saved as template.', {
+                    name: project.name,
+                })
+            );
         } catch {
-            showErrorToast(t('projects.saveAsTemplateError', 'Failed to save project as template.'));
+            showErrorToast(
+                t(
+                    'projects.saveAsTemplateError',
+                    'Failed to save project as template.'
+                )
+            );
         } finally {
             setIsTemplateConfirmOpen(false);
         }
@@ -422,11 +456,16 @@ const ProjectDetails: React.FC = () => {
     const handleTogglePin = async () => {
         if (!project?.uid) return;
         const newValue = !project.pin_to_sidebar;
-        const updatedProject = await updateProject(project.uid, { ...project, pin_to_sidebar: newValue });
+        const updatedProject = await updateProject(project.uid, {
+            ...project,
+            pin_to_sidebar: newValue,
+        });
         setProject((prev) => ({ ...prev, ...updatedProject }));
         const currentProjects = projectsStore.projects;
         projectsStore.setProjects(
-            currentProjects.map((p) => (p.uid === project.uid ? { ...p, pin_to_sidebar: newValue } : p))
+            currentProjects.map((p) =>
+                p.uid === project.uid ? { ...p, pin_to_sidebar: newValue } : p
+            )
         );
     };
 
@@ -455,36 +494,6 @@ const ProjectDetails: React.FC = () => {
             t('success.bannerUpdated', 'Banner updated successfully!')
         );
     };
-
-    const handleCreateNextAction = async (
-        projectUid: string,
-        actionDescription: string
-    ) => {
-        const newTask = await createTask({
-            name: actionDescription,
-            status: 0,
-            project_uid: projectUid,
-            priority: 0,
-            completed_at: null,
-        });
-        setTasks([...tasks, newTask]);
-        setShowAutoSuggestForm(false);
-        const taskLink = (
-            <span>
-                {t('task.created', 'Task')}{' '}
-                <a
-                    href={`/task/${newTask.uid}`}
-                    className="text-green-200 underline hover:text-green-100"
-                >
-                    {newTask.name}
-                </a>{' '}
-                {t('task.createdSuccessfully', 'created successfully!')}
-            </span>
-        );
-        showSuccessToast(taskLink);
-    };
-
-    const handleSkipNextAction = () => setShowAutoSuggestForm(false);
 
     const handleTaskStatusFilterChange = (
         status: 'all' | 'active' | 'completed'
@@ -613,49 +622,34 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
-    const displayTasks = useMemo(() => {
-        let filteredTasks: Task[];
+    // Unplaced tasks (never dragged) come first, newest first.
+    const taskPositions = useMemo(
+        () => new Map(taskOrder.map((uid, index) => [uid, index])),
+        [taskOrder]
+    );
 
-        if (taskStatusFilter === 'completed') {
-            filteredTasks = tasks.filter(
-                (task) =>
-                    task.status === 'done' ||
-                    task.status === 'archived' ||
-                    task.status === 2 ||
-                    task.status === 3
-            );
-        } else if (taskStatusFilter === 'active') {
-            filteredTasks = tasks.filter(
-                (task) =>
-                    task.status === 'not_started' ||
-                    task.status === 'in_progress' ||
-                    task.status === 'waiting' ||
-                    task.status === 0 ||
-                    task.status === 1 ||
-                    task.status === 4
-            );
-        } else {
-            // taskStatusFilter === 'all'
-            filteredTasks = tasks;
-        }
-        if (taskSearchQuery.trim()) {
-            const query = taskSearchQuery.toLowerCase();
-            filteredTasks = filteredTasks.filter(
-                (task) =>
-                    task.name.toLowerCase().includes(query) ||
-                    task.original_name?.toLowerCase().includes(query) ||
-                    task.note?.toLowerCase().includes(query)
-            );
-        }
-        const getStatusRank = (status: Task['status']) => {
-            if (status === 'in_progress' || status === 1) return 0;
-            if (status === 'not_started' || status === 0) return 1;
-            if (status === 'waiting' || status === 4) return 2;
-            if (status === 'done' || status === 2) return 3;
-            if (status === 'archived' || status === 3) return 4;
-            return 5;
-        };
-        return [...filteredTasks].sort((a, b) => {
+    const compareTasks = useCallback(
+        (a: Task, b: Task) => {
+            if (orderBy.startsWith('custom:')) {
+                const posA = a.uid ? taskPositions.get(a.uid) : undefined;
+                const posB = b.uid ? taskPositions.get(b.uid) : undefined;
+                if (posA === undefined || posB === undefined) {
+                    if (posA !== posB) return posA === undefined ? -1 : 1;
+                    return (
+                        new Date(b.created_at || 0).getTime() -
+                        new Date(a.created_at || 0).getTime()
+                    );
+                }
+                return posA - posB;
+            }
+            const getStatusRank = (status: Task['status']) => {
+                if (status === 'in_progress' || status === 1) return 0;
+                if (status === 'not_started' || status === 0) return 1;
+                if (status === 'waiting' || status === 4) return 2;
+                if (status === 'done' || status === 2) return 3;
+                if (status === 'archived' || status === 3) return 4;
+                return 5;
+            };
             if (orderBy === 'status:inProgressFirst') {
                 const rankA = getStatusRank(a.status);
                 const rankB = getStatusRank(b.status);
@@ -711,8 +705,74 @@ const ProjectDetails: React.FC = () => {
                         b.created_at ? new Date(b.created_at).getTime() : 0
                     );
             }
-        });
-    }, [tasks, taskStatusFilter, orderBy, taskSearchQuery]);
+        },
+        [orderBy, taskPositions]
+    );
+
+    // Dragging a task saves a manual order and switches the list to it,
+    // starting from the order on screen.
+    const handleTaskReorder = async (orderedUids: string[]) => {
+        if (!project?.uid) return;
+        const fullOrder = tasks
+            .filter((task) => task.uid)
+            .sort(compareTasks)
+            .map((task) => task.uid as string);
+        const newOrder = mergeVisibleOrder(fullOrder, orderedUids);
+        const prevOrder = taskOrder;
+        const prevOrderBy = orderBy;
+        setTaskOrder(newOrder);
+        if (!orderBy.startsWith('custom:')) handleSortChange('custom:asc');
+        try {
+            await saveTaskOrder(
+                { scope: 'project', project_uid: project.uid },
+                newOrder
+            );
+        } catch (error) {
+            console.error('Error saving task order:', error);
+            setTaskOrder(prevOrder);
+            handleSortChange(prevOrderBy);
+            showErrorToast(
+                t('tasks.reorderError', 'Failed to save task order')
+            );
+        }
+    };
+
+    const displayTasks = useMemo(() => {
+        let filteredTasks: Task[];
+
+        if (taskStatusFilter === 'completed') {
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status === 'done' ||
+                    task.status === 'archived' ||
+                    task.status === 2 ||
+                    task.status === 3
+            );
+        } else if (taskStatusFilter === 'active') {
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status === 'not_started' ||
+                    task.status === 'in_progress' ||
+                    task.status === 'waiting' ||
+                    task.status === 0 ||
+                    task.status === 1 ||
+                    task.status === 4
+            );
+        } else {
+            // taskStatusFilter === 'all'
+            filteredTasks = tasks;
+        }
+        if (taskSearchQuery.trim()) {
+            const query = taskSearchQuery.toLowerCase();
+            filteredTasks = filteredTasks.filter(
+                (task) =>
+                    task.name.toLowerCase().includes(query) ||
+                    task.original_name?.toLowerCase().includes(query) ||
+                    task.note?.toLowerCase().includes(query)
+            );
+        }
+        return [...filteredTasks].sort(compareTasks);
+    }, [tasks, taskStatusFilter, taskSearchQuery, compareTasks]);
 
     const {
         taskStats,
@@ -802,9 +862,7 @@ const ProjectDetails: React.FC = () => {
                                 onClick={() =>
                                     handleTaskStatusFilterChange(
                                         opt.key as
-                                            | 'all'
-                                            | 'active'
-                                            | 'completed'
+                                            'all' | 'active' | 'completed'
                                     )
                                 }
                                 className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
@@ -874,7 +932,9 @@ const ProjectDetails: React.FC = () => {
                     setIsConfirmDialogOpen(true);
                 }}
                 onShareClick={() => setIsShareModalOpen(true)}
-                onSaveAsTemplate={templatesEnabled ? handleSaveAsTemplate : undefined}
+                onSaveAsTemplate={
+                    templatesEnabled ? handleSaveAsTemplate : undefined
+                }
                 onEditBannerClick={handleEditBannerClick}
                 onTogglePin={handleTogglePin}
             />
@@ -911,6 +971,27 @@ const ProjectDetails: React.FC = () => {
                                     {notes.length > 0 && (
                                         <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
                                             {notes.length}
+                                        </span>
+                                    )}
+                                </button>
+                                <button
+                                    data-testid="project-attachments-tab"
+                                    onClick={() => setActiveTab('attachments')}
+                                    className={`flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium transition-colors ${
+                                        activeTab === 'attachments'
+                                            ? 'text-gray-900 dark:text-gray-100'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    }`}
+                                >
+                                    <span>
+                                        {t(
+                                            'project.attachments',
+                                            'Attachments'
+                                        )}
+                                    </span>
+                                    {attachmentCount > 0 && (
+                                        <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                            {attachmentCount}
                                         </span>
                                     )}
                                 </button>
@@ -1076,17 +1157,7 @@ const ProjectDetails: React.FC = () => {
                                         }`}
                                     >
                                         <ProjectTasksSection
-                                            project={project}
                                             displayTasks={displayTasks}
-                                            showAutoSuggestForm={
-                                                showAutoSuggestForm
-                                            }
-                                            onAddNextAction={
-                                                handleCreateNextAction
-                                            }
-                                            onDismissNextAction={
-                                                handleSkipNextAction
-                                            }
                                             onTaskCreate={handleTaskCreate}
                                             onTaskUpdate={handleTaskUpdate}
                                             onTaskCompletionToggle={
@@ -1099,6 +1170,7 @@ const ProjectDetails: React.FC = () => {
                                                 taskStatusFilter !== 'active'
                                             }
                                             taskSearchQuery={taskSearchQuery}
+                                            onTaskReorder={handleTaskReorder}
                                             t={t}
                                         />
                                     </div>
@@ -1138,6 +1210,14 @@ const ProjectDetails: React.FC = () => {
                                 </div>
                             </div>
                         </>
+                    )}
+
+                    {activeTab === 'attachments' && attachmentsApi && (
+                        <AttachmentsPanel
+                            api={attachmentsApi}
+                            showTitle={false}
+                            onAttachmentsCountChange={setAttachmentCount}
+                        />
                     )}
 
                     {activeTab === 'notes' && project && (
@@ -1235,8 +1315,15 @@ const ProjectDetails: React.FC = () => {
                     )}
                     {isTemplateConfirmOpen && (
                         <ConfirmDialog
-                            title={t('modals.saveAsTemplate.title', 'Save as Template')}
-                            message={t('modals.saveAsTemplate.message', 'Save "{{name}}" as a template? This will create a reusable template based on this project.', { name: project?.name })}
+                            title={t(
+                                'modals.saveAsTemplate.title',
+                                'Save as Template'
+                            )}
+                            message={t(
+                                'modals.saveAsTemplate.message',
+                                'Save "{{name}}" as a template? This will create a reusable template based on this project.',
+                                { name: project?.name }
+                            )}
                             onConfirm={handleConfirmSaveAsTemplate}
                             onCancel={() => setIsTemplateConfirmOpen(false)}
                             confirmButtonText={t('common.save', 'Save')}

@@ -1,5 +1,7 @@
 const {
     shouldSendInAppNotification,
+    shouldSendPushNotification,
+    deliverySources,
     getDefaultNotificationPreferences,
     ensureNotificationPreferences,
     NOTIFICATION_TYPE_MAPPING,
@@ -42,6 +44,18 @@ describe('notificationPreferences utils', () => {
                     telegram: false,
                 },
                 taskAssigned: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                habitReminders: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                comments: {
                     inApp: true,
                     email: false,
                     push: false,
@@ -210,6 +224,8 @@ describe('notificationPreferences utils', () => {
                 project_due_soon: 'dueProjects',
                 project_overdue: 'overdueProjects',
                 task_assigned: 'taskAssigned',
+                comment_added: 'comments',
+                mention: 'comments',
             });
         });
     });
@@ -345,6 +361,18 @@ describe('notificationPreferences utils', () => {
                     push: false,
                     telegram: false,
                 },
+                habitReminders: {
+                    inApp: false,
+                    email: false,
+                    push: false,
+                    telegram: true,
+                },
+                comments: {
+                    inApp: true,
+                    email: false,
+                    push: true,
+                    telegram: false,
+                },
             };
 
             const result = ensureNotificationPreferences(input);
@@ -375,6 +403,55 @@ describe('notificationPreferences utils', () => {
 
             // Valid type should be preserved
             expect(result.overdueTasks).toEqual(input.overdueTasks);
+        });
+    });
+
+    describe('shouldSendPushNotification', () => {
+        const withPrefs = (prefs) => ({ notification_preferences: prefs });
+
+        it('is off without preferences', () => {
+            expect(shouldSendPushNotification(null, 'task_due_soon')).toBe(
+                false
+            );
+            expect(
+                shouldSendPushNotification(withPrefs(null), 'task_due_soon')
+            ).toBe(false);
+        });
+
+        it('follows the push flag of the mapped preference key', () => {
+            const user = withPrefs({
+                dueTasks: { inApp: true, push: true },
+                overdueTasks: { inApp: true, push: false },
+                comments: { inApp: true, push: true },
+            });
+            expect(shouldSendPushNotification(user, 'task_due_soon')).toBe(
+                true
+            );
+            expect(shouldSendPushNotification(user, 'task_overdue')).toBe(
+                false
+            );
+            expect(shouldSendPushNotification(user, 'mention')).toBe(true);
+            expect(shouldSendPushNotification(user, 'comment_added')).toBe(
+                true
+            );
+            expect(shouldSendPushNotification(user, 'deferUntil')).toBe(false);
+        });
+    });
+
+    describe('deliverySources', () => {
+        it('lists every extra channel the user turned on', () => {
+            const user = {
+                notification_preferences: {
+                    taskAssigned: { inApp: true, telegram: true, push: true },
+                    dueTasks: { inApp: true, telegram: false, push: true },
+                },
+            };
+            expect(deliverySources(user, 'task_assigned')).toEqual([
+                'telegram',
+                'push',
+            ]);
+            expect(deliverySources(user, 'task_due_soon')).toEqual(['push']);
+            expect(deliverySources(user, 'project_overdue')).toEqual([]);
         });
     });
 });

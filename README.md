@@ -49,6 +49,12 @@ For the thinking behind tududi, read:
     - **Flexible Scheduling**: Set custom intervals (every 2 weeks, every 3 months, etc.)
     - **End Date Control**: Optional end dates for recurring series
 - **Project Sharing & Collaboration**: Share projects with team members and collaborate effectively
+- **Families & Small Teams**: One workspace for a household or a team, described in [People, Members and Roles](docs/19-people-and-roles.md):
+    - **Roles**: Admin, user and guest, each with a list of what it can do
+    - **Groups**: Share a project, area or goal with several people at once
+    - **Members without an email**: Add a child or another household member who has no email, put them in a group, assign them tasks and give them a sign-in link so they can sign in
+    - **One People list**: Members and contacts in one list. Add members yourself with the invite permission, or turn a contact into a member without losing the tasks assigned to them
+    - **Assign to anyone**: Give a task to a member or to a contact such as a plumber, and see everyone's day on one Everyone board
 - **Quick Notes**: Create, update, delete, or assign text notes to projects.
 - **Tags**: Create tags for tasks and notes to enhance organization.
 - **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks and/or multiple notes.
@@ -56,7 +62,7 @@ For the thinking behind tududi, read:
 - **Due Date Tracking**: Set due dates for tasks and view them based on due date categories.
 - **Responsive Design**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
 - **Installable PWA**: Add tududi to your home screen on Android, iOS, and desktop browsers for a native app-like experience. The app stays readable from cache when offline, and write operations are queued and synced automatically when connectivity returns.
-- **Multi-Language Support**: Available in 24 languages with full localization support for a truly global productivity experience.
+- **Multi-Language Support**: Available in 25 languages with full localization support for a truly global productivity experience.
 - **Telegram Integration**:
     - Create tasks directly through Telegram messages
     - Receive daily digests of your tasks
@@ -95,11 +101,14 @@ docker run \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -v ~/tududi_db:/app/db \
   -v ~/tududi_uploads:/app/uploads \
+  -v ~/tududi_backups:/app/backups \
   -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
+
+If people reach tududi at another address (for example `http://zima.local:3002` or `https://tududi.example.com`), add `-e BASE_URL=<that address>` so links in emails (account verification, password reset) point there instead of `localhost`.
 
 ### Using docker-compose
 
@@ -180,13 +189,12 @@ docker run \
 
 ### CalDAV Synchronization
 
-Tududi supports the industry-standard CalDAV protocol, enabling seamless task synchronization with popular CalDAV clients and servers.
+Tududi supports the industry-standard CalDAV protocol, enabling seamless task synchronization with popular CalDAV clients and servers. It's enabled by default.
 
 **Quick Setup:**
 
 ```bash
 docker run \
-  -e CALDAV_ENABLED=true \
   -e ENCRYPTION_KEY=$(openssl rand -hex 32) \
   ...
 ```
@@ -239,6 +247,7 @@ volumes:
 volumes:
   - ./tududi_db:/app/db
   - ./uploads:/app/uploads
+  - ./backups:/app/backups
 ```
 
 **Migration steps:**
@@ -261,6 +270,7 @@ For detailed setup instructions, configuration options, and getting started guid
 - **[Configuration](https://docs.tududi.com/getting-started/configuration)** - Environment variables and advanced settings
 - **[First Steps](https://docs.tududi.com/getting-started/first-steps)** - Learn the basics and get productive
 - **[Project Sharing](https://docs.tududi.com/features/project-sharing)** - Collaborate with your team
+- **[People, Members and Roles](docs/19-people-and-roles.md)** - Families and teams: roles, groups, members without an email and assigning tasks
 
 ## 🚧 Development
 

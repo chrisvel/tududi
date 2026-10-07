@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="<%= i18n.meta.htmlLang %>" dir="<%= i18n.meta.dir || 'ltr' %>">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-VC2N7ZBPEE', { page_locale: '<%= i18n.locale %>' });
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= i18n.t('cloud.metaTitle') %></title>
@@ -18,12 +10,10 @@
     <link rel="alternate" hreflang="<%= l.htmlLang %>" href="<%= pageUrl(l.code, '/cloud') %>" />
     <% }); %>
     <link rel="alternate" hreflang="x-default" href="<%= pageUrl('en', '/cloud') %>" />
+    <%- include('partials/social-meta', { title: i18n.t('cloud.metaTitle'), description: i18n.t('cloud.metaDescription'), url: canonicalUrl }) %>
     <meta property="og:locale" content="<%= i18n.meta.ogLocale %>">
     <link rel="icon" href="/landing-assets/favicon.ico">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <%- include('partials/head-assets') %>
     <%- include('partials/styles') %>
     <style>
         /* Reasons list. Same card language as the feature grid, but two
@@ -53,7 +43,7 @@
         <h1><%= t('cloud.title') %></h1>
         <p><%= t('cloud.lede') %></p>
         <div class="hero-actions" style="justify-content:center;">
-            <a href="<%= pricing.cloudOpen ? appUrl + '/register' : localePath(i18n.locale) + '#waitlist' %>" class="btn-primary"><%= pricing.cloudOpen ? t('cloud.ctaPrimary') : t('hero.ctaWaitlist') %></a>
+            <a href="<%= appUrl %>/register" class="btn-primary"><%= trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('cloud.ctaPrimary') %></a>
             <a href="#cloud-pricing" class="btn-secondary"><%= t('cloud.ctaPricing') %></a>
         </div>
         <p class="hero-note" style="margin-top:16px;"><i class="fas fa-lock-open"></i><%= t('cloud.note') %></p>
@@ -83,7 +73,7 @@
             <div class="section-head">
                 <span class="eyebrow"><%= t('pricing.eyebrow') %></span>
                 <h2 class="section-title"><%= t('cloud.pricingTitle') %></h2>
-                <p class="section-sub"><%= t('cloud.pricingSub') %></p>
+                <p class="section-sub"><%= trialDays > 0 ? t('cloud.pricingSubTrial', { days: trialDays }) : t('cloud.pricingSub') %></p>
             </div>
 
             <div class="plan-grid" style="grid-template-columns:minmax(0,1fr); max-width:520px; margin:0 auto;">
@@ -109,13 +99,16 @@
                             <% } %>
                         </div>
                         <div class="plan-price-note"><%= t('cloud.priceNote') %></div>
+                        <% if (trialDays > 0) { %>
+                        <div class="plan-launch-note"><%= t('pricing.plans.cloud.trialNote') %></div>
+                        <% } %>
                     </div>
                     <ul class="plan-features">
                         <% i18n.tList('cloud.includes').forEach(function (feature) { %>
                         <li><i class="fas fa-check"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="<%= pricing.cloudOpen ? appUrl + '/register' : localePath(i18n.locale) + '#waitlist' %>" class="plan-action plan-action-primary"><%= pricing.cloudOpen ? t('cloud.ctaPrimary') : t('hero.ctaWaitlist') %></a>
+                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('cloud.ctaPrimary') %></a>
                 </div>
             </div>
 
@@ -123,7 +116,7 @@
                 why somebody would let us run it; closing it with a big button
                 pointing the other way was arguing against itself. %>
             <div class="closing">
-                <p class="closing-selfhost"><%= t('cloud.selfHostLine') %> <a href="<%= localePath(i18n.locale) %>#self-host"><%= t('finalCta.selfHostLink') %></a></p>
+                <p class="closing-selfhost"><%= t('cloud.selfHostLine') %> <a href="https://github.com/chrisvel/tududi"><%= t('finalCta.selfHostLink') %></a></p>
             </div>
         </div>
     </section>

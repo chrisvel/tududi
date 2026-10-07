@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Goal, User } = require('../../models');
+const { Goal, User, Area } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Goals Routes', () => {
@@ -12,6 +12,77 @@ describe('Goals Routes', () => {
         await agent.post('/api/login').send({
             email: 'goaltest@example.com',
             password: 'password123',
+        });
+    });
+
+    describe('area ownership', () => {
+        let ownArea, foreignArea;
+
+        beforeEach(async () => {
+            const other = await createTestUser({
+                email: 'goal-area-other@example.com',
+            });
+            ownArea = await Area.create({ name: 'Mine', user_id: user.id });
+            foreignArea = await Area.create({
+                name: 'Not mine',
+                user_id: other.id,
+            });
+        });
+
+        it('should place a goal in an area the user owns', async () => {
+            const response = await agent
+                .post('/api/goals')
+                .send({ title: 'In my area', area_id: ownArea.id });
+
+            expect(response.status).toBe(201);
+            expect(response.body.goal.area_id).toBe(ownArea.id);
+        });
+
+        it("should refuse a goal in another user's area on create", async () => {
+            const response = await agent
+                .post('/api/goals')
+                .send({ title: 'Sneaky', area_id: foreignArea.id });
+
+            expect(response.status).toBe(400);
+            expect(await Goal.count({ where: { user_id: user.id } })).toBe(0);
+        });
+
+        it("should refuse moving a goal into another user's area", async () => {
+            const created = await agent
+                .post('/api/goals')
+                .send({ title: 'Movable', area_id: ownArea.id });
+
+            const response = await agent
+                .patch(`/api/goals/${created.body.goal.uid}`)
+                .send({ area_id: foreignArea.id });
+
+            expect(response.status).toBe(400);
+            const stored = await Goal.findOne({
+                where: { uid: created.body.goal.uid },
+            });
+            expect(stored.area_id).toBe(ownArea.id);
+        });
+
+        it('should answer the same for a nonexistent area as for a foreign one', async () => {
+            const response = await agent
+                .post('/api/goals')
+                .send({ title: 'Ghost', area_id: 999999 });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid area');
+        });
+
+        it('should still allow clearing the area', async () => {
+            const created = await agent
+                .post('/api/goals')
+                .send({ title: 'Clearable', area_id: ownArea.id });
+
+            const response = await agent
+                .patch(`/api/goals/${created.body.goal.uid}`)
+                .send({ area_id: null });
+
+            expect(response.status).toBe(200);
+            expect(response.body.goal.area_id).toBeNull();
         });
     });
 

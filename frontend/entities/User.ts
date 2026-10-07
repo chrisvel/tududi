@@ -1,8 +1,6 @@
+import { Capabilities, RoleId } from './Role';
+
 export interface UserFeatures {
-    task_intelligence_enabled?: boolean;
-    auto_suggest_next_actions_enabled?: boolean;
-    productivity_assistant_enabled?: boolean;
-    next_task_suggestion_enabled?: boolean;
     pomodoro_enabled?: boolean;
     eisenhower_enabled?: boolean;
     kanban_enabled?: boolean;
@@ -18,5 +16,7 @@ export interface User {
     timezone: string;
     avatarUrl?: string;
     is_admin?: boolean;
+    role?: RoleId;
+    capabilities?: Capabilities;
     features?: UserFeatures;
 }

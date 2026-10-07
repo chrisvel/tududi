@@ -7,6 +7,66 @@
 
 /**
  * @swagger
+ * /api/tasks/order:
+ *   get:
+ *     summary: Get your manual task order for a list
+ *     tags: [Tasks]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: scope
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [all, project]
+ *       - in: query
+ *         name: project_uid
+ *         schema:
+ *           type: string
+ *         description: Required when scope is project
+ *     responses:
+ *       200:
+ *         description: Task UIDs in your saved order
+ *   put:
+ *     summary: Save a drag in a task list
+ *     description: task_uids are the shown tasks in their new order. They are reordered within the slots they hold in your full saved order; other tasks keep their places. With base_order_by (All Tasks only), the full order starts from that sort instead.
+ *     tags: [Tasks]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [scope, task_uids]
+ *             properties:
+ *               scope:
+ *                 type: string
+ *                 enum: [all, project]
+ *               project_uid:
+ *                 type: string
+ *               task_uids:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               base_order_by:
+ *                 type: string
+ *                 example: "due_date:asc"
+ *     responses:
+ *       200:
+ *         description: Order saved
+ *       400:
+ *         description: Invalid payload
+ *       404:
+ *         description: A task or project was not found or is not visible to you
+ */
+
+/**
+ * @swagger
  * /api/tasks:
  *   get:
  *     summary: Get tasks with filtering and grouping options
@@ -43,7 +103,7 @@
  *         schema:
  *           type: string
  *           example: "created_at:desc"
- *         description: Sort order (field:direction)
+ *         description: Sort order (field:direction). `custom:asc` sorts by your drag-and-drop order (see /api/tasks/order).
  *     responses:
  *       200:
  *         description: List of tasks (use /api/tasks/metrics for dashboard statistics)

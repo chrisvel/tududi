@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
     Squares2X2Icon,
     ChevronRightIcon,
@@ -7,6 +7,8 @@ import {
 import { Location } from 'react-router-dom';
 import { Area } from '../../entities/Area';
 import { useTranslation } from 'react-i18next';
+import { useCan } from '../../hooks/useCan';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarAreasProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -31,7 +33,8 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
     areas,
 }) => {
     const { t } = useTranslation();
-    const [isExpanded, setIsExpanded] = useState(false);
+    const canCreateAreas = useCan('create_projects');
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('areas');
 
     useEffect(() => {
         if (areas.some((area) => getAreaPath(area) === location.pathname)) {
@@ -62,12 +65,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                     isAreasPageActive ? 'bg-gray-100 dark:bg-white/5' : ''
                 }`}
                 onClick={() => {
-                    setIsExpanded(true);
-                    handleNavClick(
-                        '/areas',
-                        'Areas',
-                        <Squares2X2Icon className="h-5 w-5 mr-2" />
-                    );
+                    if (areas.length > 0) setIsExpanded((v) => !v);
                 }}
             >
                 <span
@@ -76,22 +74,33 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                             ? 'text-gray-900 dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsExpanded(true);
+                        handleNavClick(
+                            '/areas',
+                            'Areas',
+                            <Squares2X2Icon className="h-5 w-5 mr-2" />
+                        );
+                    }}
                 >
                     <Squares2X2Icon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
                     {t('sidebar.areas')}
                 </span>
                 <div className="flex items-center gap-1">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            openAreaModal(null);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label={t('areas.addArea', 'Add Area')}
-                        title={t('areas.addArea', 'Add Area')}
-                    >
-                        <PlusIcon className="h-3.5 w-3.5" />
-                    </button>
+                    {canCreateAreas && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                openAreaModal(null);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-label={t('areas.addArea', 'Add Area')}
+                            title={t('areas.addArea', 'Add Area')}
+                        >
+                            <PlusIcon className="h-3.5 w-3.5" />
+                        </button>
+                    )}
                     {areas.length > 0 && (
                         <>
                             <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">
@@ -102,7 +111,8 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

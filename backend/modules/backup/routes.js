@@ -6,18 +6,6 @@ const router = express.Router();
 const { requireFeature } = require('../../middleware/entitlements');
 const backupController = require('./controller');
 
-const checkBackupsEnabled = (req, res, next) => {
-    const backupsEnabled = process.env.FF_ENABLE_BACKUPS === 'true';
-    if (!backupsEnabled) {
-        return res.status(403).json({
-            error: 'Backups feature is disabled',
-            message:
-                'The backups feature is currently disabled. Please contact your administrator.',
-        });
-    }
-    next();
-};
-
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
@@ -42,8 +30,6 @@ const upload = multer({
         }
     },
 });
-
-router.use('/backup', checkBackupsEnabled);
 
 router.post('/backup/export', backupController.export);
 router.post(

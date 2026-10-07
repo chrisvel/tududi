@@ -1,7 +1,8 @@
 'use strict';
 
 // Reads the tag history and works out what the next version would be on each
-// channel. Prints shell assignments so create-version.sh can `eval` it.
+// channel, plus the stable fix, minor and major bumps. Prints shell
+// assignments so create-version.sh can `eval` it.
 //
 // Ordering lives here rather than in the shell because `sort -V` gets
 // pre-releases wrong: 1.5.0-rc.7 has to sort *below* 1.5.0, and rc.10 above
@@ -48,8 +49,18 @@ function base(v) {
     return `${v.major}.${v.minor}.${v.patch}`;
 }
 
+// Bumps of the last stable release. With no stable release yet there is
+// nothing to bump from, so the first minor is 0.1.0 and the first major 1.0.0.
 function nextPatch(v) {
     return v ? `${v.major}.${v.minor}.${v.patch + 1}` : '0.1.0';
+}
+
+function nextMinor(v) {
+    return v ? `${v.major}.${v.minor + 1}.0` : '0.1.0';
+}
+
+function nextMajor(v) {
+    return v ? `${v.major + 1}.0.0` : '1.0.0';
 }
 
 const tags = execFileSync('git', ['tag', '--list', 'v*'], {
@@ -91,18 +102,42 @@ function nextPre(channel, latest) {
     return `v${nextPatch(stable)}-${channel}.1`;
 }
 
-// Going stable promotes whichever pre-release line is furthest along, so
-// 1.5.0-rc.7 becomes 1.5.0 rather than inventing a number.
+// The next pre-release of a channel on an explicit version, e.g. the rc for
+// 1.6.0: one past the highest number already cut on that exact version.
+function preOn(channel, version) {
+    const numbers = tags
+        .filter((t) => t.channel === channel && base(t) === version)
+        .map((t) => t.number);
+    return `v${version}-${channel}.${Math.max(0, ...numbers) + 1}`;
+}
+
+// Promoting a stable release takes whichever pre-release line is furthest
+// along, so 1.5.0-rc.7 becomes 1.5.0 rather than inventing a number. Fix,
+// minor and major are the explicit bumps of the last stable release, for when
+// the next release is not the line already in flight. Each channel offers all
+// three, so a 2.0.0 release candidate is as reachable as a 2.0.0 stable.
 const promote = inFlight || null;
 
 const out = {
     LATEST_STABLE: stable ? stable.tag : '',
     LATEST_RC: rc ? rc.tag : '',
     LATEST_DEV: dev ? dev.tag : '',
-    NEXT_STABLE: promote ? `v${base(promote)}` : `v${nextPatch(stable)}`,
+    PROMOTE_STABLE: promote ? `v${base(promote)}` : '',
     NEXT_RC: nextPre('rc', rc),
     NEXT_DEV: nextPre('dev', dev),
 };
+
+const bumps = {
+    FIX: nextPatch(stable),
+    MINOR: nextMinor(stable),
+    MAJOR: nextMajor(stable),
+};
+
+for (const [name, version] of Object.entries(bumps)) {
+    out[`STABLE_${name}`] = `v${version}`;
+    out[`RC_${name}`] = preOn('rc', version);
+    out[`DEV_${name}`] = preOn('dev', version);
+}
 
 for (const [key, value] of Object.entries(out)) {
     process.stdout.write(`${key}='${value}'\n`);

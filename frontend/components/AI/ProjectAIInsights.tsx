@@ -24,6 +24,8 @@ import {
     ProjectInsights,
     ProjectInsightsRequest,
 } from '../../utils/aiAssistantService';
+import TrialLockNotice from '../Billing/TrialLockNotice';
+import { useTrialLock } from '../../hooks/useTrialStatus';
 
 export interface ProjectAIInsightsHandle {
     activate: () => void;
@@ -53,6 +55,10 @@ const ProjectAIInsights = forwardRef<
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isVisible, setIsVisible] = useState(false);
+    // On the trial the ✨ button opens a lock box instead of asking for
+    // insights the plan would refuse.
+    const aiLocked = useTrialLock('ai');
+    const [showLock, setShowLock] = useState(false);
 
     const buildPayload = (): ProjectInsightsRequest => ({
         projectUid: project.uid,
@@ -108,6 +114,10 @@ const ProjectAIInsights = forwardRef<
 
     useImperativeHandle(ref, () => ({
         activate: () => {
+            if (aiLocked) {
+                setShowLock((open) => !open);
+                return;
+            }
             if (isInitializing) return;
             if (isVisible) {
                 dismiss();
@@ -171,6 +181,10 @@ const ProjectAIInsights = forwardRef<
             cancelled = true;
         };
     }, [project.uid]);
+
+    if (aiLocked) {
+        return showLock ? <TrialLockNotice feature="ai" /> : null;
+    }
 
     if (!isVisible) return null;
 

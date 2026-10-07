@@ -27,11 +27,23 @@ module.exports = (sequelize) => {
             },
             email: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
                 unique: true,
                 validate: {
                     isEmail: true,
                 },
+            },
+            // The email with aliases folded away (see canonicalEmail), so a
+            // hosted instance can tell that two sign-ups are one mailbox.
+            email_canonical: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            // A sign-up that has not verified gets one reminder, with a new
+            // link, a day or so later.
+            verification_reminder_sent_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
             },
             password: {
                 type: DataTypes.VIRTUAL,
@@ -129,10 +141,6 @@ module.exports = (sequelize) => {
                 type: DataTypes.JSON,
                 allowNull: true,
                 defaultValue: {
-                    task_intelligence_enabled: true,
-                    auto_suggest_next_actions_enabled: false,
-                    productivity_assistant_enabled: true,
-                    next_task_suggestion_enabled: true,
                     ai_assistant_enabled: false,
                     pomodoro_enabled: true,
                     eisenhower_enabled: false,
@@ -146,8 +154,6 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: {
                     showMetrics: false,
-                    showProductivity: false,
-                    showNextTaskSuggestion: false,
                     showSuggestions: false,
                     showDueToday: true,
                     showCompleted: true,
@@ -160,6 +166,11 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: {
                     pinnedViewsOrder: [],
+                    visibleSections: {
+                        upcomingTasks: true,
+                        assignedToMe: true,
+                        everyone: true,
+                    },
                 },
             },
             ui_settings: {
@@ -213,6 +224,18 @@ module.exports = (sequelize) => {
                         push: false,
                         telegram: false,
                     },
+                    habitReminders: {
+                        inApp: true,
+                        email: false,
+                        push: false,
+                        telegram: false,
+                    },
+                    comments: {
+                        inApp: true,
+                        email: false,
+                        push: false,
+                        telegram: false,
+                    },
                 },
             },
             keyboard_shortcuts: {
@@ -234,6 +257,34 @@ module.exports = (sequelize) => {
             },
             ai_profile: {
                 type: DataTypes.TEXT,
+                allowNull: true,
+                defaultValue: null,
+            },
+            ai_api_key: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+                defaultValue: null,
+                comment:
+                    'Encrypted per-user LLM API key, overrides LLM_API_KEY/.env',
+            },
+            ai_base_url: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null,
+            },
+            ai_model: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null,
+            },
+            created_by_user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                defaultValue: null,
+            },
+            // The hosted account this user belongs to (see models/account.js).
+            account_id: {
+                type: DataTypes.INTEGER,
                 allowNull: true,
                 defaultValue: null,
             },
@@ -261,6 +312,20 @@ module.exports = (sequelize) => {
         },
         {
             tableName: 'users',
+            indexes: [
+                {
+                    fields: ['created_by_user_id'],
+                    name: 'users_created_by_user_id',
+                },
+                {
+                    fields: ['account_id'],
+                    name: 'users_account_id',
+                },
+                {
+                    fields: ['email_canonical'],
+                    name: 'users_email_canonical',
+                },
+            ],
             hooks: {
                 beforeValidate: async (user) => {
                     if (user.email) {
@@ -271,6 +336,18 @@ module.exports = (sequelize) => {
                             user.password,
                             10
                         );
+                    }
+                },
+                // beforeSave rather than beforeValidate: fields a save hook
+                // sets are persisted even by instance.update({ email }).
+                beforeSave: (user) => {
+                    if (user.isNewRecord || user.changed('email')) {
+                        const {
+                            canonicalEmail,
+                        } = require('../services/emailDomainService');
+                        user.email_canonical = user.email
+                            ? canonicalEmail(user.email)
+                            : null;
                     }
                 },
                 afterCreate: async (user, options) => {
@@ -295,9 +372,19 @@ module.exports = (sequelize) => {
                         {
                             user_id: user.id,
                             is_admin: isFirstUser,
+                            role: isFirstUser ? 'admin' : 'user',
                         },
                         { transaction: options.transaction }
                     );
+
+                    // On a hosted instance every account belongs to a customer
+                    // account: its creator's, or a new one it owns.
+                    if (hosted) {
+                        await require('../services/accountsService').ensureAccountId(
+                            user.id,
+                            { transaction: options.transaction }
+                        );
+                    }
                 },
             },
         }

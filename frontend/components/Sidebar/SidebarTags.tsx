@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import {
     TagIcon,
@@ -9,6 +9,7 @@ import { Tag } from '../../entities/Tag';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { createTagUrl } from '../../utils/slugUtils';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarTagsProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -24,7 +25,7 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
     openTagModal,
 }) => {
     const { t } = useTranslation();
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('tags');
 
     const tags = useStore((state) => state.tagsStore.tags);
     const hasLoaded = useStore((state) => state.tagsStore.hasLoaded);
@@ -57,11 +58,14 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
     return (
         <div className="flex flex-col">
             <div
-                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md hover:bg-gray-100 dark:hover:bg-white/5 ${
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
                     location.pathname === '/tags'
                         ? 'bg-gray-100 dark:bg-white/5'
                         : ''
                 }`}
+                onClick={() => {
+                    if (tags.length > 0) setIsExpanded((v) => !v);
+                }}
             >
                 <span
                     className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
@@ -69,7 +73,8 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
                             ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.stopPropagation();
                         setIsExpanded(true);
                         handleNavClick('/tags', t('sidebar.tags'), <TagIcon className="h-4 w-4 mr-2" />);
                     }}
@@ -99,7 +104,8 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

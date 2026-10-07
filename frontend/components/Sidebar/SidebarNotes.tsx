@@ -10,6 +10,7 @@ import { Note } from '../../entities/Note';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import SidebarNotesTree from './SidebarNotesTree';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarNotesProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -25,7 +26,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
     onCreateNote,
 }) => {
     const { t } = useTranslation();
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('notes');
     const [searchQuery, setSearchQuery] = useState('');
 
     const notes = useStore((state) => state.notesStore.notes);
@@ -53,11 +54,14 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
     return (
         <div className="flex flex-col">
             <div
-                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md hover:bg-gray-100 dark:hover:bg-white/5 ${
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
                     location.pathname.startsWith('/notes')
                         ? 'bg-gray-100 dark:bg-white/5'
                         : ''
                 }`}
+                onClick={() => {
+                    if (notes.length > 0) setIsExpanded((v) => !v);
+                }}
             >
                 <span
                     className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
@@ -65,7 +69,8 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                             ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.stopPropagation();
                         setIsExpanded(true);
                         handleNavClick('/notes', t('sidebar.notes'), <BookOpenIcon className="h-4 w-4 mr-2" />);
                     }}
@@ -95,7 +100,8 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

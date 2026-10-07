@@ -122,7 +122,7 @@ const RecurrenceSelectDropdown: React.FC<RecurrenceSelectDropdownProps> = ({
                 createPortal(
                     <div
                         ref={menuRef}
-                        className="fixed z-50 bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600 max-h-48 overflow-y-auto recurrence-dropdown-menu"
+                        className="fixed z-[10050] bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600 max-h-48 overflow-y-auto recurrence-dropdown-menu"
                         style={{
                             top: `${position.top}px`,
                             left: `${position.left}px`,

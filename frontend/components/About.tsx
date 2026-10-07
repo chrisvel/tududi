@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeartIcon } from '@heroicons/react/24/outline';
+import { Navigate } from 'react-router-dom';
 import { getApiPath } from '../config/paths';
+import { getFeatureFlags } from '../utils/featureFlags';
 
 interface AboutProps {
     isDarkMode?: boolean;
@@ -10,6 +12,13 @@ interface AboutProps {
 const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
     const { t } = useTranslation();
     const [version, setVersion] = useState<string>('0.3');
+    // The page is about the open source project and its donations, which
+    // is not what a hosted account is paying for, so hosted sends it home.
+    const [hosted, setHosted] = useState(false);
+
+    useEffect(() => {
+        getFeatureFlags().then((flags) => setHosted(flags.hosted));
+    }, []);
 
     useEffect(() => {
         // Fetch version from the deployed app
@@ -25,6 +34,8 @@ const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
                 // Keep default version if fetch fails
             });
     }, []);
+
+    if (hosted) return <Navigate to="/today" replace />;
 
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">

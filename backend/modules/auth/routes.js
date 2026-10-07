@@ -5,7 +5,11 @@ const router = express.Router();
 const authController = require('./controller');
 const {
     authLimiter,
+    signInLinkLimiter,
     authEmailLimiter,
+    loginLimiter,
+    loginEmailLimiter,
+    signupLimiter,
     apiLimiter,
 } = require('../../middleware/rateLimiter');
 const { csrfMiddleware } = require('../../middleware/csrf');
@@ -20,8 +24,13 @@ router.get(
     authController.getPasswordAuthStatus
 );
 router.get('/csrf-token', csrfMiddleware, authController.getCsrfToken);
-router.post('/waitlist', authLimiter, authController.joinWaitlist);
-router.post('/register', authLimiter, requireCaptcha, authController.register);
+router.post(
+    '/register',
+    authLimiter,
+    signupLimiter,
+    requireCaptcha,
+    authController.register
+);
 router.get('/verify-email', authLimiter, authController.verifyEmail);
 router.post(
     '/resend-verification',
@@ -31,7 +40,7 @@ router.post(
     authController.resendVerification
 );
 router.get('/current_user', authController.getCurrentUser);
-router.post('/login', authLimiter, authEmailLimiter, authController.login);
+router.post('/login', loginLimiter, loginEmailLimiter, authController.login);
 router.post(
     '/forgot-password',
     authLimiter,
@@ -40,6 +49,19 @@ router.post(
     authController.forgotPassword
 );
 router.post('/reset-password', authLimiter, authController.resetPassword);
+// Sign-in links for members without an email. The token travels in the body,
+// not the URL, so it does not end up in access logs. Opening the link only
+// shows a page: signing in is a POST, so link previews cannot use it up.
+router.post(
+    '/sign-in-link/peek',
+    signInLinkLimiter,
+    authController.peekSignInLink
+);
+router.post(
+    '/sign-in-link/redeem',
+    signInLinkLimiter,
+    authController.redeemSignInLink
+);
 router.get('/logout', authController.logout);
 
 module.exports = router;

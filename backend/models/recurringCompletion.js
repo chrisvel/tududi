@@ -29,6 +29,14 @@ module.exports = (sequelize) => {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
             },
+            value: {
+                type: DataTypes.FLOAT,
+                allowNull: true,
+            },
+            note: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            },
         },
         {
             tableName: 'recurring_completions',

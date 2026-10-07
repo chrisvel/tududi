@@ -1,0 +1,79 @@
+# One replica only. With SQLite the database is a single file on one volume,
+# and the schedulers run inside the app process, so a second pod would fight
+# over the file and send every reminder twice. Recreate makes sure the old pod
+# is gone before the new one starts.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tududi
+  labels:
+    app.kubernetes.io/name: tududi
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tududi
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tududi
+    spec:
+      securityContext:
+        fsGroup: 1001
+      containers:
+        - name: tududi
+          # Pin a release tag instead of latest so upgrades happen when you
+          # choose. Check the release notes before bumping it.
+          image: docker.io/chrisvel/tududi:1.5.0
+          ports:
+            - name: http
+              containerPort: 3002
+          env:
+            - name: TUDUDI_ALLOWED_ORIGINS
+              value: https://tududi.example.com
+            # Behind an ingress controller there is one proxy hop.
+            - name: TUDUDI_TRUST_PROXY
+              value: "1"
+          envFrom:
+            - secretRef:
+                name: tududi
+          volumeMounts:
+            # Since v1.2.0 the database lives in /app/db, not /app/backend/db.
+            - name: db
+              mountPath: /app/db
+            - name: uploads
+              mountPath: /app/uploads
+          # The first start runs the migrations, give it a few minutes.
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 15
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: tududi-db
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: tududi-uploads

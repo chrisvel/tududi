@@ -171,3 +171,125 @@
  *       404:
  *         description: Note not found
  */
+
+/**
+ * @swagger
+ * /api/note/{uid}/public-share:
+ *   get:
+ *     summary: Get the public sharing state of a note (owner only)
+ *     tags: [Notes]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Note UID
+ *     responses:
+ *       200:
+ *         description: Current public sharing state
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotePublicShare'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Only the owner can manage public sharing
+ *       404:
+ *         description: Note not found
+ *   post:
+ *     summary: Share a note publicly by link (owner only)
+ *     description: Returns the token of the public link. Calling it again while sharing is on keeps the same link.
+ *     tags: [Notes]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Note UID
+ *     responses:
+ *       200:
+ *         description: Public sharing is on
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotePublicShare'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Only the owner can manage public sharing
+ *       404:
+ *         description: Note not found
+ *   delete:
+ *     summary: Stop sharing a note publicly (owner only)
+ *     description: Deletes the token, so the old link stops working immediately. Sharing again creates a new link.
+ *     tags: [Notes]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Note UID
+ *     responses:
+ *       200:
+ *         description: Public sharing is off
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotePublicShare'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Only the owner can manage public sharing
+ *       404:
+ *         description: Note not found
+ */
+
+/**
+ * @swagger
+ * /api/public/notes/{token}:
+ *   get:
+ *     summary: Read a publicly shared note
+ *     description: No authentication. The token is the credential. An unknown, malformed or revoked token all return 404.
+ *     tags: [Notes]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Public link token
+ *     responses:
+ *       200:
+ *         description: The shared note
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 title:
+ *                   type: string
+ *                 content:
+ *                   type: string
+ *                 color:
+ *                   type: string
+ *                   nullable: true
+ *                 updated_at:
+ *                   type: string
+ *                   format: date-time
+ *       404:
+ *         description: This link is not available
+ */

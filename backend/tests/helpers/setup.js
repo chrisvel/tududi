@@ -8,12 +8,6 @@
 
 const { testDatabaseName } = require('./test-db');
 
-// CalDAV routes 404 unless the flag is on; the CalDAV suites expect it on
-// unless a test turns it off deliberately.
-if (process.env.FF_ENABLE_CALDAV === undefined) {
-    process.env.FF_ENABLE_CALDAV = 'true';
-}
-
 if (process.env.DATABASE_URL || process.env.DB_DIALECT) {
     const workerDb = testDatabaseName(process.env.JEST_WORKER_ID || '1');
     if (process.env.DATABASE_URL) {
@@ -37,7 +31,16 @@ const CLEANUP_TABLES = [
     'notes_tags',
     'projects_tags',
     'task_events',
+    'task_relations',
+    'user_task_orders',
     'task_attachments',
+    'inbox_item_attachments',
+    'project_attachments',
+    'note_attachments',
+    'daily_plan_items',
+    'daily_plans',
+    'calendar_feeds',
+    'comments',
     'recurring_completions',
     'caldav_occurrence_overrides',
     'caldav_sync_state',
@@ -47,9 +50,17 @@ const CLEANUP_TABLES = [
     'rate_limits',
     'usage_counters',
     'waitlist_subscribers',
+    'feedback',
+    'push_subscriptions',
     'billing_events',
     'billing_accounts',
+    'accounts',
     'notifications',
+    'member_sign_in_links',
+    'group_permissions',
+    'group_shares',
+    'user_group_members',
+    'user_groups',
     'permissions',
     // actions and the audit/identity tables reference users; on PostgreSQL
     // the FK blocks DELETE FROM users when they are left out, and the
@@ -65,6 +76,7 @@ const CLEANUP_TABLES = [
     'notes',
     'tags',
     'user_project_areas',
+    'user_project_orders',
     'projects',
     'goals',
     'areas',

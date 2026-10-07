@@ -2,11 +2,22 @@ import { create } from 'zustand';
 import { Project } from '../entities/Project';
 import { Area } from '../entities/Area';
 import { Note } from '../entities/Note';
+import { Capabilities, RoleId } from '../entities/Role';
 import { Task } from '../entities/Task';
 import { Tag } from '../entities/Tag';
 import { InboxItem } from '../entities/InboxItem';
 import { Goal } from '../entities/Goal';
 import { Person } from '../entities/Person';
+import type { SidebarVisibleSections } from '../components/Profile/types';
+import {
+    DEFAULT_LINK_ORDER,
+    DEFAULT_SECTION_ORDER,
+    resolveOrder,
+} from '../utils/sidebarLayout';
+import {
+    SIDEBAR_DEFAULT_PERCENT,
+    clampSidebarPercent,
+} from '../utils/sidebarWidth';
 
 interface NotesStore {
     notes: Note[];
@@ -14,6 +25,7 @@ interface NotesStore {
     isError: boolean;
     hasLoaded: boolean;
     setNotes: (notes: Note[]) => void;
+    addNote: (note: Note) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
     loadNotes: () => Promise<void>;
@@ -82,7 +94,6 @@ interface InboxStore {
     inboxItems: InboxItem[];
     isLoading: boolean;
     isError: boolean;
-    trashedCount: number;
     pagination: {
         total: number;
         limit: number;
@@ -104,7 +115,6 @@ interface InboxStore {
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
     resetPagination: () => void;
-    setTrashedCount: (count: number) => void;
 }
 
 interface UserSettingsStore {
@@ -118,12 +128,26 @@ interface UserSettingsStore {
     setCalendarEnabled: (enabled: boolean) => void;
     hasCollaborators: boolean;
     setHasCollaborators: (enabled: boolean) => void;
+    capabilities: Capabilities | null;
+    setCapabilities: (capabilities: Capabilities | null) => void;
+    role: RoleId | null;
+    setRole: (role: RoleId | null) => void;
     templatesEnabled: boolean;
     setTemplatesEnabled: (enabled: boolean) => void;
     aiAssistantEnabled: boolean;
     setAiAssistantEnabled: (enabled: boolean) => void;
-    showTaskContextMenu: boolean;
-    setShowTaskContextMenu: (enabled: boolean) => void;
+    contentBackground: string | null;
+    setContentBackground: (background: string | null) => void;
+    sidebarVisibleSections: SidebarVisibleSections;
+    setSidebarVisibleSections: (sections: SidebarVisibleSections) => void;
+    sidebarLinkOrder: string[];
+    sidebarSectionOrder: string[];
+    setSidebarOrder: (order: {
+        linkOrder?: unknown;
+        sectionOrder?: unknown;
+    }) => void;
+    sidebarWidthPercent: number;
+    setSidebarWidthPercent: (percent: number | undefined) => void;
 }
 
 interface GoalsStore {
@@ -156,7 +180,13 @@ interface HabitsStore {
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
     loadHabits: () => Promise<void>;
-    logCompletion: (habitUid: string, completedAt?: Date) => Promise<void>;
+    logCompletion: (
+        habitUid: string,
+        completedAt?: Date,
+        options?: { value?: number; note?: string }
+    ) => Promise<void>;
+    skipDay: (habitUid: string, date?: Date) => Promise<void>;
+    updateHabitInList: (habit: Task) => void;
     removeTodayCompletion: (habitUid: string) => Promise<void>;
 }
 
@@ -181,6 +211,18 @@ export const useStore = create<StoreState>((set: any) => ({
         hasLoaded: false,
         setNotes: (notes) =>
             set((state) => ({ notesStore: { ...state.notesStore, notes } })),
+        addNote: (note) =>
+            set((state) => ({
+                notesStore: {
+                    ...state.notesStore,
+                    notes: [
+                        note,
+                        ...state.notesStore.notes.filter(
+                            (n) => n.uid !== note.uid
+                        ),
+                    ],
+                },
+            })),
         setLoading: (isLoading) =>
             set((state) => ({
                 notesStore: { ...state.notesStore, isLoading },
@@ -638,9 +680,8 @@ export const useStore = create<StoreState>((set: any) => ({
             }
         },
         toggleTaskCompletion: async (taskUid) => {
-            const { toggleTaskCompletion } = await import(
-                '../utils/tasksService'
-            );
+            const { toggleTaskCompletion } =
+                await import('../utils/tasksService');
             try {
                 const updatedTask = await toggleTaskCompletion(taskUid);
                 set((state) => ({
@@ -776,7 +817,6 @@ export const useStore = create<StoreState>((set: any) => ({
         inboxItems: [],
         isLoading: false,
         isError: false,
-        trashedCount: 0,
         pagination: {
             total: 0,
             limit: 20,
@@ -873,10 +913,6 @@ export const useStore = create<StoreState>((set: any) => ({
                     },
                 },
             })),
-        setTrashedCount: (trashedCount) =>
-            set((state) => ({
-                inboxStore: { ...state.inboxStore, trashedCount },
-            })),
     },
     habitsStore: {
         habits: [],
@@ -921,12 +957,36 @@ export const useStore = create<StoreState>((set: any) => ({
                 }));
             }
         },
-        logCompletion: async (habitUid, completedAt) => {
-            const { logHabitCompletion } = await import(
-                '../utils/habitsService'
-            );
+        updateHabitInList: (habit) =>
+            set((state) => ({
+                habitsStore: {
+                    ...state.habitsStore,
+                    habits: state.habitsStore.habits.map((h) =>
+                        h.uid === habit.uid ? { ...h, ...habit } : h
+                    ),
+                },
+            })),
+        skipDay: async (habitUid, date) => {
+            const { skipHabitDay } = await import('../utils/habitsService');
+            const updated = await skipHabitDay(habitUid, date);
+            set((state) => ({
+                habitsStore: {
+                    ...state.habitsStore,
+                    habits: state.habitsStore.habits.map((h) =>
+                        h.uid === habitUid ? { ...h, ...updated.task } : h
+                    ),
+                },
+            }));
+        },
+        logCompletion: async (habitUid, completedAt, options) => {
+            const { logHabitCompletion } =
+                await import('../utils/habitsService');
             try {
-                const updated = await logHabitCompletion(habitUid, completedAt);
+                const updated = await logHabitCompletion(
+                    habitUid,
+                    completedAt,
+                    options
+                );
                 set((state) => ({
                     habitsStore: {
                         ...state.habitsStore,
@@ -1024,6 +1084,22 @@ export const useStore = create<StoreState>((set: any) => ({
                     hasCollaborators: enabled,
                 },
             })),
+        role: null,
+        setRole: (role) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    role,
+                },
+            })),
+        capabilities: null,
+        setCapabilities: (capabilities) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    capabilities,
+                },
+            })),
         templatesEnabled: true,
         setTemplatesEnabled: (enabled) =>
             set((state) => ({
@@ -1040,12 +1116,44 @@ export const useStore = create<StoreState>((set: any) => ({
                     aiAssistantEnabled: enabled,
                 },
             })),
-        showTaskContextMenu: false,
-        setShowTaskContextMenu: (enabled) =>
+        contentBackground: null,
+        setContentBackground: (background) =>
             set((state) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
-                    showTaskContextMenu: enabled,
+                    contentBackground: background,
+                },
+            })),
+        sidebarVisibleSections: {},
+        setSidebarVisibleSections: (sections) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    sidebarVisibleSections: sections,
+                },
+            })),
+        sidebarLinkOrder: [...DEFAULT_LINK_ORDER],
+        sidebarSectionOrder: [...DEFAULT_SECTION_ORDER],
+        setSidebarOrder: ({ linkOrder, sectionOrder }) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    sidebarLinkOrder: resolveOrder(
+                        linkOrder,
+                        DEFAULT_LINK_ORDER
+                    ),
+                    sidebarSectionOrder: resolveOrder(
+                        sectionOrder,
+                        DEFAULT_SECTION_ORDER
+                    ),
+                },
+            })),
+        sidebarWidthPercent: SIDEBAR_DEFAULT_PERCENT,
+        setSidebarWidthPercent: (percent) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    sidebarWidthPercent: clampSidebarPercent(percent),
                 },
             })),
     },

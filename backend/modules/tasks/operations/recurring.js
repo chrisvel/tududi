@@ -1,6 +1,11 @@
-const { Task } = require('../../../models');
+const { Task, RecurringCompletion } = require('../../../models');
 const taskRepository = require('../repository');
-const { calculateNextDueDate } = require('../recurringTaskService');
+const {
+    calculateNextDueDate,
+    shouldGenerateNextTask,
+} = require('../recurringTaskService');
+const { logEvent } = require('../taskEventService');
+const { logError } = require('../../../services/logService');
 const {
     processDueDateForResponse,
     getSafeTimezone,
@@ -98,6 +103,45 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
 
     // Parse start date using start-of-day in user timezone (used for weekly/daily logic)
     let startDate = dateStringToUTC(todayLocalStr, safeTimezone, 'start');
+
+    // Daily and weekly recurrence repeat on a fixed cadence measured from the
+    // task's own due date (e.g. "every 14 days"), so the due date - not
+    // "today" - determines which dates are valid occurrences. Anchor on it
+    // and fast-forward through real occurrences (via calculateNextDueDate,
+    // the same stepping logic used to generate the next real instance) until
+    // we reach today. Recalculating the pattern from "today" instead loses
+    // that phase and produces the wrong days whenever the interval is
+    // greater than 1 (#1489).
+    if (
+        (task.recurrence_type === 'daily' ||
+            task.recurrence_type === 'weekly') &&
+        task.due_date
+    ) {
+        let cursor = new Date(task.due_date);
+        if (!isNaN(cursor.getTime())) {
+            while (cursor < startDate) {
+                const next = calculateNextDueDate(task, cursor, safeTimezone);
+                if (!next) break;
+                cursor = next;
+            }
+
+            for (let i = 0; i < 6 && cursor; i++) {
+                if (task.recurrence_end_date) {
+                    const endDate = new Date(task.recurrence_end_date);
+                    if (cursor > endDate) break;
+                }
+
+                iterations.push({
+                    date: processDueDateForResponse(cursor, safeTimezone),
+                    utc_date: cursor.toISOString(),
+                });
+
+                cursor = calculateNextDueDate(task, cursor, safeTimezone);
+            }
+
+            return iterations;
+        }
+    }
 
     let nextDate = new Date(startDate);
     let includesToday = false;
@@ -327,7 +371,82 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
     return iterations;
 }
 
+// Moves a recurring task to its next due date without completing it. The
+// occurrence is recorded with skipped = true, so stats, streaks and the daily
+// plan, which all read only skipped = false rows, ignore it.
+async function skipRecurringOccurrence(task, userId, userTimezone) {
+    if (
+        !task.recurrence_type ||
+        task.recurrence_type === 'none' ||
+        task.recurring_parent_id
+    ) {
+        return { error: 'Only recurring tasks can skip an occurrence.' };
+    }
+
+    if (task.status === Task.STATUS.DONE || task.status === 'done') {
+        return { error: 'Completed tasks cannot skip an occurrence.' };
+    }
+
+    const skippedAt = new Date();
+    const originalDueDate = task.due_date
+        ? new Date(task.due_date)
+        : new Date(skippedAt);
+    const recurrenceContext = {
+        ...task.get({ plain: true }),
+        due_date: originalDueDate,
+    };
+    const baseDate = task.completion_based
+        ? skippedAt
+        : new Date(originalDueDate);
+    const nextDueDate = calculateNextDueDate(
+        recurrenceContext,
+        baseDate,
+        getSafeTimezone(userTimezone)
+    );
+
+    if (
+        !nextDueDate ||
+        !shouldGenerateNextTask(recurrenceContext, nextDueDate)
+    ) {
+        return { error: 'This task has no next occurrence to skip to.' };
+    }
+
+    await task.update({
+        due_date: nextDueDate,
+        status: Task.STATUS.NOT_STARTED,
+        completed_at: null,
+    });
+
+    await RecurringCompletion.create({
+        task_id: task.id,
+        completed_at: skippedAt,
+        original_due_date: originalDueDate,
+        skipped: true,
+    });
+
+    try {
+        await logEvent({
+            taskId: task.id,
+            userId,
+            eventType: 'recurring_occurrence_skipped',
+            fieldName: 'recurrence',
+            oldValue: originalDueDate,
+            newValue: nextDueDate,
+            metadata: {
+                action: 'recurring_occurrence_skipped',
+                original_due_date: originalDueDate.toISOString(),
+                next_due_date: nextDueDate.toISOString(),
+            },
+        });
+    } catch (eventError) {
+        logError('Error logging recurring occurrence skip event:', eventError);
+    }
+
+    return { originalDueDate, nextDueDate };
+}
+
 module.exports = {
     handleRecurrenceUpdate,
     calculateNextIterations,
+    skipRecurringOccurrence,
 };

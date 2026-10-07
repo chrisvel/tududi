@@ -1,4 +1,4 @@
-const axios = require('axios');
+const { safeRequest } = require('../services/safe-request');
 const { parseStringPromise } = require('xml2js');
 const { AppError } = require('../../../shared/errors');
 const logger = require('../../../services/logService');
@@ -91,7 +91,7 @@ class PullPhase {
         }
 
         try {
-            const response = await axios({
+            const response = await safeRequest({
                 method: 'REPORT',
                 url: calendarUrl,
                 headers: {
@@ -282,7 +282,7 @@ class PullPhase {
                 remoteCalendar.password_encrypted
             );
 
-            const response = await axios({
+            const response = await safeRequest({
                 method: 'GET',
                 url: taskUrl,
                 auth: {

@@ -30,12 +30,6 @@ describe('Task Attachments Routes', () => {
             path.join(testFilesDir, 'test.txt'),
             'Text test content'
         );
-
-        // Create an invalid file type
-        await fs.writeFile(
-            path.join(testFilesDir, 'test.exe'),
-            'EXE test content'
-        );
     });
 
     afterAll(async () => {
@@ -164,14 +158,62 @@ describe('Task Attachments Routes', () => {
                 expect(response.body.error).toBe('Task not found');
             });
 
-            it('should reject invalid file type', async () => {
+            it('should accept any file type, stored as .bin', async () => {
                 const response = await agent
                     .post('/api/upload/task-attachment')
                     .field('taskUid', task.uid)
-                    .attach('file', path.join(testFilesDir, 'test.exe'));
+                    .attach('file', Buffer.from('pcap bytes'), {
+                        filename: 'capture.pcap',
+                        contentType: 'application/vnd.tcpdump.pcap',
+                    });
 
-                expect(response.status).toBe(500);
-                expect(response.body.error).toBeDefined();
+                expect(response.status).toBe(201);
+                expect(response.body.original_filename).toBe('capture.pcap');
+                expect(response.body.mime_type).toBe(
+                    'application/vnd.tcpdump.pcap'
+                );
+                expect(response.body.stored_filename).toMatch(/\.bin$/);
+            });
+
+            it('should serve an HTML upload as a download, not a page', async () => {
+                const upload = await agent
+                    .post('/api/upload/task-attachment')
+                    .field('taskUid', task.uid)
+                    .attach('file', Buffer.from('<script>alert(1)</script>'), {
+                        filename: 'evil.html',
+                        contentType: 'text/html',
+                    });
+
+                expect(upload.status).toBe(201);
+                expect(upload.body.stored_filename).toMatch(/\.bin$/);
+
+                const served = await agent.get(upload.body.file_url);
+                expect(served.status).toBe(200);
+                expect(served.headers['content-disposition']).toBe(
+                    'attachment'
+                );
+                expect(served.headers['content-type']).not.toMatch(/html/);
+                expect(served.headers['x-content-type-options']).toBe(
+                    'nosniff'
+                );
+            });
+
+            it('should download an unknown type under its original name', async () => {
+                const upload = await agent
+                    .post('/api/upload/task-attachment')
+                    .field('taskUid', task.uid)
+                    .attach('file', Buffer.from('pcap bytes'), {
+                        filename: 'capture.pcap',
+                        contentType: 'application/vnd.tcpdump.pcap',
+                    });
+
+                const download = await agent.get(
+                    `/api/attachments/${upload.body.uid}/download`
+                );
+                expect(download.status).toBe(200);
+                expect(download.headers['content-disposition']).toContain(
+                    'capture.pcap'
+                );
             });
 
             it('should enforce 20 attachment limit', async () => {
@@ -372,9 +414,12 @@ describe('Task Attachments Routes', () => {
         });
 
         afterEach(async () => {
-            // Clean up upload directory
+            // Remove only this block's file: other test files share the
+            // uploads folder and run at the same time.
             try {
-                await fs.rm(uploadPath, { recursive: true, force: true });
+                await fs.rm(path.join(uploadPath, 'task-delete-test.pdf'), {
+                    force: true,
+                });
             } catch (error) {
                 // Ignore errors
             }
@@ -519,9 +564,12 @@ describe('Task Attachments Routes', () => {
         });
 
         afterEach(async () => {
-            // Clean up upload directory
+            // Remove only this block's file: other test files share the
+            // uploads folder and run at the same time.
             try {
-                await fs.rm(uploadPath, { recursive: true, force: true });
+                await fs.rm(path.join(uploadPath, 'task-download-test.pdf'), {
+                    force: true,
+                });
             } catch (error) {
                 // Ignore errors
             }

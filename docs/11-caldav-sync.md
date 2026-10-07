@@ -203,6 +203,14 @@ CalDAV Expansion:
 
 ---
 
+### Shared and Assigned Tasks
+
+CalDAV clients see the same tasks as the web app:
+
+- The `tasks/` calendar holds your own tasks, tasks in projects shared with you, and tasks assigned to you.
+- With `CALDAV_PROJECTS_AS_CALENDARS=true`, a project shared with you is its own calendar and lists every task in it, whoever created it.
+- Editing a task from a client needs read-write access. A read-only share is advertised as read-only, and edits are refused with 403. An edit by a collaborator never changes who owns the task.
+
 ## Why Use CalDAV
 
 **For Mobile Users:**
@@ -233,23 +241,19 @@ CalDAV Expansion:
 
 ## Configuration
 
-CalDAV is configured via environment variables in your `.env` file. After making changes, **restart the Tududi server** for them to take effect.
+CalDAV is enabled by default and configured via environment variables in your
+`.env` file. After making changes, **restart the Tududi server** for them to
+take effect.
 
 ### Quick Setup
 
-**Enable CalDAV:**
+**Set an encryption key** (used to encrypt remote calendar passwords):
 
 ```bash
-# Enable CalDAV feature
-CALDAV_ENABLED=true
-
-# Encryption key for remote calendar passwords (32 characters minimum)
 ENCRYPTION_KEY=$(openssl rand -hex 32)
 
 # Optional: Configure defaults
 CALDAV_DEFAULT_SYNC_INTERVAL=15              # Minutes between syncs
-CALDAV_MAX_RECURRING_INSTANCES=365           # Future recurring instances
-CALDAV_CONFLICT_RESOLUTION=last_write_wins   # Default strategy
 ```
 
 **Restart Tududi:**
@@ -270,21 +274,15 @@ npm start              # For standalone
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `FF_ENABLE_CALDAV` | Yes | `false` | Enable the CalDAV feature: the `/caldav/*` endpoints, the sync scheduler, and the profile tab. `CALDAV_ENABLED=true` is accepted as an older spelling. While off, the protocol endpoints answer 404. |
-| `CALDAV_PROJECTS_AS_CALENDARS` | No | `false` | Serve one CalDAV calendar **per project** (plus a "(No Project)" calendar) instead of a single combined `tasks/` calendar. With it on, clients such as Apple Reminders show one list per project. |
+| `CALDAV_PROJECTS_AS_CALENDARS` | No | `false` | Serve one CalDAV calendar **per project** (plus a "(No Project)" calendar) instead of a single combined `tasks/` calendar. With it on, clients such as Apple Reminders show one list per project. A project shared with you shows up as a calendar with all its tasks (read-only for a read-only share). |
 | `ENCRYPTION_KEY` | Recommended | `SECRET_KEY` | AES-256-GCM encryption key for passwords |
+| `CALDAV_ALLOW_PRIVATE_HOSTS` | No | `false` | Allow remote calendars (CalDAV and read-only iCal feeds) on private, loopback or LAN addresses, and plain `http`. By default a remote calendar must use HTTPS and resolve to a public address (checked before every sync and on every redirect). |
 | `CALDAV_DEFAULT_SYNC_INTERVAL` | No | `15` | Default sync interval in minutes |
-| `CALDAV_MAX_RECURRING_INSTANCES` | No | `365` | Max future recurring instances to expand |
-| `CALDAV_CONFLICT_RESOLUTION` | No | `last_write_wins` | Default conflict strategy |
-| `CALDAV_RATE_LIMIT` | No | `60` | Requests per minute per IP |
-| `CALDAV_MAX_SYNC_TASKS` | No | `1000` | Max tasks per sync operation |
 | `CALDAV_REQUEST_TIMEOUT` | No | `30000` | Request timeout in milliseconds |
-| `CALDAV_LOG_LEVEL` | No | `info` | Log level: error, warn, info, debug |
-| `CALDAV_LOG_REQUESTS` | No | `false` | Log all CalDAV HTTP requests |
 
 **Important:** The `ENCRYPTION_KEY` should be a secure random string (32 bytes). If not set, falls back to `SECRET_KEY`.
 
-**Conflict Resolution Strategies:**
+**Conflict Resolution Strategies** (set per calendar, not by an environment variable):
 - `last_write_wins`: Most recent change wins (default, recommended)
 - `local_wins`: Always keep Tududi's version
 - `remote_wins`: Always keep remote server's version
@@ -596,9 +594,8 @@ Tududi supports CalDAV recurring tasks via RRULE (RFC 5545):
 
 **Solutions:**
 1. Verify credentials (email and password are correct)
-2. Check that `CALDAV_ENABLED=true` in environment
-3. Ensure HTTP Basic Auth is supported by client
-4. Try creating a new API token in Profile settings
+2. Ensure HTTP Basic Auth is supported by client
+3. Try creating a new API token in Profile settings
 
 ### Tasks Not Syncing
 
@@ -617,8 +614,7 @@ Tududi supports CalDAV recurring tasks via RRULE (RFC 5545):
 
 **Solutions:**
 1. Ensure client supports RRULE recurrence
-2. Check that `CALDAV_MAX_RECURRING_INSTANCES` environment variable is set (default: 365)
-3. Some clients require manual refresh to see new instances
+2. Some clients require manual refresh to see new instances
 
 ### Performance Issues
 
@@ -675,25 +671,14 @@ CalDAV endpoints are rate-limited:
 ## Environment Variables
 
 ```bash
-# Feature toggle
-CALDAV_ENABLED=true
-
 # Encryption key (32 characters minimum)
 ENCRYPTION_KEY=your-256-bit-encryption-key
 
 # Sync defaults
 CALDAV_DEFAULT_SYNC_INTERVAL=15              # Minutes
-CALDAV_MAX_RECURRING_INSTANCES=365           # Future instances
-CALDAV_CONFLICT_RESOLUTION=last_write_wins   # Strategy
 
 # Performance tuning
-CALDAV_RATE_LIMIT=60                         # Requests per minute
-CALDAV_MAX_SYNC_TASKS=1000                   # Max tasks per sync
 CALDAV_REQUEST_TIMEOUT=30000                 # Milliseconds
-
-# Debugging
-CALDAV_LOG_LEVEL=info                        # error, warn, info, debug
-CALDAV_LOG_REQUESTS=false                    # Log all CalDAV requests
 ```
 
 ---
@@ -706,7 +691,7 @@ CALDAV_LOG_REQUESTS=false                    # Log all CalDAV requests
 4. **Projects:** Association stored in X-TUDUDI-PROJECT-UID, not shown externally
 5. **Status Granularity:** 7 Tududi statuses mapped to 4 CalDAV statuses (some nuance lost)
 6. **Timezone Handling:** All dates stored as UTC; local timezone conversion in clients
-7. **Large Recurring Sequences:** Expanding far into future creates many VTODOs (configurable limit)
+7. **Large Recurring Sequences:** Expanding far into future creates many VTODOs
 
 ---
 

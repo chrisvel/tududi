@@ -15,11 +15,19 @@ const {
     TaskEvent,
     Action,
     Permission,
+    UserGroup,
+    UserGroupMember,
+    MemberSignInLink,
+    GroupShare,
+    GroupPermission,
     View,
     ApiToken,
     Notification,
     RecurringCompletion,
     TaskAttachment,
+    InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
     Backup,
     OIDCIdentity,
     AuthAuditLog,
@@ -28,12 +36,20 @@ const {
     CalDAVOccurrenceOverride,
     CalDAVRemoteCalendar,
     CalendarToken,
+    CalendarFeed,
+    DailyPlan,
+    DailyPlanItem,
     Person,
     UserProjectArea,
+    UserProjectOrder,
+    UserTaskOrder,
     BillingAccount,
     UsageCounter,
+    Feedback,
+    PushSubscription,
 } = require('../models');
 const { getConfig } = require('../config/config');
+const { assertAnotherAdminRemains } = require('./rolesService');
 const { getBackupsDirectory } = require('./backupService');
 const { destroyUserSessions } = require('./sessionService');
 const { logError } = require('./logService');
@@ -73,16 +89,42 @@ async function eraseUserAccount(userId) {
             return false;
         }
 
+        const targetRole = await Role.findOne({
+            where: { user_id: userId },
+            transaction,
+        });
+        if (targetRole?.is_admin) {
+            await assertAnotherAdminRemains(
+                transaction,
+                'Cannot delete the last remaining admin'
+            );
+        }
+
         const tx = { transaction };
         const byUser = { where: { user_id: userId }, ...tx };
 
-        const attachments = await TaskAttachment.findAll({
+        const taskAttachments = await TaskAttachment.findAll({
             where: { user_id: userId },
             attributes: ['file_path'],
             raw: true,
             ...tx,
         });
-        for (const a of attachments) {
+        const otherAttachments = [];
+        for (const Model of [
+            InboxItemAttachment,
+            ProjectAttachment,
+            NoteAttachment,
+        ]) {
+            otherAttachments.push(
+                ...(await Model.findAll({
+                    where: { user_id: userId },
+                    attributes: ['file_path'],
+                    raw: true,
+                    ...tx,
+                }))
+            );
+        }
+        for (const a of [...taskAttachments, ...otherAttachments]) {
             filesToDelete.push([config.uploadPath, a.file_path]);
         }
 
@@ -118,7 +160,27 @@ async function eraseUserAccount(userId) {
                 where: { task_id: taskIds },
                 ...tx,
             });
+            // Other people may have planned one of these (shared) tasks.
+            await DailyPlanItem.destroy({
+                where: { task_id: taskIds },
+                ...tx,
+            });
         }
+
+        const plans = await DailyPlan.findAll({
+            where: { user_id: userId },
+            attributes: ['id'],
+            raw: true,
+            ...tx,
+        });
+        if (plans.length > 0) {
+            await DailyPlanItem.destroy({
+                where: { daily_plan_id: plans.map((p) => p.id) },
+                ...tx,
+            });
+        }
+        await DailyPlan.destroy(byUser);
+        await CalendarFeed.destroy(byUser);
 
         const calendars = await CalDAVCalendar.findAll({
             where: { user_id: userId },
@@ -141,15 +203,20 @@ async function eraseUserAccount(userId) {
         await CalDAVCalendar.destroy(byUser);
         await CalendarToken.destroy(byUser);
 
+        await UserTaskOrder.destroy(byUser);
         await TaskEvent.destroy(byUser);
         await TaskAttachment.destroy(byUser);
+        await ProjectAttachment.destroy(byUser);
+        await NoteAttachment.destroy(byUser);
         await Task.destroy(byUser);
         await Note.destroy(byUser);
         await UserProjectArea.destroy(byUser);
+        await UserProjectOrder.destroy(byUser);
         await Project.destroy(byUser);
         await Goal.destroy(byUser);
         await Area.destroy(byUser);
         await Tag.destroy(byUser);
+        await InboxItemAttachment.destroy(byUser);
         await InboxItem.destroy(byUser);
         await View.destroy(byUser);
         await Notification.destroy(byUser);
@@ -158,7 +225,18 @@ async function eraseUserAccount(userId) {
         await OIDCIdentity.destroy(byUser);
         await AuthAuditLog.destroy(byUser);
         await UsageCounter.destroy(byUser);
+        await Feedback.destroy(byUser);
+        await PushSubscription.destroy(byUser);
         await BillingAccount.destroy(byUser);
+
+        // A hosted account this one owned goes with it; its members stay.
+        await require('./accountsService').releaseOwnedAccount(userId, tx);
+
+        // Accounts this one created stay, and just forget who created them.
+        await User.update(
+            { created_by_user_id: null },
+            { where: { created_by_user_id: userId }, ...tx }
+        );
 
         // Other people's contact cards that pointed at this account keep
         // their own data but lose the link.
@@ -174,6 +252,46 @@ async function eraseUserAccount(userId) {
             },
             ...tx,
         });
+
+        // Group access rows this user received or granted, the group grants
+        // they made, and their group memberships. Groups are instance-wide, so
+        // they outlive the user who created them.
+        const ownGroupShares = await GroupShare.findAll({
+            where: { granted_by_user_id: userId },
+            attributes: ['id'],
+            raw: true,
+            ...tx,
+        });
+        await GroupPermission.destroy({
+            where: {
+                [Op.or]: [
+                    { user_id: userId },
+                    { granted_by_user_id: userId },
+                    { group_share_id: ownGroupShares.map((s) => s.id) },
+                ],
+            },
+            ...tx,
+        });
+        await GroupShare.destroy({
+            where: { granted_by_user_id: userId },
+            ...tx,
+        });
+        await UserGroupMember.destroy({
+            where: {
+                [Op.or]: [{ user_id: userId }, { added_by_user_id: userId }],
+            },
+            ...tx,
+        });
+        await MemberSignInLink.destroy({
+            where: {
+                [Op.or]: [{ user_id: userId }, { created_by_user_id: userId }],
+            },
+            ...tx,
+        });
+        await UserGroup.update(
+            { created_by_user_id: null },
+            { where: { created_by_user_id: userId }, ...tx }
+        );
         await Action.destroy({
             where: {
                 [Op.or]: [

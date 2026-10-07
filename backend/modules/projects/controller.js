@@ -36,6 +36,23 @@ const projectsController = {
     },
 
     /**
+     * PUT /api/projects/order
+     * Save the current user's custom order of projects.
+     */
+    async reorder(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await projectsService.reorder(
+                userId,
+                req.body?.project_uids
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
      * GET /api/project/:uidSlug
      * Get a single project by UID.
      */

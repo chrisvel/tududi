@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Ganti bahasa",
     "langSwitcherCurrent": "Bahasa: {{name}}",
-    "description": "Area, tujuan, proyek, dan tugas, plus catatan dan kebiasaan, dalam satu sistem. Siapkan akun tududi Cloud dalam satu menit. Server MCP yang mengekspos {{tools}} alat memungkinkan agen AI mengerjakan daftar Anda. Hosting sendiri tersedia jika Anda lebih suka menjalankan server sendiri.",
+    "description": "Catat apa saja, rencanakan hari dengan AI di sekitar kalender, dan simpan area, tujuan, proyek, catatan, dan kebiasaan dalam satu sistem. Server MCP dengan {{tools}} alat memungkinkan agen AI mengerjakan daftar Anda. Akun tududi Cloud siap dalam semenit.",
     "title": "tududi: manajer tugas dan sistem manajemen hidup, dengan MCP untuk agen AI"
   },
   "nav": {
@@ -11,25 +11,25 @@
     "ai": "AI & MCP",
     "pricing": "Harga",
     "faq": "FAQ",
-    "docs": "Dokumentasi",
-    "changelog": "Perubahan",
+    "blog": "Blog",
     "signIn": "Masuk",
     "toggle": "Buka menu",
-    "selfHostGuide": "Panduan hosting sendiri"
+    "plan": "Rencanakan harimu"
   },
   "hero": {
     "badgeStars": "bintang di GitHub",
     "badgeMcp": "Server MCP bawaan",
-    "starsLoading": "Memuat jumlah bintang",
+    "badgeCloudOpen": "tududi Cloud kini dibuka",
     "ctaDemo": "Coba demo langsung",
     "demoNote": "Instance terkelola sungguhan dengan data contoh, dipakai bersama dan direset secara berkala",
     "screenshotAlt": "Antarmuka tududi, menampilkan tampilan Hari Ini dengan tugas yang direncanakan",
-    "ctaWaitlist": "Gabung daftar tunggu",
     "cloudNote": "Tidak ada server yang perlu disiapkan. Bulanan atau tahunan, dan Anda bisa membatalkan kapan saja.",
-    "ctaPrimary": "Mulai di tududi Cloud",
-    "lede": "Area, tujuan, proyek, tugas, catatan, dan kebiasaan, dalam satu sistem. Buat akun Cloud dalam satu menit.",
+    "ctaPrimary": "Mulai sekarang",
+    "lede": "Catat apa saja, rencanakan hari dengan AI di sekitar kalender, dan simpan area, tujuan, proyek, catatan, dan kebiasaan dalam satu sistem. Buat akun Cloud dalam semenit.",
     "titleLine1": "Produktivitas dibuat sederhana",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Mulai uji coba gratis {{days}} hari",
+    "cloudNoteTrial": "Gratis selama {{days}} hari, tanpa kartu. Setelah itu bulanan atau tahunan, batalkan kapan saja."
   },
   "proof": {
     "stars": "bintang di GitHub",
@@ -37,7 +37,6 @@
     "languages": "{{count}} bahasa",
     "dockerPulls": "unduhan Docker",
     "discord": "anggota Discord",
-    "discordAlt": "Discord: {{count}} anggota",
     "minute": "Disiapkan dalam satu menit"
   },
   "press": {
@@ -63,16 +62,11 @@
         "body": "Dibangun di atas Model Context Protocol yang terbuka. Bekerja dengan Claude dan klien MCP lainnya."
       }
     },
-    "configTitle": "Hubungkan ke Claude Desktop",
     "footnoteClients": "Hal yang sama berlaku untuk Cursor, Windsurf, Cline, dan klien MCP lainnya.",
     "footnoteDocsLink": "Baca dokumentasi MCP →",
     "assistantTitle": "Asisten AI",
     "assistantLede": "Lapisan terpisah dan opsional yang membaca data Anda lalu mengembalikan ringkasan dalam bahasa sehari-hari. Bekerja dengan penyedia apa pun yang kompatibel dengan OpenAI, termasuk yang Anda hosting sendiri seperti Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Ringkasan harian",
-        "body": "Rangkuman pagi berisi tugas utama Anda dan tanda risiko yang perlu diketahui."
-      },
       "task": {
         "title": "Wawasan tugas",
         "body": "Saran langkah berikutnya untuk suatu tugas, dibuat saat Anda meminta."
@@ -80,11 +74,16 @@
       "project": {
         "title": "Wawasan proyek",
         "body": "Penilaian cepat atas kondisi proyek: apa yang bergerak dan apa yang macet."
+      },
+      "plan": {
+        "title": "Rencanakan harimu",
+        "body": "Menyusun hari Anda di waktu luang sekitar rapat, dengan alasan untuk tiap blok."
+      },
+      "wrapUp": {
+        "title": "Rangkuman hari",
+        "body": "Di akhir hari: apa yang selesai, pola yang patut dicatat, dan apa yang dibawa ke besok."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Arahkan TUDUDI_URL ke instans Anda sendiri sebagai gantinya. Semua yang lain identik.",
-    "configSelfHostTab": "Anda menghostingnya sendiri?",
     "demo": {
       "answer1Html": "Mulailah dengan <strong>Rilis migrasi penagihan</strong>. Ini jatuh tempo hari ini, dan tiga tugas di <strong>Pembayaran</strong> menunggu di belakangnya.",
       "answer2Html": "Selesai. <strong>Tinjau draf desain ulang</strong> sekarang jatuh tempo Jumat, dan <strong>Buka blokir antrean Pembayaran</strong> ada di proyek Pembayaran, jatuh tempo hari ini.",
@@ -120,13 +119,36 @@
     "eyebrow": "Fitur",
     "title": "Sistem lengkap untuk hidup yang tertata",
     "showAll": "Tampilkan semua {{count}} fitur",
+    "preview": "Pratinjau",
+    "closePreview": "Tutup pratinjau",
     "groups": {
+      "planDay": "Catat & rencanakan",
       "planFocus": "Merencanakan & fokus",
       "tasksProjects": "Tugas & proyek",
       "accessAnywhere": "Akses di mana saja",
       "privacyCollab": "Privasi & kolaborasi"
     },
     "cards": {
+      "capture": {
+        "title": "Satu kotak untuk semua",
+        "body": "Tambahkan item inbox, tugas, catatan, atau proyek dari mana saja, dengan file. Tangkapan layar yang ditempel menjadi itemnya."
+      },
+      "nlpDates": {
+        "title": "Tanggal dengan kata biasa",
+        "body": "“tomorrow”, “next fri”, “every weekday”: tanggal dan pengulangan dibaca saat mengetik, bersama #tag, +Proyek, dan @orang."
+      },
+      "planMyDay": {
+        "title": "Rencanakan harimu",
+        "body": "Perencana yang menaruh tugas di waktu luang sekitar rapat, dengan durasi, saran berurutan, dan tips."
+      },
+      "todayCalendar": {
+        "title": "Hari ini dengan kalender",
+        "body": "Hubungkan kalender Google, Apple, atau Outlook dan lihat rapat di samping tugas, dengan blok saat ini di atas."
+      },
+      "aiPlanning": {
+        "title": "Perencanaan hari dengan AI",
+        "body": "Susun hari dengan AI, dapatkan perkiraan durasi tugas, dan rangkuman akhir hari yang membawa sisa pekerjaan."
+      },
       "goals": {
         "title": "Sasaran",
         "body": "Tetapkan hasil untuk satu musim atau satu tahun, lalu lihat Area dan Proyek mana yang benar-benar menggerakkannya."
@@ -146,10 +168,6 @@
       "matrixKanban": {
         "title": "Matriks Eisenhower & Kanban",
         "body": "Beralih ke Matriks Eisenhower atau papan Kanban ketika pertanyaannya hanya: apa yang saya kerjakan sekarang."
-      },
-      "dueDates": {
-        "title": "Tenggat yang cerdas",
-        "body": "Pengelompokan otomatis: prioritas hari ini, tenggat yang mendekat, dan tugas untuk suatu saat nanti."
       },
       "insights": {
         "title": "Wawasan produktivitas",
@@ -211,10 +229,6 @@
         "title": "Akses API & Swagger",
         "body": "Dokumentasi Swagger berversi dan token akses pribadi untuk integrasi buatan sendiri."
       },
-      "responsive": {
-        "title": "Desain responsif",
-        "body": "Tata letak yang menyesuaikan diri dengan rapi dari layar lebar hingga ponsel di saku Anda."
-      },
       "privacy": {
         "title": "Privasi dan kendali",
         "body": "Jaga data Anda tetap pribadi. Hosting sendiri untuk kendali penuh, atau pakai instansi Terkelola dengan cadangan terenkripsi."
@@ -226,26 +240,12 @@
     },
     "sub": "tududi menggabungkan tujuan, proyek, tugas, catatan, dan tampilan cerdas ke dalam satu sistem yang tenang dan terfokus. Biarkan kami menjalankannya untuk Anda, atau jalankan sendiri jika Anda lebih suka."
   },
-  "selfHost": {
-    "eyebrow": "Hosting sendiri",
-    "title": "Jalankan di server Anda sendiri",
-    "cardTitle": "Pemasangan Docker",
-    "step1": "Tarik image Docker",
-    "step2": "Jalankan kontainer",
-    "step3Prefix": "Akses di",
-    "linkGithub": "Lihat di GitHub",
-    "cardSub": "Untuk orang yang sudah menjalankan Docker",
-    "ctaCloud": "Mulai di Cloud",
-    "linkDocs": "Baca panduan hosting sendiri",
-    "showCommands": "Tampilkan perintah instalasi",
-    "sub": "Hosting sendiri untuk orang yang sudah menjalankan Docker dan reverse proxy. Jika Anda ingin tududi tanpa menjadi administrator sistem, gunakan Cloud."
-  },
   "pricing": {
     "eyebrow": "Harga",
     "title": "Pilih cara Anda memakai tududi",
     "mostPopular": "PALING DIPILIH",
     "earlyBird": "HARGA PERDANA",
-    "perYear": "/tahun",
+    "perYear": "/tahun per orang",
     "plans": {
       "selfHosted": {
         "action": "Baca panduan hosting sendiri →",
@@ -263,62 +263,58 @@
         "name": "Cloud",
         "or": "atau",
         "launchNote": "Harga tahunan early bird, tetap milik Anda selama berlangganan.",
-        "comingSoon": "Dibuka dalam beberapa hari",
-        "comingSoonNote": "Kami sedang memindahkan Cloud ke infrastruktur baru. Tinggalkan email Anda di bawah dan kami akan mengabari begitu kembali aktif.",
-        "notifySubmit": "Beri tahu saya",
         "action": "Mulai →",
         "features": [
           "Berjalan dalam satu menit, tanpa server yang perlu disiapkan",
           "Tugas, proyek, dan catatan tak terbatas, plus lampiran",
-          "Asisten AI, MCP, sinkronisasi CalDAV, dan bot Telegram",
+          "Tambahkan anggota keluarga atau rekan kerja, masing-masing satu kursi dengan harga yang sama",
+          "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
           "Pembaruan dan cadangan harian yang diurus untuk Anda, dengan {{proStorageGb}} GB penyimpanan",
           "Ekspor semuanya kapan saja, hapus akun Anda sendiri"
         ],
-        "priceNote": "Semuanya termasuk. Batalkan kapan saja."
+        "priceNote": "Semuanya termasuk. Batalkan kapan saja.",
+        "actionTrial": "Coba gratis →",
+        "priceNoteTrial": "{{days}} hari gratis, tanpa kartu. Batalkan kapan saja.",
+        "trialNote": "Uji coba mencakup semuanya kecuali asisten AI, tautan catatan publik, dan menambahkan anggota."
       }
     },
-    "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 30 hari, tanpa pertanyaan.",
-    "perMonth": "/bulan",
+    "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 14 hari, tanpa pertanyaan.",
+    "perMonth": "/bulan per orang",
     "sub": "Satu paket yang dihosting, atau jalankan sendiri jika Anda lebih suka mengurus operasionalnya."
   },
   "compare": {
     "title": "Perbandingan singkat",
+    "sub": "Perbandingan tududi Cloud dengan aplikasi yang paling sering dibandingkan, pada paket individunya.",
+    "footnote": "Todoist Pro, TickTick Premium, dan Notion Plus, dari halaman harga publik mereka pada September 2026. Cek situs mereka untuk harga terbaru. Harga mereka adalah harga daftar AS dalam dolar.",
     "rows": {
-      "openSource": "Inti sumber terbuka",
-      "commercialUse": "Penggunaan komersial",
-      "infraControl": "Kendali penuh atas infrastruktur",
-      "dataOnHardware": "Data tetap di perangkat keras Anda",
-      "noRecurring": "Tanpa biaya berulang",
-      "noSetup": "Tanpa perlu menyiapkan server",
-      "managedUpdates": "Pembaruan terkelola",
-      "autoBackups": "Pencadangan otomatis",
-      "pricing": "Harga",
-      "exportAnytime": "Ekspor semuanya kapan saja",
-      "proFeatures": "Asisten AI, MCP, CalDAV, Telegram",
-      "startMinute": "Mulai dalam satu menit",
-      "storage": "Penyimpanan lampiran",
-      "support": "Dukungan"
+      "price": "Harga, tagihan tahunan",
+      "aiIncluded": "AI termasuk",
+      "dayPlanner": "Rencanakan hari sesuai kalender",
+      "habits": "Pelacakan kebiasaan",
+      "goals": "Tujuan, area, dan proyek",
+      "notes": "Catatan di samping tugas",
+      "matrix": "Matriks Eisenhower",
+      "kanban": "Papan Kanban",
+      "views": "Tampilan pintar tersimpan",
+      "people": "Tugaskan ke orang lain",
+      "telegram": "Tangkap dari Telegram",
+      "caldav": "Sinkronisasi tugas CalDAV",
+      "mcp": "Server MCP untuk agen AI"
     },
     "values": {
-      "community": "Komunitas",
-      "email": "Email",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/bln atau {{price}}/thn",
-      "selfCost": "Gratis, ditambah hosting Anda",
-      "yourDisk": "Disk Anda sendiri"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Hosting sendiri",
-    "sub": "Aplikasi yang sama pada kedua kasus. Yang berbeda adalah siapa yang menjalankannya, dan berapa biayanya bagi Anda."
+      "perYear": "{{price}}/thn",
+      "businessOnly": "Hanya paket Business",
+      "separateApp": "Aplikasi terpisah",
+      "diy": "Bangun sendiri"
+    }
   },
   "waitlist": {
-    "title": "Belum siap?",
-    "sub": "Tinggalkan email Anda untuk catatan rilis dan kabar sesekali. Tanpa spam, berhenti berlangganan dengan sekali klik.",
     "placeholder": "kamu@email.com",
-    "inputLabel": "Alamat email",
-    "submit": "Beri tahu saya",
-    "note": "Kami menyimpan alamat Anda dan tanggal Anda memberikannya, semata untuk mengirim catatan rilis dan tidak untuk hal lain. Kami tidak pernah membagikannya.",
-    "joined": "Anda sudah masuk daftar. Kami akan mengirim email saat tududi Cloud dibuka."
+    "inputLabel": "Alamat email"
+  },
+  "signup": {
+    "note": "Kami menyimpan alamat Anda dan tanggal Anda memberikannya, hanya untuk mengirim berita dan pembaruan. Kami tidak pernah membagikannya.",
+    "joined": "Anda sudah berlangganan. Berita dan pembaruan akan dikirim lewat email."
   },
   "langs": {
     "heading": "Tersedia dalam {{count}} bahasa di seluruh dunia"
@@ -329,19 +325,25 @@
   },
   "footer": {
     "colProduct": "Produk",
-    "colResources": "Sumber daya",
     "colCommunity": "Komunitas & dukungan",
     "colSupport": "Dukung",
-    "linkRoadmap": "Peta jalan",
-    "linkIssues": "Laporan masalah",
-    "linkEmail": "Email",
     "linkCoffee": "Traktir kopi",
-    "subTitle": "Catatan rilis lewat email",
-    "subBody": "Catatan rilis sesekali. Tanpa pemasaran, berhenti berlangganan kapan saja.",
+    "subTitle": "Berita dan pembaruan lewat email",
+    "subBody": "Berita dan pembaruan produk sesekali. Tanpa spam, berhenti berlangganan kapan saja.",
     "subSubmit": "Daftar",
     "rights": "Hak cipta dilindungi undang-undang.",
-    "linkLicence": "Lisensi MIT",
-    "tagline": "Sistem terbuka untuk mengatur hidup dan pekerjaan. Dihosting oleh kami, atau di server Anda sendiri."
+    "tagline": "Sistem yang tenang dan lengkap untuk mengatur hidup dan pekerjaan.",
+    "linkTerms": "Ketentuan",
+    "linkPrivacy": "Privasi",
+    "linkRefunds": "Pengembalian dana",
+    "linkContact": "Kontak",
+    "linkCookies": "Pengaturan cookie"
+  },
+  "consent": {
+    "label": "Pilihan cookie",
+    "body": "Kami menggunakan cookie untuk meningkatkan pengalaman Anda di situs ini. Cookie hanya dipasang jika Anda menerimanya.",
+    "accept": "Terima",
+    "decline": "Tolak"
   },
   "js": {
     "showFewer": "Tampilkan lebih sedikit",
@@ -351,8 +353,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Tidak. Cloud berharga {{monthly}} per bulan atau {{price}} per tahun, dan itulah seluruh daftar harganya: tidak ada tingkat gratis, tidak ada jam percobaan, tidak ada kartu yang dikenai biaya untuk sesuatu yang diam-diam mulai menagih nanti. Ada garansi uang kembali 30 hari jika ternyata tidak sesuai untuk Anda, dan ada demo langsung di halaman ini jika Anda ingin melihat-lihat dulu. Cara gratis untuk menggunakan tududi adalah menjalankannya di server Anda sendiri, yang merupakan aplikasi yang sama.",
-        "q": "Apakah ada paket gratis atau percobaan di tududi Cloud?"
+        "a": "Tidak. Cloud berharga {{monthly}} per bulan atau {{price}} per tahun per orang, dan itulah seluruh daftar harganya: tidak ada tingkat gratis, tidak ada jam percobaan, tidak ada kartu yang dikenai biaya untuk sesuatu yang diam-diam mulai menagih nanti. Ada garansi uang kembali 14 hari jika ternyata tidak sesuai untuk Anda, dan ada demo langsung di halaman ini jika Anda ingin melihat-lihat dulu. Cara gratis untuk menggunakan tududi adalah menjalankannya di server Anda sendiri, yang merupakan aplikasi yang sama.",
+        "q": "Apakah ada paket gratis atau percobaan di tududi Cloud?",
+        "aTrial": "Tidak ada paket gratis, tetapi setiap akun baru mendapat uji coba gratis {{days}} hari, tanpa kartu. Uji coba mencakup semuanya kecuali asisten AI, tautan catatan publik, dan menambahkan anggota. Jika Anda tidak berlangganan, akun menjadi hanya-baca selama 30 hari agar Anda bisa mengekspor data, lalu dihapus. Setelah uji coba, Cloud seharga {{monthly}} per bulan atau {{price}} per tahun per orang. Cara gratis memakai tududi adalah menjalankannya di server Anda sendiri, aplikasinya sama."
       },
       "leaving": {
         "q": "Bisakah saya pergi, dan apa yang terjadi pada data saya?",
@@ -370,10 +373,6 @@
         "a": "Ya, dan Anda tidak perlu membeli apa pun terlebih dahulu. Lisensi MIT mengizinkan penggunaan komersial, termasuk di dalam perusahaan dan dalam produk komersial, tanpa ambang batas pendapatan dan tanpa apa pun yang harus dilaporkan. Jika tim keuangan Anda membutuhkan faktur, langganan Cloud ditagih melalui penyedia pembayaran kami dan menghasilkan faktur. Tidak ada apa pun di halaman ini yang menjual izin, karena izin itu sudah milik Anda.",
         "q": "Bisakah saya menggunakan tududi di tempat kerja, atau di perusahaan saya?"
       },
-      "dataLocation": {
-        "a": "Semuanya berada dalam satu file basis data SQLite di dalam volume yang Anda pasang. Membuat cadangan berarti menyalin file itu ke tempat yang aman, dan memulihkannya berarti menyalinnya kembali. tududi juga secara otomatis mengambil snapshot basis data sebelum menerapkan migrasi, menyimpan salinan terbaru. Tidak ada format proprietary dan tidak ada langkah ekspor antara Anda dan data Anda sendiri.",
-        "q": "Di mana data saya, dan bagaimana saya mencadangkannya?"
-      },
       "licence": {
         "a": "Aplikasi ini adalah sumber terbuka di bawah lisensi MIT, jadi Anda dapat menjalankannya di server Anda sendiri secara gratis, mengubahnya, dan membangun di atasnya tanpa membayar siapa pun. Tidak ada batas jumlah kursi dan tidak ada fitur yang ditahan: build hosting sendiri adalah produk lengkap. tududi Cloud adalah layanan berbayar, karena hosting, cadangan, dan email membutuhkan biaya untuk dijalankan. Anda membayar untuk pekerjaan operasional, bukan untuk akses ke perangkat lunak.",
         "q": "Apakah tududi benar-benar gratis?"
@@ -387,23 +386,6 @@
         "a": "MCP adalah Model Context Protocol, standar terbuka untuk menghubungkan agen AI ke sistem nyata. tududi menyediakan server MCP yang mengekspos {{tools}} alat mencakup tugas, proyek, area, tujuan, kebiasaan, catatan, orang, tag, tampilan, kotak masuk, pencarian, dan metrik, sehingga agen dapat menangkap, menemukan, memperbarui, dan menyelesaikan pekerjaan daripada hanya membicarakannya. Ini opsional, disertakan dengan Cloud dan dengan setiap instans hosting sendiri, dan berfungsi dengan Claude Desktop, Cursor, Windsurf, Cline, atau klien MCP lainnya.",
         "q": "Apa itu MCP, dan apa yang benar-benar bisa dilakukan agen?"
       },
-      "mobile": {
-        "a": "tududi terinstal sebagai PWA bukan sebagai aplikasi native. Tambahkan ke layar utama Anda di Android atau iOS, atau instal di desktop, dan ia berperilaku seperti aplikasi: membaca dari cache saat Anda offline dan menyinkronkan perubahan Anda saat terhubung kembali. Tidak ada yang perlu diunduh dari App Store atau Play Store.",
-        "q": "Apakah ada aplikasi mobile?"
-      },
-      "multiUser": {
-        "a": "Ya. Satu instans dapat menghosting beberapa pengguna, dan proyek dapat dibagikan dengan akses hanya-baca atau baca-tulis, yang diwarisi oleh tugas dan catatan di dalamnya. Pendaftaran mandiri dimatikan secara default, sehingga admin akan membuat akun atau membuka pendaftaran secara sengaja. Tidak ada yang masuk hanya karena Anda lupa menutup pintu.",
-        "q": "Bisakah beberapa orang berbagi satu instans?"
-      },
-      "requirements": {
-        "a": "Docker, tempat yang persisten untuk menyimpan basis data, reverse proxy dengan TLS di depannya, dan disiplin untuk menerapkan pembaruan dan menjaga cadangan. Ini berjalan nyaman di VPS kecil atau mesin di jaringan Anda sendiri, dan perintahnya ada di bagian Hosting Sendiri dan dokumentasi. Kebanyakan orang lebih baik dilayani oleh Cloud, yang merupakan aplikasi yang sama tanpa semua pekerjaan itu.",
-        "linkLabel": "Baca dokumentasi",
-        "q": "Apa yang saya perlukan untuk menghostingnya sendiri?"
-      },
-      "reverseProxy": {
-        "a": "Ya, dan itu cara normal untuk menjalankannya. Atur TUDUDI_TRUST_PROXY agar aplikasi mempercayai header yang diteruskan oleh nginx, Caddy, atau Traefik. Jika Anda melewatkan ini, login dan pencatatan IP berperilaku aneh dengan cara yang sulit didiagnosis, sehingga aplikasi melempar kesalahan spesifik daripada gagal secara diam-diam. Nilai yang diterima didokumentasikan di README.",
-        "q": "Apakah ini berfungsi di belakang reverse proxy?"
-      },
       "shutdown": {
         "a": "Aplikasi ini berlisensi MIT, dan kode sumbernya publik, sehingga tidak dapat diambil dari Anda. Siapa pun dapat terus menjalankannya, dan Anda bisa mem-fork-nya. Di tududi Cloud data Anda hidup dalam basis data tududi standar bukan format proprietary, sehingga jika layanan suatu saat ditutup, Anda akan mendapatkan data Anda dan panduan untuk memindahkannya ke server Anda sendiri.",
         "q": "Apa yang terjadi pada data saya jika tududi menghilang?"
@@ -416,8 +398,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "AI, MCP & Cloud",
-      "project": "Lisensi & proyek",
-      "selfHost": "Hosting sendiri & data"
+      "project": "Lisensi & proyek"
     },
     "permalink": "Tautan ke jawaban ini",
     "sub": "Lisensi, AI, dan apa yang terjadi pada data Anda. Jika ada yang kurang, tanyakan di Discord.",
@@ -428,8 +409,9 @@
     "ctaPrimary": "Mulai",
     "includes": [
       "Tugas, proyek, dan catatan tak terbatas",
+      "Tambahkan anggota keluarga atau rekan kerja, masing-masing satu kursi dengan harga yang sama",
       "Lampiran dan unggahan file",
-      "Asisten AI, MCP, sinkronisasi CalDAV, dan bot Telegram",
+      "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
       "Cadangan harian dan pembaruan yang dikelola",
       "Dukungan melalui email",
       "Ekspor semuanya, kapan saja"
@@ -472,14 +454,66 @@
     "title": "Mengapa menggunakan tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Bukan fitur. Setiap fitur juga ada di build hosting sendiri.",
-    "whyTitle": "Yang sebenarnya Anda bayar"
+    "whyTitle": "Yang sebenarnya Anda bayar",
+    "ctaTrial": "Coba gratis",
+    "pricingSubTrial": "Coba gratis selama {{days}} hari, tanpa kartu. Setelah itu semua sudah termasuk, batalkan kapan pun."
   },
   "finalCta": {
     "primary": "Mulai",
     "secondary": "Lihat harga",
     "selfHostLink": "Baca panduannya.",
-    "selfHostPrefix": "Lebih suka menjalankannya di server Anda sendiri?",
-    "sub": "Kami menjalankan server, pembaruan, dan cadangan. Anda mendapatkan sistemnya, dan garansi uang kembali 30 hari jika tidak cocok untuk Anda.",
-    "title": "Terorganisir dalam satu menit"
+    "sub": "Kami menjalankan server, pembaruan, dan cadangan. Anda mendapatkan sistemnya, dan garansi uang kembali 14 hari jika tidak cocok untuk Anda.",
+    "title": "Terorganisir dalam satu menit",
+    "subTrial": "Kami menjalankan server, pembaruan, dan cadangan. Coba gratis selama {{days}} hari, tanpa kartu.",
+    "primaryTrial": "Coba gratis"
+  },
+  "contact": {
+    "title": "Hubungi kami",
+    "lede": "Ada pertanyaan tentang tududi Cloud, tagihan, atau akun Anda? Kirimi kami pesan dan kami akan membalas lewat email.",
+    "name": "Nama",
+    "email": "Email",
+    "message": "Pesan",
+    "submit": "Kirim pesan",
+    "sent": "Terima kasih, pesan Anda sedang dikirim. Kami akan membalas lewat email.",
+    "invalid": "Mohon isi nama, alamat email yang valid, dan pesan.",
+    "failed": "Pesan Anda tidak dapat dikirim saat ini. Silakan email kami di"
+  },
+  "plan": {
+    "eyebrow": "Rencanakan harimu",
+    "title": "Dari pikiran sekilas menjadi hari yang tuntas",
+    "sub": "Catat hal begitu muncul, rencanakan hari di sekitar rapat dengan AI, lalu jalani satu blok demi satu blok.",
+    "stepLabel": "Langkah {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Catat apa saja, dengan kata-kata biasa",
+        "body": "Satu kotak Tambah untuk inbox, tugas, catatan, dan proyek, di seluruh aplikasi. Tulis seperti Anda berpikir, tududi melengkapi sisanya.",
+        "points": [
+          "“next fri”, “in 3 days”, atau “every first monday” mengatur tanggal atau pengulangan",
+          "#tag, +Proyek, dan @orang dikenali saat mengetik",
+          "Tempel tangkapan layar atau jatuhkan file, semuanya ikut tersimpan"
+        ],
+        "alt": "Kotak Tambah mengubah kalimat menjadi tugas berulang dengan tag dan proyek"
+      },
+      "plan": {
+        "title": "Rencanakan harimu dengan AI (atau tanpa)",
+        "body": "Perencana menampilkan apa yang muat hari ini, sesuai urutan pilihan Anda. Beri durasi tiap tugas dan taruh di waktu luang di antara rapat, atau biarkan AI menyusun seluruh hari.",
+        "points": [
+          "Saran berurutan: terlambat, jatuh tempo hari ini, sedang berjalan, lalu sisanya",
+          "Draf dengan AI mengisi waktu luang di sekitar rapat, dan Urungkan mengembalikannya",
+          "Tips menandai hari yang terlalu padat dan celah yang muat untuk tugas"
+        ],
+        "alt": "Perencana harian dengan tugas dan rapat di satu garis waktu"
+      },
+      "today": {
+        "title": "Hari ini, dengan kalender Anda",
+        "body": "Mulai hari dan Hari ini hanya menampilkan komitmen Anda: blok saat ini, lalu agenda, dengan rapat Google, Apple, atau Outlook di antaranya.",
+        "points": [
+          "Tandai selesai atau tunda dari kartu Sekarang",
+          "Kalender hanya-baca, disimpan terenkripsi",
+          "Rangkuman AI di akhir hari memindahkan yang belum selesai ke besok"
+        ],
+        "alt": "Hari ini dengan tugas berikutnya, agenda, dan rapat dari dua kalender"
+      }
+    }
   }
 }

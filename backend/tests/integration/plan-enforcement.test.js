@@ -2,9 +2,6 @@ const request = require('supertest');
 const path = require('path');
 const fs = require('fs').promises;
 
-process.env.FF_ENABLE_MCP = 'true';
-process.env.FF_ENABLE_BACKUPS = 'true';
-
 const app = require('../../app');
 const { getConfig } = require('../../config/config');
 const plans = require('../../config/plans');
@@ -30,7 +27,7 @@ const tinyPlans = (extra = {}) =>
                 max_projects: 1,
                 max_notes: 1,
                 storage_mb: 1,
-                ai_requests_per_day: 0,
+                ai_requests_per_month: 0,
             },
             ...extra,
         },

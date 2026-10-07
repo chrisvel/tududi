@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Taal wijzigen",
     "langSwitcherCurrent": "Taal: {{name}}",
-    "description": "Gebieden, doelen, projecten en taken, plus notities en gewoontes, in één systeem. Zet een tududi Cloud-account op in een minuut. Een MCP-server met {{tools}} tools laat AI-agenten aan je lijst werken. Zelfhosten kan als je liever zelf de server draait.",
+    "description": "Leg alles vast, plan je dag met AI rond je agenda en houd gebieden, doelen, projecten, notities en gewoonten in één systeem. Een MCP-server met {{tools}} tools laat AI-agents met je lijst werken. Een tududi Cloud-account staat in een minuut klaar.",
     "title": "tududi: taakbeheer en levensbeheersysteem, met MCP voor AI-agenten"
   },
   "nav": {
@@ -11,25 +11,25 @@
     "ai": "AI & MCP",
     "pricing": "Prijzen",
     "faq": "FAQ",
-    "docs": "Documentatie",
-    "changelog": "Wijzigingen",
+    "blog": "Blog",
     "signIn": "Inloggen",
     "toggle": "Menu openen",
-    "selfHostGuide": "Zelfhostgids"
+    "plan": "Plan je dag"
   },
   "hero": {
     "badgeStars": "sterren op GitHub",
     "badgeMcp": "MCP-server ingebouwd",
-    "starsLoading": "Aantal sterren wordt geladen",
+    "badgeCloudOpen": "tududi Cloud is nu open",
     "ctaDemo": "Probeer de live demo",
     "demoNote": "Een echte gehoste instantie met voorbeeldgegevens, gedeeld en regelmatig gereset",
     "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken",
-    "ctaWaitlist": "Zet me op de wachtlijst",
     "cloudNote": "Geen server om op te zetten. Maandelijks of jaarlijks, en je kunt op elk moment opzeggen.",
-    "ctaPrimary": "Begin op tududi Cloud",
-    "lede": "Gebieden, doelen, projecten, taken, notities en gewoontes, in één systeem. Maak een Cloud-account in een minuut.",
+    "ctaPrimary": "Begin nu",
+    "lede": "Leg alles vast, plan je dag met AI rond je agenda en houd gebieden, doelen, projecten, notities en gewoonten in één systeem. Maak in een minuut een Cloud-account.",
     "titleLine1": "Productiviteit eenvoudig gemaakt",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Start je gratis proefperiode van {{days}} dagen",
+    "cloudNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Daarna per maand of per jaar, altijd opzegbaar."
   },
   "proof": {
     "stars": "sterren op GitHub",
@@ -37,7 +37,6 @@
     "languages": "{{count}} talen",
     "dockerPulls": "Docker-pulls",
     "discord": "Discord-leden",
-    "discordAlt": "Discord: {{count}} leden",
     "minute": "Opgezet in een minuut"
   },
   "press": {
@@ -63,16 +62,11 @@
         "body": "Gebouwd op het open Model Context Protocol. Werkt met Claude en andere MCP-clients."
       }
     },
-    "configTitle": "Koppel het aan Claude Desktop",
     "footnoteClients": "Hetzelfde werkt met Cursor, Windsurf, Cline en elke andere MCP-client.",
     "footnoteDocsLink": "Lees de MCP-documentatie →",
     "assistantTitle": "AI-assistent",
     "assistantLede": "Een aparte, optionele laag die je data leest en er samenvattingen in gewone taal van maakt. Werkt met elke OpenAI-compatibele provider, ook zelfgehost zoals Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Dagelijkse briefing",
-        "body": "Een samenvatting in de ochtend met je belangrijkste taak en de risicosignalen die je moet kennen."
-      },
       "task": {
         "title": "Taakinzichten",
         "body": "Voorgestelde vervolgstappen voor een specifieke taak, op aanvraag gegenereerd."
@@ -80,11 +74,16 @@
       "project": {
         "title": "Projectinzichten",
         "body": "Een snelle inschatting van de gezondheid van een project: wat loopt en wat vastzit."
+      },
+      "plan": {
+        "title": "Plan je dag",
+        "body": "Verdeelt je dag over de vrije tijd rond je afspraken, met een reden voor elk blok."
+      },
+      "wrapUp": {
+        "title": "Dagafsluiting",
+        "body": "Aan het eind van de dag: wat klaar is, een patroon om op te letten en wat mee moet naar morgen."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Wijs TUDUDI_URL in plaats daarvan naar je eigen instantie. Al het andere is identiek.",
-    "configSelfHostTab": "Host je het zelf?",
     "demo": {
       "answer1Html": "Begin met <strong>Factureringsmigratie uitbrengen</strong>. Die is vandaag verschuldigd, en drie taken in <strong>Betalingen</strong> wachten erachter.",
       "answer2Html": "Gedaan. <strong>Herontwerp-concept beoordelen</strong> is nu verschuldigd op vrijdag, en <strong>Betalingenwachtrij deblokkeren</strong> staat in het project Betalingen, verschuldigd vandaag.",
@@ -120,13 +119,36 @@
     "eyebrow": "Functies",
     "title": "Een compleet systeem voor een geordend leven",
     "showAll": "Alle {{count}} functies tonen",
+    "preview": "Voorbeeld",
+    "closePreview": "Voorbeeld sluiten",
     "groups": {
+      "planDay": "Vastleggen & plannen",
       "planFocus": "Plannen & focussen",
       "tasksProjects": "Taken & projecten",
       "accessAnywhere": "Overal toegang",
       "privacyCollab": "Privacy & samenwerking"
     },
     "cards": {
+      "capture": {
+        "title": "Eén vak voor alles",
+        "body": "Voeg inbox-items, taken, notities of projecten toe van overal, met bestanden. Een geplakte screenshot wordt het item."
+      },
+      "nlpDates": {
+        "title": "Datums in gewone woorden",
+        "body": "“tomorrow”, “next fri”, “every weekday”: datums en herhalingen worden gelezen terwijl je typt, samen met #tags, +Project en @persoon."
+      },
+      "planMyDay": {
+        "title": "Plan je dag",
+        "body": "Een planner die taken in de vrije tijd rond je afspraken zet, met duur, gerangschikte suggesties en tips."
+      },
+      "todayCalendar": {
+        "title": "Vandaag met je agenda",
+        "body": "Koppel Google-, Apple- of Outlook-agenda’s en zie afspraken naast je taken, met het huidige blok bovenaan."
+      },
+      "aiPlanning": {
+        "title": "Dagplanning met AI",
+        "body": "Zet de dag op met AI, krijg geschatte duur voor taken en een dagafsluiting die onafgemaakt werk meeneemt."
+      },
       "goals": {
         "title": "Doelen",
         "body": "Leg resultaten vast voor een seizoen of een jaar, en zie welke Gebieden en Projecten ze werkelijk vooruithelpen."
@@ -146,10 +168,6 @@
       "matrixKanban": {
         "title": "Eisenhower-matrix & Kanban",
         "body": "Schakel over naar een Eisenhower-matrix of een Kanban-bord wanneer de vraag simpelweg is: wat doe ik nu."
-      },
-      "dueDates": {
-        "title": "Slimme vervaldatums",
-        "body": "Automatische indeling: de prioriteiten van vandaag, naderende deadlines en taken voor ooit."
       },
       "insights": {
         "title": "Productiviteitsinzichten",
@@ -211,10 +229,6 @@
         "title": "API-toegang & Swagger",
         "body": "Swagger-documentatie met versies en persoonlijke toegangstokens voor eigen integraties."
       },
-      "responsive": {
-        "title": "Responsief ontwerp",
-        "body": "Een indeling die netjes meeschaalt van een breedbeeldscherm tot de telefoon in je zak."
-      },
       "privacy": {
         "title": "Privacy en controle",
         "body": "Houd je data privé. Zelf hosten voor volledige controle, of een Managed instantie met versleutelde back-ups."
@@ -226,26 +240,12 @@
     },
     "sub": "tududi combineert doelen, projecten, taken, notities en slimme weergaven in één rustig, gefocust systeem. Laat ons het voor je draaien, of draai het zelf als je dat liever hebt."
   },
-  "selfHost": {
-    "eyebrow": "Zelf hosten",
-    "title": "Draai het op je eigen server",
-    "cardTitle": "Docker-installatie",
-    "step1": "Haal de Docker-image op",
-    "step2": "Start de container",
-    "step3Prefix": "Bereikbaar op",
-    "linkGithub": "Bekijk op GitHub",
-    "cardSub": "Voor mensen die al Docker draaien",
-    "ctaCloud": "Begin op Cloud",
-    "linkDocs": "Lees de zelfhostgids",
-    "showCommands": "Toon installatiecommando's",
-    "sub": "Zelfhosten is voor mensen die al Docker en een reverse proxy draaien. Als je tududi wilt zonder de systeembeheerder te worden, gebruik Cloud."
-  },
   "pricing": {
     "eyebrow": "Prijzen",
     "title": "Kies hoe je tududi gebruikt",
     "mostPopular": "MEEST GEKOZEN",
     "earlyBird": "VROEGBOEK",
-    "perYear": "/jaar",
+    "perYear": "/jaar per persoon",
     "plans": {
       "selfHosted": {
         "action": "Lees de zelfhostgids →",
@@ -263,62 +263,58 @@
         "name": "Cloud",
         "or": "of",
         "launchNote": "Early-bird jaarprijs, van jou zolang je geabonneerd blijft.",
-        "comingSoon": "Opent over een paar dagen",
-        "comingSoonNote": "We verhuizen Cloud naar nieuwe infrastructuur. Laat hieronder je e-mailadres achter, dan laten we het weten zodra het er weer is.",
-        "notifySubmit": "Houd me op de hoogte",
         "action": "Aan de slag →",
         "features": [
           "Binnen een minuut draaiend, zonder server om op te zetten",
           "Onbeperkte taken, projecten en notities, plus bijlagen",
-          "AI-assistent, MCP, CalDAV-synchronisatie en de Telegram-bot",
+          "Voeg gezinsleden of collega's toe, elk een plek voor dezelfde prijs",
+          "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
           "Updates en dagelijkse backups voor je verzorgd, met {{proStorageGb}} GB opslag",
           "Exporteer alles op elk moment, verwijder je account zelf"
         ],
-        "priceNote": "Alles inbegrepen. Zeg op elk moment op."
+        "priceNote": "Alles inbegrepen. Zeg op elk moment op.",
+        "actionTrial": "Gratis proberen →",
+        "priceNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Altijd opzegbaar.",
+        "trialNote": "De proefperiode bevat alles behalve de AI-assistent, openbare notitielinks en het toevoegen van leden."
       }
     },
-    "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 30 dagen geld-terug-garantie, zonder vragen.",
-    "perMonth": "/maand",
+    "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 14 dagen geld-terug-garantie, zonder vragen.",
+    "perMonth": "/maand per persoon",
     "sub": "Één gehost abonnement, of draai het zelf als je liever de operatie doet."
   },
   "compare": {
     "title": "Snelle vergelijking",
+    "sub": "Hoe tududi Cloud zich verhoudt tot de apps waarmee het meestal wordt vergeleken, op hun individuele abonnementen.",
+    "footnote": "Todoist Pro, TickTick Premium en Notion Plus, volgens hun openbare prijspagina’s in september 2026. Kijk op hun sites voor actuele prijzen. Hun prijzen zijn Amerikaanse lijstprijzen in dollars.",
     "rows": {
-      "openSource": "Open source kern",
-      "commercialUse": "Commercieel gebruik",
-      "infraControl": "Volledige controle over de infrastructuur",
-      "dataOnHardware": "Data blijft op je eigen hardware",
-      "noRecurring": "Geen terugkerende kosten",
-      "noSetup": "Geen serverinstallatie nodig",
-      "managedUpdates": "Beheerde updates",
-      "autoBackups": "Automatische back-ups",
-      "pricing": "Prijs",
-      "exportAnytime": "Exporteer alles op elk moment",
-      "proFeatures": "AI-assistent, MCP, CalDAV, Telegram",
-      "startMinute": "Begin in een minuut",
-      "storage": "Opslag voor bijlagen",
-      "support": "Support"
+      "price": "Prijs, jaarlijks",
+      "aiIncluded": "AI inbegrepen",
+      "dayPlanner": "Plan je dag rond je agenda",
+      "habits": "Gewoontes bijhouden",
+      "goals": "Doelen, gebieden en projecten",
+      "notes": "Notities naast je taken",
+      "matrix": "Eisenhower-matrix",
+      "kanban": "Kanbanborden",
+      "views": "Opgeslagen slimme weergaven",
+      "people": "Taken toewijzen aan personen",
+      "telegram": "Vastleggen via Telegram",
+      "caldav": "Taaksynchronisatie via CalDAV",
+      "mcp": "MCP-server voor AI-agents"
     },
     "values": {
-      "community": "Community",
-      "email": "E-mail",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/mnd of {{price}}/jaar",
-      "selfCost": "Gratis, plus je hosting",
-      "yourDisk": "Je eigen schijf"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Zelfhosten",
-    "sub": "Dezelfde applicatie in beide gevallen. Wat verschilt, is wie hem beheert, en wat je dat kost."
+      "perYear": "{{price}}/jaar",
+      "businessOnly": "Alleen Business-abonnement",
+      "separateApp": "Aparte app",
+      "diy": "Zelf bouwen"
+    }
   },
   "waitlist": {
-    "title": "Nog niet zover?",
-    "sub": "Laat je e-mailadres achter voor releasenotes en af en toe een update. Geen spam, uitschrijven met één klik.",
     "placeholder": "jij@email.com",
-    "inputLabel": "E-mailadres",
-    "submit": "Houd me op de hoogte",
-    "note": "We bewaren je adres en de datum waarop je het gaf, om je releasenotes te sturen en niets anders. We delen het nooit.",
-    "joined": "Je staat op de lijst. We mailen je zodra tududi Cloud opengaat."
+    "inputLabel": "E-mailadres"
+  },
+  "signup": {
+    "note": "We bewaren je adres en de datum waarop je het gaf alleen om nieuws en updates te sturen. We delen het nooit.",
+    "joined": "Je bent aangemeld. Nieuws en updates komen per e-mail."
   },
   "langs": {
     "heading": "Beschikbaar in {{count}} talen wereldwijd"
@@ -329,19 +325,25 @@
   },
   "footer": {
     "colProduct": "Product",
-    "colResources": "Bronnen",
     "colCommunity": "Community & ondersteuning",
     "colSupport": "Steunen",
-    "linkRoadmap": "Roadmap",
-    "linkIssues": "Issues",
-    "linkEmail": "E-mail",
     "linkCoffee": "Trakteer op koffie",
-    "subTitle": "Releasenotes per e-mail",
-    "subBody": "Af en toe releasenotes. Geen marketing, uitschrijven wanneer je wilt.",
+    "subTitle": "Nieuws en updates per e-mail",
+    "subBody": "Af en toe productnieuws en updates. Geen spam, altijd af te melden.",
     "subSubmit": "Aanmelden",
     "rights": "Alle rechten voorbehouden.",
-    "linkLicence": "MIT-licentie",
-    "tagline": "Een open systeem voor het organiseren van leven en werk. Door ons gehost, of op je eigen server."
+    "tagline": "Een rustig, compleet systeem om leven en werk te organiseren.",
+    "linkTerms": "Voorwaarden",
+    "linkPrivacy": "Privacy",
+    "linkRefunds": "Terugbetaling",
+    "linkContact": "Contact",
+    "linkCookies": "Cookie-instellingen"
+  },
+  "consent": {
+    "label": "Cookiekeuze",
+    "body": "We gebruiken cookies om je ervaring op deze website te verbeteren. Ze worden alleen geplaatst als je ze accepteert.",
+    "accept": "Accepteren",
+    "decline": "Weigeren"
   },
   "js": {
     "showFewer": "Minder tonen",
@@ -351,8 +353,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nee. Cloud kost {{monthly}} per maand of {{price}} per jaar, en dat is de hele prijslijst: geen gratis laag, geen proefklok, geen kaart belast voor iets dat later stilletjes begint te factureren. Er is een geld-terug-garantie van 30 dagen als het niet blijkt te passen, en er is een live demo op deze pagina als je eerst wilt rondkijken. De gratis manier om tududi te gebruiken is het op je eigen server te draaien, wat dezelfde applicatie is.",
-        "q": "Is er een gratis abonnement of een proefperiode op tududi Cloud?"
+        "a": "Nee. Cloud kost {{monthly}} per maand of {{price}} per jaar per persoon, en dat is de hele prijslijst: geen gratis laag, geen proefklok, geen kaart belast voor iets dat later stilletjes begint te factureren. Er is een geld-terug-garantie van 14 dagen als het niet blijkt te passen, en er is een live demo op deze pagina als je eerst wilt rondkijken. De gratis manier om tududi te gebruiken is het op je eigen server te draaien, wat dezelfde applicatie is.",
+        "q": "Is er een gratis abonnement of een proefperiode op tududi Cloud?",
+        "aTrial": "Er is geen gratis abonnement, maar elk nieuw account krijgt een gratis proefperiode van {{days}} dagen, zonder creditcard. De proefperiode bevat alles behalve de AI-assistent, openbare notitielinks en leden toevoegen. Neem je geen abonnement, dan wordt het account 30 dagen alleen-lezen zodat je je gegevens kunt exporteren, en daarna verwijderd. Na de proefperiode kost Cloud {{monthly}} per maand of {{price}} per jaar per persoon. Gratis gebruik je tududi door het op je eigen server te draaien, het is dezelfde applicatie."
       },
       "leaving": {
         "q": "Kan ik weg, en wat gebeurt er met mijn gegevens?",
@@ -370,10 +373,6 @@
         "a": "Ja, en je hoeft daarvoor niets te kopen. De MIT-licentie staat commercieel gebruik toe, ook binnen een bedrijf en in een commercieel product, zonder omzetgrens en zonder iets te melden. Als je financiële afdeling een factuur nodig heeft: een Cloud-abonnement wordt via onze betalingsprovider gefactureerd en levert er een. Niets op deze pagina verkoopt toestemming, want die toestemming heb je al.",
         "q": "Mag ik tududi op het werk, of in mijn bedrijf, gebruiken?"
       },
-      "dataLocation": {
-        "a": "Alles leeft in één enkel SQLite-databasebestand binnen het volume dat je hebt gekoppeld. Backuppen betekent dat bestand ergens veilig kopiëren, en herstellen betekent het terugkopiëren. tududi maakt ook automatisch een snapshot van de database voordat migraties worden toegepast, en houdt recente kopieën bij. Er is geen eigen formaat en geen exportstap tussen jou en je eigen gegevens.",
-        "q": "Waar staan mijn gegevens, en hoe backup ik ze?"
-      },
       "licence": {
         "a": "De applicatie is open source onder de MIT-licentie, dus je kunt hem gratis op je eigen server draaien, aanpassen en erop bouwen zonder iemand te betalen. Er is geen plaatsenlimiet en geen achtergehouden functies: de zelfgehoste build is het volledige product. tududi Cloud is een betaalde dienst, omdat hosting, backups en e-mail geld kosten om te draaien. Je betaalt voor het operationele werk, nooit voor toegang tot de software.",
         "q": "Is tududi echt gratis?"
@@ -387,23 +386,6 @@
         "a": "MCP is het Model Context Protocol, een open standaard om AI-agenten met echte systemen te verbinden. tududi levert een MCP-server met {{tools}} tools voor taken, projecten, gebieden, doelen, gewoontes, notities, personen, tags, weergaven, de inbox, zoeken en statistieken, zodat een agent werk kan vastleggen, vinden, bijwerken en afronden in plaats van er alleen over te praten. Het is optioneel, het wordt geleverd bij Cloud en bij elke zelfgehoste instantie, en het werkt met Claude Desktop, Cursor, Windsurf, Cline, of elke andere MCP-client.",
         "q": "Wat is MCP, en wat kan een agent er echt mee doen?"
       },
-      "mobile": {
-        "a": "tududi installeert als een PWA in plaats van een native app. Voeg het toe aan je startscherm op Android of iOS, of installeer het op een desktop, en het gedraagt zich als een app: het leest uit de cache als je offline bent en synchroniseert je wijzigingen bij het opnieuw verbinden. Er is niets te downloaden uit de App Store of Play Store.",
-        "q": "Is er een mobiele app?"
-      },
-      "multiUser": {
-        "a": "Ja. Één instantie kan meerdere gebruikers hosten, en projecten kunnen worden gedeeld met alleen-lezen of lees-schrijftoegang, die de taken en notities erin overnemen. Zelfregistratie staat standaard uit, dus een beheerder maakt accounts aan of opent bewust de aanmelding. Niemand komt binnen omdat je vergat een deur te sluiten.",
-        "q": "Kunnen meerdere mensen één instantie delen?"
-      },
-      "requirements": {
-        "a": "Docker, een persistente plek om de database op te slaan, een reverse proxy met TLS ervoor, en de discipline om updates toe te passen en backups te bewaren. Het draait comfortabel op een kleine VPS of een machine in je eigen netwerk, en de commando's staan in de sectie Zelfhosten en in de documentatie. De meeste mensen zijn beter af met Cloud, dat dezelfde applicatie is zonder al dat werk.",
-        "linkLabel": "Lees de documentatie",
-        "q": "Wat heb ik nodig om het zelf te hosten?"
-      },
-      "reverseProxy": {
-        "a": "Ja, en dat is de normale manier om het te draaien. Stel TUDUDI_TRUST_PROXY in zodat de app de doorgestuurde headers van nginx, Caddy of Traefik vertrouwt. Sla je dit over, dan gedragen logins en IP-logging zich vreemd op een manier die moeilijk te diagnosticeren is, dus de app geeft een specifieke foutmelding in plaats van stilletjes te falen. De geaccepteerde waarden staan gedocumenteerd in de README.",
-        "q": "Werkt het achter een reverse proxy?"
-      },
       "shutdown": {
         "a": "De app is MIT-gelicentieerd en de broncode is openbaar, dus die kan niet van je worden afgenomen. Iedereen kan hem blijven draaien, en jij kunt hem forken. Bij tududi Cloud leven je gegevens in een standaard tududi-database in plaats van een eigen formaat, dus als de dienst ooit zou stoppen, krijg je je gegevens en een gids om ze naar je eigen server te verhuizen.",
         "q": "Wat gebeurt er met mijn gegevens als tududi verdwijnt?"
@@ -416,8 +398,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "AI, MCP & Cloud",
-      "project": "Licentie & project",
-      "selfHost": "Zelfhosten & gegevens"
+      "project": "Licentie & project"
     },
     "permalink": "Link naar dit antwoord",
     "sub": "De licentie, de AI, en wat er met je gegevens gebeurt. Als er iets ontbreekt, vraag het op Discord.",
@@ -428,8 +409,9 @@
     "ctaPrimary": "Aan de slag",
     "includes": [
       "Onbeperkte taken, projecten en notities",
+      "Voeg gezinsleden of collega's toe, elk een plek voor dezelfde prijs",
       "Bijlagen en bestandsuploads",
-      "AI-assistent, MCP, CalDAV-synchronisatie en de Telegram-bot",
+      "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
       "Dagelijkse backups en beheerde updates",
       "Support via e-mail",
       "Exporteer alles, op elk moment"
@@ -472,14 +454,66 @@
     "title": "Waarom tududi Cloud gebruiken?",
     "whyEyebrow": "Cloud",
     "whySub": "Geen functies. Elke functie zit ook in de zelfgehoste build.",
-    "whyTitle": "Waarvoor je eigenlijk betaalt"
+    "whyTitle": "Waarvoor je eigenlijk betaalt",
+    "ctaTrial": "Gratis proberen",
+    "pricingSubTrial": "Probeer het {{days}} dagen gratis, zonder creditcard. Daarna zit alles erin, opzeggen wanneer je wilt."
   },
   "finalCta": {
     "primary": "Aan de slag",
     "secondary": "Bekijk prijzen",
     "selfHostLink": "Lees de gids.",
-    "selfHostPrefix": "Liever op je eigen server draaien?",
-    "sub": "Wij beheren de server, de updates en de backups. Jij krijgt het systeem, en een geld-terug-garantie van 30 dagen als het niet voor jou is.",
-    "title": "Organiseer jezelf in een minuut"
+    "sub": "Wij beheren de server, de updates en de backups. Jij krijgt het systeem, en een geld-terug-garantie van 14 dagen als het niet voor jou is.",
+    "title": "Organiseer jezelf in een minuut",
+    "subTrial": "Wij draaien de server, de updates en de back-ups. Probeer het {{days}} dagen gratis, zonder kaart.",
+    "primaryTrial": "Gratis proberen"
+  },
+  "contact": {
+    "title": "Neem contact op",
+    "lede": "Vragen over tududi Cloud, facturering of je account? Stuur ons een bericht en we antwoorden per e-mail.",
+    "name": "Naam",
+    "email": "E-mail",
+    "message": "Bericht",
+    "submit": "Bericht versturen",
+    "sent": "Bedankt, je bericht is onderweg. We antwoorden per e-mail.",
+    "invalid": "Vul je naam, een geldig e-mailadres en een bericht in.",
+    "failed": "Je bericht kon nu niet worden verstuurd. Mail ons op"
+  },
+  "plan": {
+    "eyebrow": "Plan je dag",
+    "title": "Van een losse gedachte naar een afgeronde dag",
+    "sub": "Leg dingen vast zodra ze opkomen, plan de dag met AI rond je afspraken en werk hem blok voor blok af.",
+    "stepLabel": "Stap {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Leg alles vast, in gewone woorden",
+        "body": "Eén invoervak voor inbox, taken, notities en projecten, overal in de app. Schrijf zoals je denkt, tududi vult de rest in.",
+        "points": [
+          "“next fri”, “in 3 days” of “every first monday” zet de datum of herhaling",
+          "#tags, +Project en @persoon worden herkend terwijl je typt",
+          "Plak een screenshot of sleep bestanden erin, ze gaan mee"
+        ],
+        "alt": "Het invoervak maakt van een zin een terugkerende taak met tag en project"
+      },
+      "plan": {
+        "title": "Plan je dag, met AI (of zonder)",
+        "body": "De planner laat zien wat vandaag past, in de volgorde die jij kiest. Geef elke taak een duur en zet hem in de vrije tijd tussen afspraken, of laat AI de hele dag opzetten.",
+        "points": [
+          "Gerangschikte suggesties: te laat, vandaag, bezig, dan de rest",
+          "Opzetten met AI vult de vrije tijd rond afspraken, Ongedaan maken zet het terug",
+          "Tips melden een overvolle dag en gaten waar een taak in past"
+        ],
+        "alt": "De dagplanner met taken en afspraken op één tijdlijn"
+      },
+      "today": {
+        "title": "Vandaag, met je agenda",
+        "body": "Start de dag en Vandaag toont alleen wat je je voornam: het huidige blok, dan de agenda, met je Google-, Apple- of Outlook-afspraken ertussen.",
+        "points": [
+          "Afvinken of uitstellen vanaf de Nu-kaart",
+          "Agendafeeds alleen-lezen, versleuteld opgeslagen",
+          "Een AI-dagafsluiting neemt onafgemaakt werk mee naar morgen"
+        ],
+        "alt": "Vandaag met de volgende taak, de agenda en afspraken uit twee agenda’s"
+      }
+    }
   }
 }

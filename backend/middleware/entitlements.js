@@ -1,6 +1,9 @@
 const entitlements = require('../services/entitlementsService');
 const { getAuthenticatedUserId } = require('../utils/request-utils');
-const { SubscriptionRequiredError } = require('../shared/errors');
+const {
+    SubscriptionRequiredError,
+    TrialEndedError,
+} = require('../shared/errors');
 
 // Route-level guards for hosted mode. Each one is a no-op when hosted mode
 // is off (the service returns before any query), so self-hosted installs
@@ -55,17 +58,30 @@ const OPEN_WITHOUT_SUBSCRIPTION = [
     /^\/backup\/export$/,
     /^\/backup\/list$/,
     /^\/backup\/[^/]+\/download$/,
+    // Someone stuck at the paywall can still tell us something is wrong.
+    /^\/feedback$/,
 ];
+
+const READ_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 const requireSubscription = async (req, res, next) => {
     try {
         if (!entitlements.isSubscriptionRequired()) return next();
+        const userId = getAuthenticatedUserId(req);
+        // Before the open routes: the app's first calls after sign-in are to
+        // billing, and that is where a returning account's trial must begin.
+        if (userId) await entitlements.startTrialOnReturn(userId);
         if (OPEN_WITHOUT_SUBSCRIPTION.some((rule) => rule.test(req.path))) {
             return next();
         }
-        const userId = getAuthenticatedUserId(req);
         if (!userId) return next();
-        if (await entitlements.hasActiveEntitlement(userId)) return next();
+        const ent = await entitlements.getEntitlements(userId);
+        if (ent.active) return next();
+        // A trial that ended unpaid can still read everything for a while.
+        if (ent.read_only) {
+            if (READ_METHODS.has(req.method)) return next();
+            throw new TrialEndedError();
+        }
         throw new SubscriptionRequiredError();
     } catch (error) {
         next(error);

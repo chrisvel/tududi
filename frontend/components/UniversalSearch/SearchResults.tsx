@@ -14,6 +14,7 @@ interface SearchResultsProps {
     searchQuery: string;
     selectedFilters: string[];
     selectedPriority: string | null;
+    selectedStatus: string | null;
     selectedDue: string | null;
     selectedDefer: string | null;
     selectedTags: string[];
@@ -36,6 +37,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     searchQuery,
     selectedFilters,
     selectedPriority,
+    selectedStatus,
     selectedDue,
     selectedDefer,
     selectedTags,
@@ -54,6 +56,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 !searchQuery.trim() &&
                 selectedFilters.length === 0 &&
                 !selectedPriority &&
+                !selectedStatus &&
                 !selectedDue &&
                 !selectedDefer &&
                 selectedTags.length === 0 &&
@@ -69,6 +72,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     query: searchQuery,
                     filters: selectedFilters,
                     priority: selectedPriority || undefined,
+                    taskStatus: selectedStatus || undefined,
                     due: selectedDue || undefined,
                     defer: selectedDefer || undefined,
                     tags: selectedTags.length > 0 ? selectedTags : undefined,
@@ -90,6 +94,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         searchQuery,
         selectedFilters,
         selectedPriority,
+        selectedStatus,
         selectedDue,
         selectedDefer,
         selectedTags,
@@ -135,7 +140,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             case 'Task':
                 // Tasks use uid directly
                 if (result.uid) {
-                    navigate(`/task/${result.uid}`, { state: { from: location.pathname + location.search } });
+                    navigate(`/task/${result.uid}`, {
+                        state: { from: location.pathname + location.search },
+                    });
                 }
                 break;
             case 'Project': {
@@ -189,6 +196,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         !searchQuery.trim() &&
         selectedFilters.length === 0 &&
         !selectedPriority &&
+        !selectedStatus &&
         !selectedDue &&
         selectedTags.length === 0
     ) {

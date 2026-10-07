@@ -1,5 +1,5 @@
 import { Metrics } from '../entities/Metrics';
-import { Task } from '../entities/Task';
+import { Task, TaskRelation, TaskRelationType } from '../entities/Task';
 import {
     handleAuthResponse,
     getDefaultHeaders,
@@ -7,6 +7,7 @@ import {
 } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { isTaskDone, TASK_STATUS } from '../constants/taskStatus';
+import { refreshTagCountsIfTagsChanged } from './tagsService';
 
 export interface GroupedTasks {
     [groupName: string]: Task[];
@@ -85,7 +86,9 @@ export const createTask = async (taskData: Task): Promise<Task> => {
     });
 
     await handleAuthResponse(response, 'Failed to create task.');
-    return await response.json();
+    const created = await response.json();
+    refreshTagCountsIfTagsChanged(taskData);
+    return created;
 };
 
 export const updateTask = async (
@@ -110,7 +113,9 @@ export const updateTask = async (
     );
 
     await handleAuthResponse(response, 'Failed to update task.');
-    return await response.json();
+    const updated = await response.json();
+    refreshTagCountsIfTagsChanged(taskData);
+    return updated;
 };
 
 export const toggleTaskCompletion = async (
@@ -154,6 +159,57 @@ export const toggleTaskCompletion = async (
     return result;
 };
 
+export type TaskOrderScope =
+    { scope: 'all' } | { scope: 'project'; project_uid: string };
+
+export const skipTaskOccurrence = async (taskUid: string): Promise<Task> => {
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(taskUid)}/skip-occurrence`),
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to skip occurrence.');
+    return await response.json();
+};
+
+export const fetchTaskOrder = async (
+    scope: TaskOrderScope
+): Promise<string[]> => {
+    const params = new URLSearchParams(scope as Record<string, string>);
+    const response = await fetch(getApiPath(`tasks/order?${params}`), {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+    await handleAuthResponse(response, 'Failed to fetch task order.');
+    const data = await response.json();
+    return data.task_uids || [];
+};
+
+// Saves a drag: `taskUids` are the shown tasks in their new order.
+// `baseOrderBy` is the sort the list had when the drag was not made under
+// the custom order.
+export const saveTaskOrder = async (
+    scope: TaskOrderScope,
+    taskUids: string[],
+    baseOrderBy?: string
+): Promise<void> => {
+    const response = await fetch(getApiPath('tasks/order'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify({
+            ...scope,
+            task_uids: taskUids,
+            ...(baseOrderBy ? { base_order_by: baseOrderBy } : {}),
+        }),
+    });
+    await handleAuthResponse(response, 'Failed to save task order.');
+};
+
 export const deleteTask = async (taskUid: string): Promise<void> => {
     const response = await fetch(
         getApiPath(`task/${encodeURIComponent(taskUid)}`),
@@ -173,6 +229,7 @@ export const deleteTask = async (taskUid: string): Promise<void> => {
     }
 
     await handleAuthResponse(response, 'Failed to delete task.');
+    refreshTagCountsIfTagsChanged();
 };
 
 export const fetchTaskById = async (taskId: number): Promise<Task> => {
@@ -231,4 +288,57 @@ export const fetchTaskNextIterations = async (
     await handleAuthResponse(response, 'Failed to fetch task iterations.');
     const result = await response.json();
     return result.iterations || [];
+};
+
+export const fetchTaskRelations = async (
+    taskUid: string
+): Promise<TaskRelation[]> => {
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(taskUid)}/relations`),
+        {
+            credentials: 'include',
+            headers: getDefaultHeaders(),
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to fetch task relations.');
+    const data = await response.json();
+    return data.relations || [];
+};
+
+export const createTaskRelation = async (
+    taskUid: string,
+    targetUid: string,
+    type: TaskRelationType
+): Promise<TaskRelation> => {
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(taskUid)}/relations`),
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+            body: JSON.stringify({ target_uid: targetUid, type }),
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to add relation.');
+    return await response.json();
+};
+
+export const deleteTaskRelation = async (
+    taskUid: string,
+    relationUid: string
+): Promise<void> => {
+    const response = await fetch(
+        getApiPath(
+            `task/${encodeURIComponent(taskUid)}/relations/${encodeURIComponent(relationUid)}`
+        ),
+        {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: await getPostHeadersWithCsrf(),
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to remove relation.');
 };

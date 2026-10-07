@@ -115,6 +115,27 @@ describe('errorHandler middleware', () => {
         });
     });
 
+    // --- CSRF errors ---
+
+    it.each(['CSRF token missing', 'CSRF token mismatch'])(
+        'should answer "%s" with 403 and a CSRF code',
+        (message) => {
+            errorHandler(new Error(message), req, res, next);
+
+            expect(res.status).toHaveBeenCalledWith(403);
+            expect(res.json).toHaveBeenCalledWith({
+                error: message,
+                code: 'CSRF_ERROR',
+            });
+        }
+    );
+
+    it('should not treat other errors that mention CSRF as CSRF errors', () => {
+        errorHandler(new Error('CSRF token missing in log'), req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+    });
+
     // --- Unknown errors ---
 
     it('should handle unknown errors with 500 in non-production', () => {

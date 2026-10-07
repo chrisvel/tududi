@@ -1,6 +1,13 @@
 const request = require('supertest');
 const app = require('../../app');
-const { sequelize } = require('../../models');
+const {
+    sequelize,
+    Area,
+    Project,
+    Person,
+    UserGroup,
+    UserGroupMember,
+} = require('../../models');
 const {
     createTestUser,
     acceptAllInvitations,
@@ -96,5 +103,160 @@ describe('Assignable people for shared projects', () => {
         );
 
         expect(response.status).toBe(403);
+    });
+
+    describe('access that does not come from a direct project share', () => {
+        let areaProject;
+
+        beforeEach(async () => {
+            const area = await Area.create({
+                name: 'Home',
+                user_id: ownerUser.id,
+            });
+            areaProject = await Project.create({
+                name: 'Renovation',
+                user_id: ownerUser.id,
+                area_id: area.id,
+            });
+
+            for (const target of [sharedUser, outsiderUser]) {
+                await ownerAgent.post('/api/shares').send({
+                    resource_type: 'area',
+                    resource_uid: area.uid,
+                    target_user_email: target.email,
+                    access_level: 'rw',
+                });
+            }
+            await acceptAllInvitations(sharedUserAgent);
+            await acceptAllInvitations(outsiderAgent);
+        });
+
+        const namesFor = async (agent, projectUid) => {
+            const response = await agent.get(
+                `/api/projects/${projectUid}/assignable-people`
+            );
+            expect(response.status).toBe(200);
+            return response.body.people.map((p) => p.name);
+        };
+
+        test('owner sees people who reach the project through an area share', async () => {
+            const names = await namesFor(ownerAgent, areaProject.uid);
+
+            expect(names).toContain('Shared');
+            expect(names).toContain('Outsider');
+        });
+
+        test('a collaborator sees the other people sharing the same area', async () => {
+            const names = await namesFor(sharedUserAgent, areaProject.uid);
+
+            expect(names).toContain('Owner');
+            expect(names).toContain('Outsider');
+        });
+    });
+
+    describe('cards that point at an account', () => {
+        test("a user's own contact card for a collaborator is not listed twice", async () => {
+            await Person.create({
+                user_id: ownerUser.id,
+                linked_user_id: sharedUser.id,
+                name: 'Sharie',
+            });
+
+            const response = await ownerAgent.get(
+                `/api/projects/${project.uid}/assignable-people`
+            );
+
+            expect(response.status).toBe(200);
+            const forSharedUser = response.body.people.filter(
+                (p) => p.linked_user_id === sharedUser.id
+            );
+            expect(forSharedUser).toHaveLength(1);
+        });
+
+        test("offers only the collaborator's own person record", async () => {
+            await Person.create({
+                user_id: outsiderUser.id,
+                linked_user_id: sharedUser.id,
+                name: 'Secret Nickname',
+                phone: '555-0100',
+            });
+
+            const response = await ownerAgent.get(
+                `/api/projects/${project.uid}/assignable-people`
+            );
+
+            expect(response.status).toBe(200);
+            const names = response.body.people.map((p) => p.name);
+            expect(names).not.toContain('Secret Nickname');
+        });
+    });
+
+    describe('assignable people outside a project', () => {
+        const assignableNames = async (agent) => {
+            const response = await agent.get('/api/people/assignable');
+            expect(response.status).toBe(200);
+            return response.body.people.map((p) => p.name);
+        };
+
+        test('includes people the caller shares something with', async () => {
+            const names = await assignableNames(ownerAgent);
+
+            expect(names).toContain('Shared');
+            expect(names).not.toContain('Outsider');
+        });
+
+        test('includes people in the same group with nothing shared', async () => {
+            const group = await UserGroup.create({ name: 'Family' });
+            await UserGroupMember.bulkCreate([
+                { group_id: group.id, user_id: sharedUser.id },
+                { group_id: group.id, user_id: outsiderUser.id },
+            ]);
+
+            const names = await assignableNames(sharedUserAgent);
+
+            expect(names).toContain('Outsider');
+        });
+
+        test("does not expose another member's phone, notes or email", async () => {
+            await Person.update(
+                { phone: '555-0100', notes: 'private note' },
+                {
+                    where: {
+                        user_id: sharedUser.id,
+                        linked_user_id: sharedUser.id,
+                    },
+                }
+            );
+
+            const response = await ownerAgent.get('/api/people/assignable');
+
+            const shared = response.body.people.find(
+                (p) => p.name === 'Shared'
+            );
+            expect(shared).toBeDefined();
+            expect(shared.phone).toBeUndefined();
+            expect(shared.notes).toBeUndefined();
+            expect(shared.email).toBeUndefined();
+        });
+    });
+
+    describe('linking a person to an account', () => {
+        test('is refused for someone the caller does not work with', async () => {
+            const response = await sharedUserAgent.post('/api/people').send({
+                name: 'Stranger',
+                linked_user_id: outsiderUser.id,
+            });
+
+            expect(response.status).toBe(403);
+        });
+
+        test('is allowed for someone the caller shares with', async () => {
+            const response = await ownerAgent.post('/api/people').send({
+                name: 'Sharie',
+                linked_user_id: sharedUser.id,
+            });
+
+            expect(response.status).toBe(201);
+        });
     });
 });

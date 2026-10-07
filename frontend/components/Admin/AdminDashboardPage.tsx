@@ -6,14 +6,20 @@ import {
     CreditCardIcon,
     EnvelopeIcon,
     RectangleStackIcon,
+    SparklesIcon,
+    BugAntIcon,
+    NewspaperIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
 import { handleAuthResponse } from '../../utils/authUtils';
+import AdminBlogSettings from './AdminBlogSettings';
+import AdminUserStatusTable from './AdminUserStatusTable';
 
 interface Overview {
     users: { total: number; admins: number; verified: number; last24h: number };
     content: { tasks: number; projects: number; notes: number };
     waitlist: { total: number; last7d: number };
+    feedback: { open: number };
     billing: {
         paying: number;
         hosted: boolean;
@@ -25,15 +31,6 @@ interface Overview {
         version: string;
         environment: string;
     };
-}
-
-interface WaitlistEntry {
-    id: number;
-    email: string;
-    source: string;
-    locale: string | null;
-    submission_count: number;
-    created_at: string;
 }
 
 const Stat: React.FC<{
@@ -59,8 +56,8 @@ const Stat: React.FC<{
 const AdminDashboardPage: React.FC = () => {
     const { t } = useTranslation();
     const [data, setData] = useState<Overview | null>(null);
-    const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [blogOpen, setBlogOpen] = useState(false);
 
     useEffect(() => {
         const load = async () => {
@@ -70,11 +67,6 @@ const AdminDashboardPage: React.FC = () => {
                 });
                 await handleAuthResponse(res, 'Failed to load the overview.');
                 setData(await res.json());
-
-                const wl = await fetch(getApiPath('admin/waitlist?limit=25'), {
-                    credentials: 'include',
-                });
-                if (wl.ok) setWaitlist((await wl.json()).subscribers || []);
             } catch (err: any) {
                 setError(err.message || 'Could not load the dashboard');
             }
@@ -164,13 +156,24 @@ const AdminDashboardPage: React.FC = () => {
                     <UsersIcon className="w-4 h-4 mr-2" />
                     {t('admin.users.title', 'Users')}
                 </Link>
-                <Link
-                    to="/admin/billing"
-                    className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                    <CreditCardIcon className="w-4 h-4 mr-2" />
-                    {t('admin.billing.title', 'Billing')}
-                </Link>
+                {data.billing.hosted && (
+                    <>
+                        <Link
+                            to="/admin/billing"
+                            className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                            <CreditCardIcon className="w-4 h-4 mr-2" />
+                            {t('admin.billing.title', 'Billing')}
+                        </Link>
+                        <Link
+                            to="/admin/ai-usage"
+                            className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                            <SparklesIcon className="w-4 h-4 mr-2" />
+                            {t('admin.aiUsage.title', 'AI Usage')}
+                        </Link>
+                    </>
+                )}
                 <Link
                     to="/admin/waitlist"
                     className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -178,6 +181,28 @@ const AdminDashboardPage: React.FC = () => {
                     <EnvelopeIcon className="w-4 h-4 mr-2" />
                     {t('admin.waitlist.title', 'Waitlist')}
                 </Link>
+                <Link
+                    to="/admin/feedback"
+                    className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    data-testid="admin-dashboard-feedback-link"
+                >
+                    <BugAntIcon className="w-4 h-4 mr-2" />
+                    {t('admin.feedback.title', 'Feedback')}
+                    {data.feedback?.open > 0 && (
+                        <span className="ml-2 px-1.5 rounded-full bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 text-xs">
+                            {data.feedback.open}
+                        </span>
+                    )}
+                </Link>
+                <button
+                    type="button"
+                    onClick={() => setBlogOpen(true)}
+                    className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    data-testid="admin-dashboard-blog-button"
+                >
+                    <NewspaperIcon className="w-4 h-4 mr-2" />
+                    {t('admin.blog.title', 'Blog')}
+                </button>
                 <span className="inline-flex items-center px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400">
                     <RectangleStackIcon className="w-4 h-4 mr-2" />
                     {data.instance.registration_enabled
@@ -186,59 +211,10 @@ const AdminDashboardPage: React.FC = () => {
                 </span>
             </div>
 
-            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-                <EnvelopeIcon className="w-5 h-5 mr-2" />
-                {t('admin.dashboard.waitlistLatest', 'Latest waitlist signups')}
-                <Link
-                    to="/admin/waitlist"
-                    className="ml-3 text-sm font-normal text-blue-500 hover:text-blue-600"
-                >
-                    {t('admin.dashboard.waitlistAll', 'See all')}
-                </Link>
-            </h2>
-            {waitlist.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    {t('admin.dashboard.waitlistEmpty', 'Nobody yet.')}
-                </p>
-            ) : (
-                <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <table className="min-w-full text-sm">
-                        <thead className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                            <tr>
-                                <th className="text-left px-4 py-2 font-medium">
-                                    {t('admin.dashboard.email', 'Email')}
-                                </th>
-                                <th className="text-left px-4 py-2 font-medium">
-                                    {t('admin.dashboard.source', 'Source')}
-                                </th>
-                                <th className="text-left px-4 py-2 font-medium">
-                                    {t('admin.dashboard.joined', 'Joined')}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {waitlist.map((w) => (
-                                <tr
-                                    key={w.id}
-                                    className="border-b border-gray-100 dark:border-gray-700 last:border-0"
-                                >
-                                    <td className="px-4 py-2 text-gray-800 dark:text-gray-200">
-                                        {w.email}
-                                    </td>
-                                    <td className="px-4 py-2 text-gray-500 dark:text-gray-400">
-                                        {w.source}
-                                        {w.locale ? ` · ${w.locale}` : ''}
-                                    </td>
-                                    <td className="px-4 py-2 text-gray-500 dark:text-gray-400">
-                                        {new Date(
-                                            w.created_at
-                                        ).toLocaleDateString()}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+            <AdminUserStatusTable />
+
+            {blogOpen && (
+                <AdminBlogSettings onClose={() => setBlogOpen(false)} />
             )}
         </div>
     );

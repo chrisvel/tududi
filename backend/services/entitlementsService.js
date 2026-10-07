@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const { getConfig } = require('../config/config');
 const { getPlans, UNLIMITED } = require('../config/plans');
 const { isAdmin } = require('./rolesService');
+const { logError } = require('./logService');
 const { PlanLimitError, FeatureNotInPlanError } = require('../shared/errors');
 
 // What a user may do right now, derived from their billing account and the
@@ -29,15 +30,6 @@ function isHostedMode() {
 function isSubscriptionRequired() {
     const hosted = getConfig().hosted || {};
     return hosted.enabled === true && hosted.requireSubscription === true;
-}
-
-// "This account is entitled to the app": a subscription, a trial, an admin
-// exemption, an admin override, or the past-due grace window. The 'free'
-// reason is the only one that means nothing is paying for it.
-async function hasActiveEntitlement(userId) {
-    if (!isHostedMode()) return true;
-    const ent = await getEntitlements(userId);
-    return ent.reason !== 'free';
 }
 
 function models() {
@@ -101,10 +93,39 @@ function resolvePlan(
         ? new Date(account.trial_ends_at)
         : null;
     if (trialEnd && trialEnd > now) {
-        return { plan: pro, reason: 'trial', status, trialEndsAt: trialEnd };
+        return {
+            plan: plans.trial || pro,
+            reason: 'trial',
+            status,
+            trialEndsAt: trialEnd,
+        };
     }
 
     return { plan: free, reason: 'free', status };
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Days between the deletion warning email and the deletion itself.
+const DELETION_NOTICE_DAYS = 7;
+
+// A trial that ended without a subscription leaves the account readable
+// (and exportable) until this date, after which the account is deleted.
+// Only trials started on email verification (trial_started_at) count, and
+// only for an account that never subscribed. A warning that went out late
+// pushes the date back, so nobody is deleted sooner than the email said.
+function readOnlyUntil(account) {
+    if (!account?.trial_started_at || !account.trial_ends_at) return null;
+    if (account.provider_subscription_id || account.status !== 'none') {
+        return null;
+    }
+    const days = getConfig().hosted?.trialReadOnlyDays ?? 30;
+    const end = new Date(account.trial_ends_at).getTime() + days * DAY_MS;
+    const noticeEnd = account.deletion_warned_at
+        ? new Date(account.deletion_warned_at).getTime() +
+          DELETION_NOTICE_DAYS * DAY_MS
+        : 0;
+    return new Date(Math.max(end, noticeEnd));
 }
 
 async function ensureAccount(userId) {
@@ -119,18 +140,106 @@ async function ensureAccount(userId) {
     });
     if (!user) return null;
 
-    const trialDays = getConfig().hosted.trialDays || 0;
-    const createdAt = user.created_at ? new Date(user.created_at) : new Date();
-    const trialEndsAt =
-        trialDays > 0
-            ? new Date(createdAt.getTime() + trialDays * 24 * 60 * 60 * 1000)
-            : null;
-
+    // No trial here: it starts when the email is verified (startTrial).
     const [account] = await BillingAccount.findOrCreate({
         where: { user_id: userId },
-        defaults: { user_id: userId, trial_ends_at: trialEndsAt },
+        defaults: { user_id: userId },
     });
     return account;
+}
+
+// Starts the Cloud trial for a verified account that never had one: on
+// verification, or when an account that verified before trials existed comes
+// back (see startTrialOnReturn). Once per account: a started trial
+// (trial_started_at), a subscription past or present, or a comp means no new
+// trial. A trial_ends_at without trial_started_at predates these rules, when
+// every sign-up got one from its creation date, so it counts as never
+// started. Members are seats on someone else's account and an admin needs no
+// trial, so neither gets one. Never throws, since the caller is a sign-up,
+// verification or request that must succeed regardless.
+async function startTrial(userId, { now = new Date() } = {}) {
+    try {
+        if (!isHostedMode()) return null;
+        const trialDays = getConfig().hosted.trialDays || 0;
+        if (trialDays <= 0) return null;
+
+        const { User } = models();
+        const user = await User.findByPk(userId, {
+            attributes: ['id', 'created_by_user_id', 'email_verified'],
+        });
+        if (!user || user.created_by_user_id || !user.email_verified) {
+            return null;
+        }
+        if (await isAdmin(userId)) return null;
+
+        const account = await ensureAccount(userId);
+        if (!account || account.trial_started_at) return null;
+        if (
+            account.status !== 'none' ||
+            account.provider_subscription_id ||
+            account.override_plan
+        ) {
+            return null;
+        }
+
+        await account.update({
+            trial_started_at: now,
+            trial_ends_at: new Date(now.getTime() + trialDays * DAY_MS),
+        });
+        invalidate(userId);
+        return account;
+    } catch (error) {
+        logError(error, `Could not start the trial for user ${userId}`);
+        return null;
+    }
+}
+
+// For an account that signs in (or is still signed in) with nothing
+// entitling it to the app: starts its trial if it never had one, so someone
+// who verified before trials existed gets one by coming back. Cheap for
+// everyone else: the entitlement lookup is cached, and only a 'free' account
+// that is not already in its read-only month goes any further.
+async function startTrialOnReturn(userId) {
+    if (!isHostedMode()) return null;
+    if ((getConfig().hosted.trialDays || 0) <= 0) return null;
+    const ent = await getEntitlements(userId);
+    if (ent.reason !== 'free' || ent.read_only) return null;
+    return startTrial(userId);
+}
+
+// Reasons an owner's plan counts as paid, so the members it added share it.
+// An admin's exemption and a bare trial are not seats anybody paid for.
+const SEAT_REASONS = ['subscription', 'grace', 'override'];
+
+// A member of an account sits on the account owner's subscription: when the
+// member has nothing of its own, it gets the owner's plan for as long as the
+// owner pays.
+async function resolveSeat(userId) {
+    const { User } = models();
+    const ownerId = await require('./accountsService').getOwnerId(userId);
+    if (!ownerId || ownerId === userId) return null;
+
+    const owner = await User.findByPk(ownerId, {
+        attributes: ['id', 'name', 'surname', 'email'],
+    });
+    if (!owner || (await isAdmin(owner.id))) return null;
+
+    const ownerAccount = await models().BillingAccount.findOne({
+        where: { user_id: owner.id },
+    });
+    const ownerPlan = resolvePlan(ownerAccount, null);
+    if (!SEAT_REASONS.includes(ownerPlan.reason)) return null;
+
+    return {
+        resolved: { ...ownerPlan, reason: 'seat' },
+        owner: {
+            id: owner.id,
+            name:
+                [owner.name, owner.surname].filter(Boolean).join(' ') ||
+                owner.email ||
+                null,
+        },
+    };
 }
 
 async function getEntitlements(userId, { includeUsage = false } = {}) {
@@ -155,7 +264,22 @@ async function getEntitlements(userId, { includeUsage = false } = {}) {
     if (!resolved) {
         const account = await ensureAccount(userId);
         const admin = await isAdmin(userId);
-        const r = resolvePlan(account, null, { isAdmin: admin });
+        let r = resolvePlan(account, null, { isAdmin: admin });
+        let seatOwner = null;
+        if (r.reason === 'free' && !admin) {
+            const seat = await resolveSeat(userId);
+            if (seat) {
+                r = seat.resolved;
+                seatOwner = seat.owner;
+            }
+        }
+        // Without the subscription gate an ended trial is just the free
+        // plan, which keeps working, so there is no read-only window.
+        const readOnlyEnd =
+            r.reason === 'free' && isSubscriptionRequired()
+                ? readOnlyUntil(account)
+                : null;
+        const readOnly = !!readOnlyEnd && readOnlyEnd > new Date();
         resolved = {
             hosted: true,
             plan: r.plan.key,
@@ -170,6 +294,11 @@ async function getEntitlements(userId, { includeUsage = false } = {}) {
             grace_until: r.graceUntil || null,
             subscription_required: isSubscriptionRequired(),
             active: r.reason !== 'free',
+            // The trial ended unpaid: the data can be read and exported, not
+            // changed, until read_only_until, when the account is deleted.
+            read_only: readOnly,
+            read_only_until: readOnly ? readOnlyEnd : null,
+            seat_owner: seatOwner,
             override: account?.override_plan
                 ? {
                       plan: account.override_plan,
@@ -241,11 +370,21 @@ async function assertCanCreate(userId, resource, n = 1) {
 }
 
 async function storageBytesUsed(userId) {
-    const { TaskAttachment } = models();
-    const total = await TaskAttachment.sum('file_size', {
-        where: { user_id: userId },
-    });
-    return Number(total) || 0;
+    const {
+        TaskAttachment,
+        InboxItemAttachment,
+        ProjectAttachment,
+        NoteAttachment,
+    } = models();
+    const totals = await Promise.all(
+        [
+            TaskAttachment,
+            InboxItemAttachment,
+            ProjectAttachment,
+            NoteAttachment,
+        ].map((Model) => Model.sum('file_size', { where: { user_id: userId } }))
+    );
+    return totals.reduce((sum, bytes) => sum + (Number(bytes) || 0), 0);
 }
 
 async function assertStorage(userId, additionalBytes) {
@@ -261,20 +400,24 @@ async function assertStorage(userId, additionalBytes) {
     }
 }
 
-function todayKey(now = new Date()) {
-    return now.toISOString().slice(0, 10);
+// 'YYYY-MM', e.g. '2026-09'. Calendar-month, not billing-cycle-anchored:
+// simpler to explain ("resets on the 1st") and avoids reading
+// account.current_period_end for accounts in trial/grace/admin-override
+// with no real subscription period.
+function monthKey(now = new Date()) {
+    return now.toISOString().slice(0, 7);
 }
 
-// Atomically records one use of a per-day metric and throws when the
-// day's budget is exhausted. Returns the new count.
+// Atomically records one use of a per-month metric and throws when the
+// month's budget is exhausted. Returns the new count.
 async function consumeUsage(userId, metric, n = 1) {
     if (!isHostedMode()) return 0;
     const ent = await getEntitlements(userId);
-    const limitKey = `${metric}_per_day`;
+    const limitKey = `${metric}_per_month`;
     const limit = ent.limits[limitKey];
 
     const { UsageCounter } = models();
-    const period = todayKey();
+    const period = monthKey();
     const [row] = await UsageCounter.findOrCreate({
         where: { user_id: userId, metric, period_key: period },
         defaults: { user_id: userId, metric, period_key: period, count: 0 },
@@ -291,15 +434,22 @@ async function consumeUsage(userId, metric, n = 1) {
     return row.count;
 }
 
+// Same as consumeUsage: kept as a separate name for call sites (e.g.
+// ai_credits_per_month) that are conceptually a monthly subscription
+// allowance rather than an anti-abuse rate limit.
+async function consumeMonthlyUsage(userId, metric, n = 1) {
+    return consumeUsage(userId, metric, n);
+}
+
 async function getUsage(userId) {
     const { UsageCounter } = models();
     const counter = (metric) =>
         UsageCounter.findOne({
-            where: { user_id: userId, metric, period_key: todayKey() },
+            where: { user_id: userId, metric, period_key: monthKey() },
             attributes: ['count'],
             raw: true,
         });
-    const [tasks, projects, notes, storage_bytes, ai, aiTokens] =
+    const [tasks, projects, notes, storage_bytes, ai, aiTokens, aiCredits] =
         await Promise.all([
             countResource(userId, 'task'),
             countResource(userId, 'project'),
@@ -307,25 +457,51 @@ async function getUsage(userId) {
             storageBytesUsed(userId),
             counter('ai_requests'),
             counter('ai_tokens'),
+            counter('ai_credits'),
         ]);
     return {
         tasks,
         projects,
         notes,
         storage_bytes,
-        ai_requests_today: ai ? ai.count : 0,
+        ai_requests_this_month: ai ? ai.count : 0,
         // Unlimited by design: recorded so hosted pricing can be set from
         // real spend rather than a request count. No plan caps it.
-        ai_tokens_today: aiTokens ? aiTokens.count : 0,
+        ai_tokens_this_month: aiTokens ? aiTokens.count : 0,
+        ai_credits_used_this_month: aiCredits ? aiCredits.count : 0,
     };
+}
+
+// Batch version of getUsage's AI counters, for the admin account list
+// where per-row queries would mean one round trip per account.
+async function getUsageForUsers(userIds, metric) {
+    if (!userIds.length) return {};
+    const { UsageCounter } = models();
+    const rows = await UsageCounter.findAll({
+        where: {
+            user_id: userIds,
+            metric,
+            period_key: monthKey(),
+        },
+        attributes: ['user_id', 'count'],
+        raw: true,
+    });
+    const map = {};
+    rows.forEach((r) => {
+        map[r.user_id] = r.count;
+    });
+    return map;
 }
 
 module.exports = {
     isHostedMode,
     isSubscriptionRequired,
-    hasActiveEntitlement,
     resolvePlan,
+    readOnlyUntil,
+    DELETION_NOTICE_DAYS,
     ensureAccount,
+    startTrial,
+    startTrialOnReturn,
     getEntitlements,
     invalidate,
     hasFeature,
@@ -333,5 +509,8 @@ module.exports = {
     assertCanCreate,
     assertStorage,
     consumeUsage,
+    consumeMonthlyUsage,
+    monthKey,
     getUsage,
+    getUsageForUsers,
 };

@@ -233,7 +233,14 @@ BACKUPS="$(find "$VOL" -maxdepth 1 -name 'db-backup-*.sqlite3' | wc -l | tr -d '
 check "$([ "$BACKUPS" -ge 1 ]; echo $?)" "new image: pre-migration backup written ($BACKUPS)"
 if [ "$BACKUPS" -ge 1 ]; then
     LATEST_BACKUP="$(ls -t "$VOL"/db-backup-*.sqlite3 | head -n1)"
-    check "$([ "$(sha "$LATEST_BACKUP")" = "$PRE_SHA" ]; echo $?)" "new image: backup matches the pre-upgrade file"
+    # The backup is written with VACUUM INTO, so it is compared by content
+    # (the same users as before the upgrade), not byte for byte.
+    if [ "$USERS_BEFORE" = "?" ]; then
+        yellow "  note new image: sqlite3 CLI missing, cannot verify the backup contents"
+    else
+        BACKUP_USERS="$(sqlite3 -readonly "$LATEST_BACKUP" "SELECT COUNT(*) FROM users" 2>/dev/null || echo "?")"
+        check "$([ "$BACKUP_USERS" = "$USERS_BEFORE" ]; echo $?)" "new image: backup holds the pre-upgrade data (users $USERS_BEFORE -> $BACKUP_USERS)"
+    fi
 fi
 
 NEW_JAR="$WORK/new.jar"

@@ -4,6 +4,8 @@ const express = require('express');
 const router = express.Router();
 const notesController = require('./controller');
 const { hasAccess } = require('../../middleware/authorize');
+const attachmentRoutes = require('./attachmentRoutes');
+const { requireFeature } = require('../../middleware/entitlements');
 
 // All routes require authentication (handled by app.js middleware)
 
@@ -41,6 +43,60 @@ router.delete(
 );
 
 // Get backlinks — notes that reference this note via [[title]]
-router.get('/note/:uid/backlinks', notesController.backlinks);
+router.get(
+    '/note/:uid/backlinks',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    notesController.backlinks
+);
+
+// Public sharing: only the owner can read or change it (checked in the
+// service). Making a link is not part of a Cloud trial; turning one off is
+// always allowed.
+router.get(
+    '/note/:uid/public-share',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    notesController.getPublicShare
+);
+
+router.post(
+    '/note/:uid/public-share',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    requireFeature('public_notes'),
+    notesController.enablePublicShare
+);
+
+router.patch(
+    '/note/:uid/public-share',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    requireFeature('public_notes'),
+    notesController.updatePublicShare
+);
+
+router.post(
+    '/note/:uid/public-share/rotate',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    requireFeature('public_notes'),
+    notesController.rotatePublicShare
+);
+
+router.delete(
+    '/note/:uid/public-share',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    notesController.disablePublicShare
+);
+
+router.use(attachmentRoutes);
 
 module.exports = router;

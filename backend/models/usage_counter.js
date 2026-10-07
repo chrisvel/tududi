@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-// Counters for rate-type limits (AI requests per day). Stock limits such
+// Counters for rate-type limits (AI requests per month). Stock limits such
 // as task counts are counted live; only metrics with no row to count need
 // a counter.
 module.exports = (sequelize) => {

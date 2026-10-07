@@ -49,7 +49,7 @@ describe('entitlementsService with hosted mode on', () => {
                     max_projects: 1,
                     max_notes: 1,
                     storage_mb: 1,
-                    ai_requests_per_day: 2,
+                    ai_requests_per_month: 2,
                 },
             },
         });
@@ -87,22 +87,44 @@ describe('entitlementsService with hosted mode on', () => {
             projects: 0,
             notes: 0,
             storage_bytes: 0,
-            ai_requests_today: 0,
-            ai_tokens_today: 0,
+            ai_requests_this_month: 0,
+            ai_tokens_this_month: 0,
+            ai_credits_used_this_month: 0,
         });
         expect(
             await BillingAccount.count({ where: { user_id: user.id } })
         ).toBe(1);
     });
 
-    it('starts a trial from the account creation date when configured', async () => {
+    it('starts no trial until the email is verified', async () => {
         config.hosted.trialDays = 14;
         const ent = await entitlements.getEntitlements(user.id);
-        expect(ent.plan).toBe('pro');
+        expect(ent.reason).toBe('free');
+        expect(ent.trial_ends_at).toBeNull();
+    });
+
+    it('starts the trial once, on the trial plan', async () => {
+        config.hosted.trialDays = 14;
+        await entitlements.startTrial(user.id);
+        const ent = await entitlements.getEntitlements(user.id);
+        expect(ent.plan).toBe('trial');
         expect(ent.reason).toBe('trial');
+        expect(ent.features.ai).toBe(false);
+        expect(ent.features.public_notes).toBe(false);
+        expect(ent.limits.max_members).toBe(0);
         expect(new Date(ent.trial_ends_at).getTime()).toBeGreaterThan(
             Date.now()
         );
+
+        // A second verification (or reset) never extends it.
+        const account = await BillingAccount.findOne({
+            where: { user_id: user.id },
+        });
+        const ended = new Date(Date.now() - 1000);
+        await account.update({ trial_ends_at: ended });
+        await entitlements.startTrial(user.id);
+        await account.reload();
+        expect(account.trial_ends_at.getTime()).toBe(ended.getTime());
     });
 
     it('stops task creation at the limit, counting only active tasks', async () => {
@@ -153,7 +175,7 @@ describe('entitlementsService with hosted mode on', () => {
         });
     });
 
-    it('gates features and counts daily AI usage', async () => {
+    it('gates features and counts monthly AI usage', async () => {
         await expect(
             entitlements.assertFeature(user.id, 'mcp')
         ).rejects.toMatchObject({
@@ -172,7 +194,7 @@ describe('entitlementsService with hosted mode on', () => {
         ).rejects.toMatchObject({ code: 'PLAN_LIMIT_REACHED' });
 
         const usage = await entitlements.getUsage(user.id);
-        expect(usage.ai_requests_today).toBe(2);
+        expect(usage.ai_requests_this_month).toBe(2);
     });
 
     it('lifts limits through an admin override and drops the cache', async () => {

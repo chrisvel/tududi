@@ -32,6 +32,14 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            estimated_minutes: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                validate: {
+                    min: 5,
+                    max: 720,
+                },
+            },
             priority: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
@@ -208,6 +216,48 @@ module.exports = (sequelize) => {
             habit_last_completion_at: {
                 type: DataTypes.DATE,
                 allowNull: true,
+            },
+            habit_polarity: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'build',
+            },
+            habit_unit: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            habit_target_value: {
+                type: DataTypes.FLOAT,
+                allowNull: true,
+            },
+            habit_schedule_days: {
+                type: DataTypes.JSON,
+                allowNull: true,
+            },
+            habit_interval_days: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
+            habit_time_of_day: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            habit_reminder_time: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            habit_reminder_sent_on: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            habit_color: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            habit_strength: {
+                type: DataTypes.FLOAT,
+                allowNull: false,
+                defaultValue: 0,
             },
             ai_insights: {
                 type: DataTypes.JSON,

@@ -1,21 +1,27 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
+    Bars3Icon,
     MagnifyingGlassIcon,
     Squares2X2Icon,
-    Bars3Icon,
-    ClockIcon,
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
-import Tooltip from './Shared/Tooltip';
 import ProjectModal from './Project/ProjectModal';
-import SortFilter from './Shared/SortFilter';
+import IconSortDropdown from './Shared/IconSortDropdown';
 import FilterDropdown, { FilterOption } from './Shared/FilterDropdown';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    rectSortingStrategy,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { useStore } from '../store/useStore';
 import {
     fetchProjects,
     createProject,
     updateProject,
     deleteProject,
+    reorderProjects,
 } from '../utils/projectsService';
 import { fetchAreas } from '../utils/areasService';
 import { useTranslation } from 'react-i18next';
@@ -23,11 +29,107 @@ import { SortOption } from './Shared/SortFilterButton';
 
 import { Project, ProjectStatus } from '../entities/Project';
 import { useSearchParams, Link } from 'react-router-dom';
-import { RectangleStackIcon } from '@heroicons/react/24/outline';
+import {
+    FunnelIcon,
+    PlusIcon,
+    RectangleStackIcon,
+} from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
+import SortableItem from './Shared/SortableItem';
+import NewItemButton from './Shared/NewItemButton';
+import BlankSlate from './Shared/BlankSlate';
+import { useCan } from '../hooks/useCan';
+import {
+    mergeVisibleOrder,
+    resetSortableCursor,
+    sortableCursorHandlers,
+    swallowNextClick,
+    useSortableSensors,
+} from './Shared/sortableList';
 import ProjectShareModal from './Project/ProjectShareModal';
 import { useToast } from './Shared/ToastContext';
 import { saveProjectAsTemplate } from '../utils/templatesService';
+import { fetchProfile, updateUiSettings } from '../utils/profileService';
+import ProjectsListSettings, {
+    ProjectsListFilters,
+} from './Project/ProjectsListSettings';
+
+// Custom order: projects without a position (new ones) come first, newest
+// first, then the rest by the position the user dragged them to.
+const compareCustomOrder = (a: Project, b: Project) => {
+    const posA = a.sort_position ?? null;
+    const posB = b.sort_position ?? null;
+    if (posA === null || posB === null) {
+        if (posA !== posB) return posA === null ? -1 : 1;
+        const createdA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const createdB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return createdB - createdA;
+    }
+    return posA - posB;
+};
+
+const compareProjects = (a: Project, b: Project, orderBy: string) => {
+    const [field, direction] = orderBy.split(':');
+    if (field === 'custom') return compareCustomOrder(a, b);
+    const isAsc = direction === 'asc';
+
+    let valueA, valueB;
+
+    switch (field) {
+        case 'name':
+            valueA = a.name?.toLowerCase() || '';
+            valueB = b.name?.toLowerCase() || '';
+            break;
+        case 'due_date_at':
+            valueA = a.due_date_at ? new Date(a.due_date_at).getTime() : 0;
+            valueB = b.due_date_at ? new Date(b.due_date_at).getTime() : 0;
+            break;
+        case 'updated_at':
+            valueA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+            valueB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+            break;
+        case 'created_at':
+        default:
+            valueA = a.created_at ? new Date(a.created_at).getTime() : 0;
+            valueB = b.created_at ? new Date(b.created_at).getTime() : 0;
+            break;
+    }
+
+    if (valueA < valueB) return isAsc ? -1 : 1;
+    if (valueA > valueB) return isAsc ? 1 : -1;
+    return 0;
+};
+
+const LIST_FILTERS_KEY = 'projectsListFilters';
+
+const readCachedListFilters = (): ProjectsListFilters => {
+    const defaults = { showSomeday: false, showCompleted: false };
+    try {
+        const cached = localStorage.getItem(LIST_FILTERS_KEY);
+        if (cached) {
+            const { showSomeday, showCompleted } = JSON.parse(cached);
+            return {
+                showSomeday: showSomeday === true,
+                showCompleted: showCompleted === true,
+            };
+        }
+        // Carry over the older someday-only toggle
+        if (localStorage.getItem('projectsSomedayFilter') === '1') {
+            return { ...defaults, showSomeday: true };
+        }
+    } catch {
+        // ignore storage errors
+    }
+    return defaults;
+};
+
+const cacheListFilters = (filters: ProjectsListFilters) => {
+    try {
+        localStorage.setItem(LIST_FILTERS_KEY, JSON.stringify(filters));
+    } catch {
+        // ignore storage errors
+    }
+};
 
 const Projects: React.FC = () => {
     const { t } = useTranslation();
@@ -43,7 +145,10 @@ const Projects: React.FC = () => {
         setError: setProjectsError,
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
-    const templatesEnabled = useStore((state) => state.userSettingsStore.templatesEnabled);
+    const canCreateProjects = useCan('create_projects');
+    const templatesEnabled = useStore(
+        (state) => state.userSettingsStore.templatesEnabled
+    );
 
     // Try using a ref to avoid React state conflicts
     const modalStateRef = useRef({
@@ -81,7 +186,54 @@ const Projects: React.FC = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const statusFilter = searchParams.get('status') || 'not_completed';
-    const somedayFilter = searchParams.get('someday') === '1';
+    const [listFilters, setListFilters] = useState<ProjectsListFilters>(
+        readCachedListFilters
+    );
+    const somedayFilter = listFilters.showSomeday;
+    const completedFilter = listFilters.showCompleted;
+
+    // The saved settings live on the user; the local copy only avoids a
+    // flash of hidden projects before the profile loads.
+    useEffect(() => {
+        let cancelled = false;
+        fetchProfile()
+            .then((profile) => {
+                const saved = profile.ui_settings?.project?.list;
+                if (cancelled || !saved) return;
+                setListFilters((current) => {
+                    const next = {
+                        showSomeday:
+                            typeof saved.showSomeday === 'boolean'
+                                ? saved.showSomeday
+                                : current.showSomeday,
+                        showCompleted:
+                            typeof saved.showCompleted === 'boolean'
+                                ? saved.showCompleted
+                                : current.showCompleted,
+                    };
+                    cacheListFilters(next);
+                    return next;
+                });
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const handleListFiltersChange = (next: ProjectsListFilters) => {
+        setListFilters(next);
+        cacheListFilters(next);
+        updateUiSettings({ project: { list: next } }).catch((error) => {
+            console.error('Error saving projects settings:', error);
+            showErrorToast(
+                t(
+                    'projects.listSettings.saveError',
+                    'Failed to save projects settings'
+                )
+            );
+        });
+    };
 
     // Restore persisted filters from localStorage on first mount (URL params take precedence)
     useEffect(() => {
@@ -100,14 +252,6 @@ const Projects: React.FC = () => {
             const saved = localStorage.getItem('projectsAreaFilter');
             if (saved) {
                 params.set('area', saved);
-                changed = true;
-            }
-        }
-
-        if (!params.has('someday')) {
-            const saved = localStorage.getItem('projectsSomedayFilter');
-            if (saved === '1') {
-                params.set('someday', '1');
                 changed = true;
             }
         }
@@ -135,7 +279,10 @@ const Projects: React.FC = () => {
         { value: 'name:asc', label: t('sort.name', 'Name') },
         { value: 'due_date_at:asc', label: t('sort.due_date', 'Due Date') },
         { value: 'updated_at:desc', label: t('common.updated', 'Updated') },
+        { value: 'custom:asc', label: t('sort.custom', 'Custom') },
     ];
+    const isCustomOrder = orderBy.startsWith('custom:');
+    const sensors = useSortableSensors();
 
     // Filter options for dropdowns
     const statusOptions: FilterOption[] = [
@@ -160,6 +307,7 @@ const Projects: React.FC = () => {
             value: 'not_completed',
             label: t('projects.filters.notCompleted', 'Not Completed'),
         },
+        { value: 'shared', label: t('projects.filters.shared', 'Shared') },
     ];
 
     const areaOptions: FilterOption[] = [
@@ -253,6 +401,25 @@ const Projects: React.FC = () => {
         }
     };
 
+    const handleNewProject = () => {
+        modalStateRef.current = { isOpen: true, projectToEdit: null };
+        setModalState({ isOpen: true, projectToEdit: null });
+    };
+
+    // Clears every filter that can hide a project, including search.
+    const handleShowAllProjects = () => {
+        const params = new URLSearchParams(searchParams);
+        params.set('status', 'all');
+        params.delete('area');
+        localStorage.setItem('projectsStatusFilter', 'all');
+        localStorage.setItem('projectsAreaFilter', '');
+        setSearchParams(params);
+        setSearchQuery('');
+        if (!listFilters.showSomeday || !listFilters.showCompleted) {
+            handleListFiltersChange({ showSomeday: true, showCompleted: true });
+        }
+    };
+
     const handleEditProject = (project: Project) => {
         modalStateRef.current = {
             isOpen: true,
@@ -272,10 +439,21 @@ const Projects: React.FC = () => {
     const handleConfirmSaveAsTemplate = async () => {
         if (!projectToSaveAsTemplate?.uid) return;
         try {
-            await saveProjectAsTemplate(projectToSaveAsTemplate.uid, { name: projectToSaveAsTemplate.name });
-            showSuccessToast(t('projects.savedAsTemplate', '"{{name}}" saved as template.', { name: projectToSaveAsTemplate.name }));
+            await saveProjectAsTemplate(projectToSaveAsTemplate.uid, {
+                name: projectToSaveAsTemplate.name,
+            });
+            showSuccessToast(
+                t('projects.savedAsTemplate', '"{{name}}" saved as template.', {
+                    name: projectToSaveAsTemplate.name,
+                })
+            );
         } catch {
-            showErrorToast(t('projects.saveAsTemplateError', 'Failed to save project as template.'));
+            showErrorToast(
+                t(
+                    'projects.saveAsTemplateError',
+                    'Failed to save project as template.'
+                )
+            );
         } finally {
             setIsTemplateConfirmOpen(false);
             setProjectToSaveAsTemplate(null);
@@ -310,16 +488,28 @@ const Projects: React.FC = () => {
         }
     };
 
-    const handleStatusChange = async (project: Project, newStatus: ProjectStatus) => {
+    const handleStatusChange = async (
+        project: Project,
+        newStatus: ProjectStatus
+    ) => {
         if (!project.uid) return;
         const prevProjects = projects;
-        setProjects(projects.map((p) => (p.uid === project.uid ? { ...p, status: newStatus } : p)));
+        setProjects(
+            projects.map((p) =>
+                p.uid === project.uid ? { ...p, status: newStatus } : p
+            )
+        );
         try {
             await updateProject(project.uid, { status: newStatus });
         } catch (error) {
             console.error('Error updating project status:', error);
             setProjects(prevProjects);
-            showErrorToast(t('errors.projectStatusUpdateFailed', 'Failed to update project status'));
+            showErrorToast(
+                t(
+                    'errors.projectStatusUpdateFailed',
+                    'Failed to update project status'
+                )
+            );
         }
     };
 
@@ -337,18 +527,6 @@ const Projects: React.FC = () => {
             params.set('status', value);
         }
         localStorage.setItem('projectsStatusFilter', value);
-        setSearchParams(params);
-    };
-
-    const handleSomedayToggle = () => {
-        const params = new URLSearchParams(searchParams);
-        if (somedayFilter) {
-            params.delete('someday');
-            localStorage.setItem('projectsSomedayFilter', '0');
-        } else {
-            params.set('someday', '1');
-            localStorage.setItem('projectsSomedayFilter', '1');
-        }
         setSearchParams(params);
     };
 
@@ -379,6 +557,10 @@ const Projects: React.FC = () => {
                 (project) =>
                     project.status !== 'done' && project.status !== 'cancelled'
             );
+        } else if (statusFilter === 'shared') {
+            filteredProjects = filteredProjects.filter(
+                (project) => project.is_shared
+            );
         } else if (statusFilter !== 'all') {
             filteredProjects = filteredProjects.filter(
                 (project) => project.status === statusFilter
@@ -393,13 +575,21 @@ const Projects: React.FC = () => {
             });
         }
 
-        // Hide someday-tagged projects unless the button is active
+        // Hide someday-tagged projects unless the setting shows them
         if (!somedayFilter) {
             filteredProjects = filteredProjects.filter(
                 (project) =>
                     !project.tags?.some(
                         (tag) => tag.name.toLowerCase() === 'someday'
                     )
+            );
+        }
+
+        // Hide completed projects unless the setting shows them or the
+        // status filter asks for them
+        if (!completedFilter && statusFilter !== 'done') {
+            filteredProjects = filteredProjects.filter(
+                (project) => project.status !== 'done'
             );
         }
 
@@ -418,51 +608,83 @@ const Projects: React.FC = () => {
         }
 
         // Apply sorting
-        filteredProjects.sort((a, b) => {
-            const [field, direction] = orderBy.split(':');
-            const isAsc = direction === 'asc';
-
-            let valueA, valueB;
-
-            switch (field) {
-                case 'name':
-                    valueA = a.name?.toLowerCase() || '';
-                    valueB = b.name?.toLowerCase() || '';
-                    break;
-                case 'due_date_at':
-                    valueA = a.due_date_at
-                        ? new Date(a.due_date_at).getTime()
-                        : 0;
-                    valueB = b.due_date_at
-                        ? new Date(b.due_date_at).getTime()
-                        : 0;
-                    break;
-                case 'updated_at':
-                    valueA = a.updated_at
-                        ? new Date(a.updated_at).getTime()
-                        : 0;
-                    valueB = b.updated_at
-                        ? new Date(b.updated_at).getTime()
-                        : 0;
-                    break;
-                case 'created_at':
-                default:
-                    valueA = a.created_at
-                        ? new Date(a.created_at).getTime()
-                        : 0;
-                    valueB = b.created_at
-                        ? new Date(b.created_at).getTime()
-                        : 0;
-                    break;
-            }
-
-            if (valueA < valueB) return isAsc ? -1 : 1;
-            if (valueA > valueB) return isAsc ? 1 : -1;
-            return 0;
-        });
+        filteredProjects.sort((a, b) => compareProjects(a, b, orderBy));
 
         return filteredProjects;
-    }, [projects, statusFilter, actualAreaFilter, somedayFilter, searchQuery, orderBy]);
+    }, [
+        projects,
+        statusFilter,
+        actualAreaFilter,
+        somedayFilter,
+        completedFilter,
+        searchQuery,
+        orderBy,
+    ]);
+
+    const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+        resetSortableCursor();
+        if (!over || active.id === over.id) return;
+        swallowNextClick();
+
+        const visibleUids = displayProjects.map((p) => p.uid as string);
+        const from = visibleUids.indexOf(active.id as string);
+        const to = visibleUids.indexOf(over.id as string);
+        if (from === -1 || to === -1) return;
+        const movedVisible = arrayMove(visibleUids, from, to);
+
+        const fullOrder = projects
+            .filter((p) => p.uid)
+            .sort((a, b) => compareProjects(a, b, orderBy))
+            .map((p) => p.uid as string);
+        const newOrder = mergeVisibleOrder(fullOrder, movedVisible);
+
+        const positionByUid = new Map(newOrder.map((uid, i) => [uid, i]));
+        const prevProjects = projects;
+        setProjects(
+            projects.map((p) =>
+                p.uid && positionByUid.has(p.uid)
+                    ? { ...p, sort_position: positionByUid.get(p.uid) }
+                    : p
+            )
+        );
+        // Dragging under another sort starts a custom order from what is
+        // on screen.
+        const prevOrderBy = orderBy;
+        if (!isCustomOrder) setOrderBy('custom:asc');
+        try {
+            await reorderProjects(newOrder);
+        } catch (error) {
+            console.error('Error saving project order:', error);
+            setProjects(prevProjects);
+            setOrderBy(prevOrderBy);
+            showErrorToast(
+                t('projects.reorderError', 'Failed to save project order')
+            );
+        }
+    };
+
+    const renderProjectItem = (project: Project) => (
+        <ProjectItem
+            project={project}
+            viewMode={viewMode}
+            getCompletionPercentage={() => getCompletionPercentage(project)}
+            activeDropdown={activeDropdown}
+            setActiveDropdown={setActiveDropdown}
+            handleEditProject={handleEditProject}
+            setProjectToDelete={setProjectToDelete}
+            setIsConfirmDialogOpen={setIsConfirmDialogOpen}
+            onOpenShare={(p) => setShareModal({ isOpen: true, project: p })}
+            onStatusChange={handleStatusChange}
+            onSaveAsTemplate={
+                templatesEnabled ? handleSaveAsTemplate : undefined
+            }
+        />
+    );
+
+    const projectsContainerClass =
+        viewMode === 'cards'
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+            : 'flex flex-col space-y-1';
 
     if (isLoading) {
         return (
@@ -487,123 +709,125 @@ const Projects: React.FC = () => {
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between gap-3 mb-8">
                     <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
-                    {templatesEnabled && (
-                        <Link
-                            to="/templates"
-                            className="flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
-                        >
-                            <RectangleStackIcon className="h-4 w-4" />
-                            {t('projects.fromTemplate', 'From Template')}
-                        </Link>
-                    )}
-                </div>
-
-                {/* View Mode and Filters */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
-                    <div className="flex items-center space-x-2">
-                        <button
-                            onClick={() => setViewMode('cards')}
-                            className={`p-2 rounded-md focus:outline-none ${
-                                viewMode === 'cards'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                            }`}
-                            aria-label={t('projects.cardViewAriaLabel')}
-                        >
-                            <Squares2X2Icon className="h-5 w-5" />
-                        </button>
-
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`p-2 rounded-md focus:outline-none ${
-                                viewMode === 'list'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                            }`}
-                            aria-label={t('projects.listViewAriaLabel')}
-                        >
-                            <Bars3Icon className="h-5 w-5" />
-                        </button>
-
-                        {/* Search Toggle Button */}
+                    <div className="flex items-center gap-3">
                         <button
                             onClick={() =>
                                 setIsSearchExpanded(!isSearchExpanded)
                             }
-                            className={`p-2 rounded-md focus:outline-none transition-colors ${
+                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-1.5 sm:p-2 ${
                                 isSearchExpanded
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
+                            aria-expanded={isSearchExpanded}
                             aria-label={t('common.search', 'Search')}
+                            title={t('common.search', 'Search')}
                         >
-                            <MagnifyingGlassIcon className="h-5 w-5" />
+                            <MagnifyingGlassIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-200" />
                         </button>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                        {/* Someday Tag Toggle */}
-                        <div className="w-full md:w-auto mb-4 md:mb-0">
-                            <Tooltip
-                                content={
-                                    <div className="w-44">
-                                        <p className="font-bold mb-1">
-                                            {t('projects.filters.someday', 'Someday')}
-                                        </p>
-                                        <p className="font-normal opacity-80">
-                                            {t('projects.filters.somedayTooltip', 'Projects tagged "someday" are hidden by default. Click to reveal them.')}
-                                        </p>
-                                    </div>
-                                }
-                                position="bottom"
-                            >
+                        <div
+                            className="flex items-center rounded-lg bg-gray-100 dark:bg-gray-800 p-0.5"
+                            role="group"
+                            aria-label={t('projects.viewAs', 'View')}
+                        >
+                            {(
+                                [
+                                    [
+                                        'cards',
+                                        Squares2X2Icon,
+                                        t('projects.cardViewAriaLabel'),
+                                    ],
+                                    [
+                                        'list',
+                                        Bars3Icon,
+                                        t('projects.listViewAriaLabel'),
+                                    ],
+                                ] as const
+                            ).map(([mode, Icon, label]) => (
                                 <button
-                                    onClick={handleSomedayToggle}
-                                    aria-label={t('projects.filters.someday', 'Someday')}
-                                    className={`p-2 rounded-md focus:outline-none transition-colors ${
-                                        somedayFilter
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => setViewMode(mode)}
+                                    className={`p-1 sm:p-1.5 rounded-md focus:outline-none transition-colors ${
+                                        viewMode === mode
+                                            ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
+                                    aria-label={label}
+                                    aria-pressed={viewMode === mode}
+                                    title={label}
                                 >
-                                    <ClockIcon className="h-5 w-5" />
+                                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                                 </button>
-                            </Tooltip>
+                            ))}
                         </div>
-
-                        {/* Status Filter */}
-                        <div className="w-full md:w-auto mb-4 md:mb-0">
-                            <FilterDropdown
-                                options={statusOptions}
-                                value={statusFilter}
-                                onChange={handleStatusFilterChange}
-                                size="desktop"
-                                autoWidth={true}
-                            />
-                        </div>
-
-                        {/* Area Filter */}
-                        <div className="w-full md:w-auto mb-4 md:mb-0">
-                            <FilterDropdown
-                                options={areaOptions}
-                                value={actualAreaFilter}
-                                onChange={handleAreaFilterChange}
-                                size="desktop"
-                                autoWidth={true}
-                            />
-                        </div>
-
-                        {/* Sort Filter Button */}
-                        <SortFilter
-                            sortOptions={sortOptions}
-                            sortValue={orderBy}
-                            onSortChange={handleSortChange}
+                        <IconSortDropdown
+                            options={sortOptions}
+                            value={orderBy}
+                            onChange={handleSortChange}
+                            ariaLabel={t('tasks.sortBy', 'Sort by')}
+                            title={t('tasks.sortBy', 'Sort by')}
+                            dropdownLabel={t('tasks.sortBy', 'Sort by')}
+                            align="right"
                         />
+                        <ProjectsListSettings
+                            value={listFilters}
+                            onChange={handleListFiltersChange}
+                        />
+                        {templatesEnabled && (
+                            <Link
+                                to="/templates"
+                                aria-label={t(
+                                    'projects.fromTemplate',
+                                    'From Template'
+                                )}
+                                title={t(
+                                    'projects.fromTemplate',
+                                    'From Template'
+                                )}
+                                className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                            >
+                                <RectangleStackIcon className="h-5 w-5 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">
+                                    {t(
+                                        'projects.fromTemplate',
+                                        'From Template'
+                                    )}
+                                </span>
+                            </Link>
+                        )}
+                        {canCreateProjects && (
+                            <NewItemButton
+                                label={t('projects.new', 'New Project')}
+                                onClick={handleNewProject}
+                                testId="new-project-button"
+                            />
+                        )}
                     </div>
+                </div>
+
+                {/* Status and area filters: one row, sharing it on phones */}
+                <div className="flex items-center gap-3 mb-6 sm:justify-end">
+                    <FilterDropdown
+                        options={statusOptions}
+                        value={statusFilter}
+                        onChange={handleStatusFilterChange}
+                        size="desktop"
+                        autoWidth={true}
+                        fill
+                    />
+                    <FilterDropdown
+                        options={areaOptions}
+                        value={actualAreaFilter}
+                        onChange={handleAreaFilterChange}
+                        size="desktop"
+                        autoWidth={true}
+                        fill
+                    />
                 </div>
 
                 {/* Collapsible Search Bar */}
@@ -627,40 +851,128 @@ const Projects: React.FC = () => {
                 </div>
 
                 {/* Projects Grid/List */}
-                <div
-                    className={`${
-                        viewMode === 'cards'
-                            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-                            : 'flex flex-col space-y-1'
-                    }`}
-                >
-                    {displayProjects.length === 0 ? (
-                        <div className="text-gray-700 dark:text-gray-300">
-                            {t('projects.noProjectsFound')}
-                        </div>
+                {displayProjects.length === 0 ? (
+                    projects.length === 0 ? (
+                        <BlankSlate
+                            title={t(
+                                'projects.noProjectsYet',
+                                'No projects yet.'
+                            )}
+                            hint={t(
+                                'projects.blankSlateHint',
+                                'A project groups the tasks and notes that lead to one outcome, like planning a trip or launching a website. Keep them tidy by grouping them into areas like Work or Home.'
+                            )}
+                            actions={[
+                                ...(canCreateProjects
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'projects.blankSlateNew',
+                                                  'Create your first project'
+                                              ),
+                                              icon: PlusIcon,
+                                              onClick: handleNewProject,
+                                          },
+                                      ]
+                                    : []),
+                                ...(canCreateProjects && templatesEnabled
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'projects.blankSlateTemplate',
+                                                  'Start from a template'
+                                              ),
+                                              icon: RectangleStackIcon,
+                                              to: '/templates',
+                                          },
+                                      ]
+                                    : []),
+                                {
+                                    label: t(
+                                        'projects.blankSlateAreas',
+                                        'Set up areas'
+                                    ),
+                                    icon: Squares2X2Icon,
+                                    to: '/areas',
+                                },
+                            ]}
+                        />
                     ) : (
-                        displayProjects.map((project) => (
-                            <ProjectItem
-                                key={project.id}
-                                project={project}
-                                viewMode={viewMode}
-                                getCompletionPercentage={() =>
-                                    getCompletionPercentage(project)
-                                }
-                                activeDropdown={activeDropdown}
-                                setActiveDropdown={setActiveDropdown}
-                                handleEditProject={handleEditProject}
-                                setProjectToDelete={setProjectToDelete}
-                                setIsConfirmDialogOpen={setIsConfirmDialogOpen}
-                                onOpenShare={(p) =>
-                                    setShareModal({ isOpen: true, project: p })
-                                }
-                                onStatusChange={handleStatusChange}
-                                onSaveAsTemplate={templatesEnabled ? handleSaveAsTemplate : undefined}
-                            />
-                        ))
-                    )}
-                </div>
+                        <BlankSlate
+                            title={t(
+                                'projects.noProjectsFound',
+                                'No projects found'
+                            )}
+                            hint={t(
+                                'projects.blankSlateFilteredHint',
+                                'Try changing your filters or search.'
+                            )}
+                            actions={[
+                                {
+                                    label: t(
+                                        'projects.blankSlateShowAll',
+                                        'Show all projects'
+                                    ),
+                                    icon: FunnelIcon,
+                                    onClick: handleShowAllProjects,
+                                },
+                                ...(canCreateProjects
+                                    ? [
+                                          {
+                                              label: t(
+                                                  'projects.new',
+                                                  'New Project'
+                                              ),
+                                              icon: PlusIcon,
+                                              onClick: handleNewProject,
+                                          },
+                                      ]
+                                    : []),
+                            ]}
+                        />
+                    )
+                ) : displayProjects.every((p) => p.uid) ? (
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        {...sortableCursorHandlers}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <SortableContext
+                            items={displayProjects.map((p) => p.uid as string)}
+                            strategy={
+                                viewMode === 'cards'
+                                    ? rectSortingStrategy
+                                    : verticalListSortingStrategy
+                            }
+                        >
+                            <div className={projectsContainerClass}>
+                                {displayProjects.map((project) => (
+                                    <SortableItem
+                                        key={project.id}
+                                        id={project.uid as string}
+                                        label={project.name}
+                                        roleDescription={t(
+                                            'sortable.project',
+                                            'sortable project'
+                                        )}
+                                        testIdPrefix="sortable-project"
+                                    >
+                                        {renderProjectItem(project)}
+                                    </SortableItem>
+                                ))}
+                            </div>
+                        </SortableContext>
+                    </DndContext>
+                ) : (
+                    <div className={projectsContainerClass}>
+                        {displayProjects.map((project) => (
+                            <React.Fragment key={project.id}>
+                                {renderProjectItem(project)}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {modalState.isOpen && (
@@ -707,7 +1019,11 @@ const Projects: React.FC = () => {
             {isTemplateConfirmOpen && (
                 <ConfirmDialog
                     title={t('modals.saveAsTemplate.title', 'Save as Template')}
-                    message={t('modals.saveAsTemplate.message', 'Save "{{name}}" as a template? This will create a reusable template based on this project.', { name: projectToSaveAsTemplate?.name })}
+                    message={t(
+                        'modals.saveAsTemplate.message',
+                        'Save "{{name}}" as a template? This will create a reusable template based on this project.',
+                        { name: projectToSaveAsTemplate?.name }
+                    )}
                     onConfirm={handleConfirmSaveAsTemplate}
                     onCancel={() => {
                         setIsTemplateConfirmOpen(false);

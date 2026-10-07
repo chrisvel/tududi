@@ -15,6 +15,7 @@ This guide explains how to configure and use OpenID Connect (OIDC) Single Sign-O
   - [Single Provider Setup](#single-provider-setup)
   - [Multiple Providers Setup](#multiple-providers-setup)
   - [Environment Variables Reference](#environment-variables-reference)
+  - [Admin UI Configuration](#admin-ui-configuration)
 - [Provider Setup Guides](#provider-setup-guides)
   - [Google](#google)
   - [Okta](#okta)
@@ -181,6 +182,8 @@ OIDC_PROVIDER_3_AUTO_PROVISION=true
 | `OIDC_SCOPE` | No | `openid profile email` | OAuth scopes (space-separated) |
 | `OIDC_AUTO_PROVISION` | No | `true` | Auto-create users on first login |
 | `OIDC_ADMIN_EMAIL_DOMAINS` | No | - | Comma-separated domains for auto-admin |
+| `OIDC_TRUST_UNVERIFIED_EMAIL` | No | `false` | Accept sign-ins when the provider does not report the email as verified (see [Email verification](#email-verification)). Numbered providers use `OIDC_PROVIDER_<n>_TRUST_UNVERIFIED_EMAIL`. |
+| `OIDC_ACCESS_TOKEN_AUDIENCE` | No | - | Comma-separated audiences accepted for OAuth bearer tokens (MCP and other API clients). When unset, tokens from any audience are accepted and a warning is logged. |
 | `BASE_URL` | Yes | - | Tududi base URL (for OAuth callbacks) |
 
 **Scope Formatting:**
@@ -222,6 +225,18 @@ This is required for:
 Without this setting, you may experience:
 - Session loss after SSO login (401 errors)
 - Rate limiter errors: `ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false`
+
+---
+
+### Admin UI Configuration
+
+Everything above can also be configured from **Profile Settings → OIDC/SSO**, in a "Provider Configuration" panel visible to admins. This is the only way to configure OIDC on a hosted instance, where nobody has shell access to edit `.env` and restart — but it works for self-hosted instances too.
+
+Opening the panel for the first time shows whatever is currently loaded from `.env` as a starting point; nothing is written to the database until you click **Save changes**. Once saved, that configuration **fully replaces** the `OIDC_*` / `OIDC_PROVIDER_N_*` environment variables — it is an override, not a merge, so editing `.env` afterwards has no effect until you either update the same panel or delete the saved configuration. Changes made in the panel take effect within about 30 seconds, with no restart required.
+
+A provider's client secret is never shown back in full — only whether one is set and its last four characters. Leaving the secret field blank when editing a provider keeps the secret that's already stored; type a new value only to replace it. Client secrets saved this way are encrypted at rest, using `TUDUDI_SESSION_SECRET` (or a dedicated `TUDUDI_OIDC_SECRET_ENCRYPTION_KEY`, see `.env.example`) as key material — at least one of those must be set before a secret can be saved from the panel.
+
+`PASSWORD_AUTH_ENABLED` is not part of this panel and remains `.env`-only.
 
 ---
 
@@ -548,6 +563,12 @@ When `OIDC_AUTO_PROVISION=true` (default), new users are automatically created o
      - Optional admin role (if domain matches)
 4. User is logged in
 
+#### Email verification
+
+A new SSO identity is only matched to an existing account, or turned into a new account, when the provider reports the email as verified (`email_verified: true` in the ID token or userinfo). Without that, anyone who can enter an address at the provider could sign in as its owner, including as an existing local account or administrator. A user who has already signed in through this provider is not affected.
+
+If your provider never sends the claim (some Azure AD and self-hosted setups), set `OIDC_TRUST_UNVERIFIED_EMAIL=true` for that provider only when you control who can register at it. The admin API also accepts `trustUnverifiedEmail` per provider.
+
 **Disable Auto-Provisioning:**
 
 ```bash
@@ -721,6 +742,21 @@ ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust prox
 1. Start the login flow again (don't reuse old URLs)
 2. Check `BASE_URL` matches your actual domain
 3. Verify callback URL in provider settings
+
+### "Sign-in session mismatch" Error
+
+**Cause:** The browser finishing the login is not the one that started it. Each login sets a short-lived cookie (`oidc_binding`) that the callback must present.
+
+**Possible Reasons:**
+- The sign-in link was opened in a different browser or profile than the one that started it
+- Cookies are blocked or cleared during the redirect to the provider
+- A proxy strips the `Cookie` header on `/api/oidc/callback/*`
+
+**Solution:** Start again from the login page in one browser and complete it there.
+
+### "Your identity provider has not verified this email address" Error
+
+**Cause:** The provider did not report `email_verified: true`. See [Email verification](#email-verification).
 
 ### "Auto-provisioning disabled" Error
 

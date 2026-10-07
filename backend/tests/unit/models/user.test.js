@@ -19,12 +19,11 @@ describe('User Model', () => {
             expect(user.timezone).toBe('UTC');
         });
 
-        it('should require email', async () => {
-            const userData = {
-                password: 'password123',
-            };
+        it('should not require an email', async () => {
+            const user = await User.create({ name: 'No Email' });
+            await user.reload();
 
-            await expect(User.create(userData)).rejects.toThrow();
+            expect(user.email).toBeNull();
         });
 
         it('should require valid email format', async () => {

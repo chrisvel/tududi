@@ -1,0 +1,211 @@
+'use strict';
+
+const { Op } = require('sequelize');
+const {
+    DailyPlan,
+    DailyPlanItem,
+    Task,
+    InboxItem,
+    Project,
+    RecurringCompletion,
+    Tag,
+    User,
+    sequelize,
+} = require('../../models');
+const { TASK_INCLUDES } = require('../tasks/utils/constants');
+const {
+    getTaskIncludeConfigLight,
+} = require('../tasks/queries/query-builders');
+
+const OPEN_STATUSES_EXCLUDED = [
+    Task.STATUS.DONE,
+    Task.STATUS.ARCHIVED,
+    Task.STATUS.CANCELLED,
+];
+
+class DailyPlanRepository {
+    async findPlan(userId, planDate) {
+        return DailyPlan.findOne({
+            where: { user_id: userId, plan_date: planDate },
+            include: [{ model: DailyPlanItem, as: 'Items' }],
+            order: [[{ model: DailyPlanItem, as: 'Items' }, 'position', 'ASC']],
+        });
+    }
+
+    async findOrCreatePlan(userId, planDate, transaction) {
+        const [plan] = await DailyPlan.findOrCreate({
+            where: { user_id: userId, plan_date: planDate },
+            defaults: { user_id: userId, plan_date: planDate },
+            transaction,
+        });
+        return plan;
+    }
+
+    // Only tasks the user can currently see; a task whose share was revoked
+    // silently drops out of the plan.
+    async findVisibleTasksByIds(visibleWhere, ids) {
+        if (ids.length === 0) return [];
+        return Task.findAll({
+            where: { [Op.and]: [visibleWhere, { id: { [Op.in]: ids } }] },
+            include: TASK_INCLUDES,
+        });
+    }
+
+    // Tasks with a recurring occurrence completed (not skipped) in the range.
+    async findTaskIdsCompletedBetween(taskIds, start, end) {
+        if (taskIds.length === 0) return new Set();
+        const rows = await RecurringCompletion.findAll({
+            where: {
+                task_id: { [Op.in]: taskIds },
+                skipped: false,
+                completed_at: { [Op.between]: [start, end] },
+            },
+            attributes: ['task_id'],
+            raw: true,
+        });
+        return new Set(rows.map((row) => row.task_id));
+    }
+
+    async findVisibleProjectIds(visibleWhere, ids) {
+        if (ids.length === 0) return [];
+        const projects = await Project.findAll({
+            where: { [Op.and]: [visibleWhere, { id: { [Op.in]: ids } }] },
+            attributes: ['id'],
+            raw: true,
+        });
+        return projects.map((project) => project.id);
+    }
+
+    async findVisibleTasksByUids(visibleWhere, uids) {
+        if (uids.length === 0) return [];
+        return Task.findAll({
+            where: { [Op.and]: [visibleWhere, { uid: { [Op.in]: uids } }] },
+            attributes: ['id', 'uid', 'estimated_minutes'],
+        });
+    }
+
+    async replaceItems(userId, planDate, rows) {
+        return sequelize.transaction(async (transaction) => {
+            const plan = await this.findOrCreatePlan(
+                userId,
+                planDate,
+                transaction
+            );
+            await DailyPlanItem.destroy({
+                where: { daily_plan_id: plan.id },
+                transaction,
+            });
+            if (rows.length > 0) {
+                await DailyPlanItem.bulkCreate(
+                    rows.map((row) => ({ ...row, daily_plan_id: plan.id })),
+                    { transaction }
+                );
+            }
+            return plan;
+        });
+    }
+
+    async markStarted(userId, planDate) {
+        const plan = await this.findOrCreatePlan(userId, planDate);
+        if (!plan.started_at) {
+            await plan.update({ started_at: new Date() });
+        }
+        return plan;
+    }
+
+    async saveWrapUp(userId, planDate, wrapUp) {
+        const plan = await this.findOrCreatePlan(userId, planDate);
+        await plan.update({ ai_wrap_up: wrapUp });
+        return plan;
+    }
+
+    async deletePlan(userId, planDate) {
+        return sequelize.transaction(async (transaction) => {
+            const plan = await DailyPlan.findOne({
+                where: { user_id: userId, plan_date: planDate },
+                transaction,
+            });
+            if (!plan) return false;
+            await DailyPlanItem.destroy({
+                where: { daily_plan_id: plan.id },
+                transaction,
+            });
+            await plan.destroy({ transaction });
+            return true;
+        });
+    }
+
+    // Open top-level tasks the user tagged "today" (any case), with every
+    // tag loaded, not only the matching one.
+    async findTasksTaggedToday(visibleWhere) {
+        const tagged = await Task.findAll({
+            where: {
+                [Op.and]: [
+                    visibleWhere,
+                    {
+                        status: { [Op.notIn]: OPEN_STATUSES_EXCLUDED },
+                        parent_task_id: null,
+                        recurring_parent_id: null,
+                    },
+                ],
+            },
+            attributes: ['id'],
+            include: [
+                {
+                    model: Tag,
+                    attributes: [],
+                    through: { attributes: [] },
+                    required: true,
+                    where: sequelize.where(
+                        sequelize.fn('lower', sequelize.col('Tags.name')),
+                        'today'
+                    ),
+                },
+            ],
+        });
+        if (tagged.length === 0) return [];
+        return Task.findAll({
+            where: { id: { [Op.in]: tagged.map((task) => task.id) } },
+            include: getTaskIncludeConfigLight(),
+        });
+    }
+
+    async findOpenInboxItems(userId, limit) {
+        const where = { user_id: userId, status: 'added' };
+        const [items, count] = await Promise.all([
+            InboxItem.findAll({
+                where,
+                attributes: ['uid', 'title', 'content', 'created_at'],
+                order: [['created_at', 'DESC']],
+                limit,
+            }),
+            InboxItem.count({ where }),
+        ]);
+        return { items, count };
+    }
+
+    async findUiSettings(userId) {
+        const user = await User.findByPk(userId, {
+            attributes: ['id', 'ui_settings'],
+        });
+        return parseSettings(user?.ui_settings);
+    }
+
+    async saveUiSettings(userId, settings) {
+        await User.update({ ui_settings: settings }, { where: { id: userId } });
+    }
+}
+
+function parseSettings(value) {
+    if (!value) return {};
+    if (typeof value === 'string') {
+        try {
+            return JSON.parse(value) || {};
+        } catch {
+            return {};
+        }
+    }
+    return value;
+}
+
+module.exports = new DailyPlanRepository();

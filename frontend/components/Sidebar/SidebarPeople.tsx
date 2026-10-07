@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Location } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     UserGroupIcon,
     ChevronRightIcon,
@@ -7,6 +8,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { Person } from '../../entities/Person';
 import { useStore } from '../../store/useStore';
+import { useCan } from '../../hooks/useCan';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarPeopleProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -21,7 +24,9 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
     location,
     openPersonModal,
 }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    const { t } = useTranslation();
+    const canCreatePeople = useCan('create_people');
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('people');
 
     const people = useStore((state) => state.peopleStore.people);
     const hasLoaded = useStore((state) => state.peopleStore.hasLoaded);
@@ -64,9 +69,12 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
     return (
         <ul className="flex flex-col">
             <li
-                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md hover:bg-gray-100 dark:hover:bg-white/5 ${
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
                     isPeoplePageActive ? 'bg-gray-100 dark:bg-white/5' : ''
                 }`}
+                onClick={() => {
+                    if (sortedPeople.length > 0) setIsExpanded((v) => !v);
+                }}
             >
                 <span
                     className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
@@ -74,30 +82,33 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                             ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.stopPropagation();
                         setIsExpanded(true);
                         handleNavClick(
                             '/people',
-                            'People',
+                            t('sidebar.people', 'People'),
                             <UserGroupIcon className="h-4 w-4 mr-2" />
                         );
                     }}
                 >
                     <UserGroupIcon className="h-[14px] w-[14px]" />
-                    People
+                    {t('sidebar.people', 'People')}
                 </span>
                 <div className="flex items-center gap-1">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            openPersonModal(null);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label="Add Person"
-                        title="Add Person"
-                    >
-                        <PlusIcon className="h-3.5 w-3.5" />
-                    </button>
+                    {canCreatePeople && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                openPersonModal(null);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-label={t('people.addPerson', 'Add Person')}
+                            title={t('people.addPerson', 'Add Person')}
+                        >
+                            <PlusIcon className="h-3.5 w-3.5" />
+                        </button>
+                    )}
                     {sortedPeople.length > 0 && (
                         <>
                             <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">
@@ -108,7 +119,8 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

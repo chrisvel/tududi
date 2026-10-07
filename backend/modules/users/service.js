@@ -1,10 +1,6 @@
 'use strict';
 
 const FEATURE_KEYS = [
-    'task_intelligence_enabled',
-    'auto_suggest_next_actions_enabled',
-    'productivity_assistant_enabled',
-    'next_task_suggestion_enabled',
     'ai_assistant_enabled',
     'pomodoro_enabled',
     'eisenhower_enabled',
@@ -27,6 +23,24 @@ function sanitizeFeatures(raw) {
     return result;
 }
 
+function maskAiSettings(user) {
+    const encrypted = user.ai_api_key || '';
+    let plaintext = '';
+    if (encrypted) {
+        try {
+            plaintext = secretCipher.decrypt(encrypted) || '';
+        } catch (error) {
+            logError('Failed to decrypt stored AI API key for masking', error);
+        }
+    }
+    return {
+        ai_base_url: user.ai_base_url || null,
+        ai_model: user.ai_model || null,
+        ai_api_key_set: encrypted.length > 0,
+        ai_api_key_last4: plaintext.length >= 4 ? plaintext.slice(-4) : null,
+    };
+}
+
 const usersRepository = require('./repository');
 const {
     validateFirstDayOfWeek,
@@ -36,6 +50,7 @@ const {
     validateApiKeyName,
     validateExpiresAt,
     validateSidebarSettings,
+    validateAiSettings,
 } = require('./validation');
 const {
     NotFoundError,
@@ -46,6 +61,9 @@ const { User, Role } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
 const entitlements = require('../../services/entitlementsService');
 const { eraseUserAccount } = require('../../services/accountErasureService');
+const seatsService = require('../../services/seatsService');
+const accountsService = require('../../services/accountsService');
+const secretCipher = require('../../shared/crypto/secretCipher');
 const {
     createApiToken,
     revokeApiToken,
@@ -130,6 +148,17 @@ class UsersService {
                 user.ui_settings = null;
             }
         }
+        if (
+            user.sidebar_settings &&
+            typeof user.sidebar_settings === 'string'
+        ) {
+            try {
+                user.sidebar_settings = JSON.parse(user.sidebar_settings);
+            } catch (error) {
+                logError('Error parsing sidebar_settings:', error);
+                user.sidebar_settings = null;
+            }
+        }
 
         const profile = user.toJSON();
         profile.has_password = !!user.password_digest;
@@ -177,8 +206,12 @@ class UsersService {
             validateFirstDayOfWeek(first_day_of_week);
             allowedUpdates.first_day_of_week = first_day_of_week;
         }
-        if (avatar_image !== undefined)
-            allowedUpdates.avatar_image = avatar_image;
+        // The avatar path is only ever set by the upload endpoint. Accepting a
+        // client-supplied path would let a user claim another user's avatar
+        // file (and have it deleted on their next upload), so this field can
+        // only be cleared here; any other value is ignored.
+        if (avatar_image === null || avatar_image === '')
+            allowedUpdates.avatar_image = null;
         if (telegram_bot_token !== undefined) {
             if (telegram_bot_token) {
                 await entitlements.assertFeature(userId, 'telegram');
@@ -205,7 +238,22 @@ class UsersService {
             allowedUpdates.task_summary_enabled = task_summary_enabled;
         if (task_summary_frequency !== undefined)
             allowedUpdates.task_summary_frequency = task_summary_frequency;
-        if (ui_settings !== undefined) allowedUpdates.ui_settings = ui_settings;
+        if (ui_settings !== undefined) {
+            // The planner order is saved by its own endpoint; a profile form
+            // loaded before that save must not put the old order back.
+            let current = user.ui_settings;
+            if (typeof current === 'string') {
+                try {
+                    current = JSON.parse(current);
+                } catch {
+                    current = null;
+                }
+            }
+            allowedUpdates.ui_settings =
+                ui_settings && current?.planning
+                    ? { ...ui_settings, planning: current.planning }
+                    : ui_settings;
+        }
         if (notification_preferences !== undefined)
             allowedUpdates.notification_preferences = notification_preferences;
         if (keyboard_shortcuts !== undefined)
@@ -361,7 +409,12 @@ class UsersService {
             }
         }
 
+        const payerId = await accountsService.getOwnerId(userId);
         await eraseUserAccount(userId);
+        // A member leaving frees its seat on the account owner's subscription.
+        if (payerId !== userId) {
+            await seatsService.reconcile(payerId);
+        }
         return { success: true };
     }
 
@@ -555,8 +608,6 @@ class UsersService {
         const {
             showMetrics,
             projectShowMetrics,
-            showProductivity,
-            showNextTaskSuggestion,
             showDailyBrief,
             showAreaBalance,
             showActiveProjects,
@@ -583,14 +634,6 @@ class UsersService {
                 showActiveProjects !== undefined
                     ? showActiveProjects
                     : (user.today_settings?.showActiveProjects ?? true),
-            showProductivity:
-                showProductivity !== undefined
-                    ? showProductivity
-                    : user.today_settings?.showProductivity || false,
-            showNextTaskSuggestion:
-                showNextTaskSuggestion !== undefined
-                    ? showNextTaskSuggestion
-                    : user.today_settings?.showNextTaskSuggestion || false,
             showDailyBrief:
                 showDailyBrief !== undefined
                     ? showDailyBrief
@@ -614,35 +657,7 @@ class UsersService {
                     : user.today_settings?.showDailyQuote || true,
         };
 
-        const profileUpdates = { today_settings: todaySettings };
-        if (
-            showProductivity !== undefined ||
-            showNextTaskSuggestion !== undefined
-        ) {
-            let currentFeatures = user.features;
-            if (typeof currentFeatures === 'string') {
-                try {
-                    currentFeatures = JSON.parse(currentFeatures);
-                } catch {
-                    currentFeatures = {};
-                }
-            }
-            const featureUpdates = {};
-            if (showProductivity !== undefined) {
-                featureUpdates.productivity_assistant_enabled =
-                    showProductivity;
-            }
-            if (showNextTaskSuggestion !== undefined) {
-                featureUpdates.next_task_suggestion_enabled =
-                    showNextTaskSuggestion;
-            }
-            profileUpdates.features = {
-                ...sanitizeFeatures(currentFeatures),
-                ...featureUpdates,
-            };
-        }
-
-        await usersRepository.update(user, profileUpdates);
+        await usersRepository.update(user, { today_settings: todaySettings });
 
         return { success: true, today_settings: todaySettings };
     }
@@ -656,8 +671,24 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { pinnedViewsOrder } = validateSidebarSettings(data);
-        const sidebarSettings = { pinnedViewsOrder };
+        const updates = validateSidebarSettings(data);
+        const currentSettings =
+            user.sidebar_settings && typeof user.sidebar_settings === 'object'
+                ? user.sidebar_settings
+                : {};
+
+        const sidebarSettings = {
+            ...currentSettings,
+            ...updates,
+            ...(updates.visibleSections !== undefined
+                ? {
+                      visibleSections: {
+                          ...(currentSettings.visibleSections || {}),
+                          ...updates.visibleSections,
+                      },
+                  }
+                : {}),
+        };
 
         await usersRepository.update(user, {
             sidebar_settings: sidebarSettings,
@@ -675,7 +706,7 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { project, appearance } = data;
+        const { project, appearance, inbox } = data;
 
         const currentSettings =
             user.ui_settings && typeof user.ui_settings === 'object'
@@ -693,6 +724,12 @@ class UsersService {
                         {}),
                     ...((project && project.details) || {}),
                 },
+                list: {
+                    ...((currentSettings.project &&
+                        currentSettings.project.list) ||
+                        {}),
+                    ...((project && project.list) || {}),
+                },
             },
         };
 
@@ -703,9 +740,71 @@ class UsersService {
             };
         }
 
+        if (inbox !== undefined) {
+            newSettings.inbox = {
+                ...(currentSettings.inbox || {}),
+                ...inbox,
+            };
+        }
+
         await usersRepository.update(user, { ui_settings: newSettings });
 
         return { success: true, ui_settings: newSettings };
+    }
+
+    /**
+     * Get per-user AI provider settings, API key masked.
+     */
+    async getAiSettings(userId) {
+        const user = await usersRepository.findAiSettings(userId);
+        if (!user) {
+            throw new NotFoundError('User not found.');
+        }
+
+        return maskAiSettings(user);
+    }
+
+    /**
+     * Update per-user AI provider settings (API key, base URL, model).
+     * An omitted ai_api_key leaves the stored key untouched; an explicit
+     * null/'' clears it.
+     */
+    async updateAiSettings(userId, data) {
+        if (entitlements.isHostedMode()) {
+            throw new ForbiddenError(
+                'AI provider settings are managed by the operator on the hosted plan.'
+            );
+        }
+
+        const user = await usersRepository.findAiSettings(userId);
+        if (!user) {
+            throw new NotFoundError('User not found.');
+        }
+
+        const { ai_api_key, ai_base_url, ai_model } = data;
+        await validateAiSettings({ ai_base_url, ai_model });
+
+        const updates = {};
+        if (ai_api_key !== undefined) {
+            if (ai_api_key) {
+                if (!secretCipher.hasKeyMaterial()) {
+                    throw new ValidationError(
+                        'Cannot save an AI API key: set TUDUDI_SESSION_SECRET (or TUDUDI_OIDC_SECRET_ENCRYPTION_KEY) on the server first',
+                        'ai_api_key'
+                    );
+                }
+                updates.ai_api_key = secretCipher.encrypt(ai_api_key);
+            } else {
+                updates.ai_api_key = null;
+            }
+        }
+        if (ai_base_url !== undefined)
+            updates.ai_base_url = ai_base_url || null;
+        if (ai_model !== undefined) updates.ai_model = ai_model || null;
+
+        await usersRepository.update(user, updates);
+        const updated = await usersRepository.findAiSettings(userId);
+        return maskAiSettings(updated);
     }
 }
 

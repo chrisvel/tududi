@@ -163,6 +163,61 @@ When a new version of `sw.js` is deployed:
 
 ---
 
+## Push Notifications
+
+Tududi sends notifications to phones and desktops with the standard Web Push protocol (VAPID), so one implementation covers every platform. Each user turns push on per device in **Profile → Notifications**, then picks which notification types use the **Push** column.
+
+### Platform support
+
+| Platform | Works | Notes |
+|----------|-------|-------|
+| Android (Chrome, Edge, Samsung Internet, Firefox) | Browser tab or installed app | Delivered through FCM / Mozilla push |
+| iPhone / iPad (iOS 16.4+) | Installed app only | Add tududi to the Home Screen first, then open it from there and turn push on. In a Safari tab the Notifications page shows this hint instead of the button |
+| Desktop Chrome, Edge, Firefox, Safari | Yes | |
+
+Push needs HTTPS (or `localhost`). Notifications arrive while tududi is closed.
+
+### How it works
+
+1. The Notifications tab calls `enablePush()` in `frontend/utils/pushService.ts` from the button click (iOS only shows the permission prompt for a user gesture), subscribes with the server's public VAPID key and posts the subscription to `POST /api/push/subscriptions`.
+2. Notification producers (due/overdue tasks and projects, defer until, task assigned, habit reminders, comments and mentions) add `'push'` to `sources` when the user enabled push for that type (`deliverySources()` in `backend/utils/notificationPreferences.js`).
+3. `Notification.createNotification` hands the row to `backend/modules/push/service.js`, which sends to every device of the user. A tap opens the task, project or habit. A reminder that is recreated by the scheduler is pushed at most once per 24 hours, like Telegram.
+4. The service worker shows the notification (`push` event) and focuses or opens the app on tap (`notificationclick`).
+
+Devices the push service reports as gone (404/410) are deleted; other errors are retried and the device is dropped after 5 failures in a row.
+
+### Keys and configuration
+
+No configuration is needed. On first use the server generates a VAPID key pair and stores it in the `settings` table (the private key is encrypted when `TUDUDI_SESSION_SECRET` or `TUDUDI_OIDC_SECRET_ENCRYPTION_KEY` is set). Optional variables:
+
+| Variable | Purpose |
+|----------|---------|
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Pin the key pair (e.g. several instances sharing a database). Generate with `npx web-push generate-vapid-keys` |
+| `VAPID_SUBJECT` | Contact URL or `mailto:` sent to push services. Defaults to `FRONTEND_URL` when it is a public https address, otherwise `mailto:noreply@tududi.com` (Apple rejects `localhost`) |
+
+If the keys change, existing subscriptions stop working; each device re-subscribes automatically the next time the app is opened.
+
+### Shared devices
+
+Signing out removes the device from the account on the server but keeps the browser subscription. It is re-attached on the next sign-in only for the same account that turned push on (`tududi_push_owner` in `localStorage`), so another person signing in on that device does not receive the first person's notifications.
+
+### API
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/push/config` | Public VAPID key |
+| `GET /api/push/subscriptions` | The user's devices |
+| `POST /api/push/subscriptions` | Add or refresh this device (`{ endpoint, keys: { p256dh, auth } }`) |
+| `DELETE /api/push/subscriptions` | Remove this device (`{ endpoint }`) |
+
+Push requests bypass the offline mutation queue.
+
+### Testing locally
+
+On the dev server (`npm start`, `localhost:8080`) the push-only worker is enough to try push in a desktop browser. Phones need an HTTPS address (a staging deployment or a tunnel).
+
+---
+
 ## Session Security
 
 The service worker caches API responses and queues mutations across page navigations. In a multi-user or shared-device scenario this creates two risks:
@@ -197,10 +252,10 @@ Both functions handle the case where the SW has not yet taken control of the pag
 
 ## Development Mode
 
-The service worker is **not registered** when `NODE_ENV !== 'production'`. Instead, `frontend/index.tsx` actively unregisters any existing SWs and clears all caches at startup. This prevents stale cached responses from interfering with live development.
+In development the service worker is registered as `/sw.js?push-only`. In that mode it caches nothing and intercepts no requests (no offline queue either), so hot reloading always serves fresh code, but push notifications work on `localhost:8080`. `frontend/index.tsx` still unregisters any other worker (for example a full one left by a production build on the same origin) and clears all caches at startup.
 
 ```typescript
-// In frontend/index.tsx (dev only)
+// In frontend/index.tsx (dev only, simplified: the push-only worker is kept)
 if (isDevelopment && 'serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then((registrations) => {
         registrations.forEach((r) => r.unregister());
@@ -241,7 +296,7 @@ async function handleApiGet(request) {
 When making a breaking change to the static asset structure — removing or renaming a cached file, or editing a pre-cached one such as `manifest.json`, since cache-first would otherwise serve the stale copy forever — bump `CACHE_VERSION` at the top of `public/sw.js`:
 
 ```javascript
-const CACHE_VERSION = 'tududi-v3'; // was tududi-v2
+const CACHE_VERSION = 'tududi-v4'; // was tududi-v3
 ```
 
 The `activate` event deletes all caches that don't match the current `CACHE_VERSION` or `API_CACHE`. If the API response format changes significantly, also bump `API_CACHE`:

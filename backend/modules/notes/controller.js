@@ -1,9 +1,13 @@
 'use strict';
 
+const path = require('path');
 const notesService = require('./service');
+const publicSharing = require('./publicSharing');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
+const { getConfig } = require('../../config/config');
+const { INLINE_SAFE_EXTENSIONS } = require('../../utils/attachment-utils');
 
 /**
  * Get authenticated user ID or throw UnauthorizedError.
@@ -58,8 +62,15 @@ const notesController = {
     async create(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const { title, content, project_uid, project_id, tags, color } =
-                req.body;
+            const {
+                title,
+                content,
+                project_uid,
+                project_id,
+                tags,
+                color,
+                background,
+            } = req.body;
 
             const note = await notesService.create(userId, {
                 title,
@@ -68,6 +79,7 @@ const notesController = {
                 project_id,
                 tags,
                 color,
+                background,
             });
 
             res.status(201).json(note);
@@ -91,6 +103,7 @@ const notesController = {
                 project_id,
                 tags,
                 color,
+                background,
                 pin_to_sidebar,
             } = req.body;
 
@@ -101,6 +114,7 @@ const notesController = {
                 project_id,
                 tags,
                 color,
+                background,
                 pin_to_sidebar,
             });
 
@@ -134,6 +148,123 @@ const notesController = {
             const uid = extractUidFromSlug(req.params.uid);
             const links = await notesService.getBacklinks(userId, uid);
             res.json(links);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * GET /api/note/:uid/public-share
+     * Read the public sharing state of a note (owner only).
+     */
+    async getPublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.get(userId, uid));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * POST /api/note/:uid/public-share
+     * Turn public sharing on and return the link token.
+     */
+    async enablePublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.enable(userId, uid, req.body));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * PATCH /api/note/:uid/public-share
+     * Change the color and background of the public page.
+     */
+    async updatePublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.updateLook(userId, uid, req.body));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * POST /api/note/:uid/public-share/rotate
+     * Replace the public link with a new one; the old one stops working.
+     */
+    async rotatePublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.rotate(userId, uid));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * DELETE /api/note/:uid/public-share
+     * Turn public sharing off and kill the link.
+     */
+    async disablePublicShare(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            res.json(await publicSharing.disable(userId, uid));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * GET /api/public/notes/:token
+     * Read a publicly shared note. No authentication.
+     */
+    async getPublicNote(req, res, next) {
+        try {
+            // The token is the credential: keep the page out of caches,
+            // search indexes and Referer headers.
+            res.set({
+                'Cache-Control': 'no-store',
+                'X-Robots-Tag': 'noindex, nofollow',
+                'Referrer-Policy': 'no-referrer',
+            });
+            res.json(await publicSharing.getPublicNote(req.params.token));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // An image or file of a public note, so the public page can show it.
+    async getPublicNoteFile(req, res, next) {
+        try {
+            const attachment = await publicSharing.getPublicFile(
+                req.params.token,
+                req.params.filename
+            );
+            res.set({
+                'Cache-Control': 'no-store',
+                'X-Robots-Tag': 'noindex, nofollow',
+                'Referrer-Policy': 'no-referrer',
+                'X-Content-Type-Options': 'nosniff',
+            });
+            const ext = path.extname(attachment.file_path).toLowerCase();
+            if (!INLINE_SAFE_EXTENSIONS.has(ext)) {
+                res.attachment(attachment.original_filename);
+            }
+            res.sendFile(
+                path.join(getConfig().uploadPath, attachment.file_path),
+                (error) => {
+                    if (error && !res.headersSent) next(error);
+                }
+            );
         } catch (error) {
             next(error);
         }

@@ -5,6 +5,64 @@ Notable changes to tududi. Versions match the git tags and the
 
 ## Unreleased
 
+## 1.7.11
+
+## 1.7.10
+
+## 1.7.9
+
+## 1.7.8
+
+## 1.7.7
+
+## 1.7.6
+
+## 1.7.5
+
+## 1.7.4
+
+## 1.7.3
+
+## 1.7.2
+
+## 1.7.1
+
+## 1.7.0
+
+## 1.6.11
+
+## 1.6.10
+
+## 1.6.9
+
+## 1.6.8
+
+## 1.6.7
+
+## 1.6.6
+
+## 1.6.5
+
+## 1.6.4
+
+## 1.6.3
+
+## 1.6.2
+
+## 1.6.1
+
+## 1.6.0
+
+### Changed
+
+- tududi Cloud is open: the marketing page links every Cloud call to action
+  to registration and announces the launch in the hero. The waitlist, its
+  "opening soon" copy and the `cloudOpen` pricing flag are gone; hosted
+  registration follows the admin toggle alone. The page's email signup is
+  now for release notes only.
+
+## 1.5.0
+
 ### Security
 
 - Sharing a project, task, or note now creates an invitation that the

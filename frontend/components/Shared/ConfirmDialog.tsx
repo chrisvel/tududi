@@ -35,6 +35,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 </p>
                 <div className="flex justify-end space-x-4">
                     <button
+                        type="button"
                         onClick={onCancel}
                         className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 focus:outline-none"
                         data-testid="confirm-dialog-cancel"
@@ -42,6 +43,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                         {t('common.cancel', 'Cancel')}
                     </button>
                     <button
+                        type="button"
                         onClick={onConfirm}
                         className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
                         data-testid="confirm-dialog-confirm"

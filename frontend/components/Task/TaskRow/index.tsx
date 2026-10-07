@@ -14,7 +14,7 @@ import { Task } from '../../../entities/Task';
 import { Project } from '../../../entities/Project';
 import { useToast } from '../../Shared/ToastContext';
 import ConfirmDialog from '../../Shared/ConfirmDialog';
-import { isTaskCompleted } from '../../../constants/taskStatus';
+import { isTaskCompleted, isTaskDone } from '../../../constants/taskStatus';
 import {
     toggleTaskCompletion,
     updateTask,
@@ -38,13 +38,13 @@ const getPriorityBorderClassName = (
     }
     switch (p) {
         case 'high':
-            return 'border-l-4 border-l-red-500';
+            return 'border-l-[3px] border-l-red-500';
         case 'medium':
-            return 'border-l-4 border-l-yellow-400';
+            return 'border-l-[3px] border-l-yellow-400';
         case 'low':
-            return 'border-l-4 border-l-blue-400';
+            return 'border-l-[3px] border-l-blue-400';
         default:
-            return 'border-l-4 border-l-transparent';
+            return 'border-l-[3px] border-l-transparent';
     }
 };
 
@@ -65,6 +65,9 @@ export interface TaskRowProps {
     compact?: boolean;
     // Opt out of inline quick-edit: clicking the row opens the full page.
     disableExpand?: boolean;
+    // For pages whose onTaskUpdate only updates local state: the row saves a
+    // status picked from its status menu itself.
+    saveStatusChanges?: boolean;
 }
 
 const TaskRow: React.FC<TaskRowProps> = ({
@@ -81,6 +84,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
     compact = false,
     showSuggestionChips = false,
     disableExpand = false,
+    saveStatusChanges = false,
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -89,17 +93,26 @@ const TaskRow: React.FC<TaskRowProps> = ({
 
     const [projectList, setProjectList] = useState<Project[]>(projects);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const [isBlockedConfirmOpen, setIsBlockedConfirmOpen] = useState(false);
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
     const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
+    const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
 
     const [subtasks, setSubtasks] = useState<Task[]>(task.subtasks || []);
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
     const [showSubtasks, setShowSubtasks] = useState(false);
+    // Lifted above TaskRowExpanded (which unmounts on collapse) so the count
+    // survives an expand/collapse cycle instead of resetting to the possibly
+    // stale task.comments_count every time the panel remounts.
+    const [commentCount, setCommentCount] = useState(task.comments_count ?? 0);
 
     const canExpand = !disableExpand && !task.habit_mode && !!task.uid;
-    const { isExpanded, toggle, collapse } = useTaskRowExpansion(task.uid, {
-        disabled: !canExpand,
-    });
+    // Virtual occurrences of a recurring task share the parent's uid, so
+    // expansion is keyed by the per-occurrence id when there is one.
+    const { isExpanded, toggle, collapse } = useTaskRowExpansion(
+        task.virtual_id ?? task.uid,
+        { disabled: !canExpand }
+    );
     const setters = useTaskRowSave(task, onTaskUpdate);
     const rowRootRef = useRef<HTMLDivElement>(null);
 
@@ -138,6 +151,9 @@ const TaskRow: React.FC<TaskRowProps> = ({
     useEffect(() => {
         setSubtasks(task.subtasks || []);
     }, [task.id, task.subtasks]);
+    useEffect(() => {
+        setCommentCount(task.comments_count ?? 0);
+    }, [task.id, task.comments_count]);
     useEffect(() => {
         setShowSubtasks(false);
     }, [task.id]);
@@ -220,8 +236,43 @@ const TaskRow: React.FC<TaskRowProps> = ({
         }
     };
 
+    const handleStatusUpdate = async (updated: Task) => {
+        if (!saveStatusChanges || !task.uid) return onTaskUpdate(updated);
+        try {
+            const response = await updateTask(task.uid, {
+                status: updated.status,
+            });
+            const merged: Task = {
+                ...task,
+                ...response,
+                subtasks: response.subtasks || task.subtasks || [],
+            };
+            // A recurring task comes back reopened for its next date, so a
+            // pick of Done goes through the page's completion handling.
+            if (onTaskCompletionToggle && isTaskDone(updated.status)) {
+                onTaskCompletionToggle(merged);
+            } else {
+                await onTaskUpdate(merged);
+            }
+        } catch (error) {
+            console.error('Task status update failed:', error);
+            showErrorToast(
+                t('task.statusUpdateError', 'Failed to update status')
+            );
+        }
+    };
+
+    // Completing a blocked task is allowed, but asked about first.
     const handleToggleCompletion = async () => {
         if (!task.id) return;
+        if (task.is_blocked && !isTaskCompleted(task.status)) {
+            setIsBlockedConfirmOpen(true);
+            return;
+        }
+        await performToggleCompletion();
+    };
+
+    const performToggleCompletion = async () => {
         try {
             const isCompletingTask =
                 task.status !== 'done' &&
@@ -307,12 +358,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
         project = { ...project, id: task.project_id };
     }
 
-    const isInProgress = task.status === 'in_progress' || task.status === 1;
     void isTaskOverdueInTodayPlan;
 
     const priorityBorderClass =
         isInCompletedSection || isTaskCompleted(task.status)
-            ? 'border-l-4 border-l-green-500'
+            ? 'border-l-[3px] border-l-green-500'
             : getPriorityBorderClassName(task.priority);
 
     const hasInitialSubtasks = !!(task.subtasks && task.subtasks.length > 0);
@@ -338,15 +388,15 @@ const TaskRow: React.FC<TaskRowProps> = ({
         <div
             ref={rowRootRef}
             className={`relative ${
-                isStatusMenuOpen ? 'z-[10001]' : isExpanded ? 'z-30' : ''
+                isStatusMenuOpen || isActionsMenuOpen
+                    ? 'z-[10001]'
+                    : isExpanded
+                      ? 'z-30'
+                      : ''
             }`}
         >
             <div
                 className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 ${priorityBorderClass} ${
-                    isInProgress
-                        ? 'ring-1 ring-blue-500/60 dark:ring-blue-600/60'
-                        : ''
-                } ${
                     isExpanded
                         ? 'ring-1 ring-blue-400/70 dark:ring-blue-600/70'
                         : ''
@@ -357,10 +407,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
                     project={project}
                     hideProjectName={hideProjectName}
                     hideStatusControl={hideStatusControl}
+                    condenseStatusControl={isUpcomingView}
                     compact={compact}
                     onActivate={handleActivate}
                     onToggleCompletion={handleToggleCompletion}
-                    onTaskUpdate={onTaskUpdate}
+                    onTaskUpdate={handleStatusUpdate}
                     onMenuOpenChange={setIsStatusMenuOpen}
                     hasSubtasks={shouldShowSubtasksIcon}
                     showSubtasks={showSubtasks}
@@ -369,9 +420,17 @@ const TaskRow: React.FC<TaskRowProps> = ({
                             ? handleSubtasksToggle
                             : undefined
                     }
+                    commentCount={commentCount}
                     editable={isExpanded}
                     onSaveTitle={setters.setTitle}
                     onEscape={collapse}
+                    onEdit={
+                        task.uid
+                            ? () => navigate(fullPagePath, fromState)
+                            : undefined
+                    }
+                    onDelete={task.uid ? handleDeleteClick : undefined}
+                    onActionsMenuOpenChange={setIsActionsMenuOpen}
                 />
 
                 {panelMounted && (
@@ -390,6 +449,8 @@ const TaskRow: React.FC<TaskRowProps> = ({
                             } as React.MouseEvent);
                         }}
                         onAddSubtask={handleAddSubtask}
+                        commentCount={commentCount}
+                        onCommentCountChange={setCommentCount}
                     />
                 )}
 
@@ -495,6 +556,29 @@ const TaskRow: React.FC<TaskRowProps> = ({
                         )}
                     </div>
                 )}
+
+            {isBlockedConfirmOpen && (
+                <ConfirmDialog
+                    title={t(
+                        'relations.completeBlockedTitle',
+                        'Task is blocked'
+                    )}
+                    message={t(
+                        'relations.completeBlockedMessage',
+                        'This task is blocked by {{count}} open task(s). Complete it anyway?',
+                        { count: task.blocked_by_count || 1 }
+                    )}
+                    confirmButtonText={t(
+                        'relations.completeAnyway',
+                        'Complete anyway'
+                    )}
+                    onConfirm={() => {
+                        setIsBlockedConfirmOpen(false);
+                        void performToggleCompletion();
+                    }}
+                    onCancel={() => setIsBlockedConfirmOpen(false)}
+                />
+            )}
 
             {isConfirmDialogOpen && (
                 <ConfirmDialog

@@ -36,8 +36,12 @@ This document explains how projects work in tududi from a user behavior perspect
    - "Stalled" detection for projects with no active tasks
 
 4. **Projects can be shared**
-   - Share with other users (read-only or read-write)
+   - Share with other users or with a whole group (read-only or read-write)
+   - The recipient has to accept the invitation before they see anything
    - Shared project access extends to all tasks/notes within
+
+5. **Projects can become templates**
+   - Save a project as a reusable template and start new projects from it (see [Project Templates](#project-templates))
 
 ---
 
@@ -199,8 +203,8 @@ These properties are computed automatically based on project content:
 
 ### Sharing Metadata
 
-**share_count**: Number of users project is shared with
-**is_shared**: `true` if `share_count > 0`
+**share_count**: Number of users who accepted access to the project
+**is_shared**: `true` once the project is shared with anyone, including invitations not accepted yet
 
 ---
 
@@ -334,6 +338,15 @@ No Area
   └── Random Ideas
 ```
 
+### Custom Order
+
+**On Projects page:**
+- Pick **Custom** in the sort menu, then drag a card or row to move it (cards and list view both work; on touch, press and hold first)
+- The order is personal: each user keeps their own, stored in `user_project_orders` (one row per user and project), so a shared project can sit in a different place for each member
+- Projects that have not been placed yet (new ones) show at the top, newest first; any drag saves a position for every project
+- With filters or search active, only the visible projects move; hidden projects keep their slots
+- API: `PUT /api/projects/order` with `{ "project_uids": [...] }` replaces the whole order; `GET /api/projects` returns `sort_position` (or `null`) on each project
+
 ---
 
 ## Tasks and Notes in Projects
@@ -369,6 +382,10 @@ No Area
 - Notes shown in separate "Notes" section on project page
 - Sorted by most recent first
 - Can be tagged independently
+
+### Project Attachments
+
+The project page has an **Attachments** tab next to Tasks and Notes. It holds files that belong to the project itself rather than to one task: briefs, plans, photos. It works like a task's attachments: click to upload, preview images and PDFs, download, delete. Anyone the project is shared with can see and download them; people with edit access can add and delete them. Up to 20 files per project, each under the server's upload limit. Files added in the Add box with **Project** chosen, or on an Inbox item that becomes a project, land here. Deleting the project deletes its files.
 
 ### Orphaned Tasks/Notes
 
@@ -413,13 +430,18 @@ No Area
 **How to share:**
 1. Open project detail page
 2. Click "Share" button
-3. Enter email of user to share with
+3. Choose **User** and enter their email, or choose **Group** (the toggle appears once the instance has a group, see [User Groups](18-user-groups.md))
 4. Select access level (read-only or read-write)
-5. User receives notification
+5. The recipient gets a `share_invitation` notification
+
+**Invitations:**
+- Sharing creates a pending invitation; the project stays invisible to the recipient until they accept
+- Declining removes the invitation; the owner can invite again later
+- The share dialog answers the same way whether or not the email belongs to an account, so it cannot be used to find out who has signed up
+- Sharing with a group invites every member separately (see [User Groups](18-user-groups.md))
 
 **Requirements:**
-- Other user must have a tududi account
-- Must use exact email address
+- Access only takes effect for someone with a tududi account who accepts
 - Cannot share with yourself
 
 ### Access Inheritance
@@ -443,13 +465,24 @@ No Area
 - Shared projects appear in their Projects list
 - Can filter projects by ownership vs shared
 - Shared indicator shown on project card
-- Cannot change Area (only owner can)
+- Can file the project under one of their own areas: the placement is stored per user (`user_project_areas`) and does not move the project for the owner or anyone else
 - Cannot delete project (only owner can)
 
 **Notifications:**
 - Project owner sees share count badge
 - Shared users see owner's name
 - Activity on shared project can trigger notifications
+
+---
+
+## Project Templates
+
+A template is a project row with `is_template = true`. Templates live on the **Templates** page, not in the Projects list.
+
+- **Save as template**: from a project (`POST /api/project/:uid/save-as-template`). Tasks are copied with their status reset, and tags are copied.
+- **Create from template**: clone a template into a new project (`POST /api/template/:uid/clone`). The default name is "<template> (Copy)" and task statuses are reset unless the caller passes `resetStatus: false`.
+- **Manage**: `GET /api/templates`, `POST /api/template`, `GET`/`PATCH`/`DELETE /api/template/:uid`.
+- **Marketplace**: when `MARKETPLACE_URL` (and optionally `MARKETPLACE_API_KEY`) is set, the Templates page also lists shared templates from that marketplace, which can be previewed and installed (`GET /api/marketplace/templates`, `POST /api/marketplace/templates/:uid/install`). Without it the marketplace list is empty.
 
 ---
 
@@ -539,6 +572,12 @@ No Area
    - Query: `?grouped=true`
    - Groups projects under area names
    - Special "No Area" group for orphaned projects
+
+### Page Controls
+
+- **Cards / list** switch next to search
+- **Status** dropdown also has **Shared**: every project you share or that is shared with you, any status
+- **Cog** menu: **Show someday projects** (projects tagged #someday, hidden by default), saved per user in `ui_settings.project.list.showSomeday`
 
 **Example URLs:**
 - `/projects?status=in_progress` - Active projects
@@ -753,8 +792,7 @@ Displayed on project cards and detail page:
 7. **Notes Section**
    - Note cards (most recent first)
    - "Add Note" button
-8. **Insights Panel** (if productivity assistant enabled)
-   - Auto-suggested next actions
+8. **Insights Panel**
    - Stalled warning
    - Due date alerts
 
@@ -762,24 +800,7 @@ Displayed on project cards and detail page:
 
 ## Special Features
 
-### 1. Auto-Suggest Next Action
-
-**What it does:**
-- AI-powered suggestions for next steps
-- Analyzes project context, tasks, and notes
-- Suggests concrete actions to move project forward
-
-**Appears when:**
-- Project has description and some tasks
-- User has AI features enabled
-- Accessed via "Suggest Next Action" button
-
-**Example suggestions:**
-- "Schedule a meeting with the designer"
-- "Review the latest mockups"
-- "Get feedback from stakeholders"
-
-### 2. Banner Images
+### 1. Banner Images
 
 **Purpose:**
 - Visual identity for projects
@@ -797,7 +818,7 @@ Displayed on project cards and detail page:
 - High resolution (1200x400 or larger)
 - Landscape orientation
 
-### 3. Task Sorting Preferences
+### 2. Task Sorting Preferences
 
 **Per-project sorting:**
 - Each project can have its own task sort order
@@ -816,7 +837,7 @@ Displayed on project cards and detail page:
 - Research project: Sort by created date
 - Deadline-driven project: Sort by due date
 
-### 4. Keyboard Shortcuts
+### 3. Keyboard Shortcuts
 
 **On project page:**
 - `n`: Create new task
@@ -917,6 +938,6 @@ Displayed on project cards and detail page:
 
 ---
 
-**Document Version:** 1.0.0
-**Last Updated:** 2026-03-14
+**Document Version:** 1.1.0
+**Last Updated:** 2026-09-22
 **Audience:** Developers, AI assistants, and end users

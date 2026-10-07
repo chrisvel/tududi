@@ -28,6 +28,9 @@ import {
     invalidateProfileCache,
 } from '../utils/profileService';
 import { notifySwClearCache } from '../utils/swUtils';
+import { detachPushForLogout } from '../utils/pushService';
+import { resetSessionState } from '../utils/sessionReset';
+import { toggleCapture, useCaptureUi } from '../utils/captureUi';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -54,14 +57,12 @@ const Navbar: React.FC<NavbarProps> = ({
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const [pomodoroEnabled, setPomodoroEnabled] = useState(true); // Default to true
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
-        backups: false,
-        caldav: false,
-        mcp: false,
         hosted: false,
         billing: false,
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const { open: captureOpen } = useCaptureUi();
     // Dispatch event when mobile search state changes
     useEffect(() => {
         window.dispatchEvent(
@@ -70,6 +71,17 @@ const Navbar: React.FC<NavbarProps> = ({
             })
         );
     }, [isMobileSearchOpen]);
+
+    // Pages open Universal Search with an openUniversalSearch event; on
+    // phones that means showing the navbar search bar.
+    useEffect(() => {
+        const handleOpenSearch = () => {
+            if (window.innerWidth < 768) setIsMobileSearchOpen(true);
+        };
+        window.addEventListener('openUniversalSearch', handleOpenSearch);
+        return () =>
+            window.removeEventListener('openUniversalSearch', handleOpenSearch);
+    }, []);
 
     // Listen for close mobile search events
     useEffect(() => {
@@ -152,6 +164,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
     const handleLogout = async () => {
         invalidateProfileCache();
+        await detachPushForLogout();
         try {
             const response = await fetch(getApiPath('logout'), {
                 method: 'GET',
@@ -160,6 +173,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
             if (response.ok) {
                 notifySwClearCache();
+                resetSessionState();
                 setCurrentUser(null);
                 navigate('/login');
             } else {
@@ -226,8 +240,12 @@ const Navbar: React.FC<NavbarProps> = ({
                     </button>
 
                     <button
-                        onClick={() => navigate('/inbox')}
-                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
+                        type="button"
+                        onClick={() => toggleCapture('inbox')}
+                        aria-haspopup="dialog"
+                        aria-expanded={captureOpen}
+                        data-testid="capture-navbar-button"
+                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
                         aria-label={t('navigation.quickInboxCapture')}
                         title={t('navigation.quickInboxCapture')}
                     >
@@ -280,10 +298,15 @@ const Navbar: React.FC<NavbarProps> = ({
                                             {t('navigation.admin', 'Admin')}
                                         </span>
                                         <span className="ml-3 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
-                                            {t(
-                                                'navigation.adminBadge',
-                                                'Admin'
-                                            )}
+                                            {featureFlags.hosted
+                                                ? t(
+                                                      'admin.roles.names.superadmin',
+                                                      'Superadmin'
+                                                  )
+                                                : t(
+                                                      'navigation.adminBadge',
+                                                      'Admin'
+                                                  )}
                                         </span>
                                     </Link>
                                 )}
@@ -298,27 +321,27 @@ const Navbar: React.FC<NavbarProps> = ({
                                         'Profile Settings'
                                     )}
                                 </Link>
-                                {featureFlags.backups && (
-                                    <Link
-                                        to="/backup"
-                                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        onClick={() => setIsDropdownOpen(false)}
-                                    >
-                                        <CircleStackIcon className="h-4 w-4 mr-2 shrink-0" />
-                                        {t(
-                                            'navigation.backupRestore',
-                                            'Backup & Restore'
-                                        )}
-                                    </Link>
-                                )}
                                 <Link
-                                    to="/about"
+                                    to="/backup"
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
-                                    <InformationCircleIcon className="h-4 w-4 mr-2 shrink-0" />
-                                    {t('navigation.about', 'About')}
+                                    <CircleStackIcon className="h-4 w-4 mr-2 shrink-0" />
+                                    {t(
+                                        'navigation.backupRestore',
+                                        'Backup & Restore'
+                                    )}
                                 </Link>
+                                {!featureFlags.hosted && (
+                                    <Link
+                                        to="/about"
+                                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        onClick={() => setIsDropdownOpen(false)}
+                                    >
+                                        <InformationCircleIcon className="h-4 w-4 mr-2 shrink-0" />
+                                        {t('navigation.about', 'About')}
+                                    </Link>
+                                )}
                                 <hr className="my-1 border-gray-200 dark:border-gray-600" />
                                 <button
                                     onClick={() => {

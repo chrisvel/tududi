@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import {
     FlagIcon,
@@ -9,6 +9,8 @@ import { Goal } from '../../entities/Goal';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { createGoalUrl } from '../../utils/slugUtils';
+import { useCan } from '../../hooks/useCan';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarGoalsProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -20,7 +22,8 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
     location,
 }) => {
     const { t } = useTranslation();
-    const [isExpanded, setIsExpanded] = useState(false);
+    const canCreateGoals = useCan('create_projects');
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('goals');
 
     const goals = useStore((state: any) => state.goalsStore.goals);
     const hasLoaded = useStore((state: any) => state.goalsStore.hasLoaded);
@@ -51,11 +54,14 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
     return (
         <div className="flex flex-col">
             <div
-                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md hover:bg-gray-100 dark:hover:bg-white/5 ${
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
                     location.pathname === '/goals'
                         ? 'bg-gray-100 dark:bg-white/5'
                         : ''
                 }`}
+                onClick={() => {
+                    if (activeGoals.length > 0) setIsExpanded((v) => !v);
+                }}
             >
                 <span
                     className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
@@ -63,7 +69,8 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                             ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.stopPropagation();
                         setIsExpanded(true);
                         handleNavClick('/goals', t('sidebar.goals', 'Goals'), <FlagIcon className="h-4 w-4 mr-2" />);
                     }}
@@ -72,21 +79,23 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                     {t('sidebar.goals', 'Goals')}
                 </span>
                 <div className="flex items-center gap-1">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleNavClick(
-                                '/goal/new',
-                                t('goals.newGoal', 'New Goal'),
-                                <FlagIcon className="h-4 w-4 mr-2" />
-                            );
-                        }}
-                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label={t('goals.addGoal', 'Add Goal')}
-                        title={t('goals.addGoal', 'Add Goal')}
-                    >
-                        <PlusIcon className="h-3.5 w-3.5" />
-                    </button>
+                    {canCreateGoals && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleNavClick(
+                                    '/goal/new',
+                                    t('goals.newGoal', 'New Goal'),
+                                    <FlagIcon className="h-4 w-4 mr-2" />
+                                );
+                            }}
+                            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-label={t('goals.addGoal', 'Add Goal')}
+                            title={t('goals.addGoal', 'Add Goal')}
+                        >
+                            <PlusIcon className="h-3.5 w-3.5" />
+                        </button>
+                    )}
                     {activeGoals.length > 0 && (
                         <>
                             <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">
@@ -97,7 +106,8 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

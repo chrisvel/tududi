@@ -22,75 +22,16 @@ describe('MCP Routing', () => {
     });
 
     describe('GET /api/mcp/status', () => {
-        let originalEnv;
-
-        beforeEach(() => {
-            originalEnv = process.env.FF_ENABLE_MCP;
-        });
-
-        afterEach(() => {
-            if (originalEnv === undefined) {
-                delete process.env.FF_ENABLE_MCP;
-            } else {
-                process.env.FF_ENABLE_MCP = originalEnv;
-            }
-        });
-
-        it('should return enabled: false when feature flag is off', async () => {
-            delete process.env.FF_ENABLE_MCP;
-
-            const response = await agent.get('/api/mcp/status');
-
-            expect(response.status).toBe(200);
-            expect(response.body.enabled).toBe(false);
-        });
-
-        it('should return enabled: true when feature flag is on', async () => {
-            process.env.FF_ENABLE_MCP = 'true';
-
+        it('should return enabled: true', async () => {
             const response = await agent.get('/api/mcp/status');
 
             expect(response.status).toBe(200);
             expect(response.body.enabled).toBe(true);
         });
-
-        it('should not require feature flag to be enabled', async () => {
-            // Status endpoint should always work regardless of feature flag
-            delete process.env.FF_ENABLE_MCP;
-
-            const response = await agent.get('/api/mcp/status');
-
-            expect(response.status).toBe(200);
-        });
     });
 
     describe('GET /api/mcp/config', () => {
-        let originalEnv;
-
-        beforeEach(() => {
-            originalEnv = process.env.FF_ENABLE_MCP;
-        });
-
-        afterEach(() => {
-            if (originalEnv === undefined) {
-                delete process.env.FF_ENABLE_MCP;
-            } else {
-                process.env.FF_ENABLE_MCP = originalEnv;
-            }
-        });
-
-        it('should require feature flag to be enabled', async () => {
-            delete process.env.FF_ENABLE_MCP;
-
-            const response = await agent.get('/api/mcp/config');
-
-            expect(response.status).toBe(403);
-            expect(response.body.error).toBe('MCP feature is not enabled');
-        });
-
-        it('should return Claude Desktop config when feature flag is on', async () => {
-            process.env.FF_ENABLE_MCP = 'true';
-
+        it('should return Claude Desktop config', async () => {
             const response = await agent.get('/api/mcp/config');
 
             expect(response.status).toBe(200);
@@ -105,37 +46,12 @@ describe('MCP Routing', () => {
     });
 
     describe('GET /api/mcp/tools', () => {
-        let originalEnv;
-
-        beforeEach(() => {
-            originalEnv = process.env.FF_ENABLE_MCP;
-        });
-
-        afterEach(() => {
-            if (originalEnv === undefined) {
-                delete process.env.FF_ENABLE_MCP;
-            } else {
-                process.env.FF_ENABLE_MCP = originalEnv;
-            }
-        });
-
-        it('should require feature flag to be enabled', async () => {
-            delete process.env.FF_ENABLE_MCP;
-
-            const response = await agent.get('/api/mcp/tools');
-
-            expect(response.status).toBe(403);
-            expect(response.body.error).toBe('MCP feature is not enabled');
-        });
-
-        it('should list all tool categories when feature flag is on', async () => {
-            process.env.FF_ENABLE_MCP = 'true';
-
+        it('should list all tool categories', async () => {
             const response = await agent.get('/api/mcp/tools');
 
             expect(response.status).toBe(200);
             expect(response.body.tools).toBeInstanceOf(Array);
-            expect(response.body.tools.length).toBe(8);
+            expect(response.body.tools.length).toBe(9);
 
             const categories = response.body.tools.map((t) => t.category);
             expect(categories).toContain('Tasks');
@@ -145,26 +61,12 @@ describe('MCP Routing', () => {
             expect(categories).toContain('Inbox');
             expect(categories).toContain('Notes');
             expect(categories).toContain('Tags');
+            expect(categories).toContain('Comments');
             expect(categories).toContain('Misc');
         });
     });
 
     describe('POST /api/mcp', () => {
-        let originalEnv;
-
-        beforeEach(() => {
-            originalEnv = process.env.FF_ENABLE_MCP;
-            process.env.FF_ENABLE_MCP = 'true';
-        });
-
-        afterEach(() => {
-            if (originalEnv === undefined) {
-                delete process.env.FF_ENABLE_MCP;
-            } else {
-                process.env.FF_ENABLE_MCP = originalEnv;
-            }
-        });
-
         it('should require Bearer token authentication', async () => {
             const response = await request(app)
                 .post('/api/mcp')

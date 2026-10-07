@@ -144,6 +144,9 @@ LLM_DISABLE_THINKING=false    # true to send chat_template_kwargs.enable_thinkin
 
 # Optional - Integrations
 DISABLE_TELEGRAM=false
+# VAPID_PUBLIC_KEY=             # Web Push keys, generated and stored on
+# VAPID_PRIVATE_KEY=            # first use when unset (docs/15-pwa.md)
+# VAPID_SUBJECT=mailto:you@example.com
 GOOGLE_CLIENT_ID=your-google-oauth-client-id
 GOOGLE_CLIENT_SECRET=your-google-oauth-secret
 GOOGLE_REDIRECT_URI=http://localhost:8080/auth/google/callback
@@ -159,6 +162,8 @@ TUDUDI_ALLOWED_ORIGINS=http://localhost:8080
 
 # Optional - Registration
 REGISTRATION_TOKEN_EXPIRY_HOURS=24
+# Refuse signups whose email domain cannot receive mail (MX lookup)
+# REGISTRATION_MX_CHECK=true
 # Password reset links stay valid this long
 PASSWORD_RESET_TOKEN_EXPIRY_MINUTES=60
 ```
@@ -319,7 +324,7 @@ export interface Task {
 
 ### Step 8: Update Frontend Component
 
-Edit `/frontend/components/Task/TaskForm.tsx`:
+Add a section under `/frontend/components/Task/TaskForm/` (for example `TaskEstimatedTimeSection.tsx`, modelled on `TaskDueDateSection.tsx`):
 
 ```typescript
 // Add input field
@@ -342,7 +347,7 @@ Edit `/frontend/components/Task/TaskForm.tsx`:
 
 ### Step 9: Write Tests
 
-Add tests in `/backend/tests/integration/tasks/tasks.test.js`:
+Add tests in `/backend/tests/integration/tasks.test.js`:
 
 ```javascript
 it('should create task with estimated_time', async () => {
@@ -549,6 +554,7 @@ docker run \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -v ~/tududi_db:/app/db \
   -v ~/tududi_uploads:/app/uploads \
+  -v ~/tududi_backups:/app/backups \
   -p 3002:3002 \
   -d tududi:latest
 ```

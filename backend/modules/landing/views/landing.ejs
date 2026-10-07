@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html lang="<%= i18n.meta.htmlLang %>" dir="<%= i18n.meta.dir || 'ltr' %>">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      // page_locale separates the five homepages without a second property.
-      // GA's built-in language dimension is the *browser's* language, which is
-      // a different question from which language we actually served.
-      gtag('config', 'G-VC2N7ZBPEE', { page_locale: '<%= i18n.locale %>' });
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= i18n.t('meta.title') %></title>
@@ -25,6 +12,7 @@
     <link rel="alternate" hreflang="<%= l.htmlLang %>" href="<%= localeUrl(l.code) %>" />
     <% }); %>
     <link rel="alternate" hreflang="x-default" href="<%= localeUrl('en') %>" />
+    <%- include('partials/social-meta', { title: i18n.t('meta.title'), description: i18n.t('meta.description', { tools: mcpToolCount }), url: canonicalUrl }) %>
     <meta property="og:locale" content="<%= i18n.meta.ogLocale %>">
     <% locales.filter(function (l) { return l.code !== i18n.locale; }).forEach(function (l) { %>
     <meta property="og:locale:alternate" content="<%= l.ogLocale %>">
@@ -60,21 +48,12 @@
             { id: 'shutdown' },
         ]},
         { id: 'managed', items: [
-            { id: 'freePlan' },
+            { id: 'freePlan', answer: trialDays > 0 ? 'aTrial' : 'a' },
             { id: 'whyManaged' },
             { id: 'aiOptional' },
             { id: 'aiPrivacy' },
             { id: 'mcp' },
             { id: 'leaving' },
-        ]},
-        // Self-hosting last. Nothing here is hidden, and the requirements answer
-        // leads the group; it is simply not the first thing the page argues for.
-        { id: 'selfHost', items: [
-            { id: 'requirements', link: { href: 'https://docs.tududi.com' } },
-            { id: 'dataLocation' },
-            { id: 'multiUser' },
-            { id: 'mobile' },
-            { id: 'reverseProxy' },
         ]},
     ];
 
@@ -86,6 +65,7 @@
         price: money(personalPrice),
         monthly: money(pricing.monthly),
         proStorageGb: plans.proStorageGb,
+        days: trialDays,
     };
 
     // camelCase id -> kebab fragment, so #faq-commercial-use is something a
@@ -120,17 +100,14 @@
                         // Answers are plain text on purpose, so this is the
                         // rendered string verbatim - nothing to strip, nothing
                         // that can disagree with what the visitor reads.
-                        text: i18n.t('faq.items.' + item.id + '.a', faqVars),
+                        text: i18n.t('faq.items.' + item.id + '.' + (item.answer || 'a'), faqVars),
                     },
                 };
             });
         }),
     }) %></script>
     <link rel="icon" href="/landing-assets/favicon.ico">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <%- include('partials/head-assets') %>
     <%- include('partials/styles') %>
 </head>
 <body>
@@ -150,36 +127,41 @@
     // "Show all N features" count and the eight-card hero grid drift apart
     // between locales, and a translation pass can silently drop a card.
     const featureGroups = [
+        { id: 'planDay', cards: [
+            { id: 'capture',       icon: 'fas fa-bolt',                 featured: true, shot: true },
+            { id: 'nlpDates',      icon: 'fas fa-calendar-check',       featured: true, shot: true },
+            { id: 'planMyDay',     icon: 'fas fa-wand-magic-sparkles',  featured: true, shot: true },
+            { id: 'todayCalendar', icon: 'fas fa-calendar-day',         featured: true, shot: true },
+            { id: 'aiPlanning',    icon: 'fas fa-robot',                featured: true, shot: true },
+        ]},
         { id: 'planFocus', cards: [
-            { id: 'goals',        icon: 'fas fa-bullseye',        featured: true },
-            { id: 'hierarchy',    icon: 'fas fa-project-diagram', featured: true },
-            { id: 'lifeAreas',    icon: 'fas fa-layer-group' },
-            { id: 'views',        icon: 'fas fa-filter',          featured: true },
-            { id: 'matrixKanban', icon: 'fas fa-th-large' },
-            { id: 'dueDates',     icon: 'fas fa-calendar-check' },
+            { id: 'goals',        icon: 'fas fa-bullseye',        featured: true, shot: true },
+            { id: 'hierarchy',    icon: 'fas fa-project-diagram', shot: true },
+            { id: 'lifeAreas',    icon: 'fas fa-layer-group', shot: true },
+            { id: 'views',        icon: 'fas fa-filter', shot: true },
+            { id: 'matrixKanban', icon: 'fas fa-th-large',        featured: true, shot: true },
             { id: 'insights',     icon: 'fas fa-chart-line' },
         ]},
         { id: 'tasksProjects', cards: [
-            { id: 'people',    icon: 'fas fa-user-friends' },
-            { id: 'habits',    icon: 'fas fa-redo-alt' },
-            { id: 'recurring', icon: 'fas fa-sync-alt',   featured: true },
-            { id: 'richTasks', icon: 'fas fa-tasks' },
-            { id: 'subtasks',  icon: 'fas fa-list-ul',    featured: true },
-            { id: 'notes',     icon: 'fas fa-sticky-note' },
-            { id: 'tags',      icon: 'fas fa-tag',        featured: true },
-            { id: 'search',    icon: 'fas fa-search' },
+            { id: 'people',    icon: 'fas fa-user-friends', shot: true },
+            { id: 'habits',    icon: 'fas fa-redo-alt',   featured: true, shot: true },
+            { id: 'recurring', icon: 'fas fa-sync-alt' },
+            { id: 'richTasks', icon: 'fas fa-tasks', shot: true },
+            { id: 'subtasks',  icon: 'fas fa-list-ul', shot: true },
+            { id: 'notes',     icon: 'fas fa-sticky-note', shot: true },
+            { id: 'tags',      icon: 'fas fa-tag', shot: true },
+            { id: 'search',    icon: 'fas fa-search', shot: true },
         ]},
         { id: 'accessAnywhere', cards: [
-            { id: 'pwa',        icon: 'fas fa-mobile-alt' },
+            { id: 'pwa',        icon: 'fas fa-mobile-alt', shot: true },
             { id: 'oidc',       icon: 'fas fa-id-badge' },
             { id: 'i18n',       icon: 'fas fa-language' },
-            { id: 'telegram',   icon: 'fas fa-paper-plane', featured: true },
+            { id: 'telegram',   icon: 'fas fa-paper-plane' },
             { id: 'caldav',     icon: 'fas fa-calendar-alt' },
             { id: 'api',        icon: 'fas fa-code' },
-            { id: 'responsive', icon: 'fas fa-mobile-alt' },
         ]},
         { id: 'privacyCollab', cards: [
-            { id: 'privacy', icon: 'fas fa-shield-alt', featured: true },
+            { id: 'privacy', icon: 'fas fa-shield-alt' },
             { id: 'collab',  icon: 'fas fa-user-friends' },
         ]},
     ];
@@ -236,34 +218,35 @@
     // page counts it, rather than repeating a number that goes stale.
     const languageCount = locales.length;
 
-    // Runtimes, not tiers. There is one Cloud plan and it is paid, so the
-    // table compares the two ways to run tududi and nothing else.
-    //
-    // Ordered so the rows Cloud wins come first, then the parity rows - which
-    // are the point of the whole section, since they say the self-hosted build
-    // is not crippled - then the three rows self-hosting genuinely wins.
-    //
-    // Ticks and crosses are product claims, not copy, so they stay here where
-    // no translation pass can flip one: only the row label and the two text
-    // cells are localized, by id.
+    // tududi Cloud against the three apps people most often weigh it
+    // against, on their individual plans. Vendor names, prices and ticks are
+    // claims about other companies, taken from their public pricing pages
+    // (see compare.footnote for the date), so they live here rather than in
+    // the locales: re-check them before changing any. Only labels and the
+    // text cells are translated. Cells are 'yes', 'no', or a string.
+    const compareVendors = ['tududi Cloud', 'Todoist Pro', 'TickTick Premium', 'Notion Plus'];
     const comparisonRows = [
-        { id: 'noSetup',         cloudCheck: true, selfX: true },
-        { id: 'startMinute',     cloudCheck: true, selfX: true },
-        { id: 'managedUpdates',  cloudCheck: true, selfX: true },
-        { id: 'autoBackups',     cloudCheck: true, selfX: true },
-        { id: 'support',         cloudText: t('compare.values.email'),
-                                 selfText:  t('compare.values.community') },
-        { id: 'storage',         cloudText: t('compare.values.gigabytes', { count: plans.proStorageGb }),
-                                 selfText:  t('compare.values.yourDisk') },
-        { id: 'proFeatures',     cloudCheck: true, selfCheck: true },
-        { id: 'openSource',      cloudCheck: true, selfCheck: true },
-        { id: 'commercialUse',   cloudCheck: true, selfCheck: true },
-        { id: 'exportAnytime',   cloudCheck: true, selfCheck: true },
-        { id: 'dataOnHardware',  cloudX: true,     selfCheck: true },
-        { id: 'infraControl',    cloudX: true,     selfCheck: true },
-        { id: 'noRecurring',     cloudX: true,     selfCheck: true },
-        { id: 'pricing',         cloudText: t('compare.values.perMonthOrYear', { monthly: money(pricing.monthly), price: money(personalPrice) }),
-                                 selfText:  t('compare.values.selfCost') },
+        { id: 'price',      cells: [
+            t('compare.values.perYear', { price: money(personalPrice) }),
+            t('compare.values.perYear', { price: '$60' }),
+            t('compare.values.perYear', { price: '$49.99' }),
+            t('compare.values.perYear', { price: '$120' }),
+        ]},
+        { id: 'aiIncluded', cells: [
+            'yes', 'yes', 'yes',
+            t('compare.values.businessOnly'),
+        ]},
+        { id: 'dayPlanner', cells: ['yes', 'yes', 'yes', t('compare.values.separateApp')] },
+        { id: 'habits',     cells: ['yes', 'no', 'yes', 'no'] },
+        { id: 'goals',      cells: ['yes', 'no', 'no', t('compare.values.diy')] },
+        { id: 'notes',      cells: ['yes', 'no', 'yes', 'yes'] },
+        { id: 'matrix',     cells: ['yes', 'no', 'yes', t('compare.values.diy')] },
+        { id: 'kanban',     cells: ['yes', 'yes', 'yes', 'yes'] },
+        { id: 'views',      cells: ['yes', 'yes', 'yes', 'yes'] },
+        { id: 'people',     cells: ['yes', 'yes', 'yes', 'yes'] },
+        { id: 'telegram',   cells: ['yes', 'no', 'no', 'no'] },
+        { id: 'caldav',     cells: ['yes', 'no', 'no', 'no'] },
+        { id: 'mcp',       cells: ['yes', 'yes', 'yes', 'yes'] },
     ];
 %>
 
@@ -273,11 +256,18 @@
         <div class="hero-glow"></div>
         <div class="hero-inner">
             <div class="hero-badges">
+                <a href="<%= localePath(i18n.locale, '/cloud') %>" class="hero-badge hero-badge-launch" data-testid="cloud-open-badge">
+                    <i class="fas fa-cloud"></i>
+                    <span><%= t('hero.badgeCloudOpen') %></span>
+                    <i class="fas fa-arrow-right hero-badge-arrow" aria-hidden="true"></i>
+                </a>
+                <% if (githubStars) { %>
                 <span class="hero-badge">
                     <i class="fab fa-github"></i>
-                    <strong data-github-stars><span class="stars-spinner" role="status" aria-label="<%= t('hero.starsLoading') %>"></span></strong>
+                    <strong><%= githubStars.toLocaleString() %></strong>
                     <span><%= t('hero.badgeStars') %></span>
                 </span>
+                <% } %>
                 <span class="hero-badge">
                     <i class="fas fa-plug"></i>
                     <span><%= t('hero.badgeMcp') %></span>
@@ -298,10 +288,10 @@
                 <%# One offer, not a fork in the road: sign up, or look at a
                     real instance first. Neither self-hosting nor the source
                     repository is offered here - both live near the foot of the
-                    page, in the self-host section and the footer, where someone
+                    page, on the pricing card and in the footer, where someone
                     who came looking for them will still find them. The stars
                     chip above stays, because that is proof rather than an exit. %>
-                <a href="<%= pricing.cloudOpen ? appUrl + '/register' : '#waitlist' %>" class="btn-primary"><i class="fas fa-cloud"></i><%= pricing.cloudOpen ? t('hero.ctaPrimary') : t('hero.ctaWaitlist') %></a>
+                <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= trialDays > 0 ? t('hero.ctaTrial', faqVars) : t('hero.ctaPrimary') %></a>
                 <%# Rendered only when there is genuinely an instance to open.
                     demo.available is false while the container is being rebuilt
                     or if provisioning failed, and the whole button disappears
@@ -313,9 +303,7 @@
                 </a>
                 <% } %>
             </div>
-            <% if (pricing.cloudOpen) { %>
-            <p class="hero-note"><i class="fas fa-cloud"></i><%= t('hero.cloudNote') %></p>
-            <% } %>
+            <p class="hero-note"><i class="fas fa-cloud"></i><%= trialDays > 0 ? t('hero.cloudNoteTrial', faqVars) : t('hero.cloudNote') %></p>
             <% if (demo && demo.available) { %>
             <p class="hero-note"><i class="fas fa-eye"></i><%= t('hero.demoNote') %></p>
             <% } %>
@@ -329,7 +317,24 @@
                 <span style="background:#e5b95c;"></span>
                 <span style="background:#61c454;"></span>
             </div>
-            <img src="/landing-assets/screenshots/all-light.png" alt="<%= t('hero.screenshotAlt') %>">
+            <%# A short loop of the planner drafting a day with AI, then Today.
+                It plays only when a script starts it and the visitor has not
+                asked for reduced motion; everyone else keeps the poster, the
+                same frame as a still. Recorded from a seeded account. %>
+            <video id="hero-video" class="hero-video" muted loop playsinline preload="metadata"
+                   poster="/landing-assets/screenshots/hero-light.png"
+                   aria-label="<%= t('hero.screenshotAlt') %>">
+                <source src="/landing-assets/screenshots/hero.mp4" type="video/mp4">
+            </video>
+            <script>
+                (function () {
+                    var v = document.getElementById('hero-video');
+                    if (!v || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                    v.preload = 'auto';
+                    var p = v.play();
+                    if (p && p.catch) p.catch(function () {});
+                })();
+            </script>
         </div>
     </section>
 
@@ -340,9 +345,9 @@
         Row one is who has covered tududi - previously two unlinked claims
         ("Covered by XDA", "Listed in awesome-selfhosted") buried mid-sentence
         in row two, where nobody could check them. Row two is the countable
-        facts. The Docker pull count used to sit here and now lives in the
-        self-host section: it is proof that people run containers, which is a
-        different argument from the one this part of the page is making.
+        facts. The Docker pull count used to sit here and was dropped: it is
+        proof that people run containers, which is a different argument from
+        the one this part of the page is making.
     -->
     <section class="proofbar">
         <div class="proofbar-inner">
@@ -353,24 +358,67 @@
                 <% }); %>
             </div>
             <div class="proofbar-stats">
+                <% if (githubStars) { %>
                 <span class="proofbar-item">
                     <i class="fab fa-github"></i>
-                    <strong data-github-stars><span class="stars-spinner" role="status" aria-label="<%= t('hero.starsLoading') %>"></span></strong> <%= t('proof.stars') %>
+                    <strong><%= githubStars.toLocaleString() %></strong> <%= t('proof.stars') %>
                 </span>
                 <span class="proofbar-sep">&middot;</span>
+                <% } %>
                 <span class="proofbar-item"><%= t('proof.mcp', { tools: mcpToolCount }) %></span>
                 <span class="proofbar-sep">&middot;</span>
                 <span class="proofbar-item"><%= t('proof.languages', { count: languageCount }) %></span>
-                <% if (pricing.cloudOpen) { %>
                 <span class="proofbar-sep">&middot;</span>
                 <span class="proofbar-item"><%= t('proof.minute') %></span>
-                <% } %>
             </div>
         </div>
     </section>
 
     <!--
-        Features. Eight cards carry the page; the other sixteen stay in the DOM
+        Plan your day. The loop the product is built around, in the order a
+        day runs: capture, plan, do. Screenshots come from a seeded account,
+        so every name in them is sample data. Step ids double as locale keys
+        and image names; the images live next to the hero shot.
+    -->
+    <% const planSteps = [
+        { id: 'capture', icon: 'fas fa-bolt',          img: 'capture-light.png' },
+        { id: 'plan',    icon: 'fas fa-wand-magic-sparkles', img: 'plan-light.png' },
+        { id: 'today',   icon: 'fas fa-calendar-day',  img: 'today-light.png' },
+    ]; %>
+    <section id="plan" class="section plan-day">
+        <div class="container">
+            <div class="section-head">
+                <span class="eyebrow"><%= t('plan.eyebrow') %></span>
+                <h2 class="section-title"><%= t('plan.title') %></h2>
+                <p class="section-sub" style="max-width:720px; margin:0 auto;"><%= t('plan.sub') %></p>
+            </div>
+            <% planSteps.forEach(function (step, i) { %>
+            <div class="plan-step<%= i % 2 ? ' plan-step-flip' : '' %>">
+                <div class="plan-step-text">
+                    <span class="plan-step-num"><i class="<%= step.icon %>"></i><%= t('plan.stepLabel', { n: i + 1 }) %></span>
+                    <h3><%= t('plan.steps.' + step.id + '.title') %></h3>
+                    <p><%= t('plan.steps.' + step.id + '.body') %></p>
+                    <ul>
+                        <% i18n.tList('plan.steps.' + step.id + '.points').forEach(function (point) { %>
+                        <li><i class="fas fa-check"></i><%= point %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+                <div class="browser-frame plan-step-shot">
+                    <div class="browser-dots">
+                        <span style="background:#e0645c;"></span>
+                        <span style="background:#e5b95c;"></span>
+                        <span style="background:#61c454;"></span>
+                    </div>
+                    <img src="/landing-assets/screenshots/<%= step.img %>" alt="<%= t('plan.steps.' + step.id + '.alt') %>" loading="lazy">
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </section>
+
+    <!--
+        Features. Eight cards carry the page; the rest stay in the DOM
         behind a toggle so crawlers still see the full copy without the grid
         eating a quarter of the page height.
     -->
@@ -387,15 +435,24 @@
             <%# Only one card body has a placeholder, but passing count to all of
                 them is free: interpolate() is a no-op on a string without one. %>
             <% const cardVars = { count: languageCount }; %>
-            <% const featuredCards = featureGroups.flatMap(function (g) { return g.cards.filter(function (c) { return c.featured; }); }); %>
-            <div class="feature-grid">
-                <% featuredCards.forEach(function (card) { %>
+            <%# Every card leads with its icon, so a card with a screenshot and one
+                without read as the same set. The screenshot sits behind a quiet
+                link: a real href to the image, so it still opens with JS off,
+                and the script below turns it into the preview dialog. %>
+            <% function featureCard(card) {
+                const title = t('features.cards.' + card.id + '.title', cardVars); %>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
-                    <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
+                    <h4><%= title %></h4>
                     <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
+                    <% if (card.shot) { %>
+                    <a class="feature-peek" href="/landing-assets/screenshots/features/<%= card.id %>.webp" data-title="<%= title %>"><i class="far fa-image" aria-hidden="true"></i><%= t('features.preview') %></a>
+                    <% } %>
                 </div>
-                <% }); %>
+            <% } %>
+            <% const featuredCards = featureGroups.flatMap(function (g) { return g.cards.filter(function (c) { return c.featured; }); }); %>
+            <div class="feature-grid">
+                <% featuredCards.forEach(featureCard); %>
             </div>
 
             <div id="feature-rest" hidden>
@@ -408,13 +465,7 @@
                         <h3><%= t('features.groups.' + group.id) %></h3>
                     </div>
                     <div class="feature-grid">
-                        <% rest.forEach(function (card) { %>
-                        <div class="feature-card">
-                            <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
-                            <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
-                            <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
-                        </div>
-                        <% }); %>
+                        <% rest.forEach(featureCard); %>
                     </div>
                 </div>
                 <% } %>
@@ -427,6 +478,14 @@
                     <i class="fas fa-plus"></i><span><%= t('features.showAll', { count: featureTotal }) %></span>
                 </button>
             </div>
+
+            <dialog id="feature-preview" class="feature-preview" aria-labelledby="feature-preview-title">
+                <div class="feature-preview-head">
+                    <h4 id="feature-preview-title"></h4>
+                    <button type="button" class="feature-preview-close" aria-label="<%= t('features.closePreview') %>"><i class="fas fa-times" aria-hidden="true"></i></button>
+                </div>
+                <img alt="" width="1120" height="700">
+            </dialog>
         </div>
     </section>
 
@@ -543,37 +602,6 @@
                 </div>
             </div>
 
-            <%# The snippet is the one the dashboard hands real users (see
-                views/dashboard/index.ejs) with the token left as a placeholder.
-                Keep the two in step if the env vars ever change. %>
-            <div class="mcp-config">
-                <div class="mcp-config-head">
-                    <h4><%= t('ai.configTitle') %></h4>
-                    <span>claude_desktop_config.json</span>
-                </div>
-                <%# Cloud is the default example because it is the instance most
-                    readers will have. The self-hosted URL is the same snippet
-                    with one line changed, so it is a disclosure rather than a
-                    second block competing for attention. %>
-                <p class="mcp-config-tab"><i class="fas fa-cloud"></i><%= t('ai.configCloudTab') %></p>
-                <div class="setup-pre"><pre><code>{
-  "mcpServers": {
-    "tududi": {
-      "command": "npx",
-      "args": ["-y", "tududi-mcp"],
-      "env": {
-        "TUDUDI_URL": "<%= appUrl %>",
-        "TUDUDI_API_TOKEN": "your-personal-access-token"
-      }
-    }
-  }
-}</code></pre></div>
-                <details class="mcp-config-alt">
-                    <summary><%= t('ai.configSelfHostTab') %></summary>
-                    <p><%= t('ai.configSelfHostNote') %></p>
-                    <div class="setup-pre"><pre><code>"TUDUDI_URL": "http://localhost:3002"</code></pre></div>
-                </details>
-            </div>
             <p class="ai-footnote" style="margin-bottom:20px;">
                 <%= t('ai.footnoteClients') %>
                 <a href="https://docs.tududi.com" class="ai-footnote-link"><%= t('ai.footnoteDocsLink') %></a>
@@ -588,14 +616,19 @@
                 </p>
                 <div class="auto-grid">
                     <div class="dark-card">
-                        <i class="fas fa-sun"></i>
-                        <h4><%= t('ai.assistantCards.daily.title') %></h4>
-                        <p><%= t('ai.assistantCards.daily.body') %></p>
-                    </div>
-                    <div class="dark-card">
                         <i class="fas fa-lightbulb"></i>
                         <h4><%= t('ai.assistantCards.task.title') %></h4>
                         <p><%= t('ai.assistantCards.task.body') %></p>
+                    </div>
+                    <div class="dark-card">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        <h4><%= t('ai.assistantCards.plan.title') %></h4>
+                        <p><%= t('ai.assistantCards.plan.body') %></p>
+                    </div>
+                    <div class="dark-card">
+                        <i class="fas fa-flag-checkered"></i>
+                        <h4><%= t('ai.assistantCards.wrapUp.title') %></h4>
+                        <p><%= t('ai.assistantCards.wrapUp.body') %></p>
                     </div>
                     <div class="dark-card">
                         <i class="fas fa-heartbeat"></i>
@@ -663,12 +696,11 @@
                         <div class="plan-icon"><i class="fas fa-cloud"></i></div>
                         <h3><%= t('pricing.plans.cloud.name') %></h3>
                     </div>
-                    <% if (pricing.cloudOpen) { %>
                     <div class="plan-price">
-                        <%# One plan, and it is paid. There is no free tier and no
-                            trial, so nothing here may imply a way in without a
-                            card - the money-back guarantee in the fineprint is
-                            the only safety net we actually offer. %>
+                        <%# One plan, and it is paid. There is no free tier; the
+                            trial is mentioned only when TUDUDI_TRIAL_DAYS turns
+                            it on (trialDays), so nothing here may imply a way
+                            in without a card that the instance does not offer. %>
                         <div class="plan-amount"><span><%= money(pricing.monthly) %></span><span><%= t('pricing.perMonth') %></span></div>
                         <div class="plan-pro-line">
                             <span class="plan-pro-sep"><%= t('pricing.plans.cloud.or') %></span>
@@ -685,39 +717,17 @@
                         <% if (pricing.launchActive) { %>
                         <div class="plan-launch-note"><%= t('pricing.plans.cloud.launchNote') %></div>
                         <% } %>
-                        <div class="plan-price-note"><%= t('pricing.plans.cloud.priceNote') %></div>
+                        <div class="plan-price-note"><%= trialDays > 0 ? t('pricing.plans.cloud.priceNoteTrial', faqVars) : t('pricing.plans.cloud.priceNote') %></div>
+                        <% if (trialDays > 0) { %>
+                        <div class="plan-launch-note"><%= t('pricing.plans.cloud.trialNote') %></div>
+                        <% } %>
                     </div>
                     <ul class="plan-features">
                         <% i18n.tList('pricing.plans.cloud.features', faqVars).forEach(function (feature) { %>
                         <li><i class="fas fa-check"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= t('pricing.plans.cloud.action') %></a>
-                    <% } else { %>
-                    <%# Cloud is being moved to new infrastructure: no register
-                        link, just the notice and the same email capture the
-                        waitlist section below posts to, tagged with its own
-                        source so we can see which form people used. %>
-                    <div class="plan-price">
-                        <div class="plan-amount"><span><%= t('pricing.plans.cloud.comingSoon') %></span></div>
-                        <div class="plan-price-note"><%= t('pricing.plans.cloud.comingSoonNote') %></div>
-                    </div>
-                    <ul class="plan-features">
-                        <% i18n.tList('pricing.plans.cloud.features', faqVars).forEach(function (feature) { %>
-                        <li><i class="fas fa-check"></i><%= feature %></li>
-                        <% }); %>
-                    </ul>
-                    <% if (joined) { %>
-                    <p class="waitlist-done" style="margin-top:28px;"><%= t('waitlist.joined') %></p>
-                    <% } else { %>
-                    <form class="waitlist-form" action="/waitlist" method="post" style="margin-top:28px;">
-                        <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
-                        <input type="hidden" name="source" value="pricing">
-                        <input type="hidden" name="locale" value="<%= i18n.locale %>">
-                        <button type="submit"><%= t('pricing.plans.cloud.notifySubmit') %></button>
-                    </form>
-                    <% } %>
-                    <% } %>
+                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('pricing.plans.cloud.actionTrial', faqVars) : t('pricing.plans.cloud.action') %></a>
                 </div>
 
                 <%# Bullets here are work the visitor takes on, not benefits, so
@@ -742,7 +752,7 @@
                         <li><i class="fas fa-wrench"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="#self-host" class="plan-action"><%= t('pricing.plans.selfHosted.action') %></a>
+                    <a href="https://github.com/chrisvel/tududi" class="plan-action"><%= t('pricing.plans.selfHosted.action') %></a>
                 </div>
             </div>
 
@@ -770,30 +780,27 @@
 
             <div class="compare-scroll-wrap">
             <div class="compare-scroll" tabindex="0" role="region" aria-label="<%= t('compare.title') %>">
-                <div class="compare">
+                <div class="compare compare-vendors">
                     <div class="compare-row compare-head">
                         <div></div>
-                        <div><%= t('compare.colCloud') %></div>
-                        <div><%= t('compare.colSelf') %></div>
+                        <% compareVendors.forEach(function (vendor, i) { %>
+                        <div<%- i === 0 ? ' class="compare-us"' : '' %>><%= vendor %></div>
+                        <% }); %>
                     </div>
                     <% comparisonRows.forEach(function (row) { %>
                     <div class="compare-row">
                         <div class="compare-label"><%= t('compare.rows.' + row.id) %></div>
-                        <div class="compare-cell">
-                            <% if (row.cloudText) { %><span class="text"><%= row.cloudText %></span><% } %>
-                            <% if (row.cloudCheck) { %><i class="fas fa-check yes"></i><% } %>
-                            <% if (row.cloudX) { %><i class="fas fa-times no"></i><% } %>
+                        <% row.cells.forEach(function (cell, i) { %>
+                        <div class="compare-cell<%= i === 0 ? ' compare-us' : '' %>">
+                            <% if (cell === 'yes') { %><i class="fas fa-check yes" aria-label="✓"></i><% } else if (cell === 'no') { %><i class="fas fa-times no" aria-label="✗"></i><% } else { %><span class="text"><%= cell %></span><% } %>
                         </div>
-                        <div class="compare-cell">
-                            <% if (row.selfText) { %><span class="text"><%= row.selfText %></span><% } %>
-                            <% if (row.selfCheck) { %><i class="fas fa-check yes"></i><% } %>
-                            <% if (row.selfX) { %><i class="fas fa-times no"></i><% } %>
-                        </div>
+                        <% }); %>
                     </div>
                     <% }); %>
                 </div>
             </div>
             </div>
+            <p class="compare-footnote"><%= t('compare.footnote') %></p>
 
         </div>
     </section>
@@ -844,7 +851,7 @@
                             h4 under the group's h3 keeps the outline unbroken. %>
                         <summary class="faq-q"><h4><%= t('faq.items.' + item.id + '.q', faqVars) %></h4></summary>
                         <div class="faq-a">
-                            <p><%= t('faq.items.' + item.id + '.a', faqVars) %></p>
+                            <p><%= t('faq.items.' + item.id + '.' + (item.answer || 'a'), faqVars) %></p>
                             <div class="faq-a-foot">
                                 <% if (item.link) { %>
                                 <a class="faq-a-link" href="<%= item.link.href %>"><%= t('faq.items.' + item.id + '.linkLabel') %><i class="fas fa-arrow-right"></i></a>
@@ -865,134 +872,47 @@
     </section>
 
     <!--
-        Self-Host. Demoted on purpose, and late on purpose. It used to open with
-        "deploy in minutes" above the pricing, which sold the hard path to people
-        who had not asked for it. The honest version leads with what the reader
-        signs up for - Docker, a reverse proxy, TLS, updates, backups - offers
-        Cloud first, and keeps the commands behind a disclosure. Nothing is
-        removed: everything that was here is still here, one click in.
-    -->
-    <section id="self-host" class="section section-dark selfhost">
-        <div class="container-sm">
-            <div class="section-head" style="margin-bottom:36px;">
-                <span class="eyebrow"><%= t('selfHost.eyebrow') %></span>
-                <h2 class="section-title" style="margin-bottom:16px;"><%= t('selfHost.title') %></h2>
-                <p class="section-sub"><%= t('selfHost.sub') %></p>
-            </div>
-
-            <div class="selfhost-actions">
-                <% if (pricing.cloudOpen) { %>
-                <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('selfHost.ctaCloud') %></a>
-                <% } %>
-                <a href="https://docs.tududi.com" class="btn-ghost"><i class="fas fa-book"></i><%= t('selfHost.linkDocs') %></a>
-            </div>
-
-            <div class="setup-card">
-                <div class="setup-head">
-                    <div class="setup-head-icon"><i class="fab fa-docker"></i></div>
-                    <div>
-                        <h3><%= t('selfHost.cardTitle') %></h3>
-                        <p><%= t('selfHost.cardSub') %></p>
-                    </div>
-                </div>
-
-                <%# Collapsed rather than deleted. A two-line docker run in the
-                    open reads as "this is easy", which is the claim the section
-                    above spends three sentences correcting. The uploads volume
-                    is here because the README mounts it too: a one-liner that
-                    quietly loses attachments is worse than no one-liner. %>
-                <details class="setup-disclosure">
-                    <summary><i class="fas fa-terminal"></i><%= t('selfHost.showCommands') %></summary>
-                    <div class="setup-steps">
-                        <div>
-                            <div class="setup-step-head">
-                                <span class="setup-num">1</span>
-                                <h4><%= t('selfHost.step1') %></h4>
-                            </div>
-                            <div class="setup-pre"><pre><code>docker pull chrisvel/tududi:latest</code></pre></div>
-                        </div>
-                        <div>
-                            <div class="setup-step-head">
-                                <span class="setup-num">2</span>
-                                <h4><%= t('selfHost.step2') %></h4>
-                            </div>
-                            <div class="setup-pre"><pre><code>docker run \
-  -e TUDUDI_USER_EMAIL=you@example.com \
-  -e TUDUDI_USER_PASSWORD=yourpassword \
-  -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
-  -v ~/tududi_db:/app/db \
-  -v ~/tududi_uploads:/app/uploads \
-  -p 3002:3002 \
-  -d chrisvel/tududi:latest</code></pre></div>
-                        </div>
-                        <div>
-                            <div class="setup-step-head" style="margin-bottom:0;">
-                                <span class="setup-num">3</span>
-                                <h4><%= t('selfHost.step3Prefix') %> <code style="color:#60bffa;">http://localhost:3002</code></h4>
-                            </div>
-                        </div>
-                    </div>
-                </details>
-
-                <div class="setup-links">
-                    <a href="https://github.com/chrisvel/tududi" class="btn-ghost"><i class="fab fa-github"></i><%= t('selfHost.linkGithub') %></a>
-                    <a href="https://docs.tududi.com" class="btn-ghost"><i class="fas fa-book"></i><%= t('nav.docs') %></a>
-                </div>
-
-                <%# The pull count lives here now rather than in the proof bar.
-                    Same rule as before: omitted entirely when the fetch has
-                    nothing cached, never a stale hardcoded number. %>
-                <% if (dockerPulls) { %>
-                <p class="setup-pulls"><i class="fab fa-docker"></i><strong><%= Math.floor(dockerPulls / 1000).toLocaleString() %>k+</strong> <%= t('proof.dockerPulls') %></p>
-                <% } %>
-            </div>
-        </div>
-    </section>
-
-    <!--
         Final CTA. Replaces the band that used to close the comparison table with
         "Ready to run your own system?" and a Docker button. Same position in the
-        funnel, opposite recommendation: the filled button is the free Cloud
-        account, and self-hosting is a sentence of plain text underneath, which
-        is the weight it should have had all along.
+        funnel, opposite recommendation: the filled button is the Cloud
+        account, and self-hosting is left to the pricing card and the footer.
     -->
     <section class="section" style="padding-top:72px; padding-bottom:72px;">
         <div class="container-sm">
             <div class="closing" style="margin-top:0;">
                 <h2 class="section-title" style="font-size:32px; margin-bottom:14px;"><%= t('finalCta.title') %></h2>
-                <p><%= t('finalCta.sub') %></p>
+                <p><%= trialDays > 0 ? t('finalCta.subTrial', faqVars) : t('finalCta.sub') %></p>
                 <div class="closing-actions">
-                    <a href="<%= pricing.cloudOpen ? appUrl + '/register' : '#waitlist' %>" class="btn-primary"><i class="fas fa-cloud"></i><%= pricing.cloudOpen ? t('finalCta.primary') : t('hero.ctaWaitlist') %></a>
+                    <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= trialDays > 0 ? t('finalCta.primaryTrial') : t('finalCta.primary') %></a>
                     <a href="#pricing" class="btn-secondary"><%= t('finalCta.secondary') %></a>
                 </div>
-                <p class="closing-selfhost"><%= t('finalCta.selfHostPrefix') %> <a href="#self-host"><%= t('finalCta.selfHostLink') %></a></p>
             </div>
         </div>
     </section>
 
     <!--
-        Release-notes signup. Posts straight to the mailing-list provider in
-        TUDUDI_LANDING_NEWSLETTER_URL and renders nothing when none is set.
+        Release-notes signup. Posts to /waitlist on this host, which stores the
+        address in waitlist_subscribers.
 
         Sits after the comparison because it is the catch for everyone the three
         cards did not close: the ask is an email, not a card.
     -->
     <section class="waitlist" id="waitlist">
         <div class="waitlist-inner">
-            <%# Two jobs, one form. While Cloud is shut this is the waitlist the
-                hero points at; while it is open the same capture is the release
-                notes list, and it says so, because "Cloud is opening soon" sitting
-                under a live signup button is a plain contradiction. The open-state
-                strings are the footer's, already translated everywhere. %>
-            <h2 class="section-title" style="font-size:30px; margin-bottom:14px;"><%= pricing.cloudOpen ? t('footer.subTitle') : t('waitlist.title') %></h2>
+            <%# The release-notes list, with the same title as the footer's form.
+                The anchor and the /waitlist route keep their old names so
+                existing links and stored rows stay valid. %>
+            <h2 class="section-title" style="font-size:30px; margin-bottom:14px;"><%= t('footer.subTitle') %></h2>
             <p class="section-sub" style="font-size:16.5px; margin-bottom:28px;">
-                <%= pricing.cloudOpen ? t('footer.subBody') : t('waitlist.sub') %>
+                <%= t('footer.subBody') %>
             </p>
             <div class="waitlist-proof">
+                <% if (githubStars) { %>
                 <a href="https://github.com/chrisvel/tududi" class="waitlist-proof-item" rel="noopener">
                     <i class="fab fa-github"></i>
-                    <strong data-github-stars><span class="stars-spinner" role="status" aria-label="<%= t('hero.starsLoading') %>"></span></strong> <%= t('proof.stars') %>
+                    <strong><%= githubStars.toLocaleString() %></strong> <%= t('proof.stars') %>
                 </a>
+                <% } %>
                 <a href="https://discord.gg/fkbeJ9CmcH" class="waitlist-proof-item" rel="noopener">
                     <i class="fab fa-discord"></i>
                     <% if (discordMembers) { %><strong><%= discordMembers.toLocaleString() %></strong> <%= t('proof.discord') %><% } else { %>Discord<% } %>
@@ -1002,16 +922,17 @@
                 </a>
             </div>
             <% if (joined) { %>
-            <p class="waitlist-done" data-testid="waitlist-joined"><%= t('waitlist.joined') %></p>
+            <p class="waitlist-done" data-testid="waitlist-joined"><%= t('signup.joined') %></p>
             <% } else { %>
             <form class="waitlist-form" action="/waitlist" method="post">
+                <input type="text" name="company" value="" autocomplete="off" tabindex="-1" aria-hidden="true" class="hp-field">
                 <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
                 <input type="hidden" name="source" value="waitlist">
                 <input type="hidden" name="locale" value="<%= i18n.locale %>">
-                <button type="submit"><%= t('waitlist.submit') %></button>
+                <button type="submit"><%= t('footer.subSubmit') %></button>
             </form>
             <p class="waitlist-note">
-                <%= t('waitlist.note') %>
+                <%= t('signup.note') %>
             </p>
             <% } %>
         </div>
@@ -1043,19 +964,16 @@
             <h2 class="section-title" style="font-size:30px; margin-bottom:16px;"><%= t('community.title') %></h2>
             <p class="section-sub" style="font-size:18px; margin-bottom:32px;"><%= t('community.sub') %></p>
             <div class="community-badges">
-                <%# The count is baked into a static badge rather than fetched by
-                    shields.io's own /discord/:id endpoint, which needs the server
-                    widget enabled and otherwise renders "WIDGET DISABLED". Falls
-                    back to the plain join label until the first fetch lands. %>
-                <a href="https://discord.gg/fkbeJ9CmcH">
-                    <% if (discordMembers) { %>
-                    <img src="https://img.shields.io/badge/Discord-<%= discordMembers.toLocaleString() %>%20members-7289da?logo=discord&logoColor=white&style=for-the-badge" alt="<%= t('proof.discordAlt', { count: discordMembers.toLocaleString() }) %>">
-                    <% } else { %>
-                    <img src="https://img.shields.io/badge/Discord-Join%20Server-7289da?logo=discord&logoColor=white&style=for-the-badge" alt="Discord">
-                    <% } %>
+                <%# Plain links styled as badges rather than shields.io images, so
+                    the page loads nothing from a third party. The Discord count
+                    comes from the server-side cache in stats.js and falls back to
+                    the plain join label until the first fetch lands. %>
+                <a href="https://discord.gg/fkbeJ9CmcH" class="community-badge community-badge-discord">
+                    <i class="fab fa-discord" aria-hidden="true"></i>
+                    <% if (discordMembers) { %><strong><%= discordMembers.toLocaleString() %></strong> <%= t('proof.discord') %><% } else { %>Discord<% } %>
                 </a>
-                <a href="https://www.reddit.com/r/tududi/">
-                    <img src="https://img.shields.io/reddit/subreddit-subscribers/tududi?color=ff4500&label=Reddit&logo=reddit&logoColor=white&style=for-the-badge" alt="Reddit">
+                <a href="https://www.reddit.com/r/tududi/" class="community-badge community-badge-reddit">
+                    <i class="fab fa-reddit-alien" aria-hidden="true"></i> r/tududi
                 </a>
             </div>
         </div>
@@ -1076,39 +994,6 @@
 
     <script>
         const T = window.__I18N || {};
-
-        // Live star count replaces the spinner baked into the markup. Three
-        // elements show it now - the hero badge, the proof bar and the row
-        // above the waitlist form - so this writes to every
-        // [data-github-stars] rather than a single id.
-        //
-        // There is deliberately no static fallback figure: a hardcoded number
-        // goes stale between deploys. But a spinner that never resolves is
-        // worse than no claim at all, so if the fetch fails - GitHub rate
-        // limits anonymous callers at 60/hr per IP - the item is removed
-        // entirely, the same way the proof bar drops a missing pull count.
-        async function fetchGitHubStars() {
-            const targets = document.querySelectorAll('[data-github-stars]');
-            try {
-                const response = await fetch('https://api.github.com/repos/chrisvel/tududi');
-                if (!response.ok) throw new Error('GitHub responded ' + response.status);
-                const data = await response.json();
-                if (typeof data.stargazers_count !== 'number') {
-                    throw new Error('no stargazers_count in response');
-                }
-                const count = data.stargazers_count.toLocaleString();
-                targets.forEach((el) => { el.textContent = count; });
-            } catch (error) {
-                targets.forEach((el) => {
-                    const item = el.closest('.hero-badge, .proofbar-item, .waitlist-proof-item');
-                    if (!item) return;
-                    const sep = item.nextElementSibling;
-                    if (sep && sep.classList.contains('proofbar-sep')) sep.remove();
-                    item.remove();
-                });
-            }
-        }
-        fetchGitHubStars();
 
         // Mobile menu toggle
         const navToggle = document.getElementById('nav-toggle');
@@ -1142,16 +1027,6 @@
         });
 
         const navDropdowns = Array.from(document.querySelectorAll('.nav-dd'));
-
-        // Opening one closes the rest. <details> has no notion of siblings, and
-        // Resources sits close enough to the language menu that two open at once
-        // overlap each other.
-        navDropdowns.forEach(dd => {
-            dd.addEventListener('toggle', () => {
-                if (!dd.open) return;
-                navDropdowns.forEach(other => { if (other !== dd) other.open = false; });
-            });
-        });
 
         document.addEventListener('click', (e) => {
             navDropdowns.forEach(dd => {
@@ -1243,6 +1118,29 @@
                 label.textContent = opening ? (T.showFewer || 'Show fewer') : showAll;
                 icon.className = opening ? 'fas fa-minus' : 'fas fa-plus';
             });
+        })();
+
+        // Feature screenshots open in a small dialog instead of navigating to
+        // the bare image. Without <dialog> support the link still just works.
+        (function featurePreview() {
+            const dialog = document.getElementById('feature-preview');
+            if (!dialog || typeof dialog.showModal !== 'function') return;
+            const title = dialog.querySelector('h4');
+            const img = dialog.querySelector('img');
+
+            document.querySelectorAll('.feature-peek').forEach((link) => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    title.textContent = link.dataset.title;
+                    img.src = link.getAttribute('href');
+                    img.alt = link.dataset.title;
+                    dialog.showModal();
+                });
+            });
+
+            dialog.querySelector('.feature-preview-close').addEventListener('click', () => dialog.close());
+            // A click on the backdrop lands on the dialog element itself.
+            dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
         })();
 
         // Copy buttons on the code blocks: the docker commands and the MCP

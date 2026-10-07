@@ -19,6 +19,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
+import SignInLink from './components/Auth/SignInLink';
 import OIDCCallback from './components/Auth/OIDCCallback';
 import NotFound from './components/Shared/NotFound';
 import ProjectDetails from './components/Project/ProjectDetails';
@@ -43,7 +44,8 @@ const SubscriptionRequired = lazy(
     () => import('./components/Billing/SubscriptionRequired')
 );
 import { User } from './entities/User';
-import TasksToday from './components/Task/TasksToday';
+import { canOpenAccess } from './entities/Role';
+import TodayPage from './components/DailyPlan/TodayPage';
 import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
@@ -63,12 +65,23 @@ import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
+import { resyncPush } from './utils/pushService';
+import { resetSessionState } from './utils/sessionReset';
 import {
     clearSharedText,
     hasPendingSharedText,
 } from './utils/shareTargetService';
+const PublicNotePage = lazy(
+    () => import('./components/PublicNote/PublicNotePage')
+);
+const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
+const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
+// Declared at module scope: the users page switches tabs through the query
+// string, and a lazy component created inside render would remount and
+// re-suspend on every navigation.
+const AdminUsersPage = lazy(() => import('./components/Admin/AdminUsersPage'));
 
 const App: React.FC = () => {
     const { i18n } = useTranslation();
@@ -78,7 +91,7 @@ const App: React.FC = () => {
     const [loading, setLoading] = useState(true);
 
     if (!i18n.isInitialized) {
-        return <LoadingScreen />;
+        return <LoadingScreen fullScreen />;
     }
 
     const fetchCurrentUser = async () => {
@@ -94,6 +107,7 @@ const App: React.FC = () => {
                 if (response.status === 401) {
                     invalidateProfileCache();
                     notifySwClearCache();
+                    resetSessionState();
                     setCurrentUser(null);
                     return;
                 }
@@ -105,6 +119,7 @@ const App: React.FC = () => {
                 setCurrentUser(data.user);
                 setUserInStorage(data.user);
                 notifySwSession(data.user.id);
+                resyncPush(data.user.uid);
                 useStore
                     .getState()
                     .userSettingsStore.setEisenhowerEnabled(
@@ -132,14 +147,36 @@ const App: React.FC = () => {
                     );
                 useStore
                     .getState()
+                    .userSettingsStore.setCapabilities(
+                        data.user.capabilities ?? null
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setRole(data.user.role ?? null);
+                useStore
+                    .getState()
                     .userSettingsStore.setAiAssistantEnabled(
                         data.user.features?.ai_assistant_enabled === true
                     );
                 useStore
                     .getState()
-                    .userSettingsStore.setShowTaskContextMenu(
-                        data.user.ui_settings?.appearance
-                            ?.showTaskContextMenu === true
+                    .userSettingsStore.setContentBackground(
+                        data.user.ui_settings?.appearance?.contentBackground ??
+                            null
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setSidebarVisibleSections(
+                        data.user.sidebar_settings?.visibleSections ?? {}
+                    );
+                useStore.getState().userSettingsStore.setSidebarOrder({
+                    linkOrder: data.user.sidebar_settings?.linkOrder,
+                    sectionOrder: data.user.sidebar_settings?.sectionOrder,
+                });
+                useStore
+                    .getState()
+                    .userSettingsStore.setSidebarWidthPercent(
+                        data.user.sidebar_settings?.widthPercent
                     );
             } else {
                 setCurrentUser(null);
@@ -161,6 +198,7 @@ const App: React.FC = () => {
     useEffect(() => {
         const handleUserLoggedIn = (event: CustomEvent) => {
             invalidateProfileCache();
+            resetSessionState();
             const user = event.detail;
             setCurrentUser(user);
             setUserInStorage(user);
@@ -294,6 +332,33 @@ const App: React.FC = () => {
     return (
         <Suspense fallback={<LoadingComponent />}>
             <Routes>
+                {/* Reachable signed in or out: a browser that already has a
+                    session can still open a member's link. */}
+                <Route path="/sign-in-link" element={<SignInLink />} />
+                {/* A shared note: readable by anyone with the link, signed in
+                    or not, and outside the app layout (no sidebar). */}
+                <Route
+                    path="/public/notes/:token"
+                    element={
+                        <PublicNotePage
+                            isSignedIn={!!currentUser}
+                            isDarkMode={isDarkMode}
+                            toggleDarkMode={toggleDarkMode}
+                        />
+                    }
+                />
+                {/* The blog, for anyone, signed in or not. On a blog host it
+                    renders at the root instead (see index.tsx). */}
+                <Route
+                    path="/blog/*"
+                    element={
+                        <BlogApp
+                            basePath="/blog"
+                            isDarkMode={isDarkMode}
+                            toggleDarkMode={toggleDarkMode}
+                        />
+                    }
+                />
                 {currentUser ? (
                     <>
                         <Route
@@ -301,6 +366,22 @@ const App: React.FC = () => {
                             element={<SubscriptionRequired />}
                         />
                         <Route path="/demo" element={<DemoEntry />} />
+                        {/* The marketing site links here whether or not the
+                            visitor is signed in, so these send an existing
+                            session home instead of falling through to 404. */}
+                        {['/login', '/register', '/forgot-password'].map(
+                            (path) => (
+                                <Route
+                                    key={path}
+                                    path={path}
+                                    element={<Navigate to="/" replace />}
+                                />
+                            )
+                        )}
+                        <Route
+                            path="/reset-password"
+                            element={<ResetPassword />}
+                        />
                         <Route
                             element={
                                 <SubscriptionGate>
@@ -319,7 +400,28 @@ const App: React.FC = () => {
                                 index
                                 element={<Navigate to="/today" replace />}
                             />
-                            <Route path="/today" element={<TasksToday />} />
+                            <Route path="/today" element={<TodayPage />} />
+                            <Route
+                                path="/today_legacy"
+                                element={<Navigate to="/today" replace />}
+                            />
+                            <Route
+                                path="/today/plan"
+                                element={
+                                    <Suspense
+                                        fallback={
+                                            <div className="p-4">
+                                                {i18n.t(
+                                                    'common.loading',
+                                                    'Loading...'
+                                                )}
+                                            </div>
+                                        }
+                                    >
+                                        <PlanMyDay />
+                                    </Suspense>
+                                }
+                            />
                             <Route
                                 path="/task/:uid"
                                 element={<TaskDetails />}
@@ -444,7 +546,20 @@ const App: React.FC = () => {
                                 path="/about"
                                 element={<About isDarkMode={isDarkMode} />}
                             />
-                            <Route path="/backup" element={<BackupRestore />} />
+                            <Route
+                                path="/backup"
+                                element={
+                                    <BackupRestore
+                                        isAdmin={currentUser.is_admin === true}
+                                        onImportSuccess={() => {
+                                            // A restore brings back the profile
+                                            // settings, so reload them (#1776)
+                                            invalidateProfileCache();
+                                            fetchCurrentUser();
+                                        }}
+                                    />
+                                }
+                            />
                             <Route path="/people" element={<PeopleList />} />
                             <Route
                                 path="/person/:uid"
@@ -468,9 +583,7 @@ const App: React.FC = () => {
                                             {React.createElement(
                                                 React.lazy(
                                                     () =>
-                                                        import(
-                                                            './components/Admin/AdminBillingPage'
-                                                        )
+                                                        import('./components/Admin/AdminBillingPage')
                                                 )
                                             )}
                                         </React.Suspense>
@@ -493,9 +606,53 @@ const App: React.FC = () => {
                                             {React.createElement(
                                                 React.lazy(
                                                     () =>
-                                                        import(
-                                                            './components/Admin/AdminDashboardPage'
-                                                        )
+                                                        import('./components/Admin/AdminDashboardPage')
+                                                )
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
+                            <Route
+                                path="/admin/ai-usage"
+                                element={
+                                    currentUser?.is_admin === true ? (
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            {React.createElement(
+                                                React.lazy(
+                                                    () =>
+                                                        import('./components/Admin/AdminAiUsagePage')
+                                                )
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
+                            <Route
+                                path="/admin/feedback"
+                                element={
+                                    currentUser?.is_admin === true ? (
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            {React.createElement(
+                                                React.lazy(
+                                                    () =>
+                                                        import('./components/Admin/AdminFeedbackPage')
                                                 )
                                             )}
                                         </React.Suspense>
@@ -518,9 +675,7 @@ const App: React.FC = () => {
                                             {React.createElement(
                                                 React.lazy(
                                                     () =>
-                                                        import(
-                                                            './components/Admin/AdminWaitlistPage'
-                                                        )
+                                                        import('./components/Admin/AdminWaitlistPage')
                                                 )
                                             )}
                                         </React.Suspense>
@@ -532,7 +687,7 @@ const App: React.FC = () => {
                             <Route
                                 path="/admin/users"
                                 element={
-                                    currentUser?.is_admin === true ? (
+                                    canOpenAccess(currentUser) ? (
                                         <React.Suspense
                                             fallback={
                                                 <div className="p-4">
@@ -540,18 +695,20 @@ const App: React.FC = () => {
                                                 </div>
                                             }
                                         >
-                                            {React.createElement(
-                                                React.lazy(
-                                                    () =>
-                                                        import(
-                                                            './components/Admin/AdminUsersPage'
-                                                        )
-                                                )
-                                            )}
+                                            <AdminUsersPage />
                                         </React.Suspense>
                                     ) : (
                                         <Navigate to="/today" replace />
                                     )
+                                }
+                            />
+                            <Route
+                                path="/admin/groups"
+                                element={
+                                    <Navigate
+                                        to="/admin/users?tab=groups"
+                                        replace
+                                    />
                                 }
                             />
                             <Route path="*" element={<NotFound />} />

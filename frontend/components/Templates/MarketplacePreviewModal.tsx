@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+    ACCENT,
+    PALETTE,
+    accentVars,
+    hashColor,
+} from '../../constants/colorPalette';
 import { XMarkIcon, ArrowDownTrayIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { MarketplaceTemplate } from '../../entities/Template';
 import { fetchMarketplaceTemplate } from '../../utils/templatesService';
@@ -11,22 +17,12 @@ interface MarketplacePreviewModalProps {
     installing?: boolean;
 }
 
-const ACCENT_COLORS = [
-    'bg-violet-500',
-    'bg-blue-500',
-    'bg-emerald-500',
-    'bg-rose-500',
-    'bg-amber-500',
-    'bg-cyan-500',
-    'bg-pink-500',
-    'bg-teal-500',
-];
-
-function categoryAccentBar(category?: string) {
-    if (!category) return ACCENT_COLORS[0];
-    let hash = 0;
-    for (let i = 0; i < category.length; i++) hash = (hash * 31 + category.charCodeAt(i)) & 0xffff;
-    return ACCENT_COLORS[hash % ACCENT_COLORS.length];
+// Category accents come from the shared palette so a category always gets
+// the same hue, the same one it would get anywhere else in tududi.
+function categoryAccent(category?: string | null) {
+    return category
+        ? hashColor(category)
+        : PALETTE.find((c) => c.key === 'blue')!;
 }
 
 const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
@@ -38,7 +34,7 @@ const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
     const { t } = useTranslation();
     const [full, setFull] = useState<MarketplaceTemplate>(template);
     const [loading, setLoading] = useState(true);
-    const accentBar = categoryAccentBar(template.category);
+    const accent = categoryAccent(template.category);
 
     useEffect(() => {
         fetchMarketplaceTemplate(template.uid)
@@ -58,7 +54,9 @@ const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
                 className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[85vh] flex flex-col overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className={`h-1.5 w-full flex-shrink-0 ${accentBar}`} />
+                <div className={`h-1.5 w-full flex-shrink-0 ${ACCENT.bg}`}
+                    style={accentVars(accent)}
+                />
 
                 <div className="px-6 pt-5 pb-4 flex-shrink-0">
                     <div className="flex items-start justify-between gap-3">
@@ -104,7 +102,7 @@ const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
                 <div className="flex-1 overflow-y-auto px-6 pb-4 min-h-0">
                     {loading ? (
                         <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500" />
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500" />
                         </div>
                     ) : tasks.length === 0 ? (
                         <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">
@@ -147,7 +145,7 @@ const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
                     <button
                         onClick={() => onInstall(full)}
                         disabled={installing}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
                     >
                         <ArrowDownTrayIcon className="h-4 w-4" />
                         {installing ? t('templates.marketplace.installing', 'Installing...') : t('templates.marketplace.install', 'Install')}

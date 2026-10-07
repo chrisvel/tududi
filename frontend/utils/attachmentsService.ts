@@ -1,7 +1,18 @@
-import { Attachment, AttachmentType } from '../entities/Attachment';
+import {
+    Attachment,
+    AttachmentType,
+    FileAttachment,
+} from '../entities/Attachment';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
 import { getServerConfig } from './configService';
+
+const INLINE_IMAGE_TYPES = [
+    'image/png',
+    'image/jpeg',
+    'image/gif',
+    'image/webp',
+];
 
 /**
  * Upload a file attachment to a task
@@ -128,7 +139,10 @@ export function getAttachmentType(mimeType: string): AttachmentType {
  */
 export function canPreviewInline(mimeType: string): boolean {
     const type = getAttachmentType(mimeType);
-    return type === 'image' || type === 'pdf' || type === 'text';
+    // Images outside the known list are stored as generic .bin downloads, so
+    // the browser can't render them.
+    if (type === 'image') return INLINE_IMAGE_TYPES.includes(mimeType);
+    return type === 'pdf' || type === 'text';
 }
 
 /**
@@ -159,30 +173,76 @@ export async function validateFile(
         };
     }
 
-    // Check file type
-    const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'text/plain',
-        'text/markdown',
-        'image/png',
-        'image/jpeg',
-        'image/gif',
-        'image/webp',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/csv',
-        'application/zip',
-        'application/x-zip-compressed',
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-        return {
-            valid: false,
-            error: 'File type not allowed',
-        };
-    }
-
     return { valid: true };
 }
+
+// The four things an attachments panel needs, for whatever owns the files.
+export interface AttachmentsApi {
+    list: () => Promise<FileAttachment[]>;
+    upload: (file: File) => Promise<FileAttachment>;
+    remove: (attachmentUid: string) => Promise<void>;
+    downloadUrl: (attachmentUid: string) => string;
+}
+
+export const taskAttachmentsApi = (taskUid: string): AttachmentsApi => ({
+    list: () => fetchAttachments(taskUid),
+    upload: (file) => uploadAttachment(taskUid, file),
+    remove: (attachmentUid) => deleteAttachment(taskUid, attachmentUid),
+    downloadUrl: getDownloadUrl,
+});
+
+export type AttachmentOwnerKind = 'inbox' | 'project' | 'note';
+
+const readError = async (response: Response, fallback: string) => {
+    const data = await response.json().catch(() => ({}));
+    return new Error(data.error || fallback);
+};
+
+// Inbox items, projects and notes share one set of endpoints:
+// /api/<kind>/<uid>/attachments.
+export const ownerAttachmentsApi = (
+    kind: AttachmentOwnerKind,
+    ownerUid: string
+): AttachmentsApi => {
+    const base = `${kind}/${ownerUid}/attachments`;
+    return {
+        list: async () => {
+            const response = await fetch(getApiPath(base), {
+                credentials: 'include',
+            });
+            if (!response.ok) {
+                throw await readError(response, 'Failed to fetch attachments');
+            }
+            return response.json();
+        },
+        upload: async (file) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await fetch(getApiPath(base), {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'x-csrf-token': await getCsrfToken() },
+                body: formData,
+            });
+            if (!response.ok) {
+                throw await readError(response, 'Failed to upload attachment');
+            }
+            return response.json();
+        },
+        remove: async (attachmentUid) => {
+            const response = await fetch(
+                getApiPath(`${base}/${attachmentUid}`),
+                {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    headers: { 'x-csrf-token': await getCsrfToken() },
+                }
+            );
+            if (!response.ok) {
+                throw await readError(response, 'Failed to delete attachment');
+            }
+        },
+        downloadUrl: (attachmentUid) =>
+            getApiPath(`${base}/${attachmentUid}/download`),
+    };
+};

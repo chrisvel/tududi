@@ -5,7 +5,9 @@ set -euo pipefail
 # release, commits and tags. Pushing the tag is what publishes the image and
 # creates the GitHub Release (.github/workflows/docker-publish.yml).
 #
-#   ./scripts/create-version.sh              ask which kind, propose the number
+#   ./scripts/create-version.sh              ask which kind (stable, rc or dev),
+#                                            then which version (fix, minor,
+#                                            major or the line in flight)
 #   ./scripts/create-version.sh v1.5.0       take that version, no questions
 #   ./scripts/create-version.sh --no-push    stop at the local commit and tag
 #
@@ -63,7 +65,8 @@ if [[ -z "$VERSION" ]]; then
     exit 1
   fi
 
-  # Shell assignments: LATEST_STABLE/RC/DEV and NEXT_STABLE/RC/DEV.
+  # Shell assignments: LATEST_STABLE/RC/DEV, PROMOTE_STABLE, NEXT_RC/DEV (the
+  # line in flight) and {STABLE,RC,DEV}_{FIX,MINOR,MAJOR}.
   eval "$(node scripts/version-plan.js)"
 
   printf '\nLatest release on each channel\n\n'
@@ -71,19 +74,75 @@ if [[ -z "$VERSION" ]]; then
   printf '  rc      %s\n' "${LATEST_RC:-(none yet)}"
   printf '  dev     %s\n\n' "${LATEST_DEV:-(none yet)}"
 
-  printf 'What kind of release is this?\n\n'
-  printf '  1) stable             %-18s moves :latest\n' "$NEXT_STABLE"
-  printf '  2) release candidate  %-18s pre-release\n' "$NEXT_RC"
-  printf '  3) development        %-18s pre-release\n\n' "$NEXT_DEV"
+  LABELS=()
+  VERSIONS=()
+  NOTES=()
+  SEEN=' '
+  add_choice() {
+    # A bump that lands on a version already listed is not offered twice.
+    [[ -n "$2" && "$SEEN" == *" $2 "* ]] && return 0
+    LABELS+=("$1")
+    VERSIONS+=("$2")
+    NOTES+=("$3")
+    SEEN="$SEEN$2 "
+  }
 
-  # A bare `read` failing on Ctrl-D would exit silently under `set -e`.
-  read -r -p 'Choice [1-3]: ' CHOICE || { printf '\nCancelled.\n'; exit 1; }
-  case "$CHOICE" in
-    1) SUGGESTED="$NEXT_STABLE" ;;
-    2) SUGGESTED="$NEXT_RC" ;;
-    3) SUGGESTED="$NEXT_DEV" ;;
-    *) echo "Error: pick 1, 2 or 3." >&2; exit 1 ;;
+  # Prints LABELS/VERSIONS/NOTES as a numbered menu and leaves the picked
+  # position in PICKED.
+  choose() {
+    local count=${#LABELS[@]} i answer
+    for ((i = 0; i < count; i++)); do
+      printf '  %d) %-22s %-18s %s\n' "$((i + 1))" "${LABELS[$i]}" "${VERSIONS[$i]}" "${NOTES[$i]}"
+    done
+    printf '\n'
+    # A bare `read` failing on Ctrl-D would exit silently under `set -e`.
+    read -r -p "Choice [1-${count}]: " answer || { printf '\nCancelled.\n'; exit 1; }
+    if [[ ! "$answer" =~ ^[0-9]+$ ]] || ((answer < 1 || answer > count)); then
+      echo "Error: pick a number from 1 to ${count}." >&2
+      exit 1
+    fi
+    PICKED=$((answer - 1))
+  }
+
+  printf 'What kind of release is this?\n\n'
+  add_choice "stable" "" "moves :latest"
+  add_choice "release candidate" "" "pre-release"
+  add_choice "development" "" "pre-release"
+  choose
+  case "$PICKED" in
+    0) KIND=STABLE ;;
+    1) KIND=RC ;;
+    *) KIND=DEV ;;
   esac
+
+  LABELS=()
+  VERSIONS=()
+  NOTES=()
+  SEEN=' '
+  if [[ "$KIND" == STABLE ]]; then NOTE="moves :latest"; else NOTE="pre-release"; fi
+
+  # Continuing the line already in flight comes first, so choice 1 is the
+  # obvious "ship what is being tested" or "cut the next one of these". Fix,
+  # minor and major are bumps of the last stable release, on any channel.
+  if [[ -n "$PROMOTE_STABLE" ]]; then
+    case "$KIND" in
+      STABLE) add_choice "promote" "$PROMOTE_STABLE" "$NOTE" ;;
+      RC) add_choice "current line" "$NEXT_RC" "$NOTE" ;;
+      DEV) add_choice "current line" "$NEXT_DEV" "$NOTE" ;;
+    esac
+  fi
+  for BUMP in FIX MINOR MAJOR; do
+    BUMPED="${KIND}_${BUMP}"
+    case "$BUMP" in
+      FIX) add_choice "fix" "${!BUMPED}" "$NOTE" ;;
+      MINOR) add_choice "minor" "${!BUMPED}" "$NOTE" ;;
+      MAJOR) add_choice "major" "${!BUMPED}" "$NOTE" ;;
+    esac
+  done
+
+  printf '\nWhich version?\n\n'
+  choose
+  SUGGESTED="${VERSIONS[$PICKED]}"
 
   printf '\n'
   read -r -p "Create ${SUGGESTED}? [Y/n, or type another version]: " ANSWER || { printf '\nCancelled.\n'; exit 1; }
@@ -214,12 +273,25 @@ if [[ -t 0 ]]; then
   esac
 fi
 
+WORKFLOW='Publish Docker image'
+
+# Recorded before the push so we can tell a fresh run from one already in
+# flight when we go looking for it below.
+BASELINE_RUN_ID=""
+if command -v gh >/dev/null 2>&1; then
+  BASELINE_RUN_ID=$(gh run list --workflow "$WORKFLOW" --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null || true)
+fi
+
 # Two pushes, deliberately. Sending the branch and the tag in one push (what
 # --follow-tags does) has left the tag on the remote without GitHub raising a
 # tag event, so nothing built: v1.5.0-rc.8 landed that way. Pushing the tag on
 # its own is the ref update the publish workflow listens for.
 git push origin "$BRANCH"
 git push origin "$VERSION"
+
+watch_hint() {
+  echo "Watch it with:  gh run watch \$(gh run list --workflow '$WORKFLOW' --limit 1 --json databaseId --jq '.[0].databaseId')"
+}
 
 ORIGIN_URL=$(git remote get-url origin)
 echo
@@ -229,7 +301,29 @@ case "$ORIGIN_URL" in
     echo "Pushed. Building the image and cutting the release:"
     echo "  https://github.com/$SLUG/actions"
     echo
-    echo "Watch it with:  gh run watch \$(gh run list --workflow 'Publish Docker image' --limit 1 --json databaseId --jq '.[0].databaseId')"
+    if command -v gh >/dev/null 2>&1; then
+      # The tag push above is what triggers the workflow, but GitHub takes a
+      # few seconds to register it as a run. Poll for one newer than whatever
+      # was already there before we pushed, rather than watching a stale run.
+      NEW_RUN_ID=""
+      for _ in $(seq 1 20); do
+        CANDIDATE=$(gh run list --workflow "$WORKFLOW" --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null || true)
+        if [[ -n "$CANDIDATE" && "$CANDIDATE" != "$BASELINE_RUN_ID" ]]; then
+          NEW_RUN_ID="$CANDIDATE"
+          break
+        fi
+        sleep 3
+      done
+
+      if [[ -n "$NEW_RUN_ID" ]]; then
+        gh run watch "$NEW_RUN_ID"
+      else
+        echo "No new run showed up yet."
+        watch_hint
+      fi
+    else
+      watch_hint
+    fi
     ;;
   *)
     echo "Pushed $BRANCH and $VERSION to $ORIGIN_URL."

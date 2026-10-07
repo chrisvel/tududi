@@ -6,6 +6,7 @@ const { generateToken } = require('../../middleware/csrf');
 const { isPasswordAuthEnabled } = require('../../config/authConfig');
 const { getConfig } = require('../../config/config');
 const auditService = require('../oidc/auditService');
+const signInLinkService = require('../members/signInLinkService');
 
 const authController = {
     getVersion(req, res) {
@@ -25,25 +26,6 @@ const authController = {
         try {
             const result = await authService.getRegistrationStatus();
             res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    // The register page's waitlist capture while Cloud is shut. The answer
-    // is the same for a new address, one already on the list and one that
-    // was refused, so it cannot be used to find out who has signed up.
-    async joinWaitlist(req, res, next) {
-        try {
-            const waitlist = require('../../services/waitlistService');
-            await waitlist.capture({
-                email: req.body?.email,
-                source: 'app',
-                locale: req.body?.locale || null,
-                referrer: req.get('referer'),
-                ip: req.ip,
-            });
-            res.json({ joined: true });
         } catch (error) {
             next(error);
         }
@@ -101,6 +83,42 @@ const authController = {
         } catch (error) {
             logError('Error fetching current user:', error);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    async peekSignInLink(req, res, next) {
+        try {
+            const result = await signInLinkService.peek(req.body?.token);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async redeemSignInLink(req, res, next) {
+        try {
+            const { member, issuedByUserId } = await signInLinkService.consume(
+                req.body?.token
+            );
+
+            // A fresh session, so whoever was signed in on this browser is
+            // signed out and no earlier session id carries over.
+            await new Promise((resolve, reject) =>
+                req.session.regenerate((err) => (err ? reject(err) : resolve()))
+            );
+            req.session.userId = member.id;
+            await new Promise((resolve, reject) =>
+                req.session.save((err) => (err ? reject(err) : resolve()))
+            );
+
+            await auditService.logSignInLinkUsed(
+                member.id,
+                issuedByUserId,
+                req
+            );
+            res.json(await authService.buildLoginResult(member));
+        } catch (error) {
+            next(error);
         }
     },
 

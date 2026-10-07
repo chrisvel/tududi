@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { SparklesIcon } from '@heroicons/react/24/outline';
-import { PLAN_LIMIT_EVENT, PlanLimitDetail } from '../../utils/planLimits';
+import {
+    PLAN_LIMIT_EVENT,
+    PlanLimitDetail,
+    subscriptionPathFor,
+} from '../../utils/planLimits';
 
 // Listens for 402 responses surfaced by the API wrappers and explains which
 // plan limit was hit. Mounted once in the layout; invisible until needed.
@@ -13,11 +17,17 @@ const UpgradeModal: React.FC = () => {
 
     useEffect(() => {
         const handler = (event: Event) => {
-            setDetail((event as CustomEvent<PlanLimitDetail>).detail);
+            const next = (event as CustomEvent<PlanLimitDetail>).detail;
+            const path = subscriptionPathFor(next);
+            if (path) {
+                navigate(path);
+                return;
+            }
+            setDetail(next);
         };
         window.addEventListener(PLAN_LIMIT_EVENT, handler);
         return () => window.removeEventListener(PLAN_LIMIT_EVENT, handler);
-    }, []);
+    }, [navigate]);
 
     if (!detail) return null;
 
@@ -33,7 +43,7 @@ const UpgradeModal: React.FC = () => {
             case 'storage':
                 return t('billing.resource.storage', 'attachment storage');
             case 'ai_requests':
-                return t('billing.resource.ai', 'AI requests today');
+                return t('billing.resource.ai', 'AI requests this month');
             default:
                 return resource || '';
         }
@@ -52,6 +62,10 @@ const UpgradeModal: React.FC = () => {
                 return t('billing.feature.backups_import', 'backup import');
             case 'attachments':
                 return t('billing.feature.attachments', 'attachments');
+            case 'public_notes':
+                return t('billing.feature.public_notes', 'public notes');
+            case 'members':
+                return t('billing.feature.members', 'adding members');
             default:
                 return feature || '';
         }

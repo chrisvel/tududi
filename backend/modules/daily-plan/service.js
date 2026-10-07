@@ -1,0 +1,526 @@
+'use strict';
+
+const moment = require('moment-timezone');
+const { Task } = require('../../models');
+const repository = require('./repository');
+const slots = require('./slots');
+const permissionsService = require('../../services/permissionsService');
+const { serializeTasks } = require('../tasks/core/serializers');
+const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
+const {
+    GROUP_ORDER,
+    DEFAULT_ORDER,
+    normalizeOrder,
+    orderCandidates,
+    rankCandidates,
+} = require('./ranking');
+const {
+    DEFAULT_SUGGESTIONS,
+    PROJECT_STATUSES,
+    TIE_BREAKS,
+    STALE_AFTER_DAYS,
+    HORIZON_DAYS,
+    MAX_SUGGESTIONS,
+    isSuggestible,
+    normalizeSuggestionSettings,
+    validateSuggestionUpdate,
+} = require('./planningSettings');
+const {
+    getSafeTimezone,
+    getCurrentDateInTimezone,
+    getDayBoundsInUTC,
+    getTodayBoundsInUTC,
+} = require('../../utils/timezone-utils');
+const { ValidationError, NotFoundError } = require('../../shared/errors');
+
+const MAX_ITEMS = 100;
+const MINUTES_PER_DAY = 24 * 60;
+const MIN_DURATION = 5;
+const MAX_DURATION = 12 * 60;
+const DEFAULT_DURATION = 30;
+const INBOX_LIMIT = 20;
+const DAY_HOURS_STEP = 30;
+
+function resolvePlanDate(date, timezone) {
+    if (
+        date === undefined ||
+        date === null ||
+        date === '' ||
+        date === 'today'
+    ) {
+        return getCurrentDateInTimezone(getSafeTimezone(timezone));
+    }
+    if (
+        typeof date !== 'string' ||
+        !moment(date, 'YYYY-MM-DD', true).isValid()
+    ) {
+        throw new ValidationError('date must be a YYYY-MM-DD date');
+    }
+    return date;
+}
+
+function isWholeNumberInRange(value, min, max) {
+    return Number.isInteger(value) && value >= min && value <= max;
+}
+
+// Checks the shape of each item and that no two time slots overlap.
+// Positions come from array order, so the client only has to send the list.
+function validateItems(items) {
+    if (!Array.isArray(items)) {
+        throw new ValidationError('items must be an array');
+    }
+    if (items.length > MAX_ITEMS) {
+        throw new ValidationError(
+            `A day plan holds at most ${MAX_ITEMS} tasks`
+        );
+    }
+
+    const seen = new Set();
+    const normalized = items.map((item) => {
+        if (!item || typeof item.task_uid !== 'string' || !item.task_uid) {
+            throw new ValidationError('Each item needs a task_uid');
+        }
+        if (seen.has(item.task_uid)) {
+            throw new ValidationError('A task can only be planned once a day');
+        }
+        seen.add(item.task_uid);
+
+        const start =
+            item.start_minute === undefined || item.start_minute === null
+                ? null
+                : item.start_minute;
+        if (
+            start !== null &&
+            !isWholeNumberInRange(start, 0, MINUTES_PER_DAY - MIN_DURATION)
+        ) {
+            throw new ValidationError(
+                'start_minute must be a whole number of minutes within the day'
+            );
+        }
+
+        const duration =
+            item.duration_minutes === undefined ||
+            item.duration_minutes === null
+                ? null
+                : item.duration_minutes;
+        if (
+            duration !== null &&
+            !isWholeNumberInRange(duration, MIN_DURATION, MAX_DURATION)
+        ) {
+            throw new ValidationError(
+                `duration_minutes must be between ${MIN_DURATION} and ${MAX_DURATION}`
+            );
+        }
+        if (
+            start !== null &&
+            start + (duration ?? DEFAULT_DURATION) > MINUTES_PER_DAY
+        ) {
+            throw new ValidationError('A time slot cannot run past midnight');
+        }
+
+        return {
+            task_uid: item.task_uid,
+            start_minute: start,
+            duration_minutes: duration,
+        };
+    });
+
+    const scheduled = normalized
+        .filter((item) => item.start_minute !== null)
+        .map((item) => ({
+            start: item.start_minute,
+            end:
+                item.start_minute + (item.duration_minutes ?? DEFAULT_DURATION),
+        }))
+        .sort((a, b) => a.start - b.start);
+    for (let i = 1; i < scheduled.length; i++) {
+        if (scheduled[i].start < scheduled[i - 1].end) {
+            throw new ValidationError('Planned time slots cannot overlap');
+        }
+    }
+
+    return normalized;
+}
+
+async function visibleTaskWhere(userId) {
+    return permissionsService.ownershipOrPermissionWhere('task', userId);
+}
+
+async function serializePlan(plan, userId, timezone) {
+    if (!plan) return null;
+
+    const items = plan.Items || [];
+    const visibleWhere = await visibleTaskWhere(userId);
+    const tasks = await repository.findVisibleTasksByIds(
+        visibleWhere,
+        items.map((item) => item.task_id)
+    );
+    const serialized = await serializeTasks(tasks, timezone, {
+        preserveOriginalName: true,
+    });
+    const byId = new Map(tasks.map((task, i) => [task.id, serialized[i]]));
+
+    // Completing a recurring task moves the same row on to its next due
+    // date and reopens it, so its status alone would show it as open again.
+    // Count it as done for this day when an occurrence was completed on the
+    // day and the task has since moved past it.
+    const bounds = getDayBoundsInUTC(plan.plan_date, timezone);
+    const completedIds = await repository.findTaskIdsCompletedBetween(
+        tasks.map((task) => task.id),
+        bounds.start,
+        bounds.end
+    );
+    const closedStatuses = [Task.STATUS.DONE, Task.STATUS.ARCHIVED];
+    const statusById = new Map(tasks.map((task) => [task.id, task.status]));
+    const isOccurrenceDone = (taskId) => {
+        const dueDate = byId.get(taskId).due_date;
+        return (
+            completedIds.has(taskId) &&
+            !!dueDate &&
+            dueDate > plan.plan_date &&
+            !closedStatuses.includes(statusById.get(taskId))
+        );
+    };
+
+    return {
+        uid: plan.uid,
+        date: plan.plan_date,
+        started_at: plan.started_at,
+        ai_wrap_up: plan.ai_wrap_up || null,
+        items: items
+            .filter((item) => byId.has(item.task_id))
+            .map((item) => ({
+                task_uid: byId.get(item.task_id).uid,
+                position: item.position,
+                start_minute: item.start_minute,
+                duration_minutes: item.duration_minutes,
+                task: byId.get(item.task_id),
+                occurrence_done: isOccurrenceDone(item.task_id),
+            })),
+    };
+}
+
+async function getPlan(user, date) {
+    const timezone = getSafeTimezone(user.timezone);
+    const planDate = resolvePlanDate(date, timezone);
+    const [plan, dayHours] = await Promise.all([
+        repository.findPlan(user.id, planDate),
+        getDayHours(user),
+    ]);
+    return {
+        date: planDate,
+        day_hours: dayHours,
+        plan: await serializePlan(plan, user.id, timezone),
+    };
+}
+
+async function replaceItems(user, date, items) {
+    const timezone = getSafeTimezone(user.timezone);
+    const planDate = resolvePlanDate(date, timezone);
+    const normalized = validateItems(items);
+
+    const visibleWhere = await visibleTaskWhere(user.id);
+    const tasks = await repository.findVisibleTasksByUids(
+        visibleWhere,
+        normalized.map((item) => item.task_uid)
+    );
+    const byUid = new Map(tasks.map((task) => [task.uid, task]));
+    const missing = normalized.find((item) => !byUid.has(item.task_uid));
+    if (missing) {
+        throw new NotFoundError(`Task ${missing.task_uid} not found`);
+    }
+
+    const rows = normalized.map((item, index) => {
+        const task = byUid.get(item.task_uid);
+        return {
+            task_id: task.id,
+            position: index,
+            start_minute: item.start_minute,
+            duration_minutes:
+                item.duration_minutes ??
+                task.estimated_minutes ??
+                DEFAULT_DURATION,
+        };
+    });
+
+    await repository.replaceItems(user.id, planDate, rows);
+    return getPlan(user, planDate);
+}
+
+async function startPlan(user, date) {
+    const timezone = getSafeTimezone(user.timezone);
+    const planDate = resolvePlanDate(date, timezone);
+    await repository.markStarted(user.id, planDate);
+    return getPlan(user, planDate);
+}
+
+// Appends tasks to a day's plan without a time, skipping ones already on
+// it. Used to move unfinished work to tomorrow.
+async function carryOver(user, date, taskUids) {
+    if (
+        !Array.isArray(taskUids) ||
+        taskUids.some((uid) => typeof uid !== 'string' || !uid)
+    ) {
+        throw new ValidationError('task_uids must be a list of task uids');
+    }
+    const timezone = getSafeTimezone(user.timezone);
+    const planDate = resolvePlanDate(date, timezone);
+    const { plan } = await getPlan(user, planDate);
+    const current = (plan?.items || []).map((item) => ({
+        task_uid: item.task_uid,
+        start_minute: item.start_minute,
+        duration_minutes: item.duration_minutes,
+    }));
+    const already = new Set(current.map((item) => item.task_uid));
+    const added = [...new Set(taskUids)]
+        .filter((uid) => !already.has(uid))
+        .map((uid) => ({ task_uid: uid, start_minute: null }));
+    if (added.length === 0) return getPlan(user, planDate);
+    return replaceItems(user, planDate, [...current, ...added]);
+}
+
+async function clearPlan(user, date) {
+    const timezone = getSafeTimezone(user.timezone);
+    const planDate = resolvePlanDate(date, timezone);
+    await repository.deletePlan(user.id, planDate);
+    return { date: planDate, plan: null };
+}
+
+// The planner's left column: open tasks tagged #today plus the same lists
+// the classic Today page shows, deduplicated so a task appears in the first
+// group it belongs to, and ranked by the rules in ranking.js. The user's planning settings decide
+// which tasks count as suggested and how many are shown.
+async function getCandidates(user) {
+    const timezone = getSafeTimezone(user.timezone);
+    const { order, suggestions } = await getPlanningSettings(user);
+    const [metrics, taggedToday] = await Promise.all([
+        computeTaskMetrics(user.id, timezone, null, suggestions),
+        repository.findTasksTaggedToday(
+            await permissionsService.ownershipOrPermissionWhere('task', user.id)
+        ),
+    ]);
+
+    // Groups follow the task's own due date, as Profile > Planning
+    // describes them. The Today page lists also count a late or due-today
+    // project, which put undated tasks under "Overdue". Started tasks that
+    // are past due count as overdue here, so late work is never ranked below
+    // fresh work.
+    const bounds = getTodayBoundsInUTC(timezone);
+    const todayStart = new Date(bounds.start).getTime();
+    const todayEnd = new Date(bounds.end).getTime();
+    const now = Date.now();
+    const dueTime = (task) =>
+        task.due_date ? new Date(task.due_date).getTime() : null;
+    const isLate = (task) =>
+        dueTime(task) !== null && dueTime(task) < todayStart;
+    const isDueToday = (task) =>
+        dueTime(task) !== null &&
+        dueTime(task) >= todayStart &&
+        dueTime(task) <= todayEnd;
+    const started = [...metrics.tasks_in_progress, ...metrics.today_plan_tasks];
+    const fromProjectDates = [
+        ...metrics.tasks_overdue,
+        ...metrics.tasks_due_today,
+    ].filter((task) => !isLate(task) && !isDueToday(task));
+
+    // Tasks tagged #today come first by default and leave the other groups.
+    const groupTasks = {
+        tagged_today: taggedToday,
+        overdue: [
+            ...metrics.tasks_overdue.filter(isLate),
+            ...metrics.tasks_due_today.filter(isLate),
+            ...started.filter(isLate),
+        ],
+        due_today: [
+            ...metrics.tasks_overdue.filter(isDueToday),
+            ...metrics.tasks_due_today.filter(isDueToday),
+        ],
+        in_progress: started,
+        suggested: [
+            ...metrics.suggested_tasks,
+            ...fromProjectDates.filter((task) =>
+                isSuggestible(task, suggestions, now)
+            ),
+        ],
+    };
+
+    const seen = new Set();
+    const unique = {};
+    for (const key of GROUP_ORDER) {
+        unique[key] = rankCandidates(
+            groupTasks[key],
+            suggestions.tieBreak
+        ).filter((task) => {
+            if (seen.has(task.id)) return false;
+            seen.add(task.id);
+            return true;
+        });
+    }
+
+    // The cap comes last: keep the first suggestions in the final order.
+    let ranked = orderCandidates(unique, order, suggestions.tieBreak);
+    const shown = new Set(
+        ranked
+            .filter(({ group }) => group === 'suggested')
+            .slice(0, suggestions.maxSuggestions)
+            .map(({ task }) => task.id)
+    );
+    unique.suggested = unique.suggested.filter((task) => shown.has(task.id));
+    ranked = ranked.filter(
+        ({ group, task }) => group !== 'suggested' || shown.has(task.id)
+    );
+
+    const result = {};
+    for (const key of GROUP_ORDER) {
+        result[key] = await serializeTasks(unique[key], timezone, {
+            preserveOriginalName: true,
+        });
+    }
+    result.ranked = ranked.map(({ task }) => task.uid);
+
+    const inbox = await repository.findOpenInboxItems(user.id, INBOX_LIMIT);
+    result.inbox = inbox.items.map((item) => ({
+        uid: item.uid,
+        title: item.title,
+        content: item.content,
+        created_at: item.created_at,
+    }));
+    result.inbox_count = inbox.count;
+
+    return result;
+}
+
+// Everything the candidate list reads from ui_settings.planning, each value
+// normalized to a known one.
+async function getPlanningSettings(user) {
+    const settings = await repository.findUiSettings(user.id);
+    return {
+        order: normalizeOrder(settings.planning?.candidateOrder),
+        suggestions: normalizeSuggestionSettings(settings.planning),
+    };
+}
+
+// Which tasks count as suggested (Profile > Planning), with the allowed
+// values so the client does not repeat them.
+async function getSuggestionSettings(user) {
+    const { suggestions } = await getPlanningSettings(user);
+    return {
+        settings: suggestions,
+        defaults: DEFAULT_SUGGESTIONS,
+        options: {
+            projectStatuses: PROJECT_STATUSES,
+            tieBreak: TIE_BREAKS,
+            staleAfterDays: STALE_AFTER_DAYS,
+            horizonDays: HORIZON_DAYS,
+            maxSuggestions: MAX_SUGGESTIONS,
+        },
+    };
+}
+
+async function saveSuggestionSettings(user, body) {
+    const update = validateSuggestionUpdate(body);
+    if (update.excludedProjectIds) {
+        const visible = await repository.findVisibleProjectIds(
+            await permissionsService.ownershipOrPermissionWhere(
+                'project',
+                user.id
+            ),
+            update.excludedProjectIds
+        );
+        const unknown = update.excludedProjectIds.filter(
+            (id) => !visible.includes(id)
+        );
+        if (unknown.length > 0) {
+            throw new ValidationError(
+                `Unknown projects in excludedProjectIds: ${unknown.join(', ')}`
+            );
+        }
+    }
+    const settings = await repository.findUiSettings(user.id);
+    await repository.saveUiSettings(user.id, {
+        ...settings,
+        planning: { ...(settings.planning || {}), ...update },
+    });
+    return getSuggestionSettings(user);
+}
+
+// The user's bucket order for the candidate list (Profile > Planning).
+async function getRanking(user) {
+    const settings = await repository.findUiSettings(user.id);
+    return {
+        order: normalizeOrder(settings.planning?.candidateOrder),
+        default_order: DEFAULT_ORDER,
+    };
+}
+
+async function saveRanking(user, order) {
+    if (
+        !Array.isArray(order) ||
+        order.length !== DEFAULT_ORDER.length ||
+        new Set(order).size !== order.length ||
+        order.some((key) => !DEFAULT_ORDER.includes(key))
+    ) {
+        throw new ValidationError(
+            `order must list each of ${DEFAULT_ORDER.join(', ')} once`
+        );
+    }
+    const settings = await repository.findUiSettings(user.id);
+    await repository.saveUiSettings(user.id, {
+        ...settings,
+        planning: { ...(settings.planning || {}), candidateOrder: order },
+    });
+    return getRanking(user);
+}
+
+// The hours the planner shows by default, as minutes after local midnight
+// in the user's timezone (Profile > Planning).
+const isValidDayHours = (hours) =>
+    !!hours &&
+    Number.isInteger(hours.start) &&
+    Number.isInteger(hours.end) &&
+    hours.start >= 0 &&
+    hours.end <= MINUTES_PER_DAY &&
+    hours.start < hours.end &&
+    hours.start % DAY_HOURS_STEP === 0 &&
+    hours.end % DAY_HOURS_STEP === 0;
+
+async function getDayHours(user) {
+    const settings = await repository.findUiSettings(user.id);
+    const saved = settings.planning?.dayHours;
+    return isValidDayHours(saved)
+        ? { start: saved.start, end: saved.end }
+        : { ...slots.DEFAULT_DAY_HOURS };
+}
+
+async function saveDayHours(user, hours) {
+    const next = { start: hours?.start, end: hours?.end };
+    if (!isValidDayHours(next)) {
+        throw new ValidationError(
+            `start and end must be minutes of the day in steps of ${DAY_HOURS_STEP}, with start before end`
+        );
+    }
+    const settings = await repository.findUiSettings(user.id);
+    await repository.saveUiSettings(user.id, {
+        ...settings,
+        planning: { ...(settings.planning || {}), dayHours: next },
+    });
+    return getDayHours(user);
+}
+
+module.exports = {
+    getDayHours,
+    saveDayHours,
+    resolvePlanDate,
+    validateItems,
+    getPlan,
+    replaceItems,
+    startPlan,
+    clearPlan,
+    carryOver,
+    getCandidates,
+    getRanking,
+    saveRanking,
+    getPlanningSettings,
+    getSuggestionSettings,
+    saveSuggestionSettings,
+};

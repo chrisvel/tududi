@@ -8,6 +8,8 @@ const {
 } = require('../../../models');
 const { Op, QueryTypes } = require('sequelize');
 const permissionsService = require('../../../services/permissionsService');
+const { blockedCondition } = require('../relations/service');
+const { customOrderClause } = require('../order/service');
 const {
     getSafeTimezone,
     getUpcomingRangeInUTC,
@@ -40,38 +42,9 @@ async function filterTasksByParams(
     };
 
     whereClause[Op.or] = [
-        {
-            [Op.and]: [
-                {
-                    [Op.or]: [
-                        { recurrence_type: 'none' },
-                        { recurrence_type: null },
-                        { recurrence_type: '' },
-                    ],
-                },
-                { recurring_parent_id: null },
-            ],
-        },
-        {
-            [Op.and]: [
-                { recurrence_type: { [Op.ne]: 'none' } },
-                { recurrence_type: { [Op.ne]: null } },
-                { recurrence_type: { [Op.ne]: '' } },
-                { recurring_parent_id: null },
-                {
-                    [Op.or]: [
-                        { due_date: null },
-                        {
-                            due_date: {
-                                [Op.gte]: new Date(
-                                    new Date().setHours(0, 0, 0, 0)
-                                ),
-                            },
-                        },
-                    ],
-                },
-            ],
-        },
+        // Recurring parents keep their due date until completed, so a missed
+        // one stays listed as overdue instead of dropping out the next day.
+        { recurring_parent_id: null },
         {
             [Op.and]: [
                 { recurring_parent_id: { [Op.ne]: null } },
@@ -348,6 +321,7 @@ async function filterTasksByParams(
         const [orderColumn, orderDirection = 'asc'] =
             params.order_by.split(':');
         const allowedColumns = [
+            'custom',
             'created_at',
             'updated_at',
             'name',
@@ -361,7 +335,9 @@ async function filterTasksByParams(
             throw new Error('Invalid order column specified.');
         }
 
-        if (orderColumn === 'due_date') {
+        if (orderColumn === 'custom') {
+            orderClause = customOrderClause(userId);
+        } else if (orderColumn === 'due_date') {
             // Undated tasks always sort after dated ones, whichever direction
             orderClause = [
                 ['due_date', `${orderDirection.toUpperCase()} NULLS LAST`],
@@ -395,6 +371,17 @@ async function filterTasksByParams(
             ...(whereClause.id || {}),
             [Op.in]: tagFilteredTaskIds,
         };
+    }
+
+    // Opt-in only: a task is blocked while any task that blocks it is still
+    // open. Default lists are unaffected.
+    if (params.blocked !== undefined && params.blocked !== '') {
+        const wantBlocked =
+            params.blocked === true || params.blocked === 'true';
+        whereClause[Op.and] = [
+            ...(Array.isArray(whereClause[Op.and]) ? whereClause[Op.and] : []),
+            blockedCondition(wantBlocked),
+        ];
     }
 
     if (params.project_uid) {
@@ -434,10 +421,23 @@ async function filterTasksByParams(
         [Op.and]: [ownedOrShared, whereClause],
     };
 
+    // CAST keeps the count numeric on PostgreSQL, where COUNT(*) is a bigint
+    // that the driver would otherwise return as a string (matches the
+    // tags_count pattern in modules/tags/repository.js). Deleted comments
+    // are tombstones, not removed, so they are excluded here the same way
+    // the client excludes them from its own "N comments" badge.
+    const commentsCountAttribute = [
+        sequelize.literal(
+            'CAST((SELECT COUNT(*) FROM comments WHERE comments.task_id = "Task"."id" AND comments.deleted_at IS NULL) AS INTEGER)'
+        ),
+        'comments_count',
+    ];
+
     if (page) {
         const { rows, count } = await Task.findAndCountAll({
             where: finalWhereClause,
             include: includeClause,
+            attributes: { include: [commentsCountAttribute] },
             order: orderClause,
             distinct: true,
             col: 'id',
@@ -450,6 +450,7 @@ async function filterTasksByParams(
     return await Task.findAll({
         where: finalWhereClause,
         include: includeClause,
+        attributes: { include: [commentsCountAttribute] },
         order: orderClause,
         distinct: true,
     });

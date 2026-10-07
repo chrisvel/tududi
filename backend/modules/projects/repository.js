@@ -9,11 +9,13 @@ const {
     Goal,
     Note,
     User,
-    Permission,
     TaskAttachment,
     UserProjectArea,
+    UserProjectOrder,
     sequelize,
 } = require('../../models');
+const { projectAttachments } = require('../../services/entityAttachments');
+const permissionSources = require('../../services/permissionSources');
 const { Op } = require('sequelize');
 const {
     deleteFileFromDisk,
@@ -87,26 +89,14 @@ class ProjectsRepository extends BaseRepository {
     async getShareCounts(projectUids) {
         if (projectUids.length === 0) return {};
 
-        const shareCounts = await Permission.findAll({
-            attributes: [
-                'resource_uid',
-                [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
-            ],
-            where: {
-                resource_type: 'project',
-                resource_uid: { [Op.in]: projectUids },
-                status: 'accepted',
-            },
-            group: ['resource_uid'],
-            raw: true,
-        });
+        return permissionSources.countDistinctUsersByResource(
+            'project',
+            projectUids
+        );
+    }
 
-        const uidToCount = {};
-        shareCounts.forEach((item) => {
-            uidToCount[item.resource_uid] = parseInt(item.count, 10);
-        });
-
-        return uidToCount;
+    async getSharedProjectUids(projectUids) {
+        return permissionSources.findSharedResourceUids('project', projectUids);
     }
 
     /**
@@ -241,13 +231,11 @@ class ProjectsRepository extends BaseRepository {
      * Get share count for a single project.
      */
     async getShareCount(projectUid) {
-        return Permission.count({
-            where: {
-                resource_type: 'project',
-                resource_uid: projectUid,
-                status: 'accepted',
-            },
-        });
+        const counts = await permissionSources.countDistinctUsersByResource(
+            'project',
+            [projectUid]
+        );
+        return counts[projectUid] || 0;
     }
 
     /**
@@ -340,6 +328,8 @@ class ProjectsRepository extends BaseRepository {
             }
         }
 
+        await projectAttachments.removeAll(project.id, { transaction });
+
         // Delete tasks (including subtasks)
         await Task.destroy({
             where: { project_id: project.id, user_id: userId },
@@ -371,6 +361,11 @@ class ProjectsRepository extends BaseRepository {
                 await deleteFileFromDisk(imagePath);
             }
         }
+
+        await UserProjectOrder.destroy({
+            where: { project_id: project.id },
+            transaction,
+        });
 
         // Delete the project
         await project.destroy({ transaction });
@@ -428,6 +423,46 @@ class ProjectsRepository extends BaseRepository {
             };
         });
         return map;
+    }
+
+    // Custom order positions of the Projects page for a user, by project_id.
+    async getUserProjectPositions(userId) {
+        const rows = await UserProjectOrder.findAll({
+            where: { user_id: userId },
+            attributes: ['project_id', 'position'],
+            raw: true,
+        });
+        const map = {};
+        rows.forEach((row) => {
+            map[row.project_id] = row.position;
+        });
+        return map;
+    }
+
+    async findIdsByUids(whereClause, uids) {
+        return this.model.findAll({
+            where: { [Op.and]: [whereClause, { uid: { [Op.in]: uids } }] },
+            attributes: ['id', 'uid'],
+            raw: true,
+        });
+    }
+
+    // Replaces the user's whole custom order with projectIds, in that order.
+    async replaceUserProjectOrder(userId, projectIds) {
+        await sequelize.transaction(async (transaction) => {
+            await UserProjectOrder.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
+            await UserProjectOrder.bulkCreate(
+                projectIds.map((projectId, index) => ({
+                    user_id: userId,
+                    project_id: projectId,
+                    position: index,
+                })),
+                { transaction }
+            );
+        });
     }
 }
 

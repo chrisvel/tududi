@@ -17,7 +17,12 @@ const GoalDropdown: React.FC<GoalDropdownProps> = ({
     onChange,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [position, setPosition] = useState({ top: 0, left: 0, width: 0, openUpward: false });
+    const [position, setPosition] = useState({
+        top: 0,
+        left: 0,
+        width: 0,
+        openUpward: false,
+    });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -35,11 +40,15 @@ const GoalDropdown: React.FC<GoalDropdownProps> = ({
     const handleToggle = () => {
         if (!isOpen && dropdownRef.current) {
             const rect = dropdownRef.current.getBoundingClientRect();
-            const totalItems = 2 + activeGoals.length + (inactiveGoals.length > 0 ? inactiveGoals.length + 1 : 0);
+            const totalItems =
+                2 +
+                activeGoals.length +
+                (inactiveGoals.length > 0 ? inactiveGoals.length + 1 : 0);
             const menuHeight = Math.min(totalItems * 40 + 8, 240);
             const spaceBelow = window.innerHeight - rect.bottom;
             const spaceAbove = rect.top;
-            const openUpward = spaceAbove > spaceBelow && spaceBelow < menuHeight;
+            const openUpward =
+                spaceAbove > spaceBelow && spaceBelow < menuHeight;
             setPosition({
                 top: openUpward ? rect.top - menuHeight - 8 : rect.bottom + 8,
                 left: rect.left,
@@ -69,11 +78,15 @@ const GoalDropdown: React.FC<GoalDropdownProps> = ({
         if (isOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         }
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen]);
 
     return (
-        <div ref={dropdownRef} className="relative inline-block text-left w-full">
+        <div
+            ref={dropdownRef}
+            className="relative inline-block text-left w-full"
+        >
             <button
                 type="button"
                 className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -90,6 +103,7 @@ const GoalDropdown: React.FC<GoalDropdownProps> = ({
                 createPortal(
                     <div
                         ref={menuRef}
+                        data-portal-menu
                         className="fixed z-50 bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600 max-h-60 overflow-y-auto"
                         style={{
                             top: `${position.top}px`,
@@ -112,7 +126,9 @@ const GoalDropdown: React.FC<GoalDropdownProps> = ({
                         {activeGoals.map((g) => (
                             <button
                                 key={g.id}
-                                onClick={() => handleSelect(g.id ?? null, false)}
+                                onClick={() =>
+                                    handleSelect(g.id ?? null, false)
+                                }
                                 className="flex items-center px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 w-full"
                             >
                                 {g.title}
@@ -126,7 +142,9 @@ const GoalDropdown: React.FC<GoalDropdownProps> = ({
                                 {inactiveGoals.map((g) => (
                                     <button
                                         key={g.id}
-                                        onClick={() => handleSelect(g.id ?? null, false)}
+                                        onClick={() =>
+                                            handleSelect(g.id ?? null, false)
+                                        }
                                         className="flex items-center px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 w-full last:rounded-b-md"
                                     >
                                         {g.title} ({g.status})

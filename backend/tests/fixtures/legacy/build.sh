@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Builds the legacy SQLite fixtures used by backend/tests/upgrade.
 #
-# For every tag given (default: v1.2.4 v1.3.0 v1.3.1 v1.4.0 v1.4.2) this script
+# For every tag given (default: v1.2.4 v1.3.0 v1.3.1 v1.4.0 v1.4.2 v1.5.0
+# v1.6.0-rc.1) this script
 #   1. checks the tag out into a temporary git worktree and installs its deps,
 #   2. boots that version's own backend/cmd/start.sh against an empty DB_FILE
 #      (db-init + its migrations + user-create + app boot), waits for
@@ -23,7 +24,7 @@ SCRATCH="${LEGACY_SCRATCH:-$(mktemp -d -t tududi-legacy)}"
 PORT="${LEGACY_PORT:-3399}"
 TAGS=("$@")
 if [ ${#TAGS[@]} -eq 0 ]; then
-    TAGS=(v1.2.4 v1.3.0 v1.3.1 v1.4.0 v1.4.2)
+    TAGS=(v1.2.4 v1.3.0 v1.3.1 v1.4.0 v1.4.2 v1.5.0 v1.6.0-rc.1)
 fi
 MANIFEST="$SCRIPT_DIR/manifest.json"
 

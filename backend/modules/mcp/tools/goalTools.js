@@ -105,6 +105,12 @@ function registerGoalTools(server, context, tools) {
                           name: goal.Area.name,
                       }
                     : null,
+                projects: (goal.Projects || []).map((p) => ({
+                    id: p.id,
+                    uid: p.uid,
+                    name: p.name,
+                    status: p.status,
+                })),
                 created_at: goal.created_at,
                 updated_at: goal.updated_at,
             };

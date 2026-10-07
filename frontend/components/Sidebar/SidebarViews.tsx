@@ -25,6 +25,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { getApiPath } from '../../config/paths';
 import { getCsrfToken } from '../../utils/csrfService';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface View {
     id: number;
@@ -104,7 +105,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
     location,
 }) => {
     const { t } = useTranslation();
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('views');
     const [pinnedViews, setPinnedViews] = useState<View[]>([]);
     const [sidebarSettings, setSidebarSettings] = useState<{
         pinnedViewsOrder: string[];
@@ -150,7 +151,13 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                         typeof profile.sidebar_settings === 'string'
                             ? JSON.parse(profile.sidebar_settings)
                             : profile.sidebar_settings;
-                    setSidebarSettings(settings);
+                    setSidebarSettings({
+                        pinnedViewsOrder: Array.isArray(
+                            settings?.pinnedViewsOrder
+                        )
+                            ? settings.pinnedViewsOrder
+                            : [],
+                    });
                 }
             }
         } catch (error) {
@@ -261,14 +268,20 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
 
     return (
         <ul className="flex flex-col">
-            <li className="flex justify-between items-center px-[10px] py-[4px] rounded-md">
+            <li
+                className="flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer"
+                onClick={() => {
+                    if (orderedViews.length > 0) setIsExpanded((v) => !v);
+                }}
+            >
                 <span
                     className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         isActiveView('/views')
                             ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.stopPropagation();
                         setIsExpanded(true);
                         handleNavClick(
                             '/views',
@@ -288,8 +301,9 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                                 e.stopPropagation();
                                 setIsExpanded((v) => !v);
                             }}
-                            className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                            aria-label={isExpanded ? 'Collapse views list' : 'Expand views list'}
+                            aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-label={isExpanded ? t('sidebar.collapseViews', 'Collapse views list') : t('sidebar.expandViews', 'Expand views list')}
                         >
                             <ChevronRightIcon
                                 className="h-3 w-3 transition-transform duration-150"

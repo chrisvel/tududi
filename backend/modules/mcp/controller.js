@@ -69,8 +69,7 @@ async function handleMcpMessage(req, res) {
  * Get MCP feature flag status
  */
 async function getMcpStatus(req, res) {
-    const mcpEnabled = process.env.FF_ENABLE_MCP === 'true';
-    res.json({ enabled: mcpEnabled });
+    res.json({ enabled: true });
 }
 
 /**
@@ -80,17 +79,23 @@ async function listMcpTools(req, res) {
     const tools = [
         {
             category: 'Tasks',
-            count: 8,
+            count: 9,
             tools: [
                 'list_tasks',
                 'get_task',
                 'create_task',
                 'update_task',
                 'complete_task',
+                'skip_task_occurrence',
                 'delete_task',
                 'add_subtask',
                 'get_task_metrics',
             ],
+        },
+        {
+            category: 'Comments',
+            count: 2,
+            tools: ['list_task_comments', 'add_task_comment'],
         },
         {
             category: 'Projects',

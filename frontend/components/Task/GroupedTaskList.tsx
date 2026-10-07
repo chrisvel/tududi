@@ -5,10 +5,24 @@ import {
     ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import TaskItem from './TaskItem';
+import SortableItem from '../Shared/SortableItem';
+import {
+    resetSortableCursor,
+    sortableCursorHandlers,
+    swallowNextClick,
+    useSortableSensors,
+} from '../Shared/sortableList';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { GroupedTasks } from '../../utils/tasksService';
+import { isTaskActive } from '../../constants/taskStatus';
 
 interface GroupedTaskListProps {
     tasks: Task[];
@@ -23,7 +37,64 @@ interface GroupedTaskListProps {
     onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     showCompletedTasks?: boolean;
     searchQuery?: string;
+    // Makes the rows of each project group draggable within that group;
+    // called with the group's task uids in their new order.
+    onReorder?: (orderedUids: string[]) => void;
 }
+
+// One project group's rows, draggable among themselves.
+const SortableTaskGroup: React.FC<{
+    tasks: Task[];
+    onReorder: (orderedUids: string[]) => void;
+    renderTask: (task: Task) => React.ReactNode;
+}> = ({ tasks, onReorder, renderTask }) => {
+    const { t } = useTranslation();
+    const sensors = useSortableSensors();
+    const uids = tasks.map((task) => task.uid as string);
+
+    const handleDragEnd = ({ active, over }: DragEndEvent) => {
+        resetSortableCursor();
+        if (!over || active.id === over.id) return;
+        swallowNextClick();
+        const from = uids.indexOf(active.id as string);
+        const to = uids.indexOf(over.id as string);
+        if (from === -1 || to === -1) return;
+        onReorder(arrayMove(uids, from, to));
+    };
+
+    return (
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            {...sortableCursorHandlers}
+            onDragEnd={handleDragEnd}
+        >
+            <SortableContext
+                items={uids}
+                strategy={verticalListSortingStrategy}
+            >
+                {tasks.map((task) => (
+                    <div
+                        key={task.id}
+                        className="task-item-wrapper transition-all duration-200 ease-in-out relative hover:z-[10000] focus-within:z-[10000]"
+                    >
+                        <SortableItem
+                            id={task.uid as string}
+                            label={task.name}
+                            roleDescription={t(
+                                'sortable.task',
+                                'sortable task'
+                            )}
+                            testIdPrefix="sortable-task"
+                        >
+                            {renderTask(task)}
+                        </SortableItem>
+                    </div>
+                ))}
+            </SortableContext>
+        </DndContext>
+    );
+};
 
 interface TaskGroup {
     template: Task;
@@ -50,6 +121,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
     onToggleToday,
     showCompletedTasks = false,
     searchQuery = '',
+    onReorder,
 }) => {
     const { t } = useTranslation();
 
@@ -71,15 +143,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
         // Filter tasks based on completion status
         const filteredTasks = showCompletedTasks
             ? tasks
-            : tasks.filter((task) => {
-                  // Show only non-completed tasks
-                  const isCompleted =
-                      task.status === 'done' ||
-                      task.status === 'archived' ||
-                      task.status === 2 ||
-                      task.status === 3;
-                  return !isCompleted;
-              });
+            : tasks.filter((task) => isTaskActive(task.status));
 
         const groups = new Map<number, TaskGroup>();
         const standalone: Task[] = [];
@@ -145,15 +209,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             // Filter by completion status
             let filteredTasks = showCompletedTasks
                 ? groupTasks
-                : groupTasks.filter((task) => {
-                      // Show only non-completed tasks
-                      const isCompleted =
-                          task.status === 'done' ||
-                          task.status === 'archived' ||
-                          task.status === 2 ||
-                          task.status === 3;
-                      return !isCompleted;
-                  });
+                : groupTasks.filter((task) => isTaskActive(task.status));
 
             // Apply search filter if search query provided
             if (searchQuery.trim()) {
@@ -190,14 +246,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
         // Apply completion filter
         const filtered = showCompletedTasks
             ? tasks
-            : tasks.filter((task) => {
-                  const isCompleted =
-                      task.status === 'done' ||
-                      task.status === 'archived' ||
-                      task.status === 2 ||
-                      task.status === 3;
-                  return !isCompleted;
-              });
+            : tasks.filter((task) => isTaskActive(task.status));
 
         // Apply search
         const filteredBySearch = searchQuery.trim()
@@ -338,7 +387,10 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                             <div className="space-y-1.5">
                                                 {dayTasks.map((task) => (
                                                     <div
-                                                        key={task.id}
+                                                        key={
+                                                            task.virtual_id ??
+                                                            task.id
+                                                        }
                                                         className="relative hover:z-[10000] focus-within:z-[10000]"
                                                     >
                                                         <TaskItem
@@ -436,24 +488,49 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                           {t('tasks.tasks', 'tasks')}
                                       </span>
                                   </div>
-                                  {projectTasks.map((task) => (
-                                      <div
-                                          key={task.id}
-                                          className="task-item-wrapper transition-all duration-200 ease-in-out relative hover:z-[10000] focus-within:z-[10000]"
-                                      >
-                                          <TaskItem
-                                              task={task}
-                                              onTaskUpdate={onTaskUpdate}
-                                              onTaskCompletionToggle={
-                                                  onTaskCompletionToggle
-                                              }
-                                              onTaskDelete={onTaskDelete}
-                                              projects={projects}
-                                              hideProjectName={hideProjectName}
-                                              onToggleToday={onToggleToday}
-                                          />
-                                      </div>
-                                  ))}
+                                  {onReorder &&
+                                  projectTasks.every((task) => task.uid) ? (
+                                      <SortableTaskGroup
+                                          tasks={projectTasks}
+                                          onReorder={onReorder}
+                                          renderTask={(task) => (
+                                              <TaskItem
+                                                  task={task}
+                                                  onTaskUpdate={onTaskUpdate}
+                                                  onTaskCompletionToggle={
+                                                      onTaskCompletionToggle
+                                                  }
+                                                  onTaskDelete={onTaskDelete}
+                                                  projects={projects}
+                                                  hideProjectName={
+                                                      hideProjectName
+                                                  }
+                                                  onToggleToday={onToggleToday}
+                                              />
+                                          )}
+                                      />
+                                  ) : (
+                                      projectTasks.map((task) => (
+                                          <div
+                                              key={task.id}
+                                              className="task-item-wrapper transition-all duration-200 ease-in-out relative hover:z-[10000] focus-within:z-[10000]"
+                                          >
+                                              <TaskItem
+                                                  task={task}
+                                                  onTaskUpdate={onTaskUpdate}
+                                                  onTaskCompletionToggle={
+                                                      onTaskCompletionToggle
+                                                  }
+                                                  onTaskDelete={onTaskDelete}
+                                                  projects={projects}
+                                                  hideProjectName={
+                                                      hideProjectName
+                                                  }
+                                                  onToggleToday={onToggleToday}
+                                              />
+                                          </div>
+                                      ))
+                                  )}
                               </div>
                           );
                       }

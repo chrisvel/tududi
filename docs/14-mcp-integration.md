@@ -18,7 +18,8 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
     - [Stdio Mode (Local)](#stdio-mode-local)
     - [HTTP Mode (Remote)](#http-mode-remote)
 - [Available Tools](#available-tools)
-    - [Tasks Tools (8)](#tasks-tools-8)
+    - [Tasks Tools (11)](#tasks-tools-11)
+    - [Comments Tools (2)](#comments-tools-2)
     - [Projects Tools (5)](#projects-tools-5)
     - [Inbox Tools (6)](#inbox-tools-6)
     - [Views Tools (5)](#views-tools-5)
@@ -44,10 +45,10 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 **Key Features:**
 
-- **59 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people
+- **65 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people, plus task comments
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
-- **Feature Flag:** Opt-in via `FF_ENABLE_MCP` to control availability
+- **Enabled by default:** No configuration needed to turn MCP on
 - **Frontend Configuration:** Web UI for generating client configurations
 
 ---
@@ -92,29 +93,19 @@ Tududi's MCP server works with any MCP-compatible client:
 
 1. **Tududi installed and running** — v1.0.0 or later
 2. **An API token** — Generate one at `Profile → API Keys`
-3. **Feature flag enabled** — Set `FF_ENABLE_MCP=true` in your `.env`
-4. **An MCP-compatible client** — Claude Desktop, Cursor, etc.
+3. **An MCP-compatible client** — Claude Desktop, Cursor, etc.
 
 ### Quick Setup
 
-1. **Enable MCP:**
-
-    ```bash
-    # In your .env file
-    FF_ENABLE_MCP=true
-    ```
-
-    Restart server/container if necessary
-
-2. **Generate an API token:**
+1. **Generate an API token:**
     - Navigate to `Profile → API Keys` in Tududi
     - Create a new token (keep it secure)
 
-3. **Choose your transport mode:**
+2. **Choose your transport mode:**
     - **Stdio:** For local Desktop/CLI client integration
     - **HTTP:** For remote access or Docker deployments
 
-4. **Configure your client** — Use the configuration below
+3. **Configure your client** — Use the configuration below
 
 ---
 
@@ -180,9 +171,9 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 59 MCP tools organized into 11 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 65 MCP tools organized into 12 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
-### Tasks Tools (8)
+### Tasks Tools (12)
 
 #### `list_tasks`
 
@@ -191,9 +182,10 @@ List tasks with optional filtering by type, status, or project.
 **Parameters:**
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `type` | string | No | — | Filter: `today`, `upcoming`, `completed`, `archived`, `all` |
+| `type` | string | No | — | Filter: `today` (what the Today page shows: in progress, planned for today, due today, overdue), `upcoming` (due or deferred in the next 7 days), `completed`, `archived`, `all` |
 | `status` | string | No | — | Filter: `pending`, `in_progress`, `completed`, `archived` |
 | `project_id` | number | No | — | Filter by project ID |
+| `blocked` | boolean | No | — | `true`: only tasks with an open blocker. `false`: only tasks without one |
 | `limit` | number | No | 50 | Maximum tasks to return |
 
 **Example:**
@@ -236,7 +228,8 @@ Create a new task.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `name` | string | Yes | Task name |
-| `description` | string | No | Task description/note |
+| `note` | string | No | Task note (the same field REST calls `note`) |
+| `description` | string | No | Alias of `note`; `note` wins if both are sent |
 | `priority` | string | No | `low`, `medium`, or `high` (default: `medium`) |
 | `due_date` | string | No | ISO 8601 date |
 | `defer_until` | string | No | ISO 8601 date/time; task is hidden from view until this point |
@@ -285,7 +278,8 @@ Update an existing task.
 |-----------|------|----------|-------------|
 | `id` | number/string | Yes | Task ID or UID |
 | `name` | string | No | New task name |
-| `description` | string | No | New description |
+| `note` | string | No | New note (the same field REST calls `note`) |
+| `description` | string | No | Alias of `note`; `note` wins if both are sent |
 | `priority` | string | No | `low`, `medium`, `high` |
 | `status` | string | No | `pending`, `in_progress`, `completed`, `archived` |
 | `due_date` | string | No | New due date (ISO 8601) |
@@ -337,6 +331,25 @@ Toggle a task between completed and pending.
 
 ---
 
+#### `skip_task_occurrence`
+
+Move a recurring task to its next due date without completing it. The skipped occurrence does not count in completion stats or streaks. Returns an error for non-recurring tasks, completed tasks, and tasks whose recurrence has no further occurrence.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+
+**Example:**
+
+```json
+{
+    "id": "abc123"
+}
+```
+
+---
+
 #### `delete_task`
 
 Permanently delete a task.
@@ -372,6 +385,44 @@ Add a subtask to a parent task.
 
 ---
 
+#### `create_task_relation`
+
+Link two tasks. The type is from the point of view of the task in `id`. Circular blocking chains are refused, and you need edit access to both tasks.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID to add the relation to |
+| `target_id` | number/string | Yes | The other task's ID or UID |
+| `type` | string | Yes | `blocks`, `blocked_by`, `related_to`, `duplicates`, `duplicated_by` |
+
+---
+
+#### `list_task_relations`
+
+List the tasks linked to a task. Each entry has a relation `uid`, a `type` and the other task's `uid`, `name` and `status`. Linked tasks you cannot read are left out.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+
+---
+
+#### `remove_task_relation`
+
+Remove a relation using the `uid` from `list_task_relations`. Removing it from either task removes it for both.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+| `relation_uid` | string | Yes | Relation UID |
+
+`complete_task` still completes a blocked task, and adds a `warning` and `open_blockers` to its result when it does.
+
+---
+
 #### `get_task_metrics`
 
 Get productivity metrics and task statistics.
@@ -388,6 +439,42 @@ Get productivity metrics and task statistics.
     "in_progress_tasks": 5,
     "completed_today": 2,
     "completed_this_week": 11
+}
+```
+
+---
+
+### Comments Tools (2)
+
+#### `list_task_comments`
+
+List the comments on a task, oldest first. Replies are nested under the comment they answer in `replies`. You need read access to the task.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+
+---
+
+#### `add_task_comment`
+
+Add a comment to a task. Read access is enough, so a read-only collaborator can comment too. The task owner, the assignee and anyone mentioned get the usual comment notifications.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+| `body` | string | Yes | Comment text (max 10,000 characters) |
+| `parent_comment_uid` | string | No | Reply to this top-level comment |
+| `mentioned_person_uids` | string[] | No | Person UIDs to mention |
+
+**Example:**
+
+```json
+{
+    "id": "abc123",
+    "body": "Blocked on the vendor, following up Monday"
 }
 ```
 
@@ -421,7 +508,7 @@ Get a single project by UID.
 
 #### `create_project`
 
-Create a new project.
+Create a new project. Refused for an account whose role does not allow creating projects (a guest, or a user who was denied `create_projects`).
 
 **Parameters:**
 | Parameter | Type | Required | Description |
@@ -433,6 +520,8 @@ Create a new project.
 | `area_id` | number | No | Parent area ID |
 | `due_date_at` | string | No | Due date (ISO 8601) |
 | `tags` | string[] | No | Array of tag names |
+| `goal_id` | number | No | Goal ID to link the project to (must be your own goal) |
+| `goal_uid` | string | No | Goal UID, as an alternative to `goal_id` |
 
 ---
 
@@ -450,6 +539,8 @@ Update an existing project.
 | `status` | string | No | New status |
 | `area_id` | number | No | New area ID |
 | `pinned` | boolean | No | Pin to sidebar |
+| `goal_id` | number | No | Link to a goal you own; `null` unlinks (owner only) |
+| `goal_uid` | string | No | Goal UID, as an alternative to `goal_id`; `null` or empty unlinks |
 
 ---
 
@@ -636,7 +727,7 @@ List goals with optional filtering by area or status.
 
 #### `get_goal`
 
-Get a single goal by UID.
+Get a single goal by UID, including the projects linked to it.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
@@ -869,9 +960,16 @@ Delete a tag. Removes it from all entities.
 
 ### Habits Tools (9)
 
+Habits are either **build** habits (do something) or **quit** habits (avoid something, where each logged completion records a slip). See [Habits](21-habits.md) for how streaks and strength are calculated.
+
 #### `list_habits`
 
-List all habits. No required parameters.
+List habits with their streaks, strength (0-100) and `habit_progress` for the current period.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `archived` | boolean | No | List archived habits instead |
 
 ---
 
@@ -894,19 +992,28 @@ Create a new habit.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `name` | string | Yes | Habit name |
-| `frequency` | string | No | Recurrence pattern |
+| `habit_polarity` | string | No | `build` (default) or `quit` |
+| `habit_frequency_period` | string | No | `daily`, `weekly`, `monthly` or `interval` |
+| `habit_target_count` | number | No | Check-ins needed per period |
+| `habit_target_value` | number | No | Makes the habit measurable: amount needed per period |
+| `habit_unit` | string | No | Unit for a measurable habit, e.g. `pages` |
+| `habit_schedule_days` | number[] | No | Daily habits only: weekdays it is due, 0 = Sunday |
+| `habit_interval_days` | number | No | Length of an `interval` period in days |
+| `habit_time_of_day` | string | No | `morning`, `afternoon` or `evening` |
+| `habit_reminder_time` | string | No | Reminder time `HH:MM` in the user's timezone |
 
 ---
 
 #### `update_habit`
 
-Update an existing habit.
+Update a habit, or archive / restore it. Accepts the same settings as `create_habit`.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Habit UID |
 | `name` | string | No | New name |
+| `archived` | boolean | No | `true` archives (keeps history), `false` restores |
 
 ---
 
@@ -923,46 +1030,54 @@ Delete a habit and all its completions.
 
 #### `log_habit_completion`
 
-Record a completion entry for a habit.
+Check in a habit, record a slip on a quit habit, or skip a day.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Habit UID |
 | `completed_at` | string | No | ISO 8601 datetime (defaults to now) |
+| `value` | number | No | Amount, required for measurable habits |
+| `note` | string | No | Optional note |
+| `skip` | boolean | No | Skip this day instead; keeps the streak (build habits only) |
 
 ---
 
 #### `get_habit_completions`
 
-Get completion history for a habit.
+Get check-ins (with value and note) and skipped days for a habit.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Habit UID |
+| `start_date` | string | No | ISO 8601, defaults to 30 days ago |
+| `end_date` | string | No | ISO 8601, defaults to now |
 
 ---
 
 #### `delete_habit_completion`
 
-Remove a specific completion entry.
-
-**Parameters:**
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `id` | number | Yes | Completion ID |
-
----
-
-#### `get_habit_stats`
-
-Get aggregated statistics for a habit.
+Remove a check-in or a skipped day.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Habit UID |
+| `completion_id` | number | Yes | Completion ID |
+
+---
+
+#### `get_habit_stats`
+
+Get streaks, strength, the completion rate over judged periods and totals.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+| `start_date` | string | No | ISO 8601 |
+| `end_date` | string | No | ISO 8601 |
 
 ---
 
@@ -996,7 +1111,7 @@ Get a specific person by UID, including their assigned task count.
 
 #### `create_person`
 
-Create a new person/contact.
+Create a new person/contact. Refused for an account whose role does not allow adding people (a guest, or a user who was denied `create_people`).
 
 **Parameters:**
 | Parameter | Type | Required | Description |
@@ -1242,11 +1357,10 @@ const result = await client.callTool({
 - Tokens can be revoked at any time from `Profile → API Keys`
 - HTTP mode uses Bearer token in the `Authorization` header
 
-### Feature Flag
+### Access Control
 
-MCP is behind a feature flag (`FF_ENABLE_MCP`). This means:
+MCP is enabled by default:
 
-- **Opt-in only:** Administrators must explicitly enable MCP by setting `FF_ENABLE_MCP=true`.
 - **Token required:** Each user must generate their own API token to use the MCP tools.
 
 ### Data Isolation
@@ -1270,18 +1384,6 @@ Every MCP tool query includes `user_id` filtering:
 1. Go to `Profile → API Keys`
 2. Generate a new token
 3. Update your MCP client configuration
-
-### "MCP feature is not enabled"
-
-**Cause:** The feature flag is not set.
-
-**Fix:**
-
-```bash
-# In your .env file
-FF_ENABLE_MCP=true
-# Restart Tududi
-```
 
 ### HTTP Connection Refused
 
@@ -1329,7 +1431,6 @@ FF_ENABLE_MCP=true
             ports:
                 - '3002:3002'
             environment:
-                - FF_ENABLE_MCP=true
                 - BACKEND_URL=http://tududi.yourdomain.com:3002
     ```
 

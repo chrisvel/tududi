@@ -141,7 +141,7 @@ import useSWR from 'swr';
 import { getTasks } from '../utils/tasksService';
 
 const TaskList = () => {
-  const { data: tasks, error, mutate } = useSWR('/api/v1/tasks', getTasks);
+  const { data: tasks, error, mutate } = useSWR('/api/tasks', getTasks);
   // ...
 };
 
@@ -176,17 +176,23 @@ import clsx from 'clsx';
 
 ---
 
+### 4. Colors and Form Controls
+
+- **One palette.** Every user-chosen color (areas, projects, goals, tags, notes, people, calendars, habits) comes from `PALETTE` in `frontend/constants/colorPalette.ts`, through the shared `ColorPicker`. Automatic colors (comment avatars, template accents) use `hashColor(seed)` from the same palette. Do not add local color arrays.
+- Each palette color has a stored `value` (light-mode shade) and a lighter `dark` shade. To color a component with a user color, set `accentVars(resolveColor(value))` as its `style` and use the `ACCENT.*` classes (`ACCENT.bg`, `ACCENT.text`, `ACCENT.solid`, `ACCENT.surface`, ...), which switch shade in dark mode.
+- **Form controls** use the shared classes in `frontend/constants/formClasses.ts`: `FORM.select`, `FORM.input`, `FORM.textarea`, `FORM.label`, plus layout classes such as `w-full`. Base `select` styling (the arrow, dark native option lists) lives in `@layer base` in `frontend/styles/tailwind.css`, so utility classes always win over it.
+
 ## Naming Conventions
 
 | Type | Convention | Example |
 |------|------------|---------|
-| **Files** | kebab-case | `recurring-task-service.js`, `task-item.tsx` |
-| **React Components** | PascalCase | `TaskItem.tsx`, `ProjectForm.tsx` |
+| **Backend files** | camelCase for services, kebab-case in `operations/` and `queries/` | `recurringTaskService.js`, `query-builders.js` |
+| **React Components** | PascalCase | `TaskItem.tsx`, `ProjectModal.tsx` |
 | **Functions** | camelCase | `findTaskById`, `createTask`, `handleSubmit` |
 | **Classes** | PascalCase | `TaskService`, `BaseRepository` |
 | **Constants** | UPPER_SNAKE_CASE | `API_VERSION`, `MAX_FILE_SIZE` |
 | **Variables** | camelCase | `userId`, `taskList`, `isCompleted` |
-| **Database Tables** | PascalCase | `Tasks`, `Projects`, `Users` |
+| **Database Tables** | lowercase snake_case, plural | `tasks`, `projects`, `user_groups` |
 | **Database Columns** | snake_case | `user_id`, `due_date`, `created_at` |
 | **Interfaces (TS)** | PascalCase | `TaskProps`, `User`, `ApiResponse` |
 | **Type Aliases (TS)** | PascalCase | `TaskStatus`, `Priority` |
@@ -196,24 +202,25 @@ import clsx from 'clsx';
 ## API Route Conventions
 
 ```javascript
-// Singular for single resource operations
-POST   /api/v1/task              // Create new task
-GET    /api/v1/task/:id          // Get task by ID
-PUT    /api/v1/task/:id          // Update task
-DELETE /api/v1/task/:id          // Delete task
+// Singular for single resource operations, addressed by uid
+POST   /api/task                 // Create new task
+GET    /api/task/:uid            // Get task
+PATCH  /api/task/:uid            // Update task (partial)
+DELETE /api/task/:uid            // Delete task
 
-// Plural for collection operations
-GET    /api/v1/tasks             // List all tasks
-GET    /api/v1/tasks/today       // Filtered list
-GET    /api/v1/tasks/upcoming    // Another filtered list
-
-// UID support (alternative to numeric ID)
-GET    /api/v1/task/uid/:uid     // Get by UID
+// Plural for collection operations, filtered by query parameters
+GET    /api/tasks                // List tasks
+GET    /api/tasks?type=today     // Filtered list
+GET    /api/tasks?type=upcoming&groupBy=day
 
 // Nested resources
-GET    /api/v1/project/:id/tasks // Tasks for a project
-POST   /api/v1/task/:id/tags     // Add tags to task
+GET    /api/task/:uid/subtasks   // Subtasks of a task
+GET    /api/task/:uid/comments   // Comments on a task
 ```
+
+The resource routes are also mounted under `/api/v1` (for example `/api/v1/tasks`); the web UI uses `/api`. Updates use `PATCH`, not `PUT`. Tags are set through the `tags` array on the task body, not a separate endpoint, and a project's tasks come from `GET /api/tasks?project_uid=<uid>`.
+
+The `:uid` routes for tasks, projects and areas (for example `/api/task/:uid`) also accept the numeric `id` that appears in API payloads. `backend/middleware/numericIdParam.js` swaps it for the row's uid, and only when the caller already has access to that row, so an id that does not exist and one that belongs to someone else both answer 404. The uid stays the canonical identifier: it is what the web UI routes on. To support numeric ids on another resource, register the helper with `router.param` in that module's router.
 
 ---
 
@@ -360,9 +367,9 @@ export interface Task {
 /frontend/components/Task/
 ├── TaskItem.tsx        # Single task display
 ├── TaskList.tsx        # List of tasks
-├── TaskForm.tsx        # Task creation/editing form
-├── TaskFilters.tsx     # Filter controls
-└── SubtaskList.tsx     # Subtask-specific component
+├── TaskForm/           # One component per form section (TaskDueDateSection.tsx, ...)
+├── TaskDetails/        # Task detail sidebar cards
+└── __tests__/          # Component tests
 ```
 
 **Principle:** Feature-based organization, components stay focused
@@ -375,11 +382,11 @@ export interface Task {
 
 ```
 // Backend
-/backend/tests/unit/services/taskService.test.js
-/backend/tests/integration/tasks/tasks.test.js
+/backend/tests/unit/services/permissionsService.test.js
+/backend/tests/integration/tasks.test.js        // flat, one file per feature
 
 // Frontend
-/frontend/components/Task/__tests__/TaskItem.test.tsx
+/frontend/components/Task/__tests__/TaskRow.test.tsx
 ```
 
 ### Test Structure

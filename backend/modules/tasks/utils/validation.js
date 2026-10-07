@@ -1,5 +1,7 @@
-const { Project, Task, Area, Goal } = require('../../../models');
+const { Project, Task, Area, Goal, Person } = require('../../../models');
 const permissionsService = require('../../../services/permissionsService');
+const { getWorkspaceUserIds } = require('../../../services/workspaceMembers');
+const peopleRepository = require('../../people/repository');
 
 function isUid(value) {
     const str = value.toString().trim();
@@ -155,17 +157,27 @@ function validateDeferUntilAndDueDate(
     }
 }
 
+// Owners and anyone the area or goal is shared with read-write can file tasks
+// under it. Anything else, including a missing row, gets the same error so
+// ids cannot be probed.
+async function canWriteTo(userId, resourceType, uid) {
+    const access = await permissionsService.getAccess(
+        userId,
+        resourceType,
+        uid
+    );
+    return access === 'rw' || access === 'admin';
+}
+
 async function validateAreaAccess(areaIdOrUid, userId) {
     if (!areaIdOrUid || !areaIdOrUid.toString().trim()) {
         return null;
     }
 
     const value = areaIdOrUid.toString().trim();
-    const where = isUid(value)
-        ? { uid: value, user_id: userId }
-        : { id: value, user_id: userId };
+    const where = isUid(value) ? { uid: value } : { id: value };
     const area = await Area.findOne({ where });
-    if (!area) {
+    if (!area || !(await canWriteTo(userId, 'area', area.uid))) {
         throw new Error('Invalid area.');
     }
 
@@ -178,15 +190,56 @@ async function validateGoalAccess(goalIdOrUid, userId) {
     }
 
     const value = goalIdOrUid.toString().trim();
-    const where = isUid(value)
-        ? { uid: value, user_id: userId }
-        : { id: value, user_id: userId };
+    const where = isUid(value) ? { uid: value } : { id: value };
     const goal = await Goal.findOne({ where });
-    if (!goal) {
+    if (!goal || !(await canWriteTo(userId, 'goal', goal.uid))) {
         throw new Error('Invalid goal.');
     }
 
     return goal.id;
+}
+
+// Assigning a task hands the assignee's account write access to it and sends
+// them a notification, so the person must be one the caller could pick in the
+// assignee list: one of their own cards, or the self-person of someone they
+// work with (share partners, group members, and members of the task's
+// project). Keeping the assignee a task already has is always allowed.
+async function validateAssignee(
+    assignedTo,
+    userId,
+    { projectId = null, currentAssignedTo = null } = {}
+) {
+    if (!assignedTo) return null;
+    if (assignedTo === currentAssignedTo) return assignedTo;
+
+    const person = await Person.findOne({
+        where: { uid: String(assignedTo) },
+        attributes: ['user_id', 'linked_user_id'],
+        raw: true,
+    });
+    if (!person) throw new Error('Invalid assignee.');
+    if (person.user_id === userId) return assignedTo;
+
+    const isSelfPerson = person.linked_user_id === person.user_id;
+    if (isSelfPerson) {
+        const allowed = new Set(await getWorkspaceUserIds(userId));
+        if (projectId) {
+            const project = await Project.findByPk(projectId, {
+                attributes: ['uid', 'user_id'],
+            });
+            if (project) {
+                allowed.add(project.user_id);
+                (
+                    await peopleRepository.findProjectCollaboratorUserIds(
+                        project.uid
+                    )
+                ).forEach((id) => allowed.add(id));
+            }
+        }
+        if (allowed.has(person.user_id)) return assignedTo;
+    }
+
+    throw new Error('Invalid assignee.');
 }
 
 /**
@@ -222,5 +275,6 @@ module.exports = {
     validateDeferUntilAndDueDate,
     validateAreaAccess,
     validateGoalAccess,
+    validateAssignee,
     getRecurringParentEndDate,
 };

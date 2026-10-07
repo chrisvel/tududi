@@ -25,12 +25,13 @@ import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
 import ProjectItem from './Project/ProjectItem';
 import ConfirmDialog from './Shared/ConfirmDialog';
-import { searchUniversal } from '../utils/searchService';
+import { searchUniversal, resolveViewFilters } from '../utils/searchService';
 import { getApiPath } from '../config/paths';
 import { SortOption } from './Shared/SortFilterButton';
 import IconSortDropdown from './Shared/IconSortDropdown';
 import { useStore } from '../store/useStore';
 import { getCsrfToken } from '../utils/csrfService';
+import { isTaskActive, isTaskCompleted } from '../constants/taskStatus';
 
 interface View {
     id: number;
@@ -43,6 +44,7 @@ interface View {
     defer: string | null;
     tags: string[];
     extras: string[] | null;
+    task_status: string | null;
     is_pinned: boolean;
 }
 
@@ -175,22 +177,16 @@ const ViewDetail: React.FC = () => {
     const displayTasks = useMemo(() => {
         let filteredTasks: Task[];
 
-        // Filter by completion status
-        if (taskStatusFilter === 'completed') {
-            filteredTasks = tasks.filter(
-                (task: Task) =>
-                    task.status === 'done' ||
-                    task.status === 'archived' ||
-                    task.status === 2 ||
-                    task.status === 3
+        // Filter by completion status, unless the view pins one status
+        if (view?.task_status) {
+            filteredTasks = tasks;
+        } else if (taskStatusFilter === 'completed') {
+            filteredTasks = tasks.filter((task: Task) =>
+                isTaskCompleted(task.status)
             );
         } else if (taskStatusFilter === 'active') {
-            filteredTasks = tasks.filter(
-                (task: Task) =>
-                    task.status !== 'done' &&
-                    task.status !== 'archived' &&
-                    task.status !== 2 &&
-                    task.status !== 3
+            filteredTasks = tasks.filter((task: Task) =>
+                isTaskActive(task.status)
             );
         } else {
             // taskStatusFilter === 'all'
@@ -281,6 +277,7 @@ const ViewDetail: React.FC = () => {
     }, [
         tasks,
         taskStatusFilter,
+        view?.task_status,
         taskSearchQuery,
         orderBy,
         t,
@@ -342,11 +339,12 @@ const ViewDetail: React.FC = () => {
         [updateQueryParams]
     );
 
-    const showCompletedTasks = taskStatusFilter !== 'active';
+    const showCompletedTasks =
+        !!view?.task_status || taskStatusFilter !== 'active';
 
     useEffect(() => {
         fetchViewAndResults();
-    }, [uid]);
+    }, [uid, taskStatusFilter]);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -425,6 +423,7 @@ const ViewDetail: React.FC = () => {
                 tags: viewData.tags || [],
                 extras: viewData.extras || [],
                 defer: viewData.defer || null,
+                task_status: viewData.task_status || null,
             };
             setView(normalizedView);
 
@@ -433,8 +432,9 @@ const ViewDetail: React.FC = () => {
             // Fetch search results with pagination and exclude subtasks
             const response = await searchUniversal({
                 query: normalizedView.search_query || '',
-                filters: normalizedView.filters,
+                filters: resolveViewFilters(normalizedView.filters),
                 priority: normalizedView.priority || undefined,
+                taskStatus: normalizedView.task_status || undefined,
                 due: normalizedView.due || undefined,
                 defer: normalizedView.defer || undefined,
                 tags:
@@ -448,6 +448,7 @@ const ViewDetail: React.FC = () => {
                 limit: limit,
                 offset: currentOffset,
                 excludeSubtasks: true,
+                status: taskStatusFilter,
             });
 
             // Separate results by type
@@ -692,7 +693,7 @@ const ViewDetail: React.FC = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
                 {/* View Banner Header */}
-                <div className="rounded-xl mb-8 overflow-hidden">
+                <div className="rounded-xl mb-8">
                     <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl">
                         <div className="flex items-start justify-between gap-4">
                             <div className="min-w-0 flex-1">
@@ -722,7 +723,7 @@ const ViewDetail: React.FC = () => {
                                 )}
 
                                 {/* Filter chips */}
-                                {(view.tags.length > 0 || view.filters.length > 0 || view.search_query || view.priority || view.due || view.defer || (view.extras && view.extras.length > 0)) && (
+                                {(view.tags.length > 0 || view.filters.length > 0 || view.search_query || view.priority || view.task_status || view.due || view.defer || (view.extras && view.extras.length > 0)) && (
                                     <div className="mt-3 flex flex-wrap gap-1.5">
                                         {view.tags.map((tag) => {
                                             const color = getTagColor(tag);
@@ -742,6 +743,13 @@ const ViewDetail: React.FC = () => {
                                         {view.priority && (
                                             <span className="px-2 py-0.5 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
                                                 {view.priority}
+                                            </span>
+                                        )}
+                                        {view.task_status && (
+                                            <span className="px-2 py-0.5 bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 rounded text-xs font-medium">
+                                                {t(
+                                                    `task.status.${view.task_status.replace(/_(\w)/g, (_, c) => c.toUpperCase())}`
+                                                )}
                                             </span>
                                         )}
                                         {view.due && (
@@ -832,64 +840,66 @@ const ViewDetail: React.FC = () => {
                                             ))}
                                         </div>
                                     </div>
-                                    <div>
-                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
-                                            {t('tasks.show', 'Show')}
+                                    {!view.task_status && (
+                                        <div>
+                                            <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                                                {t('tasks.show', 'Show')}
+                                            </div>
+                                            <div className="py-1 space-y-1">
+                                                {[
+                                                    {
+                                                        key: 'active',
+                                                        label: t(
+                                                            'tasks.open',
+                                                            'Open'
+                                                        ),
+                                                    },
+                                                    {
+                                                        key: 'all',
+                                                        label: t(
+                                                            'tasks.all',
+                                                            'All'
+                                                        ),
+                                                    },
+                                                    {
+                                                        key: 'completed',
+                                                        label: t(
+                                                            'tasks.completed',
+                                                            'Completed'
+                                                        ),
+                                                    },
+                                                ].map((opt) => {
+                                                    const isActive =
+                                                        taskStatusFilter ===
+                                                        opt.key;
+                                                    return (
+                                                        <button
+                                                            key={opt.key}
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleStatusChange(
+                                                                    opt.key as
+                                                                        | 'all'
+                                                                        | 'active'
+                                                                        | 'completed'
+                                                                )
+                                                            }
+                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                                isActive
+                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                            }`}
+                                                        >
+                                                            <span>{opt.label}</span>
+                                                            {isActive && (
+                                                                <CheckIcon className="h-4 w-4" />
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
-                                        <div className="py-1 space-y-1">
-                                            {[
-                                                {
-                                                    key: 'active',
-                                                    label: t(
-                                                        'tasks.open',
-                                                        'Open'
-                                                    ),
-                                                },
-                                                {
-                                                    key: 'all',
-                                                    label: t(
-                                                        'tasks.all',
-                                                        'All'
-                                                    ),
-                                                },
-                                                {
-                                                    key: 'completed',
-                                                    label: t(
-                                                        'tasks.completed',
-                                                        'Completed'
-                                                    ),
-                                                },
-                                            ].map((opt) => {
-                                                const isActive =
-                                                    taskStatusFilter ===
-                                                    opt.key;
-                                                return (
-                                                    <button
-                                                        key={opt.key}
-                                                        type="button"
-                                                        onClick={() =>
-                                                            handleStatusChange(
-                                                                opt.key as
-                                                                    | 'all'
-                                                                    | 'active'
-                                                                    | 'completed'
-                                                            )
-                                                        }
-                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
-                                                            isActive
-                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                        }`}
-                                                    >
-                                                        <span>{opt.label}</span>
-                                                        {isActive && (
-                                                            <CheckIcon className="h-4 w-4" />
-                                                        )}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
+                                    )}
                                     <div>
                                         <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
                                             {t('tasks.direction', 'Direction')}

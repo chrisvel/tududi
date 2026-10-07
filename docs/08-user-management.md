@@ -10,7 +10,7 @@ This document explains how user management works in tududi from a user behavior 
 
 1. **Registration is controlled by admins**
     - By default, registration is disabled
-    - Admins can toggle registration on/off via the Admin panel
+    - Admins toggle registration on/off through `POST /api/admin/toggle-registration` (the Access page no longer has a switch for it)
     - When disabled, only admins can create new user accounts
 
 2. **Email verification is required**
@@ -32,6 +32,8 @@ This document explains how user management works in tududi from a user behavior 
 
 4. **Registration validation rules:**
     - Email must be valid format and unique
+    - Disposable email providers (mailinator.com, yopmail.com and the rest of the [community blocklist](https://github.com/disposable-email-domains/disposable-email-domains), subdomains included) are refused
+    - The email's domain must be able to receive mail (an MX lookup, falling back to A/AAAA). A DNS timeout or server failure lets the signup through. Set `REGISTRATION_MX_CHECK=false` to turn the lookup off, for example on an instance without outside DNS
     - Password must be at least 8 characters long
     - Email is automatically normalized (trimmed and lowercased)
 
@@ -70,21 +72,53 @@ This document explains how user management works in tududi from a user behavior 
 
 ### Role System
 
-9. **Two role types exist: Admin and User**
-    - **Admin:** Full system access, can manage users, toggle registration, access admin panel
-    - **User:** Standard access to their own data and shared resources
+9. **Three roles exist: Admin, User and Guest**
+    - **Admin:** Full system access, manages accounts, roles and groups, and can do everything below
+    - **User:** A regular member with their own data and everything shared with them
+    - **Guest:** Works inside what is shared with them or assigned to them, and creates nothing of their own
+
+    Each role has a set of **capabilities** that decide what an account may create:
+
+    | Capability        | Meaning                                              | Admin | User | Guest |
+    | ----------------- | ---------------------------------------------------- | ----- | ---- | ----- |
+    | `create_people`   | Add people to the People list                        | yes   | yes  | no    |
+    | `invite_members`  | Create accounts, send invitations or sign people up  | yes   | no   | no    |
+    | `create_projects` | Create projects, areas and goals                     | yes   | yes  | no    |
+
+    The role decides an account's capabilities. The add and edit user forms
+    list what the chosen role allows, and have no way to change it for one
+    account: changing what a role allows is meant for the Roles tab. The API
+    still accepts a `capabilities` object on the admin user calls, stored as the
+    difference from the role's defaults (an admin has none), but no page sets it.
+    Reading what is shared with an account is never restricted by role.
 
 10. **Role assignment:**
     - First user is automatically assigned admin role
-    - Admins can promote/demote other users to/from admin
+    - Admins choose an account's role in the Users tab when adding or editing it
     - Every user has exactly one role record
-    - Roles are created automatically when a user account is created
+    - Roles are created automatically when a user account is created (as `user`)
+    - The role names and their defaults are fixed in code for now
+    - The last remaining admin cannot be demoted (or deleted), even when two admins try to remove each other at the same moment
+    - Editing an account in the admin page is all or nothing: if the role change is refused, the name, email or password in the same request are not saved
+    - Setting a new password for an account signs it out everywhere (the admin changing their own password stays signed in)
+    - Names and surnames must be text of at most 100 characters without control characters
 
 11. **Admin capabilities:**
     - Create, update, and delete user accounts
-    - Promote/demote users to/from admin role
+    - Change roles and capabilities
     - Toggle registration on/off
     - Cannot delete their own account (prevents lockout)
+
+11b. **How restrictions are enforced**
+    - The server refuses the request with `403` when the account's capabilities
+      do not allow it: `POST /api/people`, `POST /api/project`, `POST /api/areas`,
+      `POST /api/goals` and the MCP `create_person` and `create_project` tools
+    - The UI hides the sidebar "add" buttons for what an account cannot create.
+      This only decides what to show, the server is the real gate
+    - The current user (`GET /api/current_user` and the login response) carries
+      `role` and the effective `capabilities` next to `is_admin`
+    - `is_admin` stays the source of truth for admin, so anything that only
+      reads or writes that flag keeps working
 
 ---
 
@@ -131,16 +165,13 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 17. **User preferences stored in profile:**
     - **Appearance:** Light or dark theme
-    - **Language:** One of 24 supported languages
+    - **Language:** One of 25 supported languages
     - **Timezone:** User's timezone for date/time display
     - **First day of week:** 0 (Sunday) to 6 (Saturday)
 
-18. **Feature toggles:**
-    - Task intelligence enabled/disabled
-    - Auto-suggest next actions enabled/disabled
-    - Pomodoro timer enabled/disabled
-    - Productivity assistant enabled/disabled
-    - Next task suggestion enabled/disabled
+18. **Feature toggles (Profile > Features & Add-ons):**
+    - Habits, Eisenhower Matrix, Kanban Board, Calendar and Templates
+    - Pomodoro timer
 
 19. **Telegram integration settings:**
     - Bot token for personal Telegram bot
@@ -184,6 +215,16 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     - Login and reset requests are rate limited per email address as well as
       per IP (`RATE_LIMIT_AUTH_EMAIL_MAX`, default 10 per 15 minutes), and
       password logins (success and failure) are written to `auth_audit_log`
+    - Only failed logins count towards the login limits, and login has its own
+      counters separate from registration and password reset
+    - Changing the password or deleting the account is limited per user
+      (`RATE_LIMIT_PASSWORD_CONFIRM_MAX`, default 10 per 15 minutes), and
+      repeated invalid API tokens from one IP are throttled
+      (`RATE_LIMIT_BEARER_FAILURE_MAX`, default 50 per 15 minutes)
+    - Looking at and using a sign-in link for a member without an email has
+      its own limit per IP (`RATE_LIMIT_SIGN_IN_LINK_MAX`, default 30 per 15
+      minutes), separate from login, registration and password reset, so a
+      household can sign in several devices from one network
 
 23. **Password storage is secure**
     - Passwords are hashed using bcrypt (10 rounds)
@@ -266,22 +307,61 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 30. **Admins can create new users directly**
     - Bypasses the registration flow
-    - Requires: email. Optional: name, surname, role (admin or user)
-    - **With a password:** the account is verified and can log in immediately
+    - Requires: an email, or a name when there is no email. Optional: surname, role (admin, user or guest), capabilities
+    - **With a password:** the account is verified and can log in immediately,
+      unless the admin turns on **Request email verification** in the form
+      (`require_verification: true`). The account is then created unverified, a
+      verification email is sent (same link and expiry as self-registration),
+      and login is blocked until it is used. The response carries
+      `verification_requested: true` and `email_sent`; if email is disabled the
+      account is still kept and must be verified manually.
     - **Without a password (invite):** the account is created unverified with no
       password, and an email is sent with a set-password link (reuses the
       password-reset token; expiry `INVITE_TOKEN_EXPIRY_HOURS`, default 168).
       Using the link sets the password and verifies the email. The response
       carries `invited: true` and `email_sent`; if email is disabled the account
       is still kept and the admin sets a password via update.
+    - **Without an email:** a member such as a child or another household
+      member can be added with just a name. The email is optional and a blank
+      one counts as none. The account has no password, and no
+      invitation or verification email is sent, and a password without an email
+      is refused (`400`), since there would be nothing to sign in with. It gets
+      its own person, named after the account (`Member` if it has no name), so
+      it can join groups, receive shares and be assigned tasks like anyone
+      else. Any number of accounts can have no email, while emails that are set
+      stay unique. Such a member signs in with a sign-in link that the account's
+      creator or an admin makes (`POST /api/members/:id/sign-in-link`): valid
+      24 hours, single use, session of 30 days, revoked with
+      `DELETE /api/members/:id/sign-in-link`. See [People, Members and
+      Roles](19-people-and-roles.md).
+    - **From one of the admin's own contacts:** `person_uid` (the older name
+      `linked_person_uid` still works) makes that contact the new account's own
+      person. It keeps its uid, so tasks assigned to it stay assigned and there is
+      no duplicate, its private notes are cleared, and nothing is created if any
+      step fails. See [People, Members and Roles](19-people-and-roles.md)
+
+30b. **Anyone with the `invite_members` capability can add members too**
+    - `POST /api/members` takes the same fields as the admin call and is used by
+      the People page. It is limited by the per-user resource limiter, since it can
+      send email
+    - Only an admin can create an admin (`403` otherwise) or set `capabilities`
+      (`403` otherwise), so the capability cannot be used to hand out more than the
+      caller has
+    - An account records who created it (`users.created_by_user_id`). It is part of
+      that account's workspace and of the ones it created. Erasing the creator
+      leaves the accounts in place and forgets the link
 
 31. **Admins can list all users**
-    - Shows email, name, surname, role, creation date
-    - Includes role information (admin or user)
+    - Shows email (empty for a member added without one), name, surname, role, creation date
+    - `account_status` says whether the account can sign in: `active` (has a password or signs in through SSO), `invited` (an invitation is waiting to be used) or `no_sign_in` (no password and no SSO, for example no email: they can sign in with a sign-in link)
+    - Includes role and the effective capabilities of each account
+    - `GET /api/admin/roles` lists the three roles with their default
+      capabilities and how many accounts hold each
 
 32. **Admins can update any user's details**
-    - Can change: email, password, name, surname, role
+    - Can change: email, password, name, surname, role, capabilities
     - Email must remain unique across all users
+    - An email can be added to a member that has none, or changed, but not taken away (a blank email leaves the current one alone)
     - Password change doesn't require current password (admin privilege)
 
 33. **Admins can delete users**
@@ -316,8 +396,6 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 35. **Today page is highly customizable:**
     - Show/hide metrics panel
-    - Show/hide productivity assistant
-    - Show/hide next task suggestion
     - Show/hide AI suggestions section
     - Show/hide tasks due today
     - Show/hide completed tasks
@@ -335,6 +413,18 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     - Users can pin saved views to the sidebar
     - Pinned views can be reordered
     - Order is stored in `sidebar_settings.pinnedViewsOrder` array
+
+    **Sidebar sections and the "All entities" launcher:**
+    - Profile > Sidebar shows a preview of the sidebar with a switch on every item: the top links (Inbox, Today, Upcoming, Calendar, All Tasks, Assigned to me, Everyone), the sections (Favorites, Projects, Areas, Goals, Notes, Tags, People, Habits, Views, Boards, Insights) and the Templates link, plus the Access link for admins
+    - The links and the sections can each be reordered by dragging their handle (or with the keyboard: focus the handle, press Space, use the arrow keys, press Space again). Templates and Access stay at the bottom and cannot be moved
+    - Switches and the order are applied when **Save Changes** is clicked, and take effect in the real sidebar straight away
+    - The order is stored in `sidebar_settings.linkOrder` and `sidebar_settings.sectionOrder` (arrays of item ids). Ids the saved order does not know about are shown after the ones it does, so a newly added item never disappears
+    - Visibility is stored in `sidebar_settings.visibleSections`; a missing key means the section is shown
+    - The grid button in the sidebar footer (right of **+**) opens a launcher with every page as an icon tile, including sections hidden from the sidebar
+    - The launcher splits the tiles into the same three parts as the sidebar (the top links, the sections, then Templates and Access), separated by space only, and each part follows your saved sidebar order
+    - The sidebar can be dragged wider or narrower by its right edge, from 90% to 110% of the default width (double-click the edge to reset; the arrow keys, Home and End also work when it is focused)
+    - The width is saved to the profile when the drag ends, as `sidebar_settings.widthPercent` (a number from 90 to 110, default 100)
+    - The launcher leaves out pages whose feature is turned off (Calendar, Habits, Eisenhower, Kanban, Templates), shows Everyone only when the account has collaborators, and shows Access only to admins
 
 ### Task Summary Settings
 
@@ -356,7 +446,7 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     Registration → Email Verification → First Login → Profile Setup → Active User
     ```
 
-    - Or: Admin creates user with a password → Active user (no verification needed)
+    - Or: Admin creates user with a password → Active user (no verification needed), or, with Request email verification on → Verification email → Active user
     - Or: Admin creates user without a password → Invite email → user sets password → Active user
 
 40. **User deletion flow:**
@@ -417,7 +507,7 @@ Every user has exactly one role record that determines admin status. Created aut
 
 ### Permission Record
 
-Grants access to a specific resource (project, task, note) with a specific access level (ro, rw). Multiple permission records enable sharing resources across users.
+Grants access to a specific resource (project, task, note) with a specific access level (ro, rw). Multiple permission records enable sharing resources across users. Access that comes through a user group is stored separately, see [User Groups](18-user-groups.md).
 
 ### API Token
 

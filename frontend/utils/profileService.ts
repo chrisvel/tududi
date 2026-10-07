@@ -14,12 +14,23 @@ interface Profile {
     task_summary_enabled: boolean;
     task_summary_frequency: string;
     features?: {
-        task_intelligence_enabled?: boolean;
-        auto_suggest_next_actions_enabled?: boolean;
-        productivity_assistant_enabled?: boolean;
-        next_task_suggestion_enabled?: boolean;
         pomodoro_enabled?: boolean;
         eisenhower_enabled?: boolean;
+    };
+    ui_settings?: {
+        project?: {
+            details?: {
+                showMetrics?: boolean;
+            };
+            list?: {
+                showSomeday?: boolean;
+                showCompleted?: boolean;
+            };
+        };
+        appearance?: Record<string, unknown>;
+        inbox?: {
+            recentlyCapturedExpanded?: boolean;
+        };
     };
 }
 
@@ -94,14 +105,32 @@ export const updateProfile = async (
     profileCache = updatedProfile;
     profileCacheExpiry = Date.now() + PROFILE_CACHE_TTL_MS;
 
-    if (
-        profileData.features &&
-        'task_intelligence_enabled' in profileData.features
-    ) {
-        localStorage.removeItem('taskIntelligenceEnabled');
-    }
-
     return updatedProfile;
+};
+
+export const updateUiSettings = async (
+    settings: NonNullable<Profile['ui_settings']>
+): Promise<{ success: boolean; ui_settings: Profile['ui_settings'] }> => {
+    const response = await fetch(getApiPath('profile/ui-settings'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify(settings),
+    });
+    await handleAuthResponse(response, 'Failed to update UI settings.');
+    const result = await response.json();
+    invalidateProfileCache();
+    return result;
+};
+
+export const getInboxRecentlyCapturedExpanded = async (): Promise<boolean> => {
+    try {
+        const profile = await fetchProfile();
+        return profile.ui_settings?.inbox?.recentlyCapturedExpanded ?? false;
+    } catch (error) {
+        console.error('Error fetching inbox recently captured setting:', error);
+        return false;
+    }
 };
 
 export const fetchSchedulerStatus = async (): Promise<SchedulerStatus> => {
@@ -214,57 +243,6 @@ export const updateTaskSummaryFrequency = async (
 };
 
 export type { Profile };
-
-export const getTaskIntelligenceEnabled = async (): Promise<boolean> => {
-    try {
-        const profile = await fetchProfile();
-        return profile.features?.task_intelligence_enabled !== undefined
-            ? profile.features.task_intelligence_enabled
-            : true;
-    } catch (error) {
-        console.error('Error fetching task intelligence setting:', error);
-        return true;
-    }
-};
-
-export const getAutoSuggestNextActionsEnabled = async (): Promise<boolean> => {
-    try {
-        const profile = await fetchProfile();
-        return profile.features?.auto_suggest_next_actions_enabled !== undefined
-            ? profile.features.auto_suggest_next_actions_enabled
-            : true;
-    } catch (error) {
-        console.error(
-            'Error fetching auto-suggest next actions setting:',
-            error
-        );
-        return true;
-    }
-};
-
-export const getProductivityAssistantEnabled = async (): Promise<boolean> => {
-    try {
-        const profile = await fetchProfile();
-        return profile.features?.productivity_assistant_enabled !== undefined
-            ? profile.features.productivity_assistant_enabled
-            : true;
-    } catch (error) {
-        console.error('Error fetching productivity assistant setting:', error);
-        return true;
-    }
-};
-
-export const getNextTaskSuggestionEnabled = async (): Promise<boolean> => {
-    try {
-        const profile = await fetchProfile();
-        return profile.features?.next_task_suggestion_enabled !== undefined
-            ? profile.features.next_task_suggestion_enabled
-            : true;
-    } catch (error) {
-        console.error('Error fetching next task suggestion setting:', error);
-        return true;
-    }
-};
 
 /**
  * Gets the first day of the week (0 = Sunday, 1 = Monday, etc.)

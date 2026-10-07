@@ -3,7 +3,9 @@ import React from 'react';
 interface SuggestionsDropdownProps<T> {
     isVisible: boolean;
     items: T[];
-    position: { left: number; top: number };
+    // `bottom` opens the list upward, ending that many pixels above the
+    // bottom of the window.
+    position: { left: number; top: number; bottom?: number };
     selectedIndex: number;
     onSelect: (item: T) => void;
     renderLabel: (item: T) => React.ReactNode;
@@ -24,7 +26,9 @@ const SuggestionsDropdown = <T,>({
             className="fixed bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50"
             style={{
                 left: `${position.left}px`,
-                top: `${position.top}px`,
+                ...(position.bottom !== undefined
+                    ? { bottom: `${position.bottom}px` }
+                    : { top: `${position.top}px` }),
                 minWidth: '120px',
                 maxWidth: '200px',
             }}

@@ -262,7 +262,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
 
 23. **[MCP Integration](docs/14-mcp-integration.md)**
     - Model Context Protocol server for AI tool integration
-    - 16 tools: tasks, projects, inbox, and search operations
+    - 65 tools across tasks, comments, projects, areas, goals, notes, tags, habits, people, views, inbox and search
     - Stdio and HTTP transport modes
     - Claude Desktop, Cursor, VS Code configuration
     - API token authentication and security
@@ -273,6 +273,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Background Sync for replaying queued mutations on reconnect
     - Session-scoped cache security (cleared on logout / 401)
     - Known limitations (sub-path deployments, iOS background sync, offline task creation)
+    - Web Push notifications for Android, iOS (Home Screen apps) and desktop
 
 25. **[PostgreSQL Deployment](docs/16-postgresql.md)**
     - Environment variables (`DATABASE_URL`, `DB_*`) and TLS
@@ -285,6 +286,40 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Testing preferences
     - Common patterns to remember
     - Known issues and solutions
+
+27. **[User Groups](docs/18-user-groups.md)**
+    - Admin-managed groups shared across the instance
+    - Sharing any item with a whole group, with an invitation per member
+    - Live membership, overlap with direct shares, and how access is revoked
+    - Group API and the `permissionSources` rule for reading shared access
+
+28. **[People, Members & Roles](docs/19-people-and-roles.md)**
+    - Vocabulary: member, contact, person, group, share, workspace, role, capability
+    - Who a task can be assigned to, and what assigning does
+    - Members without an email (no sign-in yet), adding members from the People page, and turning a contact into a member
+    - The Everyone board
+    - Admin, user and guest roles with capabilities, and the admin Access page
+
+29. **[Daily Plan](docs/20-daily-plan.md)**
+    - Today in two modes: planning (`/today/plan`) and doing (`/today`); `/today_legacy` redirects to `/today`
+    - Timeline and list planning, task estimates, the Now card
+    - Read-only iCal calendar feeds (Google secret address), encrypted and SSRF-guarded
+    - Daily plan API and schema
+
+30. **[Habits](docs/21-habits.md)**
+    - Build and quit habits, counts or measured amounts, schedules and intervals
+    - Several check-ins a day, notes, skipped days, full-history year grid
+    - Streak rules, the strength score, and archiving
+    - Habit reminders and the habits API
+
+31. **[Kubernetes](docs/22-kubernetes.md)**
+    - Example manifests in `docs/examples/kubernetes`
+    - One replica, block storage for SQLite, ingress and backup notes
+
+32. **[Blog](docs/23-blog.md)**
+    - A front page note and the public notes it links become the blog
+    - Superadmin picks the front page in Admin → Blog
+    - `/blog` in the app, or the root of `TUDUDI_BLOG_HOSTS` (blog.tududi.com)
 
 ---
 
@@ -301,12 +336,12 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 **Key Capabilities:**
 - **Hierarchical Organization:** Areas > Goals > Projects > Tasks > Subtasks
 - **Smart Recurring Tasks:** Multiple patterns with parent-child tracking
-- **Multi-Language Support:** 24 languages via i18next
+- **Multi-Language Support:** 25 languages via i18next
 - **Collaboration:** Project sharing with granular permissions
 - **REST API:** Swagger docs + personal API tokens
 - **Telegram Integration:** Create tasks via messages, daily digests
 - **Tag System:** Flexible tagging across tasks, notes, projects
-- **MCP Integration:** AI tool connectivity via Model Context Protocol (16 tools)
+- **MCP Integration:** AI tool connectivity via Model Context Protocol (65 tools)
 
 **Target Users:** Self-hosting individuals and teams managing personal or collaborative productivity
 
@@ -319,7 +354,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - Webpack 5 (build) + webpack-dev-server (development)
 - Tailwind CSS 3.4 + Heroicons
 - Zustand (global state) + SWR (server state)
-- React Router 6, i18next (24 languages)
+- React Router 6, i18next (25 languages)
 
 **Backend:**
 - Express 4.21 + Sequelize 6.37 (ORM)
@@ -373,5 +408,5 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 ---
 
 **Document Version:** 1.0.0
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-09-20
 **Maintainer:** Update when architecture changes or patterns evolve

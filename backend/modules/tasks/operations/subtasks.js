@@ -67,7 +67,7 @@ async function createSubtasks(parentTaskId, subtasks, userId) {
     // same project-sharing checks as its parent task, instead of only being
     // accessible to whoever happened to create it (#1425).
     const parent = await taskRepository.findById(parentTaskId, {
-        attributes: ['id', 'project_id'],
+        attributes: ['id', 'project_id', 'priority'],
     });
 
     const subtasksData = subtasks
@@ -77,7 +77,10 @@ async function createSubtasks(parentTaskId, subtasks, userId) {
             parent_task_id: parentTaskId,
             project_id: parent ? parent.project_id : null,
             user_id: userId,
-            priority: parsePriority(subtask.priority) || Task.PRIORITY.LOW,
+            priority:
+                subtask.priority !== undefined
+                    ? parsePriority(subtask.priority)
+                    : (parent?.priority ?? null),
             status: parseStatus(subtask.status),
             completed_at:
                 subtask.status === 'done' || subtask.status === Task.STATUS.DONE
@@ -166,8 +169,7 @@ async function updateSubtasks(taskId, subtasks, userId) {
                 }
 
                 if (subtask.priority !== undefined) {
-                    updateData.priority =
-                        parsePriority(subtask.priority) || Task.PRIORITY.LOW;
+                    updateData.priority = parsePriority(subtask.priority);
                 }
             }
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useToast } from './components/Shared/ToastContext';
 import UpgradeModal from './components/Billing/UpgradeModal';
+import TrialBanner from './components/Billing/TrialBanner';
 import { SidebarProvider } from './contexts/SidebarContext';
 import Navbar from './components/Navbar';
+import CaptureHost from './components/Capture/CaptureHost';
+import { openCapture } from './utils/captureUi';
 import Sidebar from './components/Sidebar';
 import './styles/tailwind.css';
 import ProjectModal from './components/Project/ProjectModal';
@@ -29,6 +31,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { TaskRowExpansionProvider } from './components/Task/TaskRow/TaskRowExpansionContext';
 import { getApiPath } from './config/paths';
 import { KeyboardShortcutsConfig } from './utils/keyboardShortcutsService';
+import PhotoCredit from './components/Shared/PhotoCredit';
+import {
+    CONTENT_BACKGROUND_OVERLAY,
+    contentBackgroundUrl,
+    findContentBackground,
+} from './constants/contentBackgrounds';
 
 interface LayoutProps {
     currentUser: User;
@@ -46,7 +54,6 @@ const Layout: React.FC<LayoutProps> = ({
     children,
 }) => {
     const { t } = useTranslation();
-    const { showErrorToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
     const isUpcomingView = location.pathname === '/upcoming';
@@ -100,7 +107,6 @@ const Layout: React.FC<LayoutProps> = ({
             isLoading: isTasksLoading,
             isError: isTasksError,
             hasLoaded: hasTasksLoaded,
-            createTask: createTaskInStore,
         },
         projectsStore: {
             projects,
@@ -116,36 +122,14 @@ const Layout: React.FC<LayoutProps> = ({
             hasLoaded: hasTagsLoaded,
         },
     } = useStore();
+    const contentBackground = findContentBackground(
+        useStore((state) => state.userSettingsStore.contentBackground)
+    );
 
-    const createAndOpenTaskDetails = async () => {
-        try {
-            const newTask = await createTaskInStore({
-                name: t('task.newTaskPlaceholder', 'New Task'),
-                status: 'not_started',
-                completed_at: null,
-            });
-
-            if (newTask?.uid) {
-                if (window.innerWidth < 1024) {
-                    setIsSidebarOpen(false);
-                }
-                navigate(`/task/${newTask.uid}`, {
-                    state: {
-                        isNew: true,
-                        from: location.pathname + location.search,
-                    },
-                });
-            } else {
-                throw new Error('New task missing UID');
-            }
-        } catch (error) {
-            console.error('Error creating task from Layout:', error);
-            showErrorToast(t('task.createError', 'Failed to create task.'));
-        }
-    };
-
+    // Task shortcuts and the sidebar's New > Task open the shared capture
+    // box on Task. The navbar and phone buttons open it on Inbox.
     const openTaskModal = () => {
-        void createAndOpenTaskDetails();
+        openCapture('task');
     };
 
     useEffect(() => {
@@ -507,13 +491,34 @@ const Layout: React.FC<LayoutProps> = ({
                 <div
                     className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col`}
                 >
-                    <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 overflow-hidden">
+                    <div className="relative flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 overflow-hidden">
+                        {contentBackground && (
+                            <>
+                                <div
+                                    aria-hidden="true"
+                                    className="absolute inset-0 bg-cover bg-center"
+                                    style={{
+                                        backgroundImage: `url(${contentBackgroundUrl(contentBackground)})`,
+                                    }}
+                                    data-testid="content-background"
+                                />
+                                <div
+                                    aria-hidden="true"
+                                    className={`absolute inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
+                                />
+                                <PhotoCredit
+                                    background={contentBackground}
+                                    className="absolute bottom-3 left-3"
+                                />
+                            </>
+                        )}
                         <div
-                            className={`flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
+                            className={`relative flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
                                 isMobileSearchOpen ? 'pt-32' : 'pt-20'
                             } md:pt-20 ${isUpcomingView ? 'md:px-6 lg:px-8' : 'md:px-4'} overflow-hidden`}
                         >
                             <div className="w-full h-full overflow-auto">
+                                <TrialBanner />
                                 <TaskRowExpansionProvider
                                     key={location.pathname}
                                 >
@@ -581,6 +586,8 @@ const Layout: React.FC<LayoutProps> = ({
                         onClose={closePersonModal}
                     />
                 )}
+
+                <CaptureHost sidebarOpen={isSidebarOpen} />
             </div>
         </SidebarProvider>
     );

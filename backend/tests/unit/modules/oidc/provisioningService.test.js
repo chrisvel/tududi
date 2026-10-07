@@ -4,6 +4,7 @@ const {
     OIDCIdentity,
     Role,
     Setting,
+    Person,
 } = require('../../../../models');
 const provisioningService = require('../../../../modules/oidc/provisioningService');
 const providerConfig = require('../../../../modules/oidc/providerConfig');
@@ -22,14 +23,100 @@ describe('OIDC Provisioning Service', () => {
 
     beforeEach(async () => {
         await OIDCIdentity.destroy({ where: {}, force: true });
+        await Person.destroy({ where: {}, force: true });
         await Role.destroy({ where: {}, force: true });
         await User.destroy({ where: {}, force: true });
 
-        providerConfig.getProvider.mockReturnValue({
+        providerConfig.getProvider.mockResolvedValue({
             slug: 'test-provider',
             name: 'Test Provider',
             autoProvision: true,
             adminEmailDomains: ['admin.com'],
+        });
+    });
+
+    describe('account name from profile claims', () => {
+        it('names a new account from given_name and family_name', async () => {
+            const { user } = await provisioningService.provisionUser(
+                'test-provider',
+                {
+                    sub: 'sub-name-1',
+                    email: 'first.last@example.com',
+                    email_verified: true,
+                    name: 'Display Name',
+                    given_name: 'First',
+                    family_name: 'Last',
+                },
+                {}
+            );
+
+            const saved = await User.findByPk(user.id);
+            expect(saved.name).toBe('First');
+            expect(saved.surname).toBe('Last');
+            const person = await Person.findOne({
+                where: { linked_user_id: user.id },
+            });
+            expect(person.name).toBe('First Last');
+        });
+
+        it('falls back to the name claim without given or family name', () => {
+            expect(
+                provisioningService.nameFromClaims({ name: ' Display ' })
+            ).toEqual({ name: 'Display', surname: null });
+            expect(provisioningService.nameFromClaims({})).toEqual({
+                name: null,
+                surname: null,
+            });
+        });
+
+        it('fills in a blank name on the next sign-in and renames the person', async () => {
+            const user = await User.create({
+                email: 'first.last@example.com',
+                password_digest: null,
+            });
+            const before = await Person.findOne({
+                where: { linked_user_id: user.id },
+            });
+            expect(before.name).toBe('first.last');
+            await OIDCIdentity.create({
+                user_id: user.id,
+                provider_slug: 'test-provider',
+                subject: 'sub-name-2',
+                email: user.email,
+                first_login_at: new Date(),
+                last_login_at: new Date(),
+            });
+
+            await provisioningService.provisionUser(
+                'test-provider',
+                { sub: 'sub-name-2', name: 'MyName', given_name: 'Given' },
+                {}
+            );
+
+            const saved = await User.findByPk(user.id);
+            expect(saved.name).toBe('Given');
+            const person = await Person.findOne({
+                where: { linked_user_id: user.id },
+            });
+            expect(person.name).toBe('Given');
+        });
+
+        it('keeps a name the user set themselves', async () => {
+            const user = await User.create({
+                email: 'kept@example.com',
+                name: 'Chosen',
+                password_digest: 'hashed',
+            });
+
+            await provisioningService.linkIdentityToUser(
+                user.id,
+                'test-provider',
+                { sub: 'sub-name-3', given_name: 'Other', family_name: 'Name' }
+            );
+
+            const saved = await User.findByPk(user.id);
+            expect(saved.name).toBe('Chosen');
+            expect(saved.surname).toBeNull();
         });
     });
 
@@ -75,6 +162,7 @@ describe('OIDC Provisioning Service', () => {
             const claims = {
                 sub: 'sub-456',
                 email: 'newuser@example.com',
+                email_verified: true,
                 name: 'New User',
                 given_name: 'New',
                 family_name: 'User',
@@ -109,6 +197,7 @@ describe('OIDC Provisioning Service', () => {
             const claims = {
                 sub: 'sub-789',
                 email: 'existing@example.com',
+                email_verified: true,
                 name: 'Existing User',
             };
 
@@ -131,7 +220,7 @@ describe('OIDC Provisioning Service', () => {
         });
 
         it('should throw error when auto-provision is disabled and user does not exist', async () => {
-            providerConfig.getProvider.mockReturnValue({
+            providerConfig.getProvider.mockResolvedValue({
                 slug: 'test-provider',
                 name: 'Test Provider',
                 autoProvision: false,
@@ -150,40 +239,14 @@ describe('OIDC Provisioning Service', () => {
 
         describe('hosted mode', () => {
             const config = getConfig();
-            const originalCloudOpen = config.pricing.cloudOpen;
 
             beforeEach(async () => {
                 config.hosted.enabled = true;
-                // A shut Cloud closes registration for SSO too, which has
-                // its own test below; these cover the admin toggle.
-                config.pricing.cloudOpen = true;
                 await Setting.destroy({ where: {}, force: true });
             });
 
             afterEach(() => {
                 config.hosted.enabled = false;
-                config.pricing.cloudOpen = originalCloudOpen;
-            });
-
-            it('refuses to provision a new user while Cloud is shut', async () => {
-                await Setting.upsert({
-                    key: 'registration_enabled',
-                    value: 'true',
-                });
-                config.pricing.cloudOpen = false;
-
-                await expect(
-                    provisioningService.provisionUser(
-                        'test-provider',
-                        { sub: 'sub-hosted-shut', email: 'shut@example.com' },
-                        {}
-                    )
-                ).rejects.toThrow('Registration is not enabled');
-
-                const user = await User.findOne({
-                    where: { email: 'shut@example.com' },
-                });
-                expect(user).toBeNull();
             });
 
             it('refuses to provision a new user while registration is disabled', async () => {
@@ -195,7 +258,11 @@ describe('OIDC Provisioning Service', () => {
                 await expect(
                     provisioningService.provisionUser(
                         'test-provider',
-                        { sub: 'sub-hosted-1', email: 'closed@example.com' },
+                        {
+                            sub: 'sub-hosted-1',
+                            email: 'closed@example.com',
+                            email_verified: true,
+                        },
                         {}
                     )
                 ).rejects.toThrow('Registration is not enabled');
@@ -214,7 +281,11 @@ describe('OIDC Provisioning Service', () => {
 
                 const result = await provisioningService.provisionUser(
                     'test-provider',
-                    { sub: 'sub-hosted-2', email: 'open@example.com' },
+                    {
+                        sub: 'sub-hosted-2',
+                        email: 'open@example.com',
+                        email_verified: true,
+                    },
                     {}
                 );
 
@@ -242,7 +313,11 @@ describe('OIDC Provisioning Service', () => {
 
                 const result = await provisioningService.provisionUser(
                     'test-provider',
-                    { sub: 'sub-hosted-3', email: 'member@example.com' },
+                    {
+                        sub: 'sub-hosted-3',
+                        email: 'member@example.com',
+                        email_verified: true,
+                    },
                     {}
                 );
 
@@ -262,10 +337,142 @@ describe('OIDC Provisioning Service', () => {
             ).rejects.toThrow('Email claim is required');
         });
 
+        describe('email verification', () => {
+            it('refuses to create an account for an unverified email', async () => {
+                await expect(
+                    provisioningService.provisionUser(
+                        'test-provider',
+                        {
+                            sub: 'sub-unverified',
+                            email: 'unverified@example.com',
+                            email_verified: false,
+                        },
+                        {}
+                    )
+                ).rejects.toThrow('has not verified this email');
+
+                expect(
+                    await User.findOne({
+                        where: { email: 'unverified@example.com' },
+                    })
+                ).toBeNull();
+            });
+
+            it('refuses when the provider sends no email_verified claim', async () => {
+                await expect(
+                    provisioningService.provisionUser(
+                        'test-provider',
+                        { sub: 'sub-noclaim', email: 'noclaim@example.com' },
+                        {}
+                    )
+                ).rejects.toThrow('has not verified this email');
+            });
+
+            it('does not link an unverified email to an existing local account', async () => {
+                const victim = await User.create({
+                    email: 'victim@example.com',
+                    password_digest: 'hashed',
+                });
+
+                await expect(
+                    provisioningService.provisionUser(
+                        'test-provider',
+                        {
+                            sub: 'sub-attacker',
+                            email: 'victim@example.com',
+                            email_verified: false,
+                        },
+                        {}
+                    )
+                ).rejects.toThrow('has not verified this email');
+
+                expect(
+                    await OIDCIdentity.count({ where: { user_id: victim.id } })
+                ).toBe(0);
+            });
+
+            it('accepts the string "true" some providers send', async () => {
+                const result = await provisioningService.provisionUser(
+                    'test-provider',
+                    {
+                        sub: 'sub-string-true',
+                        email: 'stringtrue@example.com',
+                        email_verified: 'true',
+                    },
+                    {}
+                );
+
+                expect(result.isNewUser).toBe(true);
+            });
+
+            it('lets an operator trust a provider that never sends the claim', async () => {
+                providerConfig.getProvider.mockResolvedValue({
+                    slug: 'test-provider',
+                    name: 'Test Provider',
+                    autoProvision: true,
+                    adminEmailDomains: [],
+                    trustUnverifiedEmail: true,
+                });
+
+                const result = await provisioningService.provisionUser(
+                    'test-provider',
+                    { sub: 'sub-trusted', email: 'trusted@example.com' },
+                    {}
+                );
+
+                expect(result.isNewUser).toBe(true);
+            });
+
+            it('still logs in an existing identity without the claim', async () => {
+                const user = await User.create({
+                    email: 'returning@example.com',
+                    password_digest: 'hashed',
+                });
+                await OIDCIdentity.create({
+                    user_id: user.id,
+                    provider_slug: 'test-provider',
+                    subject: 'sub-returning',
+                    email: 'returning@example.com',
+                    first_login_at: new Date(),
+                    last_login_at: new Date(),
+                });
+
+                const result = await provisioningService.provisionUser(
+                    'test-provider',
+                    { sub: 'sub-returning', email: 'returning@example.com' },
+                    {}
+                );
+
+                expect(result.user.id).toBe(user.id);
+            });
+        });
+
+        describe('shouldBeAdmin', () => {
+            it('matches the admin email domain case-insensitively', () => {
+                const config = { adminEmailDomains: ['Admin.com'] };
+
+                expect(
+                    provisioningService.shouldBeAdmin(config, 'a@ADMIN.COM')
+                ).toBe(true);
+                expect(
+                    provisioningService.shouldBeAdmin(config, 'a@other.com')
+                ).toBe(false);
+            });
+
+            it('is false without a usable email', () => {
+                const config = { adminEmailDomains: ['admin.com'] };
+
+                expect(
+                    provisioningService.shouldBeAdmin(config, 'nodomain')
+                ).toBe(false);
+            });
+        });
+
         it('should set admin flag when email domain matches admin domains', async () => {
             const claims = {
                 sub: 'sub-admin',
                 email: 'admin@admin.com',
+                email_verified: true,
                 name: 'Admin User',
             };
 

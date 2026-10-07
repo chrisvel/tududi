@@ -1,10 +1,18 @@
 const moment = require('moment-timezone');
 const { Task } = require('../../../models');
-const { parsePriority, parseStatus } = require('./parsers');
+const {
+    parsePriority,
+    parseStatus,
+    parseEstimatedMinutes,
+} = require('./parsers');
 const {
     processDueDateForStorage,
     processDeferUntilForStorage,
 } = require('../../../utils/timezone-utils');
+
+function resolveNote(body) {
+    return body.note !== undefined ? body.note : body.description;
+}
 
 function calculateInitialDueDate(body, timezone = 'UTC') {
     const recurrenceType = body.recurrence_type;
@@ -150,7 +158,7 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         due_date: processDueDateForStorage(dueDate, timezone),
         defer_until: processDeferUntilForStorage(body.defer_until, timezone),
         status: parseStatus(body.status),
-        note: body.note,
+        note: resolveNote(body),
         recurrence_type: recurrenceType,
         recurrence_interval: body.recurrence_interval || null,
         recurrence_end_date: body.recurrence_end_date || null,
@@ -177,6 +185,10 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         attrs.user_id = userId;
     }
 
+    if (body.estimated_minutes !== undefined) {
+        attrs.estimated_minutes = parseEstimatedMinutes(body.estimated_minutes);
+    }
+
     if (body.assigned_to !== undefined) {
         attrs.assigned_to = body.assigned_to || null;
     }
@@ -200,6 +212,8 @@ function buildUpdateAttributes(body, task, timezone) {
         body.recurrence_type !== 'none' &&
         (task.recurrence_type === 'none' || !task.recurrence_type);
 
+    const incomingNote = resolveNote(body);
+
     const attrs = {
         name: body.name !== undefined ? body.name : task.name,
         priority:
@@ -208,7 +222,7 @@ function buildUpdateAttributes(body, task, timezone) {
                 : task.priority,
         status:
             body.status !== undefined ? parseStatus(body.status) : task.status,
-        note: body.note !== undefined ? body.note : task.note,
+        note: incomingNote !== undefined ? incomingNote : task.note,
         recurrence_type: recurrenceType,
         recurrence_interval:
             body.recurrence_interval !== undefined
@@ -275,6 +289,10 @@ function buildUpdateAttributes(body, task, timezone) {
             body.defer_until,
             timezone
         );
+    }
+
+    if (body.estimated_minutes !== undefined) {
+        attrs.estimated_minutes = parseEstimatedMinutes(body.estimated_minutes);
     }
 
     if (body.assigned_to !== undefined) {

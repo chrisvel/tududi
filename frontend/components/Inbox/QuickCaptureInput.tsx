@@ -10,24 +10,70 @@ import { Task } from '../../entities/Task';
 import { Tag } from '../../entities/Tag';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
+import { FileAttachment, InboxAttachment } from '../../entities/Attachment';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
-import { createInboxItemWithStore } from '../../utils/inboxService';
+import {
+    createInboxItemWithStore,
+    deleteInboxItemWithStore,
+    analyzeInboxText,
+    applyAnalysisToTask,
+    InboxAnalysis,
+    uploadInboxAttachment,
+} from '../../utils/inboxService';
+import {
+    ownerAttachmentsApi,
+    uploadAttachment,
+} from '../../utils/attachmentsService';
+import { noteLinksFor } from '../../utils/noteAttachmentLinks';
+import { createNote, deleteNote, updateNote } from '../../utils/notesService';
+import {
+    CaptureTarget,
+    CapturedItem,
+    nonEmptyLines,
+    splitCaptureText,
+    splitFirstLine,
+} from '../../utils/captureText';
+import {
+    isTouchDevice,
+    updateCaptureSettings,
+    useCaptureSettings,
+} from '../../utils/captureSettings';
+import CaptureDestinations from '../Capture/CaptureDestinations';
+import CaptureFiles from '../Capture/CaptureFiles';
+import {
+    CaptureFile,
+    CaptureFileError,
+    filesToAttachFromPaste,
+    nameForPastedFile,
+    takePickedFiles,
+    titleFromFiles,
+    useCaptureFiles,
+} from '../Capture/useCaptureFiles';
+import {
+    fetchWorkspaceAssignablePeople,
+    fetchAssignablePeopleForProject,
+} from '../../utils/peopleService';
+import { Person } from '../../entities/Person';
 import { isAuthError, OfflineQueuedError } from '../../utils/authUtils';
 import { createTag } from '../../utils/tagsService';
-import { createProject } from '../../utils/projectsService';
+import {
+    createProject,
+    deleteProject,
+    fetchProjects,
+} from '../../utils/projectsService';
 import {
     LinkIcon,
+    PaperClipIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { isUrl, extractUrlTitle } from '../../utils/urlService';
-import { getApiPath } from '../../config/paths';
-import { getCsrfToken } from '../../utils/csrfService';
 import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
 export interface QuickCaptureInputHandle {
     submit: (forceInbox?: boolean) => Promise<void>;
+    focus: () => void;
 }
 
 export interface InboxComposerFooterContext {
@@ -35,6 +81,7 @@ export interface InboxComposerFooterContext {
     cleanedText: string;
     hashtags: string[];
     projectRefs: string[];
+    analysis: InboxAnalysis | null;
     clearText: () => void;
 }
 
@@ -56,6 +103,26 @@ interface QuickCaptureInputProps {
     openNoteModal?: (note: Note | null, inboxItemUid?: string) => void;
     cardClassName?: string;
     multiline?: boolean;
+    // One box for everything: an explicit "Add to Inbox | Task | Note |
+    // Project" choice decides what the text becomes, and every target reads
+    // dates, #tags, +projects and @people the same way.
+    unified?: boolean;
+    defaultTarget?: CaptureTarget;
+    // Keeps the box on defaultTarget, with scopeLabel shown beside it as a
+    // fixed second choice (e.g. "Task", "Today" from Plan my day).
+    lockTarget?: boolean;
+    scopeLabel?: string;
+    // Changing this puts the box back on defaultTarget (a new open)
+    resetKey?: number;
+    compact?: boolean;
+    onClose?: () => void;
+    onCaptured?: (items: CapturedItem[]) => void;
+    onUndone?: (items: CapturedItem[]) => void;
+}
+
+interface CaptureStatus {
+    text: string;
+    items?: CapturedItem[];
 }
 
 interface UrlPreviewState {
@@ -101,6 +168,9 @@ const extractFirstUrlFromText = (text: string): string | null => {
     return null;
 };
 
+// Five suggestions at their row height, plus a little room.
+const SUGGESTIONS_HEIGHT = 200;
+
 const QuickCaptureInput = React.forwardRef<
     QuickCaptureInputHandle,
     QuickCaptureInputProps
@@ -122,14 +192,57 @@ const QuickCaptureInput = React.forwardRef<
             openNoteModal,
             cardClassName,
             multiline = true,
+            unified = false,
+            defaultTarget = 'inbox',
+            lockTarget = false,
+            scopeLabel,
+            resetKey,
+            compact = false,
+            onClose,
+            onCaptured,
+            onUndone,
         },
         ref
     ) => {
         const { t } = useTranslation();
         const [inputText, setInputText] = useState<string>(initialValue);
+        const captureSettings = useCaptureSettings();
+        const [target, setTarget] = useState<CaptureTarget>(defaultTarget);
+        const [status, setStatus] = useState<CaptureStatus | null>(null);
+        const enterSaves =
+            (isTouchDevice()
+                ? captureSettings.enterTouch
+                : captureSettings.enterKeyboard) === 'save';
         const [isSaving, setIsSaving] = useState(false);
+        // Picked files are read into memory first, then uploaded after the
+        // item is saved; Add stays locked through both.
+        const [isPreparingFiles, setIsPreparingFiles] = useState(false);
+        const [isUploading, setIsUploading] = useState(false);
         const { showSuccessToast, showErrorToast } = useToast();
         const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+        const fieldRef = useRef<HTMLDivElement>(null);
+        const fileInputRef = useRef<HTMLInputElement>(null);
+        const [draggingFiles, setDraggingFiles] = useState(false);
+        const handleFileError = useCallback(
+            (error: CaptureFileError) => {
+                showErrorToast(
+                    error.kind === 'tooLarge'
+                        ? t(
+                              'capture.fileTooLarge',
+                              '{{name}} is larger than {{limit}} MB, so it was not added.',
+                              { name: error.name, limit: error.limitMB }
+                          )
+                        : t(
+                              'capture.tooManyFiles',
+                              'Up to {{max}} files can be added at once.',
+                              { max: error.max }
+                          )
+                );
+            },
+            [showErrorToast, t]
+        );
+        const { files, addFiles, removeFile, clearFiles } =
+            useCaptureFiles(handleFileError);
         const { tagsStore } = useStore();
         const { setTags, refreshTags } = tagsStore;
         const tags = tagsStore.getTags();
@@ -142,7 +255,11 @@ const QuickCaptureInput = React.forwardRef<
         const [cursorPosition, setCursorPosition] = useState(0);
         const [, setCurrentHashtagQuery] = useState('');
         const [, setCurrentProjectQuery] = useState('');
-        const [dropdownPosition, setDropdownPosition] = useState({
+        const [dropdownPosition, setDropdownPosition] = useState<{
+            left: number;
+            top: number;
+            bottom?: number;
+        }>({
             left: 0,
             top: 0,
         });
@@ -158,13 +275,17 @@ const QuickCaptureInput = React.forwardRef<
         const [placeholderIdx, setPlaceholderIdx] = useState(0);
         const [placeholderFading, setPlaceholderFading] = useState(false);
 
-        const [analysisResult, setAnalysisResult] = useState<{
-            parsed_tags: string[];
-            parsed_projects: string[];
-            cleaned_content: string;
-            suggested_type: 'task' | 'note' | null;
-            suggested_reason: string | null;
-        } | null>(null);
+        const [analysisResult, setAnalysisResult] =
+            useState<InboxAnalysis | null>(null);
+        const [showPersonSuggestions, setShowPersonSuggestions] =
+            useState(false);
+        const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
+        const peopleCacheRef = useRef<Record<string, Person[]>>({});
+        const personQueryRequestRef = useRef(0);
+        // A date phrase the user chose to keep as plain text
+        const [dismissedDateText, setDismissedDateText] = useState<
+            string | null
+        >(null);
         const [isAnalyzing, setIsAnalyzing] = useState(false);
         const analysisTimeoutRef = useRef<NodeJS.Timeout>();
         const analysisRequestIdRef = useRef(0);
@@ -177,6 +298,10 @@ const QuickCaptureInput = React.forwardRef<
         const lastAnalyzedTextRef = useRef<string>('');
 
         const isEditMode = mode === 'edit';
+
+        useEffect(() => {
+            setTarget(defaultTarget);
+        }, [resetKey, defaultTarget]);
 
         useEffect(() => {
             if (isEditMode) {
@@ -197,7 +322,7 @@ const QuickCaptureInput = React.forwardRef<
         }, [autoFocus]);
 
         useEffect(() => {
-            if (isEditMode) return;
+            if (isEditMode || unified) return;
             const id = setInterval(() => {
                 setPlaceholderFading(true);
                 setTimeout(() => {
@@ -206,7 +331,7 @@ const QuickCaptureInput = React.forwardRef<
                 }, 300);
             }, 4000);
             return () => clearInterval(id);
-        }, [isEditMode]);
+        }, [isEditMode, unified]);
 
         useEffect(() => {
             if (!multiline) return;
@@ -218,6 +343,12 @@ const QuickCaptureInput = React.forwardRef<
             (el as HTMLElement).style.overflowY =
                 el.scrollHeight > maxHeight ? 'auto' : 'hidden';
         }, [inputText, multiline]);
+
+        // Dates and @people are read on the first line only, so a date
+        // mentioned further down a long note never becomes its due date.
+        const analysisSource = unified
+            ? splitFirstLine(inputText).first
+            : inputText;
 
         const clearComposerText = useCallback(() => {
             setInputText('');
@@ -399,7 +530,10 @@ const QuickCaptureInput = React.forwardRef<
             while (i < text.length) {
                 const char = text[i];
 
-                if (char === '"' && (i === 0 || text[i - 1] === '+')) {
+                if (
+                    char === '"' &&
+                    (i === 0 || text[i - 1] === '+' || text[i - 1] === '@')
+                ) {
                     inQuotes = true;
                     currentToken += char;
                 } else if (char === '"' && inQuotes) {
@@ -499,6 +633,86 @@ const QuickCaptureInput = React.forwardRef<
             return '';
         };
 
+        // @name or @"Full Name" ending at the caret; null when not in one.
+        const PERSON_QUERY_PATTERN = /(^|\s)@(?:"([^"]*)|([^\s"@]*))$/u;
+
+        const getCurrentPersonQuery = (
+            text: string,
+            position: number
+        ): string | null => {
+            const match = text
+                .substring(0, position)
+                .match(PERSON_QUERY_PATTERN);
+            if (!match) return null;
+            return match[2] ?? match[3] ?? '';
+        };
+
+        const loadAssignablePeople = async (
+            projectUid?: string
+        ): Promise<Person[]> => {
+            const key = projectUid || '';
+            const cached = peopleCacheRef.current[key];
+            if (cached) return cached;
+            let people: Person[];
+            try {
+                people = projectUid
+                    ? await fetchAssignablePeopleForProject(projectUid)
+                    : await fetchWorkspaceAssignablePeople();
+            } catch {
+                people = projectUid ? await loadAssignablePeople() : [];
+            }
+            peopleCacheRef.current[key] = people;
+            return people;
+        };
+
+        const showPeopleFor = async (
+            query: string,
+            text: string,
+            input: HTMLInputElement | HTMLTextAreaElement,
+            position: number
+        ) => {
+            const requestId = ++personQueryRequestRef.current;
+            const people = await loadAssignablePeople(
+                resolveProjectUid(parseProjectRefs(text))
+            );
+            if (personQueryRequestRef.current !== requestId) return;
+
+            const wanted = query.toLowerCase();
+            const filtered = people
+                .filter((person) => person.name.toLowerCase().includes(wanted))
+                .slice(0, 5);
+            setDropdownPosition(calculateDropdownPosition(input, position));
+            setFilteredPeople(filtered);
+            setShowPersonSuggestions(true);
+            setSelectedSuggestionIndex(-1);
+        };
+
+        const handlePersonSelect = (personName: string) => {
+            const beforeCursor = inputText.substring(0, cursorPosition);
+            const afterCursor = inputText.substring(cursorPosition);
+            if (!PERSON_QUERY_PATTERN.test(beforeCursor)) return;
+
+            const formatted = /\s/.test(personName)
+                ? `"${personName}"`
+                : personName;
+            const newBefore = beforeCursor.replace(
+                PERSON_QUERY_PATTERN,
+                (_, lead) => `${lead}@${formatted} `
+            );
+            setInputText(newBefore + afterCursor.replace(/^"/, ''));
+            closeSuggestions();
+
+            setTimeout(() => {
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                    inputRef.current.setSelectionRange(
+                        newBefore.length,
+                        newBefore.length
+                    );
+                }
+            }, 0);
+        };
+
         const escapeRegExp = (value: string) =>
             value.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 
@@ -542,6 +756,21 @@ const QuickCaptureInput = React.forwardRef<
             if (inputRef.current) {
                 inputRef.current.focus();
             }
+        };
+
+        const removePersonFromText = (personName: string) => {
+            const escaped = escapeRegExp(personName);
+            const pattern = new RegExp(
+                `(^|\\s)@(?:"${escaped}"|${escaped})(?=$|[\\s.,;:!?)])`,
+                'gi'
+            );
+            setInputText(
+                cleanInputSpacing(
+                    inputText.replace(pattern, (_, prefix) => prefix ?? '')
+                )
+            );
+            setAnalysisResult(null);
+            inputRef.current?.focus();
         };
 
         const getCaretViewportCoords = (
@@ -596,13 +825,19 @@ const QuickCaptureInput = React.forwardRef<
             };
         };
 
-        const calculateDropdownPosition = (
+        const caretDropdownPosition = (
             input: HTMLInputElement | HTMLTextAreaElement,
             cursorPos: number
         ) => {
             const beforeCursor = inputText.substring(0, cursorPos);
             const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
             const projectMatch = beforeCursor.match(/\+[a-zA-Z0-9_\s]*$/);
+            const personMatch = beforeCursor.match(PERSON_QUERY_PATTERN);
+
+            if (personMatch) {
+                const triggerPos = beforeCursor.lastIndexOf('@');
+                return getCaretViewportCoords(input, triggerPos);
+            }
 
             if (hashtagMatch) {
                 const triggerPos = beforeCursor.lastIndexOf('#');
@@ -617,12 +852,38 @@ const QuickCaptureInput = React.forwardRef<
             return getCaretViewportCoords(input, cursorPos);
         };
 
+        // In the compact box, suggestions open on whichever side of the field
+        // has room (below it on wide screens, above it in the phone sheet),
+        // lined up with the # + or @ that started them, so they never cover
+        // the text being typed.
+        const calculateDropdownPosition = (
+            input: HTMLInputElement | HTMLTextAreaElement,
+            cursorPos: number
+        ) => {
+            const caret = caretDropdownPosition(input, cursorPos);
+            const field = fieldRef.current;
+            if (!compact || !field) return caret;
+            const rect = field.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            if (spaceBelow >= SUGGESTIONS_HEIGHT || spaceBelow >= rect.top) {
+                return { left: caret.left, top: rect.bottom + 4 };
+            }
+            return {
+                left: caret.left,
+                top: 0,
+                bottom: window.innerHeight - rect.top + 4,
+            };
+        };
+
         const handleChange = (
             e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
         ) => {
             const newText = e.target.value;
             const newCursorPosition = e.target.selectionStart || 0;
 
+            if (status) {
+                setStatus(null);
+            }
             setInputText(newText);
             setCursorPosition(newCursorPosition);
 
@@ -637,6 +898,27 @@ const QuickCaptureInput = React.forwardRef<
                 newCursorPosition
             );
             setCurrentProjectQuery(projectQuery);
+
+            const personQuery = getCurrentPersonQuery(
+                newText,
+                newCursorPosition
+            );
+            if (personQuery !== null) {
+                setShowTagSuggestions(false);
+                setFilteredTags([]);
+                setShowProjectSuggestions(false);
+                setFilteredProjects([]);
+                void showPeopleFor(
+                    personQuery,
+                    newText,
+                    e.target,
+                    newCursorPosition
+                );
+                return;
+            }
+            personQueryRequestRef.current += 1;
+            setShowPersonSuggestions(false);
+            setFilteredPeople([]);
 
             if (
                 (newText.charAt(newCursorPosition - 1) === '#' ||
@@ -756,7 +1038,7 @@ const QuickCaptureInput = React.forwardRef<
 
             return text
                 .replace(/#[a-zA-Z0-9_-]+/g, '')
-                .replace(/\+\S+/g, '')
+                .replace(/\+(?:"[^"]+"|\S+)/g, '')
                 .trim();
         };
 
@@ -831,36 +1113,19 @@ const QuickCaptureInput = React.forwardRef<
                     if (analysisRequestIdRef.current === requestId) {
                         setIsAnalyzing(true);
                     }
-                    const token = await getCsrfToken();
-                    const response = await fetch(
-                        getApiPath('inbox/analyze-text'),
-                        {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-csrf-token': token,
-                            },
-                            credentials: 'include',
-                            body: JSON.stringify({ content: text }),
-                        }
-                    );
+                    const result = await analyzeInboxText(text, {
+                        parseDates: !(
+                            dismissedDateText &&
+                            text.includes(dismissedDateText)
+                        ),
+                    });
 
                     if (analysisRequestIdRef.current !== requestId) {
                         return;
                     }
 
-                    if (response.ok) {
-                        const result = await response.json();
-                        setAnalysisResult(result);
-                        lastAnalyzedTextRef.current = text;
-                    } else {
-                        console.error(
-                            'Failed to analyze text:',
-                            response.statusText
-                        );
-                        setAnalysisResult(null);
-                        lastAnalyzedTextRef.current = '';
-                    }
+                    setAnalysisResult(result);
+                    lastAnalyzedTextRef.current = text;
                 } catch (error) {
                     if (analysisRequestIdRef.current !== requestId) {
                         return;
@@ -874,8 +1139,14 @@ const QuickCaptureInput = React.forwardRef<
                     }
                 }
             },
-            []
+            [dismissedDateText]
         );
+
+        useEffect(() => {
+            if (!inputText.trim()) {
+                setDismissedDateText(null);
+            }
+        }, [inputText]);
 
         useEffect(() => {
             if (analysisTimeoutRef.current) {
@@ -885,7 +1156,7 @@ const QuickCaptureInput = React.forwardRef<
             const requestId = analysisRequestIdRef.current + 1;
             analysisRequestIdRef.current = requestId;
 
-            const textForAnalysis = inputText;
+            const textForAnalysis = analysisSource;
 
             analysisTimeoutRef.current = setTimeout(() => {
                 analyzeText(textForAnalysis, requestId);
@@ -896,7 +1167,7 @@ const QuickCaptureInput = React.forwardRef<
                     clearTimeout(analysisTimeoutRef.current);
                 }
             };
-        }, [inputText, analyzeText]);
+        }, [analysisSource, analyzeText]);
 
         const handleTagSelect = (tagName: string) => {
             const beforeCursor = inputText.substring(0, cursorPosition);
@@ -905,10 +1176,8 @@ const QuickCaptureInput = React.forwardRef<
 
             if (hashtagMatch) {
                 const newText =
-                    beforeCursor.replace(
-                        /#([a-zA-Z0-9_]*)$/,
-                        `#${tagName} `
-                    ) + afterCursor;
+                    beforeCursor.replace(/#([a-zA-Z0-9_]*)$/, `#${tagName} `) +
+                    afterCursor;
                 setInputText(newText);
                 setShowTagSuggestions(false);
                 setFilteredTags([]);
@@ -1024,6 +1293,9 @@ const QuickCaptureInput = React.forwardRef<
                     );
                 }
             }
+            if (missingProjects.length > 0) {
+                await refreshProjectsStore();
+            }
         };
 
         const handleSubmit = useCallback(
@@ -1078,14 +1350,17 @@ const QuickCaptureInput = React.forwardRef<
                             }
                         }
 
-                        const newTask: Task = {
-                            name: cleanedText,
-                            status: 'not_started',
-                            priority: 'low',
-                            tags: taskTags,
-                            project_uid: projectUid,
-                            completed_at: null,
-                        };
+                        const newTask: Task = applyAnalysisToTask(
+                            {
+                                name: cleanedText,
+                                status: 'not_started',
+                                priority: 'low',
+                                tags: taskTags,
+                                project_uid: projectUid,
+                                completed_at: null,
+                            },
+                            analysisResult
+                        );
 
                         try {
                             await onTaskCreate(newTask);
@@ -1285,13 +1560,623 @@ const QuickCaptureInput = React.forwardRef<
             ]
         );
 
+        const short = (text: string, max = 36) =>
+            text.length > max ? `${text.slice(0, max)}...` : text;
+
+        const refreshProjectsStore = async () => {
+            try {
+                const list = await fetchProjects();
+                useStore.getState().projectsStore.setProjects(list);
+            } catch (error) {
+                console.error('Failed to refresh projects:', error);
+            }
+        };
+
+        const resolveOrCreateProject = async (
+            name: string | undefined
+        ): Promise<string | undefined> => {
+            if (!name) {
+                return undefined;
+            }
+            const existing = projects.find(
+                (project) => project.name.toLowerCase() === name.toLowerCase()
+            );
+            if (existing) {
+                return existing.uid;
+            }
+            const created = await createProject({ name, status: 'planned' });
+            await refreshProjectsStore();
+            return created.uid;
+        };
+
+        const cleanFirstLine = (
+            line: string,
+            analysis: InboxAnalysis | null
+        ): string => {
+            const cleaned = (
+                analysis?.cleaned_content ??
+                line
+                    .replace(/#[a-zA-Z0-9_-]+/g, '')
+                    .replace(/\+(?:"[^"]+"|\S+)/g, '')
+            ).trim();
+            return cleaned || line.trim();
+        };
+
+        // Create one item of the chosen kind from one raw text. The first
+        // line is the title (dates, @people, #tags and +projects are read
+        // from it) and the other lines are its notes or body.
+        const captureOne = async (
+            destination: CaptureTarget,
+            itemText: string
+        ): Promise<CapturedItem> => {
+            const { first, rest } = splitFirstLine(itemText);
+
+            if (destination === 'inbox') {
+                await createMissingTags(itemText);
+                await createMissingProjects(itemText);
+                const item = await createInboxItemWithStore(itemText);
+                return { target: destination, uid: item.uid, title: first };
+            }
+
+            // Only tasks and projects have dates (and tasks an assignee), so
+            // a note keeps its whole title apart from #tags and +project.
+            let analysis: InboxAnalysis | null = null;
+            if (destination === 'task' || destination === 'project') {
+                try {
+                    analysis = await analyzeInboxText(first, {
+                        parseDates: !(
+                            dismissedDateText &&
+                            first.includes(dismissedDateText)
+                        ),
+                    });
+                } catch (error) {
+                    console.error('Error analyzing text:', error);
+                }
+            }
+
+            const title = cleanFirstLine(first, analysis);
+            const tagNames = Array.from(
+                new Map(
+                    [
+                        ...(analysis?.parsed_tags ?? []),
+                        ...parseHashtags(itemText),
+                    ].map((name) => [name.toLowerCase(), name])
+                ).values()
+            );
+            await createMissingTags(itemText);
+            const tagObjects = buildTagObjects(tagNames);
+
+            if (destination === 'project') {
+                const created = await createProject({
+                    name: title,
+                    description: rest,
+                    status: 'planned',
+                    tags: tagObjects,
+                    due_date_at: analysis?.parsed_due_date ?? undefined,
+                });
+                await refreshProjectsStore();
+                return { target: destination, uid: created.uid, title };
+            }
+
+            const projectUid = await resolveOrCreateProject(
+                analysis?.parsed_projects?.[0] ?? parseProjectRefs(itemText)[0]
+            );
+
+            if (destination === 'task') {
+                const task = applyAnalysisToTask(
+                    {
+                        name: title,
+                        note: rest || undefined,
+                        status: 'not_started',
+                        tags: tagObjects,
+                        project_uid: projectUid,
+                        completed_at: null,
+                    },
+                    analysis
+                );
+                const created = await useStore
+                    .getState()
+                    .tasksStore.createTask(task);
+                return { target: destination, uid: created.uid, title };
+            }
+
+            const isUrlContent =
+                isUrl(first.trim()) ||
+                analysis?.suggested_reason === 'url_detected';
+            const hasBookmark = tagNames.some(
+                (name) => name.toLowerCase() === 'bookmark'
+            );
+            const body = rest || itemText;
+            const created = await createNote({
+                title,
+                content: body,
+                tags:
+                    isUrlContent && !hasBookmark
+                        ? [...tagObjects, { name: 'bookmark' }]
+                        : tagObjects,
+                project_uid: projectUid,
+            });
+            useStore.getState().notesStore.addNote(created);
+            return { target: destination, uid: created.uid, title, body };
+        };
+
+        const describeCaptured = (
+            destination: CaptureTarget,
+            items: CapturedItem[]
+        ): string => {
+            const title = short(items[0].title);
+            const total = items.length;
+            switch (destination) {
+                case 'inbox':
+                    return total === 1
+                        ? t(
+                              'capture.savedInbox',
+                              'Saved "{{title}}" to Inbox.',
+                              { title }
+                          )
+                        : t(
+                              'capture.savedInboxMany',
+                              'Saved {{total}} items to Inbox.',
+                              { total }
+                          );
+                case 'task':
+                    return total === 1
+                        ? t(
+                              'capture.createdTask',
+                              'Created task "{{title}}".',
+                              { title }
+                          )
+                        : t(
+                              'capture.createdTasks',
+                              'Created {{total}} tasks.',
+                              { total }
+                          );
+                case 'note':
+                    return total === 1
+                        ? t(
+                              'capture.createdNote',
+                              'Created note "{{title}}".',
+                              { title }
+                          )
+                        : t(
+                              'capture.createdNotes',
+                              'Created {{total}} notes.',
+                              { total }
+                          );
+                default:
+                    return total === 1
+                        ? t(
+                              'capture.createdProject',
+                              'Created project "{{title}}".',
+                              { title }
+                          )
+                        : t(
+                              'capture.createdProjects',
+                              'Created {{total}} projects.',
+                              { total }
+                          );
+            }
+        };
+
+        const undoCaptured = async (items: CapturedItem[]) => {
+            try {
+                for (const item of [...items].reverse()) {
+                    if (!item.uid) continue;
+                    if (item.target === 'inbox') {
+                        await deleteInboxItemWithStore(item.uid);
+                    } else if (item.target === 'task') {
+                        await useStore
+                            .getState()
+                            .tasksStore.deleteTask(item.uid);
+                    } else if (item.target === 'note') {
+                        await deleteNote(item.uid);
+                        const { notesStore } = useStore.getState();
+                        notesStore.setNotes(
+                            notesStore.notes.filter(
+                                (note) => note.uid !== item.uid
+                            )
+                        );
+                    } else {
+                        await deleteProject(item.uid);
+                        await refreshProjectsStore();
+                    }
+                }
+                setStatus({
+                    text: t('capture.removed', 'Removed. Nothing was saved.'),
+                });
+                onUndone?.(items);
+            } catch (error) {
+                console.error('Failed to undo capture:', error);
+                showErrorToast(
+                    t(
+                        'capture.undoError',
+                        'Could not remove it. Find it in its list and delete it there.'
+                    )
+                );
+            }
+        };
+
+        // Files ride along with the text, whatever it becomes.
+        const attachFiles = async (incoming: File[]) => {
+            await addFiles(incoming);
+            inputRef.current?.focus();
+        };
+
+        const handlePaste = (e: React.ClipboardEvent) => {
+            const pasted = filesToAttachFromPaste(e.clipboardData);
+            if (pasted.length === 0) return;
+            e.preventDefault();
+            void attachFiles(pasted.map((file) => nameForPastedFile(file)));
+        };
+
+        const hasDraggedFiles = (e: React.DragEvent) =>
+            Array.from(e.dataTransfer.types).includes('Files');
+
+        const fileDropHandlers = unified
+            ? {
+                  onDragOver: (e: React.DragEvent) => {
+                      if (!hasDraggedFiles(e)) return;
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'copy';
+                      setDraggingFiles(true);
+                  },
+                  onDragLeave: (e: React.DragEvent) => {
+                      if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                          setDraggingFiles(false);
+                      }
+                  },
+                  onDrop: (e: React.DragEvent) => {
+                      if (!hasDraggedFiles(e)) return;
+                      e.preventDefault();
+                      setDraggingFiles(false);
+                      void attachFiles(Array.from(e.dataTransfer.files));
+                  },
+              }
+            : {};
+
+        // Uploads after the item exists. A file that fails is named in one
+        // message; the item itself is already saved.
+        const uploadCaptureFiles = async (
+            item: CapturedItem,
+            toUpload: CaptureFile[]
+        ): Promise<number> => {
+            if (!item.uid) return 0;
+            const failed: string[] = [];
+            const uploaded: FileAttachment[] = [];
+            const upload = (file: File): Promise<FileAttachment> => {
+                const uid = item.uid as string;
+                if (item.target === 'inbox') {
+                    return uploadInboxAttachment(uid, file);
+                }
+                if (item.target === 'task') return uploadAttachment(uid, file);
+                return ownerAttachmentsApi(item.target, uid).upload(file);
+            };
+            for (const { file } of toUpload) {
+                try {
+                    uploaded.push(await upload(file));
+                } catch (error) {
+                    console.error('Failed to attach file:', error);
+                    // The server's reason (too large, storage full) is what
+                    // tells the user what to do about it.
+                    const reason = error instanceof Error ? error.message : '';
+                    failed.push(
+                        reason ? `${file.name} (${reason})` : file.name
+                    );
+                }
+            }
+            // A note shows its files in its text: images inline, the rest
+            // as links, after what was typed.
+            if (item.target === 'note' && uploaded.length > 0) {
+                const links = noteLinksFor(item.uid, uploaded);
+                try {
+                    await updateNote(item.uid, {
+                        content: item.body ? `${item.body}\n\n${links}` : links,
+                    } as Note);
+                } catch (error) {
+                    console.error('Failed to link files in the note:', error);
+                }
+            }
+            if (item.target === 'inbox' && uploaded.length > 0) {
+                const inboxStore = useStore.getState().inboxStore;
+                const stored = inboxStore.inboxItems.find(
+                    (entry) => entry.uid === item.uid
+                );
+                if (stored) {
+                    inboxStore.updateInboxItem({
+                        ...stored,
+                        attachments: [
+                            ...(stored.attachments ?? []),
+                            ...(uploaded as InboxAttachment[]),
+                        ],
+                    });
+                }
+            }
+            if (failed.length > 0) {
+                showErrorToast(
+                    t(
+                        'capture.filesNotAttached',
+                        'Saved, but these files could not be attached: {{names}}',
+                        { names: failed.join(', ') }
+                    )
+                );
+            }
+            return toUpload.length - failed.length;
+        };
+
+        const handleUnifiedSubmit = async () => {
+            const withFiles = files.length > 0;
+            // A pasted screenshot on its own is enough; the file name
+            // becomes the title.
+            const raw =
+                inputText.trim() || (withFiles ? titleFromFiles(files) : '');
+            if (!raw || isSaving || isPreparingFiles) return;
+
+            const texts = splitCaptureText(raw, captureSettings.oneItemPerLine);
+            const captured: CapturedItem[] = [];
+            const destination = target;
+
+            const finish = (
+                items: CapturedItem[],
+                remaining: string[],
+                attached = 0
+            ) => {
+                setInputText(remaining.join('\n'));
+                setAnalysisResult(null);
+                setUrlPreview(null);
+                dismissedPreviewUrlRef.current = null;
+                if (items.length > 0) {
+                    const saved = describeCaptured(destination, items);
+                    setStatus({
+                        text:
+                            attached > 0
+                                ? `${saved} ${t(
+                                      'capture.filesAttached',
+                                      '{{count}} files attached.',
+                                      { count: attached }
+                                  )}`
+                                : saved,
+                        items,
+                    });
+                    onCaptured?.(items);
+                }
+                inputRef.current?.focus();
+            };
+
+            setIsSaving(true);
+            setStatus(null);
+            try {
+                for (const itemText of texts) {
+                    captured.push(await captureOne(destination, itemText));
+                }
+                // With several items, the files go on the first one.
+                let attached = 0;
+                if (withFiles) {
+                    const toUpload = files;
+                    clearFiles();
+                    setIsUploading(true);
+                    try {
+                        attached = await uploadCaptureFiles(
+                            captured[0],
+                            toUpload
+                        );
+                    } finally {
+                        setIsUploading(false);
+                    }
+                }
+                finish(captured, [], attached);
+            } catch (error) {
+                if (error instanceof OfflineQueuedError) {
+                    finish([], []);
+                    setStatus({
+                        text: t(
+                            'inbox.itemQueuedOffline',
+                            "Saved offline. It'll sync automatically once you're back online."
+                        ),
+                    });
+                } else if (!isAuthError(error)) {
+                    console.error('Failed to capture:', error);
+                    // Keep the lines that were not saved so a retry does not
+                    // duplicate the ones that were
+                    finish(captured, texts.slice(captured.length));
+                    showErrorToast(
+                        t(
+                            'capture.saveError',
+                            'Could not save. Your text is still here.'
+                        )
+                    );
+                }
+            } finally {
+                setIsSaving(false);
+            }
+        };
+
+        const insertLineBreak = () => {
+            const el = inputRef.current;
+            if (!el) return;
+            const start = el.selectionStart ?? inputText.length;
+            const end = el.selectionEnd ?? start;
+            setInputText(
+                `${inputText.slice(0, start)}\n${inputText.slice(end)}`
+            );
+            setStatus(null);
+            requestAnimationFrame(() => {
+                el.focus();
+                el.setSelectionRange(start + 1, start + 1);
+            });
+        };
+
         useImperativeHandle(
             ref,
             () => ({
-                submit: (forceInbox = false) => handleSubmit(forceInbox),
+                submit: (forceInbox = false) =>
+                    unified ? handleUnifiedSubmit() : handleSubmit(forceInbox),
+                focus: () => {
+                    const el = inputRef.current;
+                    if (!el) return;
+                    el.focus();
+                    // A kept draft continues where it left off.
+                    const end = el.value.length;
+                    el.setSelectionRange(end, end);
+                },
             }),
-            [handleSubmit]
+            [handleSubmit, handleUnifiedSubmit, unified]
         );
+
+        const closeSuggestions = () => {
+            setShowTagSuggestions(false);
+            setFilteredTags([]);
+            setShowProjectSuggestions(false);
+            setFilteredProjects([]);
+            personQueryRequestRef.current += 1;
+            setShowPersonSuggestions(false);
+            setFilteredPeople([]);
+            setSelectedSuggestionIndex(-1);
+        };
+
+        // The open suggestion list, if any, as a count and a picker
+        const activeSuggestions: {
+            count: number;
+            select: (index: number) => void;
+        } | null =
+            showTagSuggestions && filteredTags.length > 0
+                ? {
+                      count: filteredTags.length,
+                      select: (index) =>
+                          handleTagSelect(filteredTags[index].name),
+                  }
+                : showProjectSuggestions && filteredProjects.length > 0
+                  ? {
+                        count: filteredProjects.length,
+                        select: (index) =>
+                            handleProjectSelect(filteredProjects[index].name),
+                    }
+                  : showPersonSuggestions && filteredPeople.length > 0
+                    ? {
+                          count: filteredPeople.length,
+                          select: (index) =>
+                              handlePersonSelect(filteredPeople[index].name),
+                      }
+                    : null;
+
+        const handleCaretEvent = (
+            e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>
+        ) => {
+            const pos = e.currentTarget.selectionStart || 0;
+            setCursorPosition(pos);
+            if (
+                showTagSuggestions ||
+                showProjectSuggestions ||
+                showPersonSuggestions
+            ) {
+                setDropdownPosition(
+                    calculateDropdownPosition(e.currentTarget, pos)
+                );
+            }
+        };
+
+        const handleKeyDown = (
+            e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+        ) => {
+            if (activeSuggestions) {
+                const { count, select } = activeSuggestions;
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setSelectedSuggestionIndex((prev) =>
+                        prev < count - 1 ? prev + 1 : 0
+                    );
+                    return;
+                }
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setSelectedSuggestionIndex((prev) =>
+                        prev > 0 ? prev - 1 : count - 1
+                    );
+                    return;
+                }
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    select(
+                        selectedSuggestionIndex >= 0
+                            ? selectedSuggestionIndex
+                            : 0
+                    );
+                    return;
+                }
+                if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+                    e.preventDefault();
+                    select(selectedSuggestionIndex);
+                    return;
+                }
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeSuggestions();
+                    return;
+                }
+            }
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                if (isEditMode && !isSaving) {
+                    handleSubmit();
+                } else if (unified) {
+                    onClose?.();
+                }
+                return;
+            }
+
+            if (unified && e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                if (activeSuggestions) {
+                    return;
+                }
+                if (isSaving) {
+                    e.preventDefault();
+                    return;
+                }
+                // Ctrl or Cmd + Enter always saves. Plain Enter saves or
+                // starts a new line, as chosen for this kind of device.
+                if (e.ctrlKey || e.metaKey || (enterSaves && !e.shiftKey)) {
+                    e.preventDefault();
+                    void handleUnifiedSubmit();
+                }
+                return;
+            }
+
+            if (e.key === 'Enter' && !e.shiftKey && !isSaving) {
+                if (activeSuggestions) {
+                    return;
+                }
+                e.preventDefault();
+                handleSubmit();
+            }
+        };
+
+        const currentAnalysis =
+            analysisResult &&
+            lastAnalyzedTextRef.current.trim() === analysisSource.trim()
+                ? analysisResult
+                : null;
+        const dateIsDismissed =
+            !!dismissedDateText && analysisSource.includes(dismissedDateText);
+        const dateChip =
+            currentAnalysis?.parsed_due_date && !dateIsDismissed
+                ? {
+                      date: currentAnalysis.parsed_due_date,
+                      phrase: currentAnalysis.parsed_date_text,
+                      recurring: !!currentAnalysis.parsed_recurrence,
+                  }
+                : null;
+        const assigneeChip = currentAnalysis?.parsed_assignee
+            ? {
+                  name: currentAnalysis.parsed_assignee.name,
+                  color: Object.values(peopleCacheRef.current)
+                      .flat()
+                      .find(
+                          (person) =>
+                              person.uid ===
+                              currentAnalysis.parsed_assignee?.uid
+                      )?.color,
+              }
+            : null;
 
         const composerFooterContext = useMemo<InboxComposerFooterContext>(
             () => ({
@@ -1299,6 +2184,11 @@ const QuickCaptureInput = React.forwardRef<
                 cleanedText: getCleanedContent(inputText.trim()),
                 hashtags: getAllTags(inputText),
                 projectRefs: getAllProjects(inputText),
+                analysis:
+                    analysisResult &&
+                    lastAnalyzedTextRef.current.trim() === inputText.trim()
+                        ? analysisResult
+                        : null,
                 clearText: clearComposerText,
                 updateText: (value: string) => setInputText(value),
             }),
@@ -1335,18 +2225,18 @@ const QuickCaptureInput = React.forwardRef<
                                         if (!cleaned) {
                                             return;
                                         }
-                                        const newTask: Task = {
-                                            name: cleaned,
-                                            status: 'not_started',
-                                            priority: null,
-                                            tags: taskTags,
-                                            Project: projectUid
-                                                ? ({
-                                                      uid: projectUid,
-                                                  } as Project)
-                                                : undefined,
-                                            completed_at: null,
-                                        };
+                                        const newTask: Task =
+                                            applyAnalysisToTask(
+                                                {
+                                                    name: cleaned,
+                                                    status: 'not_started',
+                                                    priority: null,
+                                                    tags: taskTags,
+                                                    project_uid: projectUid,
+                                                    completed_at: null,
+                                                },
+                                                composerFooterContext.analysis
+                                            );
                                         void openTaskModal(newTask);
                                         composerFooterContext.clearText();
                                     }}
@@ -1429,11 +2319,258 @@ const QuickCaptureInput = React.forwardRef<
                 </div>
             ) : null;
 
-        const footerActions =
-            renderFooterActions?.(composerFooterContext) ||
-            defaultFooterActions;
+        const lineTotal = unified ? nonEmptyLines(inputText).length : 0;
+        const itemTotal = unified
+            ? splitCaptureText(inputText, captureSettings.oneItemPerLine).length
+            : 0;
+        const touch = isTouchDevice();
+        const enterHint = touch
+            ? enterSaves
+                ? t('capture.hintTouchSave', 'Return saves.')
+                : t('capture.hintTouchNewline', 'Return starts a new line.')
+            : enterSaves
+              ? t(
+                    'capture.hintSave',
+                    'Enter saves. Shift+Enter starts a new line.'
+                )
+              : t(
+                    'capture.hintNewline',
+                    'Enter starts a new line. Ctrl+Enter saves.'
+                );
 
-        const shouldShowPrimaryButton = !hidePrimaryButton && !isEditMode;
+        // What this text will become, in words, for text with several lines
+        const multilineNotice = (() => {
+            if (lineTotal < 2) return null;
+            const words = {
+                inbox: {
+                    one: t('capture.nounInbox', 'Inbox item'),
+                    many: t('capture.nounInboxMany', 'Inbox items'),
+                    first: '',
+                    rest: '',
+                },
+                task: {
+                    one: t('capture.nounTask', 'task'),
+                    many: t('capture.nounTaskMany', 'tasks'),
+                    first: t('capture.wordTitle', 'title'),
+                    rest: t('capture.wordNotes', 'notes'),
+                },
+                note: {
+                    one: t('capture.nounNote', 'note'),
+                    many: t('capture.nounNoteMany', 'notes'),
+                    first: t('capture.wordTitle', 'title'),
+                    rest: t('capture.wordBody', 'body'),
+                },
+                project: {
+                    one: t('capture.nounProject', 'project'),
+                    many: t('capture.nounProjectMany', 'projects'),
+                    first: t('capture.wordName', 'name'),
+                    rest: t('capture.wordDescription', 'description'),
+                },
+            }[target];
+            if (captureSettings.oneItemPerLine) {
+                return {
+                    text: t(
+                        'capture.multiPerLine',
+                        'This will be {{total}} {{name}}, one per line.',
+                        { total: itemTotal, name: words.many }
+                    ),
+                    link: t('capture.makeOne', 'Make 1 {{name}} instead', {
+                        name: words.one,
+                    }),
+                };
+            }
+            return {
+                text:
+                    target === 'inbox'
+                        ? t(
+                              'capture.multiInbox',
+                              'This will be 1 Inbox item. All {{lines}} lines are kept as typed.',
+                              { lines: lineTotal }
+                          )
+                        : t(
+                              'capture.multiOne',
+                              'This will be 1 {{name}}. The first line is the {{first}} and the other {{others}} lines are its {{rest}}.',
+                              {
+                                  name: words.one,
+                                  first: words.first,
+                                  others: lineTotal - 1,
+                                  rest: words.rest,
+                              }
+                          ),
+                link: t('capture.makeMany', 'Make {{lines}} {{name}} instead', {
+                    lines: lineTotal,
+                    name: words.many,
+                }),
+            };
+        })();
+
+        const linkButtonClass =
+            'underline underline-offset-2 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm';
+
+        const unifiedFooter = unified ? (
+            <div className="mt-3 flex flex-col gap-2">
+                {multilineNotice && (
+                    <div
+                        data-testid="capture-multiline"
+                        className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 px-3 py-2 text-xs text-gray-800 dark:text-gray-200"
+                    >
+                        <span>{multilineNotice.text}</span>
+                        <button
+                            type="button"
+                            data-testid="capture-multiline-toggle"
+                            onClick={() =>
+                                updateCaptureSettings({
+                                    oneItemPerLine:
+                                        !captureSettings.oneItemPerLine,
+                                })
+                            }
+                            className={`font-semibold text-blue-600 dark:text-blue-400 ${linkButtonClass}`}
+                        >
+                            {multilineNotice.link}
+                        </button>
+                    </div>
+                )}
+                {/* Phones: destinations, then the hint on the left with
+                    attach and Add on the right. From sm up: destinations
+                    and buttons on one line, the hint below. */}
+                <div className="flex flex-wrap items-center gap-2">
+                    <div className="w-full sm:w-auto sm:flex-1 min-w-0">
+                        <CaptureDestinations
+                            value={target}
+                            onChange={setTarget}
+                            locked={lockTarget}
+                            scopeLabel={scopeLabel}
+                        />
+                    </div>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        hidden
+                        data-testid="capture-file-input"
+                        onChange={(e) => {
+                            setIsPreparingFiles(true);
+                            void takePickedFiles(e.currentTarget)
+                                .then(attachFiles)
+                                .finally(() => setIsPreparingFiles(false));
+                        }}
+                    />
+                    <div className="order-3 sm:order-2 ml-auto flex items-center gap-2">
+                        <button
+                            type="button"
+                            data-testid="capture-attach"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isSaving || isPreparingFiles}
+                            title={t(
+                                'capture.attachHint',
+                                'Attach files. You can also paste or drop them here.'
+                            )}
+                            aria-label={t('capture.attach', 'Attach files')}
+                            className="rounded-lg p-2 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        >
+                            <PaperClipIcon
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                            />
+                        </button>
+                        <button
+                            type="button"
+                            data-testid="capture-add"
+                            onClick={() => void handleUnifiedSubmit()}
+                            disabled={
+                                (!inputText.trim() && files.length === 0) ||
+                                isSaving ||
+                                isPreparingFiles
+                            }
+                            aria-busy={isSaving || isPreparingFiles}
+                            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        >
+                            {(isSaving || isPreparingFiles) && (
+                                <span
+                                    data-testid="capture-add-spinner"
+                                    className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin"
+                                    aria-hidden="true"
+                                />
+                            )}
+                            {isUploading
+                                ? t('common.uploading', 'Uploading...')
+                                : isSaving
+                                  ? t('common.saving', 'Saving...')
+                                  : itemTotal > 1
+                                    ? t('capture.addN', 'Add {{total}}', {
+                                          total: itemTotal,
+                                      })
+                                    : t('capture.add', 'Add')}
+                        </button>
+                    </div>
+                    <div className="order-2 sm:order-3 flex-1 sm:flex-none sm:w-full min-w-0 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 min-h-[20px] text-xs text-gray-500 dark:text-gray-400">
+                        <span
+                            role="status"
+                            aria-live="polite"
+                            data-testid="capture-status"
+                        >
+                            {status ? status.text : enterHint}
+                            {status?.items && (
+                                <button
+                                    type="button"
+                                    data-testid="capture-undo"
+                                    onClick={() =>
+                                        void undoCaptured(status.items ?? [])
+                                    }
+                                    className={`ml-2 ${linkButtonClass}`}
+                                >
+                                    {t('capture.undo', 'Undo')}
+                                </button>
+                            )}
+                        </span>
+                        <span className="flex gap-3">
+                            {touch && enterSaves && (
+                                <button
+                                    type="button"
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={insertLineBreak}
+                                    className={linkButtonClass}
+                                >
+                                    {t('capture.lineBreak', 'Line break')}
+                                </button>
+                            )}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        ) : null;
+
+        const footerActions = unified
+            ? unifiedFooter
+            : renderFooterActions?.(composerFooterContext) ||
+              defaultFooterActions;
+
+        const shouldShowPrimaryButton =
+            !hidePrimaryButton && !isEditMode && !unified;
+
+        const selectedMetadata = (variant: 'chips' | 'line') => (
+            <InboxSelectedChips
+                variant={variant}
+                selectedTags={getAllTags(inputText)}
+                selectedProjects={getAllProjects(inputText)}
+                tags={tags}
+                projects={projects}
+                onRemoveTag={removeTagFromText}
+                onRemoveProject={removeProjectFromText}
+                dueDate={dateChip}
+                assignee={assigneeChip}
+                onDismissDate={() =>
+                    setDismissedDateText(
+                        currentAnalysis?.parsed_date_text ?? null
+                    )
+                }
+                onRemovePerson={() => {
+                    if (currentAnalysis?.parsed_person) {
+                        removePersonFromText(currentAnalysis.parsed_person);
+                    }
+                }}
+            />
+        );
 
         const cardClasses = cardClassName ?? 'mb-6';
 
@@ -1441,7 +2578,7 @@ const QuickCaptureInput = React.forwardRef<
             <div
                 className={`relative w-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden ${cardClasses}`}
             >
-                {!isEditMode && (
+                {!isEditMode && !compact && (
                     <svg
                         width="110"
                         height="110"
@@ -1451,481 +2588,109 @@ const QuickCaptureInput = React.forwardRef<
                         strokeWidth="0.9"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="absolute right-6 bottom-5 pointer-events-none opacity-[0.09] dark:opacity-[0.08] text-gray-400 dark:text-[oklch(55%_0.006_95)]"
+                        className="absolute right-6 top-5 pointer-events-none opacity-[0.09] dark:opacity-[0.08] text-gray-400 dark:text-[oklch(55%_0.006_95)]"
                         aria-hidden="true"
                     >
                         <path d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M2.25 13.5V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.5M2.25 13.5V9.75A2.25 2.25 0 014.5 7.5h15a2.25 2.25 0 012.25 2.25v3.75" />
                     </svg>
                 )}
-                <div className="p-[30px]">
+                <div className={compact ? 'p-5' : 'p-[30px]'}>
                     <div className="flex flex-row gap-3 items-start">
                         <div className="relative flex-1">
-                            {!inputText && !isEditMode && (
-                                <div
-                                    className={`absolute left-0 top-[5px] z-0 pointer-events-none select-none text-[18px] leading-relaxed font-normal text-gray-400 dark:text-gray-500 transition-opacity duration-300 ${
-                                        placeholderFading
-                                            ? 'opacity-0'
-                                            : 'opacity-100'
-                                    }`}
-                                    aria-hidden="true"
-                                >
-                                    {t(
-                                        placeholderData[placeholderIdx].key,
-                                        placeholderData[placeholderIdx].fallback
+                            <div
+                                ref={fieldRef}
+                                {...fileDropHandlers}
+                                data-testid="capture-field"
+                                className={`relative ${compact ? 'rounded-xl bg-gray-100 dark:bg-black/30 px-3.5 py-1 focus-within:ring-2 focus-within:ring-blue-500' : ''} ${draggingFiles ? '!bg-blue-50 dark:!bg-blue-900/30' : ''}`}
+                            >
+                                {!inputText && !isEditMode && (
+                                    <div
+                                        className={`absolute z-0 pointer-events-none select-none ${compact ? 'left-3.5 top-2.5 text-[17px]' : 'left-0 top-[5px] text-[18px]'} leading-relaxed font-normal text-gray-400 dark:text-gray-500 transition-opacity duration-300 ${
+                                            placeholderFading
+                                                ? 'opacity-0'
+                                                : 'opacity-100'
+                                        }`}
+                                        aria-hidden="true"
+                                    >
+                                        {unified
+                                            ? t(
+                                                  'capture.placeholder',
+                                                  'Type the title'
+                                              )
+                                            : t(
+                                                  placeholderData[
+                                                      placeholderIdx
+                                                  ].key,
+                                                  placeholderData[
+                                                      placeholderIdx
+                                                  ].fallback
+                                              )}
+                                    </div>
+                                )}
+                                <div className="relative z-10 flex items-start">
+                                    {multiline ? (
+                                        <textarea
+                                            ref={(el) => {
+                                                inputRef.current = el;
+                                            }}
+                                            data-testid="quick-capture-input"
+                                            value={inputText}
+                                            rows={3}
+                                            onChange={handleChange}
+                                            onSelect={handleCaretEvent}
+                                            onKeyUp={handleCaretEvent}
+                                            onClick={handleCaretEvent}
+                                            className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
+                                            placeholder=""
+                                            onKeyDown={handleKeyDown}
+                                            onPaste={
+                                                unified
+                                                    ? handlePaste
+                                                    : undefined
+                                            }
+                                        ></textarea>
+                                    ) : (
+                                        <input
+                                            ref={(el) => {
+                                                inputRef.current = el;
+                                            }}
+                                            type="text"
+                                            data-testid="quick-capture-input"
+                                            value={inputText}
+                                            onChange={handleChange}
+                                            onSelect={handleCaretEvent}
+                                            onKeyUp={handleCaretEvent}
+                                            onClick={handleCaretEvent}
+                                            className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5"
+                                            placeholder=""
+                                            onKeyDown={handleKeyDown}
+                                        />
                                     )}
                                 </div>
-                            )}
-                            <div className="relative z-10 flex items-start">
-                                {multiline ? (
-                                    <textarea
-                                        ref={(el) => {
-                                            inputRef.current = el;
-                                        }}
-                                        data-testid="quick-capture-input"
-                                        value={inputText}
-                                        rows={3}
-                                        onChange={handleChange}
-                                        onSelect={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        onKeyUp={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        onClick={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden"
-                                        placeholder=""
-                                        onKeyDown={(e) => {
-                                            const hasTagSuggestions =
-                                                showTagSuggestions &&
-                                                filteredTags.length > 0;
-                                            const hasProjectSuggestions =
-                                                showProjectSuggestions &&
-                                                filteredProjects.length > 0;
-
-                                            if (hasTagSuggestions) {
-                                                if (e.key === 'ArrowDown') {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev <
-                                                            filteredTags.length -
-                                                                1
-                                                                ? prev + 1
-                                                                : 0
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'ArrowUp'
-                                                ) {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev > 0
-                                                                ? prev - 1
-                                                                : filteredTags.length -
-                                                                  1
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Tab') {
-                                                    e.preventDefault();
-                                                    const selectedTag =
-                                                        selectedSuggestionIndex >=
-                                                        0
-                                                            ? filteredTags[
-                                                                  selectedSuggestionIndex
-                                                              ]
-                                                            : filteredTags[0];
-                                                    handleTagSelect(
-                                                        selectedTag.name
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'Enter' &&
-                                                    selectedSuggestionIndex >= 0
-                                                ) {
-                                                    e.preventDefault();
-                                                    handleTagSelect(
-                                                        filteredTags[
-                                                            selectedSuggestionIndex
-                                                        ].name
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Escape') {
-                                                    e.preventDefault();
-                                                    setShowTagSuggestions(
-                                                        false
-                                                    );
-                                                    setFilteredTags([]);
-                                                    setSelectedSuggestionIndex(
-                                                        -1
-                                                    );
-                                                    return;
-                                                }
-                                            }
-
-                                            if (hasProjectSuggestions) {
-                                                if (e.key === 'ArrowDown') {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev <
-                                                            filteredProjects.length -
-                                                                1
-                                                                ? prev + 1
-                                                                : 0
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'ArrowUp'
-                                                ) {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev > 0
-                                                                ? prev - 1
-                                                                : filteredProjects.length -
-                                                                  1
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Tab') {
-                                                    e.preventDefault();
-                                                    const selectedProject =
-                                                        selectedSuggestionIndex >=
-                                                        0
-                                                            ? filteredProjects[
-                                                                  selectedSuggestionIndex
-                                                              ]
-                                                            : filteredProjects[0];
-                                                    handleProjectSelect(
-                                                        selectedProject.name
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'Enter' &&
-                                                    selectedSuggestionIndex >= 0
-                                                ) {
-                                                    e.preventDefault();
-                                                    handleProjectSelect(
-                                                        filteredProjects[
-                                                            selectedSuggestionIndex
-                                                        ].name
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Escape') {
-                                                    e.preventDefault();
-                                                    setShowProjectSuggestions(
-                                                        false
-                                                    );
-                                                    setFilteredProjects([]);
-                                                    setSelectedSuggestionIndex(
-                                                        -1
-                                                    );
-                                                    return;
-                                                }
-                                            }
-
-                                            if (
-                                                e.key === 'Escape' &&
-                                                !hasTagSuggestions &&
-                                                !hasProjectSuggestions
-                                            ) {
-                                                e.preventDefault();
-                                                if (isEditMode && !isSaving) {
-                                                    handleSubmit();
-                                                }
-                                                return;
-                                            }
-
-                                            if (
-                                                e.key === 'Enter' &&
-                                                !e.shiftKey &&
-                                                !isSaving
-                                            ) {
-                                                if (
-                                                    hasTagSuggestions ||
-                                                    hasProjectSuggestions
-                                                ) {
-                                                    return;
-                                                }
-                                                e.preventDefault();
-                                                handleSubmit();
-                                            }
-                                        }}
-                                    ></textarea>
-                                ) : (
-                                    <input
-                                        ref={(el) => {
-                                            inputRef.current = el;
-                                        }}
-                                        type="text"
-                                        data-testid="quick-capture-input"
-                                        value={inputText}
-                                        onChange={handleChange}
-                                        onSelect={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        onKeyUp={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        onClick={(e) => {
-                                            const pos =
-                                                e.currentTarget
-                                                    .selectionStart || 0;
-                                            setCursorPosition(pos);
-                                            if (
-                                                showTagSuggestions ||
-                                                showProjectSuggestions
-                                            ) {
-                                                const position =
-                                                    calculateDropdownPosition(
-                                                        e.currentTarget,
-                                                        pos
-                                                    );
-                                                setDropdownPosition(position);
-                                            }
-                                        }}
-                                        className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5"
-                                        placeholder=""
-                                        onKeyDown={(e) => {
-                                            const hasTagSuggestions =
-                                                showTagSuggestions &&
-                                                filteredTags.length > 0;
-                                            const hasProjectSuggestions =
-                                                showProjectSuggestions &&
-                                                filteredProjects.length > 0;
-
-                                            if (hasTagSuggestions) {
-                                                if (e.key === 'ArrowDown') {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev <
-                                                            filteredTags.length -
-                                                                1
-                                                                ? prev + 1
-                                                                : 0
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'ArrowUp'
-                                                ) {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev > 0
-                                                                ? prev - 1
-                                                                : filteredTags.length -
-                                                                  1
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Tab') {
-                                                    e.preventDefault();
-                                                    const selectedTag =
-                                                        selectedSuggestionIndex >=
-                                                        0
-                                                            ? filteredTags[
-                                                                  selectedSuggestionIndex
-                                                              ]
-                                                            : filteredTags[0];
-                                                    handleTagSelect(
-                                                        selectedTag.name
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'Enter' &&
-                                                    selectedSuggestionIndex >= 0
-                                                ) {
-                                                    e.preventDefault();
-                                                    handleTagSelect(
-                                                        filteredTags[
-                                                            selectedSuggestionIndex
-                                                        ].name
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Escape') {
-                                                    e.preventDefault();
-                                                    setShowTagSuggestions(
-                                                        false
-                                                    );
-                                                    setFilteredTags([]);
-                                                    setSelectedSuggestionIndex(
-                                                        -1
-                                                    );
-                                                    return;
-                                                }
-                                            }
-
-                                            if (hasProjectSuggestions) {
-                                                if (e.key === 'ArrowDown') {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev <
-                                                            filteredProjects.length -
-                                                                1
-                                                                ? prev + 1
-                                                                : 0
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'ArrowUp'
-                                                ) {
-                                                    e.preventDefault();
-                                                    setSelectedSuggestionIndex(
-                                                        (prev) =>
-                                                            prev > 0
-                                                                ? prev - 1
-                                                                : filteredProjects.length -
-                                                                  1
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Tab') {
-                                                    e.preventDefault();
-                                                    const selectedProject =
-                                                        selectedSuggestionIndex >=
-                                                        0
-                                                            ? filteredProjects[
-                                                                  selectedSuggestionIndex
-                                                              ]
-                                                            : filteredProjects[0];
-                                                    handleProjectSelect(
-                                                        selectedProject.name
-                                                    );
-                                                    return;
-                                                } else if (
-                                                    e.key === 'Enter' &&
-                                                    selectedSuggestionIndex >= 0
-                                                ) {
-                                                    e.preventDefault();
-                                                    handleProjectSelect(
-                                                        filteredProjects[
-                                                            selectedSuggestionIndex
-                                                        ].name
-                                                    );
-                                                    return;
-                                                } else if (e.key === 'Escape') {
-                                                    e.preventDefault();
-                                                    setShowProjectSuggestions(
-                                                        false
-                                                    );
-                                                    setFilteredProjects([]);
-                                                    setSelectedSuggestionIndex(
-                                                        -1
-                                                    );
-                                                    return;
-                                                }
-                                            }
-
-                                            if (
-                                                e.key === 'Escape' &&
-                                                !hasTagSuggestions &&
-                                                !hasProjectSuggestions
-                                            ) {
-                                                e.preventDefault();
-                                                if (isEditMode && !isSaving) {
-                                                    handleSubmit();
-                                                }
-                                                return;
-                                            }
-
-                                            if (
-                                                e.key === 'Enter' &&
-                                                !e.shiftKey &&
-                                                !isSaving
-                                            ) {
-                                                if (
-                                                    hasTagSuggestions ||
-                                                    hasProjectSuggestions
-                                                ) {
-                                                    return;
-                                                }
-                                                e.preventDefault();
-                                                handleSubmit();
-                                            }
-                                        }}
+                                {compact && selectedMetadata('line')}
+                                {unified && (
+                                    <CaptureFiles
+                                        files={files}
+                                        onRemove={removeFile}
+                                        disabled={isSaving}
                                     />
                                 )}
                             </div>
 
-                            <InboxSelectedChips
-                                selectedTags={getAllTags(inputText)}
-                                selectedProjects={getAllProjects(inputText)}
-                                tags={tags}
-                                projects={projects}
-                                onRemoveTag={removeTagFromText}
-                                onRemoveProject={removeProjectFromText}
+                            {!compact && selectedMetadata('chips')}
+
+                            <SuggestionsDropdown
+                                isVisible={
+                                    showPersonSuggestions &&
+                                    filteredPeople.length > 0
+                                }
+                                items={filteredPeople}
+                                position={dropdownPosition}
+                                selectedIndex={selectedSuggestionIndex}
+                                onSelect={(person) =>
+                                    handlePersonSelect(person.name)
+                                }
+                                renderLabel={(person) => <>@{person.name}</>}
                             />
 
                             <SuggestionsDropdown
@@ -2085,51 +2850,59 @@ const QuickCaptureInput = React.forwardRef<
                                 </div>
                             )}
 
-                            {(() => {
-                                const suggestion = getSuggestion();
-                                return suggestion.type && suggestion.message ? (
-                                    <div className="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex items-start flex-1">
-                                                <div className="text-purple-600 dark:text-purple-400 mr-2 mt-0.5">
-                                                    <svg
-                                                        className="h-3 w-3"
-                                                        fill="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path d="M12 2l2.09 6.26L20 10.27l-5.91 2.01L12 18.54l-2.09-6.26L4 10.27l5.91-2.01L12 2z" />
-                                                        <path d="M8 1l1.18 3.52L12 5.64l-2.82.96L8 10.12l-1.18-3.52L4 5.64l2.82-.96L8 1z" />
-                                                        <path d="M20 14l.79 2.37L23 17.45l-2.21.75L20 20.57l-.79-2.37L17 17.45l2.21-.75L20 14z" />
-                                                    </svg>
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="text-xs text-purple-700 dark:text-purple-300 mb-1">
-                                                        {suggestion.message}
-                                                    </p>
-                                                    <div className="flex items-center gap-2 text-xs">
-                                                        <span className="text-gray-600 dark:text-gray-400">
-                                                            or
-                                                        </span>
-                                                        <button
-                                                            onClick={() => {
-                                                                handleSubmit(
-                                                                    true
-                                                                );
-                                                            }}
-                                                            className="text-purple-600 dark:text-purple-400 hover:underline"
+                            {!unified &&
+                                (() => {
+                                    const suggestion = getSuggestion();
+                                    return suggestion.type &&
+                                        suggestion.message ? (
+                                        <div className="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-start flex-1">
+                                                    <div className="text-purple-600 dark:text-purple-400 mr-2 mt-0.5">
+                                                        <svg
+                                                            className="h-3 w-3"
+                                                            fill="currentColor"
+                                                            viewBox="0 0 24 24"
                                                         >
-                                                            save as inbox item
-                                                        </button>
+                                                            <path d="M12 2l2.09 6.26L20 10.27l-5.91 2.01L12 18.54l-2.09-6.26L4 10.27l5.91-2.01L12 2z" />
+                                                            <path d="M8 1l1.18 3.52L12 5.64l-2.82.96L8 10.12l-1.18-3.52L4 5.64l2.82-.96L8 1z" />
+                                                            <path d="M20 14l.79 2.37L23 17.45l-2.21.75L20 20.57l-.79-2.37L17 17.45l2.21-.75L20 14z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="text-xs text-purple-700 dark:text-purple-300 mb-1">
+                                                            {suggestion.message}
+                                                        </p>
+                                                        <div className="flex items-center gap-2 text-xs">
+                                                            <span className="text-gray-600 dark:text-gray-400">
+                                                                {t(
+                                                                    'inbox.or',
+                                                                    'or'
+                                                                )}
+                                                            </span>
+                                                            <button
+                                                                onClick={() => {
+                                                                    handleSubmit(
+                                                                        true
+                                                                    );
+                                                                }}
+                                                                className="text-purple-600 dark:text-purple-400 hover:underline"
+                                                            >
+                                                                {t(
+                                                                    'inbox.saveAsInboxItem',
+                                                                    'save as inbox item'
+                                                                )}
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                {isAnalyzing && (
+                                                    <div className="ml-2 h-3 w-3 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                                                )}
                                             </div>
-                                            {isAnalyzing && (
-                                                <div className="ml-2 h-3 w-3 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
-                                            )}
                                         </div>
-                                    </div>
-                                ) : null;
-                            })()}
+                                    ) : null;
+                                })()}
                         </div>
                         {shouldShowPrimaryButton && (
                             <button

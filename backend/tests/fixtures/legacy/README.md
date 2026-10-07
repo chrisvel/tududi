@@ -4,13 +4,15 @@ Databases exactly as older tududi releases leave them, used by the upgrade
 suite (`npm run backend:test:upgrade`, see `backend/tests/upgrade`) to prove
 that the current migrations run cleanly on real pre-existing data.
 
-| File             | Produced by           | Migrations applied |
-| ---------------- | --------------------- | ------------------ |
-| `v1.2.4.sqlite3` | v1.2.4 `cmd/start.sh` | 94                 |
-| `v1.3.0.sqlite3` | v1.3.0 `cmd/start.sh` | 98                 |
-| `v1.3.1.sqlite3` | v1.3.1 `cmd/start.sh` | 102                |
-| `v1.4.0.sqlite3` | v1.4.0 `cmd/start.sh` | 107                |
-| `v1.4.2.sqlite3` | v1.4.2 `cmd/start.sh` | 107                |
+| File                  | Produced by                | Migrations applied |
+| --------------------- | -------------------------- | ------------------ |
+| `v1.2.4.sqlite3`      | v1.2.4 `cmd/start.sh`      | 94                 |
+| `v1.3.0.sqlite3`      | v1.3.0 `cmd/start.sh`      | 98                 |
+| `v1.3.1.sqlite3`      | v1.3.1 `cmd/start.sh`      | 102                |
+| `v1.4.0.sqlite3`      | v1.4.0 `cmd/start.sh`      | 107                |
+| `v1.4.2.sqlite3`      | v1.4.2 `cmd/start.sh`      | 107                |
+| `v1.5.0.sqlite3`      | v1.5.0 `cmd/start.sh`      | 119                |
+| `v1.6.0-rc.1.sqlite3` | v1.6.0-rc.1 `cmd/start.sh` | 128                |
 
 `manifest.json` records the commit, sha256, row counts and generation date of
 each file. v1.2.4 stands in for the whole 1.2 line: v1.2.0 has the same schema
@@ -26,7 +28,9 @@ yet are dropped automatically):
 - users `Alice.Legacy@Example.COM` (admin, password `password123`, stored with
   a mixed-case email like accounts created before February 2026) and
   `bob@example.com`; the v1.4.0 fixture also has `carol@example.com` and
-  `Carol@Example.com`, which differ only by case
+  `Carol@Example.com`, which differ only by case. From v1.5.0 on, the
+  release already ships the lowercase-user-emails migration, so a mixed-case
+  email cannot exist there and Alice is stored lowercase
 - 3 areas, 2 goals, one project per status plus a project without area, due
   date or priority
 - user tags and pinned system tags, tasks in every status and priority

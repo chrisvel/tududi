@@ -42,6 +42,26 @@ describe('Tasks Routes', () => {
             expect(response.body.user_id).toBe(user.id);
         });
 
+        it('should accept description as an alias for note', async () => {
+            const response = await agent
+                .post('/api/task')
+                .send({ name: 'Alias Task', description: 'via description' });
+
+            expect(response.status).toBe(201);
+            expect(response.body.note).toBe('via description');
+        });
+
+        it('should prefer note over description when both are sent', async () => {
+            const response = await agent.post('/api/task').send({
+                name: 'Both Task',
+                note: 'the note',
+                description: 'the description',
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.note).toBe('the note');
+        });
+
         it('should require authentication', async () => {
             const taskData = {
                 name: 'Test Task',
@@ -170,6 +190,30 @@ describe('Tasks Routes', () => {
             expect(response.body.note).toBe(updateData.note);
             expect(response.body.priority).toBe(updateData.priority);
             expect(response.body.status).toBe(updateData.status);
+        });
+
+        it('should update note when sent as description', async () => {
+            await task.update({ note: 'original' });
+
+            const response = await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ description: 'new text' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.note).toBe('new text');
+            await task.reload();
+            expect(task.note).toBe('new text');
+        });
+
+        it('should keep the note when neither note nor description is sent', async () => {
+            await task.update({ note: 'original' });
+
+            const response = await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ name: 'Renamed' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.note).toBe('original');
         });
 
         it('should update recurring task name without transformation', async () => {
@@ -502,7 +546,7 @@ describe('Tasks Routes', () => {
                 user_id: user.id,
                 recurrence_type: 'daily',
                 recurrence_interval: 1,
-                due_date: yesterday, // Template is in the past but should still be included if it's recurring
+                due_date: yesterday, // Missed occurrence, still open
                 status: 0,
             });
 
@@ -545,8 +589,8 @@ describe('Tasks Routes', () => {
             // Should include future instances
             expect(taskIds).toContain(futureInstance.id);
 
-            // Template should not be included because it's in the past
-            expect(taskIds).not.toContain(recurringTemplate.id);
+            // An open template stays listed even when its due date has passed
+            expect(taskIds).toContain(recurringTemplate.id);
         });
     });
 });

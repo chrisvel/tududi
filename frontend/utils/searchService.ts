@@ -11,6 +11,8 @@ interface SearchParams {
     limit?: number;
     offset?: number;
     excludeSubtasks?: boolean;
+    status?: 'active' | 'completed' | 'all';
+    taskStatus?: string;
 }
 
 interface SearchResult {
@@ -36,6 +38,14 @@ interface SearchResponse {
     pagination?: Pagination;
 }
 
+// A View with no entity-type filter configured must search Tasks only.
+// Passing an empty array through to searchUniversal omits the `filters`
+// query param entirely, which makes the backend default to searching (and
+// summing the counts of) every entity type: Task, Project, Area, Note, Tag.
+export const resolveViewFilters = (
+    filters: string[] | null | undefined
+): string[] => (filters && filters.length > 0 ? filters : ['Task']);
+
 export const searchUniversal = async (
     params: SearchParams
 ): Promise<SearchResponse> => {
@@ -52,6 +62,10 @@ export const searchUniversal = async (
 
         if (params.priority) {
             queryParams.append('priority', params.priority);
+        }
+
+        if (params.taskStatus) {
+            queryParams.append('task_status', params.taskStatus);
         }
 
         if (params.due) {
@@ -80,6 +94,10 @@ export const searchUniversal = async (
 
         if (params.excludeSubtasks) {
             queryParams.append('excludeSubtasks', 'true');
+        }
+
+        if (params.status) {
+            queryParams.append('status', params.status);
         }
 
         const response = await fetch(

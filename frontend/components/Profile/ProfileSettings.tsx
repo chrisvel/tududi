@@ -20,9 +20,12 @@ import {
     CommandLineIcon,
     CpuChipIcon,
     CalendarIcon,
+    CalendarDaysIcon,
     SparklesIcon,
     SwatchIcon,
     CreditCardIcon,
+    ViewColumnsIcon,
+    QueueListIcon,
 } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
@@ -49,13 +52,21 @@ import SecurityTab from './tabs/SecurityTab';
 import OIDCTab from './tabs/OIDCTab';
 import ApiKeysTab from './tabs/ApiKeysTab';
 import FeaturesTab from './tabs/FeaturesTab';
+import SidebarTab from './tabs/SidebarTab';
+import {
+    DEFAULT_LINK_ORDER,
+    DEFAULT_SECTION_ORDER,
+    resolveOrder,
+} from '../../utils/sidebarLayout';
 import TelegramTab from './tabs/TelegramTab';
 import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
 import McpTab from './tabs/McpTab';
 import CalDAVTab from './tabs/CalDAVTab';
+import CalendarFeedsTab from './tabs/CalendarFeedsTab';
 import AIAssistantTab from './tabs/AIAssistantTab';
 import BillingTab from './tabs/BillingTab';
+import PlanningTab from './tabs/PlanningTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import { PASSWORD_MIN_LENGTH } from '../../utils/passwordPolicy';
 import { getFeatureFlags, type FeatureFlags } from '../../utils/featureFlags';
@@ -81,6 +92,7 @@ const formatFrequency = (frequency: string): string => {
 };
 
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({
+    currentUser,
     isDarkMode,
     toggleDarkMode,
     setAppearance,
@@ -105,10 +117,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'telegram',
             'keyboard-shortcuts',
             'caldav',
+            'calendars',
+            'planning',
             'mcp',
             'ai-assistant',
             'features',
             'billing',
+            'sidebar',
         ];
         return section && validTabs.includes(section) ? section : 'general';
     }, [location.search]);
@@ -136,10 +151,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         task_summary_enabled: false,
         task_summary_frequency: 'daily',
         features: {
-            task_intelligence_enabled: true,
-            auto_suggest_next_actions_enabled: true,
-            productivity_assistant_enabled: true,
-            next_task_suggestion_enabled: true,
             ai_assistant_enabled: false,
             pomodoro_enabled: true,
             eisenhower_enabled: false,
@@ -151,7 +162,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         ui_settings: {
             appearance: {
                 theme: isDarkMode ? 'dark' : 'light',
-                showTaskContextMenu: false,
             },
         },
         notification_preferences: null,
@@ -164,9 +174,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [loading, setLoading] = useState(true);
     const [updateKey, setUpdateKey] = useState(0);
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
-        backups: false,
-        caldav: false,
-        mcp: false,
         hosted: false,
         billing: false,
     });
@@ -531,9 +538,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     appearance: (data.ui_settings?.appearance?.theme ??
                         data.appearance ??
                         (isDarkMode ? 'dark' : 'light')) as
-                        | 'light'
-                        | 'dark'
-                        | 'system',
+                        'light' | 'dark' | 'system',
                     language: data.language || 'en',
                     timezone: data.timezone || 'UTC',
                     first_day_of_week:
@@ -550,27 +555,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     task_summary_frequency:
                         data.task_summary_frequency || 'daily',
                     features: {
-                        task_intelligence_enabled:
-                            data.features?.task_intelligence_enabled !==
-                            undefined
-                                ? data.features.task_intelligence_enabled
-                                : true,
-                        auto_suggest_next_actions_enabled:
-                            data.features?.auto_suggest_next_actions_enabled !==
-                            undefined
-                                ? data.features
-                                      .auto_suggest_next_actions_enabled
-                                : true,
-                        productivity_assistant_enabled:
-                            data.features?.productivity_assistant_enabled !==
-                            undefined
-                                ? data.features.productivity_assistant_enabled
-                                : true,
-                        next_task_suggestion_enabled:
-                            data.features?.next_task_suggestion_enabled !==
-                            undefined
-                                ? data.features.next_task_suggestion_enabled
-                                : true,
                         ai_assistant_enabled:
                             data.features?.ai_assistant_enabled !== undefined
                                 ? data.features.ai_assistant_enabled
@@ -606,12 +590,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             theme: (data.ui_settings?.appearance?.theme ??
                                 data.appearance ??
                                 (isDarkMode ? 'dark' : 'light')) as
-                                | 'light'
-                                | 'dark'
-                                | 'system',
-                            showTaskContextMenu:
+                                'light' | 'dark' | 'system',
+                            contentBackground:
                                 data.ui_settings?.appearance
-                                    ?.showTaskContextMenu ?? false,
+                                    ?.contentBackground ?? null,
                         },
                     },
                     notification_preferences:
@@ -619,6 +601,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     keyboard_shortcuts:
                         data.keyboard_shortcuts || getDefaultConfig(),
                     ai_profile: data.ai_profile || '',
+                    sidebar_settings: {
+                        ...(data.sidebar_settings || {}),
+                        visibleSections: {
+                            ...(data.sidebar_settings?.visibleSections || {}),
+                        },
+                    },
                 });
 
                 if (data.telegram_bot_token) {
@@ -936,7 +924,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.error || t('profile.sendSummaryFailed'));
+                throw new Error(data.error || t('profile.sendSummaryFailed', 'Failed to send the summary.'));
             }
 
             const data = await response.json();
@@ -1104,6 +1092,95 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 }
             }
 
+            // Save sidebar_settings via its own dedicated endpoint, which
+            // merges rather than replacing the whole column.
+            if (formData.sidebar_settings?.visibleSections !== undefined) {
+                const sidebarResponse = await fetch(
+                    getApiPath('profile/sidebar-settings'),
+                    {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-csrf-token': await getCsrfToken(),
+                            Accept: 'application/json',
+                        },
+                        body: JSON.stringify({
+                            visibleSections:
+                                formData.sidebar_settings.visibleSections,
+                            ...(formData.sidebar_settings.linkOrder
+                                ? {
+                                      linkOrder:
+                                          formData.sidebar_settings.linkOrder,
+                                  }
+                                : {}),
+                            ...(formData.sidebar_settings.sectionOrder
+                                ? {
+                                      sectionOrder:
+                                          formData.sidebar_settings
+                                              .sectionOrder,
+                                  }
+                                : {}),
+                        }),
+                    }
+                );
+                if (sidebarResponse.ok) {
+                    const sidebarData = await sidebarResponse.json();
+                    updatedProfile.sidebar_settings =
+                        sidebarData.sidebar_settings;
+                    useStore.getState().userSettingsStore.setSidebarOrder({
+                        linkOrder: sidebarData.sidebar_settings?.linkOrder,
+                        sectionOrder:
+                            sidebarData.sidebar_settings?.sectionOrder,
+                    });
+                }
+            }
+
+            // Save AI provider settings (API key/base URL/model) via their
+            // own endpoint so the key is never part of the generic profile
+            // payload. Only sent once the AI Assistant tab has been visited
+            // (loaded) or edited.
+            let aiSettingsResult: {
+                ai_base_url: string | null;
+                ai_model: string | null;
+                ai_api_key_set: boolean;
+                ai_api_key_last4: string | null;
+            } | null = null;
+            if (
+                formData.ai_api_key !== undefined ||
+                formData.ai_base_url !== undefined ||
+                formData.ai_model !== undefined
+            ) {
+                const aiPayload: Record<string, string | null> = {};
+                if (formData.ai_api_key !== undefined)
+                    aiPayload.ai_api_key = formData.ai_api_key || null;
+                if (formData.ai_base_url !== undefined)
+                    aiPayload.ai_base_url = formData.ai_base_url || null;
+                if (formData.ai_model !== undefined)
+                    aiPayload.ai_model = formData.ai_model || null;
+
+                const aiResponse = await fetch(
+                    getApiPath('profile/ai-settings'),
+                    {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-csrf-token': await getCsrfToken(),
+                            Accept: 'application/json',
+                        },
+                        body: JSON.stringify(aiPayload),
+                    }
+                );
+                if (!aiResponse.ok) {
+                    const data = await aiResponse.json();
+                    throw new Error(
+                        data.error || 'Failed to update AI provider settings.'
+                    );
+                }
+                aiSettingsResult = await aiResponse.json();
+            }
+
             if (avatarFile) {
                 const avatarUrl = await uploadAvatar(avatarFile);
                 updatedProfile.avatar_image = avatarUrl;
@@ -1160,6 +1237,25 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         ...(updatedProfile.ui_settings?.appearance || {}),
                     },
                 },
+                sidebar_settings: {
+                    ...(prev.sidebar_settings || {}),
+                    ...(updatedProfile.sidebar_settings || {}),
+                    visibleSections: {
+                        ...(prev.sidebar_settings?.visibleSections || {}),
+                        ...(updatedProfile.sidebar_settings?.visibleSections ||
+                            {}),
+                    },
+                },
+                ...(aiSettingsResult
+                    ? {
+                          ai_base_url: aiSettingsResult.ai_base_url,
+                          ai_model: aiSettingsResult.ai_model,
+                          ai_api_key_set: aiSettingsResult.ai_api_key_set,
+                          ai_api_key_last4: aiSettingsResult.ai_api_key_last4,
+                          // Clear the write-only input now that it's saved.
+                          ai_api_key: undefined,
+                      }
+                    : {}),
             }));
 
             if (setAppearance && updatedProfile.appearance) {
@@ -1234,16 +1330,22 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             }
 
             if (
-                updatedProfile.ui_settings?.appearance?.showTaskContextMenu !==
+                updatedProfile.ui_settings?.appearance?.contentBackground !==
                 undefined
             ) {
                 useStore
                     .getState()
-                    .userSettingsStore.setShowTaskContextMenu(
-                        Boolean(
-                            updatedProfile.ui_settings.appearance
-                                .showTaskContextMenu
-                        )
+                    .userSettingsStore.setContentBackground(
+                        updatedProfile.ui_settings.appearance
+                            .contentBackground ?? null
+                    );
+            }
+
+            if (updatedProfile.sidebar_settings?.visibleSections) {
+                useStore
+                    .getState()
+                    .userSettingsStore.setSidebarVisibleSections(
+                        updatedProfile.sidebar_settings.visibleSections
                     );
             }
 
@@ -1326,16 +1428,24 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <CommandLineIcon className="w-5 h-5" />,
         },
         {
+            id: 'calendars',
+            name: t('profile.tabs.calendars', 'Calendars'),
+            icon: <CalendarDaysIcon className="w-5 h-5" />,
+        },
+        {
+            id: 'planning',
+            name: t('profile.tabs.planning', 'Planning'),
+            icon: <QueueListIcon className="w-5 h-5" />,
+        },
+        {
             id: 'caldav',
             name: t('profile.tabs.caldav', 'CalDAV Sync'),
             icon: <CalendarIcon className="w-5 h-5" />,
-            featureFlag: 'caldav',
         },
         {
             id: 'mcp',
             name: t('profile.tabs.mcp', 'MCP Integration'),
             icon: <CpuChipIcon className="w-5 h-5" />,
-            featureFlag: 'mcp',
         },
         {
             id: 'ai-assistant',
@@ -1353,13 +1463,20 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             name: t('profile.tabs.features', 'Features & Add-ons'),
             icon: <Squares2X2Icon className="w-5 h-5" />,
         },
+        {
+            id: 'sidebar',
+            name: t('profile.tabs.sidebar', 'Sidebar'),
+            icon: <ViewColumnsIcon className="w-5 h-5" />,
+        },
     ];
 
-    // Filter tabs based on feature flags
-    const visibleTabs = tabs.filter((tab) => {
-        if (!tab.featureFlag) return true;
-        return featureFlags[tab.featureFlag as keyof FeatureFlags];
-    });
+    // Filter tabs based on feature flags, then sort alphabetically by name
+    const visibleTabs = tabs
+        .filter((tab) => {
+            if (!tab.featureFlag) return true;
+            return featureFlags[tab.featureFlag as keyof FeatureFlags];
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
 
     return (
         <>
@@ -1438,11 +1555,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             },
                                         }))
                                     }
-                                    showTaskContextMenu={Boolean(
+                                    contentBackground={
                                         formData.ui_settings?.appearance
-                                            ?.showTaskContextMenu
-                                    )}
-                                    onToggleTaskContextMenu={() =>
+                                            ?.contentBackground ?? null
+                                    }
+                                    onContentBackgroundChange={(background) =>
                                         setFormData((prev) => ({
                                             ...prev,
                                             ui_settings: {
@@ -1450,10 +1567,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 appearance: {
                                                     ...(prev.ui_settings
                                                         ?.appearance || {}),
-                                                    showTaskContextMenu:
-                                                        !prev.ui_settings
-                                                            ?.appearance
-                                                            ?.showTaskContextMenu,
+                                                    contentBackground:
+                                                        background,
                                                 },
                                             },
                                         }))
@@ -1482,6 +1597,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <OIDCTab
                                     isActive={activeTab === 'oidc'}
                                     hasPassword={profile?.has_password ?? false}
+                                    isAdmin={currentUser?.is_admin === true}
                                 />
 
                                 <ApiKeysTab
@@ -1543,7 +1659,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     }
                                     habitsEnabled={Boolean(
                                         formData.features?.habits_enabled ??
-                                            true
+                                        true
                                     )}
                                     onToggleHabits={() =>
                                         setFormData((prev) => ({
@@ -1572,7 +1688,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     }
                                     templatesEnabled={Boolean(
                                         formData.features?.templates_enabled ??
-                                            true
+                                        true
                                     )}
                                     onToggleTemplates={() =>
                                         setFormData((prev) => ({
@@ -1601,14 +1717,49 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             },
                                         }))
                                     }
-                                    formData={formData}
-                                    onToggleAi={(field) =>
+                                />
+
+                                <SidebarTab
+                                    isActive={activeTab === 'sidebar'}
+                                    isAdmin={currentUser?.is_admin === true}
+                                    visibleSections={
+                                        formData.sidebar_settings
+                                            ?.visibleSections || {}
+                                    }
+                                    linkOrder={resolveOrder(
+                                        formData.sidebar_settings?.linkOrder,
+                                        DEFAULT_LINK_ORDER
+                                    )}
+                                    sectionOrder={resolveOrder(
+                                        formData.sidebar_settings?.sectionOrder,
+                                        DEFAULT_SECTION_ORDER
+                                    )}
+                                    onReorder={(group, order) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            features: {
-                                                ...prev.features,
-                                                [field]:
-                                                    !prev.features?.[field],
+                                            sidebar_settings: {
+                                                ...prev.sidebar_settings,
+                                                [group === 'links'
+                                                    ? 'linkOrder'
+                                                    : 'sectionOrder']: order,
+                                            },
+                                        }))
+                                    }
+                                    onToggleSection={(key) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            sidebar_settings: {
+                                                ...prev.sidebar_settings,
+                                                visibleSections: {
+                                                    ...prev.sidebar_settings
+                                                        ?.visibleSections,
+                                                    [key]: !(
+                                                        prev.sidebar_settings
+                                                            ?.visibleSections?.[
+                                                            key
+                                                        ] !== false
+                                                    ),
+                                                },
                                             },
                                         }))
                                     }
@@ -1617,6 +1768,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <AIAssistantTab
                                     isActive={activeTab === 'ai-assistant'}
                                     formData={formData}
+                                    hosted={featureFlags.hosted}
                                     onToggleAi={(field) =>
                                         setFormData((prev) => ({
                                             ...prev,
@@ -1631,6 +1783,31 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         setFormData((prev) => ({
                                             ...prev,
                                             ai_profile: value,
+                                        }))
+                                    }
+                                    onAiProviderFieldChange={(field, value) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            [field]: value,
+                                        }))
+                                    }
+                                    onClearAiApiKey={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            ai_api_key: '',
+                                            ai_api_key_set: false,
+                                            ai_api_key_last4: null,
+                                        }))
+                                    }
+                                    onLoadAiProviderSettings={(settings) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            ai_base_url: settings.ai_base_url,
+                                            ai_model: settings.ai_model,
+                                            ai_api_key_set:
+                                                settings.ai_api_key_set,
+                                            ai_api_key_last4:
+                                                settings.ai_api_key_last4,
                                         }))
                                     }
                                 />
@@ -1693,6 +1870,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <McpTab isActive={activeTab === 'mcp'} />
 
                                 <CalDAVTab isActive={activeTab === 'caldav'} />
+
+                                <CalendarFeedsTab
+                                    isActive={activeTab === 'calendars'}
+                                />
+
+                                <PlanningTab
+                                    isActive={activeTab === 'planning'}
+                                />
 
                                 <BillingTab
                                     isActive={activeTab === 'billing'}

@@ -1,3 +1,10 @@
+// Counters are never fetched under test; give the stars chip a number so the
+// hero renders as it does in production.
+jest.mock('../../modules/landing/stats', () => {
+    const actual = jest.requireActual('../../modules/landing/stats');
+    return { getStats: () => ({ ...actual.getStats(), githubStars: 1234 }) };
+});
+
 const request = require('supertest');
 const app = require('../../app');
 const { getConfig } = require('../../config/config');
@@ -16,22 +23,15 @@ const {
 describe('Landing page', () => {
     const config = getConfig();
     const original = { ...config.landing };
-    // pricing is a nested object, so the spread above holds the same
-    // reference: cloudOpen has to be restored on its own.
-    const originalCloudOpen = config.landing.pricing.cloudOpen;
 
     beforeAll(() => {
         config.landing.hosts = ['tududi.com', 'www.tududi.com'];
         config.landing.siteUrl = 'https://tududi.com';
         config.landing.appUrl = 'https://app.tududi.com';
-        // Most of what follows describes the page as it looks once Cloud is
-        // selling; the shut state has its own block at the end.
-        config.landing.pricing.cloudOpen = true;
     });
 
     afterAll(() => {
         Object.assign(config.landing, original);
-        config.landing.pricing.cloudOpen = originalCloudOpen;
     });
 
     it('renders the English page on a landing host', async () => {
@@ -49,13 +49,61 @@ describe('Landing page', () => {
         expect(res.text).toContain(
             'rel="canonical" href="https://tududi.com/"'
         );
-        expect(res.headers['content-security-policy']).toContain(
-            'fonts.googleapis.com'
+        // Fonts, icons and counters are served from here, so nothing but
+        // consented analytics leaves the page.
+        expect(res.headers['content-security-policy']).not.toMatch(
+            /fonts\.googleapis|fonts\.gstatic|cdnjs|api\.github\.com/
         );
         // Every form on the page posts back here, nowhere else.
         expect(res.headers['content-security-policy']).toContain(
             "form-action 'self';"
         );
+    });
+
+    it('loads nothing from third parties until analytics is allowed', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.status).toBe(200);
+
+        expect(res.text).not.toMatch(
+            /fonts\.googleapis|fonts\.gstatic|cdnjs\.cloudflare|img\.shields\.io|api\.github\.com/
+        );
+        expect(res.text).toContain('/landing-assets/fonts/fonts.css');
+        // gtag.js is only named inside the loader, never as a script tag.
+        expect(res.text).not.toMatch(/<script[^>]+googletagmanager/);
+        // DYNETEQ stats is cookieless, so it is the one script that loads
+        // without asking, and the policy allows it.
+        expect(res.text).toContain(
+            '<script defer src="https://dyneteq.com/admin/s.js"></script>'
+        );
+        expect(res.headers['content-security-policy']).toMatch(
+            /script-src [^;]*https:\/\/dyneteq\.com/
+        );
+        expect(res.headers['content-security-policy']).toMatch(
+            /connect-src [^;]*https:\/\/dyneteq\.com/
+        );
+        expect(res.text).toContain(
+            "localStorage.getItem('tududi_analytics') === 'granted'"
+        );
+        // The banner ships hidden and the script reveals it, with refusing
+        // as one click like accepting, and a footer link to reopen it.
+        expect(res.text).toMatch(
+            /<div class="consent" id="consent"[^>]* hidden>/
+        );
+        expect(res.text).toContain('data-consent="denied"');
+        expect(res.text).toContain('data-consent="granted"');
+        expect(res.text).toContain('data-consent-open');
+    });
+
+    it('serves the self-hosted fonts and icons', async () => {
+        for (const asset of [
+            '/landing-assets/fonts/fonts.css',
+            '/landing-assets/fonts/inter-latin.woff2',
+            '/landing-assets/vendor/fontawesome/css/all.min.css',
+            '/landing-assets/vendor/fontawesome/webfonts/fa-solid-900.woff2',
+        ]) {
+            const res = await request(app).get(asset).set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+        }
     });
 
     it('renders other locales at their own path', async () => {
@@ -136,6 +184,41 @@ describe('Landing page', () => {
         expect(icon.status).toBe(200);
     });
 
+    it('answers robots.txt itself instead of redirecting to the app', async () => {
+        // X's crawler reads robots.txt before fetching a card's image.
+        const res = await request(app)
+            .get('/robots.txt')
+            .set('Host', 'tududi.com');
+        expect(res.status).toBe(200);
+        expect(res.headers['content-type']).toMatch(/^text\/plain/);
+        expect(res.text).toContain('User-agent: *');
+    });
+
+    it('gives the landing and cloud pages a link preview card', async () => {
+        for (const path of ['/', '/de', '/cloud']) {
+            const res = await request(app).get(path).set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain(
+                '<meta name="twitter:card" content="summary_large_image">'
+            );
+            expect(res.text).toMatch(
+                /<meta property="og:title" content="[^"]+">/
+            );
+            expect(res.text).toMatch(
+                /<meta property="og:description" content="[^"]+">/
+            );
+            // Crawlers need an absolute image URL; a relative one is ignored.
+            expect(res.text).toContain(
+                '<meta property="og:image" content="https://tududi.com/landing-assets/og-1.png">'
+            );
+        }
+        const image = await request(app)
+            .get('/landing-assets/og-1.png')
+            .set('Host', 'tududi.com');
+        expect(image.status).toBe(200);
+        expect(image.headers['content-type']).toBe('image/png');
+    });
+
     it('serves the cloud page, in English and in other locales', async () => {
         const en = await request(app).get('/cloud').set('Host', 'tududi.com');
         expect(en.status).toBe(200);
@@ -179,28 +262,181 @@ describe('Landing page', () => {
         expect(hero).not.toMatch(/MIT|open source/i);
         expect(hero).toContain('stars on GitHub');
 
-        // Still reachable further down, in the self-host section and footer.
+        // Still reachable further down, on the pricing card and in the footer.
         const belowHero = res.text.slice(
             res.text.indexOf('</section>', heroStart)
         );
         expect(belowHero).toContain('https://github.com/chrisvel/tududi');
     });
 
-    it('keeps self-hosting reachable, one click in', async () => {
+    it('sends self-hosters to GitHub instead of a section of its own', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('id="self-host"');
+        expect(res.text).not.toContain('href="#self-host"');
+        expect(res.text).not.toContain('docker pull chrisvel/tududi:latest');
+        expect(res.text).not.toContain('id="faq-requirements"');
+        expect(res.text).not.toContain('Prefer to run it on your own server?');
 
-        // Out of the top row of the navbar, into Resources - in both the
-        // desktop dropdown and the mobile sheet - and still in the footer.
+        const pricing = res.text.slice(res.text.indexOf('id="pricing"'));
+        expect(pricing).toMatch(
+            /href="https:\/\/github\.com\/chrisvel\/tududi" class="plan-action"/
+        );
+    });
+
+    it('quotes a 14-day money-back guarantee and no AI credit count', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).toContain('14-day money-back guarantee');
+        expect(res.text).not.toContain('30-day');
+        expect(res.text).not.toMatch(/AI credits/i);
+        const pricing = res.text.slice(
+            res.text.indexOf('id="pricing"'),
+            res.text.indexOf('class="compare')
+        );
+        expect(pricing).toContain('AI day planning, MCP, calendar feeds');
+    });
+
+    it('walks through capture, planning and Today before the feature grid', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const planAt = res.text.indexOf('id="plan"');
+        expect(planAt).toBeGreaterThan(-1);
+        expect(planAt).toBeLessThan(res.text.indexOf('id="features"'));
+
+        const section = res.text.slice(
+            planAt,
+            res.text.indexOf('</section>', planAt)
+        );
+        ['capture-light.png', 'plan-light.png', 'today-light.png'].forEach(
+            (img) =>
+                expect(section).toContain(`/landing-assets/screenshots/${img}`)
+        );
+        expect(section).toContain('Plan my day, with AI');
+
         const nav = res.text.slice(
             res.text.indexOf('<div class="nav-wrap">'),
             res.text.indexOf('<section class="hero"')
         );
-        expect(nav.match(/href="#self-host"/g)).toHaveLength(2);
-        expect(res.text).toContain('id="self-host"');
-        expect(res.text).toContain('docker pull chrisvel/tududi:latest');
-        expect(res.text).toContain(
-            'https://github.com/chrisvel/tududi/blob/main/LICENSE'
+        const desktop = nav.slice(0, nav.indexOf('id="nav-mobile"'));
+        const mobile = nav.slice(nav.indexOf('id="nav-mobile"'));
+        expect(desktop.match(/href="#plan"/g)).toHaveLength(1);
+        expect(mobile.match(/href="#plan"/g)).toHaveLength(1);
+    });
+
+    it('leads the featured cards with capture and planning', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const grid = res.text.slice(
+            res.text.indexOf('<div class="feature-grid">'),
+            res.text.indexOf('id="feature-rest"')
         );
+        expect(grid.match(/class="feature-card[ "]/g)).toHaveLength(8);
+        expect(grid).toContain('One box for everything');
+        expect(grid).toContain('Plan my day');
+        expect(grid).toContain('Today with your calendar');
+    });
+
+    it('plays the hero loop with the still as its poster', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).toContain(
+            'src="/landing-assets/screenshots/hero.mp4"'
+        );
+        expect(res.text).toContain(
+            'poster="/landing-assets/screenshots/hero-light.png"'
+        );
+        expect(res.text).toContain('prefers-reduced-motion: reduce');
+        const video = await request(app)
+            .get('/landing-assets/screenshots/hero.mp4')
+            .set('Host', 'tududi.com');
+        expect(video.status).toBe(200);
+        expect(video.headers['content-type']).toMatch(/video\/mp4/);
+    });
+
+    it('leads every card with an icon and puts screenshots behind a preview link', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const grid = res.text.slice(
+            res.text.indexOf('<div class="feature-grid">'),
+            res.text.indexOf('id="feature-rest"')
+        );
+        expect(grid.match(/class="feature-icon"/g)).toHaveLength(8);
+        expect(grid.match(/class="feature-peek"/g)).toHaveLength(8);
+        expect(res.text).not.toContain('class="feature-shot"');
+        expect(res.text).toContain('id="feature-preview"');
+
+        const cards = res.text.match(/class="feature-card"/g);
+        const icons = res.text.match(/class="feature-icon"/g);
+        expect(icons).toHaveLength(cards.length);
+
+        const hrefs = [
+            ...res.text.matchAll(
+                /href="(\/landing-assets\/screenshots\/features\/[^"]+)"/g
+            ),
+        ].map((m) => m[1]);
+        expect(hrefs.length).toBeGreaterThanOrEqual(18);
+        for (const href of new Set(hrefs)) {
+            const img = await request(app).get(href).set('Host', 'tududi.com');
+            expect(img.status).toBe(200);
+        }
+    });
+
+    it('has no Resources menu in the nav or the footer', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('>Resources<');
+        expect(res.text).not.toContain(
+            'https://docs.tududi.com" class="nav-link"'
+        );
+        expect(res.text).not.toContain('github.com/users/chrisvel/projects/2');
+    });
+
+    it('serves the new screenshots', async () => {
+        for (const img of [
+            'capture-light.png',
+            'plan-light.png',
+            'today-light.png',
+        ]) {
+            const res = await request(app)
+                .get(`/landing-assets/screenshots/${img}`)
+                .set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+        }
+    });
+
+    it('compares Cloud with Todoist, TickTick and Notion, not self-hosting', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const at = res.text.indexOf('class="compare compare-vendors"');
+        expect(at).toBeGreaterThan(-1);
+        const table = res.text.slice(
+            at,
+            res.text.indexOf('compare-footnote', at)
+        );
+        [
+            'tududi Cloud',
+            'Todoist Pro',
+            'TickTick Premium',
+            'Notion Plus',
+        ].forEach((vendor) => expect(table).toContain(vendor));
+        expect(table).not.toContain('Self-host');
+        [
+            'Eisenhower matrix',
+            'Capture from Telegram',
+            'CalDAV task sync',
+        ].forEach((row) => expect(table).toContain(row));
+        expect(res.text).toContain('from their public pricing pages');
+    });
+
+    it('shows no MCP config code and no Daily Brief', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('mcpServers');
+        expect(res.text).not.toContain('claude_desktop_config.json');
+        expect(res.text).not.toContain('Daily Brief');
+    });
+
+    it('keeps the footer brand free of open source wording', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const brandStart = res.text.indexOf('<div class="footer-brand">');
+        const brand = res.text.slice(
+            brandStart,
+            res.text.indexOf('</div>', brandStart)
+        );
+        expect(brand).not.toMatch(/open|github/i);
+        expect(res.text).toContain('href="/contact"');
     });
 
     it('flags the Cloud card rather than the self-host one', async () => {
@@ -223,7 +459,58 @@ describe('Landing page', () => {
         );
     });
 
-    it('never implies Cloud is free or has a trial', async () => {
+    it('offers the trial everywhere it sells Cloud once trials are on', async () => {
+        const hosted = getConfig().hosted;
+        const saved = { enabled: hosted.enabled, trialDays: hosted.trialDays };
+        hosted.enabled = true;
+        hosted.trialDays = 14;
+        try {
+            const res = await request(app).get('/').set('Host', 'tududi.com');
+            const heroOpen = res.text.indexOf('<section class="hero"');
+            const hero = res.text.slice(
+                heroOpen,
+                res.text.indexOf('</section>', heroOpen)
+            );
+            expect(hero).toContain('Start your free 14-day trial');
+            expect(hero).toContain('Free for 14 days, no card needed.');
+            expect(res.text).toContain('Start free trial →');
+            expect(res.text).toContain('14-day free trial, no card needed');
+            expect(res.text).not.toContain('no trial clock');
+            expect(res.text).toContain(
+                'The trial has everything except the AI assistant'
+            );
+            const closingOpen = res.text.indexOf('<div class="closing"');
+            const closing = res.text.slice(
+                closingOpen,
+                res.text.indexOf('</section>', closingOpen)
+            );
+            expect(closing).toContain('Try it free for 14 days');
+            expect(closing).toContain('Start free trial');
+
+            const cloud = await request(app)
+                .get('/cloud')
+                .set('Host', 'tududi.com');
+            expect(cloud.text).toContain('Try it free for 14 days');
+            expect(cloud.text).toContain(
+                'The trial has everything except the AI assistant'
+            );
+
+            const terms = await request(app)
+                .get('/terms')
+                .set('Host', 'tududi.com');
+            expect(terms.text).toContain('free trial of 14 days');
+            const privacy = await request(app)
+                .get('/privacy')
+                .set('Host', 'tududi.com');
+            expect(privacy.text).toContain(
+                'Trial accounts that never subscribe'
+            );
+        } finally {
+            Object.assign(hosted, saved);
+        }
+    });
+
+    it('never implies Cloud is free or has a trial while trials are off', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
 
         // Scoped to where the offer is actually made. The FAQ says the words
@@ -250,6 +537,8 @@ describe('Landing page', () => {
         expect(cloudCard).toMatch(/€5/);
         expect(cloudCard).toMatch(/€50/);
         expect(res.text).toContain('Is there a free plan or a trial');
+        expect(res.text).not.toContain('The trial has everything except');
+        expect(res.text).not.toContain('Start free trial');
 
         // Self-hosting is still free, and the page still says so.
         expect(res.text).toMatch(/free, if you run the server yourself/i);
@@ -269,6 +558,50 @@ describe('Landing page', () => {
         expect(res.text).toMatch(/MIT licence permits commercial use/);
     });
 
+    describe('legal pages', () => {
+        it.each([
+            ['/terms', 'Terms of Service'],
+            ['/privacy', 'Privacy Policy'],
+            ['/refunds', 'Refund Policy'],
+        ])('serves %s on the landing host', async (url, title) => {
+            const res = await request(app).get(url).set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain(`<h1>${title}</h1>`);
+            expect(res.text).toContain(
+                `rel="canonical" href="https://tududi.com${url}"`
+            );
+            expect(res.text).toContain('<article lang="en"');
+            expect(res.text).toContain('mailto:info@tududi.com');
+            expect(res.headers['content-security-policy']).toBeDefined();
+        });
+
+        it('keeps the document English but the chrome in the visitor language, without changing it', async () => {
+            const res = await request(app)
+                .get('/privacy')
+                .set('Host', 'tududi.com')
+                .set('Cookie', 'tududi_lang=de');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain('<html lang="de"');
+            expect(res.text).toContain('<h1>Privacy Policy</h1>');
+            expect(res.headers['set-cookie']).toBeUndefined();
+        });
+
+        it('links every legal page from the footer', async () => {
+            const res = await request(app).get('/fr').set('Host', 'tududi.com');
+            expect(res.text).toContain('href="/terms"');
+            expect(res.text).toContain('href="/privacy"');
+            expect(res.text).toContain('href="/refunds"');
+            expect(res.text).toContain('Confidentialité');
+        });
+
+        it('leaves /terms on the app host to the app', async () => {
+            const res = await request(app)
+                .get('/terms')
+                .set('Host', 'app.tududi.com');
+            expect(res.text).not.toContain('<h1>Terms of Service</h1>');
+        });
+    });
+
     it('sends /cloud on the app host to the app, not the marketing page', async () => {
         const res = await request(app)
             .get('/cloud')
@@ -276,11 +609,11 @@ describe('Landing page', () => {
         expect(res.text).toContain('<div id="root"');
     });
 
-    describe('the Cloud waitlist', () => {
+    describe('the release-notes signup', () => {
         const { WaitlistSubscriber } = require('../../models');
 
         it('stores an address and answers the same way twice', async () => {
-            const email = `wait_${Date.now()}@example.com`;
+            const email = `wait_${Date.now()}@tududi-test.dev`;
             const first = await request(app)
                 .post('/waitlist')
                 .set('Host', 'tududi.com')
@@ -310,7 +643,7 @@ describe('Landing page', () => {
         });
 
         it('lower-cases the address and comes back in the visitor locale', async () => {
-            const email = `MiXeD_${Date.now()}@Example.COM`;
+            const email = `MiXeD_${Date.now()}@Tududi-Test.DEV`;
             const res = await request(app)
                 .post('/waitlist')
                 .set('Host', 'tududi.com')
@@ -351,62 +684,263 @@ describe('Landing page', () => {
                 .post('/waitlist')
                 .set('Host', 'app.tududi.com')
                 .type('form')
-                .send({ email: 'x@example.com' });
+                .send({ email: 'x@tududi-test.dev' });
             expect(res.status).not.toBe(303);
         });
-    });
 
-    describe('while Cloud is shut', () => {
-        beforeAll(() => {
-            config.landing.pricing.cloudOpen = false;
-        });
-        afterAll(() => {
-            config.landing.pricing.cloudOpen = true;
-        });
-
-        it('sends the hero to the waitlist instead of registration', async () => {
-            const res = await request(app).get('/').set('Host', 'tududi.com');
-            expect(res.text).toContain('href="#waitlist"');
-            expect(res.text).toContain('action="/waitlist"');
-            expect(res.text).toContain('Join the waitlist');
-            expect(res.text).not.toContain('https://app.tududi.com/register');
-        });
-
-        it('captures the pricing card address on the site itself', async () => {
-            const res = await request(app).get('/').set('Host', 'tududi.com');
-            const pricing = res.text.slice(
-                res.text.indexOf('<section id="pricing"'),
-                res.text.indexOf('<section id="faq"')
-            );
-            // Its own source, so the two forms can be told apart in the
-            // admin list, and it posts here rather than to a mail provider.
-            expect(pricing).toContain('action="/waitlist"');
-            expect(pricing).toContain('value="pricing"');
-            expect(pricing).not.toMatch(/action="https?:/);
-        });
-
-        it('stores an address from the pricing card', async () => {
-            const email = `pricing_${Date.now()}@example.com`;
+        it('trips the honeypot without showing it', async () => {
+            const email = `hp_${Date.now()}@tududi-test.dev`;
             const res = await request(app)
                 .post('/waitlist')
                 .set('Host', 'tududi.com')
                 .type('form')
-                .send({ email, source: 'pricing', locale: 'fr' });
+                .send({
+                    email,
+                    source: 'hero',
+                    locale: 'en',
+                    company: 'Acme Bots',
+                });
+            // Looks exactly like a real signup from the outside.
             expect(res.status).toBe(303);
-
-            const { WaitlistSubscriber } = require('../../models');
-            const row = await WaitlistSubscriber.findOne({ where: { email } });
-            expect(row).not.toBeNull();
-            expect(row.source).toBe('pricing');
-            expect(row.locale).toBe('fr');
+            expect(res.headers.location).toBe('/?joined=1#waitlist');
+            expect(await WaitlistSubscriber.count({ where: { email } })).toBe(
+                0
+            );
         });
 
-        it('answers the joined redirect with the confirmation, not a cached page', async () => {
+        describe('with the mail server check on', () => {
+            const dns = require('dns');
+            let mx;
+
+            beforeEach(() => {
+                config.waitlist.mxCheck = true;
+                mx = jest.spyOn(dns.promises.Resolver.prototype, 'resolveMx');
+            });
+
+            afterEach(() => {
+                config.waitlist.mxCheck = false;
+                jest.restoreAllMocks();
+            });
+
+            it('stores an address whose domain takes mail', async () => {
+                mx.mockResolvedValue([{ exchange: 'mx.tududi-test.dev' }]);
+                const email = `mx_${Date.now()}@tududi-test.dev`;
+                await request(app)
+                    .post('/waitlist')
+                    .set('Host', 'tududi.com')
+                    .type('form')
+                    .send({ email, source: 'footer' });
+                expect(
+                    await WaitlistSubscriber.count({ where: { email } })
+                ).toBe(1);
+            });
+
+            it('says the same thing but stores nothing for a domain with no mail', async () => {
+                mx.mockResolvedValue([{ exchange: '' }]);
+                const email = `nomx_${Date.now()}@tududi-test.dev`;
+                const res = await request(app)
+                    .post('/waitlist')
+                    .set('Host', 'tududi.com')
+                    .type('form')
+                    .send({ email, source: 'footer' });
+                expect(res.status).toBe(303);
+                expect(res.headers.location).toBe('/?joined=1#waitlist');
+                expect(
+                    await WaitlistSubscriber.count({ where: { email } })
+                ).toBe(0);
+            });
+        });
+
+        describe('rate limiting', () => {
+            const originalEnabled = config.rateLimiting.enabled;
+            beforeAll(() => {
+                config.rateLimiting.enabled = true;
+            });
+            afterAll(() => {
+                config.rateLimiting.enabled = originalEnabled;
+            });
+
+            it('stops taking new addresses past the per-IP limit, without saying so', async () => {
+                const { max } = config.rateLimiting.waitlist;
+                for (let i = 0; i < max; i++) {
+                    const res = await request(app)
+                        .post('/waitlist')
+                        .set('Host', 'tududi.com')
+                        .type('form')
+                        .send({
+                            email: `rl_${Date.now()}_${i}@tududi-test.dev`,
+                            source: 'hero',
+                        });
+                    expect(res.status).toBe(303);
+                }
+
+                const overflowEmail = `rl_over_${Date.now()}@tududi-test.dev`;
+                const res = await request(app)
+                    .post('/waitlist')
+                    .set('Host', 'tududi.com')
+                    .type('form')
+                    .send({ email: overflowEmail, source: 'hero' });
+                // Same redirect a real signup gets: status alone can't tell
+                // "throttled" apart from "accepted", by design.
+                expect(res.status).toBe(303);
+                expect(res.headers.location).toBe('/?joined=1#waitlist');
+                expect(
+                    await WaitlistSubscriber.count({
+                        where: { email: overflowEmail },
+                    })
+                ).toBe(0);
+            });
+        });
+    });
+
+    describe('the contact form', () => {
+        const emailService = require('../../services/emailService');
+        let send;
+
+        beforeEach(() => {
+            send = jest
+                .spyOn(emailService, 'sendEmail')
+                .mockResolvedValue({ success: true });
+        });
+
+        afterEach(() => send.mockRestore());
+
+        const post = (body) =>
+            request(app)
+                .post('/contact')
+                .set('Host', 'tududi.com')
+                .type('form')
+                .send(body);
+
+        it('serves the form on the landing host', async () => {
+            const res = await request(app)
+                .get('/contact')
+                .set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain('action="/contact"');
+            expect(res.text).toContain('name="message"');
+            expect(res.text).toContain('class="hp-field"');
+        });
+
+        it('mails the operator with the sender as reply-to', async () => {
+            const res = await post({
+                name: 'Ada\r\nBcc: x@evil.test',
+                email: 'Ada@Gmail.com',
+                message: 'Hello there',
+            });
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe('/contact?sent=1');
+            expect(send).toHaveBeenCalledTimes(1);
+            const mail = send.mock.calls[0][0];
+            expect(mail.to).toBe('info@tududi.com');
+            expect(mail.replyTo).toBe('"Ada Bcc: x@evil.test" <ada@gmail.com>');
+            expect(mail.subject).not.toMatch(/[\r\n]/);
+            expect(mail.text).toContain('Hello there');
+
+            const page = await request(app)
+                .get(res.headers.location)
+                .set('Host', 'tududi.com');
+            expect(page.text).toContain('data-testid="contact-sent"');
+        });
+
+        it('rejects a missing message or a bad address without sending', async () => {
+            const noMessage = await post({
+                name: 'Ada',
+                email: 'ada@gmail.com',
+                message: '  ',
+            });
+            const badEmail = await post({
+                name: 'Ada',
+                email: 'nope',
+                message: 'Hi',
+            });
+            expect(noMessage.headers.location).toBe('/contact?error=invalid');
+            expect(badEmail.headers.location).toBe('/contact?error=invalid');
+            expect(send).not.toHaveBeenCalled();
+        });
+
+        it('says so when the mail cannot go out', async () => {
+            send.mockResolvedValue({ success: false, reason: 'down' });
+            const res = await post({
+                name: 'Ada',
+                email: 'ada@gmail.com',
+                message: 'Hi',
+            });
+            expect(res.headers.location).toBe('/contact?error=failed');
+            const page = await request(app)
+                .get(res.headers.location)
+                .set('Host', 'tududi.com');
+            expect(page.text).toContain('mailto:info@tududi.com');
+        });
+
+        it('trips the honeypot without sending or saying so', async () => {
+            const res = await post({
+                company: 'Acme',
+                name: 'Bot',
+                email: 'bot@gmail.com',
+                message: 'spam',
+            });
+            expect(res.headers.location).toBe('/contact?sent=1');
+            expect(send).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('with Cloud open', () => {
+        it('announces it in the hero, linking to the Cloud page', async () => {
+            const res = await request(app).get('/').set('Host', 'tududi.com');
+            expect(res.text).toContain('data-testid="cloud-open-badge"');
+            expect(res.text).toContain('tududi Cloud is now open');
+            const fr = await request(app).get('/fr').set('Host', 'tududi.com');
+            expect(fr.text).toMatch(
+                /href="\/fr\/cloud" class="hero-badge hero-badge-launch"/
+            );
+        });
+
+        it('sends every Cloud call to action to registration', async () => {
+            for (const path of ['/', '/cloud', '/de', '/de/cloud']) {
+                const res = await request(app)
+                    .get(path)
+                    .set('Host', 'tududi.com');
+                expect(res.text).toContain('https://app.tududi.com/register');
+                expect(res.text).not.toContain('href="#waitlist"');
+            }
+        });
+
+        it('has no waitlist or opening-soon copy left', async () => {
+            const res = await request(app).get('/').set('Host', 'tududi.com');
+            expect(res.text).not.toMatch(/opening soon|Opening in a few days/i);
+            expect(res.text).not.toContain('Notify me');
+            expect(res.text).not.toContain('Join the waitlist');
+            expect(res.text).not.toContain('when Cloud opens');
+            expect(res.text).not.toContain('value="pricing"');
+        });
+
+        it('hides the honeypot without pushing a right-to-left page wide', async () => {
+            const res = await request(app).get('/ar').set('Host', 'tududi.com');
+            expect(res.text).toContain('name="company"');
+            expect(res.text).toContain('class="hp-field"');
+            expect(res.text).not.toContain('left:-9999px');
+        });
+
+        it('offers news and updates in the signup section', async () => {
+            const res = await request(app).get('/').set('Host', 'tududi.com');
+            const section = res.text.slice(
+                res.text.indexOf('<section class="waitlist"')
+            );
+            expect(section).toContain('News and updates by email');
+            expect(section).toContain('only to send news and updates');
+        });
+
+        it('confirms a news signup, not a waitlist place', async () => {
             await request(app).get('/').set('Host', 'tududi.com');
             const res = await request(app)
                 .get('/?joined=1')
                 .set('Host', 'tududi.com');
             expect(res.text).toContain('data-testid="waitlist-joined"');
+            expect(res.text).toContain(
+                'You are subscribed. News and updates will arrive by email.'
+            );
+            expect(res.text).not.toContain('when tududi Cloud opens');
         });
     });
 
@@ -437,10 +971,17 @@ describe('Landing page', () => {
                 i18n.tList('pricing.plans.cloud.features', {
                     proStorageGb: 5,
                 })
-            ).toHaveLength(5);
+            ).toHaveLength(6);
             expect(i18n.t('faq.items.freePlan.q')).not.toBe(
                 'faq.items.freePlan.q'
             );
+            ['capture', 'plan', 'today'].forEach((step) => {
+                expect(catalog.plan.steps[step].title).toBeTruthy();
+                expect(catalog.plan.steps[step].points).toHaveLength(3);
+            });
+            expect(catalog.plan.stepLabel).toContain('{{n}}');
+            expect(catalog.features.cards.planMyDay.title).toBeTruthy();
+            expect(catalog.features.cards.dueDates).toBeUndefined();
         });
     });
 });

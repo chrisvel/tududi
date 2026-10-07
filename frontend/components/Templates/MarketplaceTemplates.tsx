@@ -62,7 +62,7 @@ const MarketplaceTemplates: React.FC<MarketplaceTemplatesProps> = ({ onInstalled
     if (loading) {
         return (
             <div className="flex items-center justify-center py-16">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
             </div>
         );
     }
@@ -94,7 +94,7 @@ const MarketplaceTemplates: React.FC<MarketplaceTemplatesProps> = ({ onInstalled
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder={t('templates.marketplace.search', 'Search marketplace...')}
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
             </div>
 
@@ -106,8 +106,8 @@ const MarketplaceTemplates: React.FC<MarketplaceTemplatesProps> = ({ onInstalled
                             onClick={() => setCategoryFilter(cat)}
                             className={`px-3 py-1 text-xs font-medium rounded-full border transition-colors ${
                                 categoryFilter === cat
-                                    ? 'bg-indigo-600 border-indigo-600 text-white'
-                                    : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400'
+                                    ? 'bg-blue-600 border-blue-600 text-white'
+                                    : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400'
                             }`}
                         >
                             {cat === 'all' ? t('templates.allCategories', 'All') : cat}

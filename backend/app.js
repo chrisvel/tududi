@@ -37,6 +37,17 @@ const sessionStore = new SequelizeStore({
     db: sequelize,
 });
 
+// Browsers read a backslash in an http(s) URL as a slash, so a path like
+// /\evil.example can come back in a redirect as a link to another host
+// (GHSA-m2j3-rgfr-57pq). No route uses one, so refuse them outright.
+app.use((req, res, next) => {
+    const pathname = req.originalUrl.split('?')[0];
+    if (/\\|%5c/i.test(pathname)) {
+        return res.status(400).send('Bad Request');
+    }
+    return next();
+});
+
 // Middlewares
 app.use(
     helmet({
@@ -91,7 +102,7 @@ app.use(
 );
 // Structured request log. Health probes are skipped so a 60-second
 // container healthcheck does not write a line forever.
-const { logger } = require('./services/logService');
+const { logger, stripQuery } = require('./services/logService');
 app.use(
     pinoHttp({
         logger,
@@ -107,7 +118,7 @@ app.use(
             req: (req) => ({
                 id: req.id,
                 method: req.method,
-                url: req.url,
+                url: stripQuery(req.url),
                 remoteAddress: req.remoteAddress,
             }),
             res: (res) => ({ statusCode: res.statusCode }),
@@ -254,6 +265,20 @@ app.use((req, res, next) => {
 const landingModule = require('./modules/landing');
 app.use(landingModule.hostSwitch(config.landing));
 
+// The blog at the root of the hostnames in TUDUDI_BLOG_HOSTS. Also a no-op
+// unless set; it serves the app shell marked as the blog, so it sits before
+// the static handlers for the same reason.
+const blogModule = require('./modules/blog');
+app.use(
+    blogModule.hostSwitch({
+        shellPath: () =>
+            serveFromDist
+                ? distIndexPath
+                : path.join(__dirname, '../public', 'index.html'),
+        cacheShell: config.production,
+    })
+);
+
 // Static files. Webpack output is content-hashed, so the bundles can be
 // cached for a year; the shell (index.html) and the service worker must
 // always be revalidated or a deploy would never reach returning visitors.
@@ -262,6 +287,7 @@ if (serveFromDist) {
     app.use(
         express.static(path.join(__dirname, 'dist'), {
             index: false,
+            redirect: false,
             maxAge: '1y',
             immutable: true,
             setHeaders: (res, filePath) => {
@@ -273,16 +299,23 @@ if (serveFromDist) {
         })
     );
 } else {
-    app.use(express.static('public'));
+    app.use(express.static('public', { redirect: false }));
 }
 
 // Serve locales
 if (serveFromDist) {
-    app.use('/locales', express.static(path.join(__dirname, 'dist/locales')));
+    app.use(
+        '/locales',
+        express.static(path.join(__dirname, 'dist/locales'), {
+            redirect: false,
+        })
+    );
 } else {
     app.use(
         '/locales',
-        express.static(path.join(__dirname, '../public/locales'))
+        express.static(path.join(__dirname, '../public/locales'), {
+            redirect: false,
+        })
     );
 }
 
@@ -304,12 +337,15 @@ const { INLINE_SAFE_EXTENSIONS } = require('./utils/attachment-utils');
 // can't execute it as a top-level document - this covers any file whose
 // extension predates a MIME allow-list change, regardless of what the DB
 // thinks its type is (GHSA-43p8-ch4p-gqg4).
+const { uploadsLimiter } = require('./middleware/rateLimiter');
 const registerUploadsStatic = (basePath) => {
     app.use(
         `${basePath}/uploads`,
         requireAuth,
+        uploadsLimiter,
         uploadsAccessControl,
         express.static(config.uploadPath, {
+            redirect: false,
             setHeaders: (res, filePath) => {
                 res.setHeader('X-Content-Type-Options', 'nosniff');
                 const ext = path.extname(filePath).toLowerCase();
@@ -331,6 +367,7 @@ const { logError } = require('./services/logService');
 const {
     apiLimiter,
     authenticatedApiLimiter,
+    bearerFailureLimiter,
 } = require('./middleware/rateLimiter');
 
 // Error handler for modular architecture
@@ -340,6 +377,8 @@ const errorHandler = require('./shared/middleware/errorHandler');
 const adminModule = require('./modules/admin');
 const areasModule = require('./modules/areas');
 const goalsModule = require('./modules/goals');
+const dailyPlanModule = require('./modules/daily-plan');
+const calendarFeedsModule = require('./modules/calendar-feeds');
 const authModule = require('./modules/auth');
 const backupModule = require('./modules/backup');
 const featureFlagsModule = require('./modules/feature-flags');
@@ -354,6 +393,7 @@ const searchModule = require('./modules/search');
 const sharesModule = require('./modules/shares');
 const tagsModule = require('./modules/tags');
 const tasksModule = require('./modules/tasks');
+const commentsModule = require('./modules/comments');
 const telegramModule = require('./modules/telegram');
 const urlModule = require('./modules/url');
 const usersModule = require('./modules/users');
@@ -361,10 +401,15 @@ const viewsModule = require('./modules/views');
 const mcpModule = require('./modules/mcp');
 const oidcModule = require('./modules/oidc');
 const aiAssistantModule = require('./modules/ai-assistant');
+const adminAiUsageModule = require('./modules/admin-ai-usage');
 const peopleModule = require('./modules/people');
+const membersModule = require('./modules/members');
 const templatesModule = require('./modules/templates');
 const reportsModule = require('./modules/reports');
 const everyoneModule = require('./modules/everyone');
+const groupsModule = require('./modules/groups');
+const feedbackModule = require('./modules/feedback');
+const pushModule = require('./modules/push');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -432,19 +477,26 @@ healthPaths.forEach(registerHealthCheck);
 // Use both limiters: apiLimiter for unauthenticated, authenticatedApiLimiter for authenticated
 // Each has skip logic to handle their specific use case
 const registerRateLimiting = (basePath) => {
+    app.use(basePath, bearerFailureLimiter);
     app.use(basePath, apiLimiter);
     app.use(basePath, authenticatedApiLimiter);
 };
 
-const rateLimitPath =
-    API_VERSION && API_BASE_PATH !== '/api' ? API_BASE_PATH : '/api';
-registerRateLimiting(rateLimitPath);
+// The web app calls /api while versioned clients call /api/v1, and routes are
+// served under both, so both need the limiters.
+registerRateLimiting('/api');
+if (API_VERSION && API_BASE_PATH !== '/api') {
+    registerRateLimiting(API_BASE_PATH);
+}
 
 const registerApiRoutes = (basePath) => {
     app.use(basePath, authModule.routes);
     app.use(basePath, featureFlagsModule.routes);
     app.use(basePath, demoModule.routes);
     app.use(`${basePath}/oidc`, oidcModule.routes);
+    // Public note links: reachable without signing in
+    app.use(basePath, notesModule.publicRoutes);
+    app.use(basePath, blogModule.routes);
 
     app.use(basePath, requireAuth);
     // Instances that sell access close everything past this point until the
@@ -452,12 +504,15 @@ const registerApiRoutes = (basePath) => {
     // open. A no-op unless TUDUDI_REQUIRE_SUBSCRIPTION is set.
     app.use(basePath, requireSubscription);
     app.use(basePath, tasksModule.routes);
+    app.use(basePath, commentsModule.routes);
     app.use(basePath, habitsModule.routes);
     app.use(basePath, projectsModule.routes);
     app.use(basePath, adminModule.routes);
     app.use(basePath, sharesModule.routes);
     app.use(basePath, areasModule.routes);
     app.use(basePath, goalsModule.routes);
+    app.use(basePath, dailyPlanModule.routes);
+    app.use(basePath, calendarFeedsModule.routes);
     app.use(basePath, notesModule.routes);
     app.use(basePath, tagsModule.routes);
     app.use(basePath, usersModule.routes);
@@ -472,10 +527,15 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, notificationsModule.routes);
     app.use(basePath, mcpModule.routes);
     app.use(basePath, aiAssistantModule.routes);
+    app.use(basePath, adminAiUsageModule.routes);
     app.use(basePath, peopleModule.routes);
+    app.use(basePath, membersModule.routes);
     app.use(basePath, templatesModule.routes);
     app.use(basePath, reportsModule.routes);
     app.use(basePath, everyoneModule.routes);
+    app.use(basePath, groupsModule.routes);
+    app.use(basePath, feedbackModule.routes);
+    app.use(basePath, pushModule.routes);
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility
@@ -547,12 +607,26 @@ async function startServer() {
 
         // Validate authentication configuration
         const { validateAuthConfiguration } = require('./config/authConfig');
-        validateAuthConfiguration();
+        await validateAuthConfiguration();
 
         // A hosted instance must not come up half-configured
         const { assertHostedConfig } = require('./config/hostedConfig');
         assertHostedConfig();
         billingModule.billingService.validateConfig();
+
+        // A hosted instance puts every customer and its members into an
+        // account (a no-op once done, and on a self-hosted instance).
+        try {
+            const placed =
+                await require('./services/accountsService').backfill();
+            if (placed.users || placed.groups) {
+                console.log(
+                    `Accounts: placed ${placed.users} users and ${placed.groups} groups`
+                );
+            }
+        } catch (error) {
+            console.error('Could not place users into accounts:', error);
+        }
 
         const server = app.listen(config.port, config.host, () => {
             console.log(`Server running on port ${config.port}`);
@@ -566,6 +640,35 @@ async function startServer() {
         server.on('error', (err) => {
             console.error('Server error:', err);
         });
+
+        // Close the database on docker stop / Ctrl-C. SQLite then folds its
+        // -wal file back into the main file, so the next start-up backup
+        // and any copy of the file hold every write.
+        let shuttingDown = false;
+        const shutdown = (signal) => {
+            if (shuttingDown) return;
+            shuttingDown = true;
+            console.log(`${signal} received, shutting down`);
+            let closing = false;
+            const exit = () => {
+                if (closing) return;
+                closing = true;
+                sequelize
+                    .close()
+                    .catch((error) =>
+                        console.error('Error closing the database:', error)
+                    )
+                    .finally(() => process.exit(0));
+            };
+            // Open keep-alive connections (MCP clients) would hold
+            // server.close for minutes; stop waiting well before Docker
+            // kills the process.
+            setTimeout(exit, 5000).unref();
+            server.close(exit);
+            server.closeIdleConnections();
+        };
+        process.once('SIGTERM', () => shutdown('SIGTERM'));
+        process.once('SIGINT', () => shutdown('SIGINT'));
     } catch (error) {
         console.error('Failed to start server:', error);
         process.exit(1);

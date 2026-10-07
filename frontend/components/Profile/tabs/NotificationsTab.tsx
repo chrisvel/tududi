@@ -7,9 +7,13 @@ import {
     FolderIcon,
     FolderOpenIcon,
     ClockIcon,
+    FireIcon,
+    ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
 import type { NotificationPreferences } from '../types';
 import { getCsrfToken } from '../../../utils/csrfService';
+import PushDeviceCard from './PushDeviceCard';
+import { PushState, countPushDevices } from '../../../utils/pushService';
 
 interface NotificationsTabProps {
     isActive: boolean;
@@ -29,7 +33,16 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
     },
     deferUntil: { inApp: true, email: false, push: false, telegram: false },
     taskAssigned: { inApp: true, email: false, push: false, telegram: false },
+    habitReminders: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+    },
+    comments: { inApp: true, email: false, push: false, telegram: false },
 };
+
+type Channel = 'inApp' | 'email' | 'push' | 'telegram';
 
 interface NotificationTypeRowProps {
     icon: React.ComponentType<{ className?: string }>;
@@ -46,6 +59,7 @@ interface NotificationTypeRowProps {
         value: boolean
     ) => void;
     telegramConfigured: boolean;
+    pushAvailable: boolean;
 }
 
 const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
@@ -55,6 +69,7 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
     preferences,
     onToggle,
     telegramConfigured,
+    pushAvailable,
 }) => {
     const renderToggle = (
         channel: 'inApp' | 'email' | 'push' | 'telegram',
@@ -105,7 +120,7 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
                 {renderToggle('email', preferences.email, false)}
             </td>
             <td className="py-4 px-4 text-center">
-                {renderToggle('push', preferences.push, false)}
+                {renderToggle('push', preferences.push, pushAvailable)}
             </td>
             <td className="py-4 px-4 text-center">
                 {renderToggle(
@@ -125,10 +140,15 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 }) => {
     const { t } = useTranslation();
     const [profile, setProfile] = React.useState<any>(null);
-    const [selectedTestType, setSelectedTestType] =
-        React.useState<string>('task_due_soon');
-    const [testLoading, setTestLoading] = React.useState<boolean>(false);
-    const [testMessage, setTestMessage] = React.useState<string>('');
+    const [testingChannel, setTestingChannel] = React.useState<Channel | null>(
+        null
+    );
+    const [testResult, setTestResult] = React.useState<{
+        ok: boolean;
+        text: string;
+    } | null>(null);
+    const [pushState, setPushState] = React.useState<PushState | null>(null);
+    const [pushDevices, setPushDevices] = React.useState<number>(0);
 
     // Fetch profile data to check telegram configuration
     React.useEffect(() => {
@@ -137,8 +157,11 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 .then((res) => res.json())
                 .then((data) => setProfile(data))
                 .catch((err) => console.error('Failed to fetch profile', err));
+            countPushDevices()
+                .then(setPushDevices)
+                .catch(() => setPushDevices(0));
         }
-    }, [isActive]);
+    }, [isActive, pushState]);
 
     if (!isActive) return null;
 
@@ -152,6 +175,10 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
     const telegramConfigured = !!(
         profile?.telegram_bot_token && profile?.telegram_chat_id
     );
+
+    // Push toggles work once any device of this account can receive push,
+    // so they can be set from a desktop for a phone and the other way round.
+    const pushAvailable = pushState === 'subscribed' || pushDevices > 0;
 
     const handleToggle = (
         notificationType: keyof NotificationPreferences,
@@ -168,10 +195,9 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         onChange(updatedPreferences);
     };
 
-    const handleTestNotification = async () => {
-        setTestLoading(true);
-        setTestMessage('');
-
+    const handleTest = async (channel: Channel) => {
+        setTestingChannel(channel);
+        setTestResult(null);
         try {
             const response = await fetch('/api/test-notifications/trigger', {
                 method: 'POST',
@@ -179,35 +205,82 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     'Content-Type': 'application/json',
                     'x-csrf-token': await getCsrfToken(),
                 },
-                body: JSON.stringify({ type: selectedTestType }),
+                body: JSON.stringify({ channel }),
             });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                const sources = data.notification.sources;
-                const sourcesList =
-                    sources.length > 0 ? sources.join(', ') : 'in-app only';
-                setTestMessage(`✅ Test notification sent! (${sourcesList})`);
-            } else {
-                setTestMessage(`❌ Failed: ${data.error}`);
-            }
-        } catch (error) {
-            setTestMessage(
-                `❌ Error: ${error.message || 'Failed to send test'}`
+            const data = await response.json().catch(() => ({}));
+            setTestResult(
+                response.ok
+                    ? {
+                          ok: true,
+                          text: t(
+                              'notifications.test.sent',
+                              'Test sent via {{channel}}.',
+                              { channel: channelLabel(channel) }
+                          ),
+                      }
+                    : {
+                          ok: false,
+                          text:
+                              data.error ||
+                              t(
+                                  'notifications.test.failed',
+                                  'Could not send the test.'
+                              ),
+                      }
             );
+        } catch {
+            setTestResult({
+                ok: false,
+                text: t(
+                    'notifications.test.failed',
+                    'Could not send the test.'
+                ),
+            });
         } finally {
-            setTestLoading(false);
-            // Clear message after 5 seconds
-            setTimeout(() => setTestMessage(''), 5000);
+            setTestingChannel(null);
         }
     };
+
+    const channelLabel = (channel: Channel) =>
+        ({
+            inApp: t('notifications.channels.inApp', 'In-app'),
+            email: t('notifications.channels.email', 'Email'),
+            push: t('notifications.channels.push', 'Push'),
+            telegram: t('notifications.channels.telegram', 'Telegram'),
+        })[channel];
+
+    const channelAvailable: Record<Channel, boolean> = {
+        inApp: true,
+        email: false,
+        push: pushAvailable,
+        telegram: telegramConfigured,
+    };
+
+    const renderTestButton = (channel: Channel) => (
+        <button
+            type="button"
+            onClick={() => handleTest(channel)}
+            disabled={!channelAvailable[channel] || testingChannel !== null}
+            aria-label={t(
+                'notifications.test.sendVia',
+                'Send a test via {{channel}}',
+                {
+                    channel: channelLabel(channel),
+                }
+            )}
+            className="px-2.5 py-1 text-xs font-medium rounded-md text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+            {testingChannel === channel
+                ? t('notifications.test.sending', 'Sending...')
+                : t('notifications.test.button', 'Test')}
+        </button>
+    );
 
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
                 <BellIcon className="w-6 h-6 mr-3 text-purple-500" />
-                {t('profile.tabs.notifications', 'Notification Preferences')}
+                {t('profile.tabs.notifications', 'Notifications')}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                 {t(
@@ -216,23 +289,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 )}
             </p>
 
-            {/* Telegram Not Configured Warning */}
-            {!telegramConfigured && (
-                <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                    <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                        <span className="font-medium">
-                            {t(
-                                'notifications.telegram.notConfigured.title',
-                                'Telegram Not Configured:'
-                            )}
-                        </span>{' '}
-                        {t(
-                            'notifications.telegram.notConfigured.message',
-                            'To receive Telegram notifications, please configure your Telegram bot in the Telegram tab.'
-                        )}
-                    </p>
-                </div>
-            )}
+            <PushDeviceCard onStateChange={setPushState} />
 
             {/* Notifications Table */}
             <div className="overflow-x-auto">
@@ -258,13 +315,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 </div>
                             </th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                <div className="flex items-center justify-center gap-1">
-                                    {t('notifications.channels.push', 'Push')}
-                                    <span className="text-[10px] text-gray-500 dark:text-gray-500 font-normal">
-                                        ({t('common.comingSoon', 'Coming Soon')}
-                                        )
-                                    </span>
-                                </div>
+                                {t('notifications.channels.push', 'Push')}
                             </th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 {t(
@@ -290,6 +341,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('dueTasks', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={ExclamationTriangleIcon}
@@ -306,6 +358,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('overdueTasks', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={ClockIcon}
@@ -322,6 +375,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('deferUntil', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={BellIcon}
@@ -338,6 +392,41 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('taskAssigned', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
+                        />
+                        <NotificationTypeRow
+                            icon={ChatBubbleLeftRightIcon}
+                            label={t(
+                                'notifications.types.comments',
+                                'Comments & Mentions'
+                            )}
+                            description={t(
+                                'notifications.descriptions.comments',
+                                'Replies, comments on your tasks, and @mentions'
+                            )}
+                            preferences={preferences.comments}
+                            onToggle={(channel, value) =>
+                                handleToggle('comments', channel, value)
+                            }
+                            telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
+                        />
+                        <NotificationTypeRow
+                            icon={FireIcon}
+                            label={t(
+                                'notifications.types.habitReminders',
+                                'Habit Reminders'
+                            )}
+                            description={t(
+                                'notifications.descriptions.habitReminders',
+                                'At the reminder time set on a habit, while it is still open'
+                            )}
+                            preferences={preferences.habitReminders}
+                            onToggle={(channel, value) =>
+                                handleToggle('habitReminders', channel, value)
+                            }
+                            telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={FolderIcon}
@@ -354,6 +443,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('dueProjects', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                         <NotificationTypeRow
                             icon={FolderOpenIcon}
@@ -370,94 +460,39 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('overdueProjects', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushAvailable={pushAvailable}
                         />
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">
+                                {t(
+                                    'notifications.test.rowLabel',
+                                    'Send a test notification'
+                                )}
+                            </td>
+                            {(
+                                ['inApp', 'email', 'push', 'telegram'] as const
+                            ).map((channel) => (
+                                <td
+                                    key={channel}
+                                    className="py-4 px-4 text-center"
+                                >
+                                    {renderTestButton(channel)}
+                                </td>
+                            ))}
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
-
-            {/* Test Notifications Section */}
-            <div className="mt-6 p-6 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                <h4 className="text-sm font-semibold text-purple-900 dark:text-purple-100 mb-3 flex items-center">
-                    <ClockIcon className="w-4 h-4 mr-2" />
-                    {t('notifications.test.title', 'Test Notifications')}
-                </h4>
-                <p className="text-xs text-purple-700 dark:text-purple-300 mb-4">
-                    {t(
-                        'notifications.test.description',
-                        'Send a test notification to see how it appears in-app and on enabled channels (Telegram, etc.)'
-                    )}
+            {testResult && (
+                <p
+                    role="status"
+                    className={`mt-2 px-4 text-sm ${testResult.ok ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}
+                >
+                    {testResult.text}
                 </p>
-                <div className="flex items-center gap-3">
-                    <select
-                        value={selectedTestType}
-                        onChange={(e) => setSelectedTestType(e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm border border-purple-300 dark:border-purple-700 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    >
-                        <option value="task_due_soon">
-                            {t('notifications.types.dueTasks', 'Due Tasks')}
-                        </option>
-                        <option value="task_overdue">
-                            {t(
-                                'notifications.types.overdueTasks',
-                                'Overdue Tasks'
-                            )}
-                        </option>
-                        <option value="defer_until">
-                            {t('notifications.types.deferUntil', 'Defer Until')}
-                        </option>
-                        <option value="project_due_soon">
-                            {t(
-                                'notifications.types.dueProjects',
-                                'Due Projects'
-                            )}
-                        </option>
-                        <option value="project_overdue">
-                            {t(
-                                'notifications.types.overdueProjects',
-                                'Overdue Projects'
-                            )}
-                        </option>
-                    </select>
-                    <button
-                        onClick={handleTestNotification}
-                        disabled={testLoading}
-                        className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors"
-                    >
-                        {testLoading ? (
-                            <span className="flex items-center">
-                                <svg
-                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                    />
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    />
-                                </svg>
-                                {t('notifications.test.sending', 'Sending...')}
-                            </span>
-                        ) : (
-                            t('notifications.test.send', 'Send Test')
-                        )}
-                    </button>
-                </div>
-                {testMessage && (
-                    <div className="mt-3 p-2 text-sm text-purple-900 dark:text-purple-100 bg-purple-100 dark:bg-purple-900/40 rounded">
-                        {testMessage}
-                    </div>
-                )}
-            </div>
+            )}
 
             {/* Help Text */}
             <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -467,7 +502,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     </span>{' '}
                     {t(
                         'notifications.info.message',
-                        'Email and Push notifications are coming soon. In-app and Telegram notifications are currently available.'
+                        'Email notifications are coming soon. In-app, Push and Telegram notifications are available.'
                     )}
                 </p>
             </div>

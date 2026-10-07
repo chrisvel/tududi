@@ -4,6 +4,12 @@
  */
 
 const nlp = require('compromise');
+const {
+    parseDueDate,
+    parseRecurrence,
+    parsePersonRef,
+    removeSpans,
+} = require('./nlpParsers');
 
 // Helper constants
 const AUXILIARY_VERBS = [
@@ -81,8 +87,11 @@ const tokenizeText = (text) => {
     while (i < textLength) {
         const char = text[i];
 
-        if (char === '"' && (i === 0 || text[i - 1] === '+')) {
-            // Start of a quoted string after +
+        if (
+            char === '"' &&
+            (i === 0 || text[i - 1] === '+' || text[i - 1] === '@')
+        ) {
+            // Start of a quoted string after + or @
             inQuotes = true;
             currentToken += char;
         } else if (char === '"' && inQuotes) {
@@ -286,7 +295,13 @@ const containsUrl = (text) => {
  * @param {string} cleanedContent - Cleaned content
  * @returns {object} Suggestion object
  */
-const generateSuggestion = (content, tags, projects, cleanedContent) => {
+const generateSuggestion = (
+    content,
+    tags,
+    projects,
+    cleanedContent,
+    { hasSchedule = false, hasAssignee = false } = {}
+) => {
     const hasProject = projects.length > 0;
     const hasBookmarkTag = tags.some((tag) => tag.toLowerCase() === 'bookmark');
     const textStartsWithVerb = startsWithVerb(cleanedContent);
@@ -295,6 +310,14 @@ const generateSuggestion = (content, tags, projects, cleanedContent) => {
     // Detect URLs even without a project (for bookmark tag display)
     if (hasUrl && !hasProject) {
         return { type: null, reason: 'url_detected' };
+    }
+
+    // A due date, recurrence or assignee only makes sense on a task
+    if (!hasUrl && !hasBookmarkTag && (hasSchedule || hasAssignee)) {
+        return {
+            type: 'task',
+            reason: hasSchedule ? 'date_detected' : 'person_detected',
+        };
     }
 
     if (!hasProject) {
@@ -328,29 +351,59 @@ const generateSuggestion = (content, tags, projects, cleanedContent) => {
     return { type: null, reason: null };
 };
 
-/**
- * Process inbox item content and generate metadata
- * @param {string} content - Inbox item content
- * @returns {object} Processing results
- */
-const processInboxItem = (content) => {
-    // Parse the content
+// Options:
+// - referenceDate: what "today" means for relative dates (defaults to now)
+// - timezone: the user's timezone
+// - parseDates: false skips date and recurrence parsing
+// - personResolved: true when the @person matched someone, so it is cut
+//   from the title and counts as a task signal
+const processInboxItem = (content, options = {}) => {
+    const {
+        referenceDate = new Date(),
+        timezone = 'UTC',
+        parseDates = true,
+        personResolved = false,
+    } = options;
+
     const tags = parseHashtags(content);
     const projects = parseProjectRefs(content);
-    const cleanedContent = cleanTextFromTagsAndProjects(content);
 
-    // Generate suggestion
+    const recurrence = parseDates
+        ? parseRecurrence(content, { timezone })
+        : null;
+    const dueDate =
+        parseDates && !recurrence
+            ? parseDueDate(content, { referenceDate, timezone })
+            : null;
+    const person = parsePersonRef(content);
+
+    const withoutParsedPhrases = removeSpans(content, [
+        recurrence,
+        dueDate && dueDate.removable ? dueDate : null,
+        person && personResolved ? person : null,
+    ]);
+    const cleanedContent = cleanTextFromTagsAndProjects(withoutParsedPhrases);
+
+    const schedule = recurrence || dueDate;
     const suggestion = generateSuggestion(
         content,
         tags,
         projects,
-        cleanedContent
+        cleanedContent,
+        {
+            hasSchedule: Boolean(schedule),
+            hasAssignee: Boolean(person && personResolved),
+        }
     );
 
     return {
         parsed_tags: tags,
         parsed_projects: projects,
         cleaned_content: cleanedContent,
+        parsed_due_date: schedule ? schedule.date : null,
+        parsed_date_text: schedule ? schedule.text : null,
+        parsed_recurrence: recurrence ? recurrence.recurrence : null,
+        parsed_person: person ? person.name : null,
         suggested_type: suggestion.type,
         suggested_reason: suggestion.reason,
     };

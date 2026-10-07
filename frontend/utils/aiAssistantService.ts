@@ -3,8 +3,10 @@ import { getPostHeadersWithCsrf, handleAuthResponse } from './authUtils';
 
 export interface AIConfig {
     api_key_set: boolean;
-    base_url: string | null;
-    model: string;
+    // Omitted on a hosted instance: they describe the operator's own server
+    // config (LLM provider/network, model choice), not the caller's.
+    base_url?: string | null;
+    model?: string;
 }
 
 export const fetchAIConfig = async (): Promise<AIConfig | null> => {
@@ -13,6 +15,46 @@ export const fetchAIConfig = async (): Promise<AIConfig | null> => {
         credentials: 'include',
     });
     if (!response.ok) return null;
+    return response.json();
+};
+
+export interface AiProviderSettings {
+    ai_base_url: string | null;
+    ai_model: string | null;
+    ai_api_key_set: boolean;
+    ai_api_key_last4: string | null;
+}
+
+export interface AiProviderSettingsUpdate {
+    // Omitted leaves the stored key untouched; null/'' clears it.
+    ai_api_key?: string | null;
+    ai_base_url?: string | null;
+    ai_model?: string | null;
+}
+
+export const fetchAiProviderSettings =
+    async (): Promise<AiProviderSettings | null> => {
+        const response = await fetch(getApiPath('profile/ai-settings'), {
+            method: 'GET',
+            credentials: 'include',
+        });
+        if (!response.ok) return null;
+        return response.json();
+    };
+
+export const updateAiProviderSettings = async (
+    payload: AiProviderSettingsUpdate
+): Promise<AiProviderSettings> => {
+    const response = await fetch(getApiPath('profile/ai-settings'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify(payload),
+    });
+    await handleAuthResponse(
+        response,
+        'Failed to update AI provider settings.'
+    );
     return response.json();
 };
 
@@ -190,4 +232,3 @@ export const updateProjectInsightsDismissed = async (
         }
     );
 };
-

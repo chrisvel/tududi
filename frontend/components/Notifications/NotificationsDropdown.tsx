@@ -12,8 +12,17 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getApiPath } from '../../config/paths';
 import { fetchWithCsrf } from '../../utils/csrfService';
-import { acceptInvitation, declineInvitation } from '../../utils/sharesService';
+import {
+    InvitationId,
+    acceptInvitation,
+    declineInvitation,
+} from '../../utils/sharesService';
 import { useStore } from '../../store/useStore';
+
+// Direct share invitations carry a numeric id; ones that came through a group
+// carry a string such as "g12".
+const isInvitationId = (value: unknown): value is InvitationId =>
+    typeof value === 'number' || (typeof value === 'string' && value !== '');
 
 interface Notification {
     id: number;
@@ -28,7 +37,7 @@ interface Notification {
     data?: {
         taskUid?: string;
         projectUid?: string;
-        invitationId?: number;
+        invitationId?: InvitationId;
         resourceType?: string;
         resourceUid?: string;
         [key: string]: any;
@@ -184,7 +193,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 
     const isPendingInvitation = (notification: Notification) =>
         notification.type === 'share_invitation' &&
-        typeof notification.data?.invitationId === 'number' &&
+        isInvitationId(notification.data?.invitationId) &&
         !answeredInvitations[notification.uid];
 
     const handleInvitation = async (
@@ -192,7 +201,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
         answer: 'accept' | 'decline'
     ) => {
         const invitationId = notification.data?.invitationId;
-        if (typeof invitationId !== 'number') return;
+        if (!isInvitationId(invitationId)) return;
         try {
             if (answer === 'accept') {
                 await acceptInvitation(invitationId);

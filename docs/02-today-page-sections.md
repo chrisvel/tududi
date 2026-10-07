@@ -1,5 +1,7 @@
 # Today Page Sections - Behavior Rules
 
+> The default Today page is now the day plan (see [Daily Plan](20-daily-plan.md)). The classic page that showed these sections was removed. The section lists below are still computed by the backend and feed the planner's candidates, the AI brief and the MCP tools.
+
 This document explains how the four main sections of the Today page work in tududi. For technical implementation details, see `/backend/modules/tasks/queries/metrics-queries.js` and `/backend/modules/tasks/queries/metrics-computation.js`.
 
 ---
@@ -14,6 +16,8 @@ The Today page is divided into **four main sections** that organize your tasks:
 4. **Completed** - Tasks you finished today
 
 Each section follows specific rules to show the right tasks without duplication.
+
+Around these sections the page can also show panels that do not own tasks: the AI Daily Brief, the daily quote, metrics, Area Balance, Active Projects and a **today** list of open tasks carrying the `today` system tag (see [Other Panels](#other-panels)).
 
 ---
 
@@ -289,18 +293,29 @@ You can customize what appears on your Today page:
 
 | Setting | Default | Effect |
 |---------|---------|--------|
-| Show Overdue/Due Today | On | Shows/hides Overdue section |
-| Show Suggestions | Off | Shows/hides Suggested section |
-| Show Completed | On | Shows/hides Completed section |
-| Show Metrics | Off | Shows/hides task metrics widget |
+| Show AI Daily Brief | On | Shows/hides the AI Daily Brief panel (needs the AI assistant configured) |
 | Show Daily Quote | On | Shows/hides daily motivational quote |
-| Show Progress Bar | On | Shows/hides completion progress bar |
+| Show Metrics | Off | Shows/hides task metrics widget |
+| Show Area Balance | On | Shows/hides the Area Balance panel |
+| Show Active Projects | On | Shows/hides the Active Projects panel |
+| Show Tagged Today | On | Shows/hides the **today** list of tasks tagged `today` |
+| Show Suggested | Off | Shows/hides Suggested section |
+| Show Due Today Tasks | On | Shows/hides Overdue and Due Today tasks |
+| Show Completed Tasks | On | Shows/hides Completed section |
+
+The progress bar is always shown and has no toggle. Settings missing from an account created before a toggle existed default to On for AI Daily Brief, Area Balance, Active Projects and Tagged Today.
 
 ### Where to Change Settings
 
 - Click the settings icon (⚙️) on the Today page
 - Settings auto-save when you toggle them
 - Settings are stored per user account
+
+### Other Panels
+
+- **Tagged today**: open tasks (not done, archived or cancelled, not habits) carrying the `today` system tag, sorted by priority, then due date, then project. Tagging is a way to pin a task to today without changing its status or due date. The list is hidden when empty.
+- **Area Balance** and **Active Projects**: overview panels of how your open work spreads across areas and which projects are in progress.
+- **AI Daily Brief**: see [AI Assistant](13-ai-assistant.md).
 
 ### Collapsible Sections
 
@@ -381,8 +396,6 @@ The Today page automatically refreshes:
 **Technical Implementation Files:**
 - Backend eligibility & sorting: `/backend/modules/tasks/queries/metrics-computation.js`
 - Backend queries: `/backend/modules/tasks/queries/metrics-queries.js`
-- Frontend scoring & ordering: `/frontend/utils/suggestionScoringUtils.ts`
-- Frontend component: `/frontend/components/Task/TasksToday.tsx`
 - Task model: `/backend/models/task.js`
 
 ---

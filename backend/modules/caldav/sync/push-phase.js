@@ -1,4 +1,4 @@
-const axios = require('axios');
+const { safeRequest } = require('../services/safe-request');
 const { AppError } = require('../../../shared/errors');
 const logger = require('../../../services/logService');
 const { Task } = require('../../../models');
@@ -7,6 +7,7 @@ const RemoteCalendarRepository = require('../repositories/remote-calendar-reposi
 const { serializeTaskToVTODO } = require('../icalendar/vtodo-serializer');
 const encryptionService = require('../services/encryption-service');
 const { buildRemoteTaskUrl, normalizeHref } = require('../utils/href-utils');
+const { formatEntityTag } = require('../utils/etag-generator');
 
 class PushPhase {
     async execute(calendar, userId, options = {}) {
@@ -171,10 +172,10 @@ class PushPhase {
             };
 
             if (syncState?.etag) {
-                headers['If-Match'] = syncState.etag;
+                headers['If-Match'] = formatEntityTag(syncState.etag);
             }
 
-            const response = await axios({
+            const response = await safeRequest({
                 method: 'PUT',
                 url: taskUrl,
                 headers,
@@ -264,7 +265,7 @@ class PushPhase {
         );
 
         try {
-            await axios({
+            await safeRequest({
                 method: 'DELETE',
                 url: taskUrl,
                 auth: {

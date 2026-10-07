@@ -130,8 +130,12 @@ describe('Notes stale-cache fallback (#1523)', () => {
             expect(mockFetchNoteBySlug).toHaveBeenCalledWith(sharedNote.uid);
         });
 
-        expect(await screen.findByText(sharedNote.title)).toBeInTheDocument();
-        expect(screen.queryByText(ownNote.title)).not.toBeInTheDocument();
+        expect(
+            await screen.findByDisplayValue(sharedNote.title)
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByDisplayValue(ownNote.title)
+        ).not.toBeInTheDocument();
     });
 
     it('falls back to the first note only once the direct fetch confirms the note is unavailable', async () => {
@@ -143,6 +147,8 @@ describe('Notes stale-cache fallback (#1523)', () => {
             expect(mockFetchNoteBySlug).toHaveBeenCalledWith('does-not-exist');
         });
 
-        expect(await screen.findByText(ownNote.title)).toBeInTheDocument();
+        expect(
+            await screen.findByDisplayValue(ownNote.title)
+        ).toBeInTheDocument();
     });
 });

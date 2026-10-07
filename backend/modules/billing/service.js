@@ -3,6 +3,7 @@
 const { getConfig } = require('../../config/config');
 const { getPlans } = require('../../config/plans');
 const entitlements = require('../../services/entitlementsService');
+const seats = require('../../services/seatsService');
 const { logError, logInfo } = require('../../services/logService');
 const { isAdmin } = require('../../services/rolesService');
 const repository = require('./repository');
@@ -19,6 +20,35 @@ const ACTIVE_STATUSES = new Set(['active', 'trialing', 'past_due']);
 
 function billingTabUrl(extra = '') {
     return `${getConfig().frontendUrl}/profile?section=billing${extra}`;
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// How an account's trial stands, for the admin list: `access` is what the
+// entitlements resolve to (trial, subscription, override, grace, free),
+// with the days left while the trial runs and, once an unpaid trial has
+// ended, the date the read-only account is deleted.
+function trialState(account, now) {
+    const { reason } = entitlements.resolvePlan(account, account.User, {
+        now,
+    });
+    const onTrial = reason === 'trial';
+    const readOnly =
+        reason === 'free' ? entitlements.readOnlyUntil(account) : null;
+    return {
+        access: reason,
+        trial_days_left: onTrial
+            ? Math.max(
+                  1,
+                  Math.ceil(
+                      (new Date(account.trial_ends_at).getTime() -
+                          now.getTime()) /
+                          DAY_MS
+                  )
+              )
+            : null,
+        read_only_until: readOnly && readOnly > now ? readOnly : null,
+    };
 }
 
 class BillingService {
@@ -53,15 +83,18 @@ class BillingService {
                 name: provider.name,
                 display_name: provider.displayName,
             },
+            // A member whose seat is paid by its owner has nothing to buy.
             checkout_available:
                 configured &&
                 !!(prices.month || prices.year) &&
-                !ACTIVE_STATUSES.has(account?.status),
+                !ACTIVE_STATUSES.has(account?.status) &&
+                ent.reason !== 'seat',
             portal_available: configured && provider.canOpenPortal(account),
             intervals: {
                 month: !!prices.month,
                 year: !!prices.year,
             },
+            seats: await seats.describeSeats(userId),
             subscription: account
                 ? {
                       status: account.status,
@@ -265,6 +298,14 @@ class BillingService {
         }
 
         entitlements.invalidate(account.user_id);
+        if (
+            event.type === 'checkout.completed' ||
+            event.type === 'subscription.updated'
+        ) {
+            // A new or resumed subscription starts at one seat; bring it up
+            // to the members this owner already has.
+            await seats.reconcile(account.user_id);
+        }
         return { handled: true, userId: account.user_id };
     }
 
@@ -289,18 +330,28 @@ class BillingService {
 
     async adminListAccounts(requesterId, query) {
         await this.assertAdmin(requesterId);
-        const [summary, list] = await Promise.all([
+        const [summary, onTrial, list] = await Promise.all([
             repository.summary(),
+            repository.countTrials(),
             repository.listAccounts({
                 q: query.q,
                 page: Number(query.page) || 1,
                 limit: Math.min(Number(query.limit) || 50, 200),
+                trial: query.filter === 'trial',
             }),
+        ]);
+        const now = new Date();
+        const userIds = list.rows.map((a) => a.user_id);
+        const [aiRequests, aiTokens] = await Promise.all([
+            entitlements.getUsageForUsers(userIds, 'ai_requests'),
+            entitlements.getUsageForUsers(userIds, 'ai_tokens'),
         ]);
         return {
             summary,
+            on_trial: onTrial,
             total: list.count,
             accounts: list.rows.map((a) => ({
+                ...trialState(a, now),
                 user_id: a.user_id,
                 email: a.User?.email,
                 name: a.User?.name,
@@ -314,6 +365,8 @@ class BillingService {
                 provider: a.provider,
                 provider_customer_id: a.provider_customer_id,
                 provider_subscription_id: a.provider_subscription_id,
+                ai_requests_this_month: aiRequests[a.user_id] || 0,
+                ai_tokens_this_month: aiTokens[a.user_id] || 0,
             })),
         };
     }

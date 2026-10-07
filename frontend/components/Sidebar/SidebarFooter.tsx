@@ -10,9 +10,14 @@ import {
     Squares2X2Icon,
     TagIcon,
     InboxIcon,
+    BugAntIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
+import AppsGridIcon from '../Shared/Icons/AppsGridIcon';
+import AppLauncherModal from './AppLauncherModal';
+import FeedbackModal from '../Feedback/FeedbackModal';
 import { useTranslation } from 'react-i18next';
+import { canOpenAccess } from '../../entities/Role';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
 import { getApiPath } from '../../config/paths';
@@ -26,7 +31,12 @@ import {
 } from '../../utils/keyboardShortcutsService';
 
 interface SidebarFooterProps {
-    currentUser: { email: string; avatar_image?: string };
+    currentUser: {
+        email: string;
+        is_admin?: boolean;
+        role?: string;
+        avatar_image?: string;
+    };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     isSidebarOpen: boolean;
@@ -42,6 +52,7 @@ interface SidebarFooterProps {
 }
 
 const SidebarFooter: React.FC<SidebarFooterProps> = ({
+    currentUser,
     isDarkMode,
     toggleDarkMode,
     setIsSidebarOpen,
@@ -54,9 +65,11 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isLauncherOpen, setIsLauncherOpen] = useState(false);
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
     const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [version, setVersion] = useState<string>('v0.86');
+    const [version, setVersion] = useState<string>('');
     const navigate = useNavigate();
 
     // Get shortcuts config, using defaults if not provided
@@ -133,6 +146,14 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
         setIsDropdownOpen(false);
     };
 
+    const handleLauncherSelect = (path: string, title: string) => {
+        navigate(path, { state: { title } });
+        setIsLauncherOpen(false);
+        if (window.innerWidth < 1024) {
+            setIsSidebarOpen(false);
+        }
+    };
+
     // Use the keyboard shortcuts hook
     useKeyboardShortcuts(
         shortcuts,
@@ -197,14 +218,14 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
             {/* Version */}
             <div className="px-[14px] pt-[10px] flex justify-end">
                 <span className="text-[11px] text-gray-400 dark:text-gray-600 font-light italic opacity-60">
-                    {version}
+                    {version || '\u00a0'}
                 </span>
             </div>
 
-            {/* Toolbar row: + create | dark mode */}
+            {/* Toolbar row: + create, all entities | dark mode */}
             <div className="border-t border-gray-100 dark:border-white/10 px-[14px] py-[10px] flex items-center justify-between">
-                {/* Plus / Create dropdown */}
-                <div className="relative">
+                {/* Plus / Create dropdown + all entities launcher */}
+                <div className="relative flex items-center gap-1.5">
                     <button
                         onClick={toggleDropdown}
                         className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
@@ -216,41 +237,79 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     {isDropdownOpen && (
                         <div className="absolute bottom-full left-0 mb-2 w-60 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                             <div className="py-1">
-                                {dropdownItems.map(({ label, translationKey, icon, action }) => (
-                                    <button
-                                        key={label}
-                                        onClick={() => handleDropdownSelect(label)}
-                                        className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
-                                    >
-                                        <div className="flex items-center">
-                                            {icon}
-                                            {t(translationKey, label)}
-                                        </div>
-                                        <span
-                                            className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
-                                            style={{ fontSize: '10px' }}
+                                {dropdownItems.map(
+                                    ({
+                                        label,
+                                        translationKey,
+                                        icon,
+                                        action,
+                                    }) => (
+                                        <button
+                                            key={label}
+                                            onClick={() =>
+                                                handleDropdownSelect(label)
+                                            }
+                                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
                                         >
-                                            {getShortcutDisplay(action)}
-                                        </span>
-                                    </button>
-                                ))}
+                                            <div className="flex items-center">
+                                                {icon}
+                                                {t(translationKey, label)}
+                                            </div>
+                                            <span
+                                                className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
+                                                style={{ fontSize: '10px' }}
+                                            >
+                                                {getShortcutDisplay(action)}
+                                            </span>
+                                        </button>
+                                    )
+                                )}
                             </div>
                         </div>
                     )}
+
+                    <button
+                        onClick={() => setIsLauncherOpen(true)}
+                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        aria-label={t('sidebar.allEntities', 'All entities')}
+                        title={t('sidebar.allEntities', 'All entities')}
+                        data-testid="app-launcher-button"
+                    >
+                        <AppsGridIcon className="h-4 w-4" />
+                    </button>
                 </div>
 
-                {/* Right side: telegram + dark mode */}
+                {/* Right side: telegram + feedback + dark mode */}
                 <div className="flex items-center gap-1.5">
                     {telegramStatus !== 'none' && (
                         <div
                             className="flex items-center justify-center"
-                            title={telegramStatus === 'healthy' ? 'Telegram connected' : 'Telegram connection problem'}
+                            title={
+                                telegramStatus === 'healthy'
+                                    ? t(
+                                          'sidebar.telegramConnected',
+                                          'Telegram connected'
+                                      )
+                                    : t(
+                                          'sidebar.telegramProblem',
+                                          'Telegram connection problem'
+                                      )
+                            }
                         >
                             <TelegramIcon
                                 className={`h-4 w-4 ${telegramStatus === 'healthy' ? 'text-green-500' : 'text-red-500'}`}
                             />
                         </div>
                     )}
+                    <button
+                        onClick={() => setIsFeedbackOpen(true)}
+                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        aria-label={t('feedback.title', 'Send feedback')}
+                        title={t('feedback.title', 'Send feedback')}
+                        data-testid="feedback-button"
+                    >
+                        <BugAntIcon className="h-4 w-4" />
+                    </button>
                     <button
                         onClick={toggleDarkMode}
                         className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
@@ -264,6 +323,20 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     </button>
                 </div>
             </div>
+
+            <AppLauncherModal
+                isOpen={isLauncherOpen}
+                isAdmin={canOpenAccess(currentUser)}
+                onClose={() => setIsLauncherOpen(false)}
+                onSelect={handleLauncherSelect}
+            />
+
+            {isFeedbackOpen && (
+                <FeedbackModal
+                    onClose={() => setIsFeedbackOpen(false)}
+                    appVersion={version || undefined}
+                />
+            )}
         </div>
     );
 };

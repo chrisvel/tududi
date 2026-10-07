@@ -23,6 +23,10 @@ import {
 
 type CompletionMenuTarget = 'desktop' | 'mobile';
 
+const isPhone = () =>
+    typeof window !== 'undefined' &&
+    (window.matchMedia?.('(max-width: 639px)').matches ?? false);
+
 interface TaskStatusControlProps {
     task: Task;
     onToggleCompletion?: () => void;
@@ -33,6 +37,10 @@ interface TaskStatusControlProps {
     variant?: 'pill' | 'square';
     showQuickActions?: boolean;
     onMenuOpenChange?: (isOpen: boolean) => void;
+    // Hide the text label on the main button, showing only the status icon.
+    // Used in tight layouts (e.g. the Upcoming board's day columns) where the
+    // full label would crowd out the task title.
+    hideLabel?: boolean;
 }
 
 const quickStartStatuses = new Set([
@@ -52,6 +60,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     variant = 'square',
     showQuickActions = true,
     onMenuOpenChange,
+    hideLabel = false,
 }) => {
     const { t } = useTranslation();
     const [completionMenuOpen, setCompletionMenuOpen] =
@@ -63,6 +72,21 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     const [isCompletingTask, setIsCompletingTask] = useState(false);
     const desktopCompletionMenuRef = useRef<HTMLDivElement>(null);
     const mobileCompletionMenuRef = useRef<HTMLDivElement>(null);
+    // Open the status menu upwards when there is not enough room below it
+    // (the last rows of a long list), so it never runs off the screen.
+    const [menuOpensUp, setMenuOpensUp] = useState(false);
+    const MENU_HEIGHT = 280;
+    const toggleMenu = (
+        target: CompletionMenuTarget,
+        anchor: HTMLElement | null
+    ) => {
+        if (anchor) {
+            const rect = anchor.getBoundingClientRect();
+            const below = window.innerHeight - rect.bottom;
+            setMenuOpensUp(below < MENU_HEIGHT && rect.top > below);
+        }
+        setCompletionMenuOpen((prev) => (prev === target ? null : target));
+    };
 
     useEffect(() => {
         if (!completionMenuOpen) return;
@@ -123,9 +147,12 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
         ? 'rounded-lg'
         : 'rounded-full';
     const completionButtonPaddingClass = isSquareVariant
-        ? 'px-2.5 py-1'
-        : 'px-3 py-1';
+        ? 'px-2 py-1 sm:px-2.5'
+        : 'px-2 py-1 sm:px-3';
     const quickButtonPaddingClass = isSquareVariant ? 'px-1.5' : 'px-2';
+    // Big enough to hit with a thumb on phones (#1669).
+    const phoneTapTargetClass =
+        'max-sm:min-h-9 max-sm:min-w-9 max-sm:justify-center';
     const hoverPaddingClass = isSquareVariant
         ? 'md:group-hover:px-1.5'
         : 'md:group-hover:px-2';
@@ -296,13 +323,15 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     };
 
     const quickButtonBaseClasses = `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200`;
+    // On phones the start/done shortcuts are hidden (both stay in the menu)
+    // so the task title keeps its width.
     const quickButtonClasses = hoverRevealQuickActions
-        ? `${quickButtonBaseClasses} ${quickButtonPaddingClass} md:px-0 md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0 ${hoverPaddingClass} md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:border-l`
-        : `${quickButtonBaseClasses} ${quickButtonPaddingClass}`;
+        ? `${quickButtonBaseClasses} ${quickButtonPaddingClass} md:px-0 md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0 ${hoverPaddingClass} md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:border-l max-sm:hidden`
+        : `${quickButtonBaseClasses} ${quickButtonPaddingClass} max-sm:hidden`;
 
     const quickCompleteClasses = hoverRevealQuickActions
-        ? `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200 ${quickButtonPaddingClass} md:px-0 md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0 ${hoverPaddingClass} md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:border-l`
-        : `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200 ${quickButtonPaddingClass}`;
+        ? `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200 ${quickButtonPaddingClass} md:px-0 md:w-0 md:opacity-0 md:pointer-events-none md:border-l-0 ${hoverPaddingClass} md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:border-l max-sm:hidden`
+        : `${completionButtonChevronClasses} ${statusButtonColorClasses} border-l ${statusBorderColorClass} flex transition-all duration-200 ${quickButtonPaddingClass} max-sm:hidden`;
 
     const statusDisplayConfig: Record<
         ReturnType<typeof getStatusString>,
@@ -365,10 +394,18 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                             ? (e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
+                                  // Phones hide the start/done shortcuts, so
+                                  // the status button opens the menu there.
+                                  if (isPhone()) {
+                                      toggleMenu(
+                                          'desktop',
+                                          desktopCompletionMenuRef.current
+                                      );
+                                  }
                               }
                             : handleCompletionClick
                     }
-                    className={`${completionButtonMainClasses} ${completionButtonPaddingClass} ${statusButtonColorClasses}`}
+                    className={`${completionButtonMainClasses} ${completionButtonPaddingClass} ${phoneTapTargetClass} ${statusButtonColorClasses}`}
                     title={
                         taskCompleted
                             ? t('common.undo', 'Undo')
@@ -378,7 +415,12 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                     }
                 >
                     <CompletionIcon className={iconSizeClass} />
-                    {completionButtonLabel}
+                    {!hideLabel && (
+                        // Icon only on phones so the task title keeps its room.
+                        <span className="sr-only sm:not-sr-only">
+                            {completionButtonLabel}
+                        </span>
+                    )}
                 </button>
                 {showQuickStartButton && (
                     <button
@@ -414,11 +456,9 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        setCompletionMenuOpen((prev) =>
-                            prev === 'desktop' ? null : 'desktop'
-                        );
+                        toggleMenu('desktop', desktopCompletionMenuRef.current);
                     }}
-                    className={`${completionButtonChevronClasses} ${quickButtonPaddingClass} border-l ${statusBorderColorClass}`}
+                    className={`${completionButtonChevronClasses} ${quickButtonPaddingClass} ${phoneTapTargetClass} border-l ${statusBorderColorClass}`}
                     aria-haspopup="menu"
                     aria-expanded={completionMenuOpen === 'desktop'}
                 >
@@ -427,7 +467,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
             </div>
             {completionMenuOpen === 'desktop' && (
                 <div
-                    className={`absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
+                    className={`absolute right-0 ${menuOpensUp ? 'bottom-full mb-1' : 'top-full mt-1'} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
                 >
                     {renderStatusMenuOptions('desktop')}
                 </div>
@@ -501,8 +541,9 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                setCompletionMenuOpen((prev) =>
-                                    prev === 'mobile' ? null : 'mobile'
+                                toggleMenu(
+                                    'mobile',
+                                    mobileCompletionMenuRef.current
                                 );
                             }}
                             className={`${completionButtonChevronClasses} px-2 border-l ${statusBorderColorClass}`}
@@ -514,7 +555,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                     </div>
                     {completionMenuOpen === 'mobile' && (
                         <div
-                            className={`absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
+                            className={`absolute right-0 ${menuOpensUp ? 'bottom-full mb-1' : 'top-full mt-1'} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
                         >
                             {renderStatusMenuOptions('mobile')}
                         </div>

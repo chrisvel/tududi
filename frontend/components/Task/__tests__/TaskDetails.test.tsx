@@ -106,6 +106,7 @@ jest.mock('../TaskDetails/', () => ({
         </div>
     ),
     TaskTagsCard: () => null,
+    TaskRelationsCard: () => null,
     TaskSubtasksCard: ({ subtasks, onSubtaskUpdate }: any) => (
         <div>
             {subtasks.map((s: any) => (
@@ -123,6 +124,7 @@ jest.mock('../TaskDetails/', () => ({
     TaskRecurrenceCard: () => null,
     TaskDueDateCard: () => null,
     TaskDeferUntilCard: () => null,
+    TaskEstimateCard: () => null,
     TaskAttachmentsCard: () => null,
     TaskAreaCard: () => null,
     TaskAssignedToCard: () => null,

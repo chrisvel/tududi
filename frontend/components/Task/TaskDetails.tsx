@@ -14,13 +14,16 @@ import {
     fetchSubtasks,
     TaskIteration,
     toggleTaskCompletion,
+    skipTaskOccurrence,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { fetchAttachments } from '../../utils/attachmentsService';
+import { fetchComments } from '../../utils/commentsService';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
 import LoadingScreen from '../Shared/LoadingScreen';
 import TaskTimeline from './TaskTimeline';
+import TaskComments from './TaskComments';
 import {
     TaskDetailsHeader,
     TaskContentCard,
@@ -28,9 +31,11 @@ import {
     TaskAreaCard,
     TaskTagsCard,
     TaskSubtasksCard,
+    TaskRelationsCard,
     TaskRecurrenceCard,
     TaskDueDateCard,
     TaskDeferUntilCard,
+    TaskEstimateCard,
     TaskAttachmentsCard,
     TaskAssignedToCard,
     TaskGoalCard,
@@ -41,6 +46,7 @@ import {
     isTaskPastDue,
     getTodayDateString,
 } from '../../utils/dateUtils';
+import { isTaskDone } from '../../constants/taskStatus';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -70,7 +76,9 @@ const TaskDetails: React.FC = () => {
                 );
                 const store = useStore.getState();
                 store.tasksStore.setTasks(
-                    store.tasksStore.tasks.filter((t: Task) => t.uid !== taskUid)
+                    store.tasksStore.tasks.filter(
+                        (t: Task) => t.uid !== taskUid
+                    )
                 );
             }
         };
@@ -97,7 +105,9 @@ const TaskDetails: React.FC = () => {
     const [loadingIterations, setLoadingIterations] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [loadingParent, setLoadingParent] = useState(false);
-    const [ancestorChain, setAncestorChain] = useState<Array<{ uid: string; name: string }>>([]);
+    const [ancestorChain, setAncestorChain] = useState<
+        Array<{ uid: string; name: string }>
+    >([]);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     const aiAssistantEnabled = useStore(
@@ -165,6 +175,7 @@ const TaskDetails: React.FC = () => {
     });
     const [activePill, setActivePill] = useState('overview');
     const [attachmentCount, setAttachmentCount] = useState(0);
+    const [commentCount, setCommentCount] = useState(0);
     const [hasLoadedSubtasks, setHasLoadedSubtasks] = useState(false);
 
     useEffect(() => {
@@ -276,7 +287,7 @@ const TaskDetails: React.FC = () => {
                 recurrence_weekday:
                     recurrenceForm.recurrence_type === 'weekly' ||
                     recurrenceForm.recurrence_type === 'monthly_weekday'
-                        ? recurrenceForm.recurrence_weekday ?? null
+                        ? (recurrenceForm.recurrence_weekday ?? null)
                         : null,
                 recurrence_weekdays:
                     recurrenceForm.recurrence_type === 'weekly'
@@ -284,11 +295,11 @@ const TaskDetails: React.FC = () => {
                         : null,
                 recurrence_month_day:
                     recurrenceForm.recurrence_type === 'monthly'
-                        ? recurrenceForm.recurrence_month_day ?? null
+                        ? (recurrenceForm.recurrence_month_day ?? null)
                         : null,
                 recurrence_week_of_month:
                     recurrenceForm.recurrence_type === 'monthly_weekday'
-                        ? recurrenceForm.recurrence_week_of_month ?? null
+                        ? (recurrenceForm.recurrence_week_of_month ?? null)
                         : null,
                 completion_based: recurrenceForm.completion_based,
             };
@@ -566,6 +577,21 @@ const TaskDetails: React.FC = () => {
     }, [task?.uid]);
 
     useEffect(() => {
+        const loadCommentCount = async () => {
+            if (task?.uid) {
+                try {
+                    const comments = await fetchComments(task.uid);
+                    setCommentCount(comments.length);
+                } catch (error) {
+                    console.error('Error loading comment count:', error);
+                }
+            }
+        };
+
+        loadCommentCount();
+    }, [task?.uid]);
+
+    useEffect(() => {
         setHasLoadedSubtasks(false);
         lastKnownSubtaskCount.current = 0;
     }, [uid]);
@@ -609,7 +635,6 @@ const TaskDetails: React.FC = () => {
 
         loadSubtasks();
     }, [task?.uid, task?.subtasks, hasLoadedSubtasks, tasksStore]);
-
 
     useEffect(() => {
         const loadNextIterations = async () => {
@@ -705,7 +730,10 @@ const TaskDetails: React.FC = () => {
                 try {
                     const fetched = await fetchTaskByUid(currentUid);
                     if (!fetched.parent_task?.uid) break;
-                    chain.unshift({ uid: fetched.parent_task.uid, name: fetched.parent_task.name });
+                    chain.unshift({
+                        uid: fetched.parent_task.uid,
+                        name: fetched.parent_task.name,
+                    });
                     currentUid = fetched.parent_task.uid;
                 } catch {
                     break;
@@ -716,7 +744,9 @@ const TaskDetails: React.FC = () => {
         };
 
         buildAncestorChain();
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [task?.parent_task?.uid]);
 
     const handleSubtaskUpdate = async (updatedSubtask: Task) => {
@@ -735,9 +765,7 @@ const TaskDetails: React.FC = () => {
                 const storeTask = tasksStore.tasks[taskIndex];
                 const updatedSubtasks = (storeTask.subtasks || []).map(
                     (s: Task) =>
-                        s.id === savedSubtask.id
-                            ? { ...s, ...savedSubtask }
-                            : s
+                        s.id === savedSubtask.id ? { ...s, ...savedSubtask } : s
                 );
                 const updatedTasks = [...tasksStore.tasks];
                 updatedTasks[taskIndex] = {
@@ -757,21 +785,49 @@ const TaskDetails: React.FC = () => {
     const handleSubtaskDelete = async (taskUid: string) => {
         try {
             await deleteTask(taskUid);
-            const taskIndex = tasksStore.tasks.findIndex((t: Task) => t.uid === uid);
+            const taskIndex = tasksStore.tasks.findIndex(
+                (t: Task) => t.uid === uid
+            );
             if (taskIndex >= 0) {
                 const storeTask = tasksStore.tasks[taskIndex];
                 const updatedSubtasks = (storeTask.subtasks || []).filter(
                     (s: Task) => s.uid !== taskUid
                 );
                 const updatedTasks = [...tasksStore.tasks];
-                updatedTasks[taskIndex] = { ...storeTask, subtasks: updatedSubtasks };
+                updatedTasks[taskIndex] = {
+                    ...storeTask,
+                    subtasks: updatedSubtasks,
+                };
                 tasksStore.setTasks(updatedTasks);
                 lastKnownSubtaskCount.current = updatedSubtasks.length;
             }
-            showSuccessToast(t('task.deleteSuccess', 'Task deleted successfully'));
+            showSuccessToast(
+                t('task.deleteSuccess', 'Task deleted successfully')
+            );
         } catch (error) {
             console.error('Error deleting subtask:', error);
             showErrorToast(t('task.deleteError', 'Failed to delete task'));
+        }
+    };
+
+    const handleRelationsChange = async () => {
+        if (!uid) return;
+        try {
+            const updatedTask = await fetchTaskByUid(uid);
+            const existingIndex = tasksStore.tasks.findIndex(
+                (t: Task) => t.uid === uid
+            );
+            if (existingIndex >= 0) {
+                const updatedTasks = [...tasksStore.tasks];
+                updatedTasks[existingIndex] = updatedTask;
+                tasksStore.setTasks(updatedTasks);
+            }
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error(
+                'Error refreshing task after relation change:',
+                error
+            );
         }
     };
 
@@ -780,7 +836,6 @@ const TaskDetails: React.FC = () => {
         const newSubtask = {
             name,
             status: 'not_started',
-            priority: 'low',
             today: false,
             parent_task_id: task.id,
             _isNew: true,
@@ -987,6 +1042,49 @@ const TaskDetails: React.FC = () => {
             );
         }
     };
+
+    const handleSkipOccurrence = async () => {
+        if (!task?.uid) {
+            return;
+        }
+
+        try {
+            taskModifiedRef.current = true;
+            const updatedTaskResponse = await skipTaskOccurrence(task.uid);
+            const mergedTask = {
+                ...task,
+                ...updatedTaskResponse,
+                subtasks: updatedTaskResponse.subtasks || task.subtasks || [],
+            };
+
+            if (uid) {
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = mergedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            await refreshRecurringSetup(mergedTask);
+            setTimelineRefreshKey((prev) => prev + 1);
+            showSuccessToast(t('task.occurrenceSkipped', 'Occurrence skipped'));
+        } catch (error) {
+            console.error('Error skipping occurrence:', error);
+            showErrorToast(
+                t('task.skipOccurrenceError', 'Failed to skip occurrence')
+            );
+        }
+    };
+
+    const canSkipOccurrence =
+        !!task &&
+        !!task.recurrence_type &&
+        task.recurrence_type !== 'none' &&
+        !task.recurring_parent_id &&
+        !isTaskDone(task.status);
 
     const handleStatusUpdate = async (newStatus: number) => {
         if (!task?.uid) return;
@@ -1264,6 +1362,23 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleEstimateChange = async (minutes: number | null) => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { estimated_minutes: minutes });
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+        } catch (error) {
+            console.error('Error updating estimate:', error);
+            showErrorToast(
+                t('task.estimateError', 'Failed to update the estimate')
+            );
+        }
+    };
+
     const handleAssignPerson = async (personUid: string | null) => {
         if (!task?.uid) return;
         try {
@@ -1407,6 +1522,9 @@ const TaskDetails: React.FC = () => {
                     onStatusUpdate={handleStatusUpdate}
                     onPriorityUpdate={handlePriorityUpdate}
                     onDelete={handleDeleteClick}
+                    onSkipOccurrence={
+                        canSkipOccurrence ? handleSkipOccurrence : undefined
+                    }
                     getProjectLink={getProjectLink}
                     getTagLink={getTagLink}
                     activePill={activePill}
@@ -1417,22 +1535,26 @@ const TaskDetails: React.FC = () => {
                     isOverdueAlertVisible={isOverdue && isOverdueBubbleVisible}
                     onDismissOverdueAlert={handleDismissOverdueAlert}
                     onQuickStatusToggle={handleCompletionToggle}
-                    onAiInsightsClick={aiAssistantEnabled ? handleAiInsightsClick : undefined}
+                    onAiInsightsClick={
+                        aiAssistantEnabled ? handleAiInsightsClick : undefined
+                    }
                     aiInsightsActive={aiInsightsActive}
                     attachmentCount={attachmentCount}
+                    commentCount={commentCount}
                     autoEditTitle={isNewTask}
                     ancestorChain={ancestorChain}
                 />
-
 
                 {aiAssistantEnabled && (
                     <div className="mb-4 mt-6">
                         <TaskAIInsights
                             ref={aiInsightsRef}
                             task={task}
-                            project={projectsStore.projects.find(
-                                (p: any) => p.id === task.project_id
-                            ) || null}
+                            project={
+                                projectsStore.projects.find(
+                                    (p: any) => p.id === task.project_id
+                                ) || null
+                            }
                             onActiveChange={setAiInsightsActive}
                         />
                     </div>
@@ -1452,6 +1574,10 @@ const TaskDetails: React.FC = () => {
                                     onSubtaskUpdate={handleSubtaskUpdate}
                                     onSubtaskDelete={handleSubtaskDelete}
                                     onQuickAdd={handleQuickAddSubtask}
+                                />
+                                <TaskRelationsCard
+                                    taskUid={task.uid}
+                                    onRelationsChange={handleRelationsChange}
                                 />
                                 <TaskRecurrenceCard
                                     task={task}
@@ -1534,6 +1660,11 @@ const TaskDetails: React.FC = () => {
                                     onSave={handleSaveDeferUntil}
                                     onCancel={handleCancelDeferUntilEdit}
                                 />
+
+                                <TaskEstimateCard
+                                    task={task}
+                                    onChange={handleEstimateChange}
+                                />
                             </div>
                         </div>
                     )}
@@ -1547,6 +1678,15 @@ const TaskDetails: React.FC = () => {
                         </div>
                     )}
 
+                    {activePill === 'comments' && (
+                        <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
+                            <TaskComments
+                                task={task}
+                                onCommentCountChange={setCommentCount}
+                            />
+                        </div>
+                    )}
+
                     {activePill === 'activity' && (
                         <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
                             <TaskTimeline
@@ -1555,7 +1695,6 @@ const TaskDetails: React.FC = () => {
                             />
                         </div>
                     )}
-
                 </div>
 
                 {isConfirmDialogOpen && taskToDelete && (

@@ -3,7 +3,7 @@
 const entitlements = require('../../services/entitlementsService');
 const _ = require('lodash');
 const notesRepository = require('./repository');
-const { validateUid } = require('./validation');
+const { validateUid, validateBackground } = require('./validation');
 const {
     NotFoundError,
     ValidationError,
@@ -14,6 +14,7 @@ const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
 const { sortTags } = require('../tasks/core/serializers');
 const { logError } = require('../../services/logService');
+const { noteAttachments } = require('../../services/entityAttachments');
 
 /**
  * Serialize a note with sorted tags.
@@ -172,13 +173,16 @@ class NotesService {
      */
     async create(
         userId,
-        { title, content, project_uid, project_id, tags, color }
+        { title, content, project_uid, project_id, tags, color, background }
     ) {
         await entitlements.assertCanCreate(userId, 'note');
         const noteAttributes = { title, content };
 
         if (color !== undefined) {
             noteAttributes.color = color;
+        }
+        if (background !== undefined) {
+            noteAttributes.background = validateBackground(background);
         }
 
         // Handle project assignment with permission check
@@ -218,7 +222,16 @@ class NotesService {
     async update(
         userId,
         uid,
-        { title, content, project_uid, project_id, tags, color, pin_to_sidebar }
+        {
+            title,
+            content,
+            project_uid,
+            project_id,
+            tags,
+            color,
+            background,
+            pin_to_sidebar,
+        }
     ) {
         const validatedUid = validateUid(uid);
         const note = await notesRepository.findOne({ uid: validatedUid });
@@ -231,6 +244,8 @@ class NotesService {
         if (title !== undefined) updateData.title = title;
         if (content !== undefined) updateData.content = content;
         if (color !== undefined) updateData.color = color;
+        if (background !== undefined)
+            updateData.background = validateBackground(background);
         if (pin_to_sidebar !== undefined)
             updateData.pin_to_sidebar = pin_to_sidebar;
 
@@ -322,6 +337,7 @@ class NotesService {
             throw new NotFoundError('Note not found.');
         }
 
+        await noteAttachments.removeAll(note.id);
         await notesRepository.destroy(note);
         return { message: 'Note deleted successfully.' };
     }

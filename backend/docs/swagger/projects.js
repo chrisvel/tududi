@@ -34,6 +34,39 @@
 
 /**
  * @swagger
+ * /api/projects/order:
+ *   put:
+ *     summary: Save your custom order of projects
+ *     description: Replaces the current user's custom order. Each project gets its index in the list as its sort_position; projects left out have no position.
+ *     tags: [Projects]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - project_uids
+ *             properties:
+ *               project_uids:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Project UIDs in the desired order
+ *     responses:
+ *       200:
+ *         description: Order saved
+ *       400:
+ *         description: Invalid or duplicate UIDs
+ *       404:
+ *         description: A project was not found or is not visible to you
+ */
+
+/**
+ * @swagger
  * /api/project:
  *   post:
  *     summary: Create a new project

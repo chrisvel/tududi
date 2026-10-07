@@ -10,7 +10,10 @@ export interface Note {
     project_id?: number; // Foreign key for project (deprecated, use project_uid)
     project_uid?: string; // Foreign key for project by uid
     color?: string; // Background color for the note
+    background?: string | null; // Content background id for the note
     pin_to_sidebar?: boolean;
+    user_id?: number;
+    is_public?: boolean; // Anyone with the public link can read it
     tags?: Tag[];
     Tags?: Tag[]; // Sequelize association naming (capitalized)
     project?: {

@@ -6,7 +6,7 @@ export interface CalloutMatch {
     remainderText: string;
 }
 
-const CALLOUT_MARKER_REGEX =
+export const CALLOUT_MARKER_REGEX =
     /^\[!(NOTE|WARNING|TIP|IMPORTANT|DANGER)\](?:\s+(.*))?$/i;
 
 export function detectCallout(blockquoteNode: any): CalloutMatch | null {

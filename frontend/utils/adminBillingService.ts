@@ -16,6 +16,15 @@ export interface AdminBillingAccount {
     provider: string | null;
     provider_customer_id: string | null;
     provider_subscription_id: string | null;
+    ai_requests_this_month: number;
+    ai_tokens_this_month: number;
+    // What the account's access resolves to: trial, subscription, override,
+    // grace or free.
+    access: string;
+    // While the trial runs, the days left (a started day counts).
+    trial_days_left: number | null;
+    // After an unpaid trial: read-only until this date, then deleted.
+    read_only_until: string | null;
 }
 
 export interface AdminBillingSummaryRow {
@@ -26,6 +35,7 @@ export interface AdminBillingSummaryRow {
 
 export interface AdminBillingList {
     summary: AdminBillingSummaryRow[];
+    on_trial: number;
     total: number;
     accounts: AdminBillingAccount[];
 }
@@ -38,10 +48,12 @@ export interface AdminBillingDetail {
 
 export const fetchAdminBilling = async (
     q = '',
-    page = 1
+    page = 1,
+    filter?: 'trial'
 ): Promise<AdminBillingList> => {
     const params = new URLSearchParams({ page: String(page) });
     if (q) params.set('q', q);
+    if (filter) params.set('filter', filter);
     const response = await fetch(getApiPath(`admin/billing?${params}`), {
         credentials: 'include',
         headers: { Accept: 'application/json' },

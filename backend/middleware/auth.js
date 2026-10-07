@@ -1,6 +1,9 @@
 const { User, OIDCIdentity } = require('../models');
 const { findValidTokenByValue } = require('../modules/users/apiTokenService');
 const { validateAccessToken } = require('../modules/oidc/service');
+const providerConfig = require('../modules/oidc/providerConfig');
+
+const normalizeIssuer = (issuer) => String(issuer || '').replace(/\/+$/, '');
 
 const getBearerToken = (req) => {
     const authHeader = req.headers?.authorization || '';
@@ -90,8 +93,30 @@ const requireAuth = async (req, res, next) => {
                 return unauthorized(res, 'Invalid or expired access token');
             }
 
+            // A subject is only unique within one provider, so the identity is
+            // looked up for the provider that issued the token.
+            const identityWhere = { subject: payload.sub };
+            if (payload.iss) {
+                const providers = await providerConfig.getAllProviders();
+                const provider = providers.find(
+                    (p) =>
+                        normalizeIssuer(p.issuer) ===
+                        normalizeIssuer(payload.iss)
+                );
+                if (!provider) {
+                    console.warn(
+                        `[OIDC] Bearer token issuer ${payload.iss} does not match any configured provider`
+                    );
+                    return unauthorized(
+                        res,
+                        'No account found for this identity. Please log in via OIDC first.'
+                    );
+                }
+                identityWhere.provider_slug = provider.slug;
+            }
+
             const identity = await OIDCIdentity.findOne({
-                where: { subject: payload.sub },
+                where: identityWhere,
                 include: [{ model: User, as: 'User' }],
             });
 

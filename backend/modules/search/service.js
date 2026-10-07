@@ -10,6 +10,13 @@ const { UnauthorizedError } = require('../../shared/errors');
 
 class SearchService {
     /**
+     * Task statuses considered "completed" for the active/completed status filter.
+     */
+    completedTaskStatuses() {
+        return [Task.STATUS.DONE, Task.STATUS.ARCHIVED, Task.STATUS.CANCELLED];
+    }
+
+    /**
      * Build date range condition for due/defer filters.
      */
     buildDateCondition(filterValue, startOfToday, fieldName) {
@@ -55,8 +62,15 @@ class SearchService {
         deferDateCondition,
         nowDate
     ) {
-        const { searchQuery, priority, recurring, extras, excludeSubtasks } =
-            params;
+        const {
+            searchQuery,
+            priority,
+            recurring,
+            extras,
+            excludeSubtasks,
+            status,
+            taskStatus,
+        } = params;
 
         const conditions = { user_id: userId };
         const extraConditions = [];
@@ -64,6 +78,16 @@ class SearchService {
         if (excludeSubtasks) {
             conditions.parent_task_id = null;
             conditions.recurring_parent_id = null;
+        }
+
+        // A specific status (e.g. In Progress) wins over the broader
+        // active/completed toggle, which would otherwise contradict it.
+        if (taskStatus !== undefined) {
+            conditions.status = taskStatus;
+        } else if (status === 'active') {
+            conditions.status = { [Op.notIn]: this.completedTaskStatuses() };
+        } else if (status === 'completed') {
+            conditions.status = { [Op.in]: this.completedTaskStatuses() };
         }
 
         if (searchQuery) {
@@ -476,10 +500,14 @@ class SearchService {
     /**
      * Search tags.
      */
-    async searchTags(userId, params) {
+    async searchTags(userId, params, tagIds) {
         const { searchQuery, hasPagination, limit, offset } = params;
 
         const conditions = { user_id: userId };
+
+        if (tagIds.length > 0) {
+            conditions.id = { [Op.in]: tagIds };
+        }
 
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
@@ -597,7 +625,7 @@ class SearchService {
         }
 
         if (filterTypes.includes('Tag')) {
-            const tagResults = await this.searchTags(userId, params);
+            const tagResults = await this.searchTags(userId, params, tagIds);
             results.push(...tagResults.results);
             totalCount += tagResults.count;
         }

@@ -7,18 +7,49 @@ class AdminRepository {
     /**
      * Find all users with basic attributes.
      */
-    async findAllUsers() {
+    async findAllUsers(userIds = null) {
         return User.findAll({
-            attributes: ['id', 'email', 'name', 'surname', 'created_at'],
+            where: userIds ? { id: userIds } : {},
+            attributes: [
+                'id',
+                'email',
+                'name',
+                'surname',
+                'created_at',
+                'password_digest',
+                'email_verified',
+                'account_id',
+            ],
         });
+    }
+
+    async findAccountOwnerIds(accountIds = null) {
+        const { Account } = require('../../models');
+        const rows = await Account.findAll({
+            where: accountIds ? { id: accountIds } : {},
+            attributes: ['owner_user_id'],
+            raw: true,
+        });
+        return new Set(rows.map((row) => row.owner_user_id));
+    }
+
+    async findIdentityUserIds(userIds) {
+        const { OIDCIdentity } = require('../../models');
+        const rows = await OIDCIdentity.findAll({
+            attributes: ['user_id'],
+            where: userIds ? { user_id: userIds } : {},
+            raw: true,
+        });
+        return new Set(rows.map((row) => row.user_id));
     }
 
     /**
      * Find all roles.
      */
-    async findAllRoles() {
+    async findAllRoles(userIds = null) {
         return Role.findAll({
-            attributes: ['user_id', 'is_admin'],
+            where: userIds ? { user_id: userIds } : {},
+            attributes: ['user_id', 'is_admin', 'role', 'capabilities'],
         });
     }
 

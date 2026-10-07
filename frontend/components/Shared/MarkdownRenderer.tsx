@@ -1,11 +1,16 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
+import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { LockClosedIcon } from '@heroicons/react/24/outline';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import hljs from 'highlight.js';
 import CalloutBlock from './CalloutBlock';
+import MermaidDiagram, { getMermaidSource } from './MermaidDiagram';
 import { detectCallout } from '../../utils/calloutParser';
+import { toggleTaskListItem } from '../../utils/markdownTaskList';
 import { useStore } from '../../store/useStore';
 
 const WIKILINK_PREFIX = '/__wikilink__/';
@@ -59,13 +64,95 @@ const CodeBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({
     );
 };
 
+// The badge sits on the text's baseline: the outer flex row takes its
+// baseline from the title (the label stretches and the lock centers, so
+// neither takes part), which lines it up with the words around it.
+const NoteBadge: React.FC<{ title: string; locked?: boolean }> = ({
+    title,
+    locked = false,
+}) => (
+    <span className="inline-flex items-baseline align-baseline rounded overflow-hidden mx-0.5 leading-snug">
+        <span className="self-stretch flex items-center px-1.5 text-[0.72em] font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 bg-gray-200/80 dark:bg-gray-700/80">
+            NOTE:
+        </span>
+        <span className="inline-flex items-baseline gap-1 px-1.5 py-px text-[0.9em] text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800">
+            {locked && <LockClosedIcon className="h-3 w-3 self-center" />}
+            {title}
+        </span>
+    </span>
+);
+
+// On a public page, a link to a note the owner has not made public: the
+// reader can click it to learn why it does not open. The message is portaled
+// to the body so the note's content box cannot clip it.
+const NotSharedNoteBadge: React.FC<{ title: string }> = ({ title }) => {
+    const { t } = useTranslation();
+    const [anchor, setAnchor] = useState<DOMRect | null>(null);
+
+    useEffect(() => {
+        if (!anchor) return;
+        const close = () => setAnchor(null);
+        window.addEventListener('scroll', close, true);
+        window.addEventListener('resize', close);
+        return () => {
+            window.removeEventListener('scroll', close, true);
+            window.removeEventListener('resize', close);
+        };
+    }, [anchor]);
+
+    return (
+        <>
+            <button
+                type="button"
+                className="cursor-pointer align-baseline"
+                aria-expanded={!!anchor}
+                onClick={(e) =>
+                    setAnchor((current) =>
+                        current ? null : e.currentTarget.getBoundingClientRect()
+                    )
+                }
+                onBlur={() => setAnchor(null)}
+            >
+                <NoteBadge title={title} locked />
+            </button>
+            {anchor &&
+                ReactDOM.createPortal(
+                    <span
+                        role="status"
+                        className="fixed z-[300] whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white shadow-lg dark:bg-gray-700"
+                        style={{ left: anchor.left, top: anchor.bottom + 4 }}
+                    >
+                        {t(
+                            'publicNote.linkedNoteNotShared',
+                            'This note is not shared publicly.'
+                        )}
+                    </span>,
+                    document.body
+                )}
+        </>
+    );
+};
+
 interface MarkdownRendererProps {
     content: string;
     className?: string;
     summaryMode?: boolean;
     onContentChange?: (newContent: string) => void;
     noteColor?: string;
+    // On a public note page: the linked notes the reader may open. Any other
+    // [[link]] shows as not shared instead of looking up the reader's notes.
+    publicNoteLinks?: PublicNoteLink[];
+    // Where a public linked note opens; its public link page by default.
+    publicNoteHref?: (link: PublicNoteLink) => string;
 }
+
+export interface PublicNoteLink {
+    title: string;
+    token?: string;
+    slug?: string;
+}
+
+const publicLinkPage = (link: PublicNoteLink) => `/public/notes/${link.token}`;
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     content,
@@ -73,6 +160,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     summaryMode = false,
     onContentChange,
     noteColor,
+    publicNoteLinks,
+    publicNoteHref = publicLinkPage,
 }) => {
     const storeNotes = useStore((state) => state.notesStore.notes);
 
@@ -143,29 +232,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     // Reset on each render
     checkboxIndexRef.current = -1;
 
-    // Function to toggle checkbox at a specific index
     const toggleCheckbox = (checkboxIndex: number) => {
         if (!onContentChange) return;
-
-        const lines = content.split('\n');
-        let currentCheckboxIndex = -1;
-
-        const newLines = lines.map((line) => {
-            // Match task list items: - [ ] or - [x] or - [X]
-            const match = line.match(/^(\s*-\s*)\[([ xX])\](.*)$/);
-            if (match) {
-                currentCheckboxIndex++;
-                if (currentCheckboxIndex === checkboxIndex) {
-                    const indent = match[1];
-                    const isChecked = match[2].toLowerCase() === 'x';
-                    const rest = match[3];
-                    return `${indent}[${isChecked ? ' ' : 'x'}]${rest}`;
-                }
-            }
-            return line;
-        });
-
-        onContentChange(newLines.join('\n'));
+        const next = toggleTaskListItem(content, checkboxIndex);
+        if (next !== content) onContentChange(next);
     };
 
     return (
@@ -336,22 +406,33 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             const title = decodeURIComponent(
                                 href.slice(WIKILINK_PREFIX.length)
                             );
+                            if (publicNoteLinks) {
+                                const target = publicNoteLinks.find(
+                                    (n) =>
+                                        n.title.toLowerCase() ===
+                                        title.toLowerCase()
+                                );
+                                return target ? (
+                                    <Link
+                                        to={publicNoteHref(target)}
+                                        className="!no-underline hover:!no-underline"
+                                    >
+                                        <NoteBadge title={title} />
+                                    </Link>
+                                ) : (
+                                    <NotSharedNoteBadge title={title} />
+                                );
+                            }
                             const slug = noteTitleToSlug.get(
                                 title.toLowerCase()
                             );
                             const to = slug ? `/note/${slug}` : null;
-                            const badge = (
-                                <span className="inline-flex items-stretch rounded overflow-hidden align-middle border border-blue-200 dark:border-blue-700/70 mt-2">
-                                    <span className="flex items-center px-1.5 text-[0.72em] font-bold uppercase tracking-wide text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60">
-                                        NOTE:
-                                    </span>
-                                    <span className="flex items-center px-1.5 py-0.5 text-[0.9em] text-blue-700 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-900/30">
-                                        {title}
-                                    </span>
-                                </span>
-                            );
+                            const badge = <NoteBadge title={title} />;
                             return to ? (
-                                <Link to={to} className="no-underline">
+                                <Link
+                                    to={to}
+                                    className="!no-underline hover:!no-underline"
+                                >
                                     {badge}
                                 </Link>
                             ) : (
@@ -365,7 +446,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                         }
                         return (
                             <a
-                                className="text-blue-600 dark:text-blue-400 hover:underline"
+                                className="underline underline-offset-2 decoration-gray-400 dark:decoration-gray-500 hover:decoration-current"
                                 href={href}
                                 {...props}
                             >
@@ -414,7 +495,19 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             );
                         }
                     },
-                    pre: ({ ...props }) => <CodeBlock {...props} />,
+                    pre: ({ node, ...props }) => {
+                        const mermaidSource = getMermaidSource(node);
+                        if (mermaidSource === null) {
+                            return <CodeBlock {...props} />;
+                        }
+                        return summaryMode ? (
+                            <span className="text-gray-500 italic">
+                                [Diagram hidden in preview]
+                            </span>
+                        ) : (
+                            <MermaidDiagram code={mermaidSource} />
+                        );
+                    },
 
                     // Customize blockquote styles — detect Obsidian-style callouts
                     blockquote: ({ node, children, ...props }) => {

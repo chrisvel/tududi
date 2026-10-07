@@ -61,15 +61,26 @@ const Tag = require('./tag')(sequelize);
 const Note = require('./note')(sequelize);
 const InboxItem = require('./inbox_item')(sequelize);
 const TaskEvent = require('./task_event')(sequelize);
+const TaskRelation = require('./task_relation')(sequelize);
+const Comment = require('./comment')(sequelize);
+const CommentReaction = require('./comment_reaction')(sequelize);
 const Role = require('./role')(sequelize);
 const Action = require('./action')(sequelize);
 const Permission = require('./permission')(sequelize);
+const UserGroup = require('./userGroup')(sequelize);
+const UserGroupMember = require('./userGroupMember')(sequelize);
+const MemberSignInLink = require('./memberSignInLink')(sequelize);
+const GroupShare = require('./groupShare')(sequelize);
+const GroupPermission = require('./groupPermission')(sequelize);
 const View = require('./view')(sequelize);
 const ApiToken = require('./api_token')(sequelize);
 const Setting = require('./setting')(sequelize);
 const Notification = require('./notification')(sequelize);
 const RecurringCompletion = require('./recurringCompletion')(sequelize);
 const TaskAttachment = require('./task_attachment')(sequelize);
+const InboxItemAttachment = require('./inbox_item_attachment')(sequelize);
+const ProjectAttachment = require('./project_attachment')(sequelize);
+const NoteAttachment = require('./note_attachment')(sequelize);
 const Backup = require('./backup')(sequelize);
 const OIDCIdentity = require('./oidc_identity')(sequelize);
 const OIDCStateNonce = require('./oidc_state_nonce')(sequelize);
@@ -81,19 +92,35 @@ const CalDAVOccurrenceOverride = require('./caldav_occurrence_override')(
 );
 const CalDAVRemoteCalendar = require('./caldav_remote_calendar')(sequelize);
 const CalendarToken = require('./calendar_token')(sequelize);
+const CalendarFeed = require('./calendar_feed')(sequelize);
+const DailyPlan = require('./daily_plan')(sequelize);
+const DailyPlanItem = require('./daily_plan_item')(sequelize);
 const Goal = require('./goal')(sequelize);
 const Person = require('./person')(sequelize);
 const UserProjectArea = require('./user_project_area')(sequelize);
+const UserProjectOrder = require('./user_project_order')(sequelize);
+const UserTaskOrder = require('./user_task_order')(sequelize);
 const RateLimit = require('./rate_limit')(sequelize);
 const BillingAccount = require('./billing_account')(sequelize);
 const BillingEvent = require('./billing_event')(sequelize);
 const WaitlistSubscriber = require('./waitlist_subscriber')(sequelize);
 const UsageCounter = require('./usage_counter')(sequelize);
+const Feedback = require('./feedback')(sequelize);
+const PushSubscription = require('./push_subscription')(sequelize);
+const Account = require('./account')(sequelize);
+const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
 BillingAccount.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 User.hasMany(UsageCounter, { foreignKey: 'user_id', as: 'UsageCounters' });
 UsageCounter.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+User.hasMany(Feedback, { foreignKey: 'user_id', as: 'Feedback' });
+Feedback.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+User.hasMany(PushSubscription, {
+    foreignKey: 'user_id',
+    as: 'PushSubscriptions',
+});
+PushSubscription.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -134,6 +161,41 @@ User.hasMany(TaskEvent, { foreignKey: 'user_id', as: 'TaskEvents' });
 TaskEvent.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 Task.hasMany(TaskEvent, { foreignKey: 'task_id', as: 'TaskEvents' });
 TaskEvent.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+
+User.hasMany(Comment, { foreignKey: 'user_id', as: 'Comments' });
+Comment.belongsTo(User, { foreignKey: 'user_id', as: 'Author' });
+Task.hasMany(Comment, { foreignKey: 'task_id', as: 'Comments' });
+Comment.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+Task.hasMany(TaskRelation, {
+    foreignKey: 'source_task_id',
+    as: 'SourceRelations',
+    onDelete: 'CASCADE',
+});
+Task.hasMany(TaskRelation, {
+    foreignKey: 'target_task_id',
+    as: 'TargetRelations',
+    onDelete: 'CASCADE',
+});
+TaskRelation.belongsTo(Task, {
+    foreignKey: 'source_task_id',
+    as: 'SourceTask',
+});
+TaskRelation.belongsTo(Task, {
+    foreignKey: 'target_task_id',
+    as: 'TargetTask',
+});
+
+Comment.hasMany(Comment, { foreignKey: 'parent_comment_id', as: 'Replies' });
+Comment.belongsTo(Comment, {
+    foreignKey: 'parent_comment_id',
+    as: 'ParentComment',
+});
+Comment.hasMany(CommentReaction, {
+    foreignKey: 'comment_id',
+    as: 'Reactions',
+});
+CommentReaction.belongsTo(Comment, { foreignKey: 'comment_id' });
+CommentReaction.belongsTo(User, { foreignKey: 'user_id' });
 
 Task.belongsTo(Task, {
     as: 'ParentTask',
@@ -203,6 +265,38 @@ Permission.belongsTo(User, {
     foreignKey: 'granted_by_user_id',
     as: 'GrantedBy',
 });
+UserGroup.belongsTo(User, {
+    foreignKey: 'created_by_user_id',
+    as: 'CreatedBy',
+});
+UserGroup.hasMany(UserGroupMember, {
+    foreignKey: 'group_id',
+    as: 'Members',
+    onDelete: 'CASCADE',
+});
+UserGroupMember.belongsTo(UserGroup, { foreignKey: 'group_id', as: 'Group' });
+UserGroupMember.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+MemberSignInLink.belongsTo(User, { foreignKey: 'user_id', as: 'Member' });
+UserGroup.hasMany(GroupShare, {
+    foreignKey: 'group_id',
+    as: 'Shares',
+    onDelete: 'CASCADE',
+});
+GroupShare.belongsTo(UserGroup, { foreignKey: 'group_id', as: 'Group' });
+GroupShare.belongsTo(User, {
+    foreignKey: 'granted_by_user_id',
+    as: 'GrantedBy',
+});
+GroupShare.hasMany(GroupPermission, {
+    foreignKey: 'group_share_id',
+    as: 'Permissions',
+    onDelete: 'CASCADE',
+});
+GroupPermission.belongsTo(GroupShare, {
+    foreignKey: 'group_share_id',
+    as: 'GroupShare',
+});
+GroupPermission.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 Action.belongsTo(User, { foreignKey: 'actor_user_id', as: 'Actor' });
 Action.belongsTo(User, { foreignKey: 'target_user_id', as: 'Target' });
 
@@ -220,6 +314,28 @@ User.hasMany(TaskAttachment, { foreignKey: 'user_id' });
 TaskAttachment.belongsTo(User, { foreignKey: 'user_id' });
 Task.hasMany(TaskAttachment, { foreignKey: 'task_id', as: 'Attachments' });
 TaskAttachment.belongsTo(Task, { foreignKey: 'task_id' });
+
+// InboxItemAttachment associations
+User.hasMany(InboxItemAttachment, { foreignKey: 'user_id' });
+InboxItemAttachment.belongsTo(User, { foreignKey: 'user_id' });
+InboxItem.hasMany(InboxItemAttachment, {
+    foreignKey: 'inbox_item_id',
+    as: 'Attachments',
+});
+InboxItemAttachment.belongsTo(InboxItem, { foreignKey: 'inbox_item_id' });
+
+// ProjectAttachment and NoteAttachment associations
+User.hasMany(ProjectAttachment, { foreignKey: 'user_id' });
+ProjectAttachment.belongsTo(User, { foreignKey: 'user_id' });
+Project.hasMany(ProjectAttachment, {
+    foreignKey: 'project_id',
+    as: 'Attachments',
+});
+ProjectAttachment.belongsTo(Project, { foreignKey: 'project_id' });
+User.hasMany(NoteAttachment, { foreignKey: 'user_id' });
+NoteAttachment.belongsTo(User, { foreignKey: 'user_id' });
+Note.hasMany(NoteAttachment, { foreignKey: 'note_id', as: 'Attachments' });
+NoteAttachment.belongsTo(Note, { foreignKey: 'note_id' });
 
 // Backup associations
 User.hasMany(Backup, { foreignKey: 'user_id', as: 'Backups' });
@@ -288,6 +404,23 @@ User.hasMany(CalendarToken, {
 });
 CalendarToken.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// Day plans and read-only calendar feeds
+User.hasMany(DailyPlan, { foreignKey: 'user_id', as: 'DailyPlans' });
+DailyPlan.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+DailyPlan.hasMany(DailyPlanItem, {
+    foreignKey: 'daily_plan_id',
+    as: 'Items',
+    onDelete: 'CASCADE',
+});
+DailyPlanItem.belongsTo(DailyPlan, {
+    foreignKey: 'daily_plan_id',
+    as: 'DailyPlan',
+});
+Task.hasMany(DailyPlanItem, { foreignKey: 'task_id', as: 'DailyPlanItems' });
+DailyPlanItem.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+User.hasMany(CalendarFeed, { foreignKey: 'user_id', as: 'CalendarFeeds' });
+CalendarFeed.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+
 // UserProjectArea associations (per-user area placement for shared projects)
 User.hasMany(UserProjectArea, {
     foreignKey: 'user_id',
@@ -300,6 +433,37 @@ Project.hasMany(UserProjectArea, {
 });
 UserProjectArea.belongsTo(Project, { foreignKey: 'project_id', as: 'Project' });
 UserProjectArea.belongsTo(Area, { foreignKey: 'area_id', as: 'Area' });
+
+// UserProjectOrder associations (per-user custom order of the Projects page)
+User.hasMany(UserProjectOrder, {
+    foreignKey: 'user_id',
+    as: 'ProjectOrders',
+    onDelete: 'CASCADE',
+});
+UserProjectOrder.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Project.hasMany(UserProjectOrder, {
+    foreignKey: 'project_id',
+    as: 'Orders',
+    onDelete: 'CASCADE',
+});
+UserProjectOrder.belongsTo(Project, {
+    foreignKey: 'project_id',
+    as: 'Project',
+});
+
+// UserTaskOrder associations (per-user manual order of task lists)
+User.hasMany(UserTaskOrder, {
+    foreignKey: 'user_id',
+    as: 'TaskOrders',
+    onDelete: 'CASCADE',
+});
+UserTaskOrder.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Task.hasMany(UserTaskOrder, {
+    foreignKey: 'task_id',
+    as: 'Orders',
+    onDelete: 'CASCADE',
+});
+UserTaskOrder.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
 
 // Person associations
 User.hasMany(Person, { foreignKey: 'user_id', as: 'People' });
@@ -336,6 +500,9 @@ async function runNonFatalHook(parentTransaction, description, body) {
 
 // Auto-create a self-person for every new user
 User.addHook('afterCreate', async (user, options) => {
+    // A caller that turns an existing person into the account's own person
+    // passes skipSelfPerson so no blank one is made next to it.
+    if (options.skipSelfPerson) return;
     await runNonFatalHook(
         options.transaction,
         `Failed to create self-person for user ${user.id}`,
@@ -346,11 +513,7 @@ User.addHook('afterCreate', async (user, options) => {
             });
             if (existing) return;
 
-            const nameParts = [user.name, user.surname].filter(Boolean);
-            let personName =
-                nameParts.length > 0
-                    ? nameParts.join(' ').trim()
-                    : user.email.split('@')[0];
+            let personName = selfPersonName(user);
 
             const nameConflict = await Person.findOne({
                 where: { user_id: user.id, name: personName },
@@ -393,11 +556,7 @@ User.addHook('afterUpdate', async (user, options) => {
 
             const updates = {};
             if (user.changed('name') || user.changed('surname')) {
-                const nameParts = [user.name, user.surname].filter(Boolean);
-                updates.name =
-                    nameParts.length > 0
-                        ? nameParts.join(' ').trim()
-                        : user.email.split('@')[0];
+                updates.name = selfPersonName(user);
             }
             if (user.changed('email')) updates.email = user.email || null;
 
@@ -465,15 +624,26 @@ module.exports = {
     Note,
     InboxItem,
     TaskEvent,
+    TaskRelation,
+    Comment,
+    CommentReaction,
     Role,
     Action,
     Permission,
+    UserGroup,
+    UserGroupMember,
+    MemberSignInLink,
+    GroupShare,
+    GroupPermission,
     View,
     ApiToken,
     Setting,
     Notification,
     RecurringCompletion,
     TaskAttachment,
+    InboxItemAttachment,
+    ProjectAttachment,
+    NoteAttachment,
     Backup,
     OIDCIdentity,
     OIDCStateNonce,
@@ -483,11 +653,19 @@ module.exports = {
     CalDAVOccurrenceOverride,
     CalDAVRemoteCalendar,
     CalendarToken,
+    CalendarFeed,
+    DailyPlan,
+    DailyPlanItem,
     Person,
     UserProjectArea,
+    UserProjectOrder,
+    UserTaskOrder,
     RateLimit,
     BillingAccount,
     BillingEvent,
     WaitlistSubscriber,
     UsageCounter,
+    Feedback,
+    Account,
+    PushSubscription,
 };

@@ -42,6 +42,14 @@ const adminController = {
         }
     },
 
+    async userStatuses(req, res, next) {
+        try {
+            res.json(await adminService.userStatuses(getRequesterId(req)));
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async listWaitlist(req, res, next) {
         try {
             res.json(
@@ -82,6 +90,15 @@ const adminController = {
         }
     },
 
+    async listRoles(req, res, next) {
+        try {
+            const requesterId = getRequesterId(req);
+            res.json(await adminService.listRoles(requesterId));
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async listUsers(req, res, next) {
         try {
             const requesterId = getRequesterId(req);
@@ -116,7 +133,8 @@ const adminController = {
             const user = await adminService.updateUser(
                 requesterId,
                 req.params.id,
-                req.body
+                req.body,
+                { sessionId: req.sessionID }
             );
             res.json(user);
         } catch (error) {
@@ -150,6 +168,57 @@ const adminController = {
                 req.body
             );
             res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * GET /api/admin/oidc-config
+     * Get the OIDC/SSO provider configuration (masked secrets).
+     */
+    async getOidcConfig(req, res, next) {
+        try {
+            const requesterId = getRequesterId(req);
+            const result = await adminService.getOidcConfig(requesterId);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * PUT /api/admin/oidc-config
+     * Replace the OIDC/SSO provider configuration.
+     */
+    async updateOidcConfig(req, res, next) {
+        try {
+            const requesterId = getRequesterId(req);
+            const result = await adminService.updateOidcConfig(
+                requesterId,
+                req.body
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // GET /api/admin/blog: the note picked as the blog's front page.
+    async getBlog(req, res, next) {
+        try {
+            res.json(await adminService.getBlog(getRequesterId(req)));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // PUT /api/admin/blog: pick the front page note, or clear it.
+    async updateBlog(req, res, next) {
+        try {
+            res.json(
+                await adminService.updateBlog(getRequesterId(req), req.body)
+            );
         } catch (error) {
             next(error);
         }

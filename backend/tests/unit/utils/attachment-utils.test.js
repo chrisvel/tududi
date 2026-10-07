@@ -3,7 +3,8 @@ const path = require('path');
 const { getConfig } = require('../../../config/config');
 const {
     ALLOWED_TYPES,
-    validateFileType,
+    INLINE_SAFE_EXTENSIONS,
+    UNKNOWN_TYPE_EXTENSION,
     getExtensionFromMimeType,
     formatFileSize,
     isImageFile,
@@ -17,72 +18,6 @@ const {
 const config = getConfig();
 
 describe('Attachment Utils', () => {
-    describe('validateFileType', () => {
-        it('should accept PDF files', () => {
-            expect(validateFileType('application/pdf')).toBe(true);
-        });
-
-        it('should accept PNG images', () => {
-            expect(validateFileType('image/png')).toBe(true);
-        });
-
-        it('should accept JPEG images', () => {
-            expect(validateFileType('image/jpeg')).toBe(true);
-        });
-
-        it('should accept Word documents', () => {
-            expect(
-                validateFileType(
-                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                )
-            ).toBe(true);
-        });
-
-        it('should accept text files', () => {
-            expect(validateFileType('text/plain')).toBe(true);
-        });
-
-        it('should accept markdown files', () => {
-            expect(validateFileType('text/markdown')).toBe(true);
-        });
-
-        it('should accept Excel files', () => {
-            expect(
-                validateFileType(
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                )
-            ).toBe(true);
-        });
-
-        it('should accept CSV files', () => {
-            expect(validateFileType('text/csv')).toBe(true);
-        });
-
-        it('should accept ZIP files', () => {
-            expect(validateFileType('application/zip')).toBe(true);
-        });
-
-        it('should reject executable files', () => {
-            expect(validateFileType('application/x-msdownload')).toBe(false);
-        });
-
-        it('should reject script files', () => {
-            expect(validateFileType('application/javascript')).toBe(false);
-        });
-
-        it('should reject unknown MIME types', () => {
-            expect(validateFileType('application/unknown')).toBe(false);
-        });
-
-        it('should reject empty MIME type', () => {
-            expect(validateFileType('')).toBe(false);
-        });
-
-        it('should reject null MIME type', () => {
-            expect(validateFileType(null)).toBe(false);
-        });
-    });
-
     describe('getExtensionFromMimeType', () => {
         it('should return .pdf for PDF MIME type', () => {
             expect(getExtensionFromMimeType('application/pdf')).toBe('.pdf');
@@ -108,12 +43,26 @@ describe('Attachment Utils', () => {
             expect(getExtensionFromMimeType('text/plain')).toBe('.txt');
         });
 
-        it('should return empty string for unknown MIME type', () => {
-            expect(getExtensionFromMimeType('application/unknown')).toBe('');
+        it('should return .bin for unknown MIME types', () => {
+            expect(
+                getExtensionFromMimeType('application/vnd.tcpdump.pcap')
+            ).toBe('.bin');
+            expect(getExtensionFromMimeType('application/unknown')).toBe(
+                '.bin'
+            );
+            expect(getExtensionFromMimeType(null)).toBe('.bin');
         });
 
-        it('should return empty string for null MIME type', () => {
-            expect(getExtensionFromMimeType(null)).toBe('');
+        it('should never store a renderable type under its own extension', () => {
+            expect(getExtensionFromMimeType('text/html')).toBe(
+                UNKNOWN_TYPE_EXTENSION
+            );
+            expect(getExtensionFromMimeType('image/svg+xml')).toBe(
+                UNKNOWN_TYPE_EXTENSION
+            );
+            expect(INLINE_SAFE_EXTENSIONS.has(UNKNOWN_TYPE_EXTENSION)).toBe(
+                false
+            );
         });
     });
 

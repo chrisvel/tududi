@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Location } from 'react-router-dom';
-import {
-    RectangleStackIcon,
-    UsersIcon,
-    CreditCardIcon,
-} from '@heroicons/react/24/outline';
+import { RectangleStackIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
-import { getFeatureFlags } from '../../utils/featureFlags';
+import { canOpenAccess } from '../../entities/Role';
 
 interface SidebarAdminProps {
     handleNavClick: (path: string, title: string) => void;
     location: Location;
-    currentUser: { is_admin?: boolean };
+    currentUser: { is_admin?: boolean; role?: string };
 }
 
 const SidebarAdmin: React.FC<SidebarAdminProps> = ({
@@ -21,19 +17,20 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
     currentUser,
 }) => {
     const { t } = useTranslation();
-    const templatesEnabled = useStore(
+    const templatesFeatureEnabled = useStore(
         (state) => state.userSettingsStore.templatesEnabled
     );
-    const [hosted, setHosted] = useState(false);
+    const visibleSections = useStore(
+        (state) => state.userSettingsStore.sidebarVisibleSections
+    );
+    const templatesEnabled =
+        templatesFeatureEnabled && visibleSections.templates !== false;
+    const accessVisible =
+        canOpenAccess(currentUser) && visibleSections.access !== false;
 
-    useEffect(() => {
-        if (!currentUser?.is_admin) return;
-        getFeatureFlags()
-            .then((flags) => setHosted(!!flags.hosted))
-            .catch(() => setHosted(false));
-    }, [currentUser?.is_admin]);
-
-    if (!templatesEnabled && !currentUser?.is_admin) return null;
+    if (!templatesEnabled && !accessVisible) {
+        return null;
+    }
 
     const linkClass = (path: string) => {
         const isActive = location.pathname.startsWith(path);
@@ -60,32 +57,18 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
                     {t('navigation.templates', 'Templates')}
                 </li>
             )}
-            {currentUser?.is_admin === true && (
+            {accessVisible && (
                 <li
                     className={linkClass('/admin/users')}
                     onClick={() =>
                         handleNavClick(
                             '/admin/users',
-                            t('admin.userManagement', 'User Management')
+                            t('admin.access.title', 'Access')
                         )
                     }
                 >
                     <UsersIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
-                    {t('admin.userManagement', 'User Management')}
-                </li>
-            )}
-            {currentUser?.is_admin === true && hosted && (
-                <li
-                    className={linkClass('/admin/billing')}
-                    onClick={() =>
-                        handleNavClick(
-                            '/admin/billing',
-                            t('admin.billing.title', 'Billing')
-                        )
-                    }
-                >
-                    <CreditCardIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
-                    {t('admin.billing.title', 'Billing')}
+                    {t('admin.access.title', 'Access')}
                 </li>
             )}
         </ul>

@@ -9,6 +9,11 @@ import {
     CheckIcon,
     ListBulletIcon,
     ChevronDownIcon,
+    ChatBubbleLeftIcon,
+    NoSymbolIcon,
+    EllipsisVerticalIcon,
+    PencilIcon,
+    TrashIcon,
 } from '@heroicons/react/24/outline';
 import { FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { Task } from '../../../entities/Task';
@@ -27,6 +32,7 @@ interface TaskRowCollapsedProps {
     project?: Project | null;
     hideProjectName?: boolean;
     hideStatusControl?: boolean;
+    condenseStatusControl?: boolean;
     compact?: boolean;
     onActivate: (e: React.MouseEvent | React.KeyboardEvent) => void;
     onToggleCompletion?: () => void;
@@ -35,10 +41,14 @@ interface TaskRowCollapsedProps {
     hasSubtasks?: boolean;
     showSubtasks?: boolean;
     onSubtasksToggle?: (e: React.MouseEvent) => void;
+    commentCount?: number;
     // When the row is expanded the title becomes an inline editable field.
     editable?: boolean;
     onSaveTitle?: (name: string) => void | Promise<void>;
     onEscape?: () => void;
+    onEdit?: () => void;
+    onDelete?: (e: React.MouseEvent) => void;
+    onActionsMenuOpenChange?: (open: boolean) => void;
 }
 
 const tagColorStyle = (color?: string): React.CSSProperties | undefined => {
@@ -60,6 +70,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     project,
     hideProjectName = false,
     hideStatusControl = false,
+    condenseStatusControl = false,
     compact = false,
     onActivate,
     onToggleCompletion,
@@ -68,14 +79,42 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     hasSubtasks,
     showSubtasks,
     onSubtasksToggle,
+    commentCount = 0,
     editable = false,
     onSaveTitle,
     onEscape,
+    onEdit,
+    onDelete,
+    onActionsMenuOpenChange,
 }) => {
     const { t } = useTranslation();
     const currentName = task.original_name || task.name;
     const titleInputRef = useRef<HTMLInputElement>(null);
     const [draftName, setDraftName] = useState(currentName);
+    const actionsMenuRef = useRef<HTMLDivElement>(null);
+    const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+
+    useEffect(() => {
+        onActionsMenuOpenChange?.(isActionsMenuOpen);
+        if (!isActionsMenuOpen) return;
+        const onPointerDown = (e: MouseEvent) => {
+            if (
+                actionsMenuRef.current &&
+                !actionsMenuRef.current.contains(e.target as Node)
+            ) {
+                setIsActionsMenuOpen(false);
+            }
+        };
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setIsActionsMenuOpen(false);
+        };
+        document.addEventListener('mousedown', onPointerDown);
+        document.addEventListener('keydown', onKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', onPointerDown);
+            document.removeEventListener('keydown', onKeyDown);
+        };
+    }, [isActionsMenuOpen, onActionsMenuOpenChange]);
 
     useEffect(() => {
         setDraftName(currentName);
@@ -170,7 +209,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
 
     return (
         <div
-            className={`group flex items-start gap-3 px-4 ${
+            className={`group flex items-center gap-3 px-4 ${
                 hasMeta ? 'py-2' : 'py-3'
             } cursor-pointer`}
             role="button"
@@ -209,7 +248,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                     onEscape?.();
                                 }
                             }}
-                            className="flex-1 min-w-0 bg-transparent text-[15px] font-medium tracking-tight text-gray-900 dark:text-gray-100 border-0 p-0 focus:outline-none focus:ring-0"
+                            className="flex-1 min-w-0 bg-transparent text-[15px] font-normal tracking-tight text-gray-900 dark:text-gray-100 border-0 p-0 focus:outline-none focus:ring-0"
                             placeholder={t(
                                 'forms.task.namePlaceholder',
                                 'Task name'
@@ -217,7 +256,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         />
                     ) : (
                         <span
-                            className={`text-[15px] font-medium tracking-tight truncate ${
+                            className={`text-[15px] font-normal tracking-tight max-sm:line-clamp-2 max-sm:break-words sm:truncate ${
                                 isTaskCompleted(task.status)
                                     ? 'text-gray-400 dark:text-gray-500 line-through'
                                     : 'text-gray-900 dark:text-gray-200'
@@ -226,7 +265,36 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                             {currentName}
                         </span>
                     )}
-                    {hasSubtasks && onSubtasksToggle && (
+                    {task.is_blocked && !isTaskCompleted(task.status) && (
+                        <span
+                            className="ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex-shrink-0"
+                            title={t(
+                                'relations.blockedTooltip',
+                                'Blocked by {{count}} open task(s)',
+                                { count: task.blocked_by_count || 1 }
+                            )}
+                            data-testid="task-blocked-badge"
+                        >
+                            <NoSymbolIcon className="h-3.5 w-3.5" />
+                            <span className="text-[11px] font-medium">
+                                {t('relations.blocked', 'Blocked')}
+                            </span>
+                        </span>
+                    )}
+                    {!editable && commentCount > 0 && (
+                        <span
+                            className="ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full text-gray-400 dark:text-gray-500 flex-shrink-0"
+                            title={t('comments.count', '{{count}} comments', {
+                                count: commentCount,
+                            })}
+                        >
+                            <ChatBubbleLeftIcon className="h-3.5 w-3.5" />
+                            <span className="text-[11px] font-medium">
+                                {commentCount}
+                            </span>
+                        </span>
+                    )}
+                    {!editable && hasSubtasks && onSubtasksToggle && (
                         <button
                             type="button"
                             onClick={(e) => {
@@ -239,7 +307,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                     ? t('tasks.hideSubtasks', 'Hide subtasks')
                                     : t('tasks.showSubtasks', 'Show subtasks')
                             }
-                            className={`ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full border transition-colors ${
+                            className={`ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full border transition-colors flex-shrink-0 ${
                                 showSubtasks
                                     ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-100'
                                     : 'text-gray-400 border-transparent hover:border-gray-200 hover:text-gray-600 dark:hover:border-gray-600'
@@ -331,6 +399,67 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                 )}
             </div>
 
+            {!editable && (onEdit || onDelete) && (
+                <div
+                    ref={actionsMenuRef}
+                    className="relative flex-shrink-0"
+                    onClick={stop}
+                    onKeyDown={(e) => e.stopPropagation()}
+                >
+                    <button
+                        type="button"
+                        onClick={() => setIsActionsMenuOpen((open) => !open)}
+                        aria-haspopup="menu"
+                        aria-expanded={isActionsMenuOpen}
+                        aria-label={t('common.moreActions', 'More actions')}
+                        title={t('common.moreActions', 'More actions')}
+                        data-testid="task-actions-menu-button"
+                        className={`p-1 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-opacity focus-visible:opacity-100 ${
+                            isActionsMenuOpen
+                                ? 'opacity-100'
+                                : '[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100'
+                        }`}
+                    >
+                        <EllipsisVerticalIcon className="h-4 w-4" />
+                    </button>
+                    {isActionsMenuOpen && (
+                        <div
+                            role="menu"
+                            className="absolute right-0 top-full mt-1 w-36 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 overflow-hidden"
+                        >
+                            {onEdit && (
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={() => {
+                                        setIsActionsMenuOpen(false);
+                                        onEdit();
+                                    }}
+                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    <PencilIcon className="h-4 w-4" />
+                                    {t('common.edit', 'Edit')}
+                                </button>
+                            )}
+                            {onDelete && (
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={(e) => {
+                                        setIsActionsMenuOpen(false);
+                                        onDelete(e);
+                                    }}
+                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                >
+                                    <TrashIcon className="h-4 w-4" />
+                                    {t('common.delete', 'Delete')}
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
+
             {!hideStatusControl && !task.habit_mode && onToggleCompletion && (
                 <div className="flex-shrink-0" onClick={stop}>
                     <TaskStatusControl
@@ -339,6 +468,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         onTaskUpdate={onTaskUpdate}
                         showMobileVariant={false}
                         onMenuOpenChange={onMenuOpenChange}
+                        hideLabel={condenseStatusControl}
                     />
                 </div>
             )}

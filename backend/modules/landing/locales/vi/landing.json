@@ -2,7 +2,7 @@
   "meta": {
     "langSwitcherLabel": "Đổi ngôn ngữ",
     "langSwitcherCurrent": "Ngôn ngữ: {{name}}",
-    "description": "Lĩnh vực, mục tiêu, dự án và nhiệm vụ, cùng với ghi chú và thói quen, trong một hệ thống. Thiết lập tài khoản tududi Cloud trong một phút. Một máy chủ MCP hiển thị {{tools}} công cụ cho phép các trợ lý AI làm việc trên danh sách của bạn. Tự lưu trữ luôn có sẵn nếu bạn thích tự chạy máy chủ hơn.",
+    "description": "Ghi lại mọi thứ, lên kế hoạch ngày bằng AI quanh lịch của bạn, và giữ lĩnh vực, mục tiêu, dự án, ghi chú, thói quen trong một hệ thống. Máy chủ MCP với {{tools}} công cụ cho phép tác tử AI làm việc với danh sách của bạn. Tài khoản tududi Cloud sẵn sàng trong một phút.",
     "title": "tududi: trình quản lý nhiệm vụ và hệ thống quản lý cuộc sống, với MCP cho các trợ lý AI"
   },
   "nav": {
@@ -11,25 +11,25 @@
     "ai": "AI và MCP",
     "pricing": "Giá",
     "faq": "Câu hỏi thường gặp",
-    "docs": "Tài liệu",
-    "changelog": "Thay đổi",
+    "blog": "Blog",
     "signIn": "Đăng nhập",
     "toggle": "Mở menu",
-    "selfHostGuide": "Hướng dẫn tự lưu trữ"
+    "plan": "Lên kế hoạch ngày"
   },
   "hero": {
     "badgeStars": "sao trên GitHub",
     "badgeMcp": "Tích hợp sẵn máy chủ MCP",
-    "starsLoading": "Đang tải số sao",
+    "badgeCloudOpen": "tududi Cloud đã mở",
     "ctaDemo": "Dùng thử bản demo trực tiếp",
     "demoNote": "Một phiên bản lưu trữ thật với dữ liệu mẫu, dùng chung và được đặt lại thường xuyên",
     "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch",
-    "ctaWaitlist": "Tham gia danh sách chờ",
     "cloudNote": "Không có máy chủ nào cần thiết lập. Hàng tháng hoặc hàng năm, và bạn có thể hủy bất cứ lúc nào.",
-    "ctaPrimary": "Bắt đầu trên tududi Cloud",
-    "lede": "Lĩnh vực, mục tiêu, dự án, nhiệm vụ, ghi chú và thói quen, trong một hệ thống. Tạo một tài khoản Cloud trong một phút.",
+    "ctaPrimary": "Bắt đầu ngay",
+    "lede": "Ghi lại mọi thứ, lên kế hoạch ngày bằng AI quanh lịch của bạn, và giữ lĩnh vực, mục tiêu, dự án, ghi chú, thói quen trong một hệ thống. Tạo tài khoản Cloud trong một phút.",
     "titleLine1": "Năng suất được đơn giản hóa",
-    "titleLine2": ""
+    "titleLine2": "",
+    "ctaTrial": "Bắt đầu dùng thử miễn phí {{days}} ngày",
+    "cloudNoteTrial": "Miễn phí {{days}} ngày, không cần thẻ. Sau đó trả theo tháng hoặc năm, hủy bất cứ lúc nào."
   },
   "proof": {
     "stars": "sao trên GitHub",
@@ -37,7 +37,6 @@
     "languages": "{{count}} ngôn ngữ",
     "dockerPulls": "lượt tải Docker",
     "discord": "thành viên Discord",
-    "discordAlt": "Discord: {{count}} thành viên",
     "minute": "Thiết lập trong một phút"
   },
   "press": {
@@ -63,16 +62,11 @@
         "body": "Xây trên Model Context Protocol mở. Hoạt động với Claude và các máy khách MCP khác."
       }
     },
-    "configTitle": "Kết nối với Claude Desktop",
     "footnoteClients": "Cách làm tương tự áp dụng cho Cursor, Windsurf, Cline và mọi máy khách MCP khác.",
     "footnoteDocsLink": "Đọc tài liệu MCP →",
     "assistantTitle": "Trợ lý AI",
     "assistantLede": "Một lớp riêng biệt và tùy chọn, đọc dữ liệu của bạn rồi trả lại các bản tóm tắt bằng ngôn ngữ dễ hiểu. Hoạt động với mọi nhà cung cấp tương thích OpenAI, kể cả loại bạn tự vận hành như Ollama.",
     "assistantCards": {
-      "daily": {
-        "title": "Bản tin buổi sáng",
-        "body": "Bản tóm tắt buổi sáng với công việc trọng tâm và những dấu hiệu rủi ro đáng lưu ý."
-      },
       "task": {
         "title": "Phân tích công việc",
         "body": "Gợi ý các bước tiếp theo cho một công việc cụ thể, tạo ra khi bạn cần."
@@ -80,11 +74,16 @@
       "project": {
         "title": "Phân tích dự án",
         "body": "Đánh giá nhanh tình trạng một dự án: điều gì đang tiến triển, điều gì đang tắc."
+      },
+      "plan": {
+        "title": "Lên kế hoạch ngày",
+        "body": "Sắp xếp ngày của bạn vào thời gian trống quanh cuộc họp, kèm lý do cho từng khối."
+      },
+      "wrapUp": {
+        "title": "Tổng kết ngày",
+        "body": "Cuối ngày: những gì đã xong, một khuôn mẫu đáng chú ý và việc cần chuyển sang ngày mai."
       }
     },
-    "configCloudTab": "Cloud",
-    "configSelfHostNote": "Hãy hướng TUDUDI_URL đến phiên bản riêng của bạn thay vào đó. Mọi thứ khác đều giống nhau.",
-    "configSelfHostTab": "Bạn tự lưu trữ chứ?",
     "demo": {
       "answer1Html": "Hãy bắt đầu với <strong>Phát hành migration hóa đơn</strong>. Nó hết hạn hôm nay, và ba nhiệm vụ trong <strong>Thanh toán</strong> đang chờ sau nó.",
       "answer2Html": "Xong. <strong>Xem lại bản thiết kế lại</strong> giờ hết hạn vào thứ Sáu, và <strong>Bỏ chặn hàng đợi Thanh toán</strong> nằm trong dự án Thanh toán, hết hạn hôm nay.",
@@ -120,13 +119,36 @@
     "eyebrow": "Tính năng",
     "title": "Một hệ thống trọn vẹn cho cuộc sống ngăn nắp",
     "showAll": "Xem tất cả {{count}} tính năng",
+    "preview": "Xem trước",
+    "closePreview": "Đóng xem trước",
     "groups": {
+      "planDay": "Ghi lại & lên kế hoạch",
       "planFocus": "Lập kế hoạch và tập trung",
       "tasksProjects": "Công việc và dự án",
       "accessAnywhere": "Truy cập mọi nơi",
       "privacyCollab": "Riêng tư và cộng tác"
     },
     "cards": {
+      "capture": {
+        "title": "Một ô cho mọi thứ",
+        "body": "Thêm mục hộp thư đến, công việc, ghi chú hoặc dự án từ bất cứ đâu, kèm tệp. Ảnh chụp màn hình được dán sẽ trở thành chính mục đó."
+      },
+      "nlpDates": {
+        "title": "Ngày tháng bằng lời thường",
+        "body": "“tomorrow”, “next fri”, “every weekday”: ngày và lặp lại được đọc khi gõ, cùng với #thẻ, +Dự án và @người."
+      },
+      "planMyDay": {
+        "title": "Lên kế hoạch ngày",
+        "body": "Trình lập kế hoạch xếp công việc vào thời gian trống quanh cuộc họp, với thời lượng, gợi ý theo thứ tự và mẹo."
+      },
+      "todayCalendar": {
+        "title": "Hôm nay cùng lịch",
+        "body": "Kết nối lịch Google, Apple hoặc Outlook và thấy cuộc họp bên cạnh công việc, khối hiện tại ở trên cùng."
+      },
+      "aiPlanning": {
+        "title": "Lập kế hoạch ngày bằng AI",
+        "body": "Soạn ngày bằng AI, nhận ước tính thời lượng và bản tổng kết cuối ngày chuyển tiếp việc dang dở."
+      },
       "goals": {
         "title": "Mục tiêu",
         "body": "Đặt kết quả cho một mùa hay một năm, rồi xem Lĩnh vực và Dự án nào thực sự đang đẩy chúng tiến lên."
@@ -146,10 +168,6 @@
       "matrixKanban": {
         "title": "Ma trận Eisenhower và Kanban",
         "body": "Chuyển sang ma trận Eisenhower hoặc bảng Kanban khi câu hỏi chỉ đơn giản là: giờ tôi làm gì."
-      },
-      "dueDates": {
-        "title": "Hạn chót thông minh",
-        "body": "Tự động phân loại: ưu tiên hôm nay, hạn chót sắp tới và những việc để dành sau."
       },
       "insights": {
         "title": "Thống kê năng suất",
@@ -211,10 +229,6 @@
         "title": "Truy cập API và Swagger",
         "body": "Tài liệu Swagger có phiên bản và mã truy cập cá nhân cho các tích hợp riêng."
       },
-      "responsive": {
-        "title": "Thiết kế đáp ứng",
-        "body": "Bố cục thích ứng gọn gàng từ màn hình rộng cho tới chiếc điện thoại trong túi bạn."
-      },
       "privacy": {
         "title": "Riêng tư và quyền kiểm soát",
         "body": "Giữ dữ liệu là của riêng bạn. Tự vận hành để toàn quyền kiểm soát, hoặc dùng bản Được quản lý với sao lưu mã hóa."
@@ -226,26 +240,12 @@
     },
     "sub": "tududi kết hợp mục tiêu, dự án, nhiệm vụ, ghi chú và các chế độ xem thông minh vào một hệ thống bình lặng, tập trung. Hãy để chúng tôi vận hành nó cho bạn, hoặc tự vận hành nếu bạn thích như vậy."
   },
-  "selfHost": {
-    "eyebrow": "Tự vận hành",
-    "title": "Chạy trên máy chủ của chính bạn",
-    "cardTitle": "Cài đặt bằng Docker",
-    "step1": "Tải image Docker",
-    "step2": "Chạy container",
-    "step3Prefix": "Truy cập tại",
-    "linkGithub": "Xem trên GitHub",
-    "cardSub": "Dành cho những người đã chạy Docker rồi",
-    "ctaCloud": "Bắt đầu trên Cloud",
-    "linkDocs": "Đọc hướng dẫn tự lưu trữ",
-    "showCommands": "Hiển thị các lệnh cài đặt",
-    "sub": "Tự lưu trữ dành cho những người đã chạy Docker và reverse proxy. Nếu bạn muốn tududi mà không trở thành quản trị viên hệ thống, hãy dùng Cloud."
-  },
   "pricing": {
     "eyebrow": "Giá",
     "title": "Chọn cách bạn dùng tududi",
     "mostPopular": "ĐƯỢC CHỌN NHẤT",
     "earlyBird": "ƯU ĐÃI SỚM",
-    "perYear": "/năm",
+    "perYear": "/năm mỗi người",
     "plans": {
       "selfHosted": {
         "action": "Đọc hướng dẫn tự lưu trữ →",
@@ -263,62 +263,58 @@
         "name": "Cloud",
         "or": "hoặc",
         "launchNote": "Giá năm ưu đãi sớm, giữ nguyên chừng nào bạn còn đăng ký.",
-        "comingSoon": "Mở trong vài ngày nữa",
-        "comingSoonNote": "Chúng tôi đang chuyển Cloud sang hạ tầng mới. Hãy để lại email bên dưới và chúng tôi sẽ báo ngay khi mở lại.",
-        "notifySubmit": "Báo cho tôi",
         "action": "Bắt đầu →",
         "features": [
           "Hoạt động trong một phút, không cần máy chủ để thiết lập",
           "Nhiệm vụ, dự án và ghi chú không giới hạn, cộng với tệp đính kèm",
-          "Trợ lý AI, MCP, đồng bộ CalDAV và bot Telegram",
+          "Thêm người thân hoặc đồng đội, mỗi người là một chỗ với cùng mức giá",
+          "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
           "Các bản cập nhật và sao lưu hàng ngày được xử lý cho bạn, với {{proStorageGb}} GB dung lượng lưu trữ",
           "Xuất mọi thứ bất cứ lúc nào, tự xóa tài khoản của mình"
         ],
-        "priceNote": "Mọi thứ đều được bao gồm. Hủy bất cứ lúc nào."
+        "priceNote": "Mọi thứ đều được bao gồm. Hủy bất cứ lúc nào.",
+        "actionTrial": "Dùng thử miễn phí →",
+        "priceNoteTrial": "{{days}} ngày miễn phí, không cần thẻ. Hủy bất cứ lúc nào.",
+        "trialNote": "Bản dùng thử có mọi thứ trừ trợ lý AI, liên kết ghi chú công khai và thêm thành viên."
       }
     },
-    "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 30 ngày, không cần lý do.",
-    "perMonth": "/tháng",
+    "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 14 ngày, không cần lý do.",
+    "perMonth": "/tháng mỗi người",
     "sub": "Một gói được lưu trữ, hoặc tự chạy nó nếu bạn thích tự xử lý vận hành hơn."
   },
   "compare": {
     "title": "So sánh nhanh",
+    "sub": "tududi Cloud so với các ứng dụng thường được đem ra so sánh nhất, ở gói cá nhân của họ.",
+    "footnote": "Todoist Pro, TickTick Premium và Notion Plus, theo trang giá công khai của họ vào tháng 9/2026. Hãy xem trang của họ để biết giá hiện tại. Giá của họ là giá niêm yết tại Mỹ, tính bằng đô la.",
     "rows": {
-      "openSource": "Lõi mã nguồn mở",
-      "commercialUse": "Sử dụng thương mại",
-      "infraControl": "Toàn quyền kiểm soát hạ tầng",
-      "dataOnHardware": "Dữ liệu nằm trên phần cứng của bạn",
-      "noRecurring": "Không có chi phí định kỳ",
-      "noSetup": "Không cần dựng máy chủ",
-      "managedUpdates": "Cập nhật được quản lý",
-      "autoBackups": "Sao lưu tự động",
-      "pricing": "Giá",
-      "exportAnytime": "Xuất mọi thứ bất cứ lúc nào",
-      "proFeatures": "Trợ lý AI, MCP, CalDAV, Telegram",
-      "startMinute": "Bắt đầu trong một phút",
-      "storage": "Dung lượng lưu trữ tệp đính kèm",
-      "support": "Hỗ trợ"
+      "price": "Giá, trả theo năm",
+      "aiIncluded": "Có sẵn AI",
+      "dayPlanner": "Lên kế hoạch ngày theo lịch",
+      "habits": "Theo dõi thói quen",
+      "goals": "Mục tiêu, lĩnh vực và dự án",
+      "notes": "Ghi chú cạnh công việc",
+      "matrix": "Ma trận Eisenhower",
+      "kanban": "Bảng Kanban",
+      "views": "Chế độ xem thông minh đã lưu",
+      "people": "Giao việc cho người khác",
+      "telegram": "Ghi nhanh từ Telegram",
+      "caldav": "Đồng bộ công việc qua CalDAV",
+      "mcp": "Máy chủ MCP cho tác tử AI"
     },
     "values": {
-      "community": "Cộng đồng",
-      "email": "Email",
-      "gigabytes": "{{count}} GB",
-      "perMonthOrYear": "{{monthly}}/tháng hoặc {{price}}/năm",
-      "selfCost": "Miễn phí, cộng với chi phí lưu trữ của bạn",
-      "yourDisk": "Ổ đĩa riêng của bạn"
-    },
-    "colCloud": "tududi Cloud",
-    "colSelf": "Tự lưu trữ",
-    "sub": "Cùng một ứng dụng trong cả hai trường hợp. Điều khác biệt là ai điều hành nó, và nó khiến bạn phải trả bao nhiêu."
+      "perYear": "{{price}}/năm",
+      "businessOnly": "Chỉ gói Business",
+      "separateApp": "Ứng dụng riêng",
+      "diy": "Tự dựng"
+    }
   },
   "waitlist": {
-    "title": "Chưa sẵn sàng?",
-    "sub": "Để lại email để nhận ghi chú phát hành và thỉnh thoảng một tin mới. Không spam, hủy đăng ký chỉ một cú nhấp.",
     "placeholder": "ban@email.com",
-    "inputLabel": "Địa chỉ email",
-    "submit": "Báo cho tôi",
-    "note": "Chúng tôi lưu địa chỉ của bạn và ngày bạn gửi, chỉ để gửi ghi chú phát hành chứ không gì khác. Chúng tôi không bao giờ chia sẻ nó.",
-    "joined": "Bạn đã có trong danh sách. Chúng tôi sẽ gửi email khi tududi Cloud mở."
+    "inputLabel": "Địa chỉ email"
+  },
+  "signup": {
+    "note": "Chúng tôi lưu địa chỉ của bạn và ngày bạn cung cấp chỉ để gửi tin tức và cập nhật. Chúng tôi không bao giờ chia sẻ.",
+    "joined": "Bạn đã đăng ký. Tin tức và cập nhật sẽ được gửi qua email."
   },
   "langs": {
     "heading": "Có sẵn bằng {{count}} ngôn ngữ trên toàn thế giới"
@@ -329,19 +325,25 @@
   },
   "footer": {
     "colProduct": "Sản phẩm",
-    "colResources": "Tài nguyên",
     "colCommunity": "Cộng đồng và hỗ trợ",
     "colSupport": "Ủng hộ",
-    "linkRoadmap": "Lộ trình",
-    "linkIssues": "Báo lỗi",
-    "linkEmail": "Email",
     "linkCoffee": "Mời một ly cà phê",
-    "subTitle": "Ghi chú phát hành qua email",
-    "subBody": "Thỉnh thoảng có ghi chú phát hành. Không tiếp thị, hủy đăng ký bất cứ lúc nào.",
+    "subTitle": "Tin tức và cập nhật qua email",
+    "subBody": "Thỉnh thoảng gửi tin tức và cập nhật sản phẩm. Không spam, hủy đăng ký bất cứ lúc nào.",
     "subSubmit": "Đăng ký",
     "rights": "Bảo lưu mọi quyền.",
-    "linkLicence": "Bản quyền MIT",
-    "tagline": "Một hệ thống mở để tổ chức cuộc sống và công việc. Được chúng tôi lưu trữ, hoặc trên máy chủ riêng của bạn."
+    "tagline": "Một hệ thống điềm tĩnh, trọn vẹn để sắp xếp cuộc sống và công việc.",
+    "linkTerms": "Điều khoản",
+    "linkPrivacy": "Quyền riêng tư",
+    "linkRefunds": "Hoàn tiền",
+    "linkContact": "Liên hệ",
+    "linkCookies": "Cài đặt cookie"
+  },
+  "consent": {
+    "label": "Lựa chọn cookie",
+    "body": "Chúng tôi dùng cookie để cải thiện trải nghiệm của bạn trên trang web này. Cookie chỉ được đặt khi bạn đồng ý.",
+    "accept": "Chấp nhận",
+    "decline": "Từ chối"
   },
   "js": {
     "showFewer": "Thu gọn",
@@ -351,8 +353,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Không. Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm, và đó là toàn bộ bảng giá: không có mức miễn phí, không có đồng hồ thử nghiệm, không có thẻ bị tính phí cho thứ mà sau này lặng lẽ bắt đầu tính tiền. Có bảo đảm hoàn tiền trong 30 ngày nếu nó không phù hợp với bạn, và có một bản demo trực tiếp trên trang này nếu bạn muốn xem trước. Cách miễn phí để dùng tududi là chạy nó trên máy chủ riêng của bạn, đó là cùng một ứng dụng.",
-        "q": "Có gói miễn phí hoặc bản thử nghiệm nào trên tududi Cloud không?"
+        "a": "Không. Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm cho mỗi người, và đó là toàn bộ bảng giá: không có mức miễn phí, không có đồng hồ thử nghiệm, không có thẻ bị tính phí cho thứ mà sau này lặng lẽ bắt đầu tính tiền. Có bảo đảm hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn, và có một bản demo trực tiếp trên trang này nếu bạn muốn xem trước. Cách miễn phí để dùng tududi là chạy nó trên máy chủ riêng của bạn, đó là cùng một ứng dụng.",
+        "q": "Có gói miễn phí hoặc bản thử nghiệm nào trên tududi Cloud không?",
+        "aTrial": "Không có gói miễn phí, nhưng mỗi tài khoản mới được dùng thử miễn phí {{days}} ngày, không cần thẻ. Bản dùng thử có mọi thứ trừ trợ lý AI, liên kết ghi chú công khai và thêm thành viên. Nếu bạn không đăng ký, tài khoản chuyển sang chỉ đọc trong 30 ngày để bạn xuất dữ liệu, sau đó bị xóa. Sau thời gian dùng thử, Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm cho mỗi người. Cách miễn phí để dùng tududi là chạy nó trên máy chủ của bạn, đó là cùng một ứng dụng."
       },
       "leaving": {
         "q": "Tôi có thể rời đi không, và dữ liệu của tôi sẽ ra sao?",
@@ -370,10 +373,6 @@
         "a": "Có, và bạn không cần mua gì trước. Bản quyền MIT cho phép sử dụng thương mại, bao gồm cả trong một công ty và trong một sản phẩm thương mại, không có ngưỡng doanh thu và không có gì phải báo cáo. Nếu bộ phận tài chính của bạn cần hóa đơn, một gói đăng ký Cloud được lập hóa đơn qua nhà cung cấp thanh toán của chúng tôi và tạo ra một hóa đơn. Không có gì trên trang này bán sự cho phép, vì sự cho phép đó đã là của bạn rồi.",
         "q": "Tôi có thể dùng tududi tại nơi làm việc, hoặc trong công ty của mình không?"
       },
-      "dataLocation": {
-        "a": "Mọi thứ đều tồn tại trong một tệp cơ sở dữ liệu SQLite duy nhất bên trong volume mà bạn đã mount. Sao lưu nghĩa là sao chép tệp đó đến một nơi an toàn, và khôi phục nghĩa là sao chép nó lại. tududi cũng tự động chụp một bản snapshot của cơ sở dữ liệu trước khi áp dụng migration, giữ lại các bản sao gần đây. Không có định dạng độc quyền và không có bước xuất nào nằm giữa bạn và dữ liệu của riêng bạn.",
-        "q": "Dữ liệu của tôi ở đâu, và tôi sao lưu nó như thế nào?"
-      },
       "licence": {
         "a": "Ứng dụng này là mã nguồn mở theo bản quyền MIT, vì vậy bạn có thể chạy nó trên máy chủ riêng của mình miễn phí, chỉnh sửa nó, và xây dựng dựa trên nó mà không phải trả tiền cho ai. Không có giới hạn số ghế và không có tính năng bị giữ lại: bản tự lưu trữ là sản phẩm hoàn chỉnh. tududi Cloud là một dịch vụ có phí, vì lưu trữ, sao lưu và email tốn tiền để vận hành. Bạn trả tiền cho công việc vận hành, không bao giờ cho quyền truy cập vào phần mềm.",
         "q": "tududi có thực sự miễn phí không?"
@@ -387,23 +386,6 @@
         "a": "MCP là Model Context Protocol, một tiêu chuẩn mở để kết nối các trợ lý AI với các hệ thống thực. tududi cung cấp một máy chủ MCP hiển thị {{tools}} công cụ bao gồm nhiệm vụ, dự án, lĩnh vực, mục tiêu, thói quen, ghi chú, người, thẻ, chế độ xem, hộp thư đến, tìm kiếm và số liệu, để một trợ lý có thể ghi lại, tìm, cập nhật và hoàn thành công việc thay vì chỉ nói về nó. Đây là tùy chọn, đi kèm với Cloud và với mọi phiên bản tự lưu trữ, và hoạt động với Claude Desktop, Cursor, Windsurf, Cline, hoặc bất kỳ ứng dụng MCP khác.",
         "q": "MCP là gì, và một trợ lý thực sự có thể làm gì?"
       },
-      "mobile": {
-        "a": "tududi được cài đặt như một PWA thay vì một ứng dụng gốc. Thêm nó vào màn hình chính trên Android hoặc iOS, hoặc cài đặt nó trên máy tính để bàn, và nó hoạt động như một ứng dụng: nó đọc từ bộ nhớ đệm khi bạn offline và đồng bộ hóa các thay đổi của bạn khi kết nối lại. Không có gì cần tải xuống từ App Store hay Play Store.",
-        "q": "Có ứng dụng di động không?"
-      },
-      "multiUser": {
-        "a": "Có. Một phiên bản duy nhất có thể lưu trữ nhiều người dùng, và các dự án có thể được chia sẻ với quyền truy cập chỉ đọc hoặc đọc-ghi, quyền mà các nhiệm vụ và ghi chú bên trong sẽ kế thừa. Tự đăng ký bị tắt theo mặc định, vì vậy một quản trị viên sẽ tạo tài khoản hoặc mở đăng ký một cách có chủ ý. Không ai vào được chỉ vì bạn quên đóng một cánh cửa.",
-        "q": "Nhiều người có thể dùng chung một phiên bản không?"
-      },
-      "requirements": {
-        "a": "Docker, một nơi lưu trữ ổn định cho cơ sở dữ liệu, một reverse proxy có TLS phía trước, và tính kỷ luật để áp dụng các bản cập nhật và giữ bản sao lưu. Nó chạy thoải mái trên một VPS nhỏ hoặc một máy trong chính mạng của bạn, và các lệnh có trong phần Tự lưu trữ và trong tài liệu. Hầu hết mọi người sẽ được phục vụ tốt hơn bởi Cloud, đó là cùng một ứng dụng mà không cần tất cả công việc đó.",
-        "linkLabel": "Đọc tài liệu",
-        "q": "Tôi cần gì để tự lưu trữ nó?"
-      },
-      "reverseProxy": {
-        "a": "Có, và đó là cách thông thường để chạy nó. Đặt TUDUDI_TRUST_PROXY để ứng dụng tin tưởng các header được chuyển tiếp bởi nginx, Caddy hoặc Traefik. Nếu bạn bỏ qua điều này, việc đăng nhập và ghi log IP sẽ hoạt động kỳ lạ theo cách khó chẩn đoán, vì vậy ứng dụng sẽ đưa ra một lỗi cụ thể thay vì thất bại một cách âm thầm. Các giá trị được chấp nhận được ghi trong README.",
-        "q": "Nó có hoạt động sau một reverse proxy không?"
-      },
       "shutdown": {
         "a": "Ứng dụng có bản quyền MIT, và mã nguồn là công khai, vì vậy nó không thể bị lấy đi từ bạn. Bất kỳ ai cũng có thể tiếp tục chạy nó, và bạn có thể fork nó. Trên tududi Cloud, dữ liệu của bạn sống trong một cơ sở dữ liệu tududi chuẩn thay vì một định dạng độc quyền, vì vậy nếu dịch vụ có bao giờ đóng lại, bạn sẽ nhận được dữ liệu của mình và một hướng dẫn để chuyển nó sang máy chủ riêng của bạn.",
         "q": "Điều gì sẽ xảy ra với dữ liệu của tôi nếu tududi biến mất?"
@@ -416,8 +398,7 @@
     "eyebrow": "FAQ",
     "groups": {
       "managed": "AI, MCP & Cloud",
-      "project": "Bản quyền & dự án",
-      "selfHost": "Tự lưu trữ & dữ liệu"
+      "project": "Bản quyền & dự án"
     },
     "permalink": "Liên kết đến câu trả lời này",
     "sub": "Bản quyền, AI, và điều gì xảy ra với dữ liệu của bạn. Nếu thiếu điều gì, hãy hỏi trên Discord.",
@@ -428,8 +409,9 @@
     "ctaPrimary": "Bắt đầu",
     "includes": [
       "Nhiệm vụ, dự án và ghi chú không giới hạn",
+      "Thêm người thân hoặc đồng đội, mỗi người là một chỗ với cùng mức giá",
       "Tệp đính kèm và tải lên tệp",
-      "Trợ lý AI, MCP, đồng bộ CalDAV và bot Telegram",
+      "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
       "Sao lưu hàng ngày và cập nhật được quản lý",
       "Hỗ trợ qua email",
       "Xuất mọi thứ, bất cứ lúc nào"
@@ -472,14 +454,66 @@
     "title": "Vì sao nên dùng tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Không phải là tính năng. Mọi tính năng đều có trong bản tự lưu trữ.",
-    "whyTitle": "Bạn thực sự đang trả tiền cho điều gì"
+    "whyTitle": "Bạn thực sự đang trả tiền cho điều gì",
+    "ctaTrial": "Dùng thử miễn phí",
+    "pricingSubTrial": "Dùng thử miễn phí {{days}} ngày, không cần thẻ. Sau đó mọi thứ đều có sẵn, hủy khi bạn muốn."
   },
   "finalCta": {
     "primary": "Bắt đầu",
     "secondary": "Xem giá",
     "selfHostLink": "Đọc hướng dẫn.",
-    "selfHostPrefix": "Bạn thích chạy nó trên máy chủ riêng của mình hơn?",
-    "sub": "Chúng tôi vận hành máy chủ, các bản cập nhật và bản sao lưu. Bạn có được hệ thống, và một bảo đảm hoàn tiền trong 30 ngày nếu nó không phù hợp với bạn.",
-    "title": "Tổ chức mọi thứ trong một phút"
+    "sub": "Chúng tôi vận hành máy chủ, các bản cập nhật và bản sao lưu. Bạn có được hệ thống, và một bảo đảm hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn.",
+    "title": "Tổ chức mọi thứ trong một phút",
+    "subTrial": "Chúng tôi vận hành máy chủ, cập nhật và sao lưu. Dùng thử miễn phí {{days}} ngày, không cần thẻ.",
+    "primaryTrial": "Dùng thử miễn phí"
+  },
+  "contact": {
+    "title": "Liên hệ với chúng tôi",
+    "lede": "Có câu hỏi về tududi Cloud, thanh toán hoặc tài khoản? Gửi tin nhắn cho chúng tôi, chúng tôi sẽ trả lời qua email.",
+    "name": "Tên",
+    "email": "Email",
+    "message": "Tin nhắn",
+    "submit": "Gửi tin nhắn",
+    "sent": "Cảm ơn, tin nhắn của bạn đã được gửi. Chúng tôi sẽ trả lời qua email.",
+    "invalid": "Vui lòng nhập tên, địa chỉ email hợp lệ và nội dung tin nhắn.",
+    "failed": "Hiện không thể gửi tin nhắn. Vui lòng email cho chúng tôi tại"
+  },
+  "plan": {
+    "eyebrow": "Lên kế hoạch ngày",
+    "title": "Từ một ý nghĩ thoáng qua đến một ngày trọn vẹn",
+    "sub": "Ghi lại mọi thứ ngay khi nảy ra, lên kế hoạch ngày quanh các cuộc họp với AI, rồi làm từng khối một.",
+    "stepLabel": "Bước {{n}}",
+    "steps": {
+      "capture": {
+        "title": "Ghi lại mọi thứ bằng lời thường",
+        "body": "Một ô Thêm cho hộp thư đến, công việc, ghi chú và dự án, ở mọi nơi trong ứng dụng. Viết như bạn nghĩ, tududi lo phần còn lại.",
+        "points": [
+          "“next fri”, “in 3 days” hay “every first monday” đặt ngày hoặc lặp lại",
+          "#thẻ, +Dự án và @người được nhận ra khi gõ",
+          "Dán ảnh chụp màn hình hoặc thả tệp, chúng đi kèm luôn"
+        ],
+        "alt": "Ô Thêm biến một câu thành công việc lặp lại có thẻ và dự án"
+      },
+      "plan": {
+        "title": "Lên kế hoạch ngày với AI (hoặc không)",
+        "body": "Trình lập kế hoạch cho thấy những gì vừa với hôm nay, theo thứ tự bạn chọn. Đặt thời lượng cho từng việc và xếp vào thời gian trống giữa các cuộc họp, hoặc để AI soạn cả ngày.",
+        "points": [
+          "Gợi ý theo thứ tự: quá hạn, đến hạn hôm nay, đang làm, rồi phần còn lại",
+          "Soạn bằng AI lấp thời gian trống quanh cuộc họp, Hoàn tác đưa về như cũ",
+          "Mẹo cảnh báo ngày quá tải và khoảng trống vừa cho một việc"
+        ],
+        "alt": "Trình lập kế hoạch ngày với công việc và cuộc họp trên cùng dòng thời gian"
+      },
+      "today": {
+        "title": "Hôm nay, cùng lịch của bạn",
+        "body": "Bắt đầu ngày và Hôm nay chỉ hiện những gì bạn đã cam kết: khối hiện tại, rồi lịch trình, xen giữa là cuộc họp từ Google, Apple hoặc Outlook.",
+        "points": [
+          "Đánh dấu xong hoặc dời lại từ thẻ Bây giờ",
+          "Lịch chỉ đọc, lưu trữ được mã hóa",
+          "Bản tổng kết AI cuối ngày chuyển việc dang dở sang ngày mai"
+        ],
+        "alt": "Hôm nay với việc tiếp theo, lịch trình và cuộc họp từ hai lịch"
+      }
+    }
   }
 }

@@ -8,11 +8,17 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import InboxItemAttachments from './InboxItemAttachments';
 import { useStore } from '../../store/useStore';
 import QuickCaptureInput, {
     InboxComposerFooterContext,
     QuickCaptureInputHandle,
 } from './QuickCaptureInput';
+import {
+    analyzeInboxText,
+    applyAnalysisToTask,
+    InboxAnalysis,
+} from '../../utils/inboxService';
 
 interface InboxItemDetailProps {
     item: InboxItem;
@@ -23,7 +29,6 @@ interface InboxItemDetailProps {
     openNoteModal: (note: Note | null, inboxItemUid?: string) => void;
     projects: Project[];
     isNew?: boolean;
-    onReClarify?: (uid: string) => void;
 }
 
 const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
@@ -35,7 +40,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     openNoteModal,
     projects,
     isNew = false,
-    onReClarify,
 }) => {
     const { t } = useTranslation();
     const {
@@ -87,7 +91,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
-            if (char === '"' && (i === 0 || text[i - 1] === '+')) {
+            if (char === '"' && (i === 0 || text[i - 1] === '+' || text[i - 1] === '@')) {
                 inQuotes = true;
                 currentToken += char;
             } else if (char === '"' && inQuotes) {
@@ -193,7 +197,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const renderInlineSegments = (text: string): React.ReactNode => {
         // Only render the first line for the preview
         const firstLine = text.split('\n')[0];
-        const re = /#([\w-]+)|\+(?:"([^"]+)"|(\w+))/g;
+        const re = /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))/gu;
         const nodes: React.ReactNode[] = [];
         let last = 0;
         let m: RegExpExecArray | null;
@@ -223,6 +227,28 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             }}
                             className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
                             aria-label={`Remove tag ${tagName}`}
+                        >
+                            ×
+                        </button>
+                    </span>
+                );
+            } else if (m[4] || m[5]) {
+                // @person
+                const personName = m[4] || m[5];
+                nodes.push(
+                    <span
+                        key={`person-${idx}`}
+                        className="inline-flex items-center gap-0.5 mx-0.5 align-middle text-[11px] font-semibold leading-none text-indigo-700 dark:text-indigo-300 bg-indigo-100/70 dark:bg-indigo-400/10 rounded-full px-2 py-[3px]"
+                    >
+                        @{personName}
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                void removeTokenFromText(raw);
+                            }}
+                            className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
+                            aria-label={`Remove person ${personName}`}
                         >
                             ×
                         </button>
@@ -293,16 +319,31 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         return { sourceText, cleanedContent: cleaned, tagObjects, projectUid, projectRefsList: sourceProjectRefs, hashtagsList: sourceHashtags };
     };
 
-    const handleConvertToTask = (context?: InboxComposerFooterContext) => {
+    const handleConvertToTask = async (context?: InboxComposerFooterContext) => {
         const payload = buildConversionPayload(context?.text, context?.hashtags, context?.projectRefs, context?.cleanedText);
-        const newTask: Task = {
-            name: payload.cleanedContent || displayText,
-            status: 'not_started',
-            priority: null,
-            tags: payload.tagObjects,
-            project_uid: payload.projectUid,
-            completed_at: null,
-        };
+        // Re-analyze against the capture time so "tomorrow" means the day
+        // after the item was added. A date dismissed in the composer stays
+        // dismissed: its live analysis then has no date.
+        let analysis: InboxAnalysis | null = null;
+        try {
+            analysis = await analyzeInboxText(payload.sourceText, {
+                referenceDate: item.created_at,
+                parseDates: context?.analysis ? !!context.analysis.parsed_due_date : true,
+            });
+        } catch (error) {
+            console.error('Failed to analyze inbox item:', error);
+        }
+        const newTask: Task = applyAnalysisToTask(
+            {
+                name: analysis?.cleaned_content || payload.cleanedContent || displayText,
+                status: 'not_started',
+                priority: null,
+                tags: payload.tagObjects,
+                project_uid: payload.projectUid,
+                completed_at: null,
+            },
+            analysis
+        );
         void openTaskModal(newTask, item.uid);
     };
 
@@ -366,56 +407,52 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     // ── Edit-mode footer ──────────────────────────────────────────────────────
 
     const renderComposerFooter = (context: InboxComposerFooterContext) => (
-        <div className="mt-2 flex items-center justify-between gap-2 flex-wrap h-5">
-            <div className="flex items-center gap-3.5">
-                {loading && (
-                    <div className="h-3.5 w-3.5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-                )}
-                <span className="text-[11px] text-gray-400 dark:text-gray-500">
-                    {t('inbox.saveAs', 'Save as')}
-                </span>
+        <>
+            {item.uid && item.attachments && (
+                <InboxItemAttachments
+                    itemUid={item.uid}
+                    attachments={item.attachments}
+                />
+            )}
+            <div className="mt-2 flex items-center justify-between gap-2 flex-wrap h-5">
+                <div className="flex items-center gap-3.5">
+                    {loading && (
+                        <div className="h-3.5 w-3.5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                    )}
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                        {t('inbox.saveAs', 'Save as')}
+                    </span>
+                    <button
+                        type="button"
+                        onClick={() => void handleConvertToTask(context)}
+                        className="text-[12px] text-blue-600 dark:text-blue-400 hover:underline transition-colors focus:outline-none"
+                    >
+                        {t('inbox.createTask', 'Task')}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => void handleConvertToNote(context)}
+                        className="text-[12px] text-purple-600 dark:text-purple-400 hover:underline transition-colors focus:outline-none"
+                    >
+                        {t('inbox.createNote', 'Note')}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleConvertToProject(context)}
+                        className="text-[12px] text-green-600 dark:text-green-400 hover:underline transition-colors focus:outline-none"
+                    >
+                        {t('inbox.createProject', 'Project')}
+                    </button>
+                </div>
                 <button
                     type="button"
-                    onClick={() => handleConvertToTask(context)}
-                    className="text-[12px] text-blue-600 dark:text-blue-400 hover:underline transition-colors focus:outline-none"
+                    onClick={handleDelete}
+                    className="text-[12px] text-red-500 dark:text-red-400 hover:underline transition-colors focus:outline-none"
                 >
-                    {t('inbox.createTask', 'Task')}
+                    {t('common.delete', 'Delete')}
                 </button>
-                <button
-                    type="button"
-                    onClick={() => void handleConvertToNote(context)}
-                    className="text-[12px] text-purple-600 dark:text-purple-400 hover:underline transition-colors focus:outline-none"
-                >
-                    {t('inbox.createNote', 'Note')}
-                </button>
-                <button
-                    type="button"
-                    onClick={() => handleConvertToProject(context)}
-                    className="text-[12px] text-green-600 dark:text-green-400 hover:underline transition-colors focus:outline-none"
-                >
-                    {t('inbox.createProject', 'Project')}
-                </button>
-                {onReClarify && item.uid && (
-                    <>
-                        <span className="text-[11px] text-gray-300 dark:text-gray-600 select-none">•</span>
-                        <button
-                            type="button"
-                            onClick={() => { setIsEditing(false); onReClarify(item.uid!); }}
-                            className="text-[12px] text-gray-400 dark:text-gray-500 hover:underline transition-colors focus:outline-none"
-                        >
-                            {t('inbox.reClarifyLink', 'Re-clarify')}
-                        </button>
-                    </>
-                )}
             </div>
-            <button
-                type="button"
-                onClick={handleDelete}
-                className="text-[12px] text-red-500 dark:text-red-400 hover:underline transition-colors focus:outline-none"
-            >
-                {t('common.delete', 'Delete')}
-            </button>
-        </div>
+        </>
     );
 
     // ── Render ────────────────────────────────────────────────────────────────
@@ -464,6 +501,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 </span>
                             )}
                         </p>
+                        {item.uid && item.attachments && (
+                            <InboxItemAttachments
+                                itemUid={item.uid}
+                                attachments={item.attachments}
+                            />
+                        )}
                     </div>
 
                     {/* Delete button – visible only on hover */}

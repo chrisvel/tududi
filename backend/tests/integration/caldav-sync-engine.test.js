@@ -14,6 +14,12 @@ const syncEngine = require('../../modules/caldav/sync/sync-engine');
 const encryptionService = require('../../modules/caldav/services/encryption-service');
 
 jest.mock('axios');
+// The fake calendar host does not resolve, and these tests are about sync
+// behavior, not the address guard (see caldav-safe-request.test.js).
+jest.mock('../../modules/url/ssrfGuard', () => ({
+    ...jest.requireActual('../../modules/url/ssrfGuard'),
+    assertPublicHostname: jest.fn().mockResolvedValue(undefined),
+}));
 
 describe('CalDAV Sync Engine', () => {
     let testUser;

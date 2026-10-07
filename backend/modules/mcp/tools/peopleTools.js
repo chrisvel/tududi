@@ -1,6 +1,7 @@
 'use strict';
 
 const peopleRepository = require('../../people/repository');
+const rolesService = require('../../../services/rolesService');
 
 function registerPeopleTools(server, context, tools) {
     // 1. list_people - List people/contacts
@@ -158,6 +159,7 @@ function registerPeopleTools(server, context, tools) {
             required: ['name'],
         },
         handler: async (params) => {
+            await rolesService.assertCan(context.userId, 'create_people');
             if (!params.name || params.name.trim().length === 0) {
                 throw new Error('Person name is required');
             }

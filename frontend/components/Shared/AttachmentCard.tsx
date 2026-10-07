@@ -5,15 +5,14 @@ import {
     EyeIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import { Attachment } from '../../entities/Attachment';
+import { FileAttachment } from '../../entities/Attachment';
 import FileIcon from './Icons/FileIcon';
 
 interface AttachmentCardProps {
-    attachment: Attachment;
-    taskUid: string;
-    onDelete: (attachment: Attachment) => void;
-    onDownload: (attachment: Attachment) => void;
-    onPreview: (attachment: Attachment) => void;
+    attachment: FileAttachment;
+    onDelete: (attachment: FileAttachment) => void;
+    onDownload: (attachment: FileAttachment) => void;
+    onPreview: (attachment: FileAttachment) => void;
     isPreviewOpen: boolean;
 }
 

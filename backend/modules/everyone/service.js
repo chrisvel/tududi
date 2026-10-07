@@ -2,8 +2,10 @@
 
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
-const { Task, Project, Permission } = require('../../models');
+const { Task, Project } = require('../../models');
 const permissionsService = require('../../services/permissionsService');
+const permissionSources = require('../../services/permissionSources');
+const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const peopleRepository = require('../people/repository');
 const { getTaskIncludeConfig } = require('../tasks/queries/query-builders');
 const { serializeTasks } = require('../tasks/core/serializers');
@@ -18,37 +20,6 @@ const HIDDEN_STATUSES = [
 const BUCKET_KEYS = ['overdue', 'today', 'tomorrow', 'upcoming', 'no_date'];
 
 const normalizeName = (name) => (name || '').trim().toLowerCase();
-
-// The set of user ids that share something with me or that I share something
-// with (accepted, top-level grants only).
-async function getCollaboratorUserIds(userId) {
-    const [sharedToMe, sharedByMe] = await Promise.all([
-        Permission.findAll({
-            where: {
-                user_id: userId,
-                status: 'accepted',
-                propagation: 'direct',
-            },
-            attributes: ['granted_by_user_id'],
-            raw: true,
-        }),
-        Permission.findAll({
-            where: {
-                granted_by_user_id: userId,
-                status: 'accepted',
-                propagation: 'direct',
-            },
-            attributes: ['user_id'],
-            raw: true,
-        }),
-    ]);
-
-    const ids = new Set();
-    sharedToMe.forEach((r) => ids.add(r.granted_by_user_id));
-    sharedByMe.forEach((r) => ids.add(r.user_id));
-    ids.delete(userId);
-    return Array.from(ids);
-}
 
 // Projects that are visible to me AND shared with at least one other person.
 // Phase A writes inherited project Permission rows for area/goal shares, so
@@ -65,15 +36,13 @@ async function getSharedProjectIds(userId) {
     });
     if (visibleProjects.length === 0) return [];
 
-    const sharedRows = await Permission.findAll({
-        where: {
+    const sharedRows = await permissionSources.findAccepted(
+        {
             resource_type: 'project',
             resource_uid: { [Op.in]: visibleProjects.map((p) => p.uid) },
-            status: 'accepted',
         },
-        attributes: ['resource_uid'],
-        raw: true,
-    });
+        ['resource_uid']
+    );
     const sharedUids = new Set(sharedRows.map((r) => r.resource_uid));
     return visibleProjects
         .filter((p) => sharedUids.has(p.uid))
@@ -105,7 +74,7 @@ function bucketForDue(dueDate, tz) {
 async function getEveryoneDashboard(userId, timezone) {
     const tz = getSafeTimezone(timezone);
 
-    const collaboratorUserIds = await getCollaboratorUserIds(userId);
+    const collaboratorUserIds = await getWorkspaceUserIds(userId);
     const allUserIds = [userId, ...collaboratorUserIds];
 
     // Canonical self-person per user (user_id === linked_user_id).
@@ -253,7 +222,11 @@ async function buildColumns(
         const serialized = {};
         const counts = {};
         for (const key of BUCKET_KEYS) {
-            serialized[key] = await serializeTasks(buckets[key], tz);
+            // A recurring task is shown by its own name, not by its pattern
+            // ("Daily", "Weekly"), since the board lists what to do.
+            serialized[key] = await serializeTasks(buckets[key], tz, {
+                preserveOriginalName: true,
+            });
             counts[key] = buckets[key].length;
         }
 

@@ -68,7 +68,7 @@ User created successfully
 Server running on port 3002
 ```
 
-Later boots print `Existing database detected, schema left to migrations` instead. No `/app/db` volume is needed; only `/app/uploads` must persist.
+Later boots print `Existing database detected, schema left to migrations` instead. No `/app/db` volume is needed; only `/app/uploads` must persist (and `/app/backups`, to keep backups made from Profile > Backup).
 
 For an external database (managed PostgreSQL, another host) drop the `db` service and set `DATABASE_URL` in `.env` directly.
 

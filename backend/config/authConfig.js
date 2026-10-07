@@ -4,11 +4,12 @@ function isPasswordAuthEnabled() {
     return process.env.PASSWORD_AUTH_ENABLED !== 'false';
 }
 
-function validateAuthConfiguration() {
+async function validateAuthConfiguration() {
     const passwordAuthEnabled = isPasswordAuthEnabled();
     const { isOidcEnabled } = require('../modules/oidc/providerConfig');
+    const oidcEnabled = await isOidcEnabled();
 
-    if (!passwordAuthEnabled && !isOidcEnabled()) {
+    if (!passwordAuthEnabled && !oidcEnabled) {
         const { logError } = require('../services/logService');
         logError(
             new Error(
@@ -20,7 +21,7 @@ function validateAuthConfiguration() {
 
     return {
         passwordAuthEnabled,
-        oidcEnabled: isOidcEnabled(),
+        oidcEnabled,
     };
 }
 

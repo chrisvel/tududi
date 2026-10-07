@@ -1,4 +1,6 @@
-// Public counters for the proof bar: Docker Hub pulls and Discord members.
+// Public counters for the proof bar: GitHub stars, Docker Hub pulls and
+// Discord members. Fetched here rather than by the visitor's browser, so a
+// page view sends nobody else the visitor's address.
 //
 // Never fetched on the request path. A render reads whatever is cached and
 // kicks off a refresh in the background; until the first fetch lands, or
@@ -9,6 +11,7 @@ const TTL_MS = 6 * 60 * 60 * 1000;
 const DISCORD_INVITE_CODE = 'fkbeJ9CmcH';
 
 const entries = {
+    githubStars: { value: null, fetchedAt: 0, inflight: null },
     dockerPulls: { value: null, fetchedAt: 0, inflight: null },
     discordMembers: { value: null, fetchedAt: 0, inflight: null },
 };
@@ -26,6 +29,14 @@ async function fetchJson(url) {
 }
 
 const fetchers = {
+    githubStars: async () => {
+        const data = await fetchJson(
+            'https://api.github.com/repos/chrisvel/tududi'
+        );
+        return data && typeof data.stargazers_count === 'number'
+            ? data.stargazers_count
+            : null;
+    },
     dockerPulls: async () => {
         const data = await fetchJson(
             'https://hub.docker.com/v2/repositories/chrisvel/tududi/'
@@ -67,10 +78,12 @@ function refresh(name) {
 // Disabled under test so the suite never touches the network.
 function getStats() {
     if (process.env.NODE_ENV !== 'test') {
+        refresh('githubStars');
         refresh('dockerPulls');
         refresh('discordMembers');
     }
     return {
+        githubStars: entries.githubStars.value,
         dockerPulls: entries.dockerPulls.value,
         discordMembers: entries.discordMembers.value,
     };

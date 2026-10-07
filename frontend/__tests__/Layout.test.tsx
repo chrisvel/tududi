@@ -32,6 +32,11 @@ jest.mock('../components/Sidebar', () => ({
     default: () => <div data-testid="sidebar" />,
 }));
 
+jest.mock('../components/Capture/CaptureHost', () => ({
+    __esModule: true,
+    default: () => null,
+}));
+
 jest.mock('../components/Project/ProjectModal', () => ({
     __esModule: true,
     default: () => null,

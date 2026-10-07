@@ -25,6 +25,18 @@ export const fetchPeople = async (params: {
     return data.people;
 };
 
+// Who a task outside a project can be assigned to: your people plus
+// everyone in your workspace.
+export const fetchWorkspaceAssignablePeople = async (): Promise<Person[]> => {
+    const response = await fetch(getApiPath('people/assignable'), {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    await handleAuthResponse(response, 'Failed to fetch assignable people.');
+    const data = await response.json();
+    return data.people;
+};
+
 export const fetchAssignablePeopleForProject = async (
     projectUid: string,
     params: {

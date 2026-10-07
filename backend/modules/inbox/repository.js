@@ -1,7 +1,10 @@
 'use strict';
 
-const { Op } = require('sequelize');
-const { InboxItem } = require('../../models');
+const { Op, fn, col, where } = require('sequelize');
+const { InboxItem, Project } = require('../../models');
+const {
+    ownershipOrPermissionWhere,
+} = require('../../services/permissionsService');
 const BaseRepository = require('../../shared/database/BaseRepository');
 
 const PUBLIC_ATTRIBUTES = [
@@ -46,39 +49,12 @@ class InboxRepository extends BaseRepository {
         });
     }
 
-    async countTrashed(userId) {
-        return this.model.count({
-            where: { user_id: userId, status: 'trashed' },
-            raw: true,
-        });
-    }
-
-    async markTrashed(item) {
-        await item.update({ status: 'trashed' });
-        return item;
-    }
-
-    async markRestored(item) {
-        await item.update({ status: 'added' });
-        return item;
-    }
-
     async findByUid(userId, uid) {
         return this.model.findOne({
             where: {
                 uid,
                 user_id: userId,
             },
-        });
-    }
-
-    async findByUidPublic(userId, uid) {
-        return this.model.findOne({
-            where: {
-                uid,
-                user_id: userId,
-            },
-            attributes: PUBLIC_ATTRIBUTES,
         });
     }
 
@@ -106,11 +82,21 @@ class InboxRepository extends BaseRepository {
         return item;
     }
 
-    async restoreAllTrashed(userId) {
-        await this.model.update(
-            { status: 'added' },
-            { where: { user_id: userId, status: 'trashed' } }
-        );
+    // A project the user owns or has been shared, matched by name the way
+    // the +project token matches it (case-insensitive).
+    async findAccessibleProjectUidByName(userId, name) {
+        const accessWhere = await ownershipOrPermissionWhere('project', userId);
+        const project = await Project.findOne({
+            where: {
+                [Op.and]: [
+                    accessWhere,
+                    where(fn('lower', col('name')), name.toLowerCase()),
+                ],
+            },
+            attributes: ['uid'],
+            raw: true,
+        });
+        return project ? project.uid : null;
     }
 }
 

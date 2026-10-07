@@ -8,10 +8,15 @@ const { getConfig } = require('../../config/config');
 const config = getConfig();
 const router = express.Router();
 const { blockDemoUser } = require('../../middleware/demo');
+const {
+    imageFileFilter,
+    randomUploadName,
+} = require('../../utils/image-upload');
 const usersController = require('./controller');
 const {
     apiKeyManagementLimiter,
     createResourceLimiter,
+    passwordConfirmLimiter,
 } = require('../../middleware/rateLimiter');
 
 // Configure multer for avatar uploads
@@ -25,25 +30,13 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const userId = req.currentUser?.id || req.session?.userId;
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const ext = path.extname(file.originalname);
-        cb(null, `avatar-${userId}-${uniqueSuffix}${ext}`);
+        cb(null, randomUploadName(`avatar-${userId}`, file.mimetype));
     },
 });
 
-const fileFilter = (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(
-        path.extname(file.originalname).toLowerCase()
-    );
-    const mimetype = allowedTypes.test(file.mimetype);
-
-    if (mimetype && extname) {
-        return cb(null, true);
-    } else {
-        cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed!'));
-    }
-};
+const fileFilter = imageFileFilter(
+    'Only image files (JPEG, PNG, GIF, WebP) are allowed!'
+);
 
 const upload = multer({
     storage: storage,
@@ -60,8 +53,18 @@ router.get('/users', usersController.list);
 
 // Profile routes
 router.get('/profile', usersController.getProfile);
-router.patch('/profile', blockDemoUser, usersController.updateProfile);
-router.delete('/profile', blockDemoUser, usersController.deleteAccount);
+router.patch(
+    '/profile',
+    passwordConfirmLimiter,
+    blockDemoUser,
+    usersController.updateProfile
+);
+router.delete(
+    '/profile',
+    passwordConfirmLimiter,
+    blockDemoUser,
+    usersController.deleteAccount
+);
 
 // Avatar routes
 router.post(
@@ -79,6 +82,7 @@ router.delete(
 // Password change
 router.post(
     '/profile/change-password',
+    passwordConfirmLimiter,
     blockDemoUser,
     usersController.changePassword
 );
@@ -127,5 +131,7 @@ router.get(
 router.put('/profile/today-settings', usersController.updateTodaySettings);
 router.put('/profile/sidebar-settings', usersController.updateSidebarSettings);
 router.put('/profile/ui-settings', usersController.updateUiSettings);
+router.get('/profile/ai-settings', usersController.getAiSettings);
+router.put('/profile/ai-settings', usersController.updateAiSettings);
 
 module.exports = router;

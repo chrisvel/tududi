@@ -13,41 +13,7 @@ const {
 
 describe('MCP Controller', () => {
     describe('getMcpStatus', () => {
-        let originalEnv;
-
-        beforeEach(() => {
-            originalEnv = process.env.FF_ENABLE_MCP;
-        });
-
-        afterEach(() => {
-            if (originalEnv === undefined) {
-                delete process.env.FF_ENABLE_MCP;
-            } else {
-                process.env.FF_ENABLE_MCP = originalEnv;
-            }
-        });
-
-        it('should return enabled: false when FF_ENABLE_MCP is not set', async () => {
-            delete process.env.FF_ENABLE_MCP;
-
-            const res = { json: jest.fn() };
-            await controller.getMcpStatus({}, res);
-
-            expect(res.json).toHaveBeenCalledWith({ enabled: false });
-        });
-
-        it('should return enabled: false when FF_ENABLE_MCP is false', async () => {
-            process.env.FF_ENABLE_MCP = 'false';
-
-            const res = { json: jest.fn() };
-            await controller.getMcpStatus({}, res);
-
-            expect(res.json).toHaveBeenCalledWith({ enabled: false });
-        });
-
-        it('should return enabled: true when FF_ENABLE_MCP is true', async () => {
-            process.env.FF_ENABLE_MCP = 'true';
-
+        it('should always return enabled: true', async () => {
             const res = { json: jest.fn() };
             await controller.getMcpStatus({}, res);
 
@@ -141,10 +107,11 @@ describe('MCP Controller', () => {
             await controller.listMcpTools({}, res);
 
             const result = res.json.mock.calls[0][0];
-            expect(result.tools).toHaveLength(8);
+            expect(result.tools).toHaveLength(9);
 
             const categories = result.tools.map((t) => t.category);
             expect(categories).toContain('Tasks');
+            expect(categories).toContain('Comments');
             expect(categories).toContain('Projects');
             expect(categories).toContain('Areas');
             expect(categories).toContain('Habits');
@@ -164,15 +131,31 @@ describe('MCP Controller', () => {
             );
 
             expect(taskCategory).toBeDefined();
-            expect(taskCategory.count).toBe(8);
+            expect(taskCategory.count).toBe(9);
             expect(taskCategory.tools).toContain('list_tasks');
             expect(taskCategory.tools).toContain('get_task');
             expect(taskCategory.tools).toContain('create_task');
             expect(taskCategory.tools).toContain('update_task');
             expect(taskCategory.tools).toContain('complete_task');
+            expect(taskCategory.tools).toContain('skip_task_occurrence');
             expect(taskCategory.tools).toContain('delete_task');
             expect(taskCategory.tools).toContain('add_subtask');
             expect(taskCategory.tools).toContain('get_task_metrics');
+        });
+
+        it('should list comment tools', async () => {
+            const res = { json: jest.fn() };
+            await controller.listMcpTools({}, res);
+
+            const result = res.json.mock.calls[0][0];
+            const commentCategory = result.tools.find(
+                (t) => t.category === 'Comments'
+            );
+
+            expect(commentCategory).toBeDefined();
+            expect(commentCategory.count).toBe(2);
+            expect(commentCategory.tools).toContain('list_task_comments');
+            expect(commentCategory.tools).toContain('add_task_comment');
         });
 
         it('should list project tools', async () => {

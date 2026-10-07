@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import React, {
+    useEffect,
+    useRef,
+    useState,
+    useCallback,
+    useMemo,
+} from 'react';
 import {
     EditorView,
     ViewUpdate,
@@ -9,13 +15,32 @@ import {
 import { EditorState, Compartment } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands';
-import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
-import { oneDark } from '@codemirror/theme-one-dark';
 import FormattingToolbar from './FormattingToolbar';
-import SlashCommandMenu from './SlashCommandMenu';
+import SlashCommandMenu, { SlashCommand } from './SlashCommandMenu';
 import WikilinkMenu, { NoteTitle } from './WikilinkMenu';
-import { livePreviewExtension } from './livePreviewExtension';
+import MissingNotePrompt from './MissingNotePrompt';
+import { createNote } from '../../utils/notesService';
+import { useNavigate } from 'react-router-dom';
+import { livePreviewExtension } from './editor';
+import { neutralEditorTheme } from './editor/highlightStyle';
+import { blockUxKeymap } from './editor/keymaps';
+import { isTouchScreen, touchReading } from './editor/touchReading';
+import { blockHandlePlugin, blockHandleTheme } from './editor/blockHandle';
+import {
+    wrapSelection as wrapSelectionCmd,
+    setHeading as setHeadingCmd,
+    insertLink as insertLinkCmd,
+} from './editor/textCommands';
 import { useStore } from '../../store/useStore';
+import { useTranslation } from 'react-i18next';
+import { useToast } from '../Shared/ToastContext';
+import { ownerAttachmentsApi } from '../../utils/attachmentsService';
+import { noteLinkFor } from '../../utils/noteAttachmentLinks';
+import { takePickedFiles } from '../Capture/useCaptureFiles';
+import {
+    filesToAttachFromPaste,
+    nameForPastedFile,
+} from '../Capture/useCaptureFiles';
 
 interface MarkdownEditorProps {
     value: string;
@@ -26,6 +51,9 @@ interface MarkdownEditorProps {
     className?: string;
     minHeight?: string;
     onClick?: (e: React.MouseEvent) => void;
+    // The saved note being edited. With it, pasted, dropped or picked files
+    // are uploaded to the note and placed in the text.
+    noteUid?: string;
 }
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
@@ -38,47 +66,7 @@ const shouldUseLightText = (hexColor: string | undefined): boolean => {
     return luminance < 0.4;
 };
 
-export function wrapSelection(view: EditorView, prefix: string, suffix: string = prefix) {
-    const { from, to } = view.state.selection.main;
-    const selected = view.state.sliceDoc(from, to);
-    if (selected.startsWith(prefix) && selected.endsWith(suffix) && selected.length > prefix.length + suffix.length) {
-        view.dispatch({
-            changes: { from, to, insert: selected.slice(prefix.length, selected.length - suffix.length) },
-            selection: { anchor: from, head: to - prefix.length - suffix.length },
-        });
-    } else {
-        view.dispatch({
-            changes: { from, to, insert: `${prefix}${selected}${suffix}` },
-            selection: { anchor: from, head: to + prefix.length + suffix.length },
-        });
-    }
-    view.focus();
-}
-
-export function setHeading(view: EditorView, level: number) {
-    const prefix = '#'.repeat(level) + ' ';
-    const { from } = view.state.selection.main;
-    const line = view.state.doc.lineAt(from);
-    const existing = line.text.match(/^(#{1,6})\s/);
-    if (existing) {
-        view.dispatch({
-            changes: { from: line.from, to: line.from + existing[0].length, insert: prefix },
-        });
-    } else {
-        view.dispatch({
-            changes: { from: line.from, to: line.from, insert: prefix },
-        });
-    }
-    view.focus();
-}
-
-export function insertLink(view: EditorView) {
-    const { from, to } = view.state.selection.main;
-    const selected = view.state.sliceDoc(from, to);
-    const insertion = selected ? `[${selected}](url)` : '[link text](url)';
-    view.dispatch({ changes: { from, to, insert: insertion } });
-    view.focus();
-}
+export { wrapSelection, setHeading, insertLink } from './editor/textCommands';
 
 const baseEditorTheme = EditorView.theme({
     '&': { fontSize: 'inherit' },
@@ -91,8 +79,12 @@ const baseEditorTheme = EditorView.theme({
     },
     '.cm-line': { padding: '0 2px' },
     '.cm-scroller': { fontFamily: 'inherit', overflow: 'visible' },
-    '.cm-selectionBackground': { backgroundColor: 'rgba(59, 130, 246, 0.25) !important' },
-    '&.cm-focused .cm-selectionBackground': { backgroundColor: 'rgba(59, 130, 246, 0.35) !important' },
+    '.cm-selectionBackground': {
+        backgroundColor: 'rgba(59, 130, 246, 0.25) !important',
+    },
+    '&.cm-focused .cm-selectionBackground': {
+        backgroundColor: 'rgba(59, 130, 246, 0.35) !important',
+    },
     '.cm-cursor, .cm-dropCursor': { borderLeftWidth: '2px' },
 });
 
@@ -114,12 +106,46 @@ interface WikilinkMenuState {
     to: number;
 }
 
-const CLOSED_SLASH: SlashMenuState = { open: false, x: 0, y: 0, filter: '', from: 0, to: 0 };
-const CLOSED_WIKI: WikilinkMenuState = { open: false, x: 0, y: 0, filter: '', from: 0, to: 0 };
+interface MissingNoteState {
+    open: boolean;
+    x: number;
+    y: number;
+    title: string;
+    // Open the new note once it exists (Cmd/Ctrl-click) or stay here (typing).
+    openAfterCreate: boolean;
+}
 
-function detectSlashTrigger(
-    view: EditorView
-): { from: number; to: number; filter: string; coords: { x: number; y: number } } | null {
+const CLOSED_MISSING: MissingNoteState = {
+    open: false,
+    x: 0,
+    y: 0,
+    title: '',
+    openAfterCreate: false,
+};
+
+const CLOSED_SLASH: SlashMenuState = {
+    open: false,
+    x: 0,
+    y: 0,
+    filter: '',
+    from: 0,
+    to: 0,
+};
+const CLOSED_WIKI: WikilinkMenuState = {
+    open: false,
+    x: 0,
+    y: 0,
+    filter: '',
+    from: 0,
+    to: 0,
+};
+
+function detectSlashTrigger(view: EditorView): {
+    from: number;
+    to: number;
+    filter: string;
+    coords: { x: number; y: number };
+} | null {
     const { main } = view.state.selection;
     if (!main.empty) return null;
 
@@ -138,12 +164,20 @@ function detectSlashTrigger(
     const coords = view.coordsAtPos(cursor);
     if (!coords) return null;
 
-    return { from: slashAbsPos, to: cursor, filter, coords: { x: coords.left, y: coords.top } };
+    return {
+        from: slashAbsPos,
+        to: cursor,
+        filter,
+        coords: { x: coords.left, y: coords.top },
+    };
 }
 
-function detectWikilinkTrigger(
-    view: EditorView
-): { from: number; to: number; filter: string; coords: { x: number; y: number } } | null {
+function detectWikilinkTrigger(view: EditorView): {
+    from: number;
+    to: number;
+    filter: string;
+    coords: { x: number; y: number };
+} | null {
     const { main } = view.state.selection;
     if (!main.empty) return null;
 
@@ -162,7 +196,28 @@ function detectWikilinkTrigger(
     const coords = view.coordsAtPos(cursor);
     if (!coords) return null;
 
-    return { from: openBracketAbsPos, to: cursor, filter, coords: { x: coords.left, y: coords.top } };
+    return {
+        from: openBracketAbsPos,
+        to: cursor,
+        filter,
+        coords: { x: coords.left, y: coords.top },
+    };
+}
+
+// The title of a [[link]] the user just closed by typing "]]".
+function detectClosedWikilink(update: ViewUpdate): string | null {
+    const typed = update.transactions.some((tr) =>
+        tr.isUserEvent('input.type')
+    );
+    if (!typed) return null;
+
+    const { main } = update.state.selection;
+    if (!main.empty) return null;
+
+    const line = update.state.doc.lineAt(main.from);
+    const textToCursor = line.text.slice(0, main.from - line.from);
+    const m = textToCursor.match(/\[\[([^[\]\n]+?)\]\]$/);
+    return m ? m[1].trim() || null : null;
 }
 
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
@@ -174,25 +229,42 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     className = '',
     minHeight = '300px',
     onClick,
+    noteUid,
 }) => {
+    const { t } = useTranslation();
+    const { showErrorToast } = useToast();
     const containerRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const pickPositionRef = useRef<number | null>(null);
     const viewRef = useRef<EditorView | null>(null);
     const onChangeRef = useRef(onChange);
     onChangeRef.current = onChange;
+    const navigate = useNavigate();
 
     // Load notes from store for wikilink autocomplete
     const storeNotes = useStore((state) => state.notesStore.notes);
     const hasNotesLoaded = useStore((state) => state.notesStore.hasLoaded);
     const loadNotes = useStore((state) => state.notesStore.loadNotes);
+    const addNote = useStore((state) => state.notesStore.addNote);
 
     useEffect(() => {
         if (!hasNotesLoaded) loadNotes();
     }, [hasNotesLoaded, loadNotes]);
 
     const noteTitles: NoteTitle[] = useMemo(
-        () => storeNotes.filter((n) => n.uid).map((n) => ({ uid: n.uid as string, title: n.title })),
+        () =>
+            storeNotes
+                .filter((n) => n.uid)
+                .map((n) => ({ uid: n.uid as string, title: n.title })),
         [storeNotes]
     );
+
+    const noteTitlesRef = useRef(noteTitles);
+    noteTitlesRef.current = noteTitles;
+    const hasNotesLoadedRef = useRef(hasNotesLoaded);
+    hasNotesLoadedRef.current = hasNotesLoaded;
+    const navigateRef = useRef(navigate);
+    navigateRef.current = navigate;
 
     const [toolbarState, setToolbarState] = useState<{
         visible: boolean;
@@ -201,18 +273,135 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     }>({ visible: false, x: 0, y: 0 });
 
     const [slashMenu, setSlashMenu] = useState<SlashMenuState>(CLOSED_SLASH);
-    const [wikilinkMenu, setWikilinkMenu] = useState<WikilinkMenuState>(CLOSED_WIKI);
+    const [wikilinkMenu, setWikilinkMenu] =
+        useState<WikilinkMenuState>(CLOSED_WIKI);
 
     const slashMenuRef = useRef(slashMenu);
     slashMenuRef.current = slashMenu;
     const wikilinkMenuRef = useRef(wikilinkMenu);
     wikilinkMenuRef.current = wikilinkMenu;
+    const [missingNote, setMissingNote] =
+        useState<MissingNoteState>(CLOSED_MISSING);
+    const missingNoteRef = useRef(missingNote);
+    missingNoteRef.current = missingNote;
 
     const lightText = shouldUseLightText(noteColor);
-    const textColor = noteColor ? (lightText ? '#ffffff' : '#333333') : undefined;
+    const textColor = noteColor
+        ? lightText
+            ? '#ffffff'
+            : '#333333'
+        : undefined;
 
     const closeSlash = useCallback(() => setSlashMenu(CLOSED_SLASH), []);
     const closeWikilink = useCallback(() => setWikilinkMenu(CLOSED_WIKI), []);
+    const closeMissingNote = useCallback(
+        () => setMissingNote(CLOSED_MISSING),
+        []
+    );
+
+    const findNoteByTitle = (title: string) => {
+        const wanted = title.trim().toLowerCase();
+        return noteTitlesRef.current.find(
+            (n) => n.title.trim().toLowerCase() === wanted
+        );
+    };
+
+    const createLinkedNote = useCallback(
+        async (title: string, openAfterCreate = false) => {
+            try {
+                const created = await createNote({ title, content: '' });
+                addNote?.(created);
+                if (openAfterCreate && created.uid) {
+                    navigateRef.current(`/notes/${created.uid}`);
+                }
+            } catch {
+                showErrorToast(
+                    t(
+                        'notes.linkedNoteCreateFailed',
+                        'Could not create the note.'
+                    )
+                );
+            }
+        },
+        [addNote, showErrorToast, t]
+    );
+
+    const confirmMissingNote = useCallback(() => {
+        const { title, openAfterCreate } = missingNoteRef.current;
+        setMissingNote(CLOSED_MISSING);
+        void createLinkedNote(title, openAfterCreate);
+    }, [createLinkedNote]);
+
+    // Each file gets a placeholder where it will go, replaced by an inline
+    // image or a link once it is uploaded, or removed if it fails.
+    const uploadIntoEditor = async (
+        view: EditorView,
+        files: File[],
+        pos: number
+    ) => {
+        if (files.length === 0) return;
+        if (!noteUidRef.current) {
+            showErrorToast(
+                t(
+                    'notes.saveBeforeFiles',
+                    'Give the note a title or some text first, then add files.'
+                )
+            );
+            return;
+        }
+        const api = ownerAttachmentsApi('note', noteUidRef.current);
+        const doc = view.state.doc;
+        const needsBreak = pos > 0 && doc.sliceString(pos - 1, pos) !== '\n';
+        const markers = files.map(
+            (file, i) => `[Uploading ${file.name}… ${Date.now()}-${i}]`
+        );
+        view.dispatch({
+            changes: {
+                from: pos,
+                insert: `${needsBreak ? '\n' : ''}${markers.join('\n\n')}\n`,
+            },
+        });
+
+        const replaceMarker = (marker: string, text: string) => {
+            const current = view.state.doc.toString();
+            const at = current.indexOf(marker);
+            if (at < 0) return;
+            const end =
+                !text &&
+                current.slice(at + marker.length, at + marker.length + 1) ===
+                    '\n'
+                    ? at + marker.length + 1
+                    : at + marker.length;
+            view.dispatch({ changes: { from: at, to: end, insert: text } });
+        };
+
+        for (const [i, file] of files.entries()) {
+            try {
+                const attachment = await api.upload(file);
+                replaceMarker(
+                    markers[i],
+                    noteLinkFor(noteUidRef.current as string, attachment)
+                );
+            } catch (error) {
+                replaceMarker(markers[i], '');
+                showErrorToast(
+                    error instanceof Error
+                        ? `${file.name}: ${error.message}`
+                        : t(
+                              'notes.fileUploadError',
+                              'Could not upload {{name}}',
+                              {
+                                  name: file.name,
+                              }
+                          )
+                );
+            }
+        }
+    };
+    const uploadIntoEditorRef = useRef(uploadIntoEditor);
+    uploadIntoEditorRef.current = uploadIntoEditor;
+    const noteUidRef = useRef(noteUid);
+    noteUidRef.current = noteUid;
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -221,13 +410,15 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
         const getThemeExtension = () => {
             const isDark = document.documentElement.classList.contains('dark');
-            return isDark ? oneDark : syntaxHighlighting(defaultHighlightStyle);
+            return neutralEditorTheme(isDark);
         };
 
         const colorOverride = noteColor
             ? EditorView.theme({
                   '.cm-content': { color: textColor, caretColor: textColor },
-                  '.cm-cursor, .cm-dropCursor': { borderLeftColor: textColor || 'auto' },
+                  '.cm-cursor, .cm-dropCursor': {
+                      borderLeftColor: textColor || 'auto',
+                  },
               })
             : [];
 
@@ -241,13 +432,64 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 // line box; the native caret rides the font box and appears
                 // to hang below the placeholder text.
                 drawSelection(),
+                keymap.of(blockUxKeymap),
+                blockHandlePlugin,
+                blockHandleTheme,
                 keymap.of([...defaultKeymap, ...historyKeymap]),
                 EditorView.lineWrapping,
                 cmPlaceholder(placeholder),
                 baseEditorTheme,
                 themeCompartment.of(getThemeExtension()),
                 colorOverride,
-                livePreviewExtension,
+                EditorView.domEventHandlers({
+                    paste(event, view) {
+                        if (!event.clipboardData) return false;
+                        const files = filesToAttachFromPaste(
+                            event.clipboardData
+                        );
+                        if (files.length === 0) return false;
+                        event.preventDefault();
+                        void uploadIntoEditorRef.current(
+                            view,
+                            files.map((file) => nameForPastedFile(file)),
+                            view.state.selection.main.head
+                        );
+                        return true;
+                    },
+                    drop(event, view) {
+                        const files = Array.from(
+                            event.dataTransfer?.files ?? []
+                        );
+                        if (files.length === 0) return false;
+                        event.preventDefault();
+                        const pos =
+                            view.posAtCoords({
+                                x: event.clientX,
+                                y: event.clientY,
+                            }) ?? view.state.selection.main.head;
+                        void uploadIntoEditorRef.current(view, files, pos);
+                        return true;
+                    },
+                }),
+                touchReading(isTouchScreen(), {
+                    startEditing: autoFocus || !value.trim(),
+                }),
+                livePreviewExtension({
+                    onOpenWikilink: (title, event) => {
+                        const target = findNoteByTitle(title);
+                        if (target) {
+                            navigateRef.current(`/notes/${target.uid}`);
+                        } else if (hasNotesLoadedRef.current) {
+                            setMissingNote({
+                                open: true,
+                                x: event.clientX,
+                                y: event.clientY - 18,
+                                title,
+                                openAfterCreate: true,
+                            });
+                        }
+                    },
+                }),
                 EditorView.updateListener.of((update: ViewUpdate) => {
                     if (update.docChanged) {
                         onChangeRef.current(update.state.doc.toString());
@@ -255,21 +497,59 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
                     const view = update.view;
 
-                    // Formatting toolbar (on selection)
+                    // Typing or moving on dismisses the missing-note prompt;
+                    // closing a [[link]] to a note that does not exist opens it.
+                    if (
+                        missingNoteRef.current.open &&
+                        (update.docChanged || update.selectionSet)
+                    ) {
+                        setMissingNote(CLOSED_MISSING);
+                    }
+                    const closedTitle = detectClosedWikilink(update);
+                    if (
+                        closedTitle &&
+                        hasNotesLoadedRef.current &&
+                        !findNoteByTitle(closedTitle)
+                    ) {
+                        const coords = view.coordsAtPos(
+                            update.state.selection.main.head
+                        );
+                        if (coords) {
+                            setMissingNote({
+                                open: true,
+                                x: coords.left,
+                                y: coords.top,
+                                title: closedTitle,
+                                openAfterCreate: false,
+                            });
+                        }
+                    }
+
+                    // Formatting toolbar (on selection, while editing)
                     const { main } = update.state.selection;
-                    if (!main.empty) {
+                    if (
+                        !main.empty &&
+                        update.state.facet(EditorView.editable)
+                    ) {
                         const fromCoords = view.coordsAtPos(main.from);
                         const toCoords = view.coordsAtPos(main.to);
                         if (fromCoords && toCoords) {
                             const midX = (fromCoords.left + toCoords.right) / 2;
                             const topY = Math.min(fromCoords.top, toCoords.top);
                             setToolbarState((prev) => {
-                                if (prev.visible && Math.abs(prev.x - midX) < 1 && Math.abs(prev.y - topY) < 1) return prev;
+                                if (
+                                    prev.visible &&
+                                    Math.abs(prev.x - midX) < 1 &&
+                                    Math.abs(prev.y - topY) < 1
+                                )
+                                    return prev;
                                 return { visible: true, x: midX, y: topY };
                             });
                         }
                     } else {
-                        setToolbarState((prev) => (prev.visible ? { ...prev, visible: false } : prev));
+                        setToolbarState((prev) =>
+                            prev.visible ? { ...prev, visible: false } : prev
+                        );
                     }
 
                     // Slash command trigger detection
@@ -285,7 +565,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                         });
                         setWikilinkMenu(CLOSED_WIKI);
                     } else {
-                        if (slashMenuRef.current.open) setSlashMenu(CLOSED_SLASH);
+                        if (slashMenuRef.current.open)
+                            setSlashMenu(CLOSED_SLASH);
 
                         // Wikilink trigger detection (only when slash not active)
                         const wikilinkTrigger = detectWikilinkTrigger(view);
@@ -299,7 +580,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                                 to: wikilinkTrigger.to,
                             });
                         } else {
-                            if (wikilinkMenuRef.current.open) setWikilinkMenu(CLOSED_WIKI);
+                            if (wikilinkMenuRef.current.open)
+                                setWikilinkMenu(CLOSED_WIKI);
                         }
                     }
                 }),
@@ -314,9 +596,13 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         }
 
         const observer = new MutationObserver(() => {
-            view.dispatch({ effects: themeCompartment.reconfigure(getThemeExtension()) });
+            view.dispatch({
+                effects: themeCompartment.reconfigure(getThemeExtension()),
+            });
         });
-        observer.observe(document.documentElement, { attributeFilter: ['class'] });
+        observer.observe(document.documentElement, {
+            attributeFilter: ['class'],
+        });
 
         return () => {
             observer.disconnect();
@@ -332,17 +618,53 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         const current = view.state.doc.toString();
         if (current !== value) {
             view.dispatch({
-                changes: { from: 0, to: view.state.doc.length, insert: value ?? '' },
+                changes: {
+                    from: 0,
+                    to: view.state.doc.length,
+                    insert: value ?? '',
+                },
             });
         }
     }, [value]);
 
-    const handleBold = useCallback(() => { if (viewRef.current) wrapSelection(viewRef.current, '**'); }, []);
-    const handleItalic = useCallback(() => { if (viewRef.current) wrapSelection(viewRef.current, '_'); }, []);
-    const handleStrikethrough = useCallback(() => { if (viewRef.current) wrapSelection(viewRef.current, '~~'); }, []);
-    const handleCode = useCallback(() => { if (viewRef.current) wrapSelection(viewRef.current, '`'); }, []);
-    const handleLink = useCallback(() => { if (viewRef.current) insertLink(viewRef.current); }, []);
-    const handleHeading = useCallback((level: number) => { if (viewRef.current) setHeading(viewRef.current, level); }, []);
+    const handleBold = useCallback(() => {
+        if (viewRef.current) wrapSelectionCmd(viewRef.current, '**');
+    }, []);
+    const handleItalic = useCallback(() => {
+        if (viewRef.current) wrapSelectionCmd(viewRef.current, '_');
+    }, []);
+    const handleStrikethrough = useCallback(() => {
+        if (viewRef.current) wrapSelectionCmd(viewRef.current, '~~');
+    }, []);
+    const handleCode = useCallback(() => {
+        if (viewRef.current) wrapSelectionCmd(viewRef.current, '`');
+    }, []);
+    const handleLink = useCallback(() => {
+        if (viewRef.current) insertLinkCmd(viewRef.current);
+    }, []);
+    const handleHeading = useCallback((level: number) => {
+        if (viewRef.current) setHeadingCmd(viewRef.current, level);
+    }, []);
+
+    const fileCommands: SlashCommand[] = noteUid
+        ? [
+              {
+                  id: 'file',
+                  label: t('notes.slashFile', 'Image or File'),
+                  description: t(
+                      'notes.slashFileHint',
+                      'Upload and place it here'
+                  ),
+                  keywords: ['image', 'file', 'upload', 'attach', 'photo'],
+                  icon: '📎',
+                  insert: (view, from, to) => {
+                      view.dispatch({ changes: { from, to, insert: '' } });
+                      pickPositionRef.current = from;
+                      fileInputRef.current?.click();
+                  },
+              },
+          ]
+        : [];
 
     return (
         <div
@@ -351,6 +673,25 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             onClick={onClick}
         >
             <div ref={containerRef} className="w-full" />
+            <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                hidden
+                data-testid="note-file-input"
+                onChange={async (e) => {
+                    const picked = await takePickedFiles(e.currentTarget);
+                    const view = viewRef.current;
+                    if (!view || picked.length === 0) return;
+                    void uploadIntoEditor(
+                        view,
+                        picked,
+                        pickPositionRef.current ??
+                            view.state.selection.main.head
+                    );
+                    pickPositionRef.current = null;
+                }}
+            />
             <FormattingToolbar
                 visible={toolbarState.visible}
                 x={toolbarState.x}
@@ -371,6 +712,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                     slashTo={slashMenu.to}
                     view={viewRef.current}
                     onClose={closeSlash}
+                    extraCommands={fileCommands}
                 />
             )}
             {wikilinkMenu.open && viewRef.current && (
@@ -383,6 +725,16 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                     view={viewRef.current}
                     noteTitles={noteTitles}
                     onClose={closeWikilink}
+                    onCreateNote={(title) => void createLinkedNote(title)}
+                />
+            )}
+            {missingNote.open && (
+                <MissingNotePrompt
+                    x={missingNote.x}
+                    y={missingNote.y}
+                    title={missingNote.title}
+                    onCreate={confirmMissingNote}
+                    onClose={closeMissingNote}
                 />
             )}
         </div>

@@ -247,6 +247,168 @@ describe('Universal Search Routes', () => {
             });
         });
 
+        describe('Filter by Status', () => {
+            beforeEach(async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Not started task',
+                    status: 0,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'In progress task',
+                    status: 1,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Done task',
+                    status: 2,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Archived task',
+                    status: 3,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Cancelled task',
+                    status: 5,
+                });
+            });
+
+            it('should exclude done, archived, and cancelled tasks when status is active', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    status: 'active',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((t) => t.name);
+                expect(names).toContain('Not started task');
+                expect(names).toContain('In progress task');
+                expect(names).not.toContain('Done task');
+                expect(names).not.toContain('Archived task');
+                expect(names).not.toContain('Cancelled task');
+            });
+
+            it('should only return done, archived, and cancelled tasks when status is completed', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    status: 'completed',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((t) => t.name);
+                expect(names).toContain('Done task');
+                expect(names).toContain('Archived task');
+                expect(names).toContain('Cancelled task');
+                expect(names).not.toContain('Not started task');
+                expect(names).not.toContain('In progress task');
+            });
+
+            it('should return tasks of every status when status is all', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    status: 'all',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((t) => t.name);
+                expect(names).toContain('Not started task');
+                expect(names).toContain('Done task');
+                expect(names).toContain('Cancelled task');
+            });
+
+            it('should return tasks of every status when status is omitted, for backward compatibility', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((t) => t.name);
+                expect(names).toContain('Cancelled task');
+            });
+
+            it('should ignore an invalid status value and return tasks of every status', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    status: 'bogus',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((t) => t.name);
+                expect(names).toContain('Cancelled task');
+            });
+
+            it('should not decrease the active total count until a task is deleted, only excludes it once cancelled', async () => {
+                const activeResponse = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    status: 'active',
+                    limit: 20,
+                    offset: 0,
+                });
+
+                expect(activeResponse.status).toBe(200);
+                // Not started + in progress only; done/archived/cancelled excluded
+                expect(activeResponse.body.pagination.total).toBe(2);
+            });
+
+            it('should only return tasks with the given task_status', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    task_status: 'in_progress',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((t) => t.name);
+                expect(names).toEqual(['In progress task']);
+            });
+
+            it('should let task_status override a contradicting status filter', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    status: 'active',
+                    task_status: 'done',
+                    limit: 20,
+                    offset: 0,
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results.map((t) => t.name);
+                expect(names).toEqual(['Done task']);
+                expect(response.body.pagination.total).toBe(1);
+            });
+
+            it('should ignore an invalid task_status value', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    task_status: 'bogus',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((t) => t.name);
+                expect(names).toHaveLength(5);
+            });
+        });
+
         describe('Filter by Priority', () => {
             beforeEach(async () => {
                 await Task.create({
@@ -634,6 +796,46 @@ describe('Universal Search Routes', () => {
 
                 expect(response.status).toBe(200);
                 expect(response.body.results).toEqual([]);
+            });
+
+            it('should restrict Tag results to the requested tags, not every tag in the account', async () => {
+                const response = await agent.get('/api/search').query({
+                    tags: 'work',
+                    filters: 'Tag',
+                });
+
+                expect(response.status).toBe(200);
+                const tags = response.body.results.filter(
+                    (r) => r.type === 'Tag'
+                );
+                expect(tags.length).toBe(1);
+                expect(tags[0].name).toBe('work');
+            });
+
+            it('should restrict Tag results to all requested tags when multiple are given', async () => {
+                const response = await agent.get('/api/search').query({
+                    tags: 'work,personal',
+                    filters: 'Tag',
+                });
+
+                expect(response.status).toBe(200);
+                const tagNames = response.body.results
+                    .filter((r) => r.type === 'Tag')
+                    .map((r) => r.name)
+                    .sort();
+                expect(tagNames).toEqual(['personal', 'work']);
+            });
+
+            it('should count only the requested tags in pagination.total when filtering Tag by tags', async () => {
+                const response = await agent.get('/api/search').query({
+                    tags: 'work',
+                    filters: 'Tag',
+                    limit: 20,
+                    offset: 0,
+                });
+
+                expect(response.status).toBe(200);
+                expect(response.body.pagination.total).toBe(1);
             });
         });
 

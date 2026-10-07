@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Area } from '../entities/Area';
 import { Note } from '../entities/Note';
@@ -6,6 +6,7 @@ import { Tag } from '../entities/Tag';
 import { Person } from '../entities/Person';
 import SidebarAreas from './Sidebar/SidebarAreas';
 import SidebarFooter from './Sidebar/SidebarFooter';
+import SidebarTrialCard from './Billing/SidebarTrialCard';
 import SidebarNav from './Sidebar/SidebarNav';
 import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarHabits from './Sidebar/SidebarHabits';
@@ -18,13 +19,22 @@ import SidebarBoards from './Sidebar/SidebarBoards';
 import SidebarInsights from './Sidebar/SidebarInsights';
 import SidebarAdmin from './Sidebar/SidebarAdmin';
 import SidebarBookmarks from './Sidebar/SidebarBookmarks';
+import SidebarResizeHandle from './Sidebar/SidebarResizeHandle';
 import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
 import { useStore } from '../store/useStore';
+import type { SidebarVisibleSections } from './Profile/types';
+import { sidebarPercentToRem } from '../utils/sidebarWidth';
+import type { SidebarSectionId } from '../utils/sidebarLayout';
 
 interface SidebarProps {
     isSidebarOpen: boolean;
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    currentUser: { email: string; is_admin?: boolean; avatar_image?: string };
+    currentUser: {
+        email: string;
+        is_admin?: boolean;
+        role?: string;
+        avatar_image?: string;
+    };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     openTaskModal: () => void;
@@ -60,7 +70,28 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const habitsEnabled = useStore((state) => state.userSettingsStore.habitsEnabled);
+    const habitsEnabled = useStore(
+        (state) => state.userSettingsStore.habitsEnabled
+    );
+    const visibleSections = useStore(
+        (state) => state.userSettingsStore.sidebarVisibleSections
+    );
+    const widthPercent = useStore(
+        (state) => state.userSettingsStore.sidebarWidthPercent
+    );
+
+    useEffect(() => {
+        document.documentElement.style.setProperty(
+            '--sidebar-width',
+            `${sidebarPercentToRem(widthPercent)}rem`
+        );
+    }, [widthPercent]);
+
+    const sectionOrder = useStore(
+        (state) => state.userSettingsStore.sidebarSectionOrder
+    );
+    const isSectionVisible = (key: keyof SidebarVisibleSections) =>
+        visibleSections[key] !== false;
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -75,6 +106,87 @@ const Sidebar: React.FC<SidebarProps> = ({
         }
     };
 
+    const sectionElements: Record<SidebarSectionId, JSX.Element> = {
+        favorites: (
+            <SidebarBookmarks
+                handleNavClick={handleNavClick}
+                location={location}
+            />
+        ),
+        projects: (
+            <SidebarProjects
+                handleNavClick={handleNavClick}
+                location={location}
+                isDarkMode={isDarkMode}
+                openProjectModal={openProjectModal}
+            />
+        ),
+        areas: (
+            <SidebarAreas
+                handleNavClick={handleNavClick}
+                areas={areas}
+                location={location}
+                isDarkMode={isDarkMode}
+                openAreaModal={openAreaModal}
+            />
+        ),
+        goals: (
+            <SidebarGoals handleNavClick={handleNavClick} location={location} />
+        ),
+        notes: (
+            <SidebarNotes
+                handleNavClick={handleNavClick}
+                onCreateNote={onCreateNote}
+                notes={notes}
+                location={location}
+                isDarkMode={isDarkMode}
+            />
+        ),
+        tags: (
+            <SidebarTags
+                handleNavClick={handleNavClick}
+                location={location}
+                isDarkMode={isDarkMode}
+                openTagModal={openTagModal}
+                tags={tags}
+            />
+        ),
+        people: (
+            <SidebarPeople
+                handleNavClick={handleNavClick}
+                location={location}
+                openPersonModal={openPersonModal}
+            />
+        ),
+        habits: (
+            <SidebarHabits
+                handleNavClick={handleNavClick}
+                location={location}
+                isDarkMode={isDarkMode}
+                openNewHabit={openNewHabit}
+            />
+        ),
+        views: (
+            <SidebarViews
+                handleNavClick={handleNavClick}
+                location={location}
+                isDarkMode={isDarkMode}
+            />
+        ),
+        boards: (
+            <SidebarBoards
+                handleNavClick={handleNavClick}
+                location={location}
+            />
+        ),
+        insights: (
+            <SidebarInsights
+                handleNavClick={handleNavClick}
+                location={location}
+            />
+        ),
+    };
+
     return (
         <div
             className={`fixed top-16 left-0 ${isSidebarOpen ? 'w-full sm:w-sidebar' : 'w-0'} h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-40`}
@@ -85,6 +197,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
             {isSidebarOpen && (
                 <div className="flex flex-col h-full">
+                    <SidebarResizeHandle />
                     <div className="flex-1 min-h-0 overflow-y-auto px-2.5 py-4">
                         {/* Sidebar Contents */}
                         <div className="mb-[22px]">
@@ -95,89 +208,17 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 openTaskModal={openTaskModal}
                             />
                         </div>
-                        <div className="mb-[6px]">
-                            <SidebarBookmarks
-                                handleNavClick={handleNavClick}
-                                location={location}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarProjects
-                                handleNavClick={handleNavClick}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                                openProjectModal={openProjectModal}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarAreas
-                                handleNavClick={handleNavClick}
-                                areas={areas}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                                openAreaModal={openAreaModal}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarGoals
-                                handleNavClick={handleNavClick}
-                                location={location}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarNotes
-                                handleNavClick={handleNavClick}
-                                onCreateNote={onCreateNote}
-                                notes={notes}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarTags
-                                handleNavClick={handleNavClick}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                                openTagModal={openTagModal}
-                                tags={tags}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarPeople
-                                handleNavClick={handleNavClick}
-                                location={location}
-                                openPersonModal={openPersonModal}
-                            />
-                        </div>
-                        {habitsEnabled && (
-                            <div className="mb-[6px]">
-                                <SidebarHabits
-                                    handleNavClick={handleNavClick}
-                                    location={location}
-                                    isDarkMode={isDarkMode}
-                                    openNewHabit={openNewHabit}
-                                />
-                            </div>
-                        )}
-                        <div className="mb-[6px]">
-                            <SidebarViews
-                                handleNavClick={handleNavClick}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarBoards
-                                handleNavClick={handleNavClick}
-                                location={location}
-                            />
-                        </div>
-                        <div className="mb-[6px]">
-                            <SidebarInsights
-                                handleNavClick={handleNavClick}
-                                location={location}
-                            />
-                        </div>
+                        {sectionOrder.map((id) => {
+                            if (!isSectionVisible(id as SidebarSectionId)) {
+                                return null;
+                            }
+                            if (id === 'habits' && !habitsEnabled) return null;
+                            return (
+                                <div key={id} className="mb-[6px]">
+                                    {sectionElements[id as SidebarSectionId]}
+                                </div>
+                            );
+                        })}
                         <div className="mb-[6px]">
                             <SidebarAdmin
                                 handleNavClick={handleNavClick}
@@ -187,6 +228,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         </div>
                     </div>
 
+                    <SidebarTrialCard />
                     <SidebarFooter
                         currentUser={currentUser}
                         isDarkMode={isDarkMode}

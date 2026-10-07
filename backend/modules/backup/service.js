@@ -1,9 +1,6 @@
 'use strict';
 
 const path = require('path');
-const fs = require('fs').promises;
-const zlib = require('zlib');
-const { promisify } = require('util');
 const {
     exportUserData,
     importUserData,
@@ -14,11 +11,11 @@ const {
     deleteBackup,
     getBackupsDirectory,
     checkVersionCompatibility,
+    readBackupFile,
 } = require('../../services/backupService');
 const { Backup } = require('../../models');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
-
-const gunzip = promisify(zlib.gunzip);
+const { gunzipWithLimit } = require('../../utils/safe-gunzip');
 
 async function parseUploadedBackup(fileBuffer, filename) {
     let backupJson;
@@ -28,7 +25,7 @@ async function parseUploadedBackup(fileBuffer, filename) {
         (fileBuffer[0] === 0x1f && fileBuffer[1] === 0x8b);
 
     if (isGzipped) {
-        const decompressed = await gunzip(fileBuffer);
+        const decompressed = await gunzipWithLimit(fileBuffer);
         backupJson = decompressed.toString('utf8');
     } else {
         backupJson = fileBuffer.toString('utf8');
@@ -140,6 +137,7 @@ class BackupService {
             notes: backupData.data.notes?.length || 0,
             inbox_items: backupData.data.inbox_items?.length || 0,
             views: backupData.data.views?.length || 0,
+            accounts: backupData.instance?.accounts?.length || 0,
         };
 
         return {
@@ -171,7 +169,7 @@ class BackupService {
         const backupsDir = await getBackupsDirectory();
         const filePath = path.join(backupsDir, backup.file_path);
 
-        const fileBuffer = await fs.readFile(filePath);
+        const fileBuffer = await readBackupFile(filePath);
         const isCompressed = backup.file_path.endsWith('.gz');
         const filename = `tududi-backup-${new Date().toISOString().split('T')[0]}${isCompressed ? '.json.gz' : '.json'}`;
         const contentType = isCompressed

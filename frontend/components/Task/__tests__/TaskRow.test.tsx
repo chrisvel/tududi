@@ -58,11 +58,45 @@ jest.mock('../../../store/useStore', () => ({
         }),
 }));
 
+jest.mock('../../Shared/MarkdownRenderer', () => ({
+    __esModule: true,
+    default: ({
+        content,
+        onContentChange,
+    }: {
+        content: string;
+        onContentChange?: (next: string) => void;
+    }) => (
+        <div>
+            {content}
+            {onContentChange && (
+                <input
+                    type="checkbox"
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() =>
+                        onContentChange(content.replace('[ ]', '[x]'))
+                    }
+                />
+            )}
+        </div>
+    ),
+}));
+
 // The status control + heavy editors are exercised elsewhere; keep this test
-// focused on row layout + expansion.
+// focused on row layout + expansion. The stub only picks a status.
 jest.mock('../TaskStatusControl', () => ({
     __esModule: true,
-    default: () => <div data-testid="status-control" />,
+    default: ({ task, onTaskUpdate }: any) => (
+        <div data-testid="status-control">
+            {['in_progress', 'done'].map((status) => (
+                <button
+                    key={status}
+                    aria-label={`pick ${status}`}
+                    onClick={() => onTaskUpdate?.({ ...task, status })}
+                />
+            ))}
+        </div>
+    ),
 }));
 
 const baseTask = (over: Partial<Task> = {}): Task => ({
@@ -103,6 +137,78 @@ describe('TaskRow', () => {
         fireEvent.click(screen.getByText('Buy tickets'));
         expect(screen.getByDisplayValue('Buy tickets')).toBeInTheDocument();
         expect(navigateMock).not.toHaveBeenCalled();
+    });
+
+    it('shows the task note when the row is expanded (#1668)', () => {
+        renderRow(baseTask({ note: 'Gate B, seat 12' }));
+        fireEvent.click(screen.getByText('Buy tickets'));
+
+        const preview = screen.getByTestId('task-row-note-preview');
+        expect(preview).toHaveTextContent('Gate B, seat 12');
+        expect(
+            screen.queryByPlaceholderText('Add a note...')
+        ).not.toBeInTheDocument();
+
+        fireEvent.click(preview);
+        expect(screen.getByPlaceholderText('Add a note...')).toHaveValue(
+            'Gate B, seat 12'
+        );
+    });
+
+    it('saves the note when a checkbox in the preview is ticked (#1765)', async () => {
+        const updateTaskMock = tasksService.updateTask as jest.Mock;
+        updateTaskMock.mockReset();
+        updateTaskMock.mockResolvedValue(baseTask({ note: '- [x] milk' }));
+        renderRow(baseTask({ note: '- [ ] milk' }));
+        fireEvent.click(screen.getByText('Buy tickets'));
+
+        fireEvent.click(screen.getByRole('checkbox'));
+
+        await waitFor(() =>
+            expect(updateTaskMock).toHaveBeenCalledWith('task-1', {
+                note: '- [x] milk',
+            })
+        );
+        expect(screen.getByTestId('task-row-note-preview')).toHaveTextContent(
+            '- [x] milk'
+        );
+        expect(
+            screen.queryByPlaceholderText('Add a note...')
+        ).not.toBeInTheDocument();
+    });
+
+    it('shows no note preview for a task without a note', () => {
+        renderRow(baseTask());
+        fireEvent.click(screen.getByText('Buy tickets'));
+        expect(
+            screen.queryByTestId('task-row-note-preview')
+        ).not.toBeInTheDocument();
+    });
+
+    it('hides the title-row comment/subtask badges while editing, so the growing input does not push them to the far right', () => {
+        const task = baseTask({
+            comments_count: 3,
+            subtasks: [
+                {
+                    id: 2,
+                    uid: 'sub-1',
+                    name: 'Sub',
+                    status: 'not_started',
+                    completed_at: null,
+                } as Task,
+            ],
+        });
+        renderRow(task);
+
+        expect(screen.getByTitle('{{count}} comments')).toBeInTheDocument();
+        expect(screen.getByTitle('Show subtasks')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByText('Buy tickets'));
+
+        expect(
+            screen.queryByTitle('{{count}} comments')
+        ).not.toBeInTheDocument();
+        expect(screen.queryByTitle('Show subtasks')).not.toBeInTheDocument();
     });
 
     it('collapses on Escape', () => {
@@ -147,6 +253,98 @@ describe('TaskRow', () => {
         fireEvent.click(screen.getByText('Task B'));
         expect(screen.getByDisplayValue('Task B')).toBeInTheDocument();
         expect(screen.queryByDisplayValue('Task A')).not.toBeInTheDocument();
+    });
+
+    describe('virtual occurrences of a recurring task', () => {
+        const occurrence = (index: number) =>
+            baseTask({
+                id: 7,
+                uid: 'weekly-1',
+                name: `Weekly review ${index}`,
+                virtual_id: `7_occurrence_${index}`,
+                is_virtual_occurrence: true,
+                occurrence_index: index,
+            });
+
+        const renderOccurrences = () =>
+            render(
+                <TaskRowExpansionProvider>
+                    {[0, 1, 2].map((i) => (
+                        <TaskRow
+                            key={i}
+                            task={occurrence(i)}
+                            projects={[]}
+                            onTaskUpdate={jest
+                                .fn()
+                                .mockResolvedValue(undefined)}
+                            onTaskDelete={jest.fn()}
+                        />
+                    ))}
+                </TaskRowExpansionProvider>
+            );
+
+        it('expands only the occurrence that was clicked (#1549)', () => {
+            renderOccurrences();
+            fireEvent.click(screen.getByText('Weekly review 1'));
+
+            expect(
+                screen.getByDisplayValue('Weekly review 1')
+            ).toBeInTheDocument();
+            expect(
+                screen.queryByDisplayValue('Weekly review 0')
+            ).not.toBeInTheDocument();
+            expect(
+                screen.queryByDisplayValue('Weekly review 2')
+            ).not.toBeInTheDocument();
+        });
+
+        it('keeps the clicked occurrence open when pressing inside its panel (#1548)', () => {
+            renderOccurrences();
+            fireEvent.click(screen.getByText('Weekly review 1'));
+
+            const fullViewLink = document.querySelector(
+                'a[href="/task/weekly-1"]'
+            ) as HTMLElement;
+            expect(fullViewLink).not.toBeNull();
+            fireEvent.mouseDown(fullViewLink);
+
+            expect(
+                screen.getByDisplayValue('Weekly review 1')
+            ).toBeInTheDocument();
+        });
+    });
+
+    describe('actions menu', () => {
+        it('opens the full page from Edit without expanding the row', () => {
+            renderRow(baseTask());
+            fireEvent.click(screen.getByTestId('task-actions-menu-button'));
+            fireEvent.click(screen.getByRole('menuitem', { name: 'Edit' }));
+            expect(navigateMock).toHaveBeenCalledWith(
+                '/task/task-1',
+                expect.objectContaining({ state: expect.any(Object) })
+            );
+            expect(
+                screen.queryByDisplayValue('Buy tickets')
+            ).not.toBeInTheDocument();
+        });
+
+        it('deletes the task after confirming', () => {
+            const onTaskDelete = jest.fn();
+            renderRow(baseTask(), { onTaskDelete });
+            fireEvent.click(screen.getByTestId('task-actions-menu-button'));
+            fireEvent.click(screen.getByRole('menuitem', { name: 'Delete' }));
+            expect(onTaskDelete).not.toHaveBeenCalled();
+            fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+            expect(onTaskDelete).toHaveBeenCalledWith('task-1');
+        });
+
+        it('closes on a click outside the menu', () => {
+            renderRow(baseTask());
+            fireEvent.click(screen.getByTestId('task-actions-menu-button'));
+            expect(screen.getByRole('menu')).toBeInTheDocument();
+            fireEvent.mouseDown(document.body);
+            expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+        });
     });
 
     it('navigates to the full page when expansion is disabled', () => {
@@ -195,5 +393,59 @@ describe('TaskRow', () => {
         );
         const payload = updateTaskMock.mock.calls[0][1];
         expect(payload).not.toHaveProperty('subtasks');
+    });
+
+    describe('status picked from the status menu (#1805)', () => {
+        const updateTaskMock = tasksService.updateTask as jest.Mock;
+        beforeEach(() => updateTaskMock.mockReset());
+
+        it('leaves saving to the page by default', () => {
+            const onTaskUpdate = jest.fn().mockResolvedValue(undefined);
+            renderRow(baseTask(), { onTaskUpdate });
+            fireEvent.click(screen.getByLabelText('pick in_progress'));
+            expect(updateTaskMock).not.toHaveBeenCalled();
+            expect(onTaskUpdate).toHaveBeenCalledWith(
+                expect.objectContaining({ status: 'in_progress' })
+            );
+        });
+
+        it('saves the status itself when the page asks it to', async () => {
+            updateTaskMock.mockResolvedValue({
+                ...baseTask(),
+                status: 'in_progress',
+            });
+            const onTaskUpdate = jest.fn().mockResolvedValue(undefined);
+            renderRow(baseTask(), { onTaskUpdate, saveStatusChanges: true });
+            fireEvent.click(screen.getByLabelText('pick in_progress'));
+            await waitFor(() =>
+                expect(onTaskUpdate).toHaveBeenCalledWith(
+                    expect.objectContaining({ status: 'in_progress' })
+                )
+            );
+            expect(updateTaskMock).toHaveBeenCalledWith('task-1', {
+                status: 'in_progress',
+            });
+        });
+
+        it('hands a Done pick to the completion handler', async () => {
+            updateTaskMock.mockResolvedValue({
+                ...baseTask(),
+                status: 'done',
+            });
+            const onTaskUpdate = jest.fn().mockResolvedValue(undefined);
+            const onTaskCompletionToggle = jest.fn();
+            renderRow(baseTask(), {
+                onTaskUpdate,
+                onTaskCompletionToggle,
+                saveStatusChanges: true,
+            });
+            fireEvent.click(screen.getByLabelText('pick done'));
+            await waitFor(() =>
+                expect(onTaskCompletionToggle).toHaveBeenCalledWith(
+                    expect.objectContaining({ status: 'done' })
+                )
+            );
+            expect(onTaskUpdate).not.toHaveBeenCalled();
+        });
     });
 });

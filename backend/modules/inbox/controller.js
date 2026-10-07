@@ -1,6 +1,7 @@
 'use strict';
 
 const inboxService = require('./service');
+const { validateReferenceDate } = require('./validation');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 
@@ -10,6 +11,16 @@ function requireUserId(req) {
         throw new UnauthorizedError('Authentication required');
     }
     return userId;
+}
+
+// The one thing the item became, if the client says: { task_uid } or
+// { project_uid } or { note_uid }.
+function processTarget(body = {}) {
+    for (const kind of ['task', 'project', 'note']) {
+        const uid = body?.[`${kind}_uid`];
+        if (uid) return { kind, uid };
+    }
+    return null;
 }
 
 const inboxController = {
@@ -76,7 +87,9 @@ const inboxController = {
         try {
             const userId = requireUserId(req);
             const { uid } = req.params;
-            const item = await inboxService.process(userId, uid);
+            const item = await inboxService.process(userId, uid, {
+                target: processTarget(req.body),
+            });
             res.json(item);
         } catch (error) {
             next(error);
@@ -85,40 +98,13 @@ const inboxController = {
 
     async analyzeText(req, res, next) {
         try {
-            const { content } = req.body;
-            const result = inboxService.analyzeText(content);
-            res.json(result);
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    async trash(req, res, next) {
-        try {
             const userId = requireUserId(req);
-            const { uid } = req.params;
-            const item = await inboxService.trash(userId, uid);
-            res.json(item);
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    async restore(req, res, next) {
-        try {
-            const userId = requireUserId(req);
-            const { uid } = req.params;
-            const item = await inboxService.restore(userId, uid);
-            res.json(item);
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    async restoreAll(req, res, next) {
-        try {
-            const userId = requireUserId(req);
-            const result = await inboxService.restoreAll(userId);
+            const { content, reference_date, parse_dates } = req.body;
+            const result = await inboxService.analyzeText(userId, content, {
+                referenceDate: validateReferenceDate(reference_date),
+                timezone: req.currentUser?.timezone || 'UTC',
+                parseDates: parse_dates !== false,
+            });
             res.json(result);
         } catch (error) {
             next(error);

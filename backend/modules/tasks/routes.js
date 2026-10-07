@@ -4,6 +4,8 @@ const router = express.Router();
 // Import sub-routers for task-related routes
 const attachmentsRouter = require('./attachments');
 const eventsRouter = require('./events');
+const relationsRouter = require('./relations/routes');
+const orderRouter = require('./order/routes');
 
 const {
     Task,
@@ -13,6 +15,7 @@ const {
     Project,
     sequelize,
 } = require('../../models');
+const { numericIdParam } = require('../../middleware/numericIdParam');
 const taskRepository = require('./repository');
 const { deleteAttachmentFiles } = require('../../utils/attachment-utils');
 const { withForeignKeyChecksDisabled } = require('../../utils/db-dialect');
@@ -47,6 +50,7 @@ const {
     validateDeferUntilAndDueDate,
     validateAreaAccess,
     validateGoalAccess,
+    validateAssignee,
     getRecurringParentEndDate,
 } = require('./utils/validation');
 const {
@@ -74,6 +78,7 @@ const {
 const {
     handleRecurrenceUpdate,
     calculateNextIterations,
+    skipRecurringOccurrence,
 } = require('./operations/recurring');
 
 const { getTaskMetrics } = require('./queries/metrics-computation');
@@ -463,6 +468,16 @@ router.post(
                 return res.status(400).json({ error: error.message });
             }
 
+            try {
+                await validateAssignee(
+                    taskAttributes.assigned_to,
+                    req.currentUser.id,
+                    { projectId: taskAttributes.project_id }
+                );
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
+            }
+
             const task = await taskRepository.create(taskAttributes);
             await updateTaskTags(task, tagsData, req.currentUser.id);
             await createSubtasks(task.id, subtasks, req.currentUser.id);
@@ -530,6 +545,8 @@ router.post(
         }
     }
 );
+
+router.param('uid', numericIdParam('task', Task));
 
 router.get('/task/:uid', requireTaskReadAccess, async (req, res) => {
     try {
@@ -723,6 +740,24 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                 }
             } else {
                 taskAttributes.goal_id = null;
+            }
+        }
+
+        if (taskAttributes.assigned_to) {
+            try {
+                await validateAssignee(
+                    taskAttributes.assigned_to,
+                    req.currentUser.id,
+                    {
+                        projectId:
+                            taskAttributes.project_id !== undefined
+                                ? taskAttributes.project_id
+                                : task.project_id,
+                        currentAssignedTo: task.assigned_to,
+                    }
+                );
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
             }
         }
 
@@ -1003,6 +1038,16 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                 replacements: [taskId],
             });
 
+            await sequelize.query(
+                'DELETE FROM task_relations WHERE source_task_id = ? OR target_task_id = ?',
+                { replacements: [taskId, taskId] }
+            );
+
+            await sequelize.query(
+                'DELETE FROM user_task_orders WHERE task_id = ?',
+                { replacements: [taskId] }
+            );
+
             await taskRepository.clearRecurringParent(taskId);
 
             // Unlink attachment files from disk before destroying rows, so a
@@ -1091,8 +1136,50 @@ router.get('/task/:uid/next-iterations', async (req, res) => {
     }
 });
 
+router.post(
+    '/task/:uid/skip-occurrence',
+    requireTaskWriteAccess,
+    async (req, res) => {
+        try {
+            const task = await taskRepository.findByUid(req.params.uid);
+
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+
+            const result = await skipRecurringOccurrence(
+                task,
+                req.currentUser.id,
+                req.currentUser.timezone
+            );
+
+            if (result.error) {
+                return res.status(400).json({ error: result.error });
+            }
+
+            const taskWithAssociations = await taskRepository.findById(
+                task.id,
+                { include: TASK_INCLUDES_WITH_SUBTASKS }
+            );
+
+            res.json(
+                await serializeTask(
+                    taskWithAssociations,
+                    req.currentUser.timezone,
+                    { skipDisplayNameTransform: true }
+                )
+            );
+        } catch (error) {
+            logError('Error skipping recurring occurrence:', error);
+            res.status(500).json({ error: 'Failed to skip occurrence' });
+        }
+    }
+);
+
 // Mount sub-routers for task-related routes
 router.use(attachmentsRouter);
 router.use(eventsRouter);
+router.use(relationsRouter);
+router.use(orderRouter);
 
 module.exports = router;

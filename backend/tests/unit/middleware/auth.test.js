@@ -267,9 +267,14 @@ describe('Auth Middleware', () => {
             await requireAuth(req, res, next);
 
             expect(next).toHaveBeenCalled();
-            // Give the fire-and-forget update a moment to complete
-            await new Promise((r) => setTimeout(r, 100));
-            await tokenRecord.reload();
+            // The update is fire-and-forget, so poll until it lands
+            for (let i = 0; i < 50; i++) {
+                await tokenRecord.reload();
+                if (Date.now() - tokenRecord.last_used_at.getTime() < 5000) {
+                    break;
+                }
+                await new Promise((r) => setTimeout(r, 50));
+            }
             // last_used_at should be updated to roughly now
             expect(
                 Date.now() - tokenRecord.last_used_at.getTime()

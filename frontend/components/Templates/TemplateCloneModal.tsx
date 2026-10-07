@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Template, CloneTemplateOptions } from '../../entities/Template';
 import { Area } from '../../entities/Area';
+import { FORM } from '../../constants/formClasses';
 
 interface TemplateCloneModalProps {
     template: Template;
@@ -70,7 +71,7 @@ const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
@@ -83,7 +84,7 @@ const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
                         <select
                             value={areaUid}
                             onChange={(e) => setAreaUid(e.target.value)}
-                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className={`${FORM.select} w-full`}
                         >
                             <option value="">{t('templates.noArea', 'No area')}</option>
                             {areas.map((area) => (
@@ -103,7 +104,7 @@ const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
                             type="date"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
-                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                             {t('templates.startDateHint', 'Leave empty to keep original due dates.')}
@@ -116,7 +117,7 @@ const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
                             id="resetStatus"
                             checked={resetStatus}
                             onChange={(e) => setResetStatus(e.target.checked)}
-                            className="h-4 w-4 text-indigo-600 rounded border-gray-300 dark:border-gray-600 focus:ring-indigo-500"
+                            className="h-4 w-4 text-blue-600 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">
                             {t('templates.resetStatus', 'Reset all tasks to Not Started')}
@@ -133,7 +134,7 @@ const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                         >
                             {t('templates.createProject', 'Create Project')}
                         </button>

@@ -53,6 +53,7 @@ This document explains how the Notes system works in tududi from a user behavior
 | **Color** | String | No | Background color (visual organization) |
 | **Created At** | Timestamp | Auto | Creation timestamp |
 | **Updated At** | Timestamp | Auto | Last modification timestamp |
+| **Public link** | Token | No | Set while the note is shared publicly (see [Sharing a Note Publicly](#sharing-a-note-publicly)) |
 
 ### Unique Identifier
 
@@ -69,7 +70,7 @@ This document explains how the Notes system works in tududi from a user behavior
 **From Notes page:**
 1. Navigate to `/notes`
 2. Click **+ icon** in top right
-3. New note opens in edit mode
+3. New note opens in the editor
 4. Start typing - auto-saves after 1 second
 5. No explicit "Save" required
 
@@ -102,17 +103,14 @@ This document explains how the Notes system works in tududi from a user behavior
 
 ## Editing Notes
 
-### Inline Editing
+### Editing in Place
 
-**How it works:**
-1. Click on a note in the list to preview it
-2. Click anywhere on the preview (title or content)
-3. Note switches to edit mode
-4. Changes auto-save every 1 second
-5. Press Escape to save and exit edit mode
+Notes have no separate view and edit modes. Opening a note (from the sidebar, a link or the URL) puts it straight into the live editor, so you can start typing immediately.
 
 **Save behavior:**
 - **Auto-save:** Triggers 1 second after you stop typing
+- **Escape or "Save" in the note menu:** saves right away and keeps the note open
+- **Switching notes:** the pending save of the note you leave is flushed first, and typing during a save is never overwritten by the server's reply
 - **Save status indicators:**
   - ✓ Saved (green) - Changes persisted
   - Saving... (blue) - Upload in progress
@@ -130,42 +128,65 @@ This document explains how the Notes system works in tududi from a user behavior
 **Rules:**
 - Title is optional - can be blank
 - Blank titles show as "Untitled Note" in UI
-- Auto-save only triggers if title is non-empty
-- Click title in preview mode to enter edit mode
+- Auto-save only triggers if the title is non-empty
+- The title field is focused automatically only for a new note
 
-### Content Editing
+### Content Editing: Live Preview
 
-**Markdown support:**
-- Full GitHub-flavored Markdown
-- Headings: `# H1`, `## H2`, `### H3`
-- Lists: `- item` or `1. item`
-- Links: `[text](url)`
-- Bold: `**text**`
-- Italic: `_text_`
-- Code: `` `inline` `` or triple backticks for blocks
-- Checkboxes: `- [ ] unchecked` or `- [x] checked`
+The editor is a live Markdown editor. Text is stored as plain Markdown, but it is rendered as you type. Move the caret onto a line, or inside a styled word, and its Markdown source appears (markers are dimmed); move away and it renders again.
 
-**Preview rendering:**
-- Content renders as formatted Markdown in preview mode
-- Click to edit - shows raw Markdown
-- Live preview updates on save
+| Markdown | Shows as |
+|----------|----------|
+| `# Heading` to `###### Heading` | Headings, marker hidden |
+| `**bold**`, `_italic_`, `~~strike~~`, `` `code` `` | Styled text, markers hidden |
+| `[text](https://...)` | A link (Cmd/Ctrl-click opens it in a new tab) |
+| `[[Note title]]` | A note link (Cmd/Ctrl-click opens that note) |
+| `- item`, `1. item`, nested | Bullet or numbered list with hanging indent |
+| `- [ ] task`, `- [x] done` | Clickable checkbox, done items muted |
+| `> quote` | Quote with a left border |
+| `> [!NOTE]`, `[!TIP]`, `[!WARNING]`, `[!IMPORTANT]`, `[!DANGER]` | Coloured callout with icon and title |
+| Fenced code block | Code block with the language label; Markdown inside is never styled |
+| `![alt](https://...)` | The image |
+| Pipe table | A rendered table (click it to edit the source) |
+| `---` | A divider |
+| `mermaid` fenced block | A diagram (click it to edit the source) |
+
+Only `http(s)` and `mailto:` links are followed, and only `http(s)` or same-origin (`/...`) images are shown.
+
+### Formatting Toolbar and Slash Commands
+
+- Select text to show the formatting toolbar (bold, italic, strikethrough, code, link, headings).
+- Type `/` at the start of a line or after a space for the slash menu: headings, bold/italic/strikethrough/inline code, code block, quote, to-do, bulleted and numbered lists, divider, link, note link, all five callout types, a 3x3 table, a Mermaid diagram template, and today's date.
+- Type `[[` to search your notes and insert a note link. When no note has the typed title, the menu offers "Create note" to make it and link it in one step.
+- Closing a link by hand (`[[Title]]`) or Cmd/Ctrl-clicking a link to a note that does not exist asks whether to create it (Enter creates, Escape dismisses). A note created from a click opens right away.
+
+Formatting and block shortcuts are listed with the rest of the editor's keyboard shortcuts, below.
+
+### Images and Files
+
+Paste or drop an image or file into a saved note, or type `/` and pick **Image or File**. It is uploaded to the note and placed where the caret is: images as `![name](/api/uploads/note-files/...)`, which show inline, and other files as a link that downloads them under their own name. A placeholder shows while it uploads and is removed if the upload fails. A brand-new note needs a title or some text first, so it is saved and can hold files. Files follow the note's access: anyone who can read the note can open them. Deleting the note deletes its files; removing a link from the text does not delete the file. A publicly shared note shows its images and files to anyone with the link (see [The public page](#the-public-page)).
+
+### Block Handle
+
+Hover the left edge of a paragraph, heading, list item, quote, code block or table (desktop with a mouse only - not on touch) to reveal two small controls:
+
+- **`+`** inserts a new block right below and opens the slash menu.
+- **`⋮⋮`** (drag handle): click for a menu (Turn into, Duplicate, Move up/down, Delete), or drag it to reorder blocks. Dropping before or after another block is decided by which half of that block the drop lands in.
+
+"Turn into" only works on a block that is a single line (a multi-line quote, list item or code block is left alone, since it's ambiguous which line the conversion should use).
 
 ### Multi-line Editing
 
-**Textarea behavior:**
-- Content field is a resizable textarea
+- The editor grows with its content and scrolls with the page
 - Minimum height: 300px
-- Expands to fill available vertical space
-- Shift+Enter for new lines
-
----
+- `Enter` continues lists, quotes and to-do items, but pressing it again on an already-empty list line exits the list rather than adding a blank line - press `Enter` once more if you want a blank paragraph separator
 
 ## Note Organization
 
 ### Projects
 
 **Linking notes to projects:**
-1. In edit mode, click **project icon** or "Add project"
+1. In the editor, click **project icon** or "Add project"
 2. Dropdown shows all available projects
 3. Select project or choose "No Project" to unlink
 4. Auto-saves immediately
@@ -174,7 +195,7 @@ This document explains how the Notes system works in tududi from a user behavior
 - Notes can belong to 0 or 1 project (not multiple)
 - Changing projects moves the note
 - Deleting a project unlinks all its notes (notes remain)
-- Project appears in note metadata (preview and edit mode)
+- Project appears in the note metadata row
 
 **Permission handling:**
 - Can only link notes to projects you have write access to
@@ -184,7 +205,7 @@ This document explains how the Notes system works in tududi from a user behavior
 ### Tags
 
 **Adding tags:**
-1. In edit mode, click **tag icon** or "Add tags"
+1. In the editor, click **tag icon** or "Add tags"
 2. Tag input field appears
 3. Type tag name and press Enter
 4. Select from existing tags (autocomplete) or create new
@@ -203,13 +224,12 @@ This document explains how the Notes system works in tududi from a user behavior
 - Changes save immediately
 
 **Tag navigation:**
-- Click tag name in preview mode → Go to tag page
+- Click a tag name in the note's metadata → Go to tag page
 - Shows all tasks/notes/projects with that tag
 
 ### Colors
 
 **Note color feature:**
-- **Feature flag:** `ENABLE_NOTE_COLOR` (enabled by default)
 - **10 predefined colors:** Red, Orange, Amber, Green, Teal, Blue, Indigo, Purple, Pink, Grey
 - **None option:** Default white/dark background
 
@@ -225,6 +245,8 @@ This document explains how the Notes system works in tududi from a user behavior
 - Text color adjusts automatically (dark text on light colors, light text on dark colors)
 - Persists across sessions
 - Visible in note preview (full panel uses color)
+
+**Background photo:** under the colors, the ⋮ menu also offers **Background**: the same photos as Profile > Appearance, or none. The photo fills the open note behind a translucent tint of the note's color (white or dark gray when it has none), with the photographer credit in the corner. Stored in `notes.background` as the photo id.
 
 **Accessibility:**
 - Luminance calculation ensures readable text contrast
@@ -255,52 +277,21 @@ This document explains how the Notes system works in tududi from a user behavior
 - Appears when search returns zero results
 - Or when user has no notes
 
-### Preview Mode (Right Panel)
+### Editor (Right Panel)
 
-**When note selected:**
-- Full title at top (large, bold)
-- Metadata row:
-  - 🕐 Last updated date
-  - 📁 Project (clickable link if assigned)
-  - 🏷️ Tags (clickable links)
-- Content rendered as Markdown below
-- Click anywhere to enter edit mode
-
-**Click behavior:**
-- Title → Enter edit mode
-- Content → Enter edit mode
-- Project link → Navigate to project page
-- Tag link → Navigate to tag page
-
-**Empty state:**
-- "Select a note to preview" message
-- Shows when no note is selected (desktop only)
-
-### Edit Mode (Right Panel)
-
-**Layout:**
+**When a note is selected:**
 - Title input at top (large, 2rem font)
-- Metadata controls:
-  - 🕐 Last updated or "New"
-  - 📁 Project selector
-  - 🏷️ Tag manager
+- Metadata row: last updated (or "New"), project selector, tag manager
 - Save status indicator (✓ Saved / Saving... / • Unsaved)
-- Content textarea (full height)
-- **⋮ menu** (options):
-  - Color picker
-  - Save button
-  - Delete button (if note exists)
+- The live editor fills the rest of the panel
+- **Focus mode** button, **Share** globe icon and **⋮ menu** (color, background, Save, Pin to sidebar, Delete)
 
 **Back button (mobile):**
 - ← Back to list
 - Appears only on mobile/tablet views
-- Saves note before returning
 
-**Keyboard shortcuts:**
-- `Esc` - Save and exit edit mode (if title exists)
-- `Ctrl/Cmd+S` - Manual save (implicit - auto-save handles this)
-
----
+**Empty state:**
+- "Select a note" message when no note is open (desktop only)
 
 ## Focus Mode
 
@@ -385,7 +376,7 @@ This document explains how the Notes system works in tududi from a user behavior
 ### Confirmation Required
 
 **Steps:**
-1. Select note or enter edit mode
+1. Open the note
 2. Click **⋮ menu** (three dots)
 3. Click **Delete** (red text)
 4. Confirmation dialog appears:
@@ -407,6 +398,58 @@ This document explains how the Notes system works in tududi from a user behavior
 - Deletion is immediate and irreversible
 - No trash/archive feature
 - Ensure confirmation before proceeding
+
+---
+
+## Sharing a Note Publicly
+
+A note can be shared with anyone who has a link, without them having an account. It works like "Anyone with the link" in Google Drive.
+
+### Turning it on and off
+
+1. Open the note and click the **globe icon** next to the ⋮ menu (green while the note is shared, faint while it is private)
+2. Under **General access**, choose **Anyone with the link**
+3. **Inherit styling (background and color) to the public note** is ticked by default; untick it for a plain public page. Click **Create public link**
+4. Copy the **public link** and send it to whoever should read the note
+5. To stop sharing, switch **General access** back to **Restricted**
+
+The checkbox can be changed later while the note is public and saves straight away. With it on, the public page follows the note: recolor the note or change its background and readers see the change.
+
+### Rules
+
+- **Owner only:** only the person who owns a note can share it publicly or stop sharing it. Collaborators with write access to the note's project cannot.
+- **Read only:** people with the link can read the note. They cannot edit it, and they see only the title, content and last updated date. Tags, project, owner and other notes are not shown.
+- **Always current:** the link shows the note as it is now, not a snapshot. Edits show up for readers right away.
+- **Kept for good:** a note keeps its link. Turning sharing off makes the link show "This note is not available" straight away, and turning it back on brings back the **same** link. Deleting the note ends the link.
+- **New link on demand:** **Get a new link and turn off this one** (under the link, with a confirmation) replaces the link. The old one stops working for everyone and never comes back.
+- **Unguessable:** the link contains 256 random bits, so it cannot be guessed. Anyone who has it can read the note, so treat it like a password-free document link.
+- **Kept out of search engines:** the public page sends `noindex` and `no-referrer` headers and is never cached.
+
+### The public page
+
+The link opens `/public/notes/<token>`, a page with no sidebar and no app navigation. It has only the tududi navbar (logo, dark mode toggle, **Sign In**, and **Sign Up** when registration is open) and the note. A visitor who is not signed in also sees a call to action: "Do you want to share your notes? Sign up now" (hidden when registration is closed). A signed-in visitor sees an **Open tududi** button instead.
+
+The title and content sit in one card. With styling inherited, the card uses the note's color, slightly translucent, and the note's background photo fills the page behind it with the photographer credited.
+
+**Images and files:** files attached to the note load on the public page without signing in. Their `/api/uploads/note-files/...` links are rewritten to `/api/public/notes/<token>/files/<name>`, which serves only files attached to that note, and only while it is shared. Turning sharing off or making a new link stops the old file addresses too. Files that are not safe to show inline (anything but PDF and common images) download instead of opening.
+
+**Note links:** a `[[link]]` to another note of the same owner that is public too opens that note's public page. Any other note link shows a badge with a lock that says "This note is not shared publicly" when clicked. A private note and a missing one look the same, so readers learn nothing about notes they cannot open.
+
+An unknown link, a link that was switched off and a deleted note all show the same "not available" page, so nobody can tell which it was.
+
+### API
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/note/:uid/public-share` | Owner | Current state: `{ enabled, token, shared_at, public_inherit_style }` |
+| POST | `/api/note/:uid/public-share` | Owner | Turn sharing on (keeps the same link if already on); optional body `{ public_inherit_style }` |
+| PATCH | `/api/note/:uid/public-share` | Owner | Change `public_inherit_style` (boolean, default true) |
+| POST | `/api/note/:uid/public-share/rotate` | Owner | Replace the link of a shared note; the old token stops working (400 if not shared) |
+| DELETE | `/api/note/:uid/public-share` | Owner | Turn sharing off; the token is kept so turning it back on restores the same link |
+| GET | `/api/public/notes/:token` | None | Read a public note: `{ title, content, color, background, updated_at, linked_notes }`, where `color` and `background` are the note's when it inherits its styling, otherwise null and `linked_notes` lists `{ title, token }` of linked notes that are public too |
+| GET | `/api/public/notes/:token/files/:filename` | None | A file attached to the public note, by its stored name (404 for any other file, or once sharing is off) |
+
+Note payloads never include the token. They carry `is_public` (boolean) instead, so a collaborator who can read a note cannot lift its public link. Stored in `notes.public_token` (unique) and `notes.public_shared_at`; a note is public while both are set, and turning sharing off clears only `public_shared_at`.
 
 ---
 
@@ -433,8 +476,8 @@ This document explains how the Notes system works in tududi from a user behavior
 
 **Navigation flow:**
 1. View note list
-2. Tap note → Preview opens (list hidden)
-3. Tap anywhere → Edit mode
+2. Tap note → It opens in the editor (list hidden)
+3. Start typing
 4. Tap "← Back" → Returns to list
 
 ---
@@ -513,7 +556,7 @@ This document explains how the Notes system works in tududi from a user behavior
 - Focusing input fields
 - Scrolling
 - Opening dropdowns
-- Viewing preview mode
+- Opening a note
 
 ### Save Guarantees
 
@@ -559,47 +602,20 @@ This document explains how the Notes system works in tududi from a user behavior
 
 ### Title Display
 
-**Preview mode:**
-- Large heading (2rem font size)
-- Medium weight (500)
-- Truncated if very long (responsive)
-- Shows "Untitled Note" if empty
-
-**Edit mode:**
-- Full-width input field
-- Same size/weight as preview (2rem/500)
+- Full-width input field, 2rem font size, medium weight (500)
 - Placeholder: "Note title..."
+- Shows "Untitled Note" where a blank title is listed
 - Auto-focus on new note creation
 
 ### Content Display
 
-**Preview mode:**
-- Rendered Markdown with styling
+**Editor:**
+- Live-rendered Markdown (see [Content Editing: Live Preview](#content-editing-live-preview))
 - Text size: 0.875rem (14px) on mobile, 1rem (16px) on desktop
-- Line height: 1.5
-- Scrollable if content exceeds viewport
-
-**Edit mode:**
-- Plain textarea (raw Markdown)
-- Minimum height: 300px
-- Expands to fill vertical space
-- Monospace font (not specified, browser default)
+- Minimum height: 300px, grows with the content
 - Placeholder: "Write your note content here... (Markdown supported)"
 
-### Color-Aware Text
-
-**Text color adjustment:**
-- Background luminance calculated from hex color
-- Luminance < 0.4 → White text (#ffffff)
-- Luminance ≥ 0.4 → Dark gray text (#333333)
-- Applies to title, content, and metadata text
-
-**Formula:**
-```
-luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
-```
-
----
+**Read-only views** (public share page, task descriptions, note cards) render the same Markdown with `MarkdownRenderer`.
 
 ## Keyboard Shortcuts
 
@@ -614,14 +630,26 @@ luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
 | Shortcut | Action |
 |----------|--------|
 | `n` | Create new note |
-| Click note | Open in preview mode |
+| Click note | Open it in the editor |
 
-### In edit mode
+### In the editor
 
 | Shortcut | Action |
 |----------|--------|
-| `Esc` | Save and exit edit mode (if title exists) |
-| `Tab` | Navigate between fields |
+| `Esc` | Save now (the note stays open) |
+| `/` | Open the slash menu |
+| `[[` | Open the note link menu |
+| Cmd/Ctrl-click a link | Open the link or note |
+| Select text | Show the formatting toolbar |
+| `Cmd/Ctrl-B` | Bold |
+| `Cmd/Ctrl-I` | Italic |
+| `Cmd/Ctrl-Shift-X` | Strikethrough |
+| `Cmd/Ctrl-E` | Inline code |
+| `Cmd/Ctrl-K` | Link |
+| `Cmd/Ctrl-1` / `2` / `3` | Heading 1-3 |
+| `Tab` / `Shift-Tab` | Indent or outdent the current list item |
+| `Alt-Up` / `Alt-Down` | Move the current block up or down |
+| `Cmd/Ctrl-Shift-D` | Duplicate the current block |
 
 ### In focus mode
 
@@ -654,7 +682,7 @@ luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
 5. Auto-saves after 1 second
 6. Add tags: `#product`, `#ideas`
 7. Link to project: "Product Roadmap"
-8. Press Esc to exit edit mode
+8. Press Esc to save right away
 
 ### Workflow 2: Meeting Notes
 
@@ -696,7 +724,7 @@ luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
    - Creates note with URL as content
    - Links to "Reading" project
    - Adds `#bookmark` tag
-4. Note auto-saved and opens in edit mode
+4. Note auto-saved and opens in the editor
 5. Add notes below URL:
    ```markdown
    https://example.com/article
@@ -706,7 +734,7 @@ luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
    - Single-tasking
    - Environment matters
    ```
-6. Press Esc to save and exit
+6. Press Esc to save right away
 
 ### Workflow 4: Knowledge Base
 
@@ -780,17 +808,17 @@ luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
 - Navigated away → Note not persisted
 
 **Prevention:**
-- Always add a title before leaving edit mode
+- Always add a title before leaving the note
 - Check for "✓ Saved" status before navigating
 
 ### "Markdown not rendering"
 
 **Check:**
-1. Are you in edit mode? (shows raw Markdown)
-2. Switch to preview mode (click note in list or press Esc)
-3. Ensure Markdown syntax is correct
+1. Is the caret on that line or inside that word? The editor shows the source there and renders it again when you move away
+2. Ensure Markdown syntax is correct
    - ❌ `#Heading` (no space)
    - ✅ `# Heading` (space required)
+3. Markdown inside a code fence or inline code is intentionally not rendered
 
 ### "Can't link note to project"
 
@@ -817,11 +845,9 @@ luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
 ### "Color not appearing"
 
 **Check:**
-1. Is `ENABLE_NOTE_COLOR` feature flag enabled?
-   - Check with admin/developer
-2. Browser caching issue?
+1. Browser caching issue?
    - Hard refresh: `Ctrl+Shift+R` or `Cmd+Shift+R`
-3. Dark mode conflict?
+2. Dark mode conflict?
    - Try switching theme
 
 ---
@@ -902,10 +928,12 @@ luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
    - Cannot upload files/images to notes
    - Workaround: Host elsewhere, link via Markdown
 
-6. **Limited rich text:**
-   - Markdown only (no WYSIWYG editor)
-   - No inline images (must use external URLs)
-   - No tables with complex formatting
+6. **Live Markdown, not a full block editor:**
+   - Notes are plain Markdown underneath, not a block tree - the block handle's "Turn into" and reordering work on the Markdown structure, but only on a block that is a single line
+   - Images must be linked by URL (no upload or paste yet)
+   - Tables are edited as source: click a rendered table to edit its Markdown
+   - Code fences are not syntax highlighted in the editor
+   - The block handle (hover to reveal `+` and `⋮⋮`) needs a mouse; touch devices use the slash menu instead
 
 ### Technical Constraints
 
@@ -941,6 +969,7 @@ luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
 - Note API routes: `/backend/modules/notes/routes.js`
 - Notes component: `/frontend/components/Notes.tsx`
 - Note modal: `/frontend/components/Note/NoteModal.tsx`
+- Live editor (CodeMirror): `/frontend/components/Note/MarkdownEditor.tsx` and `/frontend/components/Note/editor/`
 - Note focus mode: `/frontend/components/Note/NoteFocusMode.tsx`
 - Markdown renderer: `/frontend/components/Shared/MarkdownRenderer.tsx`
 - Note service (frontend): `/frontend/utils/notesService.ts`

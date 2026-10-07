@@ -8,6 +8,11 @@ import {
 import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import {
+    ADMIN_TABLE_WRAPPER,
+    SortHeader,
+    useSortedRows,
+} from './SortableTable';
+import {
     fetchWaitlist,
     downloadWaitlistCsv,
     deleteWaitlistEntry,
@@ -29,6 +34,14 @@ const AdminWaitlistPage: React.FC = () => {
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
+    const { sorted, sortKey, sortDir, toggle } = useSortedRows(entries, {
+        email: (e) => e.email,
+        source: (e) => e.source,
+        locale: (e) => e.locale,
+        submissions: (e) => e.submission_count,
+        joined: (e) => new Date(e.created_at).getTime(),
+        ip: (e) => e.ip_address,
+    });
     const [entryToDelete, setEntryToDelete] = useState<WaitlistEntry | null>(
         null
     );
@@ -69,9 +82,7 @@ const AdminWaitlistPage: React.FC = () => {
         if (!entryToDelete) return;
         try {
             await deleteWaitlistEntry(entryToDelete.id);
-            setEntries((prev) =>
-                prev.filter((e) => e.id !== entryToDelete.id)
-            );
+            setEntries((prev) => prev.filter((e) => e.id !== entryToDelete.id));
             setTotal((prev) => Math.max(0, prev - 1));
             showSuccessToast(
                 t('admin.waitlist.removed', 'Removed from the waitlist')
@@ -136,28 +147,58 @@ const AdminWaitlistPage: React.FC = () => {
                 </button>
             </form>
 
-            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className={ADMIN_TABLE_WRAPPER}>
                 <table className="min-w-full text-sm">
                     <thead className="bg-gray-50 dark:bg-gray-900 text-left text-gray-600 dark:text-gray-300">
                         <tr>
-                            <th className="px-4 py-2">
-                                {t('admin.waitlist.email', 'Email')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.waitlist.source', 'Source')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.waitlist.locale', 'Language')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.waitlist.submissions', 'Submissions')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.waitlist.joined', 'Joined')}
-                            </th>
-                            <th className="px-4 py-2">
-                                {t('admin.waitlist.ipAddress', 'IP Address')}
-                            </th>
+                            <SortHeader
+                                column="email"
+                                label={t('admin.waitlist.email', 'Email')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="source"
+                                label={t('admin.waitlist.source', 'Source')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="locale"
+                                label={t('admin.waitlist.locale', 'Language')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="submissions"
+                                label={t(
+                                    'admin.waitlist.submissions',
+                                    'Submissions'
+                                )}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="joined"
+                                label={t('admin.waitlist.joined', 'Joined')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
+                            <SortHeader
+                                column="ip"
+                                label={t(
+                                    'admin.waitlist.ipAddress',
+                                    'IP Address'
+                                )}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                            />
                             <th className="px-4 py-2 text-right">
                                 {t('common.actions', 'Actions')}
                             </th>
@@ -192,7 +233,7 @@ const AdminWaitlistPage: React.FC = () => {
                                 </td>
                             </tr>
                         ) : (
-                            entries.map((entry) => (
+                            sorted.map((entry) => (
                                 <tr
                                     key={entry.id}
                                     className="text-gray-900 dark:text-gray-100"
