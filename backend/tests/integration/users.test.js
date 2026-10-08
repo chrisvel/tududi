@@ -198,6 +198,13 @@ describe('Users Routes', () => {
                 expect(response.status).toBe(200);
                 expect(response.body.features.habits_enabled).toBe(true);
             });
+
+            it('should default pomodoro_enabled to false for new users', async () => {
+                const response = await agent.get('/api/profile');
+
+                expect(response.status).toBe(200);
+                expect(response.body.features.pomodoro_enabled).toBe(false);
+            });
         });
 
         describe('PATCH /api/profile - toggle a feature', () => {

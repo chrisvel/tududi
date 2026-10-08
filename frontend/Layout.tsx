@@ -342,7 +342,9 @@ const Layout: React.FC<LayoutProps> = ({
         }
     };
 
-    const mainContentMarginLeft = isSidebarOpen ? 'ml-sidebar' : 'ml-0';
+    const mainContentMarginLeft = isSidebarOpen
+        ? 'ml-sidebar'
+        : 'ml-0 sm:ml-rail';
 
     // Only show the full-screen loader for a store's *first* load. Once a
     // store has loaded once, subsequent background refreshes (e.g. a page
@@ -365,6 +367,29 @@ const Layout: React.FC<LayoutProps> = ({
     // The app canvas: the sidebar on it, and the page as a rounded panel
     // beside it with its own top bar. The panel sits 8px in, so the bar ends
     // 64px down, where fixed overlays (modals, toasts, search) expect it.
+    // The page background photo sits behind both the top bar and the page,
+    // so the bar reads as part of the panel.
+    const background = contentBackground ? (
+        <>
+            <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                    backgroundImage: `url(${contentBackgroundUrl(contentBackground)})`,
+                }}
+                data-testid="content-background"
+            />
+            <div
+                aria-hidden="true"
+                className={`absolute inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
+            />
+            <PhotoCredit
+                background={contentBackground}
+                className="absolute bottom-3 left-3"
+            />
+        </>
+    ) : null;
+
     const renderShell = (
         panel: React.ReactNode,
         overlays?: React.ReactNode
@@ -390,12 +415,12 @@ const Layout: React.FC<LayoutProps> = ({
                     keyboardShortcuts={keyboardShortcuts}
                 />
                 <div
-                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col sm:p-2 ${
-                        isSidebarOpen ? 'sm:pl-0' : ''
-                    }`}
+                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col sm:p-2 sm:pl-0`}
                 >
                     <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 sm:rounded-2xl sm:shadow-sm">
+                        {background}
                         <Navbar
+                            transparent={!!background}
                             isDarkMode={isDarkMode}
                             toggleDarkMode={toggleDarkMode}
                             currentUser={currentUser}
@@ -436,26 +461,6 @@ const Layout: React.FC<LayoutProps> = ({
             <UpgradeModal />
             {renderShell(
                 <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden">
-                    {contentBackground && (
-                        <>
-                            <div
-                                aria-hidden="true"
-                                className="absolute inset-0 bg-cover bg-center"
-                                style={{
-                                    backgroundImage: `url(${contentBackgroundUrl(contentBackground)})`,
-                                }}
-                                data-testid="content-background"
-                            />
-                            <div
-                                aria-hidden="true"
-                                className={`absolute inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
-                            />
-                            <PhotoCredit
-                                background={contentBackground}
-                                className="absolute bottom-3 left-3"
-                            />
-                        </>
-                    )}
                     <div
                         className={`relative flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
                             isNotesView ? 'pt-0' : 'pt-4'

@@ -819,13 +819,13 @@ const ProjectDetails: React.FC = () => {
             <div className="w-full">
                 <div className="w-full">
                     <div className="mb-4">
-                        <div className="flex items-center justify-between min-h-[2.5rem] shadow-[inset_0_-1px_0] shadow-gray-200 dark:shadow-gray-800">
+                        <div className="flex items-center justify-between min-h-[2.5rem]">
                             <div className="flex items-center gap-4 sm:gap-6 self-stretch">
                                 <button
                                     onClick={() => setActiveTab('tasks')}
                                     className={`flex items-center gap-1.5 self-stretch py-2.5 text-sm font-medium transition-colors ${
                                         activeTab === 'tasks'
-                                            ? 'text-gray-900 dark:text-gray-100 shadow-[inset_0_-2px_0] shadow-gray-900 dark:shadow-gray-100'
+                                            ? 'relative text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                                 >
@@ -837,7 +837,7 @@ const ProjectDetails: React.FC = () => {
                                     onClick={() => setActiveTab('notes')}
                                     className={`flex items-center gap-1.5 self-stretch py-2.5 text-sm font-medium transition-colors ${
                                         activeTab === 'notes'
-                                            ? 'text-gray-900 dark:text-gray-100 shadow-[inset_0_-2px_0] shadow-gray-900 dark:shadow-gray-100'
+                                            ? 'relative text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                                 >
@@ -853,7 +853,7 @@ const ProjectDetails: React.FC = () => {
                                     onClick={() => setActiveTab('attachments')}
                                     className={`flex items-center gap-1.5 self-stretch py-2.5 text-sm font-medium transition-colors ${
                                         activeTab === 'attachments'
-                                            ? 'text-gray-900 dark:text-gray-100 shadow-[inset_0_-2px_0] shadow-gray-900 dark:shadow-gray-100'
+                                            ? 'relative text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                                 >

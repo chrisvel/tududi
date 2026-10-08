@@ -142,7 +142,7 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: {
                     ai_assistant_enabled: false,
-                    pomodoro_enabled: true,
+                    pomodoro_enabled: false,
                     eisenhower_enabled: false,
                     kanban_enabled: false,
                     habits_enabled: true,

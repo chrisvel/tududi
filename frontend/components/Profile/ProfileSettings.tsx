@@ -152,7 +152,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         task_summary_frequency: 'daily',
         features: {
             ai_assistant_enabled: false,
-            pomodoro_enabled: true,
+            pomodoro_enabled: false,
             eisenhower_enabled: false,
             kanban_enabled: false,
             habits_enabled: true,
@@ -562,7 +562,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         pomodoro_enabled:
                             data.features?.pomodoro_enabled !== undefined
                                 ? data.features.pomodoro_enabled
-                                : true,
+                                : false,
                         eisenhower_enabled:
                             data.features?.eisenhower_enabled !== undefined
                                 ? data.features.eisenhower_enabled

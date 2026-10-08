@@ -20,11 +20,14 @@ interface SidebarNavProps {
     location: Location;
     isDarkMode: boolean;
     openTaskModal: () => void;
+    // Icons only, for the collapsed sidebar rail
+    compact?: boolean;
 }
 
 const SidebarNav: React.FC<SidebarNavProps> = ({
     handleNavClick,
     location,
+    compact = false,
 }) => {
     const { t } = useTranslation();
     const store = useStore();
@@ -136,6 +139,35 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
     const isActive = (path: string, query?: string) =>
         isActiveLink(path, query) ? activeClass : inactiveClass;
+
+    if (compact) {
+        return (
+            <ul className="flex flex-col items-center gap-1">
+                {navLinks.map((link) => (
+                    <li key={link.path}>
+                        <button
+                            onClick={() =>
+                                handleNavClick(link.path, link.title, link.icon)
+                            }
+                            title={link.title}
+                            aria-label={link.title}
+                            data-testid={`sidebar-rail-${link.id}`}
+                            className={`relative flex items-center justify-center h-9 w-9 rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
+                        >
+                            <span
+                                className={`[&>svg]:h-[18px] [&>svg]:w-[18px] ${isActiveLink(link.path, link.query) ? 'text-blue-600 dark:text-[oklch(68%_0.14_250)]' : 'text-gray-500 dark:text-[oklch(65%_0.006_95)]'}`}
+                            >
+                                {link.icon}
+                            </span>
+                            {link.path === '/inbox' && inboxItemsCount > 0 && (
+                                <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-blue-500" />
+                            )}
+                        </button>
+                    </li>
+                ))}
+            </ul>
+        );
+    }
 
     return (
         <ul className="flex flex-col gap-px">

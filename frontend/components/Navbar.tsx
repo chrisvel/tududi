@@ -39,6 +39,8 @@ interface NavbarProps {
     setCurrentUser: React.Dispatch<React.SetStateAction<any>>;
     isSidebarOpen: boolean;
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    // Tints the bar instead of hiding the page background photo behind it
+    transparent?: boolean;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -47,11 +49,12 @@ const Navbar: React.FC<NavbarProps> = ({
     isSidebarOpen,
     setIsSidebarOpen,
     isDarkMode,
+    transparent = false,
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-    const [pomodoroEnabled, setPomodoroEnabled] = useState(true); // Default to true
+    const [pomodoroEnabled, setPomodoroEnabled] = useState(false); // Off until turned on in Settings
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         hosted: false,
         billing: false,
@@ -118,7 +121,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 setPomodoroEnabled(
                     profile.features?.pomodoro_enabled !== undefined
                         ? profile.features.pomodoro_enabled
-                        : true
+                        : false
                 );
                 if (profile.timezone) {
                     setUserTimezone(profile.timezone);
@@ -181,7 +184,13 @@ const Navbar: React.FC<NavbarProps> = ({
     };
 
     return (
-        <nav className="relative z-30 flex-shrink-0 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+        <nav
+            className={`relative z-30 flex-shrink-0 text-gray-900 dark:text-white ${
+                transparent
+                    ? 'bg-gray-100/40 dark:bg-gray-800/40 backdrop-blur-md'
+                    : 'bg-gray-100 dark:bg-gray-800'
+            }`}
+        >
             {/* Main bar row */}
             <div className="h-14 flex items-center justify-between">
                 {/* With the sidebar closed, the button that brings it back */}
@@ -189,7 +198,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     {!isSidebarOpen && (
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                            className="sm:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                             aria-label="Expand Sidebar"
                             data-testid="sidebar-expand"
                         >

@@ -9,6 +9,7 @@ module.exports = {
     extend: {
       spacing: {
         sidebar: 'var(--sidebar-width, 22rem)',
+        rail: '3.5rem',
       },
       keyframes: {
         'scale-in': {
