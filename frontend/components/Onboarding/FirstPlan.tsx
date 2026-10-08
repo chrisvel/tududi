@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CheckCircleIcon,
@@ -16,18 +17,17 @@ import { createTask } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import {
     fetchDailyPlan,
-    saveDailyPlanItems,
+    carryOverTasks,
     startDailyPlan,
-    PlanItemInput,
 } from '../../utils/dailyPlanService';
 import { completeOnboarding } from '../../utils/onboardingService';
-import { DEFAULT_DURATION } from '../DailyPlan/planUtils';
 
-// The first thing a new account sees: one box to empty the week's thoughts
-// into, one line per thing, then one button that turns the lines into tasks
-// and today's plan. Tags, +projects and dates parse exactly as they do in the
-// Add box. Lines with a date on another day become tasks but stay off
-// today's plan.
+// The first thing a new account sees, and later a brain dump reachable from
+// the navbar menu: one box to empty the week's thoughts into, one line per
+// thing, then one button that turns the lines into tasks and adds them to
+// today's plan (keeping whatever is already planned). Tags, +projects and
+// dates parse exactly as they do in the Add box. Lines with a date on
+// another day become tasks but stay off today's plan.
 
 interface Line {
     id: number;
@@ -37,6 +37,7 @@ interface Line {
 }
 
 interface FirstPlanProps {
+    firstVisit: boolean;
     onComplete: (onboardedAt: string) => void;
 }
 
@@ -55,8 +56,9 @@ const formatDay = (iso: string, language: string): string => {
     }).format(date);
 };
 
-const FirstPlan: React.FC<FirstPlanProps> = ({ onComplete }) => {
+const FirstPlan: React.FC<FirstPlanProps> = ({ firstVisit, onComplete }) => {
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
     const [lines, setLines] = useState<Line[]>([]);
     const [draft, setDraft] = useState('');
     const [busy, setBusy] = useState(false);
@@ -106,8 +108,11 @@ const FirstPlan: React.FC<FirstPlanProps> = ({ onComplete }) => {
     };
 
     const finish = async () => {
-        const { onboarded_at } = await completeOnboarding();
-        onComplete(onboarded_at);
+        if (firstVisit) {
+            const { onboarded_at } = await completeOnboarding();
+            onComplete(onboarded_at);
+        }
+        navigate('/today', { replace: true });
     };
 
     const skip = async () => {
@@ -131,7 +136,7 @@ const FirstPlan: React.FC<FirstPlanProps> = ({ onComplete }) => {
         try {
             const { date } = await fetchDailyPlan();
             const projects = new Map<string, Project>();
-            const planned: PlanItemInput[] = [];
+            const planned: string[] = [];
             const current = [...lines];
 
             for (const line of current) {
@@ -176,17 +181,11 @@ const FirstPlan: React.FC<FirstPlanProps> = ({ onComplete }) => {
                     );
                 }
                 const due = analysis?.parsed_due_date?.slice(0, 10) || null;
-                if (uid && (!due || due === date)) {
-                    planned.push({
-                        task_uid: uid,
-                        start_minute: null,
-                        duration_minutes: DEFAULT_DURATION,
-                    });
-                }
+                if (uid && (!due || due === date)) planned.push(uid);
             }
 
             if (planned.length > 0) {
-                await saveDailyPlanItems(date, planned);
+                await carryOverTasks(date, planned);
                 await startDailyPlan(date);
             }
             await finish();
@@ -202,7 +201,9 @@ const FirstPlan: React.FC<FirstPlanProps> = ({ onComplete }) => {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 px-4 py-10 sm:py-16">
             <div className="w-full max-w-xl mx-auto">
                 <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">
-                    {t('onboarding.kicker', 'Welcome to tududi')}
+                    {firstVisit
+                        ? t('onboarding.kicker', 'Welcome to tududi')
+                        : t('onboarding.kickerAgain', 'Brain dump')}
                 </p>
                 <h1 className="text-3xl sm:text-4xl font-light text-gray-900 dark:text-gray-100">
                     {t('onboarding.title', "What's on your plate this week?")}
@@ -379,7 +380,9 @@ const FirstPlan: React.FC<FirstPlanProps> = ({ onComplete }) => {
                         data-testid="first-plan-skip"
                         className="h-11 px-4 rounded-lg text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 disabled:opacity-50"
                     >
-                        {t('onboarding.skip', 'Skip, take me to the app')}
+                        {firstVisit
+                            ? t('onboarding.skip', 'Skip, take me to the app')
+                            : t('onboarding.back', 'Back to Today')}
                     </button>
                 </div>
             </div>

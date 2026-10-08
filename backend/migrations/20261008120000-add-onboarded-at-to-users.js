@@ -5,9 +5,9 @@ const {
     safeRemoveColumn,
 } = require('../utils/migration-utils');
 
-// When a user finished (or skipped) the first-login welcome screen. Everyone
-// who already has an account never saw it, so they count as onboarded from
-// the day they signed up; only accounts created after this see the screen.
+// When a user finished (or skipped) the welcome screen. It stays null for
+// every existing account too, so everyone sees the screen once on their
+// next visit to Today. The demo account is set when it is prepared.
 module.exports = {
     async up(queryInterface, Sequelize) {
         await safeAddColumns(queryInterface, 'users', [
@@ -16,9 +16,6 @@ module.exports = {
                 definition: { type: Sequelize.DATE, allowNull: true },
             },
         ]);
-        await queryInterface.sequelize.query(
-            'UPDATE users SET onboarded_at = created_at WHERE onboarded_at IS NULL'
-        );
     },
 
     async down(queryInterface) {

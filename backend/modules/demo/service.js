@@ -59,6 +59,8 @@ async function ensureDemoUser() {
             onboarded_at: new Date(),
         });
         logInfo(`Demo account created: ${config.email}`);
+    } else if (!user.onboarded_at) {
+        await user.update({ onboarded_at: new Date() });
     }
     cachedDemoUserId = user.id;
 

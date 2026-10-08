@@ -9,6 +9,7 @@ import {
     CircleStackIcon,
     InformationCircleIcon,
     ArrowRightStartOnRectangleIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
@@ -296,6 +297,15 @@ const Navbar: React.FC<NavbarProps> = ({
                                         </span>
                                     </Link>
                                 )}
+                                <Link
+                                    to="/welcome"
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    onClick={() => setIsDropdownOpen(false)}
+                                    data-testid="navbar-brain-dump-link"
+                                >
+                                    <SparklesIcon className="h-4 w-4 mr-2 shrink-0" />
+                                    {t('navigation.brainDump', 'Brain dump')}
+                                </Link>
                                 <Link
                                     to="/profile"
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"

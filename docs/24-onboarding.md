@@ -9,9 +9,10 @@ How a new account's first visit works. For technical details see `/backend/modul
 A new account's first visit to `/` or `/today` goes to the welcome screen instead. Any other path (a shared note, an invitation, the inbox) opens as usual, and the screen waits for the next visit to Today.
 
 - **One box, one line per thing.** Enter adds the line to a list under the box. Tags (`#home`), projects (`+Kitchen`) and dates ("tomorrow", "next Tuesday") parse exactly as in the Add box, and show as chips on the line. Three prompts under the list tick off as lines are added: something from work, something at home, the thing you keep putting off.
-- **Plan my day** turns every line into a task. Tags are created as needed, a `+project` becomes a planned project, a parsed date becomes the due date. Lines with a date on another day stay off today's plan; every other line goes on it without a time, 30 minutes each. The plan is started, so Today opens with the first line in the **Now** card.
+- **Plan my day** turns every line into a task. Tags are created as needed, a `+project` becomes a planned project, a parsed date becomes the due date. Lines with a date on another day stay off today's plan; every other line is added to it without a time, after whatever is already planned. The plan is started, so Today opens with the first line in the **Now** card.
 - **Skip, take me to the app** records the screen as seen and opens Today.
-- The screen never shows again once it is done with or skipped. The demo account never sees it.
+- The redirect never happens again once the screen is done with or skipped. The demo account never sees it.
+- **Brain dump** in the navbar menu (under the avatar) opens the same screen any time, headed "Brain dump" instead of "Welcome", with **Back to Today** in place of Skip.
 
 On an error the lines stay; tasks already created keep their uid so a retry does not create them twice.
 
@@ -30,7 +31,7 @@ Pages that are empty for a new account offer one-click starters under their usua
 
 ## Data model and API
 
-- `users.onboarded_at`: when the welcome screen was finished or skipped. Accounts that existed before this column was added get their signup date, so only new accounts see the screen.
+- `users.onboarded_at`: when the welcome screen was finished or skipped. It is null for accounts that existed before the column was added too, so everyone sees the screen once on their next visit to Today.
 - `GET /api/current_user` and `GET /api/profile` include `onboarded_at` (`null` until set).
 - `POST /api/onboarding/complete` sets it and returns `{ onboarded_at }`. Later calls return the first time.
 

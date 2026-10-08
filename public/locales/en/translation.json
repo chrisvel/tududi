@@ -116,7 +116,8 @@
     "search": "Search",
     "admin": "Admin",
     "adminBadge": "Admin",
-    "templates": "Templates"
+    "templates": "Templates",
+    "brainDump": "Brain dump"
   },
   "settings": {
     "todayPageSettings": "Today Page Settings",
@@ -3251,6 +3252,8 @@
     "promptPutOff": "The thing you keep putting off",
     "planMyDay": "Plan my day",
     "planning": "Planning your day...",
-    "skip": "Skip, take me to the app"
+    "skip": "Skip, take me to the app",
+    "kickerAgain": "Brain dump",
+    "back": "Back to Today"
   }
 }

@@ -405,21 +405,19 @@ const App: React.FC = () => {
                         <Route
                             path="/welcome"
                             element={
-                                currentUser.onboarded_at === null ? (
-                                    <SubscriptionGate>
-                                        <Suspense
-                                            fallback={
-                                                <LoadingScreen fullScreen />
+                                <SubscriptionGate>
+                                    <Suspense
+                                        fallback={<LoadingScreen fullScreen />}
+                                    >
+                                        <FirstPlan
+                                            firstVisit={
+                                                currentUser.onboarded_at ===
+                                                null
                                             }
-                                        >
-                                            <FirstPlan
-                                                onComplete={markOnboarded}
-                                            />
-                                        </Suspense>
-                                    </SubscriptionGate>
-                                ) : (
-                                    <Navigate to="/today" replace />
-                                )
+                                            onComplete={markOnboarded}
+                                        />
+                                    </Suspense>
+                                </SubscriptionGate>
                             }
                         />
                         <Route

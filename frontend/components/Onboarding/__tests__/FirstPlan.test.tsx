@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
 import FirstPlan from '../FirstPlan';
 
 jest.mock('react-i18next', () => ({
@@ -14,7 +15,7 @@ const analyzeInboxText = jest.fn();
 const createTask = jest.fn();
 const createProject = jest.fn();
 const fetchDailyPlan = jest.fn();
-const saveDailyPlanItems = jest.fn();
+const carryOverTasks = jest.fn();
 const startDailyPlan = jest.fn();
 const completeOnboarding = jest.fn();
 
@@ -33,7 +34,7 @@ jest.mock('../../../utils/projectsService', () => ({
 }));
 jest.mock('../../../utils/dailyPlanService', () => ({
     fetchDailyPlan: (...args: unknown[]) => fetchDailyPlan(...args),
-    saveDailyPlanItems: (...args: unknown[]) => saveDailyPlanItems(...args),
+    carryOverTasks: (...args: unknown[]) => carryOverTasks(...args),
     startDailyPlan: (...args: unknown[]) => startDailyPlan(...args),
 }));
 jest.mock('../../../utils/onboardingService', () => ({
@@ -53,6 +54,13 @@ const analysis = (overrides: Record<string, unknown> = {}) => ({
     suggested_reason: null,
     ...overrides,
 });
+
+const renderPlan = (onComplete = jest.fn(), firstVisit = true) =>
+    render(
+        <MemoryRouter>
+            <FirstPlan firstVisit={firstVisit} onComplete={onComplete} />
+        </MemoryRouter>
+    );
 
 const typeLine = (text: string) => {
     const input = screen.getByTestId('first-plan-input');
@@ -76,7 +84,7 @@ describe('FirstPlan', () => {
             uid: 'proj-1',
         }));
         fetchDailyPlan.mockResolvedValue({ date: '2026-10-08', plan: null });
-        saveDailyPlanItems.mockResolvedValue({});
+        carryOverTasks.mockResolvedValue({});
         startDailyPlan.mockResolvedValue({});
         completeOnboarding.mockResolvedValue({
             onboarded_at: '2026-10-08T10:00:00.000Z',
@@ -84,7 +92,7 @@ describe('FirstPlan', () => {
     });
 
     it('adds a line per Enter and ticks the prompts off', async () => {
-        render(<FirstPlan onComplete={jest.fn()} />);
+        renderPlan();
 
         expect(screen.getByTestId('first-plan-submit')).toBeDisabled();
 
@@ -107,7 +115,7 @@ describe('FirstPlan', () => {
                 parsed_due_date: '2026-10-09',
             })
         );
-        render(<FirstPlan onComplete={jest.fn()} />);
+        renderPlan();
 
         typeLine('Call the dentist tomorrow #home +Kitchen');
 
@@ -131,7 +139,7 @@ describe('FirstPlan', () => {
                   })
         );
         const onComplete = jest.fn();
-        render(<FirstPlan onComplete={onComplete} />);
+        renderPlan(onComplete);
 
         typeLine('Send the report #work');
         typeLine('Pack the books +Move');
@@ -158,18 +166,18 @@ describe('FirstPlan', () => {
             due_date: '2026-10-10',
         });
         // The Friday line is a task but not part of today's plan.
-        expect(saveDailyPlanItems).toHaveBeenCalledWith('2026-10-08', [
-            { task_uid: 'task-1', start_minute: null, duration_minutes: 30 },
-            { task_uid: 'task-2', start_minute: null, duration_minutes: 30 },
+        expect(carryOverTasks).toHaveBeenCalledWith('2026-10-08', [
+            'task-1',
+            'task-2',
         ]);
         expect(startDailyPlan).toHaveBeenCalledWith('2026-10-08');
         expect(completeOnboarding).toHaveBeenCalledTimes(1);
     });
 
     it('keeps created tasks on a retry after an error', async () => {
-        saveDailyPlanItems.mockRejectedValueOnce(new Error('Network down'));
+        carryOverTasks.mockRejectedValueOnce(new Error('Network down'));
         const onComplete = jest.fn();
-        render(<FirstPlan onComplete={onComplete} />);
+        renderPlan(onComplete);
 
         typeLine('Send the report');
         fireEvent.click(screen.getByTestId('first-plan-submit'));
@@ -183,12 +191,12 @@ describe('FirstPlan', () => {
 
         await waitFor(() => expect(onComplete).toHaveBeenCalled());
         expect(createTask).toHaveBeenCalledTimes(1);
-        expect(saveDailyPlanItems).toHaveBeenCalledTimes(2);
+        expect(carryOverTasks).toHaveBeenCalledTimes(2);
     });
 
     it('skipping only records the screen as seen', async () => {
         const onComplete = jest.fn();
-        render(<FirstPlan onComplete={onComplete} />);
+        renderPlan(onComplete);
 
         fireEvent.click(screen.getByTestId('first-plan-skip'));
 
@@ -196,6 +204,19 @@ describe('FirstPlan', () => {
             expect(onComplete).toHaveBeenCalledWith('2026-10-08T10:00:00.000Z')
         );
         expect(createTask).not.toHaveBeenCalled();
-        expect(saveDailyPlanItems).not.toHaveBeenCalled();
+        expect(carryOverTasks).not.toHaveBeenCalled();
+    });
+
+    it('reopened later it adds to the day without touching onboarding', async () => {
+        const onComplete = jest.fn();
+        renderPlan(onComplete, false);
+
+        expect(screen.getByText('Brain dump')).toBeInTheDocument();
+        typeLine('Send the report');
+        fireEvent.click(screen.getByTestId('first-plan-submit'));
+
+        await waitFor(() => expect(carryOverTasks).toHaveBeenCalled());
+        expect(completeOnboarding).not.toHaveBeenCalled();
+        expect(onComplete).not.toHaveBeenCalled();
     });
 });
