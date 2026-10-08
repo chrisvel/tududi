@@ -602,11 +602,11 @@ const Notes: React.FC = () => {
     );
 
     return (
-        <div className="flex flex-col h-[calc(100vh-6rem)] overflow-hidden">
+        <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden pt-2">
                 <div className="flex flex-1 min-h-0 overflow-hidden">
                     <div
-                        className={`relative flex flex-1 flex-col overflow-hidden h-full rounded-md backdrop-blur-sm ${activeNoteColor ? '' : 'bg-white/85 dark:bg-gray-900/85'} ${activeNotePhoto ? 'bg-cover bg-center [--note-tint:rgb(255_255_255/0.75)] dark:[--note-tint:rgb(17_24_39/0.75)]' : ''}`}
+                        className={`relative flex flex-1 flex-col overflow-hidden h-full backdrop-blur-sm ${activeNoteColor ? '' : 'bg-white/85 dark:bg-gray-900/85'} ${activeNotePhoto ? 'bg-cover bg-center [--note-tint:rgb(255_255_255/0.75)] dark:[--note-tint:rgb(17_24_39/0.75)]' : ''}`}
                         style={activeNoteStyle}
                     >
                         {activeNotePhoto && (

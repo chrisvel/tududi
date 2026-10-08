@@ -161,7 +161,7 @@ const Breadcrumbs: React.FC = () => {
     return (
         <nav
             aria-label={t('common.breadcrumb', 'Breadcrumb')}
-            className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2"
+            className="w-full px-2 sm:px-4 lg:px-6 pt-2"
         >
             <ol className="flex items-center gap-1 min-w-0 text-xs text-gray-500 dark:text-gray-400">
                 {crumbs.map((crumb, index) => {

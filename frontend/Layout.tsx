@@ -58,6 +58,8 @@ const Layout: React.FC<LayoutProps> = ({
     const navigate = useNavigate();
     const location = useLocation();
     const isUpcomingView = location.pathname === '/upcoming';
+    // Notes fill the content area edge to edge.
+    const isNotesView = /^\/notes?(\/|$)/.test(location.pathname);
     const [isSidebarOpen, setIsSidebarOpen] = useState(
         window.innerWidth >= 1024
     );
@@ -515,10 +517,26 @@ const Layout: React.FC<LayoutProps> = ({
                         )}
                         <div
                             className={`relative flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
-                                isMobileSearchOpen ? 'pt-32' : 'pt-20'
-                            } md:pt-20 ${isUpcomingView ? 'md:px-6 lg:px-8' : 'md:px-4'} overflow-hidden`}
+                                isMobileSearchOpen
+                                    ? 'pt-32'
+                                    : isNotesView
+                                      ? 'pt-16'
+                                      : 'pt-20'
+                            } ${isNotesView ? 'md:pt-16' : 'md:pt-20'} ${
+                                isUpcomingView
+                                    ? 'md:px-6 lg:px-8'
+                                    : isNotesView
+                                      ? ''
+                                      : 'md:px-4'
+                            } overflow-hidden`}
                         >
-                            <div className="w-full h-full overflow-auto">
+                            <div
+                                className={`w-full h-full ${
+                                    isNotesView
+                                        ? 'flex flex-col overflow-hidden'
+                                        : 'overflow-auto'
+                                }`}
+                            >
                                 <TrialBanner />
                                 <Breadcrumbs />
                                 <TaskRowExpansionProvider
