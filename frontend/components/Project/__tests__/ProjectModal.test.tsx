@@ -5,16 +5,40 @@ import ProjectModal from '../ProjectModal';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (key: string, fallback?: any) =>
-            typeof fallback === 'string' ? fallback : key,
-        i18n: { language: 'en' },
+        t: (key: string, optionsOrDefault?: any, maybeOptions?: any) => {
+            const options =
+                typeof optionsOrDefault === 'object' &&
+                optionsOrDefault !== null
+                    ? optionsOrDefault
+                    : maybeOptions;
+
+            let template = key;
+            if (key === 'modals.deleteProject.message') {
+                template =
+                    'Czy na pewno chcesz usunąć projekt "{{projectName}}"?';
+            } else if (typeof optionsOrDefault === 'string') {
+                template = optionsOrDefault;
+            } else if (options && typeof options.defaultValue === 'string') {
+                template = options.defaultValue;
+            }
+
+            if (options && typeof options === 'object') {
+                return template.replace(/\{\{(\w+)\}\}/g, (_, varName) =>
+                    options[varName] !== undefined
+                        ? String(options[varName])
+                        : `{{${varName}}}`
+                );
+            }
+            return template;
+        },
+        i18n: { language: 'pl' },
     }),
     initReactI18next: { type: '3rdParty', init: () => {} },
 }));
 
 jest.mock('../../../i18n', () => ({
     __esModule: true,
-    default: { language: 'en' },
+    default: { language: 'pl' },
 }));
 
 jest.mock('../../Shared/ToastContext', () => ({
@@ -103,5 +127,43 @@ describe('ProjectModal outside clicks (#1620)', () => {
             jest.advanceTimersByTime(500);
         });
         expect(onClose).toHaveBeenCalled();
+    });
+});
+
+describe('ProjectModal delete confirmation (#1826)', () => {
+    it('interpolates project name in delete confirm dialog and does not display literal placeholder', () => {
+        const testProject = {
+            id: 42,
+            uid: 'proj-42',
+            name: 'Renovate Office Space',
+            description: '',
+            area_id: null,
+            status: 'not_started',
+            tags: [],
+            priority: null,
+            due_date_at: null,
+        } as any;
+
+        render(
+            <ProjectModal
+                isOpen
+                onClose={jest.fn()}
+                onSave={jest.fn()}
+                onDelete={jest.fn()}
+                project={testProject}
+                areas={[]}
+            />
+        );
+
+        fireEvent.click(screen.getByTitle('Delete'));
+
+        expect(
+            screen.getByText(
+                'Czy na pewno chcesz usunąć projekt "Renovate Office Space"?'
+            )
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByText(/\{\{projectName\}\}/)
+        ).not.toBeInTheDocument();
     });
 });
