@@ -14,10 +14,11 @@ const {
 } = require('../../tasks/operations/recurring');
 const { handleCompletionStatus } = require('../../tasks/operations/completion');
 const { Op } = require('sequelize');
-const { sequelize, Task, Project, Tag } = require('../../../models');
+const { sequelize, Task, Project, Tag, Area } = require('../../../models');
 const {
     validateProjectAccess,
     validateDeferUntilAndDueDate,
+    validateAreaAccess,
     getRecurringParentEndDate,
 } = require('../../tasks/utils/validation');
 const {
@@ -97,11 +98,19 @@ const recurrenceInputSchemaProperties = {
     },
 };
 
+// The area set directly on a task (tasks in a project get theirs from it).
+const AREA_INCLUDE = {
+    model: Area,
+    attributes: ['id', 'name', 'uid', 'color'],
+    required: false,
+};
+
 async function findTaskByIdentifier(identifier) {
     const isNumeric = !isNaN(identifier);
 
     const includeOptions = [
         { model: Project, as: 'Project' },
+        AREA_INCLUDE,
         { model: Tag, as: 'Tags' },
         {
             model: Task,
@@ -258,6 +267,7 @@ function registerTaskTools(server, context, tools) {
             const tasks = await taskRepository.findAll(whereClause, {
                 include: [
                     { model: Project, as: 'Project' },
+                    AREA_INCLUDE,
                     { model: Tag, as: 'Tags' },
                 ],
                 limit: limit,
@@ -383,6 +393,15 @@ function registerTaskTools(server, context, tools) {
                     type: 'number',
                     description: 'Project ID to assign task to',
                 },
+                area_id: {
+                    type: 'number',
+                    description: 'Area ID to assign task to directly',
+                },
+                area_uid: {
+                    type: 'string',
+                    description:
+                        'Area UID to assign task to directly (alternative to area_id)',
+                },
                 tags: {
                     type: 'array',
                     items: { type: 'string' },
@@ -399,6 +418,10 @@ function registerTaskTools(server, context, tools) {
             const resolvedProjectId = params.project_id
                 ? await validateProjectAccess(params.project_id, context.userId)
                 : null;
+            const resolvedAreaId = await validateAreaAccess(
+                params.area_uid || params.area_id,
+                context.userId
+            );
 
             const recurrenceType = params.recurrence_type || 'none';
             let dueDateInput = params.due_date || null;
@@ -438,6 +461,7 @@ function registerTaskTools(server, context, tools) {
                 due_date: dueDate,
                 defer_until: deferUntil,
                 project_id: resolvedProjectId,
+                area_id: resolvedAreaId,
                 recurrence_type: recurrenceType,
                 recurrence_interval: params.recurrence_interval ?? null,
                 recurrence_end_date: params.recurrence_end_date || null,
@@ -490,6 +514,7 @@ function registerTaskTools(server, context, tools) {
                 {
                     include: [
                         { model: Project, as: 'Project' },
+                        AREA_INCLUDE,
                         { model: Tag, as: 'Tags' },
                     ],
                 }
@@ -568,6 +593,16 @@ function registerTaskTools(server, context, tools) {
             type: 'number',
             description:
                 'Project ID to assign task to (use null to remove project)',
+        },
+        area_id: {
+            type: 'number',
+            description:
+                'Area ID to assign task to directly (use null to remove area)',
+        },
+        area_uid: {
+            type: 'string',
+            description:
+                'Area UID to assign task to directly (alternative to area_id)',
         },
         today: {
             type: 'boolean',
@@ -669,6 +704,16 @@ function registerTaskTools(server, context, tools) {
                 );
                 updates.project_id = validProjectId;
             }
+            const areaIdentifier =
+                params.area_uid !== undefined
+                    ? params.area_uid
+                    : params.area_id;
+            if (areaIdentifier !== undefined) {
+                updates.area_id = await validateAreaAccess(
+                    areaIdentifier,
+                    context.userId
+                );
+            }
             if (params.today !== undefined) updates.today = params.today;
 
             if (params.recurrence_type !== undefined)
@@ -768,6 +813,7 @@ function registerTaskTools(server, context, tools) {
             const reloadedTask = await taskRepository.findById(task.id, {
                 include: [
                     { model: Project, as: 'Project' },
+                    AREA_INCLUDE,
                     { model: Tag, as: 'Tags' },
                 ],
             });
@@ -849,6 +895,7 @@ function registerTaskTools(server, context, tools) {
             const reloadedTask = await taskRepository.findById(task.id, {
                 include: [
                     { model: Project, as: 'Project' },
+                    AREA_INCLUDE,
                     { model: Tag, as: 'Tags' },
                 ],
             });
@@ -933,6 +980,7 @@ function registerTaskTools(server, context, tools) {
             const reloadedTask = await taskRepository.findById(task.id, {
                 include: [
                     { model: Project, as: 'Project' },
+                    AREA_INCLUDE,
                     { model: Tag, as: 'Tags' },
                 ],
             });
@@ -1080,6 +1128,7 @@ function registerTaskTools(server, context, tools) {
                 {
                     include: [
                         { model: Project, as: 'Project' },
+                        AREA_INCLUDE,
                         { model: Tag, as: 'Tags' },
                     ],
                 }

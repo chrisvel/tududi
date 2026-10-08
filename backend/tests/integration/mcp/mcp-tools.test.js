@@ -1443,6 +1443,121 @@ describe('MCP Tools Integration', () => {
             });
         });
 
+        describe('direct area assignment', () => {
+            let area;
+
+            beforeEach(async () => {
+                area = await Area.create({
+                    user_id: user.id,
+                    name: 'Home',
+                });
+            });
+
+            it('create_task assigns an area by id', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    { name: 'Area task', area_id: area.id }
+                );
+
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.task.area_id).toBe(area.id);
+                expect(content.task.area_uid).toBe(area.uid);
+                expect(content.task.Area.name).toBe('Home');
+            });
+
+            it('create_task assigns an area by uid', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    { name: 'Area uid task', area_uid: area.uid }
+                );
+
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.task.area_id).toBe(area.id);
+            });
+
+            it('update_task sets and clears the area', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'No area yet',
+                    status: 0,
+                });
+
+                const setResponse = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, area_id: area.id }
+                );
+                const set = getToolContent(setResponse);
+                expect(set.isError).toBe(false);
+                expect(set.content.task.area_id).toBe(area.id);
+                expect(set.content.task.Area.uid).toBe(area.uid);
+
+                const clearResponse = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, area_id: null }
+                );
+                const cleared = getToolContent(clearResponse);
+                expect(cleared.isError).toBe(false);
+                await task.reload();
+                expect(task.area_id).toBeNull();
+            });
+
+            it("rejects another user's area", async () => {
+                const otherUser = await createTestUser({
+                    email: `mcp_area_other_${Date.now()}@example.com`,
+                });
+                const otherArea = await Area.create({
+                    user_id: otherUser.id,
+                    name: 'Private',
+                });
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Keep my area',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, area_id: otherArea.id }
+                );
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                expect(content._rawError).toMatch(/Invalid area/);
+
+                await task.reload();
+                expect(task.area_id).toBeNull();
+            });
+
+            it('list_tasks includes the directly assigned area', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Listed area task',
+                    status: 0,
+                    area_id: area.id,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    { type: 'all' }
+                );
+                const { content } = getToolContent(response);
+                const listed = content.tasks.find(
+                    (t) => t.name === 'Listed area task'
+                );
+                expect(listed.Area).toMatchObject({
+                    uid: area.uid,
+                    name: 'Home',
+                });
+            });
+        });
+
         describe('complete_task', () => {
             it('should mark task as completed', async () => {
                 const task = await Task.create({
