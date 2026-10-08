@@ -254,6 +254,31 @@ function evaluate(task, entries, options = {}) {
     };
 }
 
+// Whether a build habit still asks for a check-in on a day: the day is
+// scheduled and not skipped, the period goal is not met yet, and, unless
+// several check-ins a day count, the day has no check-in. Quit habits are
+// avoided rather than done, so they never ask.
+function isDueOn(task, entries, dayKey, options = {}) {
+    const cfg = normalizeConfig(task, options);
+    if (cfg.polarity === 'quit' || !isScheduledDay(dayKey, cfg)) return false;
+
+    const start = periodStart(dayKey, cfg);
+    const multiple = allowsMultiplePerDay(cfg);
+    let progress = 0;
+    for (const entry of entries) {
+        const key = toDayKey(entry.completed_at, cfg.timezone);
+        if (entry.skipped) {
+            if (key === dayKey) return false;
+            continue;
+        }
+        if (key === dayKey && !multiple) return false;
+        if (periodStart(key, cfg) === start) {
+            progress += entryAmount(entry, cfg);
+        }
+    }
+    return progress < cfg.goal;
+}
+
 module.exports = {
     PERIODS,
     toDayKey,
@@ -264,5 +289,6 @@ module.exports = {
     nextPeriodStart,
     allowsMultiplePerDay,
     isScheduledDay,
+    isDueOn,
     evaluate,
 };

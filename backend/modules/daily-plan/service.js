@@ -172,7 +172,9 @@ async function serializePlan(plan, userId, timezone) {
     );
     const closedStatuses = [Task.STATUS.DONE, Task.STATUS.ARCHIVED];
     const statusById = new Map(tasks.map((task) => [task.id, task.status]));
+    // Habits stay open after a check-in, so a check-in on the day is enough.
     const isOccurrenceDone = (taskId) => {
+        if (byId.get(taskId).habit_mode) return completedIds.has(taskId);
         const dueDate = byId.get(taskId).due_date;
         return (
             completedIds.has(taskId) &&

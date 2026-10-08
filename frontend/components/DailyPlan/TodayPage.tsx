@@ -27,6 +27,7 @@ import {
 import { deleteTask, toggleTaskCompletion } from '../../utils/tasksService';
 import { getUserTimezone } from '../../utils/dateUtils';
 import { isTaskDone } from '../../constants/taskStatus';
+import { isHabitDoneForNow } from '../../utils/habitUtils';
 import { useToast } from '../Shared/ToastContext';
 import { useDailyPlanProgress } from '../../store/dailyPlanStore';
 import { useStore } from '../../store/useStore';
@@ -222,17 +223,19 @@ const TodayPage: React.FC = () => {
     );
 
     // Completing a recurring task reopens the same task for its next due
-    // date, so the plan records the day's occurrence as done itself.
+    // date, and a habit stays open after a check-in, so the plan records the
+    // day's occurrence as done itself.
     const syncCompletedTask = useCallback(
         (updated: Task) => {
             const planDate = planResponse?.date;
             mergePlannedTask(updated, {
-                occurrence_done:
-                    !!planDate &&
-                    isRecurring(updated) &&
-                    !isTaskDone(updated.status) &&
-                    !!updated.due_date &&
-                    updated.due_date.slice(0, 10) > planDate,
+                occurrence_done: updated.habit_mode
+                    ? isHabitDoneForNow(updated)
+                    : !!planDate &&
+                      isRecurring(updated) &&
+                      !isTaskDone(updated.status) &&
+                      !!updated.due_date &&
+                      updated.due_date.slice(0, 10) > planDate,
             });
         },
         [mergePlannedTask, planResponse?.date]

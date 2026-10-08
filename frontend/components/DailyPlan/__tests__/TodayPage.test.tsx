@@ -394,6 +394,48 @@ describe('TodayPage', () => {
         expect(saveDailyPlanItems).not.toHaveBeenCalled();
     });
 
+    it('marks the day done when a planned habit is checked in', async () => {
+        (fetchDailyPlan as jest.Mock).mockResolvedValue(
+            startedPlan([
+                {
+                    task_uid: 'h1',
+                    task: {
+                        uid: 'h1',
+                        name: 'Stretch',
+                        status: 0,
+                        habit_mode: true,
+                        recurrence_type: 'daily',
+                        habit_frequency_period: 'weekly',
+                        habit_target_count: 3,
+                        habit_progress: {
+                            period_start: '2026-09-21',
+                            period_end: '2026-09-27',
+                            today: '2026-09-24',
+                            first_day: '2026-09-01',
+                            progress: 1,
+                            check_ins: 1,
+                            today_check_ins: 1,
+                            goal: 3,
+                            met: false,
+                            skipped: false,
+                            scheduled_today: true,
+                            multiple_per_day: false,
+                        },
+                    },
+                },
+            ])
+        );
+
+        render(<TodayPage />);
+
+        fireEvent.click(await screen.findByTestId('complete-h1'));
+
+        expect(
+            await screen.findByTestId('occurrence-done-h1')
+        ).toBeInTheDocument();
+        expect(screen.getByText('1 of 1 done')).toBeInTheDocument();
+    });
+
     it('takes a task off the plan when its due date moves later', async () => {
         const plan = startedPlan([
             {
