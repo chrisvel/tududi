@@ -63,7 +63,6 @@ const Layout: React.FC<LayoutProps> = ({
     const [isSidebarOpen, setIsSidebarOpen] = useState(
         window.innerWidth >= 1024
     );
-    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
@@ -141,23 +140,6 @@ const Layout: React.FC<LayoutProps> = ({
         };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    useEffect(() => {
-        // Listen for mobile search toggle events from Navbar
-        const handleMobileSearchToggle = (event: CustomEvent) => {
-            setIsMobileSearchOpen(event.detail.isOpen);
-        };
-
-        window.addEventListener(
-            'mobileSearchToggle',
-            handleMobileSearchToggle as EventListener
-        );
-        return () =>
-            window.removeEventListener(
-                'mobileSearchToggle',
-                handleMobileSearchToggle as EventListener
-            );
     }, []);
 
     useEffect(() => {
@@ -517,12 +499,14 @@ const Layout: React.FC<LayoutProps> = ({
                         )}
                         <div
                             className={`relative flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
-                                isMobileSearchOpen
-                                    ? 'pt-32'
-                                    : isNotesView
-                                      ? 'pt-16'
-                                      : 'pt-20'
-                            } ${isNotesView ? 'md:pt-16' : 'md:pt-20'} ${
+                                isNotesView
+                                    ? isSidebarOpen
+                                        ? 'pt-14 md:pt-0'
+                                        : 'pt-14'
+                                    : isSidebarOpen
+                                      ? 'pt-16 md:pt-6'
+                                      : 'pt-16'
+                            } ${
                                 isUpcomingView
                                     ? 'md:px-6 lg:px-8'
                                     : isNotesView

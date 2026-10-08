@@ -333,7 +333,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 
             {isOpen && (
                 <div
-                    className={`absolute right-0 mt-2 w-96 rounded-lg shadow-lg z-50 ${
+                    className={`fixed left-2 top-14 w-[min(24rem,calc(100vw-1rem))] rounded-lg shadow-lg z-50 ${
                         isDarkMode ? 'bg-gray-800' : 'bg-white'
                     } border ${
                         isDarkMode ? 'border-gray-700' : 'border-gray-200'

@@ -8,32 +8,8 @@ const UniversalSearch: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-
-    // Listen for mobile search toggle events
-    useEffect(() => {
-        const handleMobileSearchToggle = (event: CustomEvent) => {
-            setIsMobileSearchOpen(event.detail.isOpen);
-            // On mobile, automatically open/close the search menu when mobile search is toggled
-            if (window.innerWidth < 768) {
-                setIsOpen(event.detail.isOpen);
-            }
-        };
-
-        window.addEventListener(
-            'mobileSearchToggle',
-            handleMobileSearchToggle as EventListener
-        );
-
-        return () => {
-            window.removeEventListener(
-                'mobileSearchToggle',
-                handleMobileSearchToggle as EventListener
-            );
-        };
-    }, []);
 
     // Close on clicking outside
     useEffect(() => {
@@ -55,18 +31,16 @@ const UniversalSearch: React.FC = () => {
         };
     }, [isOpen]);
 
-    // Focus input when opening or when mobile search opens
+    // Focus input when opening
     useEffect(() => {
-        if ((isOpen || isMobileSearchOpen) && inputRef.current) {
+        if (isOpen && inputRef.current) {
             inputRef.current.focus();
         }
-    }, [isOpen, isMobileSearchOpen]);
+    }, [isOpen]);
 
     // Disable/enable body scroll when modal is open/closed
     useEffect(() => {
-        const isModalOpen = isOpen || isMobileSearchOpen;
-
-        if (isModalOpen) {
+        if (isOpen) {
             // Disable body scroll
             document.body.style.overflow = 'hidden';
         } else {
@@ -85,12 +59,10 @@ const UniversalSearch: React.FC = () => {
                 inputRef.current.blur();
             }
         };
-    }, [isOpen, isMobileSearchOpen]);
+    }, [isOpen]);
 
     useEffect(() => {
-        const handleOpenSearch = () => {
-            if (window.innerWidth >= 768) setIsOpen(true);
-        };
+        const handleOpenSearch = () => setIsOpen(true);
         window.addEventListener('openUniversalSearch', handleOpenSearch);
         return () =>
             window.removeEventListener('openUniversalSearch', handleOpenSearch);
@@ -122,9 +94,7 @@ const UniversalSearch: React.FC = () => {
                 ref={searchRef}
                 data-testid="universal-search"
                 data-state={isOpen ? 'open' : 'closed'}
-                className={`relative flex-1 mx-4 transition-all duration-300 ${
-                    isOpen ? 'max-w-5xl' : 'max-w-3xl'
-                }`}
+                className="relative flex-1 min-w-0"
             >
                 {/* Search Bar */}
                 <div

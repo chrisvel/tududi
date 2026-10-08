@@ -589,7 +589,7 @@ const Tasks: React.FC = () => {
                     <div
                         className={`flex items-center gap-2 flex-shrink-0 ${
                             isUpcomingView
-                                ? 'md:fixed md:right-4 md:top-20 md:px-3 md:py-2 md:z-20'
+                                ? 'md:fixed md:right-4 md:top-4 md:px-3 md:py-2 md:z-20'
                                 : ''
                         }`}
                     >
