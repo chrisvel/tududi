@@ -189,7 +189,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     return (
         <div
-            className={`fixed top-[6.5rem] left-0 ${isSidebarOpen ? 'w-full sm:w-sidebar' : 'w-0'} h-[calc(100vh-6.5rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-40`}
+            className={`fixed top-[6.5rem] left-0 ${isSidebarOpen ? 'w-full sm:w-sidebar' : 'w-0'} h-[calc(100vh-6.5rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-[39]`}
             style={{
                 visibility: isSidebarOpen ? 'visible' : 'hidden',
                 overflow: 'hidden',
