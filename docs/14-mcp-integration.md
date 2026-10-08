@@ -236,6 +236,7 @@ Create a new task.
 | `project_id` | number | No | Assign to a project |
 | `area_id` | number | No | Assign directly to an area (tasks in a project take the project's area) |
 | `area_uid` | string | No | Area UID, alternative to `area_id` |
+| `assigned_to` | string | No | Person UID to assign the task to (from `list_people`) |
 | `tags` | string[] | No | Array of tag names to apply |
 | `recurrence_type` | string | No | `none`, `daily`, `weekly`, `monthly`, `monthly_weekday`, or `monthly_last_day` |
 | `recurrence_interval` | number | No | Repeat every N days/weeks/months (default: 1) |
@@ -289,6 +290,7 @@ Update an existing task.
 | `project_id` | number | No | Reassign to a project (`null` to remove) |
 | `area_id` | number | No | Assign directly to an area (`null` to remove) |
 | `area_uid` | string | No | Area UID, alternative to `area_id` |
+| `assigned_to` | string | No | Person UID to assign the task to (`null` to unassign) |
 | `today` | boolean | No | Add to Today list |
 | `tags` | string[] | No | Array of tag names (replaces existing tags) |
 | `recurrence_type` | string | No | `none`, `daily`, `weekly`, `monthly`, `monthly_weekday`, or `monthly_last_day` |
