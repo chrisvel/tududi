@@ -1558,6 +1558,115 @@ describe('MCP Tools Integration', () => {
             });
         });
 
+        describe('assignee', () => {
+            it('create_task assigns one of my people', async () => {
+                const person = await Person.create({
+                    user_id: user.id,
+                    name: 'Neighbour',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    { name: 'Water the plants', assigned_to: person.uid }
+                );
+
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.task.assigned_to).toBe(person.uid);
+            });
+
+            it('update_task assigns a project collaborator, notifies them, and unassigns', async () => {
+                const collaborator = await createTestUser({
+                    email: `mcp_assignee_${Date.now()}@example.com`,
+                    name: 'Collaborator',
+                });
+                await peopleService.createSelfPerson(collaborator);
+                const collaboratorSelf = await Person.findOne({
+                    where: {
+                        user_id: collaborator.id,
+                        linked_user_id: collaborator.id,
+                    },
+                });
+                const project = await Project.create({
+                    user_id: user.id,
+                    name: 'Shared with collaborator',
+                });
+                await Permission.create({
+                    user_id: collaborator.id,
+                    resource_type: 'project',
+                    resource_uid: project.uid,
+                    access_level: 'rw',
+                    propagation: 'direct',
+                    granted_by_user_id: user.id,
+                    status: 'accepted',
+                });
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Needs an owner',
+                    status: 0,
+                    project_id: project.id,
+                });
+
+                const assignResponse = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.uid, assigned_to: collaboratorSelf.uid }
+                );
+                const assigned = getToolContent(assignResponse);
+                expect(assigned.isError).toBe(false);
+                expect(assigned.content.task.assigned_to).toBe(
+                    collaboratorSelf.uid
+                );
+                const notifications = await Notification.findAll({
+                    where: {
+                        user_id: collaborator.id,
+                        type: 'task_assigned',
+                    },
+                });
+                expect(notifications).toHaveLength(1);
+                expect(notifications[0].data.taskUid).toBe(task.uid);
+
+                const clearResponse = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.uid, assigned_to: null }
+                );
+                expect(getToolContent(clearResponse).isError).toBe(false);
+                await task.reload();
+                expect(task.assigned_to).toBeNull();
+            });
+
+            it('rejects a person outside my workspace', async () => {
+                const stranger = await createTestUser({
+                    email: `mcp_stranger_${Date.now()}@example.com`,
+                });
+                await peopleService.createSelfPerson(stranger);
+                const strangerSelf = await Person.findOne({
+                    where: {
+                        user_id: stranger.id,
+                        linked_user_id: stranger.id,
+                    },
+                });
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Stays unassigned',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.uid, assigned_to: strangerSelf.uid }
+                );
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                expect(content._rawError).toMatch(/Invalid assignee/);
+                await task.reload();
+                expect(task.assigned_to).toBeNull();
+            });
+        });
+
         describe('complete_task', () => {
             it('should mark task as completed', async () => {
                 const task = await Task.create({

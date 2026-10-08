@@ -19,8 +19,10 @@ const {
     validateProjectAccess,
     validateDeferUntilAndDueDate,
     validateAreaAccess,
+    validateAssignee,
     getRecurringParentEndDate,
 } = require('../../tasks/utils/validation');
+const { notifyAssignee } = require('../../tasks/operations/assignment');
 const {
     processDueDateForStorage,
     processDeferUntilForStorage,
@@ -402,6 +404,11 @@ function registerTaskTools(server, context, tools) {
                     description:
                         'Area UID to assign task to directly (alternative to area_id)',
                 },
+                assigned_to: {
+                    type: 'string',
+                    description:
+                        'Person UID to assign the task to (see list_people)',
+                },
                 tags: {
                     type: 'array',
                     items: { type: 'string' },
@@ -421,6 +428,11 @@ function registerTaskTools(server, context, tools) {
             const resolvedAreaId = await validateAreaAccess(
                 params.area_uid || params.area_id,
                 context.userId
+            );
+            const assignedTo = await validateAssignee(
+                params.assigned_to,
+                context.userId,
+                { projectId: resolvedProjectId }
             );
 
             const recurrenceType = params.recurrence_type || 'none';
@@ -462,6 +474,7 @@ function registerTaskTools(server, context, tools) {
                 defer_until: deferUntil,
                 project_id: resolvedProjectId,
                 area_id: resolvedAreaId,
+                assigned_to: assignedTo,
                 recurrence_type: recurrenceType,
                 recurrence_interval: params.recurrence_interval ?? null,
                 recurrence_end_date: params.recurrence_end_date || null,
@@ -519,6 +532,8 @@ function registerTaskTools(server, context, tools) {
                     ],
                 }
             );
+
+            await notifyAssignee(reloadedTask, null, context.userId);
 
             const serialized = await serializeTask(
                 reloadedTask,
@@ -604,6 +619,11 @@ function registerTaskTools(server, context, tools) {
             description:
                 'Area UID to assign task to directly (alternative to area_id)',
         },
+        assigned_to: {
+            type: ['string', 'null'],
+            description:
+                'Person UID to assign the task to (see list_people), or null to unassign',
+        },
         today: {
             type: 'boolean',
             description: 'Add to Today list',
@@ -654,6 +674,7 @@ function registerTaskTools(server, context, tools) {
                 throw new Error('Access denied');
             }
 
+            const previousAssignedTo = task.assigned_to;
             const updates = {};
             if (params.name !== undefined) updates.name = params.name;
             const incomingNote = params.note ?? params.description;
@@ -712,6 +733,19 @@ function registerTaskTools(server, context, tools) {
                 updates.area_id = await validateAreaAccess(
                     areaIdentifier,
                     context.userId
+                );
+            }
+            if (params.assigned_to !== undefined) {
+                updates.assigned_to = await validateAssignee(
+                    params.assigned_to,
+                    context.userId,
+                    {
+                        projectId:
+                            updates.project_id !== undefined
+                                ? updates.project_id
+                                : task.project_id,
+                        currentAssignedTo: task.assigned_to,
+                    }
                 );
             }
             if (params.today !== undefined) updates.today = params.today;
@@ -817,6 +851,12 @@ function registerTaskTools(server, context, tools) {
                     { model: Tag, as: 'Tags' },
                 ],
             });
+
+            await notifyAssignee(
+                reloadedTask,
+                previousAssignedTo,
+                context.userId
+            );
 
             const serialized = await serializeTask(
                 reloadedTask,
