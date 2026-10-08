@@ -59,6 +59,29 @@ const tagColorStyle = (color?: string): React.CSSProperties | undefined => {
     return { backgroundColor: `rgba(${r}, ${g}, ${b}, 0.2)`, color };
 };
 
+// Priority as a haloed dot, shown only in quiet-sheet lists where the
+// card's colored left edge is hidden.
+const priorityDotClass = (
+    priority: Task['priority'] | number | undefined,
+    completed: boolean
+): string => {
+    if (completed) return 'bg-green-500 ring-green-500/20';
+    const p =
+        typeof priority === 'number'
+            ? (['low', 'medium', 'high'] as const)[priority]
+            : priority;
+    switch (p) {
+        case 'high':
+            return 'bg-red-500 ring-red-500/20';
+        case 'medium':
+            return 'bg-yellow-400 ring-yellow-400/25';
+        case 'low':
+            return 'bg-blue-400 ring-blue-400/20';
+        default:
+            return 'bg-gray-200 ring-transparent dark:bg-gray-700';
+    }
+};
+
 const slug = (s: string) =>
     s
         .toLowerCase()
@@ -224,6 +247,13 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                 }
             }}
         >
+            <span
+                aria-hidden="true"
+                className={`hidden [.task-sheet_&]:block self-start mt-[7px] h-2 w-2 flex-shrink-0 rounded-full ring-[3px] ${priorityDotClass(
+                    task.priority,
+                    isTaskCompleted(task.status)
+                )}`}
+            />
             <div
                 className={`flex flex-1 min-w-0 flex-col ${
                     condenseStatusControl ? 'basis-full' : ''
@@ -366,9 +396,21 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                         key={tag.uid || tag.name}
                                         to={`/tag/${tag.uid ? `${tag.uid}-` : ''}${slug(tag.name)}`}
                                         onClick={stop}
-                                        className="inline-flex items-center px-2 py-px rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+                                        className="inline-flex items-center gap-1 px-2 py-px rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 [.task-sheet_&]:!bg-transparent [.task-sheet_&]:!px-0 [.task-sheet_&]:text-[11px] [.task-sheet_&]:font-normal [.task-sheet_&]:!text-gray-500 dark:[.task-sheet_&]:!text-gray-400"
                                         style={tagColorStyle(tag.color)}
                                     >
+                                        <span
+                                            aria-hidden="true"
+                                            className="hidden [.task-sheet_&]:inline-block h-1.5 w-1.5 rounded-full bg-gray-400"
+                                            style={
+                                                tag.color
+                                                    ? {
+                                                          backgroundColor:
+                                                              tag.color,
+                                                      }
+                                                    : undefined
+                                            }
+                                        />
                                         {tag.name}
                                     </Link>
                                 ))}

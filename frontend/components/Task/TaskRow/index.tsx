@@ -396,7 +396,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
             }`}
         >
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 ${priorityBorderClass} ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 [.task-sheet_&]:rounded-[10px] [.task-sheet_&]:bg-transparent [.task-sheet_&]:shadow-none [.task-sheet_&]:border-l-0 [.task-sheet_&]:hover:ring-0 [.task-sheet_&]:hover:bg-gray-100/70 dark:[.task-sheet_&]:bg-transparent dark:[.task-sheet_&]:hover:bg-white/[0.04] ${priorityBorderClass} ${
                     isExpanded
                         ? 'ring-1 ring-blue-400/70 dark:ring-blue-600/70'
                         : ''

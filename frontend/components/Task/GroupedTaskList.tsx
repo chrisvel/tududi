@@ -23,6 +23,7 @@ import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { GroupedTasks } from '../../utils/tasksService';
 import { isTaskActive } from '../../constants/taskStatus';
+import { TASK_SHEET_CLASS } from './taskSheet';
 
 interface GroupedTaskListProps {
     tasks: Task[];
@@ -443,7 +444,13 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
     // Legacy: Render recurring task grouping
     return (
-        <div className="task-list-container space-y-1.5">
+        <div
+            className={`task-list-container ${
+                groupBy === 'project' && groupedByProject
+                    ? 'space-y-1.5'
+                    : TASK_SHEET_CLASS
+            }`}
+        >
             {/* Standalone tasks */}
             {groupBy === 'project' && groupedByProject
                 ? groupedByProject.map(
@@ -488,49 +495,63 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                           {t('tasks.tasks', 'tasks')}
                                       </span>
                                   </div>
-                                  {onReorder &&
-                                  projectTasks.every((task) => task.uid) ? (
-                                      <SortableTaskGroup
-                                          tasks={projectTasks}
-                                          onReorder={onReorder}
-                                          renderTask={(task) => (
-                                              <TaskItem
-                                                  task={task}
-                                                  onTaskUpdate={onTaskUpdate}
-                                                  onTaskCompletionToggle={
-                                                      onTaskCompletionToggle
-                                                  }
-                                                  onTaskDelete={onTaskDelete}
-                                                  projects={projects}
-                                                  hideProjectName={
-                                                      hideProjectName
-                                                  }
-                                                  onToggleToday={onToggleToday}
-                                              />
-                                          )}
-                                      />
-                                  ) : (
-                                      projectTasks.map((task) => (
-                                          <div
-                                              key={task.id}
-                                              className="task-item-wrapper transition-all duration-200 ease-in-out relative hover:z-[10000] focus-within:z-[10000]"
-                                          >
-                                              <TaskItem
-                                                  task={task}
-                                                  onTaskUpdate={onTaskUpdate}
-                                                  onTaskCompletionToggle={
-                                                      onTaskCompletionToggle
-                                                  }
-                                                  onTaskDelete={onTaskDelete}
-                                                  projects={projects}
-                                                  hideProjectName={
-                                                      hideProjectName
-                                                  }
-                                                  onToggleToday={onToggleToday}
-                                              />
-                                          </div>
-                                      ))
-                                  )}
+                                  <div className={TASK_SHEET_CLASS}>
+                                      {onReorder &&
+                                      projectTasks.every((task) => task.uid) ? (
+                                          <SortableTaskGroup
+                                              tasks={projectTasks}
+                                              onReorder={onReorder}
+                                              renderTask={(task) => (
+                                                  <TaskItem
+                                                      task={task}
+                                                      onTaskUpdate={
+                                                          onTaskUpdate
+                                                      }
+                                                      onTaskCompletionToggle={
+                                                          onTaskCompletionToggle
+                                                      }
+                                                      onTaskDelete={
+                                                          onTaskDelete
+                                                      }
+                                                      projects={projects}
+                                                      hideProjectName={
+                                                          hideProjectName
+                                                      }
+                                                      onToggleToday={
+                                                          onToggleToday
+                                                      }
+                                                  />
+                                              )}
+                                          />
+                                      ) : (
+                                          projectTasks.map((task) => (
+                                              <div
+                                                  key={task.id}
+                                                  className="task-item-wrapper transition-all duration-200 ease-in-out relative hover:z-[10000] focus-within:z-[10000]"
+                                              >
+                                                  <TaskItem
+                                                      task={task}
+                                                      onTaskUpdate={
+                                                          onTaskUpdate
+                                                      }
+                                                      onTaskCompletionToggle={
+                                                          onTaskCompletionToggle
+                                                      }
+                                                      onTaskDelete={
+                                                          onTaskDelete
+                                                      }
+                                                      projects={projects}
+                                                      hideProjectName={
+                                                          hideProjectName
+                                                      }
+                                                      onToggleToday={
+                                                          onToggleToday
+                                                      }
+                                                  />
+                                              </div>
+                                          ))
+                                      )}
+                                  </div>
                               </div>
                           );
                       }
