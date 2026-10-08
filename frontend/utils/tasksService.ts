@@ -290,6 +290,23 @@ export const fetchTaskNextIterations = async (
     return result.iterations || [];
 };
 
+// A relation changes the blocked state of both tasks, so task rows listen for
+// this to refresh their badge without a page reload.
+export const TASK_RELATIONS_CHANGED_EVENT = 'taskRelationsChanged';
+
+export interface TaskRelationsChangedDetail {
+    taskUids: string[];
+}
+
+const notifyTaskRelationsChanged = (taskUids: string[]) => {
+    window.dispatchEvent(
+        new CustomEvent<TaskRelationsChangedDetail>(
+            TASK_RELATIONS_CHANGED_EVENT,
+            { detail: { taskUids } }
+        )
+    );
+};
+
 export const fetchTaskRelations = async (
     taskUid: string
 ): Promise<TaskRelation[]> => {
@@ -322,12 +339,15 @@ export const createTaskRelation = async (
     );
 
     await handleAuthResponse(response, 'Failed to add relation.');
-    return await response.json();
+    const relation = await response.json();
+    notifyTaskRelationsChanged([taskUid, targetUid]);
+    return relation;
 };
 
 export const deleteTaskRelation = async (
     taskUid: string,
-    relationUid: string
+    relationUid: string,
+    otherTaskUid?: string
 ): Promise<void> => {
     const response = await fetch(
         getApiPath(
@@ -341,4 +361,7 @@ export const deleteTaskRelation = async (
     );
 
     await handleAuthResponse(response, 'Failed to remove relation.');
+    notifyTaskRelationsChanged(
+        otherTaskUid ? [taskUid, otherTaskUid] : [taskUid]
+    );
 };

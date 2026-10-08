@@ -131,6 +131,35 @@ describe('Task relations', () => {
         expect(fetched.is_blocked).toBe(false);
     });
 
+    it('flags blocked tasks on the project page so the badge survives a reload', async () => {
+        const project = (
+            await agent.post('/api/project').send({ name: 'Relations' })
+        ).body;
+        const inProject = async (name) =>
+            (
+                await agent
+                    .post('/api/task')
+                    .send({ name, project_id: project.id })
+            ).body;
+        const a = await inProject('Blocker');
+        const b = await inProject('Blocked');
+        await link(a, b, 'blocks');
+
+        const res = await agent.get(`/api/project/${project.uid}`);
+        expect(res.status).toBe(200);
+        const byName = Object.fromEntries(
+            res.body.Tasks.map((t) => [t.name, t])
+        );
+        expect(byName.Blocked).toMatchObject({
+            is_blocked: true,
+            blocked_by_count: 1,
+        });
+        expect(byName.Blocker).toMatchObject({
+            is_blocked: false,
+            blocked_by_count: 0,
+        });
+    });
+
     it('does not stop a blocked task from being completed', async () => {
         const a = await makeTask('Blocker');
         const b = await makeTask('Blocked');

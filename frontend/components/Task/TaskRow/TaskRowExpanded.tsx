@@ -18,6 +18,8 @@ import TaskRelationsCard from '../TaskDetails/TaskRelationsCard';
 import {
     fetchTaskByUid,
     fetchTaskRelations,
+    TASK_RELATIONS_CHANGED_EVENT,
+    TaskRelationsChangedDetail,
 } from '../../../utils/tasksService';
 import TaskComments from '../TaskComments';
 import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
@@ -111,6 +113,25 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
     useEffect(() => {
         void loadRelationCount();
     }, [loadRelationCount]);
+
+    useEffect(() => {
+        const onRelationsChanged = (event: Event) => {
+            const { taskUids } =
+                (event as CustomEvent<TaskRelationsChangedDetail>).detail || {};
+            if (task.uid && taskUids?.includes(task.uid)) {
+                void loadRelationCount();
+            }
+        };
+        window.addEventListener(
+            TASK_RELATIONS_CHANGED_EVENT,
+            onRelationsChanged
+        );
+        return () =>
+            window.removeEventListener(
+                TASK_RELATIONS_CHANGED_EVENT,
+                onRelationsChanged
+            );
+    }, [task.uid, loadRelationCount]);
 
     const handleRelationsChange = async () => {
         await loadRelationCount();
