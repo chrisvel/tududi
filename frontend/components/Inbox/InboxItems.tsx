@@ -557,7 +557,7 @@ const InboxItems: React.FC = () => {
                         {/* Recently captured – collapsible header */}
                         <div
                             className={`${segmentClass} rounded-t-2xl px-1.5 pt-1.5 ${
-                                inboxListExpanded && openIndex === 0
+                                !inboxListExpanded || openIndex === 0
                                     ? 'rounded-b-2xl pb-1.5'
                                     : ''
                             }`}

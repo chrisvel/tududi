@@ -190,3 +190,56 @@ html.sidebar-resizing * {
     -webkit-line-clamp: 3;
   }
 }
+
+/* Quiet sheet task lists. The surface is painted on each row rather than
+   the list, so an open task can split away from the rows around it (the
+   same move as the Inbox's recently captured list). */
+.task-sheet > * {
+  background-color: #ffffff;
+  padding-inline: 0.375rem;
+  transition:
+    margin 300ms ease-out,
+    border-radius 300ms ease-out,
+    padding 300ms ease-out,
+    box-shadow 300ms ease-out;
+}
+.dark .task-sheet > * {
+  background-color: #111827;
+}
+.task-sheet > *:first-child {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  padding-top: 0.375rem;
+}
+.task-sheet > *:last-child {
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  padding-bottom: 0.375rem;
+}
+.task-sheet > *:has([data-task-expanded]) {
+  margin-block: 0.75rem;
+  border-radius: 1rem;
+  padding-block: 0.375rem;
+  box-shadow: 0 14px 34px -14px rgb(15 23 42 / 0.28);
+}
+.task-sheet > *:first-child:has([data-task-expanded]) {
+  margin-top: 0;
+}
+.task-sheet > *:last-child:has([data-task-expanded]) {
+  margin-bottom: 0;
+}
+.task-sheet > *:has(+ * [data-task-expanded]) {
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  padding-bottom: 0.375rem;
+}
+.task-sheet > *:has([data-task-expanded]) + * {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  padding-top: 0.375rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .task-sheet > * {
+    transition: none;
+  }
+}

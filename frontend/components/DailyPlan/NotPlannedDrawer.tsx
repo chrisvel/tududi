@@ -5,6 +5,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { PlanCandidates } from '../../utils/dailyPlanService';
 import TaskRow from '../Task/TaskRow';
+import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 
 interface NotPlannedDrawerProps {
     candidates: PlanCandidates | null;
@@ -106,39 +107,41 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
                             <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                 {group.label}
                             </p>
-                            {group.tasks.map((task) => (
-                                <div
-                                    key={task.uid}
-                                    className="flex items-start gap-2"
-                                >
-                                    <div className="min-w-0 flex-1">
-                                        <TaskRow
-                                            task={task}
-                                            projects={projects}
-                                            onTaskUpdate={onTaskUpdate}
-                                            onTaskCompletionToggle={(
-                                                updated
-                                            ) => {
-                                                void onTaskUpdate(updated);
-                                            }}
-                                            onTaskDelete={onTaskDelete}
-                                            compact
-                                            saveStatusChanges
-                                        />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => onAdd(task)}
-                                        className="mt-1.5 inline-flex min-h-[36px] shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                            <div className={TASK_SHEET_CLASS}>
+                                {group.tasks.map((task) => (
+                                    <div
+                                        key={task.uid}
+                                        className="flex items-start gap-2"
                                     >
-                                        <PlusIcon className="h-4 w-4" />
-                                        {t(
-                                            'dailyPlan.addToToday',
-                                            'Add to today'
-                                        )}
-                                    </button>
-                                </div>
-                            ))}
+                                        <div className="min-w-0 flex-1">
+                                            <TaskRow
+                                                task={task}
+                                                projects={projects}
+                                                onTaskUpdate={onTaskUpdate}
+                                                onTaskCompletionToggle={(
+                                                    updated
+                                                ) => {
+                                                    void onTaskUpdate(updated);
+                                                }}
+                                                onTaskDelete={onTaskDelete}
+                                                compact
+                                                saveStatusChanges
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => onAdd(task)}
+                                            className="mt-1.5 inline-flex min-h-[36px] shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                        >
+                                            <PlusIcon className="h-4 w-4" />
+                                            {t(
+                                                'dailyPlan.addToToday',
+                                                'Add to today'
+                                            )}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     ))}
                 </div>

@@ -21,6 +21,7 @@ import { Task } from '../../../entities/Task';
 import { Project } from '../../../entities/Project';
 import { Person } from '../../../entities/Person';
 import PriorityDropdown from '../../Shared/PriorityDropdown';
+import PriorityBadge, { toPriorityLevel } from '../../Shared/PriorityBadge';
 import DatePicker from '../../Shared/DatePicker';
 import DateTimePicker from '../../Shared/DateTimePicker';
 import PersonDropdown from '../../Shared/PersonDropdown';
@@ -51,31 +52,6 @@ interface TaskRowToolbarProps {
     commentCount?: number;
     relationCount?: number;
 }
-
-const normalizePriorityLabel = (
-    priority: Task['priority'],
-    t: (k: string, d: string) => string
-): string | null => {
-    const v =
-        typeof priority === 'number'
-            ? (['low', 'medium', 'high'][priority] as string)
-            : priority;
-    if (v === 'low') return t('priority.low', 'Low');
-    if (v === 'medium') return t('priority.medium', 'Medium');
-    if (v === 'high') return t('priority.high', 'High');
-    return null;
-};
-
-const priorityToneClass = (priority: Task['priority']): string => {
-    const v =
-        typeof priority === 'number'
-            ? ['low', 'medium', 'high'][priority]
-            : priority;
-    if (v === 'high') return 'text-red-500';
-    if (v === 'medium') return 'text-amber-500';
-    if (v === 'low') return 'text-blue-500';
-    return '';
-};
 
 const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
     task,
@@ -123,20 +99,27 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
                         : task.priority) as any
                 }
                 onChange={(p) => void setters.setPriority(p)}
-                renderTrigger={({ onClick, isOpen }) => (
-                    <ToolbarButton
-                        onClick={onClick}
-                        open={isOpen}
-                        active={task.priority != null}
-                        label={t('forms.task.labels.priority', 'Priority')}
-                        badge={normalizePriorityLabel(task.priority, t)}
-                        icon={
-                            <FlagIcon
-                                className={`h-4 w-4 ${priorityToneClass(task.priority)}`}
-                            />
-                        }
-                    />
-                )}
+                renderTrigger={({ onClick, isOpen }) =>
+                    toPriorityLevel(task.priority) ? (
+                        <button
+                            type="button"
+                            onClick={onClick}
+                            title={t('forms.task.labels.priority', 'Priority')}
+                            aria-haspopup="dialog"
+                            aria-expanded={isOpen}
+                            className="rounded-md transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        >
+                            <PriorityBadge priority={task.priority} size="md" />
+                        </button>
+                    ) : (
+                        <ToolbarButton
+                            onClick={onClick}
+                            open={isOpen}
+                            label={t('forms.task.labels.priority', 'Priority')}
+                            icon={<FlagIcon className="h-4 w-4" />}
+                        />
+                    )
+                }
             />
 
             {/* Due date */}

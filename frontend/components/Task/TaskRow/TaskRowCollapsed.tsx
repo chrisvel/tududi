@@ -26,6 +26,10 @@ import {
     getYesterdayDateString,
 } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
+import PriorityBadge, {
+    PriorityLevel,
+    toPriorityLevel,
+} from '../../Shared/PriorityBadge';
 
 interface TaskRowCollapsedProps {
     task: Task;
@@ -59,26 +63,23 @@ const tagColorStyle = (color?: string): React.CSSProperties | undefined => {
     return { backgroundColor: `rgba(${r}, ${g}, ${b}, 0.2)`, color };
 };
 
-// Priority as a haloed dot, shown only in quiet-sheet lists where the
-// card's colored left edge is hidden.
-const priorityDotClass = (
-    priority: Task['priority'] | number | undefined,
+// In quiet-sheet lists the card's colored edge is hidden, so priority shows
+// as title weight instead: bolder for higher priority, low a shade lighter.
+const sheetTitleWeightClass = (
+    level: PriorityLevel | null,
     completed: boolean
 ): string => {
-    if (completed) return 'bg-green-500 ring-green-500/20';
-    const p =
-        typeof priority === 'number'
-            ? (['low', 'medium', 'high'] as const)[priority]
-            : priority;
-    switch (p) {
+    switch (level) {
         case 'high':
-            return 'bg-red-500 ring-red-500/20';
+            return '[.task-sheet_&]:font-semibold';
         case 'medium':
-            return 'bg-yellow-400 ring-yellow-400/25';
+            return '[.task-sheet_&]:font-medium';
         case 'low':
-            return 'bg-blue-400 ring-blue-400/20';
+            return completed
+                ? ''
+                : '[.task-sheet_&]:text-gray-500 dark:[.task-sheet_&]:text-gray-400';
         default:
-            return 'bg-gray-200 ring-transparent dark:bg-gray-700';
+            return '';
     }
 };
 
@@ -213,7 +214,8 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     const showProject = project && project.name && !hideProjectName;
     const hasMeta =
         !compact &&
-        (showProject ||
+        (!!toPriorityLevel(task.priority) ||
+            showProject ||
             (task.tags && task.tags.length > 0) ||
             !!task.due_date ||
             (isTaskCompleted(task.status) && !!task.completed_at) ||
@@ -247,13 +249,6 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                 }
             }}
         >
-            <span
-                aria-hidden="true"
-                className={`hidden [.task-sheet_&]:block self-start mt-[7px] h-2 w-2 flex-shrink-0 rounded-full ring-[3px] ${priorityDotClass(
-                    task.priority,
-                    isTaskCompleted(task.status)
-                )}`}
-            />
             <div
                 className={`flex flex-1 min-w-0 flex-col ${
                     condenseStatusControl ? 'basis-full' : ''
@@ -300,7 +295,10 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                 isTaskCompleted(task.status)
                                     ? 'text-gray-400 dark:text-gray-500 line-through'
                                     : 'text-gray-900 dark:text-gray-200'
-                            }`}
+                            } ${sheetTitleWeightClass(
+                                toPriorityLevel(task.priority),
+                                isTaskCompleted(task.status)
+                            )}`}
                         >
                             {currentName}
                         </span>
@@ -365,6 +363,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
 
                 {hasMeta && (
                     <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                        <PriorityBadge priority={task.priority} />
                         {task.parent_task && (
                             <span className="flex items-center">
                                 <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
