@@ -222,15 +222,19 @@ const AreaModal: React.FC<AreaModalProps> = ({
                 <div className="h-full flex items-center justify-center sm:px-4 sm:py-4">
                     <div
                         ref={modalRef}
-                        className={`bg-white dark:bg-gray-800 border-0 sm:border sm:border-gray-200 sm:dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-md transform transition-transform duration-300 ${
+                        className={`bg-white dark:bg-gray-800 border-0 sm:border sm:border-gray-200 sm:dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-lg transform transition-transform duration-300 ${
                             isClosing ? 'scale-95' : 'scale-100'
                         } h-full sm:h-auto sm:my-4`}
                     >
-                        <div className="flex flex-col h-full sm:min-h-[400px] sm:max-h-[90vh]">
+                        <div
+                            className={`flex flex-col h-full sm:max-h-[90vh] ${
+                                area?.id ? 'sm:min-h-[400px]' : ''
+                            }`}
+                        >
                             <div className="flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 sm:rounded-lg">
-                                <div className="flex-1 relative">
+                                <div className="flex-1 min-h-0 flex flex-col">
                                     <div
-                                        className="absolute inset-0 overflow-y-auto overflow-x-hidden"
+                                        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden"
                                         style={{ WebkitOverflowScrolling: 'touch' }}
                                     >
                                         <form className="h-full" onSubmit={handleSubmit}>

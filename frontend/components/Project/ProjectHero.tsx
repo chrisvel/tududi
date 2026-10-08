@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { TFunction } from 'i18next';
 import { differenceInCalendarDays, format } from 'date-fns';
 import {
@@ -30,15 +29,8 @@ interface ProjectHeroProps {
     onTogglePin?: () => void;
 }
 
-const slugify = (value: string) =>
-    value
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
-
 const ProjectHero: React.FC<ProjectHeroProps> = ({
     project,
-    areas,
     t,
     doneCount,
     totalCount,
@@ -67,9 +59,6 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
             document.removeEventListener('mousedown', handleClickOutside);
     }, [menuOpen]);
 
-    const area = project.area || (project as any).Area;
-    const areaUid =
-        area?.uid || areas.find((a) => a.id === area?.id)?.uid || null;
     const percent =
         totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
@@ -115,33 +104,6 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
 
     return (
         <div className="mb-6 space-y-3">
-            <nav
-                className="flex flex-wrap items-center gap-2 text-sm text-gray-400 dark:text-gray-500"
-                aria-label={t('common.breadcrumb', 'Breadcrumb')}
-            >
-                {area?.name && areaUid && (
-                    <>
-                        <Link
-                            to={`/area/${areaUid}-${slugify(area.name)}`}
-                            className="hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                            {area.name}
-                        </Link>
-                        <span>/</span>
-                    </>
-                )}
-                <Link
-                    to="/projects"
-                    className="hover:text-gray-700 dark:hover:text-gray-300"
-                >
-                    {t('sidebar.projects', 'Projects')}
-                </Link>
-                <span>/</span>
-                <span className="truncate font-medium text-gray-700 dark:text-gray-200">
-                    {project.name}
-                </span>
-            </nav>
-
             <div
                 className="space-y-5 rounded-2xl bg-white p-5 sm:p-6 dark:bg-gray-900"
                 style={{

@@ -4,6 +4,7 @@ import UpgradeModal from './components/Billing/UpgradeModal';
 import TrialBanner from './components/Billing/TrialBanner';
 import { SidebarProvider } from './contexts/SidebarContext';
 import Navbar from './components/Navbar';
+import Breadcrumbs from './components/Shared/Breadcrumbs';
 import CaptureHost from './components/Capture/CaptureHost';
 import { openCapture } from './utils/captureUi';
 import Sidebar from './components/Sidebar';
@@ -519,6 +520,7 @@ const Layout: React.FC<LayoutProps> = ({
                         >
                             <div className="w-full h-full overflow-auto">
                                 <TrialBanner />
+                                <Breadcrumbs />
                                 <TaskRowExpansionProvider
                                     key={location.pathname}
                                 >

@@ -49,7 +49,6 @@ import { usePersistedModal } from '../../hooks/usePersistedModal';
 import { getApiPath } from '../../config/paths';
 import ProjectHero from './ProjectHero';
 import ProjectOverviewRail from './ProjectOverviewRail';
-import ProjectStatsStrip from './ProjectStatsStrip';
 import BannerEditModal from './BannerEditModal';
 import ProjectShareModal from './ProjectShareModal';
 import ProjectTasksSection from './ProjectTasksSection';
@@ -831,7 +830,7 @@ const ProjectDetails: React.FC = () => {
                                     }`}
                                 >
                                     <span>
-                                        {t('project.overview', 'Overview')}
+                                        {t('tasks.title', 'Tasks')}
                                     </span>
                                 </button>
                                 <button
@@ -979,11 +978,6 @@ const ProjectDetails: React.FC = () => {
 
                             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-start">
                                 <div className="min-w-0 space-y-4">
-                                    <ProjectStatsStrip
-                                        tasks={tasks}
-                                        project={project}
-                                        t={t}
-                                    />
                                     <ProjectTasksSection
                                         displayTasks={displayTasks}
                                         onTaskCreate={handleTaskCreate}
