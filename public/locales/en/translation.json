@@ -2971,7 +2971,8 @@
     "movedOffPlan": "'{{name}}' is no longer due today, so it left today's plan.",
     "tips": {
       "title": "Planning tips",
-      "missed": "{{count}} planned blocks already passed",
+      "missed_one": "{{count}} planned block already passed",
+      "missed_other": "{{count}} planned blocks already passed",
       "moveMissed": "Move to next free slots",
       "overbooked": "Planned {{planned}}, only {{free}} free: {{over}} over",
       "gapFit": "{{gap}} free at {{time}} fits {{name}} ({{duration}})",
