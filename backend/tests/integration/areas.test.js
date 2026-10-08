@@ -33,6 +33,7 @@ describe('Areas Routes', () => {
             expect(response.body.description).toBe(areaData.description);
             expect(response.body.uid).toBeDefined();
             expect(typeof response.body.uid).toBe('string');
+            expect(typeof response.body.id).toBe('number');
         });
 
         it('should require authentication', async () => {
@@ -228,6 +229,7 @@ describe('Areas Routes', () => {
             expect(response.status).toBe(200);
             expect(response.body.name).toBe(updateData.name);
             expect(response.body.description).toBe(updateData.description);
+            expect(response.body.id).toBe(area.id);
         });
 
         it('should return 400 for invalid uid format', async () => {
