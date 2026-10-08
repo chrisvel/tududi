@@ -24,11 +24,16 @@ module.exports = {
           '0%': { opacity: '0', transform: 'translateY(-5px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        'inbox-detach': {
+          '0%': { transform: 'scale(0.985)', boxShadow: '0 0 0 rgba(0,0,0,0)' },
+          '100%': { transform: 'scale(1)' },
+        },
       },
       animation: {
         'scale-in': 'scale-in 0.3s ease-out',
         'fade-in': 'fade-in 0.3s ease-out',
         'inbox-row-in': 'inbox-row-in 0.22s ease-out',
+        'inbox-detach': 'inbox-detach 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)',
       },
     },
   },

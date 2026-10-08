@@ -67,6 +67,7 @@ const InboxItems: React.FC = () => {
     const [isInfoExpanded, setIsInfoExpanded] = useState(false);
     const [inboxListExpanded, setInboxListExpanded] = useState(false);
     const [lastAddedUid, setLastAddedUid] = useState<string | null>(null);
+    const [openItemUid, setOpenItemUid] = useState<string | null>(null);
 
     const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
     const [noteToEdit, setNoteToEdit] = useState<Note | null>(null);
@@ -477,6 +478,11 @@ const InboxItems: React.FC = () => {
         return <LoadingScreen />;
     }
 
+    const segmentClass = 'bg-white dark:bg-gray-900';
+    const openIndex = openItemUid
+        ? inboxItems.findIndex((item) => item.uid === openItemUid)
+        : -1;
+
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
@@ -547,92 +553,136 @@ const InboxItems: React.FC = () => {
 
                 {/* ── Item list ────────────────────────────────────────────── */}
                 {inboxItems.length > 0 && (
-                    <div className="w-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-1.5">
+                    <div className="w-full">
                         {/* Recently captured – collapsible header */}
-                        <button
-                            onClick={() =>
-                                setInboxListExpanded((prev) => {
-                                    const next = !prev;
-                                    updateUiSettings({
-                                        inbox: { recentlyCapturedExpanded: next },
-                                    }).catch(() => {});
-                                    return next;
-                                })
-                            }
-                            className="flex items-center gap-2.5 w-full px-4 py-2.5 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
+                        <div
+                            className={`${segmentClass} rounded-t-2xl px-1.5 pt-1.5 ${
+                                inboxListExpanded && openIndex === 0
+                                    ? 'rounded-b-2xl pb-1.5'
+                                    : ''
+                            }`}
                         >
-                            <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                                {t('inbox.recentlyCaptured', 'Recently captured')}
-                            </span>
-                            <span className="text-[11px] text-gray-400 dark:text-gray-500">
-                                {inboxItems.length}
-                            </span>
-
-                            <span className="flex-1" />
-
-                            <svg
-                                className={`w-3 h-3 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${inboxListExpanded ? 'rotate-90' : ''}`}
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                            <button
+                                onClick={() =>
+                                    setInboxListExpanded((prev) => {
+                                        const next = !prev;
+                                        updateUiSettings({
+                                            inbox: { recentlyCapturedExpanded: next },
+                                        }).catch(() => {});
+                                        return next;
+                                    })
+                                }
+                                className="flex items-center gap-2.5 w-full px-4 py-2.5 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
                             >
-                                <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
+                                <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                                    {t('inbox.recentlyCaptured', 'Recently captured')}
+                                </span>
+                                <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                                    {inboxItems.length}
+                                </span>
+
+                                <span className="flex-1" />
+
+                                <svg
+                                    className={`w-3 h-3 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${inboxListExpanded ? 'rotate-90' : ''}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </button>
+                        </div>
 
                         {inboxListExpanded && (
                             <div className="flex flex-col">
-                                {/* Normal item list */}
-                                {inboxItems.map((item) => (
-                                    <InboxItemDetail
-                                        key={item.uid || item.id}
-                                        item={item}
-                                        onDelete={handleDeleteItem}
-                                        onUpdate={handleUpdateItem}
-                                        openTaskModal={handleOpenTaskModal}
-                                        openProjectModal={handleOpenProjectModal}
-                                        openNoteModal={handleOpenNoteModal}
-                                        projects={projects}
-                                        isNew={item.uid === lastAddedUid}
-                                    />
-                                ))}
-
-                                {/* Load more */}
-                                {pagination.hasMore && (
-                                    <div className="flex justify-center pt-5">
-                                        <button
-                                            onClick={handleLoadMore}
-                                            disabled={isLoading}
-                                            className="inline-flex items-center gap-2 px-5 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.04] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                {/* The open item detaches into its own card,
+                                    splitting the list around it. */}
+                                {inboxItems.map((item, index) => {
+                                    const isOpen = index === openIndex;
+                                    const rowClass = isOpen
+                                        ? 'my-3'
+                                        : `${segmentClass} px-1.5 ${
+                                              openIndex >= 0 && index === openIndex + 1
+                                                  ? 'rounded-t-2xl pt-1.5'
+                                                  : ''
+                                          } ${
+                                              index === openIndex - 1
+                                                  ? 'rounded-b-2xl pb-1.5'
+                                                  : ''
+                                          }`;
+                                    return (
+                                        <div
+                                            key={item.uid || item.id}
+                                            className={`transition-all duration-300 ease-out ${rowClass}`}
                                         >
-                                            {isLoading ? (
-                                                <>
-                                                    <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                    </svg>
-                                                    {t('inbox.loading', 'Loading…')}
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <InboxIcon className="h-3.5 w-3.5" />
-                                                    {t('inbox.loadMore', 'Load more')}
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
-                                )}
+                                            <InboxItemDetail
+                                                item={item}
+                                                onDelete={handleDeleteItem}
+                                                onUpdate={handleUpdateItem}
+                                                openTaskModal={handleOpenTaskModal}
+                                                openProjectModal={handleOpenProjectModal}
+                                                openNoteModal={handleOpenNoteModal}
+                                                projects={projects}
+                                                isNew={item.uid === lastAddedUid}
+                                                onEditingChange={(editing) =>
+                                                    setOpenItemUid((prev) =>
+                                                        editing
+                                                            ? (item.uid ?? null)
+                                                            : prev === item.uid
+                                                              ? null
+                                                              : prev
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    );
+                                })}
 
-                                {/* Item count */}
-                                <div className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4 pb-2">
-                                    {t(
-                                        'inbox.showingItems',
-                                        'Showing {{current}} of {{total}} items',
-                                        { current: inboxItems.length, total: pagination.total }
+                                <div
+                                    className={`${segmentClass} rounded-b-2xl px-1.5 pb-1.5 ${
+                                        openIndex === inboxItems.length - 1
+                                            ? 'rounded-t-2xl'
+                                            : ''
+                                    }`}
+                                >
+                                    {/* Load more */}
+                                    {pagination.hasMore && (
+                                        <div className="flex justify-center pt-5">
+                                            <button
+                                                onClick={handleLoadMore}
+                                                disabled={isLoading}
+                                                className="inline-flex items-center gap-2 px-5 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.04] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                            >
+                                                {isLoading ? (
+                                                    <>
+                                                        <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                        </svg>
+                                                        {t('inbox.loading', 'Loading…')}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <InboxIcon className="h-3.5 w-3.5" />
+                                                        {t('inbox.loadMore', 'Load more')}
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
                                     )}
+
+                                    {/* Item count */}
+                                    <div className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4 pb-2">
+                                        {t(
+                                            'inbox.showingItems',
+                                            'Showing {{current}} of {{total}} items',
+                                            { current: inboxItems.length, total: pagination.total }
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )}

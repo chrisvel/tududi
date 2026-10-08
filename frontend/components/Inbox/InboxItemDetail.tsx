@@ -29,6 +29,7 @@ interface InboxItemDetailProps {
     openNoteModal: (note: Note | null, inboxItemUid?: string) => void;
     projects: Project[];
     isNew?: boolean;
+    onEditingChange?: (editing: boolean) => void;
 }
 
 const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
@@ -40,6 +41,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     openNoteModal,
     projects,
     isNew = false,
+    onEditingChange,
 }) => {
     const { t } = useTranslation();
     const {
@@ -50,6 +52,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const [isEditing, setIsEditing] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const composerRef = useRef<QuickCaptureInputHandle>(null);
+
+    useEffect(() => {
+        onEditingChange?.(isEditing);
+    }, [isEditing]);
 
     useEffect(() => {
         if (!isEditing) return;
@@ -472,7 +478,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     openTaskModal={openTaskModal}
                     openProjectModal={openProjectModal}
                     openNoteModal={openNoteModal}
-                    cardClassName="mb-0"
+                    cardClassName="mb-0 shadow-lg animate-inbox-detach"
                     multiline={true}
                 />
             ) : (
