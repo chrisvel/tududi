@@ -209,9 +209,11 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
 
     return (
         <div
-            className={`group flex items-center gap-3 px-4 ${
-                hasMeta ? 'py-2' : 'py-3'
-            } cursor-pointer`}
+            className={`group flex items-center px-4 ${
+                condenseStatusControl
+                    ? 'flex-wrap justify-end gap-x-3 gap-y-1.5'
+                    : 'gap-3'
+            } ${hasMeta ? 'py-2' : 'py-3'} cursor-pointer`}
             role="button"
             tabIndex={0}
             onClick={onActivate}
@@ -222,7 +224,11 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                 }
             }}
         >
-            <div className="flex flex-1 min-w-0 flex-col">
+            <div
+                className={`flex flex-1 min-w-0 flex-col ${
+                    condenseStatusControl ? 'basis-full' : ''
+                }`}
+            >
                 <div className="flex items-center gap-1.5 min-w-0">
                     {task.habit_mode && (
                         <FireIcon
@@ -256,7 +262,11 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         />
                     ) : (
                         <span
-                            className={`text-[15px] font-normal tracking-tight max-sm:line-clamp-2 max-sm:break-words sm:truncate ${
+                            className={`text-[15px] font-normal tracking-tight ${
+                                condenseStatusControl
+                                    ? 'line-clamp-3 break-words leading-snug'
+                                    : 'max-sm:line-clamp-2 max-sm:break-words sm:truncate'
+                            } ${
                                 isTaskCompleted(task.status)
                                     ? 'text-gray-400 dark:text-gray-500 line-through'
                                     : 'text-gray-900 dark:text-gray-200'
