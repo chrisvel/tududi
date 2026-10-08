@@ -7,7 +7,7 @@ import Navbar from './components/Navbar';
 import Breadcrumbs from './components/Shared/Breadcrumbs';
 import CaptureHost from './components/Capture/CaptureHost';
 import { openCapture } from './utils/captureUi';
-import Sidebar from './components/Sidebar';
+import Sidebar, { SIDEBAR_CANVAS } from './components/Sidebar';
 import './styles/tailwind.css';
 import ProjectModal from './components/Project/ProjectModal';
 import AreaModal from './components/Area/AreaModal';
@@ -362,17 +362,15 @@ const Layout: React.FC<LayoutProps> = ({
         isProjectsError ||
         isTagsError;
 
-    if (isLoading) {
-        return (
-            <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-                <Navbar
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    currentUser={currentUser}
-                    setCurrentUser={setCurrentUser}
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                />
+    // The app canvas: the sidebar on it, and the page as a rounded panel
+    // beside it with its own top bar. The panel sits 8px in, so the bar ends
+    // 64px down, where fixed overlays (modals, toasts, search) expect it.
+    const renderShell = (
+        panel: React.ReactNode,
+        overlays?: React.ReactNode
+    ) => (
+        <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+            <div className={`h-screen ${SIDEBAR_CANVAS}`}>
                 <Sidebar
                     isSidebarOpen={isSidebarOpen}
                     setIsSidebarOpen={setIsSidebarOpen}
@@ -392,51 +390,42 @@ const Layout: React.FC<LayoutProps> = ({
                     keyboardShortcuts={keyboardShortcuts}
                 />
                 <div
-                    className={`flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
+                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col sm:p-2 ${
+                        isSidebarOpen ? 'sm:pl-0' : ''
+                    }`}
                 >
-                    <div className="text-xl text-gray-700 dark:text-gray-200">
-                        {t('common.loading')}
+                    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 sm:rounded-2xl sm:shadow-sm">
+                        <Navbar
+                            isDarkMode={isDarkMode}
+                            toggleDarkMode={toggleDarkMode}
+                            currentUser={currentUser}
+                            setCurrentUser={setCurrentUser}
+                            isSidebarOpen={isSidebarOpen}
+                            setIsSidebarOpen={setIsSidebarOpen}
+                        />
+                        {panel}
                     </div>
+                </div>
+            </div>
+            {overlays}
+        </div>
+    );
+
+    if (isLoading) {
+        return renderShell(
+            <div className="flex-1 flex items-center justify-center">
+                <div className="text-xl text-gray-700 dark:text-gray-200">
+                    {t('common.loading')}
                 </div>
             </div>
         );
     }
 
     if (isError) {
-        return (
-            <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-                <Navbar
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    currentUser={currentUser}
-                    setCurrentUser={setCurrentUser}
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                />
-                <Sidebar
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                    currentUser={currentUser}
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    openTaskModal={openTaskModal}
-                    openProjectModal={openProjectModal}
-                    onCreateNote={openNewNote}
-                    openAreaModal={openAreaModal}
-                    openTagModal={openTagModal}
-                    openPersonModal={openPersonModal}
-                    openNewHabit={openNewHabit}
-                    notes={notes}
-                    areas={areas}
-                    tags={tags}
-                    keyboardShortcuts={keyboardShortcuts}
-                />
-                <div
-                    className={`flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
-                >
-                    <div className="text-xl text-red-500">
-                        {t('errors.somethingWentWrong')}
-                    </div>
+        return renderShell(
+            <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="text-xl text-red-500">
+                    {t('errors.somethingWentWrong')}
                 </div>
             </div>
         );
@@ -444,155 +433,120 @@ const Layout: React.FC<LayoutProps> = ({
 
     return (
         <SidebarProvider isSidebarOpen={isSidebarOpen}>
-            <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-                <UpgradeModal />
-                <Navbar
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    currentUser={currentUser}
-                    setCurrentUser={setCurrentUser}
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                />
-                <Sidebar
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                    currentUser={currentUser}
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    openTaskModal={openTaskModal}
-                    openProjectModal={openProjectModal}
-                    onCreateNote={openNewNote}
-                    openAreaModal={openAreaModal}
-                    openTagModal={openTagModal}
-                    openPersonModal={openPersonModal}
-                    openNewHabit={openNewHabit}
-                    notes={notes}
-                    areas={areas}
-                    tags={tags}
-                    keyboardShortcuts={keyboardShortcuts}
-                />
-
-                <div
-                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col`}
-                >
-                    <div className="relative flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 overflow-hidden">
-                        {contentBackground && (
-                            <>
-                                <div
-                                    aria-hidden="true"
-                                    className="absolute inset-0 bg-cover bg-center"
-                                    style={{
-                                        backgroundImage: `url(${contentBackgroundUrl(contentBackground)})`,
-                                    }}
-                                    data-testid="content-background"
-                                />
-                                <div
-                                    aria-hidden="true"
-                                    className={`absolute inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
-                                />
-                                <PhotoCredit
-                                    background={contentBackground}
-                                    className="absolute bottom-3 left-3"
-                                />
-                            </>
-                        )}
-                        <div
-                            className={`relative flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
-                                isNotesView
-                                    ? isSidebarOpen
-                                        ? 'pt-14 md:pt-0'
-                                        : 'pt-14'
-                                    : isSidebarOpen
-                                      ? 'pt-16 md:pt-6'
-                                      : 'pt-16'
-                            } ${
-                                isUpcomingView
-                                    ? 'md:px-6 lg:px-8'
-                                    : isNotesView
-                                      ? ''
-                                      : 'md:px-4'
-                            } overflow-hidden`}
-                        >
+            <UpgradeModal />
+            {renderShell(
+                <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden">
+                    {contentBackground && (
+                        <>
                             <div
-                                className={`w-full h-full ${
-                                    isNotesView
-                                        ? 'flex flex-col overflow-hidden'
-                                        : 'overflow-auto'
-                                }`}
-                            >
-                                <TrialBanner />
-                                <Breadcrumbs />
-                                <TaskRowExpansionProvider
-                                    key={location.pathname}
-                                >
-                                    {children}
-                                </TaskRowExpansionProvider>
-                            </div>
+                                aria-hidden="true"
+                                className="absolute inset-0 bg-cover bg-center"
+                                style={{
+                                    backgroundImage: `url(${contentBackgroundUrl(contentBackground)})`,
+                                }}
+                                data-testid="content-background"
+                            />
+                            <div
+                                aria-hidden="true"
+                                className={`absolute inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
+                            />
+                            <PhotoCredit
+                                background={contentBackground}
+                                className="absolute bottom-3 left-3"
+                            />
+                        </>
+                    )}
+                    <div
+                        className={`relative flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
+                            isNotesView ? 'pt-0' : 'pt-4'
+                        } ${
+                            isUpcomingView
+                                ? 'md:px-6 lg:px-8'
+                                : isNotesView
+                                  ? ''
+                                  : 'md:px-4'
+                        } overflow-hidden`}
+                    >
+                        <div
+                            className={`w-full h-full ${
+                                isNotesView
+                                    ? 'flex flex-col overflow-hidden'
+                                    : 'overflow-auto'
+                            }`}
+                        >
+                            <TrialBanner />
+                            <Breadcrumbs />
+                            <TaskRowExpansionProvider key={location.pathname}>
+                                {children}
+                            </TaskRowExpansionProvider>
                         </div>
                     </div>
-                </div>
+                </div>,
+                <>
+                    {isProjectModalOpen && (
+                        <ProjectModal
+                            isOpen={isProjectModalOpen}
+                            onClose={closeProjectModal}
+                            onSave={handleSaveProject}
+                            onDelete={async (projectUid) => {
+                                try {
+                                    const { deleteProject } =
+                                        await import('./utils/projectsService');
+                                    await deleteProject(projectUid);
 
-                {isProjectModalOpen && (
-                    <ProjectModal
-                        isOpen={isProjectModalOpen}
-                        onClose={closeProjectModal}
-                        onSave={handleSaveProject}
-                        onDelete={async (projectUid) => {
-                            try {
-                                const { deleteProject } = await import(
-                                    './utils/projectsService'
-                                );
-                                await deleteProject(projectUid);
+                                    // Update global projects store
+                                    const currentProjects =
+                                        useStore.getState().projectsStore
+                                            .projects;
+                                    useStore
+                                        .getState()
+                                        .projectsStore.setProjects(
+                                            currentProjects.filter(
+                                                (p) => p.uid !== projectUid
+                                            )
+                                        );
 
-                                // Update global projects store
-                                const currentProjects =
-                                    useStore.getState().projectsStore.projects;
-                                useStore
-                                    .getState()
-                                    .projectsStore.setProjects(
-                                        currentProjects.filter(
-                                            (p) => p.uid !== projectUid
-                                        )
+                                    closeProjectModal();
+                                } catch (error) {
+                                    console.error(
+                                        'Error deleting project:',
+                                        error
                                     );
+                                }
+                            }}
+                            areas={areas}
+                        />
+                    )}
 
-                                closeProjectModal();
-                            } catch (error) {
-                                console.error('Error deleting project:', error);
-                            }
-                        }}
-                        areas={areas}
-                    />
-                )}
+                    {isAreaModalOpen && (
+                        <AreaModal
+                            isOpen={isAreaModalOpen}
+                            onClose={closeAreaModal}
+                            onSave={handleSaveArea}
+                            area={selectedArea}
+                        />
+                    )}
 
-                {isAreaModalOpen && (
-                    <AreaModal
-                        isOpen={isAreaModalOpen}
-                        onClose={closeAreaModal}
-                        onSave={handleSaveArea}
-                        area={selectedArea}
-                    />
-                )}
+                    {isTagModalOpen && (
+                        <TagModal
+                            isOpen={isTagModalOpen}
+                            onClose={closeTagModal}
+                            onSave={handleSaveTag}
+                            tag={selectedTag}
+                        />
+                    )}
 
-                {isTagModalOpen && (
-                    <TagModal
-                        isOpen={isTagModalOpen}
-                        onClose={closeTagModal}
-                        onSave={handleSaveTag}
-                        tag={selectedTag}
-                    />
-                )}
+                    {isPersonModalOpen && (
+                        <PersonModal
+                            person={selectedPerson}
+                            onSave={handleSavePerson}
+                            onClose={closePersonModal}
+                        />
+                    )}
 
-                {isPersonModalOpen && (
-                    <PersonModal
-                        person={selectedPerson}
-                        onSave={handleSavePerson}
-                        onClose={closePersonModal}
-                    />
-                )}
-
-                <CaptureHost sidebarOpen={isSidebarOpen} />
-            </div>
+                    <CaptureHost sidebarOpen={isSidebarOpen} />
+                </>
+            )}
         </SidebarProvider>
     );
 };

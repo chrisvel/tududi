@@ -30,8 +30,8 @@ interface CaptureHostProps {
     sidebarOpen?: boolean;
 }
 
-// The one box for adding anything: at the top center of the page content
-// on wide screens, and a sheet at the bottom on phones.
+// The one box for adding anything: at the top center of the page content,
+// just under the navbar, on wide screens, and a sheet at the bottom on phones.
 // It stays mounted once opened, so half-typed text survives closing it.
 const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
     const { t } = useTranslation();
@@ -52,7 +52,7 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
         query.addEventListener('change', onChange);
         return () => query.removeEventListener('change', onChange);
     }, []);
-    // A click or tap anywhere outside closes it. The sidebar button toggles
+    // A click or tap anywhere outside closes it. The navbar button toggles
     // on its own, so it is left out.
     useEffect(() => {
         if (!open) return undefined;
@@ -147,7 +147,7 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
                             '--capture-dock-left': dockLeft,
                         } as React.CSSProperties
                     }
-                    className="fixed z-50 inset-x-0 bottom-0 pb-[env(safe-area-inset-bottom)] bg-white dark:bg-gray-800 rounded-t-2xl shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.3)] max-h-[85vh] lg:inset-x-auto lg:left-[var(--capture-dock-left)] lg:top-6 lg:bottom-auto lg:w-[640px] lg:pb-0 lg:rounded-2xl lg:shadow-[0_18px_40px_-12px_rgba(23,32,43,0.4),0_0_0_1px_theme(colors.gray.300)] dark:lg:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.85),0_0_0_1px_theme(colors.gray.600)]"
+                    className="fixed z-50 inset-x-0 bottom-0 pb-[env(safe-area-inset-bottom)] bg-white dark:bg-gray-800 rounded-t-2xl shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.3)] max-h-[85vh] lg:inset-x-auto lg:left-[var(--capture-dock-left)] lg:top-[4.5rem] lg:bottom-auto lg:w-[640px] lg:pb-0 lg:rounded-2xl lg:shadow-[0_18px_40px_-12px_rgba(23,32,43,0.4),0_0_0_1px_theme(colors.gray.300)] dark:lg:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.85),0_0_0_1px_theme(colors.gray.600)]"
                 >
                     <div className="max-h-[85vh] overflow-y-auto rounded-t-2xl lg:rounded-2xl">
                         <QuickCaptureInput

@@ -197,7 +197,7 @@ const TagModal: React.FC<TagModalProps> = ({
     return (
         <>
             <div
-                className={`fixed inset-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
+                className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
                     isClosing ? 'opacity-0' : 'opacity-100'
                 }`}
             >
