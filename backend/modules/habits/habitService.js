@@ -9,7 +9,6 @@ const { ValidationError } = require('../../shared/errors');
 
 const ARCHIVED_STATUS = 3;
 const CANCELLED_STATUS = 5;
-const DONE_STATUS = 2;
 
 function isInactive(task) {
     return task.status === ARCHIVED_STATUS || task.status === CANCELLED_STATUS;
@@ -169,9 +168,8 @@ class HabitService {
             note: this.parseNote(options.note),
         });
 
-        if (!isInactive(task) && task.status !== DONE_STATUS) {
-            await task.update({ status: DONE_STATUS });
-        }
+        // A habit is never done: it stays open so it keeps showing in task
+        // lists, which hide it only on days it does not ask for a check-in.
         if (cfg.polarity === 'build') {
             await task.update({ completed_at: completedAt });
         }
@@ -218,6 +216,42 @@ class HabitService {
             await completion.update(updates);
         }
         return completion;
+    }
+
+    // The days, among `days` days from today, on which each open habit in
+    // `tasks` asks for a check-in, as a map of task id to day keys. Tasks
+    // that are not habits are left out.
+    async dueDays(tasks, ctx, days = 1) {
+        const habits = tasks.filter((t) => t.habit_mode && !isInactive(t));
+        const result = new Map();
+        if (habits.length === 0) return result;
+
+        const rows = await this.findEntries(habits.map((t) => t.id));
+        const byTask = new Map(habits.map((t) => [t.id, []]));
+        for (const row of rows) byTask.get(row.task_id)?.push(row);
+
+        const todayKey = engine.toDayKey(ctx.now || new Date(), ctx.timezone);
+        for (const habit of habits) {
+            const entries = byTask.get(habit.id);
+            const keys = [];
+            for (let i = 0; i < days; i++) {
+                const key = engine.addDays(todayKey, i);
+                if (engine.isDueOn(habit, entries, key, ctx)) keys.push(key);
+            }
+            result.set(habit.id, keys);
+        }
+        return result;
+    }
+
+    // Drops the habits that do not ask for a check-in today (done for now,
+    // goal met, skipped, unscheduled or quit) and keeps every other task.
+    async keepHabitsDueToday(tasks, userId) {
+        if (!tasks.some((t) => t.habit_mode)) return tasks;
+        const ctx = await this.getUserContext(userId);
+        const due = await this.dueDays(tasks, ctx, 1);
+        return tasks.filter(
+            (t) => !t.habit_mode || (due.get(t.id) || []).length > 0
+        );
     }
 
     async getHabitStats(task, ctx, startDate, endDate) {

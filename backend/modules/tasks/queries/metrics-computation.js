@@ -18,6 +18,7 @@ const {
 } = require('./metrics-queries');
 const { compareCandidates } = require('../../daily-plan/ranking');
 const { isSuggestible } = require('../../daily-plan/planningSettings');
+const habitService = require('../../habits/habitService');
 
 const MAX_SUGGESTED_TASKS = 50;
 
@@ -119,7 +120,12 @@ async function computeSuggestedTasks(
         ? (tasks) => tasks.filter((task) => isSuggestible(task, planning, now))
         : (tasks) => tasks;
 
-    let combinedTasks = keep([...nonProjectTasks, ...projectTasks]);
+    // Habits stay open, so only the ones asking for a check-in today count.
+    const keepDue = (tasks) => habitService.keepHabitsDueToday(tasks, userId);
+
+    let combinedTasks = keep(
+        await keepDue([...nonProjectTasks, ...projectTasks])
+    );
 
     if (combinedTasks.length < 6) {
         const usedTaskIds = [
@@ -133,7 +139,10 @@ async function computeSuggestedTasks(
             somedayTaskIds
         );
 
-        combinedTasks = [...combinedTasks, ...keep(somedayFallbackTasks)];
+        combinedTasks = [
+            ...combinedTasks,
+            ...keep(await keepDue(somedayFallbackTasks)),
+        ];
     }
 
     if (planning) {

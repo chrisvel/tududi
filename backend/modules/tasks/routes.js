@@ -42,6 +42,7 @@ const {
     getUpcomingRangeInUTC,
 } = require('../../utils/timezone-utils');
 const permissionsService = require('../../services/permissionsService');
+const habitService = require('../habits/habitService');
 
 const {
     isValidTaskUid,
@@ -98,7 +99,8 @@ function expandRecurringTasks(
     tasks,
     maxDays = 7,
     statusFilter = null,
-    userTimezone = 'UTC'
+    userTimezone = 'UTC',
+    habitDays = new Map()
 ) {
     const expandedTasks = [];
     const moment = require('moment-timezone');
@@ -109,6 +111,20 @@ function expandRecurringTasks(
             task.recurrence_type &&
             task.recurrence_type !== 'none' &&
             !task.recurring_parent_id;
+
+        // Habits follow their own schedule and progress, not the recurrence.
+        if (task.habit_mode && !task.recurring_parent_id) {
+            (habitDays.get(task.id) || []).forEach((day, index) => {
+                expandedTasks.push({
+                    ...(task.toJSON ? task.toJSON() : task),
+                    due_date: day,
+                    is_virtual_occurrence: true,
+                    occurrence_index: index,
+                    virtual_id: `${task.id}_occurrence_${index}`,
+                });
+            });
+            return;
+        }
 
         if (!isRecurring) {
             expandedTasks.push(task);
@@ -243,11 +259,17 @@ router.get('/tasks', async (req, res) => {
         if (type === 'upcoming' && groupBy === 'day') {
             const days = maxDays ? parseInt(maxDays, 10) : 7;
             const safeTimezone = getSafeTimezone(timezone);
+            const habitDays = await habitService.dueDays(
+                tasks,
+                await habitService.getUserContext(userId),
+                days
+            );
             tasks = expandRecurringTasks(
                 tasks,
                 days,
                 req.query.status,
-                safeTimezone
+                safeTimezone,
+                habitDays
             );
         }
 
