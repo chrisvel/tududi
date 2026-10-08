@@ -8,6 +8,7 @@ const { NotFoundError, ValidationError } = require('../../shared/errors');
 const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
 const { sortTags } = require('../tasks/core/serializers');
+const { getBlockedCountMap } = require('../tasks/relations/service');
 const {
     getSafeTimezone,
     processDueDateForResponse,
@@ -284,10 +285,19 @@ class ProjectsService {
         const safeTimezone = getSafeTimezone(userTimezone);
         const projectJson = project.toJSON();
 
+        // Same blocked flags the task serializer adds, so the "Blocked" badge
+        // on the project page comes from the server and survives a reload.
+        const blockedCountMap = await getBlockedCountMap(
+            (projectJson.Tasks || []).map((task) => task.id)
+        );
+
         const normalizedTasks = projectJson.Tasks
             ? projectJson.Tasks.map((task) => {
+                  const blockedByCount = blockedCountMap[task.id] || 0;
                   const normalizedTask = {
                       ...task,
+                      blocked_by_count: blockedByCount,
+                      is_blocked: blockedByCount > 0,
                       tags: sortTags(task.Tags),
                       subtasks: (task.Subtasks || []).map((subtask) => ({
                           ...subtask,

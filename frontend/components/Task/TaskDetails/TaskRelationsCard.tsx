@@ -143,9 +143,9 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
         }
     };
 
-    const handleRemove = async (relationUid: string) => {
+    const handleRemove = async (relation: TaskRelation) => {
         try {
-            await deleteTaskRelation(taskUid, relationUid);
+            await deleteTaskRelation(taskUid, relation.uid, relation.task.uid);
             await load();
             onRelationsChange?.();
         } catch (error) {
@@ -201,7 +201,7 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            void handleRemove(relation.uid)
+                                            void handleRemove(relation)
                                         }
                                         className="ml-3 p-1 text-gray-400 hover:text-red-500 focus:outline-none"
                                         aria-label={t(

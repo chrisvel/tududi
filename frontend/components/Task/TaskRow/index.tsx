@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useCallback,
+    useMemo,
+    useRef,
+} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,6 +27,9 @@ import {
     fetchSubtasks,
     deleteTask,
     createTask,
+    fetchTaskByUid,
+    TASK_RELATIONS_CHANGED_EVENT,
+    TaskRelationsChangedDetail,
 } from '../../../utils/tasksService';
 import { isTaskOverdueInTodayPlan } from '../../../utils/dateUtils';
 import { getApiPath } from '../../../config/paths';
@@ -105,6 +114,47 @@ const TaskRow: React.FC<TaskRowProps> = ({
     // survives an expand/collapse cycle instead of resetting to the possibly
     // stale task.comments_count every time the panel remounts.
     const [commentCount, setCommentCount] = useState(task.comments_count ?? 0);
+
+    // Blocked flags refetched after a relation change on this or a linked
+    // task. Cleared whenever the parent passes fresh server data.
+    const [blockedOverride, setBlockedOverride] = useState<Pick<
+        Task,
+        'is_blocked' | 'blocked_by_count'
+    > | null>(null);
+    useEffect(() => {
+        setBlockedOverride(null);
+    }, [task.uid, task.is_blocked, task.blocked_by_count]);
+    useEffect(() => {
+        const uid = task.uid;
+        if (!uid) return;
+        const onRelationsChanged = async (event: Event) => {
+            const { taskUids } =
+                (event as CustomEvent<TaskRelationsChangedDetail>).detail || {};
+            if (!taskUids?.includes(uid)) return;
+            try {
+                const fresh = await fetchTaskByUid(uid);
+                setBlockedOverride({
+                    is_blocked: !!fresh.is_blocked,
+                    blocked_by_count: fresh.blocked_by_count || 0,
+                });
+            } catch (error) {
+                console.error('Error refreshing blocked state:', error);
+            }
+        };
+        window.addEventListener(
+            TASK_RELATIONS_CHANGED_EVENT,
+            onRelationsChanged
+        );
+        return () =>
+            window.removeEventListener(
+                TASK_RELATIONS_CHANGED_EVENT,
+                onRelationsChanged
+            );
+    }, [task.uid]);
+    const displayTask = useMemo(
+        () => (blockedOverride ? { ...task, ...blockedOverride } : task),
+        [task, blockedOverride]
+    );
 
     const canExpand = !disableExpand && !task.habit_mode && !!task.uid;
     // Virtual occurrences of a recurring task share the parent's uid, so
@@ -265,7 +315,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
     // Completing a blocked task is allowed, but asked about first.
     const handleToggleCompletion = async () => {
         if (!task.id) return;
-        if (task.is_blocked && !isTaskCompleted(task.status)) {
+        if (displayTask.is_blocked && !isTaskCompleted(task.status)) {
             setIsBlockedConfirmOpen(true);
             return;
         }
@@ -403,7 +453,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
                 } ${isAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
             >
                 <TaskRowCollapsed
-                    task={task}
+                    task={displayTask}
                     project={project}
                     hideProjectName={hideProjectName}
                     hideStatusControl={hideStatusControl}
@@ -435,7 +485,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
 
                 {panelMounted && (
                     <TaskRowExpanded
-                        task={task}
+                        task={displayTask}
                         projects={projectList}
                         setters={setters}
                         open={isExpanded}
@@ -566,7 +616,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
                     message={t(
                         'relations.completeBlockedMessage',
                         'This task is blocked by {{count}} open task(s). Complete it anyway?',
-                        { count: task.blocked_by_count || 1 }
+                        { count: displayTask.blocked_by_count || 1 }
                     )}
                     confirmButtonText={t(
                         'relations.completeAnyway',

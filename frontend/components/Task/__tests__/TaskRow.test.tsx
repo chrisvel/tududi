@@ -39,6 +39,8 @@ jest.mock('../../../utils/tasksService', () => ({
     updateTask: jest.fn(),
     fetchSubtasks: jest.fn().mockResolvedValue([]),
     deleteTask: jest.fn(),
+    fetchTaskByUid: jest.fn(),
+    TASK_RELATIONS_CHANGED_EVENT: 'taskRelationsChanged',
 }));
 
 jest.mock('../../../utils/peopleService', () => ({
@@ -130,6 +132,36 @@ describe('TaskRow', () => {
         expect(
             screen.queryByPlaceholderText('Task name')
         ).not.toBeInTheDocument();
+    });
+
+    it('shows the blocked badge when a linked task starts blocking it (#1810)', async () => {
+        (tasksService.fetchTaskByUid as jest.Mock).mockResolvedValue(
+            baseTask({ is_blocked: true, blocked_by_count: 1 })
+        );
+        renderRow(baseTask());
+        expect(screen.queryByTestId('task-blocked-badge')).toBeNull();
+
+        window.dispatchEvent(
+            new CustomEvent(tasksService.TASK_RELATIONS_CHANGED_EVENT, {
+                detail: { taskUids: ['other-task', 'task-1'] },
+            })
+        );
+
+        expect(
+            await screen.findByTestId('task-blocked-badge')
+        ).toBeInTheDocument();
+        expect(tasksService.fetchTaskByUid).toHaveBeenCalledWith('task-1');
+    });
+
+    it('ignores relation changes for unrelated tasks', () => {
+        (tasksService.fetchTaskByUid as jest.Mock).mockClear();
+        renderRow(baseTask());
+        window.dispatchEvent(
+            new CustomEvent(tasksService.TASK_RELATIONS_CHANGED_EVENT, {
+                detail: { taskUids: ['a', 'b'] },
+            })
+        );
+        expect(tasksService.fetchTaskByUid).not.toHaveBeenCalled();
     });
 
     it('expands into the quick-edit panel on click', () => {
