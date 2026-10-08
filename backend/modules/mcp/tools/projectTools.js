@@ -21,7 +21,20 @@ const goalInputProperties = {
         description:
             'Goal UID to link the project to (null or empty to unlink)',
     },
+    is_maintenance: {
+        type: 'boolean',
+        description:
+            'Mark as a maintenance project (keeps something running, not goal-directed). Setting true unlinks any goal; linking a goal clears it.',
+    },
 };
+
+function assertNotGoalAndMaintenance(params, goalId) {
+    if (params.is_maintenance === true && goalId) {
+        throw new Error(
+            'A project cannot be linked to a goal and marked as maintenance'
+        );
+    }
+}
 
 // Returns undefined when no goal was passed, null to unlink, or the ID of a
 // goal the user owns.
@@ -122,6 +135,7 @@ function registerProjectTools(server, context, tools) {
                     priority: proj.priority,
                     area: proj.Area ? proj.Area.name : null,
                     goal: serializeGoal(proj.Goal),
+                    is_maintenance: !!proj.is_maintenance,
                     tags: proj.Tags ? proj.Tags.map((t) => t.name) : [],
                     due_date_at: proj.due_date_at,
                     pin_to_sidebar: proj.pin_to_sidebar,
@@ -191,6 +205,7 @@ function registerProjectTools(server, context, tools) {
                 priority: proj.priority,
                 area: proj.Area ? proj.Area.name : null,
                 goal: serializeGoal(proj.Goal),
+                is_maintenance: !!proj.is_maintenance,
                 tags: proj.Tags ? proj.Tags.map((t) => t.name) : [],
                 due_date_at: proj.due_date_at,
                 pin_to_sidebar: proj.pin_to_sidebar,
@@ -263,6 +278,7 @@ function registerProjectTools(server, context, tools) {
         },
         handler: async (params) => {
             const goalId = await resolveGoalId(params, context.userId);
+            assertNotGoalAndMaintenance(params, goalId);
             const projectData = {
                 user_id: context.userId,
                 name: params.name,
@@ -273,6 +289,7 @@ function registerProjectTools(server, context, tools) {
                 due_date_at: params.due_date_at || null,
                 image_url: params.image_url || null,
                 goal_id: goalId || null,
+                is_maintenance: params.is_maintenance === true,
             };
 
             await rolesService.assertCan(context.userId, 'create_projects');
@@ -311,6 +328,7 @@ function registerProjectTools(server, context, tools) {
                 priority: reloadedProject.priority,
                 area: reloadedProject.Area ? reloadedProject.Area.name : null,
                 goal: serializeGoal(reloadedProject.Goal),
+                is_maintenance: !!reloadedProject.is_maintenance,
                 tags: reloadedProject.Tags
                     ? reloadedProject.Tags.map((t) => t.name)
                     : [],
@@ -421,13 +439,21 @@ function registerProjectTools(server, context, tools) {
                     params.image_url === '' ? null : params.image_url;
 
             const goalId = await resolveGoalId(params, context.userId);
-            if (goalId !== undefined) {
-                if (project.user_id !== context.userId) {
-                    throw new Error(
-                        'Only the project owner can change its goal'
-                    );
+            assertNotGoalAndMaintenance(params, goalId);
+            if (goalId !== undefined) updates.goal_id = goalId;
+            if (params.is_maintenance !== undefined) {
+                updates.is_maintenance = params.is_maintenance === true;
+                if (updates.is_maintenance && project.goal_id) {
+                    updates.goal_id = null;
                 }
-                updates.goal_id = goalId;
+            } else if (goalId) {
+                updates.is_maintenance = false;
+            }
+            if (
+                updates.goal_id !== undefined &&
+                project.user_id !== context.userId
+            ) {
+                throw new Error('Only the project owner can change its goal');
             }
 
             await project.update(updates);
@@ -452,6 +478,7 @@ function registerProjectTools(server, context, tools) {
                 priority: reloadedProject.priority,
                 area: reloadedProject.Area ? reloadedProject.Area.name : null,
                 goal: serializeGoal(reloadedProject.Goal),
+                is_maintenance: !!reloadedProject.is_maintenance,
                 tags: reloadedProject.Tags
                     ? reloadedProject.Tags.map((t) => t.name)
                     : [],
