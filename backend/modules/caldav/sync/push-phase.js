@@ -8,6 +8,8 @@ const { serializeTaskToVTODO } = require('../icalendar/vtodo-serializer');
 const encryptionService = require('../services/encryption-service');
 const { buildRemoteTaskUrl, normalizeHref } = require('../utils/href-utils');
 const { formatEntityTag } = require('../utils/etag-generator');
+const { CALDAV_TASK_INCLUDES } = require('../task-includes');
+const { getUserTimezone } = require('../utils/user-timezone');
 
 class PushPhase {
     async execute(calendar, userId, options = {}) {
@@ -117,14 +119,18 @@ class PushPhase {
                 continue;
             }
 
-            if (
-                syncState.sync_status === 'conflict' ||
-                syncState.sync_status === 'pending'
-            ) {
+            // A conflict waits for the merge phase to settle it. 'pending' is
+            // what the merge phase leaves when the local version won a
+            // conflict: it has to go out even though it is not newer than the
+            // last sync.
+            if (syncState.sync_status === 'conflict') {
                 continue;
             }
 
-            if (task.updated_at > syncState.last_synced_at) {
+            if (
+                syncState.sync_status === 'pending' ||
+                task.updated_at > syncState.last_synced_at
+            ) {
                 changedTasks.push(task);
             }
         }
@@ -164,7 +170,16 @@ class PushPhase {
             task.uid
         );
 
-        const vtodoString = await serializeTaskToVTODO(task);
+        // Serialize the way the CalDAV server does: with tags, project and
+        // parent loaded, and dates in the user's timezone. Without the timezone
+        // a due date for a user west of UTC went out as the next day.
+        const fullTask =
+            (await Task.findByPk(task.id, {
+                include: CALDAV_TASK_INCLUDES,
+            })) || task;
+        const vtodoString = await serializeTaskToVTODO(fullTask, {
+            userTimezone: await getUserTimezone(task.user_id),
+        });
 
         try {
             const headers = {
@@ -214,9 +229,15 @@ class PushPhase {
                     `Precondition failed for task ${task.uid}: ETag mismatch, conflict detected`
                 );
 
-                await SyncStateRepository.createOrUpdate(task.id, calendar.id, {
-                    sync_status: 'conflict',
-                });
+                // The next pull settles the conflict (merge phase). A task the
+                // server has never acknowledged has no sync state to mark.
+                if (syncState) {
+                    await SyncStateRepository.createOrUpdate(
+                        task.id,
+                        calendar.id,
+                        { sync_status: 'conflict' }
+                    );
+                }
 
                 throw new AppError(
                     'Conflict detected: task was modified on server',

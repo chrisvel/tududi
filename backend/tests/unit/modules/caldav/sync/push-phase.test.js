@@ -1,7 +1,10 @@
 jest.mock('../../../../../modules/caldav/services/safe-request', () => ({
     safeRequest: jest.fn(),
 }));
-jest.mock('../../../../../models', () => ({ Task: {} }));
+jest.mock('../../../../../models', () => ({
+    Task: { findByPk: jest.fn().mockResolvedValue(null) },
+    User: { findByPk: jest.fn().mockResolvedValue(null) },
+}));
 jest.mock('../../../../../services/logService', () => ({
     logInfo: jest.fn(),
     logError: jest.fn(),

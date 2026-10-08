@@ -112,7 +112,7 @@ async function buildCalendarResponse(username, userId, propfindRequest) {
             },
         },
         'D:getcontenttype': 'text/calendar; charset=utf-8',
-        'C:getctag': ctag,
+        'CS:getctag': ctag,
         'D:current-user-principal': {
             'D:href': `/caldav/${encodeURIComponent(username)}/`,
         },

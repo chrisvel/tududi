@@ -8,6 +8,21 @@ const vtodoParser = require('../icalendar/vtodo-parser');
 const { resolveProjectIdForPut } = require('./projects');
 const { deleteTaskFromRemotes } = require('../services/task-deletion-service');
 const { canReadTask, canWriteTask } = require('../access');
+const { STATUS_TUDUDI_TO_ICAL } = require('../icalendar/field-mappings');
+const { buildHref } = require('./utils');
+
+// RFC 4791 5.3.2.1: a UID may be used by one resource in a calendar only.
+function uidConflictResponse(res, username, task) {
+    return res
+        .status(409)
+        .set('Content-Type', 'application/xml; charset=utf-8')
+        .send(
+            '<?xml version="1.0" encoding="UTF-8"?>' +
+                '<D:error xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">' +
+                `<C:no-uid-conflict><D:href>${buildHref(username, task.uid)}</D:href></C:no-uid-conflict>` +
+                '</D:error>'
+        );
+}
 
 async function handleGetTask(req, res) {
     try {
@@ -102,9 +117,43 @@ async function handlePutTask(req, res) {
             return res.status(400).send('Bad Request: Invalid VTODO data');
         }
 
+        // The resource is addressed by its filename. A client that uploads a
+        // VTODO under a new filename while its UID already belongs to another
+        // task would get a second row for the same task, so refuse it the way
+        // the spec says to, pointing the client at the existing resource.
+        if (!existingTask && taskData.uid && taskData.uid !== taskUid) {
+            const uidOwner = await taskRepository.findByUid(taskData.uid);
+            if (uidOwner && (await canReadTask(uidOwner, userId))) {
+                return uidConflictResponse(res, username, uidOwner);
+            }
+        }
+
         taskData.uid = taskUid;
         // An edit by a collaborator keeps the task with its owner.
         taskData.user_id = existingTask ? existingTask.user_id : userId;
+        // Only the sync engine uses LAST-MODIFIED.
+        delete taskData.last_modified;
+
+        if (existingTask) {
+            // iCalendar has fewer statuses than Tududi (planned, waiting and
+            // archived have no VTODO equivalent). When the client sends back
+            // the status it was given, keep the Tududi one instead of
+            // resetting a planned or waiting task to "not started".
+            if (
+                STATUS_TUDUDI_TO_ICAL[existingTask.status] ===
+                STATUS_TUDUDI_TO_ICAL[taskData.status]
+            ) {
+                taskData.status = existingTask.status;
+                if (!taskData.completed_at) {
+                    taskData.completed_at = existingTask.completed_at;
+                }
+            }
+            // Order is a Tududi-only property; a client that drops it should
+            // not reset the task's position.
+            if (taskData.order === null || Number.isNaN(taskData.order)) {
+                delete taskData.order;
+            }
+        }
 
         // Per-project route: file the task into the URL's project (or null for
         // the "(No Project)" calendar). This also fixes the case where the

@@ -5,6 +5,8 @@ const logger = require('../../../services/logService');
 const RemoteCalendarRepository = require('../repositories/remote-calendar-repository');
 const { parseVTODOToTask } = require('../icalendar/vtodo-parser');
 const encryptionService = require('../services/encryption-service');
+const { resolveRemoteHref } = require('../utils/href-utils');
+const { getUserTimezone } = require('../utils/user-timezone');
 
 class PullPhase {
     async execute(calendar, userId, options = {}) {
@@ -109,10 +111,17 @@ class PullPhase {
                 ),
             });
 
+            // Date-only DUE/DTSTART values are stored as the end of that day in
+            // the user's timezone, the same as the web app and the CalDAV
+            // server do. Parsing them as UTC moved due dates a day for users
+            // east of UTC.
+            const userTimezone = await getUserTimezone(calendar.user_id);
+
             return await this._parseReportResponse(
                 response.data,
                 remoteCalendar,
-                calendar
+                calendar,
+                userTimezone
             );
         } catch (error) {
             if (error.response?.status === 401) {
@@ -157,14 +166,18 @@ class PullPhase {
 </C:calendar-query>`;
     }
 
-    async _parseReportResponse(xmlData, remoteCalendar, calendar) {
+    async _parseReportResponse(
+        xmlData,
+        remoteCalendar,
+        calendar,
+        userTimezone
+    ) {
         const parsed = await parseStringPromise(xmlData, {
             explicitArray: false,
             tagNameProcessors: [this._stripNamespace],
         });
 
         const changedTasks = [];
-        const baseUrl = remoteCalendar.server_url.replace(/\/$/, '');
 
         const responses =
             parsed?.multistatus?.response ||
@@ -231,13 +244,11 @@ class PullPhase {
                 }
 
                 if (!calendarData) {
-                    // Construct individual task URL using the normalised base URL
-                    // to prevent double-slash when server_url has a trailing slash
-                    const hrefPath = href.startsWith('/') ? href : `/${href}`;
-                    const taskUrl = `${baseUrl}${hrefPath}`;
+                    const taskUrl = resolveRemoteHref(remoteCalendar, href);
                     const taskData = await this._fetchTaskData(
                         taskUrl,
-                        remoteCalendar
+                        remoteCalendar,
+                        userTimezone
                     );
                     if (taskData) {
                         changedTasks.push(taskData);
@@ -245,7 +256,10 @@ class PullPhase {
                     continue;
                 }
 
-                const taskData = await parseVTODOToTask(calendarData);
+                const taskData = await parseVTODOToTask(
+                    calendarData,
+                    userTimezone
+                );
                 if (taskData) {
                     changedTasks.push({
                         action: 'create_or_update',
@@ -276,7 +290,7 @@ class PullPhase {
         return changedTasks;
     }
 
-    async _fetchTaskData(taskUrl, remoteCalendar) {
+    async _fetchTaskData(taskUrl, remoteCalendar, userTimezone) {
         try {
             const password = encryptionService.decrypt(
                 remoteCalendar.password_encrypted
@@ -296,7 +310,10 @@ class PullPhase {
             });
 
             const etag = response.headers.etag?.replace(/^"|"$/g, '');
-            const taskData = await parseVTODOToTask(response.data);
+            const taskData = await parseVTODOToTask(
+                response.data,
+                userTimezone
+            );
 
             return {
                 action: 'create_or_update',
