@@ -55,10 +55,17 @@ const analysis = (overrides: Record<string, unknown> = {}) => ({
     ...overrides,
 });
 
+const onClose = jest.fn();
+
 const renderPlan = (onComplete = jest.fn(), firstVisit = true) =>
     render(
-        <MemoryRouter>
-            <FirstPlan firstVisit={firstVisit} onComplete={onComplete} />
+        <MemoryRouter initialEntries={['/today']}>
+            <FirstPlan
+                open
+                firstVisit={firstVisit}
+                onClose={onClose}
+                onComplete={onComplete}
+            />
         </MemoryRouter>
     );
 
@@ -205,6 +212,32 @@ describe('FirstPlan', () => {
         );
         expect(createTask).not.toHaveBeenCalled();
         expect(carryOverTasks).not.toHaveBeenCalled();
+        expect(onClose).toHaveBeenCalled();
+    });
+
+    it('closing it on the first visit also counts as skipping', async () => {
+        const onComplete = jest.fn();
+        renderPlan(onComplete);
+
+        fireEvent.keyDown(window, { key: 'Escape' });
+
+        await waitFor(() => expect(onComplete).toHaveBeenCalled());
+        expect(completeOnboarding).toHaveBeenCalledTimes(1);
+        expect(onClose).toHaveBeenCalled();
+    });
+
+    it('renders nothing while closed', () => {
+        render(
+            <MemoryRouter>
+                <FirstPlan
+                    open={false}
+                    firstVisit
+                    onClose={onClose}
+                    onComplete={jest.fn()}
+                />
+            </MemoryRouter>
+        );
+        expect(screen.queryByTestId('first-plan-input')).toBeNull();
     });
 
     it('reopened later it adds to the day without touching onboarding', async () => {

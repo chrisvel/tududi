@@ -61,6 +61,7 @@ import PersonDetails from './components/People/PersonDetails';
 import EveryoneDashboard from './components/Everyone/EveryoneDashboard';
 import Templates from './components/Templates/Templates';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
+import { useBrainDumpUi, closeBrainDump } from './utils/brainDumpUi';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { invalidateProfileCache } from './utils/profileService';
@@ -90,6 +91,7 @@ const App: React.FC = () => {
     const location = useLocation();
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const brainDump = useBrainDumpUi();
 
     if (!i18n.isInitialized) {
         return <LoadingScreen fullScreen />;
@@ -238,16 +240,6 @@ const App: React.FC = () => {
         if (!hasPendingSharedText()) return;
 
         navigate('/inbox', { replace: true });
-    }, [currentUser, location.pathname, navigate]);
-
-    // A new account's first visit to Today goes to the welcome screen
-    // instead. Only the home paths divert, so a deep link still opens.
-    useEffect(() => {
-        if (!currentUser || currentUser.onboarded_at !== null) return;
-        if (location.pathname !== '/' && location.pathname !== '/today') {
-            return;
-        }
-        navigate('/welcome', { replace: true });
     }, [currentUser, location.pathname, navigate]);
 
     const markOnboarded = (onboardedAt: string) => {
@@ -403,24 +395,6 @@ const App: React.FC = () => {
                             element={<ResetPassword />}
                         />
                         <Route
-                            path="/welcome"
-                            element={
-                                <SubscriptionGate>
-                                    <Suspense
-                                        fallback={<LoadingScreen fullScreen />}
-                                    >
-                                        <FirstPlan
-                                            firstVisit={
-                                                currentUser.onboarded_at ===
-                                                null
-                                            }
-                                            onComplete={markOnboarded}
-                                        />
-                                    </Suspense>
-                                </SubscriptionGate>
-                            }
-                        />
-                        <Route
                             element={
                                 <SubscriptionGate>
                                     <Layout
@@ -429,6 +403,26 @@ const App: React.FC = () => {
                                         isDarkMode={isDarkMode}
                                         toggleDarkMode={toggleDarkMode}
                                     >
+                                        <Suspense fallback={null}>
+                                            <FirstPlan
+                                                open={
+                                                    brainDump.open ||
+                                                    (currentUser.onboarded_at ===
+                                                        null &&
+                                                        (location.pathname ===
+                                                            '/today' ||
+                                                            location.pathname ===
+                                                                '/'))
+                                                }
+                                                key={brainDump.openCount}
+                                                firstVisit={
+                                                    currentUser.onboarded_at ===
+                                                    null
+                                                }
+                                                onClose={closeBrainDump}
+                                                onComplete={markOnboarded}
+                                            />
+                                        </Suspense>
                                         <Outlet />
                                     </Layout>
                                 </SubscriptionGate>

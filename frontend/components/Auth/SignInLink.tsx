@@ -57,7 +57,7 @@ const SignInLink: React.FC = () => {
             window.dispatchEvent(
                 new CustomEvent('userLoggedIn', { detail: data.user })
             );
-            navigate(data.user?.onboarded_at === null ? '/welcome' : '/today');
+            navigate('/today');
         } catch {
             setStage('invalid');
         } finally {

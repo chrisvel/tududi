@@ -317,7 +317,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - One replica, block storage for SQLite, ingress and backup notes
 
 32. **[Onboarding](docs/24-onboarding.md)**
-    - The welcome screen (`/welcome`): one box, one line per thing, Plan my day
+    - The welcome modal over Today: one box, one line per thing, Plan my day; Brain dump in the navbar menu
     - Empty-state starters on Areas and Habits
     - `users.onboarded_at`, `POST /api/onboarding/complete`, admin onboarding numbers
 
