@@ -188,7 +188,9 @@ const Login: React.FC = () => {
                     new CustomEvent('userLoggedIn', { detail: data.user })
                 );
 
-                navigate('/today');
+                navigate(
+                    data.user?.onboarded_at === null ? '/welcome' : '/today'
+                );
             } else {
                 if (data.email_not_verified) {
                     setUnverifiedEmail(email);

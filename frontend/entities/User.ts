@@ -19,4 +19,6 @@ export interface User {
     role?: RoleId;
     capabilities?: Capabilities;
     features?: UserFeatures;
+    // null until the welcome screen is done with; older servers omit it
+    onboarded_at?: string | null;
 }

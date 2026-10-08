@@ -9,6 +9,9 @@ const {
     Note,
     Tag,
     Person,
+    DailyPlan,
+    DailyPlanItem,
+    sequelize,
 } = require('../../models');
 const { getConfig } = require('../../config/config');
 const entitlements = require('../../services/entitlementsService');
@@ -52,6 +55,54 @@ describe('Admin dashboard', () => {
         expect(res.body.billing).toHaveProperty('paying');
         expect(res.body.instance).toHaveProperty('registration_enabled');
         expect(typeof res.body.instance.version).toBe('string');
+    });
+
+    it('counts who planned a first day and who kept planning', async () => {
+        const DAY_MS = 24 * 60 * 60 * 1000;
+        const dayKey = (d) => new Date(d).toISOString().slice(0, 10);
+        const planDay = async (owner, date, size) => {
+            const plan = await DailyPlan.create({
+                user_id: owner.id,
+                plan_date: date,
+            });
+            for (let i = 0; i < size; i++) {
+                const task = await Task.create({
+                    name: `t${i}`,
+                    user_id: owner.id,
+                });
+                await DailyPlanItem.create({
+                    daily_plan_id: plan.id,
+                    task_id: task.id,
+                    position: i,
+                    duration_minutes: 30,
+                });
+            }
+        };
+
+        // This week's signup planned three tasks: counts as a first plan.
+        await planDay(plain, dayKey(Date.now()), 3);
+
+        // Last week's signup planned on three days inside the first week.
+        const older = await createTestUser({
+            email: `old_${Date.now()}@example.com`,
+        });
+        const tenDaysAgo = new Date(Date.now() - 10 * DAY_MS);
+        // Sequelize guards created_at, so the signup date moves by hand.
+        await sequelize.query(
+            'UPDATE users SET created_at = :at WHERE id = :id',
+            { replacements: { at: tenDaysAgo, id: older.id } }
+        );
+        for (let i = 0; i < 3; i++) {
+            await planDay(older, dayKey(tenDaysAgo.getTime() + i * DAY_MS), 1);
+        }
+
+        const res = await adminAgent.get('/api/admin/overview');
+        expect(res.status).toBe(200);
+        const { onboarding } = res.body.trends;
+        expect(onboarding.new_users).toBeGreaterThanOrEqual(2);
+        expect(onboarding.first_plan).toBe(1);
+        expect(onboarding.cohort).toBeGreaterThanOrEqual(1);
+        expect(onboarding.three_days).toBe(1);
     });
 
     it('reports 14 days of signups, activation and active users', async () => {

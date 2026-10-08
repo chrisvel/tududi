@@ -76,6 +76,7 @@ const PublicNotePage = lazy(
 );
 const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
 const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
+const FirstPlan = lazy(() => import('./components/Onboarding/FirstPlan'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 // Declared at module scope: the users page switches tabs through the query
@@ -239,6 +240,25 @@ const App: React.FC = () => {
         navigate('/inbox', { replace: true });
     }, [currentUser, location.pathname, navigate]);
 
+    // A new account's first visit to Today goes to the welcome screen
+    // instead. Only the home paths divert, so a deep link still opens.
+    useEffect(() => {
+        if (!currentUser || currentUser.onboarded_at !== null) return;
+        if (location.pathname !== '/' && location.pathname !== '/today') {
+            return;
+        }
+        navigate('/welcome', { replace: true });
+    }, [currentUser, location.pathname, navigate]);
+
+    const markOnboarded = (onboardedAt: string) => {
+        setCurrentUser((prev) => {
+            if (!prev) return prev;
+            const next = { ...prev, onboarded_at: onboardedAt };
+            setUserInStorage(next);
+            return next;
+        });
+    };
+
     // The Inbox keeps offering a claimed share while the user stays on it (the
     // page remounts whenever Layout shows its first-load spinner), so the claim
     // is released on the first navigation away from it instead.
@@ -381,6 +401,26 @@ const App: React.FC = () => {
                         <Route
                             path="/reset-password"
                             element={<ResetPassword />}
+                        />
+                        <Route
+                            path="/welcome"
+                            element={
+                                currentUser.onboarded_at === null ? (
+                                    <SubscriptionGate>
+                                        <Suspense
+                                            fallback={
+                                                <LoadingScreen fullScreen />
+                                            }
+                                        >
+                                            <FirstPlan
+                                                onComplete={markOnboarded}
+                                            />
+                                        </Suspense>
+                                    </SubscriptionGate>
+                                ) : (
+                                    <Navigate to="/today" replace />
+                                )
+                            }
                         />
                         <Route
                             element={

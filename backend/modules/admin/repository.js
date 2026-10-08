@@ -119,6 +119,39 @@ class AdminRepository {
         return new Set(results.flat().map((row) => row.user_id));
     }
 
+    // Every day plan of the given users that holds at least one task, as
+    // `{ user_id, plan_date, items }` rows, so the dashboard can tell who
+    // planned a first day and who kept planning.
+    async findPlanSizes(userIds) {
+        if (!userIds || userIds.length === 0) return [];
+        const { DailyPlan, DailyPlanItem } = require('../../models');
+        const plans = await DailyPlan.findAll({
+            attributes: ['id', 'user_id', 'plan_date'],
+            where: { user_id: userIds },
+            raw: true,
+        });
+        if (plans.length === 0) return [];
+        const items = await DailyPlanItem.findAll({
+            attributes: ['daily_plan_id'],
+            where: { daily_plan_id: plans.map((p) => p.id) },
+            raw: true,
+        });
+        const counts = new Map();
+        for (const item of items) {
+            counts.set(
+                item.daily_plan_id,
+                (counts.get(item.daily_plan_id) || 0) + 1
+            );
+        }
+        return plans
+            .filter((p) => counts.has(p.id))
+            .map((p) => ({
+                user_id: p.user_id,
+                plan_date: String(p.plan_date).slice(0, 10),
+                items: counts.get(p.id),
+            }));
+    }
+
     async findAccountOwnerIds(accountIds = null) {
         const { Account } = require('../../models');
         const rows = await Account.findAll({

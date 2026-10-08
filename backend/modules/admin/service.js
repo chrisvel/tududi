@@ -597,6 +597,7 @@ class AdminService {
         const activated = newIds.length
             ? await adminRepository.findCreatorIdsSince(weekStart, newIds)
             : new Set();
+        const onboarding = await this.onboardingTrends(signups, weekStart);
 
         return {
             days,
@@ -609,6 +610,7 @@ class AdminService {
                 prev7d: sum(lastWeek, 'waitlist'),
             },
             activation: { new_users: newIds.length, activated: activated.size },
+            onboarding,
             active_users_7d: active.size,
             billing: hosted
                 ? {
@@ -618,6 +620,49 @@ class AdminService {
                       payment_failed_7d: failed,
                   }
                 : null,
+        };
+    }
+
+    // The two numbers the welcome screen is judged by. Of this week's
+    // signups, who planned a day with three or more tasks. Of last week's
+    // signups (old enough to have had a full week), who planned on three
+    // different days within seven days of signing up.
+    async onboardingTrends(signups, weekStart) {
+        const DAY_MS = 24 * 60 * 60 * 1000;
+        const dayKey = (value) => new Date(value).toISOString().slice(0, 10);
+        const thisWeek = signups.filter(
+            (u) => new Date(u.created_at) >= weekStart
+        );
+        const lastWeek = signups.filter(
+            (u) => new Date(u.created_at) < weekStart
+        );
+        const plans = await adminRepository.findPlanSizes(
+            signups.map((u) => u.id)
+        );
+        const byUser = new Map();
+        for (const plan of plans) {
+            if (!byUser.has(plan.user_id)) byUser.set(plan.user_id, []);
+            byUser.get(plan.user_id).push(plan);
+        }
+
+        const firstPlan = thisWeek.filter((u) =>
+            (byUser.get(u.id) || []).some((p) => p.items >= 3)
+        ).length;
+        const threeDays = lastWeek.filter((u) => {
+            const limit = dayKey(new Date(u.created_at).getTime() + 7 * DAY_MS);
+            const days = new Set(
+                (byUser.get(u.id) || [])
+                    .filter((p) => p.plan_date <= limit)
+                    .map((p) => p.plan_date)
+            );
+            return days.size >= 3;
+        }).length;
+
+        return {
+            new_users: thisWeek.length,
+            first_plan: firstPlan,
+            cohort: lastWeek.length,
+            three_days: threeDays,
         };
     }
 

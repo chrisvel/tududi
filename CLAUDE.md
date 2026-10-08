@@ -316,7 +316,12 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Example manifests in `docs/examples/kubernetes`
     - One replica, block storage for SQLite, ingress and backup notes
 
-32. **[Blog](docs/23-blog.md)**
+32. **[Onboarding](docs/24-onboarding.md)**
+    - The welcome screen (`/welcome`): one box, one line per thing, Plan my day
+    - Empty-state starters on Areas and Habits
+    - `users.onboarded_at`, `POST /api/onboarding/complete`, admin onboarding numbers
+
+33. **[Blog](docs/23-blog.md)**
     - A front page note and the public notes it links become the blog
     - Superadmin picks the front page in Admin → Blog
     - `/blog` in the app, or the root of `TUDUDI_BLOG_HOSTS` (blog.tududi.com)

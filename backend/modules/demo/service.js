@@ -55,6 +55,8 @@ async function ensureDemoUser() {
             name: 'Demo',
             email_verified: true,
             language: 'en',
+            // Visitors land straight in Today, never on the welcome screen.
+            onboarded_at: new Date(),
         });
         logInfo(`Demo account created: ${config.email}`);
     }

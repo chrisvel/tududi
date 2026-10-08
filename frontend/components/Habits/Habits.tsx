@@ -16,7 +16,11 @@ import {
     ArrowUturnLeftIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import { fetchHabits, setHabitArchived } from '../../utils/habitsService';
+import {
+    createHabit,
+    fetchHabits,
+    setHabitArchived,
+} from '../../utils/habitsService';
 import {
     TIMES_OF_DAY,
     formatHabitTarget,
@@ -47,6 +51,33 @@ const Habits: React.FC = () => {
                 console.error('Failed to load archived habits:', error)
             );
     }, [showArchived]);
+
+    // One click from the blank slate: a daily (or weekly) build habit with
+    // just a name, opened straight away so the schedule can be changed.
+    const habitPresets: { name: string; period: 'daily' | 'weekly' }[] = [
+        { name: t('habits.presetWalk', 'Morning walk'), period: 'daily' },
+        { name: t('habits.presetRead', 'Read 20 minutes'), period: 'daily' },
+        { name: t('habits.presetReview', 'Weekly review'), period: 'weekly' },
+    ];
+
+    const addPresetHabit = async (preset: {
+        name: string;
+        period: 'daily' | 'weekly';
+    }) => {
+        try {
+            const created = await createHabit({
+                name: preset.name,
+                habit_mode: true,
+                habit_polarity: 'build',
+                habit_target_count: 1,
+                habit_frequency_period: preset.period,
+            });
+            await loadHabits();
+            if (created.uid) navigate(`/habit/${created.uid}`);
+        } catch (error) {
+            console.error('Failed to create habit:', error);
+        }
+    };
 
     const openHabit = (habit: Task) => {
         if (habit.uid) navigate(`/habit/${habit.uid}`);
@@ -255,6 +286,11 @@ const Habits: React.FC = () => {
                             onClick: () => navigate('/habit/new'),
                         },
                     ]}
+                    presetsLabel={t('habits.presetsLabel', 'Or start with')}
+                    presets={habitPresets.map((preset) => ({
+                        label: preset.name,
+                        onClick: () => addPresetHabit(preset),
+                    }))}
                 />
             ) : (
                 <>

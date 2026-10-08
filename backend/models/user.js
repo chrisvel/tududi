@@ -293,6 +293,10 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: true,
             },
+            onboarded_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
             email_verification_token: {
                 type: DataTypes.STRING,
                 allowNull: true,
