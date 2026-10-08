@@ -84,7 +84,7 @@ function calendarProps(displayname, ctag, username, writable = true) {
             'C:comp': { $: { name: 'VTODO' } },
         },
         'D:getcontenttype': 'text/calendar; charset=utf-8',
-        'C:getctag': ctag,
+        'CS:getctag': ctag,
         'D:current-user-principal': { 'D:href': `/caldav/${enc(username)}/` },
         'D:principal-URL': { 'D:href': `/caldav/${enc(username)}/` },
         'D:current-user-privilege-set': {

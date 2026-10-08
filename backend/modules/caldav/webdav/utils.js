@@ -19,6 +19,9 @@ function buildMultistatus(responses) {
             $: {
                 'xmlns:D': 'DAV:',
                 'xmlns:C': 'urn:ietf:params:xml:ns:caldav',
+                // getctag belongs to the CalendarServer namespace, which is
+                // where Tasks.org, DAVx5, Thunderbird and Apple clients look.
+                'xmlns:CS': 'http://calendarserver.org/ns/',
             },
             'D:response': responses,
         },
