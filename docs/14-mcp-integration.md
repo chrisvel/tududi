@@ -510,6 +510,8 @@ Get a single project by UID.
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Project UID |
 
+Project responses from `list_projects`, `get_project`, `create_project` and `update_project` include `goal` and `is_maintenance`.
+
 ---
 
 #### `create_project`
@@ -528,6 +530,7 @@ Create a new project. Refused for an account whose role does not allow creating 
 | `tags` | string[] | No | Array of tag names |
 | `goal_id` | number | No | Goal ID to link the project to (must be your own goal) |
 | `goal_uid` | string | No | Goal UID, as an alternative to `goal_id` |
+| `is_maintenance` | boolean | No | Mark as a maintenance project; cannot be combined with a goal |
 
 ---
 
@@ -547,6 +550,7 @@ Update an existing project.
 | `pinned` | boolean | No | Pin to sidebar |
 | `goal_id` | number | No | Link to a goal you own; `null` unlinks (owner only) |
 | `goal_uid` | string | No | Goal UID, as an alternative to `goal_id`; `null` or empty unlinks |
+| `is_maintenance` | boolean | No | `true` marks as maintenance and unlinks any goal (owner only if a goal is set); linking a goal sets it back to `false` |
 
 ---
 

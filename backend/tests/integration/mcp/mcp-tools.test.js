@@ -2617,6 +2617,97 @@ describe('MCP Tools Integration', () => {
             });
         });
 
+        describe('maintenance flag', () => {
+            it('should persist is_maintenance on create and return it from get and list', async () => {
+                const createResponse = await callMcpTool(
+                    apiTokenValue,
+                    'create_project',
+                    { name: 'Household upkeep', is_maintenance: true }
+                );
+                const created = getToolContent(createResponse).content.project;
+                expect(created.is_maintenance).toBe(true);
+
+                const stored = await Project.findOne({
+                    where: { uid: created.uid },
+                });
+                expect(stored.is_maintenance).toBe(true);
+
+                const getResponse = await callMcpTool(
+                    apiTokenValue,
+                    'get_project',
+                    { uid: created.uid }
+                );
+                expect(
+                    getToolContent(getResponse).content.project.is_maintenance
+                ).toBe(true);
+
+                const listResponse = await callMcpTool(
+                    apiTokenValue,
+                    'list_projects',
+                    {}
+                );
+                const listed = getToolContent(
+                    listResponse
+                ).content.projects.find((p) => p.uid === created.uid);
+                expect(listed.is_maintenance).toBe(true);
+            });
+
+            it('should toggle is_maintenance on update and unlink the goal', async () => {
+                const goal = await Goal.create({
+                    user_id: user.id,
+                    title: 'Get fit',
+                });
+                const project = await Project.create({
+                    user_id: user.id,
+                    name: 'Gym',
+                    goal_id: goal.id,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_project',
+                    { uid: project.uid, is_maintenance: true }
+                );
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.project.is_maintenance).toBe(true);
+                expect(content.project.goal).toBe(null);
+                await project.reload();
+                expect(project.is_maintenance).toBe(true);
+                expect(project.goal_id).toBeNull();
+
+                await callMcpTool(apiTokenValue, 'update_project', {
+                    uid: project.uid,
+                    goal_id: goal.id,
+                });
+                await project.reload();
+                expect(project.goal_id).toBe(goal.id);
+                expect(project.is_maintenance).toBe(false);
+            });
+
+            it('should reject a goal together with is_maintenance true', async () => {
+                const goal = await Goal.create({
+                    user_id: user.id,
+                    title: 'Learn Greek',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_project',
+                    {
+                        name: 'Lessons',
+                        goal_id: goal.id,
+                        is_maintenance: true,
+                    }
+                );
+
+                expect(getToolContent(response).isError).toBe(true);
+                expect(
+                    await Project.count({ where: { name: 'Lessons' } })
+                ).toBe(0);
+            });
+        });
+
         describe('get_project', () => {
             it('should return a project by UID', async () => {
                 const project = await Project.create({
