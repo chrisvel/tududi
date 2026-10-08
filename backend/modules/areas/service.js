@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const areasRepository = require('./repository');
-const { PUBLIC_ATTRIBUTES } = require('./repository');
+const { PUBLIC_ATTRIBUTES, LIST_ATTRIBUTES } = require('./repository');
 const { validateName, validateUid } = require('./validation');
 const { NotFoundError, ForbiddenError } = require('../../shared/errors');
 const permissionsService = require('../../services/permissionsService');
@@ -51,7 +51,9 @@ class AreasService {
             color: color || null,
         });
 
-        return _.pick(area, PUBLIC_ATTRIBUTES);
+        // The frontend adds this straight to its areas list, and pickers
+        // select areas by id.
+        return _.pick(area, LIST_ATTRIBUTES);
     }
 
     /**
@@ -84,7 +86,7 @@ class AreasService {
 
         await areasRepository.update(area, updateData);
 
-        return _.pick(area, PUBLIC_ATTRIBUTES);
+        return _.pick(area, LIST_ATTRIBUTES);
     }
 
     /**

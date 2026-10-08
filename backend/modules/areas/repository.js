@@ -147,3 +147,4 @@ class AreasRepository extends BaseRepository {
 
 module.exports = new AreasRepository();
 module.exports.PUBLIC_ATTRIBUTES = PUBLIC_ATTRIBUTES;
+module.exports.LIST_ATTRIBUTES = LIST_ATTRIBUTES;
