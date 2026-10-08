@@ -96,15 +96,6 @@ const TodayPage: React.FC = () => {
         return () => clearInterval(timer);
     }, []);
 
-    // The brain dump modal plans the day from over this page, so reload
-    // when it says the plan changed.
-    const [planVersion, setPlanVersion] = useState(0);
-    useEffect(() => {
-        const bump = () => setPlanVersion((v) => v + 1);
-        window.addEventListener('dailyPlanChanged', bump);
-        return () => window.removeEventListener('dailyPlanChanged', bump);
-    }, []);
-
     useEffect(() => {
         let cancelled = false;
         (async () => {
@@ -131,7 +122,7 @@ const TodayPage: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [t, planVersion]);
+    }, [t]);
 
     // Calendar feeds belong to the Calendar feature; with it off Today shows
     // no events and no prompt to connect a calendar.

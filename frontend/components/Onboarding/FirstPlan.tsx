@@ -15,12 +15,9 @@ import {
 } from '../../utils/inboxService';
 import { createTask } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
-import {
-    fetchDailyPlan,
-    carryOverTasks,
-    startDailyPlan,
-} from '../../utils/dailyPlanService';
+import { fetchDailyPlan, carryOverTasks } from '../../utils/dailyPlanService';
 import { completeOnboarding } from '../../utils/onboardingService';
+import { emitCaptureSaved } from '../../utils/captureUi';
 
 // A modal over the app: the welcome a new account sees once on Today, and
 // the brain dump reachable from the navbar menu. One box to empty the
@@ -28,9 +25,10 @@ import { completeOnboarding } from '../../utils/onboardingService';
 // lines into tasks and adds them to today's plan (keeping whatever is
 // already planned). Tags, +projects and dates parse exactly as they do in
 // the Add box. Lines with a date on another day become tasks but stay off
-// today's plan. Closing it on the first visit counts as skipping.
+// today's plan. It then opens the planner, where the day gets its shape.
+// Closing it on the first visit counts as skipping.
 
-export const DAILY_PLAN_CHANGED_EVENT = 'dailyPlanChanged';
+const PLANNER_PATH = '/today/plan';
 
 interface Line {
     id: number;
@@ -159,12 +157,13 @@ const FirstPlan: React.FC<FirstPlanProps> = ({
         try {
             const { date } = await fetchDailyPlan();
             const projects = new Map<string, Project>();
-            const planned: string[] = [];
+            const planned: { uid: string; title: string }[] = [];
             const current = [...lines];
 
             for (const line of current) {
                 let uid = line.createdUid;
                 let analysis = line.analysis;
+                let title = line.text;
                 if (!uid) {
                     if (!analysis) {
                         analysis = await analyzeInboxText(line.text).catch(
@@ -195,6 +194,7 @@ const FirstPlan: React.FC<FirstPlanProps> = ({
                     }
                     const created = await createTask(task);
                     uid = created.uid || null;
+                    title = task.name;
                     setLines((prev) =>
                         prev.map((l) =>
                             l.id === line.id
@@ -204,16 +204,33 @@ const FirstPlan: React.FC<FirstPlanProps> = ({
                     );
                 }
                 const due = analysis?.parsed_due_date?.slice(0, 10) || null;
-                if (uid && (!due || due === date)) planned.push(uid);
+                if (uid && (!due || due === date)) {
+                    planned.push({ uid, title });
+                }
             }
 
             if (planned.length > 0) {
-                await carryOverTasks(date, planned);
-                await startDailyPlan(date);
+                if (location.pathname === PLANNER_PATH) {
+                    // The planner is already open and owns the plan; it
+                    // takes new tasks the same way it takes the Add box's.
+                    emitCaptureSaved({
+                        scope: 'today',
+                        undone: false,
+                        items: planned.map(({ uid, title }) => ({
+                            target: 'task',
+                            uid,
+                            title,
+                        })),
+                    });
+                } else {
+                    await carryOverTasks(
+                        date,
+                        planned.map(({ uid }) => uid)
+                    );
+                }
             }
-            window.dispatchEvent(new CustomEvent(DAILY_PLAN_CHANGED_EVENT));
             await finish();
-            if (location.pathname !== '/today') navigate('/today');
+            if (location.pathname !== PLANNER_PATH) navigate(PLANNER_PATH);
         } catch (err) {
             setError(err instanceof Error ? err.message : String(err));
         } finally {

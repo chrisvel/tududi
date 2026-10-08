@@ -1,8 +1,13 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import FirstPlan from '../FirstPlan';
+
+const WhereAmI: React.FC = () => {
+    const location = useLocation();
+    return <span data-testid="where">{location.pathname}</span>;
+};
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -16,7 +21,7 @@ const createTask = jest.fn();
 const createProject = jest.fn();
 const fetchDailyPlan = jest.fn();
 const carryOverTasks = jest.fn();
-const startDailyPlan = jest.fn();
+const emitCaptureSaved = jest.fn();
 const completeOnboarding = jest.fn();
 
 jest.mock('../../../utils/inboxService', () => ({
@@ -35,7 +40,9 @@ jest.mock('../../../utils/projectsService', () => ({
 jest.mock('../../../utils/dailyPlanService', () => ({
     fetchDailyPlan: (...args: unknown[]) => fetchDailyPlan(...args),
     carryOverTasks: (...args: unknown[]) => carryOverTasks(...args),
-    startDailyPlan: (...args: unknown[]) => startDailyPlan(...args),
+}));
+jest.mock('../../../utils/captureUi', () => ({
+    emitCaptureSaved: (...args: unknown[]) => emitCaptureSaved(...args),
 }));
 jest.mock('../../../utils/onboardingService', () => ({
     completeOnboarding: (...args: unknown[]) => completeOnboarding(...args),
@@ -57,15 +64,20 @@ const analysis = (overrides: Record<string, unknown> = {}) => ({
 
 const onClose = jest.fn();
 
-const renderPlan = (onComplete = jest.fn(), firstVisit = true) =>
+const renderPlan = (
+    onComplete = jest.fn(),
+    firstVisit = true,
+    path = '/today'
+) =>
     render(
-        <MemoryRouter initialEntries={['/today']}>
+        <MemoryRouter initialEntries={[path]}>
             <FirstPlan
                 open
                 firstVisit={firstVisit}
                 onClose={onClose}
                 onComplete={onComplete}
             />
+            <WhereAmI />
         </MemoryRouter>
     );
 
@@ -92,7 +104,6 @@ describe('FirstPlan', () => {
         }));
         fetchDailyPlan.mockResolvedValue({ date: '2026-10-08', plan: null });
         carryOverTasks.mockResolvedValue({});
-        startDailyPlan.mockResolvedValue({});
         completeOnboarding.mockResolvedValue({
             onboarded_at: '2026-10-08T10:00:00.000Z',
         });
@@ -132,7 +143,7 @@ describe('FirstPlan', () => {
         expect(screen.getByText(/9 Oct|Oct 9/)).toBeInTheDocument();
     });
 
-    it('turns the lines into tasks, plans today and starts the day', async () => {
+    it('turns the lines into tasks, adds them to today and opens the planner', async () => {
         analyzeInboxText.mockImplementation(async (text: string) =>
             text.includes('Friday')
                 ? analysis({
@@ -177,8 +188,9 @@ describe('FirstPlan', () => {
             'task-1',
             'task-2',
         ]);
-        expect(startDailyPlan).toHaveBeenCalledWith('2026-10-08');
         expect(completeOnboarding).toHaveBeenCalledTimes(1);
+        expect(screen.getByTestId('where')).toHaveTextContent('/today/plan');
+        expect(emitCaptureSaved).not.toHaveBeenCalled();
     });
 
     it('keeps created tasks on a retry after an error', async () => {
@@ -213,6 +225,25 @@ describe('FirstPlan', () => {
         expect(createTask).not.toHaveBeenCalled();
         expect(carryOverTasks).not.toHaveBeenCalled();
         expect(onClose).toHaveBeenCalled();
+    });
+
+    it('hands the tasks to the planner when it is already open', async () => {
+        const onComplete = jest.fn();
+        renderPlan(onComplete, false, '/today/plan');
+
+        typeLine('Send the report');
+        fireEvent.click(screen.getByTestId('first-plan-submit'));
+
+        await waitFor(() => expect(onClose).toHaveBeenCalled());
+        expect(carryOverTasks).not.toHaveBeenCalled();
+        expect(emitCaptureSaved).toHaveBeenCalledWith({
+            scope: 'today',
+            undone: false,
+            items: [
+                { target: 'task', uid: 'task-1', title: 'Send the report' },
+            ],
+        });
+        expect(screen.getByTestId('where')).toHaveTextContent('/today/plan');
     });
 
     it('closing it on the first visit also counts as skipping', async () => {

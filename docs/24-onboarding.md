@@ -9,10 +9,10 @@ How a new account's first visit works. For technical details see `/backend/modul
 A new account's first visit to `/` or `/today` opens a modal over Today, with the app blurred behind it. Any other path (a shared note, an invitation, the inbox) opens as usual, and the modal waits for the next visit to Today.
 
 - **One box, one line per thing.** Enter adds the line to a list under the box. Tags (`#home`), projects (`+Kitchen`) and dates ("tomorrow", "next Tuesday") parse exactly as in the Add box, and show as chips on the line. Three prompts under the list tick off as lines are added: something from work, something at home, the thing you keep putting off.
-- **Plan my day** turns every line into a task. Tags are created as needed, a `+project` becomes a planned project, a parsed date becomes the due date. Lines with a date on another day stay off today's plan; every other line is added to it without a time, after whatever is already planned. The plan is started, the modal closes and Today reloads with the first line in the **Now** card.
+- **Plan my day** turns every line into a task. Tags are created as needed, a `+project` becomes a planned project, a parsed date becomes the due date. Lines with a date on another day stay off today's plan; every other line is added to it without a time, after whatever is already planned. The modal closes and the planner (`/today/plan`) opens with those tasks in the plan, ready to be given times and started. Opened from the planner itself, the modal hands the tasks to it directly, the way the Add box does.
 - **Skip for now**, the close button, Escape or a click outside all record the modal as seen and leave the app as it is. It does not open on its own again.
 - The demo account never sees it.
-- **Brain dump** in the navbar menu (under the avatar) opens the same modal any time, on any page, headed "Brain dump" instead of "Welcome", with **Close** in place of Skip. Planning from it adds to today's plan and goes to Today.
+- **Brain dump** in the navbar menu (under the avatar) opens the same modal any time, on any page, headed "Brain dump" instead of "Welcome", with **Close** in place of Skip. Planning from it adds to today's plan and opens the planner.
 
 On an error the lines stay; tasks already created keep their uid so a retry does not create them twice.
 
@@ -34,7 +34,7 @@ Pages that are empty for a new account offer one-click starters under their usua
 - `users.onboarded_at`: when the welcome modal was finished or dismissed. It is null for accounts that existed before the column was added too, so everyone sees the screen once on their next visit to Today.
 - `GET /api/current_user` and `GET /api/profile` include `onboarded_at` (`null` until set).
 - `POST /api/onboarding/complete` sets it and returns `{ onboarded_at }`. Later calls return the first time.
-- The modal's open state lives in `frontend/utils/brainDumpUi.ts`; after planning it fires a `dailyPlanChanged` window event, which Today listens for.
+- The modal's open state lives in `frontend/utils/brainDumpUi.ts`.
 
 ## Admin numbers
 
