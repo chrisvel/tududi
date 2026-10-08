@@ -5,6 +5,7 @@ import Sidebar from '../../Sidebar';
 import { useStore } from '../../../store/useStore';
 
 jest.mock('react-router-dom', () => ({
+    Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
     useNavigate: () => jest.fn(),
     useLocation: () => ({ pathname: '/today', search: '' }),
 }));

@@ -381,7 +381,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
             className={`relative ${completionMenuOpen ? 'z-[10000]' : ''} ${className}`}
         >
             <div
-                className={`inline-flex items-stretch ${containerRoundedClass} border ${statusBorderColorClass} overflow-hidden ${hoverRevealQuickActions ? 'group' : ''}`}
+                className={`inline-flex items-stretch ${containerRoundedClass} border ${statusBorderColorClass} overflow-hidden [.task-sheet_&]:rounded-full [.task-sheet_&]:border-transparent [.task-sheet_&_*]:border-transparent ${hoverRevealQuickActions ? 'group' : ''}`}
                 ref={desktopCompletionMenuRef}
             >
                 <button

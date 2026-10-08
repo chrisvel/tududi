@@ -16,6 +16,7 @@ import { Project } from '../../entities/Project';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import TaskRow from '../Task/TaskRow';
+import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 import {
     buildAgenda,
     formatDuration,
@@ -149,11 +150,11 @@ const AgendaList: React.FC<AgendaListProps> = ({
                 const row = (
                     <div
                         key={`task-${item.task_uid}`}
-                        className="flex flex-col gap-1 sm:flex-row sm:items-start sm:gap-3"
+                        className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3"
                         data-testid={`agenda-task-${item.task_uid}`}
                     >
                         <span
-                            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs sm:w-32 sm:pt-3 sm:text-sm ${
+                            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs sm:w-32 sm:text-sm ${
                                 late
                                     ? 'font-medium text-amber-700 dark:text-amber-400'
                                     : isCurrent
@@ -180,7 +181,7 @@ const AgendaList: React.FC<AgendaListProps> = ({
                                 // without a checkbox that would complete the
                                 // next occurrence too.
                                 <div
-                                    className="flex items-center gap-3 rounded-lg bg-white px-4 py-3 shadow-sm dark:bg-gray-900"
+                                    className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 dark:bg-gray-900"
                                     data-testid={`occurrence-done-${item.task_uid}`}
                                 >
                                     <CheckCircleIcon
@@ -218,19 +219,23 @@ const AgendaList: React.FC<AgendaListProps> = ({
                                     )}
                                 </div>
                             ) : (
-                                <TaskRow
-                                    task={item.task}
-                                    projects={projects}
-                                    onTaskUpdate={onTaskUpdate}
-                                    onTaskCompletionToggle={(task) => {
-                                        if (onTaskComplete)
-                                            onTaskComplete(task);
-                                        else void onTaskUpdate(task);
-                                    }}
-                                    onTaskDelete={onTaskDelete}
-                                    compact
-                                    saveStatusChanges
-                                />
+                                // A one-row sheet, so agenda tasks match the
+                                // task lists elsewhere.
+                                <div className={TASK_SHEET_CLASS}>
+                                    <TaskRow
+                                        task={item.task}
+                                        projects={projects}
+                                        onTaskUpdate={onTaskUpdate}
+                                        onTaskCompletionToggle={(task) => {
+                                            if (onTaskComplete)
+                                                onTaskComplete(task);
+                                            else void onTaskUpdate(task);
+                                        }}
+                                        onTaskDelete={onTaskDelete}
+                                        compact
+                                        saveStatusChanges
+                                    />
+                                </div>
                             )}
                         </div>
                     </div>

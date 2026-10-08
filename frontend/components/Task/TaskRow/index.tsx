@@ -419,24 +419,10 @@ const TaskRow: React.FC<TaskRowProps> = ({
     const shouldShowSubtasksIcon =
         hasInitialSubtasks || subtasks.length > 0 || loadingSubtasks;
 
-    const completionPercentage =
-        subtasks.length === 0
-            ? 0
-            : Math.round(
-                  (subtasks.filter(
-                      (s) =>
-                          s.status === 'done' ||
-                          s.status === 2 ||
-                          s.status === 'archived' ||
-                          s.status === 3
-                  ).length /
-                      subtasks.length) *
-                      100
-              );
-
     return (
         <div
             ref={rowRootRef}
+            data-task-expanded={isExpanded || undefined}
             className={`relative ${
                 isStatusMenuOpen || isActionsMenuOpen
                     ? 'z-[10001]'
@@ -446,7 +432,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
             }`}
         >
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 ${priorityBorderClass} ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 [.task-sheet_&]:rounded-[10px] [.task-sheet_&]:bg-transparent [.task-sheet_&]:shadow-none [.task-sheet_&]:border-l-0 [.task-sheet_&]:ring-0 [.task-sheet_&]:hover:ring-0 [.task-sheet_&]:hover:bg-gray-100/70 dark:[.task-sheet_&]:bg-transparent dark:[.task-sheet_&]:hover:bg-white/[0.04] ${priorityBorderClass} ${
                     isExpanded
                         ? 'ring-1 ring-blue-400/70 dark:ring-blue-600/70'
                         : ''
@@ -502,17 +488,6 @@ const TaskRow: React.FC<TaskRowProps> = ({
                         commentCount={commentCount}
                         onCommentCountChange={setCommentCount}
                     />
-                )}
-
-                {subtasks.length > 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5">
-                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 ml-1 rounded-r-lg overflow-hidden">
-                            <div
-                                className="h-full bg-gradient-to-r from-green-400 via-green-500 to-green-600 transition-all duration-500 ease-out"
-                                style={{ width: `${completionPercentage}%` }}
-                            />
-                        </div>
-                    </div>
                 )}
             </div>
 

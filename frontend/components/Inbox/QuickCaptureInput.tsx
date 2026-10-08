@@ -2576,7 +2576,9 @@ const QuickCaptureInput = React.forwardRef<
 
         return (
             <div
-                className={`relative w-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden ${cardClasses}`}
+                className={`relative w-full bg-white dark:bg-gray-900 rounded-2xl ${
+                    isEditMode ? '' : 'shadow-sm'
+                } overflow-hidden ${cardClasses}`}
             >
                 {!isEditMode && !compact && (
                     <svg

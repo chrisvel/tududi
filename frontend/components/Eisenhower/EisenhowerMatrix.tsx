@@ -7,6 +7,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskItem from '../Task/TaskItem';
 import { getCsrfToken } from '../../utils/csrfService';
+import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 
 const URGENT_TAG = 'urgent';
 
@@ -305,7 +306,8 @@ const EisenhowerMatrix: React.FC = () => {
                                     : t('tasks.noTasksAvailable', 'No tasks available.')}
                             </p>
                         ) : (
-                            cellTasks.map((task) => (
+                            <div className={TASK_SHEET_CLASS}>
+                            {cellTasks.map((task) => (
                                 <div
                                     key={task.id}
                                     draggable
@@ -323,7 +325,8 @@ const EisenhowerMatrix: React.FC = () => {
                                         onToggleToday={undefined}
                                     />
                                 </div>
-                            ))
+                            ))}
+                            </div>
                         )}
                     </div>
                 )}

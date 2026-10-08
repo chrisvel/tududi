@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
     Bars3Icon,
+    ChevronUpDownIcon,
     MagnifyingGlassIcon,
     Squares2X2Icon,
 } from '@heroicons/react/24/solid';
@@ -35,6 +36,7 @@ import {
     RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
+import { PROJECT_TABLE_GRID } from './Project/projectTableLayout';
 import SortableItem from './Shared/SortableItem';
 import NewItemButton from './Shared/NewItemButton';
 import BlankSlate from './Shared/BlankSlate';
@@ -683,8 +685,49 @@ const Projects: React.FC = () => {
 
     const projectsContainerClass =
         viewMode === 'cards'
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-            : 'flex flex-col space-y-1';
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+            : 'flex flex-col rounded-lg bg-gray-50 dark:bg-gray-900 shadow-sm p-1.5';
+
+    const sortHeader = (label: string, value: string) => (
+        <button
+            type="button"
+            onClick={() => handleSortChange(value)}
+            className={`flex items-center gap-1 uppercase tracking-wide hover:text-gray-800 dark:hover:text-gray-200 transition-colors ${
+                orderBy === value ? 'text-gray-800 dark:text-gray-200' : ''
+            }`}
+            aria-pressed={orderBy === value}
+        >
+            {label}
+            <ChevronUpDownIcon className="h-3.5 w-3.5" />
+        </button>
+    );
+
+    const tableHeader =
+        viewMode === 'list' ? (
+            <div
+                className={`${PROJECT_TABLE_GRID} px-4 py-2.5 mb-1 rounded-md bg-gray-100 dark:bg-gray-800/60 text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400`}
+                role="row"
+            >
+                {sortHeader(t('projects.table.name', 'Name'), 'name:asc')}
+                <span>{t('projects.table.status', 'Status')}</span>
+                <span className="hidden xl:block">
+                    {t('projects.table.summary', 'Summary')}
+                </span>
+                <span className="hidden lg:block">
+                    {t('projects.table.members', 'Members')}
+                </span>
+                <span className="hidden md:block">
+                    {sortHeader(
+                        t('projects.table.due', 'Due'),
+                        'due_date_at:asc'
+                    )}
+                </span>
+                <span className="hidden md:block">
+                    {t('projects.table.progress', 'Progress')}
+                </span>
+                <span />
+            </div>
+        ) : null;
 
     if (isLoading) {
         return (
@@ -789,7 +832,7 @@ const Projects: React.FC = () => {
                                     'projects.fromTemplate',
                                     'From Template'
                                 )}
-                                className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                                className="flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-2 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-sm text-sm font-medium text-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                             >
                                 <RectangleStackIcon className="h-5 w-5 sm:h-4 sm:w-4" />
                                 <span className="hidden sm:inline">
@@ -947,6 +990,7 @@ const Projects: React.FC = () => {
                             }
                         >
                             <div className={projectsContainerClass}>
+                                {tableHeader}
                                 {displayProjects.map((project) => (
                                     <SortableItem
                                         key={project.id}
@@ -966,6 +1010,7 @@ const Projects: React.FC = () => {
                     </DndContext>
                 ) : (
                     <div className={projectsContainerClass}>
+                        {tableHeader}
                         {displayProjects.map((project) => (
                             <React.Fragment key={project.id}>
                                 {renderProjectItem(project)}

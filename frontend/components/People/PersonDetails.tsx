@@ -19,6 +19,8 @@ import SignInLinkModal from './SignInLinkModal';
 import MemberEditModal from './MemberEditModal';
 import { removeMember } from '../../utils/membersService';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import TaskList from '../Task/TaskList';
+import { useStore } from '../../store/useStore';
 
 const RELATIONSHIP_LABELS: Record<string, string> = {
     family: 'Family',
@@ -35,6 +37,24 @@ const PersonDetails: React.FC = () => {
 
     const [person, setPerson] = useState<Person | null>(null);
     const [assignedTasks, setAssignedTasks] = useState<Task[]>([]);
+    const projects = useStore((state) => state.projectsStore.projects);
+
+    // A task reassigned to someone else leaves this person's list.
+    const handleTaskUpdate = async (updated: Task) => {
+        setAssignedTasks((prev) =>
+            updated.assigned_to && updated.assigned_to !== uid
+                ? prev.filter((task) => task.uid !== updated.uid)
+                : prev.map((task) =>
+                      task.uid === updated.uid ? updated : task
+                  )
+        );
+    };
+
+    const handleTaskDelete = (taskUid: string) => {
+        setAssignedTasks((prev) =>
+            prev.filter((task) => task.uid !== taskUid)
+        );
+    };
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -314,22 +334,12 @@ const PersonDetails: React.FC = () => {
                         No tasks assigned to {person.name}.
                     </p>
                 ) : (
-                    <ul className="divide-y divide-gray-100 dark:divide-gray-700">
-                        {assignedTasks.map((task) => (
-                            <li
-                                key={task.uid}
-                                className="py-2 text-sm text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-                                onClick={() => navigate(`/task/${task.uid}`)}
-                            >
-                                <span>{task.name}</span>
-                                {task.Project && (
-                                    <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                                        {task.Project.name}
-                                    </span>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
+                    <TaskList
+                        tasks={assignedTasks}
+                        projects={projects}
+                        onTaskUpdate={handleTaskUpdate}
+                        onTaskDelete={handleTaskDelete}
+                    />
                 )}
             </div>
 

@@ -1122,7 +1122,39 @@
     "createdAndAssigned": "Project created and assigned",
     "createError": "Failed to create project",
     "viewProject": "Go to project",
-    "attachments": "Attachments"
+    "attachments": "Attachments",
+    "overview": "Overview",
+    "people": "People",
+    "info": "Project info",
+    "moreOptions": "More options",
+    "pin": "Pin",
+    "pinned": "Pinned",
+    "started": "Started",
+    "startedOn": "Started {{date}}",
+    "daysToDue_one": "{{count}} day to due date",
+    "daysToDue_other": "{{count}} days to due date",
+    "daysOverdue_one": "{{count}} day overdue",
+    "daysOverdue_other": "{{count}} days overdue",
+    "progressSummary": "Project progress · {{done}} of {{total}} tasks done",
+    "timeUsed": "{{percent}}% of time used",
+    "progressHint": "Bar: tasks done. Line: time passed between start and due date.",
+    "openTasks": "Open tasks",
+    "overdueTasks": "Overdue",
+    "doneThisWeek": "Done this week",
+    "untilDate": "Until {{date}}",
+    "pastDate": "Past {{date}}",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "noteCount_one": "{{count}} note",
+    "noteCount_other": "{{count}} notes",
+    "roleOwner": "Owner",
+    "rolePending": "Invited",
+    "roleEdit": "Can edit",
+    "roleView": "Can view",
+    "notShared": "Only you can see this project.",
+    "addNote": "Add note",
+    "noNotesYet": "No notes yet.",
+    "allNotes": "All notes"
   },
   "errors": {
     "required": "This field is required",
@@ -1416,6 +1448,14 @@
     "placeholder": "Add a subtask..."
   },
   "projects": {
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "summary": "Summary",
+      "members": "Members",
+      "due": "Due",
+      "progress": "Progress"
+    },
     "addProject": "Add Project",
     "loading": "Loading projects...",
     "error": "Error loading projects",
@@ -1607,7 +1647,9 @@
     },
     "deleteNote": "Delete Note",
     "deleteNoteConfirm": "Are you sure you want to delete the note \"{{title}}\"?",
-    "untitled": "Untitled Note"
+    "untitled": "Untitled Note",
+    "editedOn": "Edited {{date}}",
+    "emptyNote": "This note is empty."
   },
   "tags": {
     "addTag": "Add Tag",

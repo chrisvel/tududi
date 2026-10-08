@@ -17,6 +17,7 @@ import {
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { isTaskActive } from '../../constants/taskStatus';
+import { TASK_SHEET_CLASS } from './taskSheet';
 
 interface TaskListProps {
     tasks: Task[];
@@ -91,7 +92,9 @@ const TaskList: React.FC<TaskListProps> = ({
 
     if (!sortable) {
         return (
-            <div className="task-list-container space-y-1.5 overflow-visible">
+            <div
+                className={`task-list-container overflow-visible ${TASK_SHEET_CLASS}`}
+            >
                 {filteredTasks.map((task) => (
                     <div
                         key={task.id}
@@ -128,7 +131,9 @@ const TaskList: React.FC<TaskListProps> = ({
                 items={uids}
                 strategy={verticalListSortingStrategy}
             >
-                <div className="task-list-container space-y-1.5 overflow-visible">
+                <div
+                    className={`task-list-container overflow-visible ${TASK_SHEET_CLASS}`}
+                >
                     {filteredTasks.map((task) => (
                         <div
                             key={task.id}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { getAssetPath } from '../config/paths';
 import { Area } from '../entities/Area';
 import { Note } from '../entities/Note';
 import { Tag } from '../entities/Tag';
@@ -20,6 +21,8 @@ import SidebarInsights from './Sidebar/SidebarInsights';
 import SidebarAdmin from './Sidebar/SidebarAdmin';
 import SidebarBookmarks from './Sidebar/SidebarBookmarks';
 import SidebarResizeHandle from './Sidebar/SidebarResizeHandle';
+import SidebarPanelIcon from './Sidebar/SidebarPanelIcon';
+import SidebarRail from './Sidebar/SidebarRail';
 import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
 import { useStore } from '../store/useStore';
 import type { SidebarVisibleSections } from './Profile/types';
@@ -49,6 +52,9 @@ interface SidebarProps {
     tags: Tag[];
     keyboardShortcuts?: KeyboardShortcutsConfig | null;
 }
+
+// The sidebar sits on the app canvas; the page is a panel beside it.
+export const SIDEBAR_CANVAS = 'bg-gray-200 dark:bg-gray-900';
 
 const Sidebar: React.FC<SidebarProps> = ({
     isSidebarOpen,
@@ -189,16 +195,46 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     return (
         <div
-            className={`fixed top-16 left-0 ${isSidebarOpen ? 'w-full sm:w-sidebar' : 'w-0'} h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-40`}
-            style={{
-                visibility: isSidebarOpen ? 'visible' : 'hidden',
-                overflow: 'hidden',
-            }}
+            className={`fixed top-0 left-0 ${isSidebarOpen ? 'w-full sm:w-sidebar' : 'w-0 invisible sm:w-rail sm:visible'} h-screen overflow-hidden ${SIDEBAR_CANVAS} text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-40`}
         >
+            {/* Collapsed on tablet and desktop: an icon rail */}
+            {!isSidebarOpen && (
+                <div className="hidden sm:block h-full">
+                    <SidebarRail
+                        handleNavClick={handleNavClick}
+                        location={location}
+                        isDarkMode={isDarkMode}
+                        openTaskModal={openTaskModal}
+                        onExpand={() => setIsSidebarOpen(true)}
+                    />
+                </div>
+            )}
             {isSidebarOpen && (
                 <div className="flex flex-col h-full">
                     <SidebarResizeHandle />
-                    <div className="flex-1 min-h-0 overflow-y-auto px-2.5 py-4">
+                    <div className="h-14 mt-2 flex-shrink-0 flex items-center justify-between pl-5 pr-3">
+                        <Link to="/" className="flex items-center no-underline">
+                            <img
+                                src={getAssetPath(
+                                    isDarkMode
+                                        ? 'wide-logo-light.png'
+                                        : 'wide-logo-dark.png'
+                                )}
+                                alt="tududi"
+                                className="h-8 w-auto"
+                            />
+                        </Link>
+                        <button
+                            type="button"
+                            onClick={() => setIsSidebarOpen(false)}
+                            className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-300/50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                            aria-label="Collapse Sidebar"
+                            data-testid="sidebar-collapse"
+                        >
+                            <SidebarPanelIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+                    <div className="flex-1 min-h-0 overflow-y-auto px-2.5 pb-4">
                         {/* Sidebar Contents */}
                         <div className="mb-[22px]">
                             <SidebarNav
