@@ -2,6 +2,8 @@
 export interface FileAttachment {
     uid: string;
     original_filename: string;
+    // Optional name shown instead of the file name
+    title?: string | null;
     stored_filename: string;
     file_size: number;
     mime_type: string;
@@ -23,10 +25,4 @@ export interface InboxAttachment extends FileAttachment {
 }
 
 export type AttachmentType =
-    | 'image'
-    | 'pdf'
-    | 'text'
-    | 'document'
-    | 'spreadsheet'
-    | 'archive'
-    | 'other';
+    'image' | 'pdf' | 'text' | 'document' | 'spreadsheet' | 'archive' | 'other';

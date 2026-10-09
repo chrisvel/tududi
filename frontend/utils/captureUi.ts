@@ -9,6 +9,8 @@ interface CaptureUiState {
     open: boolean;
     target: CaptureTarget;
     scope: CaptureScope | null;
+    // Text the box starts with, e.g. +"Project" when opened from a project
+    initialText: string;
     // Changes on every open, so the composer can start from the same place
     openCount: number;
 }
@@ -24,6 +26,7 @@ let state: CaptureUiState = {
     open: false,
     target: 'inbox',
     scope: null,
+    initialText: '',
     openCount: 0,
 };
 const listeners = new Set<() => void>();
@@ -36,12 +39,14 @@ const setState = (next: CaptureUiState) => {
 
 export const openCapture = (
     target: CaptureTarget = 'inbox',
-    scope: CaptureScope | null = null
+    scope: CaptureScope | null = null,
+    initialText = ''
 ): void => {
     setState({
         open: true,
         target: scope === 'today' ? 'task' : target,
         scope,
+        initialText,
         openCount: state.openCount + 1,
     });
 };

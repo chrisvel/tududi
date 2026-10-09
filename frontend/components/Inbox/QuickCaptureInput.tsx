@@ -114,6 +114,8 @@ interface QuickCaptureInputProps {
     scopeLabel?: string;
     // Changing this puts the box back on defaultTarget (a new open)
     resetKey?: number;
+    // Text a new open starts with, replacing any half-typed text
+    prefillText?: string;
     compact?: boolean;
     onClose?: () => void;
     onCaptured?: (items: CapturedItem[]) => void;
@@ -197,6 +199,7 @@ const QuickCaptureInput = React.forwardRef<
             lockTarget = false,
             scopeLabel,
             resetKey,
+            prefillText,
             compact = false,
             onClose,
             onCaptured,
@@ -301,7 +304,8 @@ const QuickCaptureInput = React.forwardRef<
 
         useEffect(() => {
             setTarget(defaultTarget);
-        }, [resetKey, defaultTarget]);
+            if (prefillText) setInputText(prefillText);
+        }, [resetKey, defaultTarget, prefillText]);
 
         useEffect(() => {
             if (isEditMode) {

@@ -18,10 +18,7 @@ interface ProjectOverviewRailProps {
     onShareClick: () => void;
     onCreateNote: () => void;
     onOpenNote: (note: Note) => void;
-    onShowAllNotes: () => void;
 }
-
-const RECENT_NOTES = 3;
 
 const slugify = (value: string) =>
     value
@@ -87,7 +84,6 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
     onShareClick,
     onCreateNote,
     onOpenNote,
-    onShowAllNotes,
 }) => {
     const [people, setPeople] = useState<ListSharesResponseRow[]>([]);
     // Each member's own person, so a row can link to their profile and
@@ -144,13 +140,11 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
         medium: 'bg-yellow-400',
         low: 'bg-blue-400',
     };
-    const recentNotes = [...notes]
-        .sort(
-            (a, b) =>
-                new Date(b.updated_at || 0).getTime() -
-                new Date(a.updated_at || 0).getTime()
-        )
-        .slice(0, RECENT_NOTES);
+    const recentNotes = [...notes].sort(
+        (a, b) =>
+            new Date(b.updated_at || 0).getTime() -
+            new Date(a.updated_at || 0).getTime()
+    );
     const divided = 'space-y-0.5';
 
     return (
@@ -363,15 +357,6 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
                             </li>
                         ))}
                     </ul>
-                )}
-                {notes.length > RECENT_NOTES && (
-                    <button
-                        type="button"
-                        onClick={onShowAllNotes}
-                        className="text-xs font-medium text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-                    >
-                        {t('project.allNotes', 'All notes')}
-                    </button>
                 )}
             </Panel>
         </div>

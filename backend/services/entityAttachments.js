@@ -25,6 +25,7 @@ const {
 } = require('../middleware/rateLimiter');
 
 const MAX_ATTACHMENTS = 20;
+const MAX_TITLE_LENGTH = 255;
 
 const uploadPath = () => getConfig().uploadPath;
 
@@ -38,6 +39,7 @@ function createAttachmentStore({ model, ownerKey, dir, prefix }) {
     const serialize = (attachment) => ({
         uid: attachment.uid,
         original_filename: attachment.original_filename,
+        title: attachment.title || null,
         stored_filename: attachment.stored_filename,
         file_size: attachment.file_size,
         mime_type: attachment.mime_type,
@@ -120,6 +122,22 @@ function createAttachmentStore({ model, ownerKey, dir, prefix }) {
             return attachment;
         },
 
+        // An empty title clears it, so the file name shows again.
+        async rename(ownerId, attachmentUid, title) {
+            if (title !== null && typeof title !== 'string') {
+                throw new ValidationError('Title must be text');
+            }
+            const trimmed = (title || '').trim();
+            if (trimmed.length > MAX_TITLE_LENGTH) {
+                throw new ValidationError(
+                    `Title must be at most ${MAX_TITLE_LENGTH} characters`
+                );
+            }
+            const attachment = await store.findOne(ownerId, attachmentUid);
+            await attachment.update({ title: trimmed || null });
+            return serialize(attachment);
+        },
+
         async remove(ownerId, attachmentUid) {
             const attachment = await store.findOne(ownerId, attachmentUid);
             await deleteFileFromDisk(
@@ -174,6 +192,7 @@ function createAttachmentStore({ model, ownerKey, dir, prefix }) {
                                     ownerId: targetOwnerId,
                                     user_id: row.user_id,
                                     original_filename: row.original_filename,
+                                    title: row.title,
                                     stored_filename: row.stored_filename,
                                     file_size: row.file_size,
                                     mime_type: row.mime_type,
@@ -345,6 +364,22 @@ function createAttachmentRouter({
             res.download(
                 path.join(uploadPath(), attachment.file_path),
                 attachment.original_filename
+            );
+        })
+    );
+
+    router.patch(
+        `${basePath}/:attachmentUid`,
+        createResourceLimiter,
+        canWrite,
+        owner,
+        handle(async (req, res) => {
+            res.json(
+                await store.rename(
+                    req.attachmentOwner.id,
+                    req.params.attachmentUid,
+                    req.body?.title ?? null
+                )
             );
         })
     );
