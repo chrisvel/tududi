@@ -3,6 +3,21 @@ import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
 
+export const reorderAreas = async (areaUids: string[]): Promise<void> => {
+    const token = await getCsrfToken();
+    const response = await fetch(getApiPath('areas/order'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'x-csrf-token': token,
+        },
+        body: JSON.stringify({ area_uids: areaUids }),
+    });
+    await handleAuthResponse(response, 'Failed to save area order.');
+};
+
 export const fetchAreas = async (): Promise<Area[]> => {
     const response = await fetch(getApiPath('areas'), {
         credentials: 'include',

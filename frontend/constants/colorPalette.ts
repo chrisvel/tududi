@@ -84,7 +84,7 @@ export const ACCENT = {
     // Tints of the card surface (SURFACE.card), for "done" states. In dark
     // mode the tint is mixed into the lifted gray so warm hues stay clean.
     surface:
-        'bg-[color:color-mix(in_srgb,var(--accent-light)_7%,white)] dark:bg-[color:color-mix(in_srgb,var(--accent-dark)_6%,rgb(55_65_81/0.5))]',
+        'bg-[color:color-mix(in_srgb,var(--accent-light)_7%,white)] dark:bg-[color:color-mix(in_srgb,var(--accent-dark)_6%,rgb(55_65_81))]',
     surfaceStrong:
         'bg-[color:color-mix(in_srgb,var(--accent-light)_14%,white)] dark:bg-black/15',
     // A footer or inset strip: tinted in light mode, neutral in dark mode.
@@ -97,6 +97,6 @@ export const SURFACE = {
     // A hairline outline so cards separate from the page in both modes. It
     // is a ring, so it adds no layout width.
     outline: 'ring-1 ring-gray-900/[0.06] dark:ring-white/10',
-    card: 'bg-white dark:bg-gray-700/50 ring-1 ring-gray-900/[0.06] dark:ring-white/10',
+    card: 'bg-white dark:bg-gray-700 ring-1 ring-gray-900/[0.06] dark:ring-white/10',
     inset: 'bg-gray-100 dark:bg-gray-800/70',
 };

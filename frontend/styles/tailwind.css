@@ -214,6 +214,28 @@ html.sidebar-resizing * {
 .dark .task-sheet > * + * {
   border-top-color: rgb(255 255 255 / 0.05);
 }
+/* Goal and area rows read as one sheet. The item wrappers stay square
+   (SortableItem adds rounded-lg), only the first and last ends round, and
+   each row's left border follows those ends. */
+.task-sheet-rails > * {
+  border-radius: 0 !important;
+}
+.task-sheet-rails > *:first-child {
+  border-top-left-radius: 1rem !important;
+  border-top-right-radius: 1rem !important;
+}
+.task-sheet-rails > *:last-child {
+  border-bottom-left-radius: 1rem !important;
+  border-bottom-right-radius: 1rem !important;
+}
+.task-sheet-rails > *:first-child > * {
+  margin-top: -0.375rem;
+  border-top-left-radius: 1rem;
+}
+.task-sheet-rails > *:last-child > * {
+  margin-bottom: -0.375rem;
+  border-bottom-left-radius: 1rem;
+}
 /* Hover tints the whole row band, edge to edge, so it reads as a line in
    a list rather than a rounded pill floating inside it. */
 .task-sheet > *:not(:has([data-task-expanded])):hover {

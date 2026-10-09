@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import {
     EllipsisVerticalIcon,
     FolderIcon,
@@ -12,6 +18,18 @@ import ConfirmDialog from './Shared/ConfirmDialog';
 import AreaModal from './Area/AreaModal';
 import NewItemButton from './Shared/NewItemButton';
 import BlankSlate from './Shared/BlankSlate';
+import IconSortDropdown from './Shared/IconSortDropdown';
+import { SortOption } from './Shared/SortFilterButton';
+import SortableItem from './Shared/SortableItem';
+import { useToast } from './Shared/ToastContext';
+import {
+    mergeVisibleOrder,
+    resetSortableCursor,
+    sortableCursorHandlers,
+    swallowNextClick,
+    useSortableSensors,
+} from './Shared/sortableList';
+import { TASK_SHEET_CLASS } from './Task/taskSheet';
 import { useCan } from '../hooks/useCan';
 import { useStore } from '../store/useStore';
 import {
@@ -19,11 +37,52 @@ import {
     createArea,
     updateArea,
     deleteArea,
+    reorderAreas,
 } from '../utils/areasService';
 import { Area } from '../entities/Area';
 
+const areaPath = (area: Area) =>
+    area.uid
+        ? `/area/${area.uid}-${area.name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '')}`
+        : `/areas`;
+
+const compareCustomOrder = (a: Area, b: Area) => {
+    const posA = a.sort_position ?? null;
+    const posB = b.sort_position ?? null;
+    if (posA === null || posB === null) {
+        if (posA !== posB) return posA === null ? -1 : 1;
+        return a.name.localeCompare(b.name);
+    }
+    return posA - posB;
+};
+
+const compareAreas = (a: Area, b: Area, orderBy: string): number => {
+    const [field, direction] = orderBy.split(':');
+    if (field === 'custom') return compareCustomOrder(a, b);
+    const sign = direction === 'desc' ? -1 : 1;
+    let result: number;
+    switch (field) {
+        case 'projects':
+            result = (a.projects_count ?? 0) - (b.projects_count ?? 0);
+            break;
+        case 'goals':
+            result = (a.goals_count ?? 0) - (b.goals_count ?? 0);
+            break;
+        case 'tasks':
+            result = (a.tasks_count ?? 0) - (b.tasks_count ?? 0);
+            break;
+        default:
+            return sign * a.name.localeCompare(b.name);
+    }
+    return sign * result || a.name.localeCompare(b.name);
+};
+
 const Areas: React.FC = () => {
     const { t } = useTranslation();
+    const { showErrorToast } = useToast();
 
     // Use global store for consistency
     const { areas, loadAreas } = useStore((state: any) => state.areasStore);
@@ -36,6 +95,14 @@ const Areas: React.FC = () => {
     const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
     const justOpenedRef = useRef<boolean>(false);
+    const [orderBy, setOrderBy] = useState<string>(() => {
+        try {
+            return localStorage.getItem('areasSortOrder') || 'name:asc';
+        } catch {
+            return 'name:asc';
+        }
+    });
+    const sensors = useSortableSensors();
 
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -44,6 +111,14 @@ const Areas: React.FC = () => {
         // shown on the cards don't go stale after edits made elsewhere in the app.
         loadAreas(true);
     }, [loadAreas]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem('areasSortOrder', orderBy);
+        } catch {
+            // Storage can be unavailable (private mode), sorting still works
+        }
+    }, [orderBy]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -201,6 +276,67 @@ const Areas: React.FC = () => {
         setAreaToDelete(null);
     };
 
+    const sortedAreas = [...areas].sort((a: Area, b: Area) =>
+        compareAreas(a, b, orderBy)
+    );
+
+    const sortOptions: SortOption[] = [
+        { value: 'name:asc', label: t('areas.sort.nameAsc', 'Name A to Z') },
+        { value: 'name:desc', label: t('areas.sort.nameDesc', 'Name Z to A') },
+        {
+            value: 'projects:desc',
+            label: t('areas.sort.projects', 'Most projects'),
+        },
+        { value: 'goals:desc', label: t('areas.sort.goals', 'Most goals') },
+        { value: 'tasks:desc', label: t('areas.sort.tasks', 'Most tasks') },
+        { value: 'custom:asc', label: t('areas.sort.custom', 'Custom order') },
+    ];
+
+    const isCustomOrder = orderBy.startsWith('custom:');
+
+    const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+        resetSortableCursor();
+        if (!over || active.id === over.id) return;
+        swallowNextClick();
+
+        const visibleUids = sortedAreas.map((a: Area) => a.uid as string);
+        const from = visibleUids.indexOf(active.id as string);
+        const to = visibleUids.indexOf(over.id as string);
+        if (from === -1 || to === -1) return;
+        const movedVisible = arrayMove(visibleUids, from, to);
+
+        const fullOrder = [...areas]
+            .sort((a: Area, b: Area) => compareAreas(a, b, orderBy))
+            .map((a: Area) => a.uid as string);
+        const newOrder = mergeVisibleOrder(fullOrder, movedVisible);
+
+        const positionByUid = new Map(newOrder.map((uid, i) => [uid, i]));
+        const prevAreas = areas;
+        useStore
+            .getState()
+            .areasStore.setAreas(
+                areas.map((a: Area) =>
+                    a.uid && positionByUid.has(a.uid)
+                        ? { ...a, sort_position: positionByUid.get(a.uid) }
+                        : a
+                )
+            );
+        // Dragging under another sort starts a custom order from what is
+        // on screen.
+        const prevOrderBy = orderBy;
+        if (!isCustomOrder) setOrderBy('custom:asc');
+        try {
+            await reorderAreas(newOrder);
+        } catch (error) {
+            console.error('Error saving area order:', error);
+            useStore.getState().areasStore.setAreas(prevAreas);
+            setOrderBy(prevOrderBy);
+            showErrorToast(
+                t('areas.reorderError', 'Failed to save area order')
+            );
+        }
+    };
+
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
@@ -216,7 +352,6 @@ const Areas: React.FC = () => {
                     )}
                 </div>
 
-                {/* Areas Grid */}
                 {areas.length === 0 ? (
                     <BlankSlate
                         title={t('areas.noAreasYet', 'No areas yet.')}
@@ -265,164 +400,177 @@ const Areas: React.FC = () => {
                         }
                     />
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {areas.map((area: any) => (
-                            <Link
-                                key={area.uid}
-                                to={
-                                    area.uid
-                                        ? `/area/${area.uid}-${area.name
-                                              .toLowerCase()
-                                              .replace(/[^a-z0-9]+/g, '-')
-                                              .replace(/^-|-$/g, '')}`
-                                        : `/areas`
-                                }
-                                className={`rounded-xl shadow-sm relative flex flex-col group hover:shadow-md transition-shadow cursor-pointer ${
-                                    !area.color
-                                        ? 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
-                                        : ''
-                                } ${dropdownOpen === area.uid ? 'z-50' : ''}`}
-                                style={area.color ? { backgroundColor: area.color } : {}}
+                    <>
+                        <div className="flex justify-end mb-4">
+                            <IconSortDropdown
+                                options={sortOptions}
+                                value={orderBy}
+                                onChange={setOrderBy}
+                                ariaLabel={t('areas.sort.label', 'Sort areas')}
+                                title={t('areas.sort.label', 'Sort areas')}
+                                dropdownLabel={t(
+                                    'areas.sort.label',
+                                    'Sort areas'
+                                )}
+                                align="right"
+                            />
+                        </div>
+
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            {...sortableCursorHandlers}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={sortedAreas.map(
+                                    (a: Area) => a.uid as string
+                                )}
+                                strategy={verticalListSortingStrategy}
                             >
-                                {/* Three Dots Dropdown - Top Right */}
                                 <div
-                                    className="absolute top-2 right-2 z-10"
-                                    ref={dropdownRef}
+                                    className={`task-list-container overflow-visible ${TASK_SHEET_CLASS} task-sheet-rails`}
                                 >
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            const newDropdownState =
-                                                dropdownOpen === area.uid
-                                                    ? null
-                                                    : area.uid!;
-                                            if (newDropdownState !== null) {
-                                                justOpenedRef.current = true;
-                                            }
-                                            setDropdownOpen(newDropdownState);
-                                        }}
-                                        className={`focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded ${
-                                            area.color
-                                                ? 'text-white/60 hover:text-white hover:bg-white/20'
-                                                : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                        }`}
-                                        aria-label={t('areas.toggleDropdownMenu')}
-                                        data-testid={`area-dropdown-${area.uid}`}
-                                    >
-                                        <EllipsisVerticalIcon className="h-4 w-4" />
-                                    </button>
-
-                                    {dropdownOpen === area.uid && (
-                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    handleEditArea(area);
-                                                    setDropdownOpen(null);
-                                                }}
-                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
-                                                data-testid={`area-edit-${area.uid}`}
-                                            >
-                                                {t('areas.edit', 'Edit')}
-                                            </button>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    openConfirmDialog(area);
-                                                    setDropdownOpen(null);
-                                                }}
-                                                className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
-                                                data-testid={`area-delete-${area.uid}`}
-                                            >
-                                                {t('areas.delete', 'Delete')}
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Name + Description */}
-                                <div className="px-5 pt-6 pb-4 flex-1 flex items-center justify-center text-center">
-                                    <div>
-                                        <h3
-                                            className={`text-sm font-semibold tracking-widest uppercase line-clamp-2 ${
-                                                area.color
-                                                    ? 'text-white'
-                                                    : 'text-gray-800 dark:text-gray-100'
-                                            }`}
+                                    {sortedAreas.map((area: Area) => (
+                                        <SortableItem
+                                            key={area.uid}
+                                            id={area.uid as string}
+                                            label={area.name}
+                                            roleDescription={t(
+                                                'sortable.area',
+                                                'sortable area'
+                                            )}
+                                            testIdPrefix="sortable-area"
                                         >
-                                            {area.name}
-                                        </h3>
-                                        {area.description && (
-                                            <p
-                                                className={`text-xs mt-2 line-clamp-2 leading-relaxed ${
-                                                    area.color
-                                                        ? 'text-white/70'
-                                                        : 'text-gray-500 dark:text-gray-400'
+                                            <div
+                                                className={`relative flex items-center gap-4 -ml-1.5 py-2.5 pl-[2.375rem] pr-2 border-l-4 border-gray-300 dark:border-gray-600 group ${
+                                                    dropdownOpen === area.uid
+                                                        ? 'z-50'
+                                                        : ''
                                                 }`}
+                                                style={{
+                                                    borderLeftColor:
+                                                        area.color || undefined,
+                                                }}
                                             >
-                                                {area.description}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
+                                                <Link
+                                                    to={areaPath(area)}
+                                                    className="flex-1 min-w-0"
+                                                >
+                                                    <h3 className="text-[15px] font-normal tracking-tight text-gray-900 dark:text-gray-100 truncate">
+                                                        {area.name}
+                                                    </h3>
+                                                    {area.description && (
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                                                            {area.description}
+                                                        </p>
+                                                    )}
+                                                </Link>
 
-                                {/* Stats Footer */}
-                                <div
-                                    className={`rounded-b-xl flex items-stretch divide-x ${
-                                        area.color
-                                            ? 'bg-black/20 divide-white/10'
-                                            : 'bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-600 divide-gray-200 dark:divide-gray-600'
-                                    }`}
-                                >
-                                    {[
-                                        {
-                                            icon: <FolderIcon className="h-3.5 w-3.5" />,
-                                            count: area.projects_count ?? 0,
-                                            label: t('areas.stats.projects', 'projects'),
-                                        },
-                                        {
-                                            icon: <FlagIcon className="h-3.5 w-3.5" />,
-                                            count: area.goals_count ?? 0,
-                                            label: t('areas.stats.goals', 'goals'),
-                                        },
-                                        {
-                                            icon: <CheckCircleIcon className="h-3.5 w-3.5" />,
-                                            count: area.tasks_count ?? 0,
-                                            label: t('areas.stats.tasks', 'tasks'),
-                                        },
-                                    ].map(({ icon, count, label }) => (
-                                        <div
-                                            key={label}
-                                            className="flex-1 flex flex-col items-center py-3 gap-1"
-                                        >
-                                            <span
-                                                className={`text-base font-semibold leading-none ${
-                                                    area.color
-                                                        ? 'text-white'
-                                                        : 'text-gray-700 dark:text-gray-200'
-                                                }`}
-                                            >
-                                                {count}
-                                            </span>
-                                            <span
-                                                className={`flex items-center gap-1 text-[10px] leading-none ${
-                                                    area.color
-                                                        ? 'text-white/55'
-                                                        : 'text-gray-400 dark:text-gray-500'
-                                                }`}
-                                            >
-                                                {icon}
-                                                {label}
-                                            </span>
-                                        </div>
+                                                <div className="hidden md:flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 justify-end">
+                                                    <span className="flex items-center gap-1">
+                                                        <FolderIcon className="h-3.5 w-3.5" />
+                                                        {area.projects_count ??
+                                                            0}
+                                                    </span>
+                                                    <span className="flex items-center gap-1">
+                                                        <FlagIcon className="h-3.5 w-3.5" />
+                                                        {area.goals_count ?? 0}
+                                                    </span>
+                                                    <span className="flex items-center gap-1">
+                                                        <CheckCircleIcon className="h-3.5 w-3.5" />
+                                                        {area.tasks_count ?? 0}
+                                                    </span>
+                                                </div>
+
+                                                {/* Three Dots Dropdown */}
+                                                <div
+                                                    className="relative flex-shrink-0"
+                                                    ref={dropdownRef}
+                                                >
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            const newDropdownState =
+                                                                dropdownOpen ===
+                                                                area.uid
+                                                                    ? null
+                                                                    : area.uid!;
+                                                            if (
+                                                                newDropdownState !==
+                                                                null
+                                                            ) {
+                                                                justOpenedRef.current = true;
+                                                            }
+                                                            setDropdownOpen(
+                                                                newDropdownState
+                                                            );
+                                                        }}
+                                                        className="focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                                        aria-label={t(
+                                                            'areas.toggleDropdownMenu'
+                                                        )}
+                                                        data-testid={`area-dropdown-${area.uid}`}
+                                                    >
+                                                        <EllipsisVerticalIcon className="h-4 w-4" />
+                                                    </button>
+
+                                                    {dropdownOpen ===
+                                                        area.uid && (
+                                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
+                                                            <button
+                                                                onClick={(
+                                                                    e
+                                                                ) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    handleEditArea(
+                                                                        area
+                                                                    );
+                                                                    setDropdownOpen(
+                                                                        null
+                                                                    );
+                                                                }}
+                                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                                                data-testid={`area-edit-${area.uid}`}
+                                                            >
+                                                                {t(
+                                                                    'areas.edit',
+                                                                    'Edit'
+                                                                )}
+                                                            </button>
+                                                            <button
+                                                                onClick={(
+                                                                    e
+                                                                ) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    openConfirmDialog(
+                                                                        area
+                                                                    );
+                                                                    setDropdownOpen(
+                                                                        null
+                                                                    );
+                                                                }}
+                                                                className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                                                data-testid={`area-delete-${area.uid}`}
+                                                            >
+                                                                {t(
+                                                                    'areas.delete',
+                                                                    'Delete'
+                                                                )}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </SortableItem>
                                     ))}
                                 </div>
-                            </Link>
-                        ))}
-                    </div>
+                            </SortableContext>
+                        </DndContext>
+                    </>
                 )}
 
                 {/* AreaModal */}

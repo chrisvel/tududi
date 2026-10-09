@@ -3,6 +3,12 @@ import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import AreaDetails from '../AreaDetails';
+import { ToastProvider } from '../../Shared/ToastContext';
+
+jest.mock('../../../i18n', () => ({
+    __esModule: true,
+    default: {},
+}));
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -77,11 +83,13 @@ jest.mock('../../../store/useStore', () => ({
 
 const renderPage = () =>
     render(
-        <MemoryRouter initialEntries={['/area/areauid1-work']}>
-            <Routes>
-                <Route path="/area/:uidSlug" element={<AreaDetails />} />
-            </Routes>
-        </MemoryRouter>
+        <ToastProvider>
+            <MemoryRouter initialEntries={['/area/areauid1-work']}>
+                <Routes>
+                    <Route path="/area/:uidSlug" element={<AreaDetails />} />
+                </Routes>
+            </MemoryRouter>
+        </ToastProvider>
     );
 
 describe('AreaDetails header stats', () => {

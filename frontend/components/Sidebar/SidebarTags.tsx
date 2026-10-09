@@ -75,7 +75,6 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
                     }`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        setIsExpanded(true);
                         handleNavClick('/tags', t('sidebar.tags'), <TagIcon className="h-4 w-4 mr-2" />);
                     }}
                 >

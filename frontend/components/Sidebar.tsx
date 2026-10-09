@@ -240,7 +240,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <SidebarPanelIcon className="h-5 w-5" />
                         </button>
                     </div>
-                    <div className="flex-1 min-h-0 overflow-y-auto px-2.5 pb-4">
+                    <div className="flex-1 min-h-0 overflow-y-auto px-2.5 pt-3 pb-4">
                         {/* Sidebar Contents */}
                         <div className="mb-[22px]">
                             <SidebarNav

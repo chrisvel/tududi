@@ -1,6 +1,13 @@
 'use strict';
 
-const { Area, Project, Goal, Task, sequelize } = require('../../models');
+const {
+    Area,
+    Project,
+    Goal,
+    Task,
+    UserAreaOrder,
+    sequelize,
+} = require('../../models');
 const { Op } = require('sequelize');
 const BaseRepository = require('../../shared/database/BaseRepository');
 const permissionsService = require('../../services/permissionsService');
@@ -11,6 +18,46 @@ const LIST_ATTRIBUTES = ['id', 'uid', 'name', 'description', 'color'];
 class AreasRepository extends BaseRepository {
     constructor() {
         super(Area);
+    }
+
+    // Custom order positions of the Areas page for a user, by area_id.
+    async getUserAreaPositions(userId) {
+        const rows = await UserAreaOrder.findAll({
+            where: { user_id: userId },
+            attributes: ['area_id', 'position'],
+            raw: true,
+        });
+        const map = {};
+        rows.forEach((row) => {
+            map[row.area_id] = row.position;
+        });
+        return map;
+    }
+
+    async findIdsByUids(whereClause, uids) {
+        return this.model.findAll({
+            where: { [Op.and]: [whereClause, { uid: { [Op.in]: uids } }] },
+            attributes: ['id', 'uid'],
+            raw: true,
+        });
+    }
+
+    // Replaces the user's whole custom order with areaIds, in that order.
+    async replaceUserAreaOrder(userId, areaIds) {
+        await sequelize.transaction(async (transaction) => {
+            await UserAreaOrder.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
+            await UserAreaOrder.bulkCreate(
+                areaIds.map((areaId, index) => ({
+                    user_id: userId,
+                    area_id: areaId,
+                    position: index,
+                })),
+                { transaction }
+            );
+        });
     }
 
     /**

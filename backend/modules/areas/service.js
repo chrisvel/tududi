@@ -4,9 +4,15 @@ const _ = require('lodash');
 const areasRepository = require('./repository');
 const { PUBLIC_ATTRIBUTES, LIST_ATTRIBUTES } = require('./repository');
 const { validateName, validateUid } = require('./validation');
-const { NotFoundError, ForbiddenError } = require('../../shared/errors');
+const {
+    NotFoundError,
+    ForbiddenError,
+    ValidationError,
+} = require('../../shared/errors');
 const permissionsService = require('../../services/permissionsService');
 const { ACCESS } = permissionsService;
+
+const MAX_REORDER_AREAS = 5000;
 
 // An area the caller can neither own nor was shared reads as missing, so
 // area uids cannot be probed.
@@ -19,7 +25,50 @@ class AreasService {
      * Get all areas for a user.
      */
     async getAll(userId) {
-        return areasRepository.findAllByUser(userId);
+        const areas = await areasRepository.findAllByUser(userId);
+        const positions = await areasRepository.getUserAreaPositions(userId);
+        return areas.map((area) => ({
+            ...area,
+            sort_position: positions[area.id] ?? null,
+        }));
+    }
+
+    /**
+     * Save the user's custom order of the Areas page.
+     */
+    async reorder(userId, areaUids) {
+        if (
+            !Array.isArray(areaUids) ||
+            areaUids.some((uid) => typeof uid !== 'string' || !uid)
+        ) {
+            throw new ValidationError('area_uids must be a list of UIDs.');
+        }
+        if (areaUids.length > MAX_REORDER_AREAS) {
+            throw new ValidationError(
+                `Cannot order more than ${MAX_REORDER_AREAS} areas.`
+            );
+        }
+        if (new Set(areaUids).size !== areaUids.length) {
+            throw new ValidationError('area_uids contains duplicates.');
+        }
+
+        const whereClause = await permissionsService.ownershipOrPermissionWhere(
+            'area',
+            userId
+        );
+        const areas = areaUids.length
+            ? await areasRepository.findIdsByUids(whereClause, areaUids)
+            : [];
+        if (areas.length !== areaUids.length) {
+            throw new NotFoundError('One or more areas not found.');
+        }
+
+        const idByUid = new Map(areas.map((a) => [a.uid, a.id]));
+        await areasRepository.replaceUserAreaOrder(
+            userId,
+            areaUids.map((uid) => idByUid.get(uid))
+        );
+        return { area_uids: areaUids };
     }
 
     /**

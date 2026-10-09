@@ -1,6 +1,13 @@
 'use strict';
 
-const { Goal, Area, Project, Task, sequelize } = require('../../models');
+const {
+    Goal,
+    Area,
+    Project,
+    Task,
+    UserGoalOrder,
+    sequelize,
+} = require('../../models');
 const { Op } = require('sequelize');
 const permissionsService = require('../../services/permissionsService');
 
@@ -64,6 +71,46 @@ class GoalsRepository {
             projects_count: projectMap[goal.id] || 0,
             tasks_count: taskMap[goal.id] || 0,
         }));
+    }
+
+    // Custom order positions of the Goals page for a user, by goal_id.
+    async getUserGoalPositions(userId) {
+        const rows = await UserGoalOrder.findAll({
+            where: { user_id: userId },
+            attributes: ['goal_id', 'position'],
+            raw: true,
+        });
+        const map = {};
+        rows.forEach((row) => {
+            map[row.goal_id] = row.position;
+        });
+        return map;
+    }
+
+    async findIdsByUids(whereClause, uids) {
+        return Goal.findAll({
+            where: { [Op.and]: [whereClause, { uid: { [Op.in]: uids } }] },
+            attributes: ['id', 'uid'],
+            raw: true,
+        });
+    }
+
+    // Replaces the user's whole custom order with goalIds, in that order.
+    async replaceUserGoalOrder(userId, goalIds) {
+        await sequelize.transaction(async (transaction) => {
+            await UserGoalOrder.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
+            await UserGoalOrder.bulkCreate(
+                goalIds.map((goalId, index) => ({
+                    user_id: userId,
+                    goal_id: goalId,
+                    position: index,
+                })),
+                { transaction }
+            );
+        });
     }
 
     // Goals the user owns or has been shared.
