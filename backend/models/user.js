@@ -297,6 +297,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            onboarding_starter: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             email_verification_token: {
                 type: DataTypes.STRING,
                 allowNull: true,

@@ -884,6 +884,10 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             completed_at: taskAttributes.completed_at,
         });
 
+        // An example from the welcome screen becomes the user's own task
+        // the first time they change anything about it.
+        if (task.example_of) taskAttributes.example_of = null;
+
         await task.update(taskAttributes);
 
         console.log('[routes.js] After task.update - task values:', {
