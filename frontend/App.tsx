@@ -529,6 +529,10 @@ const App: React.FC = () => {
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/habits" element={<Habits />} />
                             <Route
+                                path="/habit/new"
+                                element={<Navigate to="/habits" replace />}
+                            />
+                            <Route
                                 path="/habit/:uid"
                                 element={<HabitDetails />}
                             />
@@ -549,6 +553,10 @@ const App: React.FC = () => {
                                 element={<TagDetails />}
                             />
                             <Route path="/goals" element={<Goals />} />
+                            <Route
+                                path="/goal/new"
+                                element={<Navigate to="/goals" replace />}
+                            />
                             <Route
                                 path="/goal/:uidSlug"
                                 element={<GoalDetails />}

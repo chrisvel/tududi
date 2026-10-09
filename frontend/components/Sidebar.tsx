@@ -44,6 +44,7 @@ interface SidebarProps {
     openProjectModal: () => void;
     onCreateNote: () => void;
     openAreaModal: (area: Area | null) => void;
+    openGoalModal: () => void;
     openTagModal: (tag: Tag | null) => void;
     openPersonModal: (person: Person | null) => void;
     openNewHabit: () => void;
@@ -66,6 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     openProjectModal,
     onCreateNote,
     openAreaModal,
+    openGoalModal,
     openTagModal,
     openPersonModal,
     openNewHabit,
@@ -137,7 +139,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             />
         ),
         goals: (
-            <SidebarGoals handleNavClick={handleNavClick} location={location} />
+            <SidebarGoals
+                handleNavClick={handleNavClick}
+                location={location}
+                openGoalModal={openGoalModal}
+            />
         ),
         notes: (
             <SidebarNotes

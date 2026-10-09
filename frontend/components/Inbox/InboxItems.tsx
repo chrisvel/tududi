@@ -603,8 +603,11 @@ const InboxItems: React.FC = () => {
                                     splitting the list around it. */}
                                 {inboxItems.map((item, index) => {
                                     const isOpen = index === openIndex;
+                                    // The open item's card is drawn by this wrapper, so its
+                                    // corners, background and shadow animate with the
+                                    // neighbouring rows' corners.
                                     const rowClass = isOpen
-                                        ? 'my-3'
+                                        ? 'my-3 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 shadow-lg'
                                         : `${segmentClass} px-1.5 ${
                                               openIndex >= 0 && index === openIndex + 1
                                                   ? 'rounded-t-2xl pt-1.5'
@@ -613,6 +616,17 @@ const InboxItems: React.FC = () => {
                                               index === openIndex - 1
                                                   ? 'rounded-b-2xl pb-1.5'
                                                   : ''
+                                          } ${
+                                              // A soft line between rows, as in task
+                                              // sheets. It drops next to the open item.
+                                              // The border always takes up its 1px and
+                                              // only its colour fades, so the rounded
+                                              // corners do not move while animating.
+                                              index > 0 &&
+                                              index !== openIndex &&
+                                              index !== openIndex + 1
+                                                  ? 'border-t border-gray-100 dark:border-white/5'
+                                                  : 'border-t border-transparent'
                                           }`;
                                     return (
                                         <div

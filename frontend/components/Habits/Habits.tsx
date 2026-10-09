@@ -6,6 +6,7 @@ import HabitCard from './HabitCard';
 import { SURFACE } from '../../constants/colorPalette';
 import NewItemButton from '../Shared/NewItemButton';
 import BlankSlate from '../Shared/BlankSlate';
+import HabitModal from './HabitModal';
 import {
     FireIcon,
     CheckCircleIcon,
@@ -38,6 +39,7 @@ const Habits: React.FC = () => {
     );
     const [showArchived, setShowArchived] = useState(false);
     const [archived, setArchived] = useState<Task[]>([]);
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
 
     useEffect(() => {
         loadHabits();
@@ -210,7 +212,7 @@ const Habits: React.FC = () => {
                     </button>
                     <NewItemButton
                         label={t('habits.new', 'New Habit')}
-                        onClick={() => navigate('/habit/new')}
+                        onClick={() => setIsCreateOpen(true)}
                     />
                 </div>
             </div>
@@ -283,7 +285,7 @@ const Habits: React.FC = () => {
                                 'Create your first habit'
                             ),
                             icon: PlusIcon,
-                            onClick: () => navigate('/habit/new'),
+                            onClick: () => setIsCreateOpen(true),
                         },
                     ]}
                     presetsLabel={t('habits.presetsLabel', 'Or start with')}
@@ -346,6 +348,11 @@ const Habits: React.FC = () => {
                     ))}
                 </>
             )}
+
+            <HabitModal
+                isOpen={isCreateOpen}
+                onClose={() => setIsCreateOpen(false)}
+            />
         </div>
     );
 };

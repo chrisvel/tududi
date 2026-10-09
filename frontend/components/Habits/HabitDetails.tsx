@@ -14,7 +14,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import {
-    createHabit,
     deleteHabit,
     deleteHabitCompletion,
     fetchHabit,
@@ -50,33 +49,17 @@ import HabitCheckIn from './HabitCheckIn';
 import HabitProgressBar from './HabitProgressBar';
 import { ACCENT, SURFACE } from '../../constants/colorPalette';
 
-const NEW_HABIT: Task = {
-    name: '',
-    habit_mode: true,
-    habit_polarity: 'build',
-    habit_target_count: 1,
-    habit_frequency_period: 'daily',
-    habit_current_streak: 0,
-    habit_best_streak: 0,
-    habit_total_completions: 0,
-    habit_strength: 0,
-} as Task;
-
 const HabitDetails: React.FC = () => {
     const { t } = useTranslation();
     const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
-    const isNew = uid === 'new';
     const updateHabitInList = useStore(
         (state) => state.habitsStore.updateHabitInList
     );
 
-    const [habit, setHabit] = useState<Task | null>(isNew ? NEW_HABIT : null);
+    const [habit, setHabit] = useState<Task | null>(null);
     const [name, setName] = useState('');
-    const [editingName, setEditingName] = useState(isNew);
-    const [draft, setDraft] = useState<HabitSettingsValues>(
-        settingsFromHabit(NEW_HABIT)
-    );
+    const [editingName, setEditingName] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [firstDayOfWeek, setFirstDayOfWeek] = useState(1);
@@ -88,7 +71,6 @@ const HabitDetails: React.FC = () => {
     const applyHabit = useCallback(
         (next: Task) => {
             setHabit(next);
-            setDraft(settingsFromHabit(next));
             updateHabitInList(next);
         },
         [updateHabitInList]
@@ -103,25 +85,17 @@ const HabitDetails: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (isNew) {
-            setHabit(NEW_HABIT);
-            setDraft(settingsFromHabit(NEW_HABIT));
-            setName('');
-            setEditingName(true);
-            return;
-        }
         if (!uid) return;
         fetchHabit(uid)
             .then((found) => {
                 setHabit(found);
-                setDraft(settingsFromHabit(found));
                 setName(found.name);
             })
             .catch(() => navigate('/habits'));
-    }, [uid, isNew, navigate]);
+    }, [uid, navigate]);
 
     const loadYear = useCallback(async () => {
-        if (!uid || isNew) return;
+        if (!uid) return;
         setLoadingYear(true);
         try {
             const start = new Date(year, 0, 1);
@@ -132,7 +106,7 @@ const HabitDetails: React.FC = () => {
         } finally {
             setLoadingYear(false);
         }
-    }, [uid, isNew, year]);
+    }, [uid, year]);
 
     useEffect(() => {
         loadYear();
@@ -170,9 +144,7 @@ const HabitDetails: React.FC = () => {
     };
 
     const saveSettings = async (patch: Partial<HabitSettingsValues>) => {
-        const nextDraft = { ...draft, ...patch };
-        setDraft(nextDraft);
-        if (isNew || !habit?.uid) return;
+        if (!habit?.uid) return;
         setSaving(true);
         setError(null);
         try {
@@ -180,7 +152,6 @@ const HabitDetails: React.FC = () => {
             await loadYear();
         } catch (err) {
             setError(err instanceof Error ? err.message : String(err));
-            setDraft(settingsFromHabit(habit));
         } finally {
             setSaving(false);
         }
@@ -188,7 +159,6 @@ const HabitDetails: React.FC = () => {
 
     const saveName = async () => {
         const trimmed = name.trim();
-        if (isNew) return;
         setEditingName(false);
         if (!habit?.uid || !trimmed || trimmed === habit.name) {
             setName(habit?.name || '');
@@ -196,19 +166,6 @@ const HabitDetails: React.FC = () => {
         }
         try {
             applyHabit(await updateHabit(habit.uid, { name: trimmed }));
-        } catch (err) {
-            setError(err instanceof Error ? err.message : String(err));
-        }
-    };
-
-    const handleCreate = async () => {
-        if (!name.trim()) {
-            setError(t('habits.nameRequired', 'Please enter a habit name'));
-            return;
-        }
-        try {
-            const created = await createHabit({ name: name.trim(), ...draft });
-            navigate(`/habit/${created.uid}`, { replace: true });
         } catch (err) {
             setError(err instanceof Error ? err.message : String(err));
         }
@@ -253,7 +210,7 @@ const HabitDetails: React.FC = () => {
         );
     }
 
-    const quit = isQuitHabit(isNew ? { ...habit, ...draft } : habit);
+    const quit = isQuitHabit(habit);
     const streak = habit.habit_current_streak || 0;
     const selectedKey = toDayKey(selected);
     const yearCheckIns = completions.filter((c) => !c.skipped);
@@ -310,7 +267,7 @@ const HabitDetails: React.FC = () => {
     return (
         <div
             className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12"
-            style={habitAccentStyle(isNew ? { ...habit, ...draft } : habit)}
+            style={habitAccentStyle(habit)}
         >
             <button
                 onClick={() => navigate('/habits')}
@@ -331,9 +288,8 @@ const HabitDetails: React.FC = () => {
                             onBlur={saveName}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
-                                    if (isNew) handleCreate();
-                                    else (e.target as HTMLInputElement).blur();
-                                } else if (e.key === 'Escape' && !isNew) {
+                                    (e.target as HTMLInputElement).blur();
+                                } else if (e.key === 'Escape') {
                                     setName(habit.name);
                                     setEditingName(false);
                                 }
@@ -354,62 +310,51 @@ const HabitDetails: React.FC = () => {
                             {habit.name}
                         </button>
                     )}
-                    {!isNew && (
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            {formatHabitTarget(t, habit)}
-                            {habit.habit_archived &&
-                                ` · ${t('habits.archivedLabel', 'Archived')}`}
-                        </p>
-                    )}
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        {formatHabitTarget(t, habit)}
+                        {habit.habit_archived &&
+                            ` · ${t('habits.archivedLabel', 'Archived')}`}
+                    </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    {isNew ? (
-                        <button
-                            onClick={handleCreate}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                        >
-                            {t('habits.create', 'Create habit')}
-                        </button>
-                    ) : (
-                        <>
-                            {!habit.habit_archived && (
-                                <HabitCheckIn
-                                    habit={habit}
-                                    size="lg"
-                                    onCheckIn={(options) =>
-                                        run(() =>
-                                            logHabitCompletion(
-                                                habit.uid!,
-                                                undefined,
-                                                options
-                                            )
+                    <>
+                        {!habit.habit_archived && (
+                            <HabitCheckIn
+                                habit={habit}
+                                size="lg"
+                                onCheckIn={(options) =>
+                                    run(() =>
+                                        logHabitCompletion(
+                                            habit.uid!,
+                                            undefined,
+                                            options
                                         )
-                                    }
-                                />
+                                    )
+                                }
+                            />
+                        )}
+                        <button
+                            onClick={handleArchive}
+                            className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                            {habit.habit_archived ? (
+                                <ArrowUturnLeftIcon className="h-4 w-4" />
+                            ) : (
+                                <ArchiveBoxIcon className="h-4 w-4" />
                             )}
-                            <button
-                                onClick={handleArchive}
-                                className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            >
-                                {habit.habit_archived ? (
-                                    <ArrowUturnLeftIcon className="h-4 w-4" />
-                                ) : (
-                                    <ArchiveBoxIcon className="h-4 w-4" />
-                                )}
-                                {habit.habit_archived
-                                    ? t('habits.restore', 'Restore')
-                                    : t('habits.archive', 'Archive')}
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
-                                title={t('common.delete', 'Delete')}
-                                aria-label={t('common.delete', 'Delete')}
-                            >
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
-                        </>
-                    )}
+                            {habit.habit_archived
+                                ? t('habits.restore', 'Restore')
+                                : t('habits.archive', 'Archive')}
+                        </button>
+                        <button
+                            onClick={handleDelete}
+                            className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
+                            title={t('common.delete', 'Delete')}
+                            aria-label={t('common.delete', 'Delete')}
+                        >
+                            <TrashIcon className="h-5 w-5" />
+                        </button>
+                    </>
                 </div>
             </div>
 
@@ -422,7 +367,7 @@ const HabitDetails: React.FC = () => {
                 </div>
             )}
 
-            {!isNew && !quit && habit.habit_progress && (
+            {!quit && habit.habit_progress && (
                 <div className="mb-6 max-w-md">
                     <HabitProgressBar habit={habit} />
                 </div>
@@ -433,104 +378,97 @@ const HabitDetails: React.FC = () => {
                     className={`lg:w-80 shrink-0 ${SURFACE.card} rounded-xl shadow-sm p-5 h-fit`}
                 >
                     <HabitSettings
-                        values={draft}
+                        values={settingsFromHabit(habit)}
                         firstDayOfWeek={firstDayOfWeek}
                         onChange={saveSettings}
                         saving={saving}
                     />
                 </div>
 
-                {!isNew && (
-                    <div className="flex-1 min-w-0 space-y-6">
-                        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-                            {stats.map(({ label, value, sub, icon }) => (
-                                <div
-                                    key={label}
-                                    className={`${SURFACE.card} rounded-xl shadow-sm p-4 min-w-0`}
-                                >
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                            {label}
-                                        </h3>
-                                        {icon}
-                                    </div>
-                                    <p className="text-3xl font-bold text-gray-900 dark:text-white tabular-nums">
-                                        {value}
-                                    </p>
-                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">
-                                        {sub}
-                                    </p>
+                <div className="flex-1 min-w-0 space-y-6">
+                    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+                        {stats.map(({ label, value, sub, icon }) => (
+                            <div
+                                key={label}
+                                className={`${SURFACE.card} rounded-xl shadow-sm p-4 min-w-0`}
+                            >
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                                        {label}
+                                    </h3>
+                                    {icon}
                                 </div>
-                            ))}
-                        </div>
-
-                        <div
-                            className={`${SURFACE.card} rounded-xl shadow-sm p-5 space-y-4`}
-                        >
-                            <HabitHeatmap
-                                habit={habit}
-                                year={year}
-                                minYear={minYear}
-                                totals={totals}
-                                firstDayOfWeek={firstDayOfWeek}
-                                selectedKey={selectedKey}
-                                loading={
-                                    loadingYear && completions.length === 0
-                                }
-                                onSelect={setSelected}
-                                onYearChange={(next) => {
-                                    setYear(next);
-                                    setSelected(
-                                        next === new Date().getFullYear()
-                                            ? new Date()
-                                            : new Date(next, 11, 31)
-                                    );
-                                }}
-                            />
-                            {toDayKey(selected).startsWith(String(year)) && (
-                                <HabitDayPanel
-                                    habit={habit}
-                                    date={selected}
-                                    totals={totals.get(selectedKey)}
-                                    onCheckIn={(options) =>
-                                        run(() =>
-                                            logHabitCompletion(
-                                                habit.uid!,
-                                                selectedDate(),
-                                                options
-                                            )
-                                        )
-                                    }
-                                    onSkip={() =>
-                                        run(() =>
-                                            skipHabitDay(
-                                                habit.uid!,
-                                                selectedDate()
-                                            )
-                                        )
-                                    }
-                                    onDelete={(entry) =>
-                                        run(() =>
-                                            deleteHabitCompletion(
-                                                habit.uid!,
-                                                entry.id
-                                            )
-                                        )
-                                    }
-                                    onUpdateNote={(entry, note) =>
-                                        run(() =>
-                                            updateHabitCompletion(
-                                                habit.uid!,
-                                                entry.id,
-                                                { note }
-                                            )
-                                        )
-                                    }
-                                />
-                            )}
-                        </div>
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white tabular-nums">
+                                    {value}
+                                </p>
+                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">
+                                    {sub}
+                                </p>
+                            </div>
+                        ))}
                     </div>
-                )}
+
+                    <div
+                        className={`${SURFACE.card} rounded-xl shadow-sm p-5 space-y-4`}
+                    >
+                        <HabitHeatmap
+                            habit={habit}
+                            year={year}
+                            minYear={minYear}
+                            totals={totals}
+                            firstDayOfWeek={firstDayOfWeek}
+                            selectedKey={selectedKey}
+                            loading={loadingYear && completions.length === 0}
+                            onSelect={setSelected}
+                            onYearChange={(next) => {
+                                setYear(next);
+                                setSelected(
+                                    next === new Date().getFullYear()
+                                        ? new Date()
+                                        : new Date(next, 11, 31)
+                                );
+                            }}
+                        />
+                        {toDayKey(selected).startsWith(String(year)) && (
+                            <HabitDayPanel
+                                habit={habit}
+                                date={selected}
+                                totals={totals.get(selectedKey)}
+                                onCheckIn={(options) =>
+                                    run(() =>
+                                        logHabitCompletion(
+                                            habit.uid!,
+                                            selectedDate(),
+                                            options
+                                        )
+                                    )
+                                }
+                                onSkip={() =>
+                                    run(() =>
+                                        skipHabitDay(habit.uid!, selectedDate())
+                                    )
+                                }
+                                onDelete={(entry) =>
+                                    run(() =>
+                                        deleteHabitCompletion(
+                                            habit.uid!,
+                                            entry.id
+                                        )
+                                    )
+                                }
+                                onUpdateNote={(entry, note) =>
+                                    run(() =>
+                                        updateHabitCompletion(
+                                            habit.uid!,
+                                            entry.id,
+                                            { note }
+                                        )
+                                    )
+                                }
+                            />
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
