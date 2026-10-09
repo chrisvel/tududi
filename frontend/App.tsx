@@ -550,6 +550,10 @@ const App: React.FC = () => {
                             />
                             <Route path="/goals" element={<Goals />} />
                             <Route
+                                path="/goal/new"
+                                element={<Navigate to="/goals" replace />}
+                            />
+                            <Route
                                 path="/goal/:uidSlug"
                                 element={<GoalDetails />}
                             />

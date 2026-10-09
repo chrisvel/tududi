@@ -15,11 +15,13 @@ import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded
 interface SidebarGoalsProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
     location: Location;
+    openGoalModal: () => void;
 }
 
 const SidebarGoals: React.FC<SidebarGoalsProps> = ({
     handleNavClick,
     location,
+    openGoalModal,
 }) => {
     const { t } = useTranslation();
     const canCreateGoals = useCan('create_projects');
@@ -43,10 +45,14 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
     const activeGoals = goals.filter((g: Goal) => g.status === 'active');
 
     useEffect(() => {
-        if (activeGoals.some((g: Goal) => {
-            const path = g.uid ? createGoalUrl({ uid: g.uid, title: g.title }) : '/goals';
-            return path === location.pathname;
-        })) {
+        if (
+            activeGoals.some((g: Goal) => {
+                const path = g.uid
+                    ? createGoalUrl({ uid: g.uid, title: g.title })
+                    : '/goals';
+                return path === location.pathname;
+            })
+        ) {
             setIsExpanded(true);
         }
     }, [location.pathname, activeGoals.length]);
@@ -72,7 +78,11 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                     onClick={(e) => {
                         e.stopPropagation();
                         setIsExpanded(true);
-                        handleNavClick('/goals', t('sidebar.goals', 'Goals'), <FlagIcon className="h-4 w-4 mr-2" />);
+                        handleNavClick(
+                            '/goals',
+                            t('sidebar.goals', 'Goals'),
+                            <FlagIcon className="h-4 w-4 mr-2" />
+                        );
                     }}
                 >
                     <FlagIcon className="h-[14px] w-[14px]" />
@@ -83,11 +93,7 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleNavClick(
-                                    '/goal/new',
-                                    t('goals.newGoal', 'New Goal'),
-                                    <FlagIcon className="h-4 w-4 mr-2" />
-                                );
+                                openGoalModal();
                             }}
                             className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             aria-label={t('goals.addGoal', 'Add Goal')}
@@ -111,7 +117,11 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"
-                                    style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                                    style={{
+                                        transform: isExpanded
+                                            ? 'rotate(90deg)'
+                                            : 'none',
+                                    }}
                                 />
                             </button>
                         </>
@@ -122,13 +132,22 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
             {isExpanded && (
                 <div className="max-h-[168px] overflow-y-auto overscroll-y-contain flex flex-col gap-0.5 mb-1.5">
                     {activeGoals.map((goal: Goal) => {
-                        const goalPath = goal.uid ? createGoalUrl({ uid: goal.uid, title: goal.title }) : '/goals';
+                        const goalPath = goal.uid
+                            ? createGoalUrl({
+                                  uid: goal.uid,
+                                  title: goal.title,
+                              })
+                            : '/goals';
                         return (
                             <div
                                 key={goal.uid ?? goal.id}
                                 className={itemClass(goalPath)}
                                 onClick={() =>
-                                    handleNavClick(goalPath, goal.title, <FlagIcon className="h-4 w-4 mr-2" />)
+                                    handleNavClick(
+                                        goalPath,
+                                        goal.title,
+                                        <FlagIcon className="h-4 w-4 mr-2" />
+                                    )
                                 }
                             >
                                 <span className="truncate min-w-0">

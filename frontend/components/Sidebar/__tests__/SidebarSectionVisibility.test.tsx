@@ -98,6 +98,7 @@ const renderSidebar = () =>
             openProjectModal={jest.fn()}
             onCreateNote={jest.fn()}
             openAreaModal={jest.fn()}
+            openGoalModal={jest.fn()}
             openTagModal={jest.fn()}
             openPersonModal={jest.fn()}
             openNewHabit={jest.fn()}

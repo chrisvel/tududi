@@ -11,6 +11,7 @@ import Sidebar, { SIDEBAR_CANVAS } from './components/Sidebar';
 import './styles/tailwind.css';
 import ProjectModal from './components/Project/ProjectModal';
 import AreaModal from './components/Area/AreaModal';
+import GoalModal from './components/Goal/GoalModal';
 import TagModal from './components/Tag/TagModal';
 import PersonModal from './components/People/PersonModal';
 import { Area } from './entities/Area';
@@ -65,6 +66,7 @@ const Layout: React.FC<LayoutProps> = ({
     );
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
+    const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
     const [isPersonModalOpen, setIsPersonModalOpen] = useState(false);
 
@@ -196,6 +198,14 @@ const Layout: React.FC<LayoutProps> = ({
     const closeAreaModal = () => {
         setIsAreaModalOpen(false);
         setSelectedArea(null);
+    };
+
+    const openGoalModal = () => {
+        setIsGoalModalOpen(true);
+    };
+
+    const closeGoalModal = () => {
+        setIsGoalModalOpen(false);
     };
 
     const openTagModal = (tag: Tag | null = null) => {
@@ -406,6 +416,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openProjectModal={openProjectModal}
                     onCreateNote={openNewNote}
                     openAreaModal={openAreaModal}
+                    openGoalModal={openGoalModal}
                     openTagModal={openTagModal}
                     openPersonModal={openPersonModal}
                     openNewHabit={openNewHabit}
@@ -529,6 +540,13 @@ const Layout: React.FC<LayoutProps> = ({
                             onClose={closeAreaModal}
                             onSave={handleSaveArea}
                             area={selectedArea}
+                        />
+                    )}
+
+                    {isGoalModalOpen && (
+                        <GoalModal
+                            isOpen={isGoalModalOpen}
+                            onClose={closeGoalModal}
                         />
                     )}
 
