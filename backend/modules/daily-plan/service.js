@@ -288,13 +288,34 @@ async function clearPlan(user, date) {
     return { date: planDate, plan: null };
 }
 
+// How many suggestions GET /daily-plan/candidates may send at once. The
+// planner raises its limit page by page, so a day with more open tasks than
+// this is still reachable one request at a time.
+const MAX_SUGGESTED_LIMIT = 1000;
+
+// Reads ?suggested_limit=N, the planner's "Show more": absent means the
+// user's Planning setting.
+function parseSuggestedLimit(value) {
+    if (value === undefined || value === null || value === '') return null;
+    const limit = Number(value);
+    if (!isWholeNumberInRange(limit, 1, MAX_SUGGESTED_LIMIT)) {
+        throw new ValidationError(
+            `suggested_limit must be a whole number between 1 and ${MAX_SUGGESTED_LIMIT}`
+        );
+    }
+    return limit;
+}
+
 // The planner's left column: open tasks tagged #today plus the same lists
 // the classic Today page shows, deduplicated so a task appears in the first
-// group it belongs to, and ranked by the rules in ranking.js. The user's planning settings decide
-// which tasks count as suggested and how many are shown.
-async function getCandidates(user) {
+// group it belongs to, and ranked by the rules in ranking.js. The user's
+// planning settings decide which tasks count as suggested and how many are
+// shown at first; suggestedLimit raises that cap when the planner asks for
+// more, and suggested_total says how many there are in all.
+async function getCandidates(user, { suggestedLimit = null } = {}) {
     const timezone = getSafeTimezone(user.timezone);
     const { order, suggestions } = await getPlanningSettings(user);
+    const cap = suggestedLimit ?? suggestions.maxSuggestions;
     const [metrics, taggedToday] = await Promise.all([
         computeTaskMetrics(user.id, timezone, null, suggestions),
         repository.findTasksTaggedToday(
@@ -361,10 +382,11 @@ async function getCandidates(user) {
 
     // The cap comes last: keep the first suggestions in the final order.
     let ranked = orderCandidates(unique, order, suggestions.tieBreak);
+    const suggestedTotal = unique.suggested.length;
     const shown = new Set(
         ranked
             .filter(({ group }) => group === 'suggested')
-            .slice(0, suggestions.maxSuggestions)
+            .slice(0, cap)
             .map(({ task }) => task.id)
     );
     unique.suggested = unique.suggested.filter((task) => shown.has(task.id));
@@ -379,6 +401,7 @@ async function getCandidates(user) {
         });
     }
     result.ranked = ranked.map(({ task }) => task.uid);
+    result.suggested_total = suggestedTotal;
 
     const inbox = await repository.findOpenInboxItems(user.id, INBOX_LIMIT);
     result.inbox = inbox.items.map((item) => ({
@@ -520,6 +543,7 @@ module.exports = {
     clearPlan,
     carryOver,
     getCandidates,
+    parseSuggestedLimit,
     getRanking,
     saveRanking,
     getPlanningSettings,

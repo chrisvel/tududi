@@ -197,6 +197,48 @@ describe('Plan my day suggestion settings', () => {
             expect(projectsIn(body.suggested).size).toBe(projects.length);
         });
 
+        it('counts every suggestion and pages past the cap on request', async () => {
+            await makeSixtyTasks();
+
+            const first = await candidates();
+            expect(first.suggested).toHaveLength(20);
+            expect(first.suggested_total).toBe(60);
+
+            const res = await agent.get(
+                '/api/daily-plan/candidates?suggested_limit=40'
+            );
+            expect(res.status).toBe(200);
+            expect(res.body.suggested).toHaveLength(40);
+            expect(res.body.suggested_total).toBe(60);
+            // The first page keeps its order when the cap grows.
+            expect(
+                res.body.ranked
+                    .filter((uid) =>
+                        res.body.suggested.some((task) => task.uid === uid)
+                    )
+                    .slice(0, 20)
+            ).toEqual(
+                first.ranked.filter((uid) =>
+                    first.suggested.some((task) => task.uid === uid)
+                )
+            );
+
+            const all = await agent.get(
+                '/api/daily-plan/candidates?suggested_limit=1000'
+            );
+            expect(all.body.suggested).toHaveLength(60);
+            expect(all.body.ranked).toHaveLength(60);
+        });
+
+        it('rejects a bad suggested_limit', async () => {
+            for (const value of ['0', '-5', '2.5', 'many', '1001']) {
+                const res = await agent.get(
+                    `/api/daily-plan/candidates?suggested_limit=${value}`
+                );
+                expect(res.status).toBe(400);
+            }
+        });
+
         it('applies the cap to the suggested group only', async () => {
             await makeSixtyTasks();
             const late = moment().subtract(3, 'days').toDate();

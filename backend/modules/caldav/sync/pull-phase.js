@@ -3,9 +3,10 @@ const { parseStringPromise } = require('xml2js');
 const { AppError } = require('../../../shared/errors');
 const logger = require('../../../services/logService');
 const RemoteCalendarRepository = require('../repositories/remote-calendar-repository');
+const SyncStateRepository = require('../repositories/sync-state-repository');
 const { parseVTODOToTask } = require('../icalendar/vtodo-parser');
 const encryptionService = require('../services/encryption-service');
-const { resolveRemoteHref } = require('../utils/href-utils');
+const { resolveRemoteHref, normalizeHref } = require('../utils/href-utils');
 const { getUserTimezone } = require('../utils/user-timezone');
 
 class PullPhase {
@@ -121,7 +122,8 @@ class PullPhase {
                 response.data,
                 remoteCalendar,
                 calendar,
-                userTimezone
+                userTimezone,
+                { fullListing: !syncToken }
             );
         } catch (error) {
             if (error.response?.status === 401) {
@@ -170,7 +172,8 @@ class PullPhase {
         xmlData,
         remoteCalendar,
         calendar,
-        userTimezone
+        userTimezone,
+        { fullListing = false } = {}
     ) {
         const parsed = await parseStringPromise(xmlData, {
             explicitArray: false,
@@ -178,6 +181,7 @@ class PullPhase {
         });
 
         const changedTasks = [];
+        const listedHrefs = [];
 
         const responses =
             parsed?.multistatus?.response ||
@@ -194,6 +198,7 @@ class PullPhase {
                 if (!href || href.endsWith('/')) {
                     continue;
                 }
+                listedHrefs.push(href);
 
                 // propstat may be a single object or an array when multiple
                 // status codes are returned for different props
@@ -276,6 +281,12 @@ class PullPhase {
             }
         }
 
+        if (fullListing && parsed?.multistatus) {
+            changedTasks.push(
+                ...(await this._findRemoteDeletions(calendar, listedHrefs))
+            );
+        }
+
         const newSyncToken =
             parsed?.multistatus?.['sync-token'] ||
             parsed?.['sync-collection']?.['sync-token'];
@@ -327,6 +338,50 @@ class PullPhase {
                 error
             );
             return null;
+        }
+    }
+
+    // A calendar-query lists what exists and says nothing about what is gone,
+    // and Radicale never hands out a sync-token in its reply, so the
+    // sync-collection path (which does report deletions) was never taken. A
+    // task deleted in another client therefore stayed in Tududi for good
+    // (#1822). Anything we have a remote href for that the server no longer
+    // lists has been deleted there.
+    async _findRemoteDeletions(calendar, listedHrefs) {
+        const listed = new Set(listedHrefs.map(this._hrefKey));
+
+        const syncStates = await SyncStateRepository.findByCalendarId(
+            calendar.id
+        );
+
+        const deletions = [];
+        for (const state of syncStates) {
+            if (!state.remote_href) {
+                continue;
+            }
+            if (listed.has(this._hrefKey(state.remote_href))) {
+                continue;
+            }
+            deletions.push({ action: 'delete', href: state.remote_href });
+        }
+
+        if (deletions.length > 0) {
+            logger.logInfo(
+                `${deletions.length} task(s) no longer on the remote calendar ${calendar.id}`
+            );
+        }
+
+        return deletions;
+    }
+
+    // Servers and clients do not agree on percent-encoding in hrefs, and a
+    // mismatch here must never read as a deletion.
+    _hrefKey(href) {
+        const normalized = normalizeHref(href) || '';
+        try {
+            return decodeURIComponent(normalized);
+        } catch {
+            return normalized;
         }
     }
 

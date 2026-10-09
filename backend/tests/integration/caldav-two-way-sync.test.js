@@ -480,5 +480,166 @@ ${items
 
             expect(calls('PUT')[0].data).toContain('CATEGORIES:home');
         });
+
+        describe('deletions made on the server', () => {
+            const syncedState = (task, overrides = {}) =>
+                CalDAVSyncState.create({
+                    task_id: task.id,
+                    calendar_id: calendar.id,
+                    etag: 'e1',
+                    remote_href: `/chris/tasks/${task.uid}.ics`,
+                    last_modified: new Date(),
+                    last_synced_at: new Date(),
+                    sync_status: 'synced',
+                    ...overrides,
+                });
+
+            test('a task deleted on the server is deleted in Tududi on the next sync', async () => {
+                await setupRemote();
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Deleted on the phone',
+                });
+                await sleep(5);
+                await syncedState(task);
+
+                // Radicale answers a calendar-query with what exists, and
+                // never with a sync-token, so this is all Tududi gets.
+                axios.mockResolvedValueOnce(multistatus([]));
+                const result = await sync();
+
+                expect(result.phases.merge.deleted).toHaveLength(1);
+                expect(await Task.count()).toBe(0);
+                expect(await CalDAVSyncState.count()).toBe(0);
+                expect(calls('PUT')).toHaveLength(0);
+            });
+
+            test('a task never pushed yet is not mistaken for a remote deletion', async () => {
+                await setupRemote();
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Brand new',
+                });
+
+                axios.mockResolvedValueOnce(multistatus([]));
+                axios.mockResolvedValueOnce({
+                    status: 201,
+                    headers: { etag: '"e1"' },
+                });
+                await sync();
+
+                expect(await Task.count()).toBe(1);
+                expect(calls('PUT')[0].url).toBe(
+                    `https://dav.example.com/chris/tasks/${task.uid}.ics`
+                );
+            });
+
+            test('a differently encoded href in the listing does not read as a deletion', async () => {
+                await setupRemote();
+                const task = await Task.create({
+                    user_id: user.id,
+                    uid: 'a@b',
+                    name: 'Odd uid',
+                });
+                await sleep(5);
+                await syncedState(task, {
+                    remote_href: '/chris/tasks/a%40b.ics',
+                });
+
+                axios.mockResolvedValueOnce(
+                    multistatus([
+                        {
+                            href: '/chris/tasks/a@b.ics',
+                            etag: 'e1',
+                            ics: vcalendar(['UID:a@b', 'SUMMARY:Odd uid']),
+                        },
+                    ])
+                );
+                await sync();
+
+                expect(await Task.count()).toBe(1);
+                expect(await CalDAVSyncState.count()).toBe(1);
+            });
+
+            test('a task edited in Tududi after it was deleted on the server is created there again', async () => {
+                await setupRemote();
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Original',
+                });
+                await syncedState(task, {
+                    last_modified: new Date(Date.now() - 3600000),
+                    last_synced_at: new Date(Date.now() - 3600000),
+                });
+                await task.update({ name: 'Edited after the deletion' });
+
+                axios.mockResolvedValueOnce(multistatus([]));
+                axios.mockResolvedValueOnce({
+                    status: 201,
+                    headers: { etag: '"e2"' },
+                });
+                await sync();
+
+                const puts = calls('PUT');
+                expect(puts).toHaveLength(1);
+                expect(puts[0].url).toBe(
+                    `https://dav.example.com/chris/tasks/${task.uid}.ics`
+                );
+                expect(puts[0].headers['If-Match']).toBeUndefined();
+                expect(puts[0].data).toContain(
+                    'SUMMARY:Edited after the deletion'
+                );
+
+                expect(await Task.count()).toBe(1);
+                const state = await CalDAVSyncState.findOne({
+                    where: { task_id: task.id },
+                });
+                expect(state.sync_status).toBe('synced');
+                expect(state.etag).toBe('e2');
+                expect(state.remote_href).toBe(`/chris/tasks/${task.uid}.ics`);
+            });
+
+            test('with manual conflict resolution the locally edited task is kept and flagged', async () => {
+                await setupRemote();
+                await calendar.update({ conflict_resolution: 'manual' });
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Original',
+                });
+                await syncedState(task, {
+                    last_synced_at: new Date(Date.now() - 3600000),
+                });
+                await task.update({ name: 'Edited after the deletion' });
+
+                axios.mockResolvedValueOnce(multistatus([]));
+                const result = await sync();
+
+                expect(result.phases.merge.conflicts).toHaveLength(1);
+                expect(await Task.count()).toBe(1);
+                expect(calls('PUT')).toHaveLength(0);
+                const state = await CalDAVSyncState.findOne({
+                    where: { task_id: task.id },
+                });
+                expect(state.sync_status).toBe('conflict');
+            });
+
+            test('a sync-collection reply is trusted as is and not diffed', async () => {
+                await setupRemote({ server_sync_token: 'token-1' });
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Unchanged',
+                });
+                await sleep(5);
+                await syncedState(task);
+
+                // sync-collection lists only what changed, so an empty reply
+                // means nothing happened, not that everything is gone.
+                axios.mockResolvedValueOnce(multistatus([]));
+                await sync();
+
+                expect(await Task.count()).toBe(1);
+                expect(await CalDAVSyncState.count()).toBe(1);
+            });
+        });
     });
 });

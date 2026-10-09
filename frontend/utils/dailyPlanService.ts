@@ -78,6 +78,9 @@ export interface PlanCandidates {
     inbox_count: number;
     // Task uids in the user's ranking order (Profile > Planning).
     ranked?: string[];
+    // How many tasks qualify as suggested in all; `suggested` holds the
+    // first ones up to the Planning setting or the limit asked for.
+    suggested_total?: number;
 }
 
 export type RankingGroup =
@@ -140,8 +143,15 @@ export const fetchDailyPlan = async (
     return response.json();
 };
 
-export const fetchPlanCandidates = async (): Promise<PlanCandidates> => {
-    const response = await fetch(getApiPath('daily-plan/candidates'), {
+// `suggestedLimit` asks for more suggestions than the Planning setting
+// sends at first; the planner raises it page by page from "Show more".
+export const fetchPlanCandidates = async (
+    suggestedLimit?: number | null
+): Promise<PlanCandidates> => {
+    const query = suggestedLimit
+        ? `?suggested_limit=${encodeURIComponent(suggestedLimit)}`
+        : '';
+    const response = await fetch(getApiPath(`daily-plan/candidates${query}`), {
         credentials: 'include',
         headers: getDefaultHeaders(),
         cache: 'no-store',

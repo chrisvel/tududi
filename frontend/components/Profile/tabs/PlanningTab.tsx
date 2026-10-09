@@ -351,9 +351,13 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
             );
         }
         parts.push(
-            t('profile.planning.suggestedCap', 'Up to {{count}} are shown.', {
-                count: suggestions.maxSuggestions,
-            })
+            t(
+                'profile.planning.suggestedCap',
+                '{{count}} load at first; Show more brings the rest.',
+                {
+                    count: suggestions.maxSuggestions,
+                }
+            )
         );
         return parts.join(' ');
     }
@@ -1019,7 +1023,7 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
                                 <p className={fieldHint}>
                                     {t(
                                         'profile.planning.maxDescription',
-                                        'The most tasks to suggest under Everything else.'
+                                        'How many Everything else tasks load at first. Show more brings the rest.'
                                     )}
                                 </p>
                             </div>
