@@ -185,7 +185,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
     return (
         <nav
-            className={`relative z-30 flex-shrink-0 text-gray-900 dark:text-white ${
+            className={`relative z-30 has-[[data-testid=universal-search][data-state=open]]:z-50 flex-shrink-0 text-gray-900 dark:text-white ${
                 transparent
                     ? 'bg-gray-100/40 dark:bg-gray-800/40 backdrop-blur-md'
                     : 'bg-gray-100 dark:bg-gray-800'
