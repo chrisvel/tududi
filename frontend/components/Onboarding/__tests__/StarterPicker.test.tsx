@@ -28,19 +28,40 @@ const result = {
     created: { areas: 4, goals: 4, projects: 3, tasks: 5, habits: 2, notes: 1 },
 };
 
+const renderAtStep2 = (onDone = jest.fn()) => {
+    render(<StarterPicker onDone={onDone} />);
+    fireEvent.click(screen.getByTestId('starter-start'));
+    return onDone;
+};
+
 describe('StarterPicker', () => {
     beforeEach(() => {
         applyStarter.mockReset();
         applyStarter.mockResolvedValue(result);
+        window.scrollTo = jest.fn();
     });
 
-    it('shows the four starters, the video and the household preview first', () => {
+    it("opens on the video step and moves to the starters on Let's start", () => {
         render(<StarterPicker onDone={jest.fn()} />);
 
         expect(screen.getByTestId('starter-video')).toHaveAttribute(
             'src',
             expect.stringContaining('youtube-nocookie.com/embed/hkwb9EmE4XE')
         );
+        expect(screen.queryByTestId('starter-step-2')).toBeNull();
+
+        fireEvent.click(screen.getByTestId('starter-start'));
+
+        expect(screen.queryByTestId('starter-step-1')).toBeNull();
+        expect(screen.getByTestId('starter-step-2')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByTestId('starter-back'));
+        expect(screen.getByTestId('starter-step-1')).toBeInTheDocument();
+    });
+
+    it('shows the four starters with the household preview first', () => {
+        renderAtStep2();
+
         expect(screen.getAllByRole('radio')).toHaveLength(4);
         expect(screen.getByTestId('starter-card-household')).toHaveAttribute(
             'aria-checked',
@@ -55,7 +76,7 @@ describe('StarterPicker', () => {
     });
 
     it('switches the preview and button when another card is picked', () => {
-        render(<StarterPicker onDone={jest.fn()} />);
+        renderAtStep2();
 
         fireEvent.click(screen.getByTestId('starter-card-studying'));
 
@@ -72,7 +93,7 @@ describe('StarterPicker', () => {
     });
 
     it('moves the selection with the arrow keys', () => {
-        render(<StarterPicker onDone={jest.fn()} />);
+        renderAtStep2();
 
         fireEvent.keyDown(screen.getByTestId('starter-card-household'), {
             key: 'ArrowDown',
@@ -85,8 +106,7 @@ describe('StarterPicker', () => {
     });
 
     it('sends the chosen starter with its structure and reports back', async () => {
-        const onDone = jest.fn();
-        render(<StarterPicker onDone={onDone} />);
+        const onDone = renderAtStep2();
 
         fireEvent.click(screen.getByTestId('starter-submit'));
 
@@ -111,12 +131,11 @@ describe('StarterPicker', () => {
     });
 
     it('records "empty" for Start empty', async () => {
-        const onDone = jest.fn();
         applyStarter.mockResolvedValue({
             ...result,
             onboarding_starter: 'empty',
         });
-        render(<StarterPicker onDone={onDone} />);
+        const onDone = renderAtStep2();
 
         fireEvent.click(screen.getByTestId('starter-empty'));
 
@@ -127,8 +146,7 @@ describe('StarterPicker', () => {
 
     it('keeps the screen and shows the error when setting up fails', async () => {
         applyStarter.mockRejectedValue(new Error('Plan limit reached'));
-        const onDone = jest.fn();
-        render(<StarterPicker onDone={onDone} />);
+        const onDone = renderAtStep2();
 
         fireEvent.click(screen.getByTestId('starter-submit'));
 

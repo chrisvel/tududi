@@ -3258,6 +3258,10 @@
     "starter": {
       "kicker": "Welcome to tududi",
       "welcomeTitle": "Take a look at what you can do with tududi in a minute",
+      "stepOne": "Step 1 of 2",
+      "stepTwo": "Step 2 of 2",
+      "letsStart": "Let's start",
+      "backToVideo": "Back to the video",
       "title": "Which one looks most like your week?",
       "subtitle": "We set up the shelves. You decide what goes on them. Rename or delete anything.",
       "groupLabel": "Starters",
