@@ -274,3 +274,29 @@ jobs:
           gh release "$ACTION" "$@"
           gh release view "$TAG" --json tagName,isPrerelease,url \
             | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # Posts each new GitHub Release to the Discord channel. Runs after the
+  # release is in place, so a failed release never announces. Needs the
+  # DISCORD_WEBHOOK_URL repository secret.
+  announce:
+    needs: [publish, release]
+    if: needs.publish.outputs.release == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Post the release to Discord
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TAG: v${{ needs.publish.outputs.version }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Discord caps an embed description at 4096 characters
+          NOTES=$(gh release view "$TAG" --json body --jq .body | head -c 3500)
+          BODY="**tududi $TAG was just released!**"$'\n\n'"$NOTES"
+          jq -n \
+            --arg title "tududi $TAG" \
+            --arg url "https://github.com/$REPO/releases/tag/$TAG" \
+            --arg body "$BODY" \
+            '{embeds: [{title: $title, url: $url, description: $body, color: 5793266}]}' \
+            | curl -fsS -H "Content-Type: application/json" -d @- "$WEBHOOK"
