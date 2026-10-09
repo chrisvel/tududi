@@ -75,7 +75,13 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     // Open the status menu upwards when there is not enough room below it
     // (the last rows of a long list), so it never runs off the screen.
     const [menuOpensUp, setMenuOpensUp] = useState(false);
+    // The menu hangs off the control's right edge, which is wrong when the
+    // control sits near the left edge of a narrow screen (the task page on a
+    // phone): the menu would run off the left side. Align it to the left
+    // edge instead whenever that keeps more of it on screen.
+    const [menuAlignsLeft, setMenuAlignsLeft] = useState(false);
     const MENU_HEIGHT = 280;
+    const MENU_WIDTH = 192;
     const toggleMenu = (
         target: CompletionMenuTarget,
         anchor: HTMLElement | null
@@ -84,9 +90,13 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
             const rect = anchor.getBoundingClientRect();
             const below = window.innerHeight - rect.bottom;
             setMenuOpensUp(below < MENU_HEIGHT && rect.top > below);
+            const overflowsLeft = rect.right - MENU_WIDTH < 0;
+            const overflowsRight = rect.left + MENU_WIDTH > window.innerWidth;
+            setMenuAlignsLeft(overflowsLeft && !overflowsRight);
         }
         setCompletionMenuOpen((prev) => (prev === target ? null : target));
     };
+    const menuPlacementClass = `${menuAlignsLeft ? 'left-0' : 'right-0'} ${menuOpensUp ? 'bottom-full mb-1' : 'top-full mt-1'}`;
 
     useEffect(() => {
         if (!completionMenuOpen) return;
@@ -467,7 +477,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
             </div>
             {completionMenuOpen === 'desktop' && (
                 <div
-                    className={`absolute right-0 ${menuOpensUp ? 'bottom-full mb-1' : 'top-full mt-1'} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
+                    className={`absolute ${menuPlacementClass} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
                 >
                     {renderStatusMenuOptions('desktop')}
                 </div>
@@ -555,7 +565,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                     </div>
                     {completionMenuOpen === 'mobile' && (
                         <div
-                            className={`absolute right-0 ${menuOpensUp ? 'bottom-full mb-1' : 'top-full mt-1'} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
+                            className={`absolute ${menuPlacementClass} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
                         >
                             {renderStatusMenuOptions('mobile')}
                         </div>
