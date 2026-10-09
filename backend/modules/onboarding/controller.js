@@ -11,14 +11,6 @@ function requireUser(req) {
 }
 
 const onboardingController = {
-    async complete(req, res, next) {
-        try {
-            res.json(await onboardingService.complete(requireUser(req)));
-        } catch (err) {
-            next(err);
-        }
-    },
-
     async applyStarter(req, res, next) {
         try {
             res.json(

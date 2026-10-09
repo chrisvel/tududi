@@ -317,9 +317,9 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - One replica, block storage for SQLite, ingress and backup notes
 
 32. **[Onboarding](docs/24-onboarding.md)**
-    - The welcome modal over Today: one box, one line per thing, Plan my day; Brain dump in the navbar menu
+    - The welcome page at `/welcome`: the welcome video and one button, seen once by every account
     - Empty-state starters on Areas and Habits
-    - `users.onboarded_at`, `POST /api/onboarding/complete`, admin onboarding numbers
+    - `users.onboarding_starter`, `POST /api/onboarding/starter`, admin onboarding numbers
 
 33. **[Blog](docs/23-blog.md)**
     - A front page note and the public notes it links become the blog

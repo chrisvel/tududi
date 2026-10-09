@@ -116,8 +116,7 @@
     "search": "Search",
     "admin": "Admin",
     "adminBadge": "Admin",
-    "templates": "Templates",
-    "brainDump": "Brain dump"
+    "templates": "Templates"
   },
   "settings": {
     "todayPageSettings": "Today Page Settings",
@@ -3241,20 +3240,6 @@
     "morePosts": "More from the blog"
   },
   "onboarding": {
-    "kicker": "Welcome to tududi",
-    "title": "What's on your plate this week?",
-    "subtitle": "One thing per line, press Enter after each. No sorting yet, that comes later.",
-    "inputLabel": "Something on your plate",
-    "placeholderMore": "Anything else?",
-    "hintSyntax": "Try \"Call the dentist tomorrow #home\" or \"Draft the budget +Q4 planning\".",
-    "promptWork": "Something from work",
-    "promptHome": "Something at home",
-    "promptPutOff": "The thing you keep putting off",
-    "planMyDay": "Plan my day",
-    "planning": "Planning your day...",
-    "skip": "Skip for now",
-    "kickerAgain": "Brain dump",
-    "back": "Close",
     "starter": {
       "kicker": "Welcome to tududi",
       "welcomeTitle": "Take a look at what you can do with tududi in a minute",

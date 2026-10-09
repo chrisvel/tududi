@@ -168,19 +168,6 @@ function normalizeStarter(body) {
 }
 
 const onboardingService = {
-    // Marks the welcome screen as seen. The first call sets the time; later
-    // calls keep it, so a double submit or a page reload cannot move it.
-    async complete(user) {
-        const row = await User.findByPk(user.id, {
-            attributes: ['id', 'onboarded_at'],
-        });
-        if (!row.onboarded_at) {
-            row.onboarded_at = new Date();
-            await row.save({ fields: ['onboarded_at'] });
-        }
-        return { onboarded_at: row.onboarded_at };
-    },
-
     // Applies a starter and records the choice. Areas, projects and habits
     // the account already has (by name) are reused rather than duplicated,
     // so the screen is safe for accounts that are not empty. Tasks are

@@ -5,7 +5,7 @@ import { applyStarter, StarterResult } from '../../utils/onboardingService';
 // The page at /welcome every account sees once, inside the normal layout:
 // the welcome video and one button. The button records the visit (as the
 // "empty" starter) so the page never comes back on its own, then Today
-// opens with the brain dump.
+// opens.
 
 export const WELCOME_VIDEO_ID = 'hkwb9EmE4XE';
 

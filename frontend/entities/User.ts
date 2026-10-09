@@ -19,7 +19,7 @@ export interface User {
     role?: RoleId;
     capabilities?: Capabilities;
     features?: UserFeatures;
-    // null until the brain dump is done with; older servers omit it
+    // when the welcome page was done with; older servers omit it
     onboarded_at?: string | null;
     // the starter picked on the welcome screen ("household", "empty", ...);
     // null until that screen is done with

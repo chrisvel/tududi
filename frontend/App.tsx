@@ -61,11 +61,6 @@ import PersonDetails from './components/People/PersonDetails';
 import EveryoneDashboard from './components/Everyone/EveryoneDashboard';
 import Templates from './components/Templates/Templates';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
-import {
-    useBrainDumpUi,
-    closeBrainDump,
-    openBrainDump,
-} from './utils/brainDumpUi';
 import type { StarterResult } from './utils/onboardingService';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
@@ -82,7 +77,6 @@ const PublicNotePage = lazy(
 );
 const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
 const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
-const FirstPlan = lazy(() => import('./components/Onboarding/FirstPlan'));
 const Welcome = lazy(() => import('./components/Onboarding/Welcome'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
@@ -97,7 +91,6 @@ const App: React.FC = () => {
     const location = useLocation();
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const brainDump = useBrainDumpUi();
 
     if (!i18n.isInitialized) {
         return <LoadingScreen fullScreen />;
@@ -248,16 +241,7 @@ const App: React.FC = () => {
         navigate('/inbox', { replace: true });
     }, [currentUser, location.pathname, navigate]);
 
-    const markOnboarded = (onboardedAt: string) => {
-        setCurrentUser((prev) => {
-            if (!prev) return prev;
-            const next = { ...prev, onboarded_at: onboardedAt };
-            setUserInStorage(next);
-            return next;
-        });
-    };
-
-    // The welcome page is done with: Today opens with the brain dump.
+    // The welcome page is done with: Today opens.
     const finishWelcome = (result: StarterResult) => {
         const user = currentUser
             ? {
@@ -269,7 +253,6 @@ const App: React.FC = () => {
         if (user) setUserInStorage(user);
         setCurrentUser(user);
         navigate('/today', { replace: true });
-        openBrainDump();
     };
 
     // The Inbox keeps offering a claimed share while the user stays on it (the
@@ -424,18 +407,6 @@ const App: React.FC = () => {
                                         isDarkMode={isDarkMode}
                                         toggleDarkMode={toggleDarkMode}
                                     >
-                                        <Suspense fallback={null}>
-                                            <FirstPlan
-                                                open={brainDump.open}
-                                                key={brainDump.openCount}
-                                                firstVisit={
-                                                    currentUser.onboarded_at ===
-                                                    null
-                                                }
-                                                onClose={closeBrainDump}
-                                                onComplete={markOnboarded}
-                                            />
-                                        </Suspense>
                                         {currentUser.onboarding_starter ===
                                             null &&
                                         location.pathname !== '/welcome' ? (
