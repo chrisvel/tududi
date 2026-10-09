@@ -18,10 +18,12 @@ import { deleteGoal } from '../utils/goalsService';
 import { Goal } from '../entities/Goal';
 import { Area } from '../entities/Area';
 import { createGoalUrl } from '../utils/slugUtils';
+import GoalModal from './Goal/GoalModal';
 
 const STATUS_COLORS: Record<string, string> = {
     active: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-    achieved: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    achieved:
+        'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
     paused: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
     dropped: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
 };
@@ -42,6 +44,7 @@ const Goals: React.FC = () => {
     const loadAreas = useStore((state: any) => state.areasStore.loadAreas);
 
     const canCreateGoals = useCan('create_projects');
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [selectedAreaUid, setSelectedAreaUid] = useState<string | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
@@ -59,32 +62,55 @@ const Goals: React.FC = () => {
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (justOpenedRef.current) { justOpenedRef.current = false; return; }
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+            if (justOpenedRef.current) {
+                justOpenedRef.current = false;
+                return;
+            }
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(e.target as Node)
+            ) {
                 setDropdownOpen(null);
             }
         };
         if (dropdownOpen !== null) {
-            const id = setTimeout(() => document.addEventListener('mousedown', handleClickOutside), 100);
-            return () => { clearTimeout(id); document.removeEventListener('mousedown', handleClickOutside); };
+            const id = setTimeout(
+                () =>
+                    document.addEventListener('mousedown', handleClickOutside),
+                100
+            );
+            return () => {
+                clearTimeout(id);
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
         }
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, [dropdownOpen]);
 
     const handleDeleteGoal = async () => {
         if (!goalToDelete?.uid) return;
         await deleteGoal(goalToDelete.uid);
         const current = useStore.getState().goalsStore.goals;
-        useStore.getState().goalsStore.setGoals(current.filter((g: Goal) => g.uid !== goalToDelete.uid));
+        useStore
+            .getState()
+            .goalsStore.setGoals(
+                current.filter((g: Goal) => g.uid !== goalToDelete.uid)
+            );
         setIsConfirmDialogOpen(false);
         setGoalToDelete(null);
     };
 
-    const openConfirmDelete = (goal: Goal) => { setGoalToDelete(goal); setIsConfirmDialogOpen(true); };
+    const openConfirmDelete = (goal: Goal) => {
+        setGoalToDelete(goal);
+        setIsConfirmDialogOpen(true);
+    };
 
     // Derive areas that actually have goals
     const areasWithGoals = areas.filter((a) =>
-        goals.some((g: Goal) => g.area_id === a.id || (g.Area && g.Area.uid === a.uid))
+        goals.some(
+            (g: Goal) => g.area_id === a.id || (g.Area && g.Area.uid === a.uid)
+        )
     );
 
     const filteredGoals = selectedAreaUid
@@ -95,11 +121,13 @@ const Goals: React.FC = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
                 <div className="flex items-center justify-between gap-2 mb-6">
-                    <h2 className="text-2xl font-light">{t('goals.title', 'Goals')}</h2>
+                    <h2 className="text-2xl font-light">
+                        {t('goals.title', 'Goals')}
+                    </h2>
                     {canCreateGoals && (
                         <NewItemButton
                             label={t('goals.newGoal', 'New Goal')}
-                            onClick={() => navigate('/goal/new')}
+                            onClick={() => setIsCreateOpen(true)}
                             testId="new-goal-button"
                         />
                     )}
@@ -121,7 +149,13 @@ const Goals: React.FC = () => {
                         {areasWithGoals.map((area) => (
                             <button
                                 key={area.uid}
-                                onClick={() => setSelectedAreaUid(area.uid === selectedAreaUid ? null : area.uid!)}
+                                onClick={() =>
+                                    setSelectedAreaUid(
+                                        area.uid === selectedAreaUid
+                                            ? null
+                                            : area.uid!
+                                    )
+                                }
                                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                                     selectedAreaUid === area.uid
                                         ? 'text-white'
@@ -131,8 +165,8 @@ const Goals: React.FC = () => {
                                     selectedAreaUid === area.uid && area.color
                                         ? { backgroundColor: area.color }
                                         : selectedAreaUid === area.uid
-                                        ? { backgroundColor: '#374151' }
-                                        : {}
+                                          ? { backgroundColor: '#374151' }
+                                          : {}
                                 }
                             >
                                 {area.name}
@@ -158,7 +192,8 @@ const Goals: React.FC = () => {
                                                   'Create your first goal'
                                               ),
                                               icon: PlusIcon,
-                                              to: '/goal/new',
+                                              onClick: () =>
+                                                  setIsCreateOpen(true),
                                           },
                                           {
                                               label: t(
@@ -176,8 +211,14 @@ const Goals: React.FC = () => {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {filteredGoals.map((goal: Goal) => {
-                            const goalUrl = goal.uid ? createGoalUrl({ uid: goal.uid, title: goal.title }) : '/goals';
-                            const effectiveColor = goal.color || goal.Area?.color;
+                            const goalUrl = goal.uid
+                                ? createGoalUrl({
+                                      uid: goal.uid,
+                                      title: goal.title,
+                                  })
+                                : '/goals';
+                            const effectiveColor =
+                                goal.color || goal.Area?.color;
                             const hasColor = !!effectiveColor;
 
                             return (
@@ -189,16 +230,30 @@ const Goals: React.FC = () => {
                                             ? 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
                                             : ''
                                     } ${dropdownOpen === goal.uid ? 'z-50' : ''}`}
-                                    style={hasColor ? { backgroundColor: effectiveColor } : {}}
+                                    style={
+                                        hasColor
+                                            ? {
+                                                  backgroundColor:
+                                                      effectiveColor,
+                                              }
+                                            : {}
+                                    }
                                 >
                                     {/* Three-dot menu */}
-                                    <div className="absolute top-2 right-2 z-10" ref={dropdownRef}>
+                                    <div
+                                        className="absolute top-2 right-2 z-10"
+                                        ref={dropdownRef}
+                                    >
                                         <button
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                const next = dropdownOpen === goal.uid ? null : goal.uid!;
-                                                if (next) justOpenedRef.current = true;
+                                                const next =
+                                                    dropdownOpen === goal.uid
+                                                        ? null
+                                                        : goal.uid!;
+                                                if (next)
+                                                    justOpenedRef.current = true;
                                                 setDropdownOpen(next);
                                             }}
                                             className={`focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded ${
@@ -223,10 +278,18 @@ const Goals: React.FC = () => {
                                                     {t('common.edit', 'Edit')}
                                                 </button>
                                                 <button
-                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); openConfirmDelete(goal); setDropdownOpen(null); }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        openConfirmDelete(goal);
+                                                        setDropdownOpen(null);
+                                                    }}
                                                     className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
                                                 >
-                                                    {t('common.delete', 'Delete')}
+                                                    {t(
+                                                        'common.delete',
+                                                        'Delete'
+                                                    )}
                                                 </button>
                                             </div>
                                         )}
@@ -236,38 +299,62 @@ const Goals: React.FC = () => {
                                     <div className="px-5 pt-6 pb-4 flex-1 flex items-center justify-center text-center">
                                         <div>
                                             <div className="flex items-center justify-center gap-2 mb-2">
-                                                <FlagIcon className={`h-4 w-4 flex-shrink-0 ${hasColor ? 'text-white/70' : 'text-blue-500'}`} />
+                                                <FlagIcon
+                                                    className={`h-4 w-4 flex-shrink-0 ${hasColor ? 'text-white/70' : 'text-blue-500'}`}
+                                                />
                                             </div>
-                                            <h3 className={`text-sm font-semibold tracking-wide line-clamp-2 ${
-                                                hasColor ? 'text-white' : 'text-gray-800 dark:text-gray-100'
-                                            }`}>
+                                            <h3
+                                                className={`text-sm font-semibold tracking-wide line-clamp-2 ${
+                                                    hasColor
+                                                        ? 'text-white'
+                                                        : 'text-gray-800 dark:text-gray-100'
+                                                }`}
+                                            >
                                                 {goal.title}
                                             </h3>
                                             {goal.why && (
-                                                <p className={`text-xs mt-2 line-clamp-2 leading-relaxed ${
-                                                    hasColor ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'
-                                                }`}>
+                                                <p
+                                                    className={`text-xs mt-2 line-clamp-2 leading-relaxed ${
+                                                        hasColor
+                                                            ? 'text-white/70'
+                                                            : 'text-gray-500 dark:text-gray-400'
+                                                    }`}
+                                                >
                                                     {goal.why}
                                                 </p>
                                             )}
                                             <div className="flex flex-wrap justify-center gap-1 mt-3">
-                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                                    hasColor
-                                                        ? 'bg-white/20 text-white'
-                                                        : STATUS_COLORS[goal.status] ?? ''
-                                                }`}>
-                                                    {t(`goals.status.${goal.status}`, goal.status)}
+                                                <span
+                                                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                                        hasColor
+                                                            ? 'bg-white/20 text-white'
+                                                            : (STATUS_COLORS[
+                                                                  goal.status
+                                                              ] ?? '')
+                                                    }`}
+                                                >
+                                                    {t(
+                                                        `goals.status.${goal.status}`,
+                                                        goal.status
+                                                    )}
                                                 </span>
-                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                                    hasColor
-                                                        ? 'bg-white/15 text-white/80'
-                                                        : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-                                                }`}>
-                                                    {t(`goals.horizon.${goal.horizon}`, goal.horizon)}
+                                                <span
+                                                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                                        hasColor
+                                                            ? 'bg-white/15 text-white/80'
+                                                            : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                                                    }`}
+                                                >
+                                                    {t(
+                                                        `goals.horizon.${goal.horizon}`,
+                                                        goal.horizon
+                                                    )}
                                                 </span>
                                             </div>
                                             {goal.Area && (
-                                                <p className={`text-xs mt-2 ${hasColor ? 'text-white/55' : 'text-gray-400 dark:text-gray-500'}`}>
+                                                <p
+                                                    className={`text-xs mt-2 ${hasColor ? 'text-white/55' : 'text-gray-400 dark:text-gray-500'}`}
+                                                >
                                                     {goal.Area.name}
                                                 </p>
                                             )}
@@ -275,32 +362,62 @@ const Goals: React.FC = () => {
                                     </div>
 
                                     {/* Stats footer */}
-                                    <div className={`rounded-b-xl flex items-stretch divide-x ${
-                                        hasColor
-                                            ? 'bg-black/20 divide-white/10'
-                                            : 'bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-600 divide-gray-200 dark:divide-gray-600'
-                                    }`}>
+                                    <div
+                                        className={`rounded-b-xl flex items-stretch divide-x ${
+                                            hasColor
+                                                ? 'bg-black/20 divide-white/10'
+                                                : 'bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-600 divide-gray-200 dark:divide-gray-600'
+                                        }`}
+                                    >
                                         {[
                                             {
-                                                icon: <FolderIcon className="h-3.5 w-3.5" />,
-                                                count: (goal as any).projects_count ?? (goal.Projects?.length ?? 0),
-                                                label: t('goals.stats.projects', 'projects'),
+                                                icon: (
+                                                    <FolderIcon className="h-3.5 w-3.5" />
+                                                ),
+                                                count:
+                                                    (goal as any)
+                                                        .projects_count ??
+                                                    goal.Projects?.length ??
+                                                    0,
+                                                label: t(
+                                                    'goals.stats.projects',
+                                                    'projects'
+                                                ),
                                             },
                                             {
-                                                icon: <CheckCircleIcon className="h-3.5 w-3.5" />,
-                                                count: (goal as any).tasks_count ?? (goal.Tasks?.length ?? 0),
-                                                label: t('goals.stats.tasks', 'tasks'),
+                                                icon: (
+                                                    <CheckCircleIcon className="h-3.5 w-3.5" />
+                                                ),
+                                                count:
+                                                    (goal as any).tasks_count ??
+                                                    goal.Tasks?.length ??
+                                                    0,
+                                                label: t(
+                                                    'goals.stats.tasks',
+                                                    'tasks'
+                                                ),
                                             },
                                         ].map(({ icon, count, label }) => (
-                                            <div key={label} className="flex-1 flex flex-col items-center py-3 gap-1">
-                                                <span className={`text-base font-semibold leading-none ${
-                                                    hasColor ? 'text-white' : 'text-gray-700 dark:text-gray-200'
-                                                }`}>
+                                            <div
+                                                key={label}
+                                                className="flex-1 flex flex-col items-center py-3 gap-1"
+                                            >
+                                                <span
+                                                    className={`text-base font-semibold leading-none ${
+                                                        hasColor
+                                                            ? 'text-white'
+                                                            : 'text-gray-700 dark:text-gray-200'
+                                                    }`}
+                                                >
                                                     {count}
                                                 </span>
-                                                <span className={`flex items-center gap-1 text-[10px] leading-none ${
-                                                    hasColor ? 'text-white/55' : 'text-gray-400 dark:text-gray-500'
-                                                }`}>
+                                                <span
+                                                    className={`flex items-center gap-1 text-[10px] leading-none ${
+                                                        hasColor
+                                                            ? 'text-white/55'
+                                                            : 'text-gray-400 dark:text-gray-500'
+                                                    }`}
+                                                >
                                                     {icon}
                                                     {label}
                                                 </span>
@@ -314,15 +431,24 @@ const Goals: React.FC = () => {
                 )}
             </div>
 
+            <GoalModal
+                isOpen={isCreateOpen}
+                onClose={() => setIsCreateOpen(false)}
+            />
+
             {isConfirmDialogOpen && goalToDelete && (
                 <ConfirmDialog
                     title={t('modals.deleteGoal.title', 'Delete Goal')}
                     message={t('modals.deleteGoal.message', {
                         title: goalToDelete.title,
-                        defaultValue: 'Are you sure you want to delete the goal "{{title}}"?',
+                        defaultValue:
+                            'Are you sure you want to delete the goal "{{title}}"?',
                     })}
                     onConfirm={handleDeleteGoal}
-                    onCancel={() => { setIsConfirmDialogOpen(false); setGoalToDelete(null); }}
+                    onCancel={() => {
+                        setIsConfirmDialogOpen(false);
+                        setGoalToDelete(null);
+                    }}
                 />
             )}
         </div>
