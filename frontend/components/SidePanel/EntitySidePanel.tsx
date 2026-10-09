@@ -20,6 +20,8 @@ export interface EntitySidePanelProps {
     onDelete?: () => void;
     deleteLabel?: string;
     testId?: string;
+    // Set while a confirmation dialog is open, so Escape and the scrim leave it alone
+    closeLocked?: boolean;
     children: React.ReactNode;
 }
 
@@ -40,6 +42,7 @@ const EntitySidePanel: React.FC<EntitySidePanelProps> = ({
     onDelete,
     deleteLabel,
     testId,
+    closeLocked = false,
     children,
 }) => {
     const { t } = useTranslation();
@@ -48,8 +51,10 @@ const EntitySidePanel: React.FC<EntitySidePanelProps> = ({
     const panelRef = useRef<HTMLElement>(null);
     const closingRef = useRef(false);
     const dirtyRef = useRef(isDirty);
+    const lockedRef = useRef(closeLocked);
     const onCloseRef = useRef(onClose);
     dirtyRef.current = isDirty;
+    lockedRef.current = closeLocked;
     onCloseRef.current = onClose;
 
     useEffect(() => {
@@ -80,7 +85,7 @@ const EntitySidePanel: React.FC<EntitySidePanelProps> = ({
     };
 
     const requestClose = () => {
-        if (closingRef.current) return;
+        if (closingRef.current || lockedRef.current) return;
         if (dirtyRef.current) {
             setShowDiscard(true);
         } else {
