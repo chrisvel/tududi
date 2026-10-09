@@ -6,6 +6,12 @@ export interface Trends {
     signups: { last7d: number; prev7d: number };
     waitlist: { last7d: number; prev7d: number };
     activation: { new_users: number; activated: number };
+    onboarding?: {
+        new_users: number;
+        first_plan: number;
+        cohort: number;
+        three_days: number;
+    };
     active_users_7d: number;
     billing: {
         trials_started_7d: number;
@@ -116,7 +122,9 @@ const SignupBars: React.FC<{ days: Trends['days'] }> = ({ days }) => {
 
 const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
     const { t } = useTranslation();
-    const { activation, billing } = trends;
+    const { activation, billing, onboarding } = trends;
+    const rate = (part: number, whole: number): string =>
+        whole ? `${Math.round((part / whole) * 100)}%` : '-';
     const activationRate = activation.new_users
         ? Math.round((activation.activated / activation.new_users) * 100)
         : null;
@@ -165,6 +173,56 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                         }
                         testId="admin-trends-activation"
                     />
+                    {onboarding && (
+                        <>
+                            <Tile
+                                label={t(
+                                    'admin.trends.firstPlan',
+                                    'Planned a first day'
+                                )}
+                                value={rate(
+                                    onboarding.first_plan,
+                                    onboarding.new_users
+                                )}
+                                hint={
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        {t(
+                                            'admin.trends.firstPlanHint',
+                                            '{{n}} of {{total}} new users planned 3+ tasks',
+                                            {
+                                                n: onboarding.first_plan,
+                                                total: onboarding.new_users,
+                                            }
+                                        )}
+                                    </span>
+                                }
+                                testId="admin-trends-first-plan"
+                            />
+                            <Tile
+                                label={t(
+                                    'admin.trends.threeDays',
+                                    'Kept planning'
+                                )}
+                                value={rate(
+                                    onboarding.three_days,
+                                    onboarding.cohort
+                                )}
+                                hint={
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        {t(
+                                            'admin.trends.threeDaysHint',
+                                            "{{n}} of {{total}} of last week's signups planned 3 days",
+                                            {
+                                                n: onboarding.three_days,
+                                                total: onboarding.cohort,
+                                            }
+                                        )}
+                                    </span>
+                                }
+                                testId="admin-trends-three-days"
+                            />
+                        </>
+                    )}
                     <Tile
                         label={t('admin.trends.active', 'Active users')}
                         value={trends.active_users_7d}

@@ -123,6 +123,38 @@ const Areas: React.FC = () => {
         }
     };
 
+    // One click from the blank slate: an area with just a name, no modal.
+    const addPresetArea = async (name: string) => {
+        const existing = useStore.getState().areasStore.areas;
+        if (
+            existing.some(
+                (area: any) => area.name?.toLowerCase() === name.toLowerCase()
+            )
+        ) {
+            return;
+        }
+        try {
+            const result = await createArea({ name });
+            useStore
+                .getState()
+                .areasStore.setAreas([
+                    ...useStore.getState().areasStore.areas,
+                    result,
+                ]);
+            useStore.getState().areasStore.setError(false);
+        } catch (error) {
+            console.error('Error creating area:', error);
+            useStore.getState().areasStore.setError(true);
+        }
+    };
+
+    const areaPresets = [
+        t('areas.presetHome', 'Home'),
+        t('areas.presetWork', 'Work'),
+        t('areas.presetHealth', 'Health'),
+        t('areas.presetFamily', 'Family'),
+    ];
+
     const handleNewArea = () => {
         setSelectedArea(null);
         setIsAreaModalOpen(true);
@@ -214,6 +246,23 @@ const Areas: React.FC = () => {
                                 to: '/projects',
                             },
                         ]}
+                        presetsLabel={
+                            canCreateAreas
+                                ? t(
+                                      'areas.presetsLabel',
+                                      'Most people start with'
+                                  )
+                                : undefined
+                        }
+                        presets={
+                            canCreateAreas
+                                ? areaPresets.map((name) => ({
+                                      label: name,
+                                      onClick: () => addPresetArea(name),
+                                      testId: `area-preset-${name.toLowerCase()}`,
+                                  }))
+                                : []
+                        }
                     />
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

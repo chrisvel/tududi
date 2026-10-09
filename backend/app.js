@@ -378,6 +378,7 @@ const adminModule = require('./modules/admin');
 const areasModule = require('./modules/areas');
 const goalsModule = require('./modules/goals');
 const dailyPlanModule = require('./modules/daily-plan');
+const onboardingModule = require('./modules/onboarding');
 const calendarFeedsModule = require('./modules/calendar-feeds');
 const authModule = require('./modules/auth');
 const backupModule = require('./modules/backup');
@@ -512,6 +513,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, areasModule.routes);
     app.use(basePath, goalsModule.routes);
     app.use(basePath, dailyPlanModule.routes);
+    app.use(basePath, onboardingModule.routes);
     app.use(basePath, calendarFeedsModule.routes);
     app.use(basePath, notesModule.routes);
     app.use(basePath, tagsModule.routes);

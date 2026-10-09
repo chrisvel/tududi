@@ -55,8 +55,12 @@ async function ensureDemoUser() {
             name: 'Demo',
             email_verified: true,
             language: 'en',
+            // Visitors land straight in Today, never on the welcome screen.
+            onboarded_at: new Date(),
         });
         logInfo(`Demo account created: ${config.email}`);
+    } else if (!user.onboarded_at) {
+        await user.update({ onboarded_at: new Date() });
     }
     cachedDemoUserId = user.id;
 

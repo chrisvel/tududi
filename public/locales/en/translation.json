@@ -116,7 +116,8 @@
     "search": "Search",
     "admin": "Admin",
     "adminBadge": "Admin",
-    "templates": "Templates"
+    "templates": "Templates",
+    "brainDump": "Brain dump"
   },
   "settings": {
     "todayPageSettings": "Today Page Settings",
@@ -1586,7 +1587,12 @@
     "deleteGoal": "Delete goal",
     "moveBackToUnlinked": "Move back to unlinked",
     "horizonSeason": "Season",
-    "horizonYear": "Year"
+    "horizonYear": "Year",
+    "presetsLabel": "Most people start with",
+    "presetHome": "Home",
+    "presetWork": "Work",
+    "presetHealth": "Health",
+    "presetFamily": "Family"
   },
   "notes": {
     "addNote": "Add Note",
@@ -1830,7 +1836,11 @@
     "perDay": "a day",
     "weekdays": "Weekdays",
     "weekends": "Weekends",
-    "quitTarget": "Avoid"
+    "quitTarget": "Avoid",
+    "presetsLabel": "Or start with",
+    "presetWalk": "Morning walk",
+    "presetRead": "Read 20 minutes",
+    "presetReview": "Weekly review"
   },
   "recurrence": {
     "none": "None",
@@ -2357,7 +2367,11 @@
       "waitlist": "Waitlist joins",
       "trialsStarted": "Trials started",
       "trialsEnding": "Trials ending in 7 days",
-      "churn": "Canceled · failed payments"
+      "churn": "Canceled · failed payments",
+      "firstPlan": "Planned a first day",
+      "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
+      "threeDays": "Kept planning",
+      "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
     }
   },
   "billing": {
@@ -3225,5 +3239,21 @@
     "missingBody": "It may have moved or been taken down. The other posts are one click away.",
     "allPosts": "All posts",
     "morePosts": "More from the blog"
+  },
+  "onboarding": {
+    "kicker": "Welcome to tududi",
+    "title": "What's on your plate this week?",
+    "subtitle": "One thing per line, press Enter after each. No sorting yet, that comes later.",
+    "inputLabel": "Something on your plate",
+    "placeholderMore": "Anything else?",
+    "hintSyntax": "Try \"Call the dentist tomorrow #home\" or \"Draft the budget +Q4 planning\".",
+    "promptWork": "Something from work",
+    "promptHome": "Something at home",
+    "promptPutOff": "The thing you keep putting off",
+    "planMyDay": "Plan my day",
+    "planning": "Planning your day...",
+    "skip": "Skip for now",
+    "kickerAgain": "Brain dump",
+    "back": "Close"
   }
 }

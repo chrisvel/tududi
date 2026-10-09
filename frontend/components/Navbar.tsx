@@ -9,6 +9,7 @@ import {
     CircleStackIcon,
     InformationCircleIcon,
     ArrowRightStartOnRectangleIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
@@ -25,6 +26,7 @@ import {
 } from '../utils/profileService';
 import { notifySwClearCache } from '../utils/swUtils';
 import { detachPushForLogout } from '../utils/pushService';
+import { openBrainDump } from '../utils/brainDumpUi';
 import { resetSessionState } from '../utils/sessionReset';
 import { toggleCapture, useCaptureUi } from '../utils/captureUi';
 
@@ -296,6 +298,18 @@ const Navbar: React.FC<NavbarProps> = ({
                                         </span>
                                     </Link>
                                 )}
+                                <button
+                                    type="button"
+                                    className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    onClick={() => {
+                                        setIsDropdownOpen(false);
+                                        openBrainDump();
+                                    }}
+                                    data-testid="navbar-brain-dump-link"
+                                >
+                                    <SparklesIcon className="h-4 w-4 mr-2 shrink-0" />
+                                    {t('navigation.brainDump', 'Brain dump')}
+                                </button>
                                 <Link
                                     to="/profile"
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
