@@ -628,7 +628,7 @@ const InboxItems: React.FC = () => {
                                     return (
                                         <div
                                             key={item.uid || item.id}
-                                            className={`transition-all duration-300 ease-out ${rowClass}`}
+                                            className={`transition-[margin,padding] duration-300 ease-out ${rowClass}`}
                                         >
                                             <InboxItemDetail
                                                 item={item}
