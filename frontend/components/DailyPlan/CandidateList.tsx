@@ -36,6 +36,10 @@ interface CandidateListProps {
     onReschedule: (task: Task, when: 'tomorrow' | 'next_week') => void;
     onDrop: (task: Task) => void;
     onAddInbox: (item: InboxCandidate) => void;
+    // Asks the server for the next page of suggestions once the loaded
+    // ones run out; "Show more" keeps going until there are none left.
+    onLoadMore?: () => void;
+    loadingMore?: boolean;
     today: string;
 }
 
@@ -220,6 +224,8 @@ const CandidateList: React.FC<CandidateListProps> = ({
     onReschedule,
     onDrop,
     onAddInbox,
+    onLoadMore,
+    loadingMore = false,
     today,
 }) => {
     const { t } = useTranslation();
@@ -253,6 +259,23 @@ const CandidateList: React.FC<CandidateListProps> = ({
         );
     const shown = entries.slice(0, visible);
 
+    // Suggestions still on the server, past the ones loaded so far. Only the
+    // views that list suggestions can ask for them.
+    const suggestedTotal =
+        candidates.suggested_total ?? candidates.suggested.length;
+    const remote =
+        (filter === 'all' || filter === 'suggested') && onLoadMore
+            ? Math.max(0, suggestedTotal - candidates.suggested.length)
+            : 0;
+    const remaining = entries.length - visible + remote;
+
+    const showMore = () => {
+        const next = visible + PAGE_SIZE;
+        setVisible(next);
+        // Fetch ahead so the next click never waits on the server.
+        if (remote > 0 && entries.length - next < PAGE_SIZE) onLoadMore?.();
+    };
+
     const counts: { key: CandidateFilter; label: string; count: number }[] = [
         { key: 'all', label: t('dailyPlan.all', 'All'), count: entries.length },
         ...GROUP_ORDER.map((key) => ({
@@ -264,7 +287,10 @@ const CandidateList: React.FC<CandidateListProps> = ({
                 in_progress: t('dailyPlan.inProgress', 'In progress'),
                 suggested: t('dailyPlan.suggested', 'Suggested'),
             }[key],
-            count: (candidates[key] ?? []).length,
+            count:
+                key === 'suggested'
+                    ? suggestedTotal
+                    : (candidates[key] ?? []).length,
         })).filter((pill) => pill.count > 0),
         {
             key: 'inbox',
@@ -366,18 +392,23 @@ const CandidateList: React.FC<CandidateListProps> = ({
                             />
                         ))}
                     </div>
-                    {entries.length > visible && (
+                    {remaining > 0 && (
                         <button
                             type="button"
-                            onClick={() => setVisible((n) => n + PAGE_SIZE)}
-                            className="self-start px-3 text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                            onClick={showMore}
+                            disabled={loadingMore && entries.length <= visible}
+                            className="self-start px-3 text-xs text-gray-500 hover:text-gray-800 disabled:cursor-wait disabled:opacity-60 dark:text-gray-400 dark:hover:text-gray-200"
+                            data-testid="candidates-show-more"
                         >
-                            {t('dailyPlan.showMore', 'Show {{count}} more', {
-                                count: Math.min(
-                                    PAGE_SIZE,
-                                    entries.length - visible
-                                ),
-                            })}
+                            {loadingMore && entries.length <= visible
+                                ? t('common.loading', 'Loading...')
+                                : t(
+                                      'dailyPlan.showMore',
+                                      'Show {{count}} more',
+                                      {
+                                          count: Math.min(PAGE_SIZE, remaining),
+                                      }
+                                  )}
                         </button>
                     )}
                 </>
