@@ -63,3 +63,51 @@ describe('TaskStatusControl on phones (#1669)', () => {
         expect(menuButton()?.className).toContain('max-sm:min-h-9');
     });
 });
+
+describe('TaskStatusControl menu placement', () => {
+    const originalMatchMedia = window.matchMedia;
+    const originalInnerWidth = window.innerWidth;
+    const originalGetRect = HTMLElement.prototype.getBoundingClientRect;
+    afterEach(() => {
+        window.matchMedia = originalMatchMedia;
+        Object.defineProperty(window, 'innerWidth', {
+            value: originalInnerWidth,
+            configurable: true,
+        });
+        HTMLElement.prototype.getBoundingClientRect = originalGetRect;
+    });
+
+    const placeControl = (left: number, right: number, viewport: number) => {
+        Object.defineProperty(window, 'innerWidth', {
+            value: viewport,
+            configurable: true,
+        });
+        HTMLElement.prototype.getBoundingClientRect = () =>
+            ({
+                left,
+                right,
+                top: 100,
+                bottom: 136,
+                width: right - left,
+                height: 36,
+            }) as DOMRect;
+    };
+
+    const openMenu = () => {
+        setViewport(true);
+        render(<TaskStatusControl task={task} showMobileVariant={false} />);
+        fireEvent.click(menuButton()!);
+        return screen.getByText('Set as done').closest('button')!
+            .parentElement as HTMLElement;
+    };
+
+    it('hangs the menu off the left edge when the control sits at the left of a narrow screen', () => {
+        placeControl(40, 112, 390);
+        expect(openMenu().className).toContain('left-0');
+    });
+
+    it('keeps the menu on the right edge when the control sits at the right', () => {
+        placeControl(300, 372, 390);
+        expect(openMenu().className).toContain('right-0');
+    });
+});
