@@ -118,7 +118,6 @@ const EditableRow: React.FC<{
             <dd className="flex min-w-0 flex-wrap items-center justify-end gap-1.5 text-right text-gray-800 dark:text-gray-200">
                 {hasValue ? (
                     <>
-                        {children}
                         <button
                             type="button"
                             onClick={onStartEdit}
@@ -127,6 +126,7 @@ const EditableRow: React.FC<{
                         >
                             <PencilIcon className="h-3.5 w-3.5" />
                         </button>
+                        {children}
                     </>
                 ) : (
                     <button
