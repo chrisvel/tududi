@@ -77,6 +77,16 @@ import {
 type Mode = 'timeline' | 'list';
 const MODE_KEY = 'dailyPlanMode';
 const SAVE_DELAY_MS = 500;
+// How many more suggestions each "Show more" past the loaded ones asks for.
+const SUGGESTIONS_PAGE = 20;
+
+// The server's count of suggestions, moved by a local add or removal so
+// "Show more" still knows whether anything is left to fetch.
+const countSuggested = (list: PlanCandidates, delta: number) =>
+    Math.max(
+        list.suggested.length + delta,
+        (list.suggested_total ?? list.suggested.length) + delta
+    );
 
 const readMode = (): Mode => {
     try {
@@ -160,6 +170,11 @@ const PlanMyDay: React.FC = () => {
     const [started, setStarted] = useState(false);
     const [items, setItems] = useState<DailyPlanItem[]>([]);
     const [candidates, setCandidates] = useState<PlanCandidates | null>(null);
+    // How many suggestions the server was last asked for; null is the
+    // Planning setting. "Show more" raises it and the whole list reloads,
+    // so the first entries keep their order and refreshes never shrink it.
+    const suggestedLimit = useRef<number | null>(null);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [refreshingEvents, setRefreshingEvents] = useState(false);
     const [durations, setDurations] = useState<Record<string, number>>({});
@@ -266,7 +281,7 @@ const PlanMyDay: React.FC = () => {
     useEffect(() => {
         const refresh = () => {
             if (document.visibilityState !== 'visible') return;
-            fetchPlanCandidates()
+            fetchPlanCandidates(suggestedLimit.current)
                 .then(setCandidates)
                 .catch(() => undefined);
         };
@@ -502,9 +517,41 @@ const PlanMyDay: React.FC = () => {
                       suggested: current.suggested.filter(
                           (x) => x.uid !== taskUid
                       ),
+                      suggested_total: countSuggested(
+                          current,
+                          current.suggested.some((x) => x.uid === taskUid)
+                              ? -1
+                              : 0
+                      ),
                   }
                 : current
         );
+
+    // The next page of suggestions: everything loaded so far plus one more
+    // page, until the server has nothing left.
+    const loadMoreCandidates = useCallback(async () => {
+        if (!candidates || loadingMore) return;
+        const total = candidates.suggested_total ?? candidates.suggested.length;
+        if (candidates.suggested.length >= total) return;
+        const next = Math.min(
+            total,
+            candidates.suggested.length + SUGGESTIONS_PAGE
+        );
+        setLoadingMore(true);
+        try {
+            const list = await fetchPlanCandidates(next);
+            suggestedLimit.current = next;
+            setCandidates(list);
+        } catch (err) {
+            showErrorToast(
+                err instanceof Error
+                    ? err.message
+                    : t('errors.generic', 'Something went wrong')
+            );
+        } finally {
+            setLoadingMore(false);
+        }
+    }, [candidates, loadingMore, t]);
 
     const handleReschedule = async (
         task: Task,
@@ -559,6 +606,7 @@ const PlanMyDay: React.FC = () => {
                           ),
                           inbox_count: Math.max(0, current.inbox_count - 1),
                           suggested: [task, ...current.suggested],
+                          suggested_total: countSuggested(current, 1),
                       }
                     : current
             );
@@ -597,6 +645,12 @@ const PlanMyDay: React.FC = () => {
                                   suggested: list.suggested.filter(
                                       (task) => !uids.includes(task.uid ?? '')
                                   ),
+                                  suggested_total: countSuggested(
+                                      list,
+                                      -list.suggested.filter((task) =>
+                                          uids.includes(task.uid ?? '')
+                                      ).length
+                                  ),
                               }
                             : list
                     );
@@ -609,6 +663,10 @@ const PlanMyDay: React.FC = () => {
                                 ? {
                                       ...list,
                                       suggested: [...tasks, ...list.suggested],
+                                      suggested_total: countSuggested(
+                                          list,
+                                          tasks.length
+                                      ),
                                   }
                                 : list
                         );
@@ -1104,6 +1162,8 @@ const PlanMyDay: React.FC = () => {
                                 onReschedule={handleReschedule}
                                 onDrop={handleDrop}
                                 onAddInbox={handleAddInbox}
+                                onLoadMore={loadMoreCandidates}
+                                loadingMore={loadingMore}
                                 today={date ?? ''}
                             />
                         </aside>

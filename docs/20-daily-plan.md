@@ -34,7 +34,7 @@ The classic Today page was removed; `/today_legacy` now redirects to `/today`. I
 
 ## Planner (`/today/plan`)
 
-- **Left column:** a short list, "What could you do today?": five candidates at a time in a fixed order (see **Candidate order** below), each shown as its name and one grey line. The name opens the task. **Show 5 more** adds five, and **Browse** opens the per-group filters and the inbox. Tasks already planned leave the list. Resting the pointer on a row for a moment, or focusing it (always on touch screens), opens its 15m / 30m / 1h / 2h chips and, for overdue tasks, **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task). The short delay keeps rows from opening and closing while the mouse passes over them.
+- **Left column:** a short list, "What could you do today?": five candidates at a time in a fixed order (see **Candidate order** below), each shown as its name and one grey line. The name opens the task. **Show 5 more** adds five and keeps going: once the loaded suggestions run out it asks the server for the next twenty, until every open task that qualifies has been shown. **Browse** opens the per-group filters and the inbox. Tasks already planned leave the list. Resting the pointer on a row for a moment, or focusing it (always on touch screens), opens its 15m / 30m / 1h / 2h chips and, for overdue tasks, **Tomorrow**, **Next week** (moves the due date) and **Drop** (cancels the task). The short delay keeps rows from opening and closing while the mouse passes over them.
 - Task names on the timeline and in the list view also open the task.
 
 ### Candidate order
@@ -62,9 +62,9 @@ Groups follow the task's own due date. A task with no date of its own in a late 
 | `tieBreak`           | `recently_touched` | `recently_touched`, `newest`, `oldest`                         |
 | `staleAfterDays`     | `null` (off)       | `null`, `90`, `180`: leave out tasks not changed for that long |
 | `horizonDays`        | `3`                | `1`, `3`, `7`: nothing due further ahead is suggested          |
-| `maxSuggestions`     | `20`               | `10`, `20`, `50`                                               |
+| `maxSuggestions`     | `20`               | `10`, `20`, `50`: how many suggestions load at first           |
 
-These only filter the suggested group: overdue, due-today and in-progress tasks always show, even from an excluded project. Filters run before the limit, and the limit keeps the first suggestions in the final order. The underlying Today suggestions list keeps its own rules (50, three days ahead, no project filter).
+These only filter the suggested group: overdue, due-today and in-progress tasks always show, even from an excluded project. Filters run before the limit, and the limit keeps the first suggestions in the final order. The limit is a first page, not a ceiling: the response carries `suggested_total`, and `?suggested_limit=N` (1 to 1000) raises the cap so **Show more** can page through the rest. The underlying Today suggestions list keeps its own rules (50, three days ahead, no project filter).
 
 ### Day hours
 
@@ -108,7 +108,7 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | Method                | Path                                     | Notes                                                                                                                                                                                        |
 | --------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GET                   | `/api/daily-plan?date=`                  | `{ date, day_hours, plan }`, the plan or `null`. The date defaults to today in the user's timezone                                                                                           |
-| GET                   | `/api/daily-plan/candidates`             | `{ tagged_today, overdue, due_today, in_progress, suggested, inbox, inbox_count, ranked }`, each task in one group only; `ranked` lists task uids in the user's order                                      |
+| GET                   | `/api/daily-plan/candidates`             | `{ tagged_today, overdue, due_today, in_progress, suggested, suggested_total, inbox, inbox_count, ranked }`, each task in one group only; `ranked` lists task uids in the user's order. `?suggested_limit=N` (1 to 1000) sends up to N suggestions instead of the Planning setting; 400 otherwise |
 | GET                   | `/api/daily-plan/ranking`                | `{ order, default_order }`, the ten bucket keys such as `overdue:project`                                                                                                                  |
 | PUT                   | `/api/daily-plan/ranking`                | Body `{ order }` with every bucket key once; 400 otherwise                                                                                                                                   |
 | GET                   | `/api/daily-plan/hours`                  | `{ start, end }` in minutes after local midnight                                                                                                                                             |

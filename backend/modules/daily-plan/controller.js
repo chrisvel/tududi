@@ -23,7 +23,13 @@ const dailyPlanController = {
     async candidates(req, res, next) {
         try {
             const user = requireUser(req);
-            res.json(await dailyPlanService.getCandidates(user));
+            res.json(
+                await dailyPlanService.getCandidates(user, {
+                    suggestedLimit: dailyPlanService.parseSuggestedLimit(
+                        req.query.suggested_limit
+                    ),
+                })
+            );
         } catch (err) {
             next(err);
         }
