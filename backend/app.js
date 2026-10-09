@@ -68,7 +68,13 @@ app.use(
                 fontSrc: ["'self'"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
-                frameSrc: ["'self'", 'https://challenges.cloudflare.com'],
+                // youtube-nocookie.com plays the welcome video on the
+                // starter picker
+                frameSrc: [
+                    "'self'",
+                    'https://challenges.cloudflare.com',
+                    'https://www.youtube-nocookie.com',
+                ],
                 upgradeInsecureRequests:
                     process.env.UPGRADE_INSECURE_REQUESTS === 'true'
                         ? []

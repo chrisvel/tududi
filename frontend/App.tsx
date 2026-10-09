@@ -61,8 +61,14 @@ import PersonDetails from './components/People/PersonDetails';
 import EveryoneDashboard from './components/Everyone/EveryoneDashboard';
 import Templates from './components/Templates/Templates';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
-import { useBrainDumpUi, closeBrainDump } from './utils/brainDumpUi';
-import { getApiPath, getLocalesPath } from './config/paths';
+import {
+    useBrainDumpUi,
+    closeBrainDump,
+    openBrainDump,
+} from './utils/brainDumpUi';
+import type { StarterResult } from './utils/onboardingService';
+import type { StarterKey } from './utils/starters';
+import { getApiPath, getBasePath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
@@ -78,6 +84,9 @@ const PublicNotePage = lazy(
 const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
 const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
 const FirstPlan = lazy(() => import('./components/Onboarding/FirstPlan'));
+const StarterPicker = lazy(
+    () => import('./components/Onboarding/StarterPicker')
+);
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 // Declared at module scope: the users page switches tabs through the query
@@ -251,6 +260,27 @@ const App: React.FC = () => {
         });
     };
 
+    // The starter picker is done with. A starter that created things is
+    // followed by a full reload of Today, so every list and count on the
+    // page and in the sidebar picks the new records up; the empty ones open
+    // the brain dump instead, the way the welcome used to.
+    const finishStarter = (result: StarterResult, key: StarterKey) => {
+        const user = currentUser
+            ? {
+                  ...currentUser,
+                  onboarded_at: result.onboarded_at,
+                  onboarding_starter: result.onboarding_starter,
+              }
+            : null;
+        if (user) setUserInStorage(user);
+        if (key === 'empty' || key === 'simple') {
+            setCurrentUser(user);
+            openBrainDump();
+            return;
+        }
+        window.location.assign(`${getBasePath() || ''}/today`);
+    };
+
     // The Inbox keeps offering a claimed share while the user stays on it (the
     // page remounts whenever Layout shows its first-load spinner), so the claim
     // is released on the first navigation away from it instead.
@@ -404,16 +434,19 @@ const App: React.FC = () => {
                                         toggleDarkMode={toggleDarkMode}
                                     >
                                         <Suspense fallback={null}>
-                                            <FirstPlan
+                                            <StarterPicker
                                                 open={
-                                                    brainDump.open ||
-                                                    (currentUser.onboarded_at ===
+                                                    currentUser.onboarding_starter ===
                                                         null &&
-                                                        (location.pathname ===
-                                                            '/today' ||
-                                                            location.pathname ===
-                                                                '/'))
+                                                    (location.pathname ===
+                                                        '/today' ||
+                                                        location.pathname ===
+                                                            '/')
                                                 }
+                                                onDone={finishStarter}
+                                            />
+                                            <FirstPlan
+                                                open={brainDump.open}
                                                 key={brainDump.openCount}
                                                 firstVisit={
                                                     currentUser.onboarded_at ===
