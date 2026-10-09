@@ -97,6 +97,56 @@ describe('Project and note attachments', () => {
             ).toBe(false);
         });
 
+        it('sets, shows and clears a title', async () => {
+            const { body } = await upload();
+            expect(body.title).toBeNull();
+            const url = `/api/project/${project.uid}/attachments/${body.uid}`;
+
+            const titled = await agent
+                .patch(url)
+                .send({ title: '  Signed quote  ' });
+            expect(titled.status).toBe(200);
+            expect(titled.body.title).toBe('Signed quote');
+            expect(titled.body.original_filename).toBe('brief.pdf');
+
+            const list = await agent.get(
+                `/api/project/${project.uid}/attachments`
+            );
+            expect(list.body[0].title).toBe('Signed quote');
+
+            const cleared = await agent.patch(url).send({ title: '' });
+            expect(cleared.body.title).toBeNull();
+
+            const tooLong = await agent
+                .patch(url)
+                .send({ title: 'x'.repeat(256) });
+            expect(tooLong.status).toBe(400);
+        });
+
+        it('refuses a title change from a read-only collaborator', async () => {
+            const { body } = await upload();
+            const reader = await createTestUser({
+                email: `pn-attach-title-reader_${Date.now()}@test.com`,
+            });
+            const readerAgent = await login(reader.email);
+            await agent.post('/api/shares').send({
+                resource_type: 'project',
+                resource_uid: project.uid,
+                target_user_email: reader.email,
+                access_level: 'ro',
+            });
+            await acceptAllInvitations(readerAgent);
+
+            const denied = await readerAgent
+                .patch(`/api/project/${project.uid}/attachments/${body.uid}`)
+                .send({ title: 'Mine now' });
+            expect(denied.status).toBe(403);
+            const row = await ProjectAttachment.findOne({
+                where: { uid: body.uid },
+            });
+            expect(row.title).toBeNull();
+        });
+
         it('lets a read-only collaborator see but not add files', async () => {
             const { body } = await upload();
             const reader = await createTestUser({

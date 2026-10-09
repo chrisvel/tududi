@@ -182,6 +182,8 @@ export interface AttachmentsApi {
     upload: (file: File) => Promise<FileAttachment>;
     remove: (attachmentUid: string) => Promise<void>;
     downloadUrl: (attachmentUid: string) => string;
+    // Sets the title; an empty one clears it. Not every owner supports it.
+    rename?: (attachmentUid: string, title: string) => Promise<FileAttachment>;
 }
 
 export const taskAttachmentsApi = (taskUid: string): AttachmentsApi => ({
@@ -244,5 +246,23 @@ export const ownerAttachmentsApi = (
         },
         downloadUrl: (attachmentUid) =>
             getApiPath(`${base}/${attachmentUid}/download`),
+        rename: async (attachmentUid, title) => {
+            const response = await fetch(
+                getApiPath(`${base}/${attachmentUid}`),
+                {
+                    method: 'PATCH',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-csrf-token': await getCsrfToken(),
+                    },
+                    body: JSON.stringify({ title }),
+                }
+            );
+            if (!response.ok) {
+                throw await readError(response, 'Failed to rename attachment');
+            }
+            return response.json();
+        },
     };
 };

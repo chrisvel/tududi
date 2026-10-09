@@ -1126,6 +1126,19 @@
     "overview": "Overview",
     "people": "People",
     "info": "Project info",
+    "clickToEdit": "Click to edit",
+    "addDescription": "Add a description",
+    "changeArea": "Change area",
+    "setArea": "Set area",
+    "changeGoal": "Change goal",
+    "setGoal": "Set goal",
+    "changePriority": "Change priority",
+    "setPriority": "Set priority",
+    "changeDue": "Change due date",
+    "changeTags": "Change tags",
+    "addTags": "Add tags",
+    "changeColor": "Change color",
+    "setColor": "Set color",
     "moreOptions": "More options",
     "pin": "Pin",
     "pinned": "Pinned",
@@ -1154,7 +1167,16 @@
     "notShared": "Only you can see this project.",
     "addNote": "Add note",
     "noNotesYet": "No notes yet.",
-    "allNotes": "All notes"
+    "allNotes": "All notes",
+    "fewerNotes": "Show fewer",
+    "fileCount_one": "{{count}} file",
+    "fileCount_other": "{{count}} files",
+    "addFile": "Add file",
+    "uploading": "Uploading...",
+    "noFilesYet": "No files yet. Drop files here or use +.",
+    "allFiles": "All files",
+    "dropToUpload": "Drop to upload",
+    "fewerFiles": "Show fewer"
   },
   "errors": {
     "required": "This field is required",
@@ -1653,8 +1675,7 @@
     "deleteNote": "Delete Note",
     "deleteNoteConfirm": "Are you sure you want to delete the note \"{{title}}\"?",
     "untitled": "Untitled Note",
-    "editedOn": "Edited {{date}}",
-    "emptyNote": "This note is empty."
+    "openInNotes": "Open in Notes"
   },
   "tags": {
     "addTag": "Add Tag",
@@ -3104,7 +3125,15 @@
     "filesAttached_other": "{{count}} files attached."
   },
   "attachments": {
-    "limitReached": "Maximum 20 attachments allowed"
+    "limitReached": "Maximum 20 attachments allowed",
+    "addTitle": "Add a title",
+    "title": "Title",
+    "download": "Download",
+    "noPreview": "No preview for this file type.",
+    "previous": "Previous file",
+    "next": "Next file",
+    "renameError": "Could not save the title",
+    "confirmDelete": "Delete file?"
   },
   "area": {
     "loadError": "Failed to load areas"
