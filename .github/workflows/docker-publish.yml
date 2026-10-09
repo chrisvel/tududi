@@ -292,7 +292,8 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           # Discord caps an embed description at 4096 characters
-          BODY=$(gh release view "$TAG" --json body --jq .body | head -c 3500)
+          NOTES=$(gh release view "$TAG" --json body --jq .body | head -c 3500)
+          BODY="**tududi $TAG was just released!**"$'\n\n'"$NOTES"
           jq -n \
             --arg title "tududi $TAG" \
             --arg url "https://github.com/$REPO/releases/tag/$TAG" \
