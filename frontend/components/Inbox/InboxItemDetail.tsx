@@ -485,7 +485,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     openTaskModal={openTaskModal}
                     openProjectModal={openProjectModal}
                     openNoteModal={openNoteModal}
-                    cardClassName="mb-0 shadow-lg animate-inbox-detach"
+                    cardClassName="mb-0 !rounded-none !shadow-none"
                     multiline={true}
                 />
             ) : (
