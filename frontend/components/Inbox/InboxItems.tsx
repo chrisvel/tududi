@@ -616,11 +616,14 @@ const InboxItems: React.FC = () => {
                                           } ${
                                               // A soft line between rows, as in task
                                               // sheets. It drops next to the open item.
+                                              // The border always takes up its 1px and
+                                              // only its colour fades, so the rounded
+                                              // corners do not move while animating.
                                               index > 0 &&
                                               index !== openIndex &&
                                               index !== openIndex + 1
                                                   ? 'border-t border-gray-100 dark:border-white/5'
-                                                  : ''
+                                                  : 'border-t border-transparent'
                                           }`;
                                     return (
                                         <div
