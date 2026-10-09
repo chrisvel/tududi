@@ -437,11 +437,7 @@ const App: React.FC = () => {
                                             <StarterPicker
                                                 open={
                                                     currentUser.onboarding_starter ===
-                                                        null &&
-                                                    (location.pathname ===
-                                                        '/today' ||
-                                                        location.pathname ===
-                                                            '/')
+                                                    null
                                                 }
                                                 onDone={finishStarter}
                                             />
