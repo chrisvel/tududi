@@ -56,6 +56,10 @@ import ProjectNotesSection from './ProjectNotesSection';
 import AttachmentsPanel from '../Shared/AttachmentsPanel';
 import { ownerAttachmentsApi } from '../../utils/attachmentsService';
 import { useProjectMetrics } from './useProjectMetrics';
+import {
+    matchesTaskStatusFilter,
+    TaskStatusFilter,
+} from '../../constants/taskStatus';
 import { saveProjectAsTemplate } from '../../utils/templatesService';
 
 const ProjectDetails: React.FC = () => {
@@ -105,12 +109,12 @@ const ProjectDetails: React.FC = () => {
             cancelled = true;
         };
     }, [attachmentsApi]);
-    const [taskStatusFilter, setTaskStatusFilter] = useState<
-        'all' | 'active' | 'completed'
-    >(() => {
-        const saved = localStorage.getItem('project_task_status_filter');
-        return (saved as 'all' | 'active' | 'completed') || 'active';
-    });
+    const [taskStatusFilter, setTaskStatusFilter] = useState<TaskStatusFilter>(
+        () => {
+            const saved = localStorage.getItem('project_task_status_filter');
+            return (saved as TaskStatusFilter) || 'active';
+        }
+    );
     const [orderBy, setOrderBy] = useState<string>('status:inProgressFirst');
     // Task uids in the user's manual order for this project.
     const [taskOrder, setTaskOrder] = useState<string[]>([]);
@@ -397,9 +401,7 @@ const ProjectDetails: React.FC = () => {
         );
     };
 
-    const handleTaskStatusFilterChange = (
-        status: 'all' | 'active' | 'completed'
-    ) => {
+    const handleTaskStatusFilterChange = (status: TaskStatusFilter) => {
         setTaskStatusFilter(status);
         localStorage.setItem('project_task_status_filter', status);
     };
@@ -563,10 +565,11 @@ const ProjectDetails: React.FC = () => {
             const getStatusRank = (status: Task['status']) => {
                 if (status === 'in_progress' || status === 1) return 0;
                 if (status === 'not_started' || status === 0) return 1;
-                if (status === 'waiting' || status === 4) return 2;
-                if (status === 'done' || status === 2) return 3;
-                if (status === 'archived' || status === 3) return 4;
-                return 5;
+                if (status === 'planned' || status === 6) return 2;
+                if (status === 'waiting' || status === 4) return 3;
+                if (status === 'done' || status === 2) return 4;
+                if (status === 'archived' || status === 3) return 5;
+                return 6;
             };
             if (orderBy === 'status:inProgressFirst') {
                 const rankA = getStatusRank(a.status);
@@ -656,30 +659,9 @@ const ProjectDetails: React.FC = () => {
     };
 
     const displayTasks = useMemo(() => {
-        let filteredTasks: Task[];
-
-        if (taskStatusFilter === 'completed') {
-            filteredTasks = tasks.filter(
-                (task) =>
-                    task.status === 'done' ||
-                    task.status === 'archived' ||
-                    task.status === 2 ||
-                    task.status === 3
-            );
-        } else if (taskStatusFilter === 'active') {
-            filteredTasks = tasks.filter(
-                (task) =>
-                    task.status === 'not_started' ||
-                    task.status === 'in_progress' ||
-                    task.status === 'waiting' ||
-                    task.status === 0 ||
-                    task.status === 1 ||
-                    task.status === 4
-            );
-        } else {
-            // taskStatusFilter === 'all'
-            filteredTasks = tasks;
-        }
+        let filteredTasks = tasks.filter((task) =>
+            matchesTaskStatusFilter(task.status, taskStatusFilter)
+        );
         if (taskSearchQuery.trim()) {
             const query = taskSearchQuery.toLowerCase();
             filteredTasks = filteredTasks.filter(
@@ -737,8 +719,7 @@ const ProjectDetails: React.FC = () => {
                                 type="button"
                                 onClick={() =>
                                     handleTaskStatusFilterChange(
-                                        opt.key as
-                                            'all' | 'active' | 'completed'
+                                        opt.key as TaskStatusFilter
                                     )
                                 }
                                 className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
@@ -829,9 +810,7 @@ const ProjectDetails: React.FC = () => {
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                                 >
-                                    <span>
-                                        {t('tasks.title', 'Tasks')}
-                                    </span>
+                                    <span>{t('tasks.title', 'Tasks')}</span>
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('notes')}
