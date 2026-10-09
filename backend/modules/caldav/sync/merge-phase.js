@@ -105,19 +105,50 @@ class MergePhase {
                 `Task ${taskUid} was modified locally after remote deletion, conflict detected`
             );
 
+            if (calendar.conflict_resolution === 'manual') {
+                if (!dryRun) {
+                    await SyncStateRepository.markConflict(
+                        existingTask.id,
+                        calendar.id,
+                        existingTask.toJSON(),
+                        null
+                    );
+                }
+
+                results.conflicts.push({
+                    uid: taskUid,
+                    taskId: existingTask.id,
+                    type: 'remote_deleted_local_modified',
+                });
+                return;
+            }
+
+            // The local edit is the newer change, so it wins: forget the
+            // remote copy and let the push phase create the resource again.
+            // Leaving the state in 'conflict' (as before) meant the push phase
+            // skipped the task forever, because nothing on the server could
+            // ever settle a conflict about a resource that no longer exists.
             if (!dryRun) {
-                await SyncStateRepository.markConflict(
+                await SyncStateRepository.createOrUpdate(
                     existingTask.id,
                     calendar.id,
-                    existingTask.toJSON(),
-                    null
+                    {
+                        etag: '',
+                        remote_href: null,
+                        sync_status: 'pending',
+                        conflict_local_version: null,
+                        conflict_remote_version: null,
+                        conflict_detected_at: null,
+                    }
                 );
             }
 
-            results.conflicts.push({
+            results.merged.push({
                 uid: taskUid,
                 taskId: existingTask.id,
+                action: 'conflict_resolved',
                 type: 'remote_deleted_local_modified',
+                strategy: 'local',
             });
             return;
         }
