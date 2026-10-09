@@ -211,9 +211,12 @@ const TaskRow: React.FC<TaskRowProps> = ({
     const fromState = {
         state: { from: location.pathname + location.search },
     };
+    // A task created by a CalDAV client keeps the uid that client chose,
+    // which may hold characters the router cannot take unencoded.
+    const encodedUid = encodeURIComponent(task.uid);
     const fullPagePath = task.habit_mode
-        ? `/habit/${task.uid}`
-        : `/task/${task.uid}`;
+        ? `/habit/${encodedUid}`
+        : `/task/${encodedUid}`;
 
     const loadSubtasks = useCallback(async () => {
         if (!task.uid) return;
