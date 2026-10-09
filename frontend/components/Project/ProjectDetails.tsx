@@ -17,7 +17,6 @@ import { useToast } from '../Shared/ToastContext';
 import ProjectAIInsights, {
     ProjectAIInsightsHandle,
 } from '../AI/ProjectAIInsights';
-import ProjectModal from './ProjectModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteSidePanel from '../Note/NoteSidePanel';
 import { deleteNote as apiDeleteNote } from '../../utils/notesService';
@@ -39,7 +38,6 @@ import {
 import { mergeVisibleOrder } from '../Shared/sortableList';
 import IconSortDropdown from '../Shared/IconSortDropdown';
 import LoadingSpinner from '../Shared/LoadingSpinner';
-import { usePersistedModal } from '../../hooks/usePersistedModal';
 import { getApiPath } from '../../config/paths';
 import ProjectHero from './ProjectHero';
 import NewItemButton from '../Shared/NewItemButton';
@@ -95,11 +93,6 @@ const ProjectDetails: React.FC = () => {
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [aiInsightsActive, setAiInsightsActive] = useState(false);
     const aiInsightsRef = useRef<ProjectAIInsightsHandle>(null);
-    const {
-        isOpen: isModalOpen,
-        openModal,
-        closeModal,
-    } = usePersistedModal(project?.id);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const sortOptions = useMemo(
         () => [
@@ -268,25 +261,29 @@ const ProjectDetails: React.FC = () => {
         );
     };
 
-    const handleSaveProject = async (updatedProject: Project) => {
-        if (!updatedProject.uid) return;
-        const savedProject = await updateProject(
-            updatedProject.uid,
-            updatedProject
-        );
-        setProject((prev) => ({
-            ...savedProject,
-            area: savedProject.area || prev?.area,
-            Area: (savedProject as any).Area || (prev as any)?.Area,
-        }));
-
-        const currentProjects = projectsStore.projects;
-        const updatedProjects = currentProjects.map((p) =>
-            p.id === savedProject.id ? savedProject : p
-        );
-        projectsStore.setProjects(updatedProjects);
-
-        closeModal();
+    // Each field on the page saves on its own, so the page only patches what
+    // changed and keeps the associations the response does not carry.
+    const handleUpdateProject = async (patch: Partial<Project>) => {
+        if (!project?.uid) return;
+        try {
+            const savedProject = await updateProject(project.uid, patch);
+            setProject((prev) => ({
+                ...prev,
+                ...savedProject,
+                area: savedProject.area || prev?.area,
+                Area: (savedProject as any).Area || (prev as any)?.Area,
+            }));
+            projectsStore.setProjects(
+                projectsStore.projects.map((p) =>
+                    p.uid === savedProject.uid ? { ...p, ...savedProject } : p
+                )
+            );
+        } catch (err) {
+            showErrorToast(
+                t('errors.projectSaveFailed', 'Failed to save project')
+            );
+            throw err;
+        }
     };
 
     const handleEditBannerClick = () => {
@@ -653,7 +650,7 @@ const ProjectDetails: React.FC = () => {
                 t={t}
                 doneCount={taskStats.completed}
                 totalCount={taskStats.total}
-                onEditClick={openModal}
+                onUpdate={handleUpdateProject}
                 onDeleteClick={() => {
                     setNoteToDelete(null);
                     setIsConfirmDialogOpen(true);
@@ -809,8 +806,10 @@ const ProjectDetails: React.FC = () => {
                                 <div className="space-y-4">
                                     <ProjectOverviewRail
                                         project={project}
+                                        areas={areas}
                                         notes={notes}
                                         t={t}
+                                        onUpdate={handleUpdateProject}
                                         onShareClick={() =>
                                             setIsShareModalOpen(true)
                                         }
@@ -866,14 +865,6 @@ const ProjectDetails: React.FC = () => {
                             }}
                         />
                     )}
-
-                    <ProjectModal
-                        isOpen={isModalOpen}
-                        onClose={closeModal}
-                        onSave={handleSaveProject}
-                        project={project}
-                        areas={areas}
-                    />
 
                     <BannerEditModal
                         isOpen={isBannerEditModalOpen}

@@ -3,17 +3,28 @@ import { TFunction } from 'i18next';
 import { differenceInCalendarDays, format } from 'date-fns';
 import {
     CameraIcon,
+    CheckIcon,
+    ChevronDownIcon,
     EllipsisHorizontalIcon,
     FolderIcon,
-    PencilSquareIcon,
     ShareIcon,
     StarIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
-import { Project } from '../../entities/Project';
+import { Project, ProjectStatus } from '../../entities/Project';
 import { Area } from '../../entities/Area';
 import { getAssetPath } from '../../config/paths';
 import { getProjectStatusTint } from './projectStatusStyles';
+
+const PROJECT_STATUSES: ProjectStatus[] = [
+    'not_started',
+    'planned',
+    'in_progress',
+    'waiting',
+    'done',
+    'cancelled',
+];
+const MAX_NAME_LENGTH = 150;
 
 interface ProjectHeroProps {
     project: Project;
@@ -21,7 +32,7 @@ interface ProjectHeroProps {
     t: TFunction;
     doneCount: number;
     totalCount: number;
-    onEditClick: () => void;
+    onUpdate: (patch: Partial<Project>) => Promise<void>;
     onDeleteClick: () => void;
     onShareClick: () => void;
     onSaveAsTemplate?: () => void;
@@ -34,7 +45,7 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
     t,
     doneCount,
     totalCount,
-    onEditClick,
+    onUpdate,
     onDeleteClick,
     onShareClick,
     onSaveAsTemplate,
@@ -43,21 +54,90 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
 }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const [statusOpen, setStatusOpen] = useState(false);
+    const statusRef = useRef<HTMLDivElement>(null);
+
+    // The name and description edit in place: click to edit, Enter (or
+    // Cmd/Ctrl+Enter for the description) or leaving the field saves, Esc
+    // puts the saved value back.
+    const [editingName, setEditingName] = useState(false);
+    const [nameDraft, setNameDraft] = useState(project.name);
+    const nameRef = useRef<HTMLInputElement>(null);
+    const [editingDescription, setEditingDescription] = useState(false);
+    const [descriptionDraft, setDescriptionDraft] = useState(
+        project.description || ''
+    );
+    const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
-        if (!menuOpen) return;
+        if (!editingName) setNameDraft(project.name);
+    }, [project.name, editingName]);
+
+    useEffect(() => {
+        if (!editingDescription) setDescriptionDraft(project.description || '');
+    }, [project.description, editingDescription]);
+
+    useEffect(() => {
+        if (editingName) nameRef.current?.select();
+    }, [editingName]);
+
+    useEffect(() => {
+        if (!editingDescription) return;
+        const el = descriptionRef.current;
+        if (!el) return;
+        el.focus();
+        el.setSelectionRange(el.value.length, el.value.length);
+    }, [editingDescription]);
+
+    useEffect(() => {
+        if (!menuOpen && !statusOpen) return;
         const handleClickOutside = (event: MouseEvent) => {
-            if (
-                menuRef.current &&
-                !menuRef.current.contains(event.target as Node)
-            ) {
+            const target = event.target as Node;
+            if (menuRef.current && !menuRef.current.contains(target)) {
                 setMenuOpen(false);
+            }
+            if (statusRef.current && !statusRef.current.contains(target)) {
+                setStatusOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () =>
             document.removeEventListener('mousedown', handleClickOutside);
-    }, [menuOpen]);
+    }, [menuOpen, statusOpen]);
+
+    const saveName = async () => {
+        const next = nameDraft.trim();
+        setEditingName(false);
+        if (!next || next.length > MAX_NAME_LENGTH || next === project.name) {
+            setNameDraft(project.name);
+            return;
+        }
+        try {
+            await onUpdate({ name: next });
+        } catch {
+            setNameDraft(project.name);
+        }
+    };
+
+    const saveDescription = async () => {
+        const next = descriptionDraft.trim();
+        setEditingDescription(false);
+        if (next === (project.description || '')) {
+            setDescriptionDraft(project.description || '');
+            return;
+        }
+        try {
+            await onUpdate({ description: next });
+        } catch {
+            setDescriptionDraft(project.description || '');
+        }
+    };
+
+    const changeStatus = async (status: ProjectStatus) => {
+        setStatusOpen(false);
+        if (status === project.status) return;
+        await onUpdate({ status }).catch(() => undefined);
+    };
 
     const percent =
         totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
@@ -145,13 +225,54 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
 
                     <div className="min-w-0 flex-1 space-y-2">
                         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
-                            {project.status && (
-                                <span
-                                    className={`rounded-md px-2 py-0.5 font-medium ${getProjectStatusTint(project.status)}`}
+                            <div className="relative" ref={statusRef}>
+                                <button
+                                    type="button"
+                                    onClick={() => setStatusOpen((v) => !v)}
+                                    className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-medium transition-opacity hover:opacity-80 ${getProjectStatusTint(project.status || 'not_started')}`}
+                                    aria-haspopup="menu"
+                                    aria-expanded={statusOpen}
+                                    data-testid="project-status-trigger"
                                 >
-                                    {t(`projectStatus.${project.status}`)}
-                                </span>
-                            )}
+                                    {t(
+                                        `projectStatus.${project.status || 'not_started'}`
+                                    )}
+                                    <ChevronDownIcon className="h-3 w-3" />
+                                </button>
+                                {statusOpen && (
+                                    <div
+                                        role="menu"
+                                        className="absolute left-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-md bg-white py-1 shadow-lg dark:bg-gray-800"
+                                    >
+                                        {PROJECT_STATUSES.map((status) => (
+                                            <button
+                                                key={status}
+                                                type="button"
+                                                role="menuitem"
+                                                onClick={() =>
+                                                    changeStatus(status)
+                                                }
+                                                className={`flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                                                    status === project.status
+                                                        ? 'text-gray-900 dark:text-gray-100'
+                                                        : 'text-gray-700 dark:text-gray-300'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`rounded-md px-2 py-0.5 text-xs font-medium ${getProjectStatusTint(status)}`}
+                                                >
+                                                    {t(
+                                                        `projectStatus.${status}`
+                                                    )}
+                                                </span>
+                                                {status === project.status && (
+                                                    <CheckIcon className="h-3.5 w-3.5" />
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                             {dueText && (
                                 <span
                                     className={
@@ -181,12 +302,99 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                                 </>
                             )}
                         </div>
-                        <h1 className="line-clamp-2 text-xl font-semibold leading-tight text-gray-900 sm:text-2xl dark:text-gray-100">
-                            {project.name}
-                        </h1>
-                        {project.description && (
-                            <p className="max-w-3xl text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                                {project.description}
+                        {editingName ? (
+                            <input
+                                ref={nameRef}
+                                type="text"
+                                value={nameDraft}
+                                maxLength={MAX_NAME_LENGTH}
+                                onChange={(e) => setNameDraft(e.target.value)}
+                                onBlur={saveName}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        saveName();
+                                    } else if (e.key === 'Escape') {
+                                        setNameDraft(project.name);
+                                        setEditingName(false);
+                                    }
+                                }}
+                                className="-mx-1 w-full rounded-md bg-white/70 px-1 text-xl font-semibold leading-tight text-gray-900 outline-none ring-2 ring-blue-500/40 sm:text-2xl dark:bg-gray-800/70 dark:text-gray-100"
+                                aria-label={t('project.name', 'Project Name')}
+                                data-testid="project-name-input"
+                            />
+                        ) : (
+                            <h1
+                                onClick={() => setEditingName(true)}
+                                title={t(
+                                    'project.clickToEdit',
+                                    'Click to edit'
+                                )}
+                                className="-mx-1 line-clamp-2 cursor-text rounded-md px-1 text-xl font-semibold leading-tight text-gray-900 transition-colors hover:bg-white/60 sm:text-2xl dark:text-gray-100 dark:hover:bg-gray-800/60"
+                                data-testid="project-name"
+                            >
+                                {project.name}
+                            </h1>
+                        )}
+                        {editingDescription ? (
+                            <textarea
+                                ref={descriptionRef}
+                                value={descriptionDraft}
+                                rows={Math.min(
+                                    8,
+                                    Math.max(
+                                        2,
+                                        descriptionDraft.split('\n').length
+                                    )
+                                )}
+                                onChange={(e) =>
+                                    setDescriptionDraft(e.target.value)
+                                }
+                                onBlur={saveDescription}
+                                onKeyDown={(e) => {
+                                    if (
+                                        (e.metaKey || e.ctrlKey) &&
+                                        e.key === 'Enter'
+                                    ) {
+                                        e.preventDefault();
+                                        saveDescription();
+                                    } else if (e.key === 'Escape') {
+                                        setDescriptionDraft(
+                                            project.description || ''
+                                        );
+                                        setEditingDescription(false);
+                                    }
+                                }}
+                                placeholder={t(
+                                    'forms.projectDescriptionPlaceholder',
+                                    'Enter project description (optional)'
+                                )}
+                                className="-mx-1 block w-full max-w-3xl resize-none rounded-md bg-white/70 px-1 py-0.5 text-sm leading-relaxed text-gray-700 outline-none ring-2 ring-blue-500/40 dark:bg-gray-800/70 dark:text-gray-300"
+                                aria-label={t(
+                                    'forms.description',
+                                    'Description'
+                                )}
+                                data-testid="project-description-input"
+                            />
+                        ) : (
+                            <p
+                                onClick={() => setEditingDescription(true)}
+                                title={t(
+                                    'project.clickToEdit',
+                                    'Click to edit'
+                                )}
+                                className={`-mx-1 max-w-3xl cursor-text whitespace-pre-wrap rounded-md px-1 py-0.5 text-sm leading-relaxed transition-colors hover:bg-white/60 dark:hover:bg-gray-800/60 ${
+                                    project.description
+                                        ? 'text-gray-600 dark:text-gray-400'
+                                        : 'text-gray-400 dark:text-gray-500'
+                                }`}
+                                data-testid="project-description"
+                            >
+                                {project.description ||
+                                    t(
+                                        'project.addDescription',
+                                        'Add a description'
+                                    )}
                             </p>
                         )}
                     </div>
@@ -216,14 +424,6 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                         >
                             <ShareIcon className="h-4 w-4" />
                             {t('projectItem.share', 'Share')}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onEditClick}
-                            className={actionClass}
-                        >
-                            <PencilSquareIcon className="h-4 w-4" />
-                            {t('projectItem.edit', 'Edit')}
                         </button>
                         <div className="relative" ref={menuRef}>
                             <button
