@@ -40,68 +40,109 @@ jest.mock('../../../store/useStore', () => ({
     }),
 }));
 
-const renderOpenModal = async () => {
+const flush = async (ms = 500) => {
+    await act(async () => {
+        jest.advanceTimersByTime(ms);
+    });
+};
+
+// The scrim is the full-screen layer behind the panel
+const getScrim = () =>
+    document.querySelector<HTMLElement>('.fixed.inset-0.z-\\[55\\]')!;
+
+const renderModal = (
+    props: Partial<React.ComponentProps<typeof ProjectModal>> = {}
+) => {
     const onClose = jest.fn();
+    const onSave = jest.fn();
     render(
-        <ProjectModal isOpen onClose={onClose} onSave={jest.fn()} areas={[]} />
+        <ProjectModal
+            isOpen
+            onClose={onClose}
+            onSave={onSave}
+            areas={[]}
+            {...props}
+        />
     );
-    await act(async () => {
-        jest.advanceTimersByTime(250);
-    });
-    return onClose;
+    return { onClose, onSave };
 };
 
-const expectStillOpen = async (onClose: jest.Mock) => {
-    await act(async () => {
-        jest.advanceTimersByTime(500);
-    });
-    expect(onClose).not.toHaveBeenCalled();
-};
-
-describe('ProjectModal outside clicks (#1620)', () => {
+describe('ProjectModal side panel', () => {
     beforeEach(() => {
         jest.useFakeTimers();
         Element.prototype.scrollTo = jest.fn();
     });
     afterEach(() => jest.useRealTimers());
 
-    it('stays open when clicking inside the due date calendar', async () => {
-        const onClose = await renderOpenModal();
+    it('shows every field without expanding sections first', () => {
+        renderModal();
+        expect(screen.getByTestId('project-name-input')).toBeInTheDocument();
+        expect(screen.getByTestId('datepicker')).toBeInTheDocument();
+        expect(screen.getByTestId('priority-dropdown')).toBeInTheDocument();
+    });
 
-        fireEvent.click(screen.getByTitle('Due Date'));
-        const picker = screen.getByTestId('datepicker');
-        fireEvent.click(picker.querySelector('button')!);
+    it('saves the entered name', async () => {
+        const { onSave, onClose } = renderModal();
+        fireEvent.change(screen.getByTestId('project-name-input'), {
+            target: { value: 'Garden shed' },
+        });
+        fireEvent.click(screen.getByTestId('project-save-button'));
+        await flush();
+        expect(onSave).toHaveBeenCalledWith(
+            expect.objectContaining({ name: 'Garden shed' })
+        );
+        expect(onClose).toHaveBeenCalled();
+    });
 
+    it('stays open when clicking inside the due date calendar (#1620)', async () => {
+        const { onClose } = renderModal();
+
+        fireEvent.click(
+            screen.getByTestId('datepicker').querySelector('button')!
+        );
         const calendar = document.querySelector('[data-portal-menu]');
         expect(calendar).toBeInTheDocument();
         fireEvent.mouseDown(calendar!);
 
-        await expectStillOpen(onClose);
+        await flush();
+        expect(onClose).not.toHaveBeenCalled();
     });
 
-    it('stays open when clicking inside the priority menu', async () => {
-        const onClose = await renderOpenModal();
+    it('stays open when clicking inside the priority menu (#1620)', async () => {
+        const { onClose } = renderModal();
 
-        fireEvent.click(screen.getByTitle('Priority'));
         fireEvent.click(
             screen.getByTestId('priority-dropdown').querySelector('button')!
         );
-
         const menu = document.querySelector('[data-portal-menu]');
         expect(menu).toBeInTheDocument();
         fireEvent.mouseDown(menu!);
 
-        await expectStillOpen(onClose);
+        await flush();
+        expect(onClose).not.toHaveBeenCalled();
     });
 
-    it('still closes on a genuine outside click', async () => {
-        const onClose = await renderOpenModal();
-
-        fireEvent.mouseDown(document.body);
-
-        await act(async () => {
-            jest.advanceTimersByTime(500);
-        });
+    it('closes when the scrim is clicked', async () => {
+        const { onClose } = renderModal();
+        fireEvent.mouseDown(getScrim());
+        await flush();
         expect(onClose).toHaveBeenCalled();
+    });
+
+    it('keeps the panel open while the delete confirmation is showing', async () => {
+        const onDelete = jest.fn().mockResolvedValue(undefined);
+        const { onClose } = renderModal({
+            project: { id: 1, uid: 'p-1', name: 'Shed' } as any,
+            onDelete,
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: /delete/i }));
+        expect(screen.getByText('Delete Project')).toBeInTheDocument();
+
+        fireEvent.keyDown(document, { key: 'Escape' });
+        fireEvent.mouseDown(getScrim());
+        await flush();
+        expect(onClose).not.toHaveBeenCalled();
+        expect(onDelete).not.toHaveBeenCalled();
     });
 });
