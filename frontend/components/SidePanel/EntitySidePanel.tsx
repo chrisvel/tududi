@@ -186,7 +186,7 @@ const EntitySidePanel: React.FC<EntitySidePanelProps> = ({
                                 onClick={requestClose}
                                 className="rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-gray-400 dark:hover:text-gray-100"
                             >
-                                {t('common.cancel')}
+                                {t('common.cancel', 'Cancel')}
                             </button>
                             <button
                                 type="submit"
