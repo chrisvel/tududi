@@ -603,8 +603,11 @@ const InboxItems: React.FC = () => {
                                     splitting the list around it. */}
                                 {inboxItems.map((item, index) => {
                                     const isOpen = index === openIndex;
+                                    // The open item's card is drawn by this wrapper, so its
+                                    // corners, background and shadow animate with the
+                                    // neighbouring rows' corners.
                                     const rowClass = isOpen
-                                        ? 'my-3'
+                                        ? 'my-3 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 shadow-lg'
                                         : `${segmentClass} px-1.5 ${
                                               openIndex >= 0 && index === openIndex + 1
                                                   ? 'rounded-t-2xl pt-1.5'
