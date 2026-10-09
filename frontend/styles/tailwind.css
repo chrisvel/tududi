@@ -206,6 +206,26 @@ html.sidebar-resizing * {
 .dark .task-sheet > * {
   background-color: #111827;
 }
+/* A soft line between rows. It drops away on either side of an open task,
+   which already sits apart from its neighbours. */
+.task-sheet > * + * {
+  border-top: 1px solid #f3f4f6;
+}
+.dark .task-sheet > * + * {
+  border-top-color: rgb(255 255 255 / 0.05);
+}
+/* Hover tints the whole row band, edge to edge, so it reads as a line in
+   a list rather than a rounded pill floating inside it. */
+.task-sheet > *:not(:has([data-task-expanded])):hover {
+  background-color: #f9fafb;
+}
+.dark .task-sheet > *:not(:has([data-task-expanded])):hover {
+  background-color: #151d2e;
+}
+.task-sheet > *:has([data-task-expanded]),
+.task-sheet > *:has([data-task-expanded]) + * {
+  border-top-color: transparent;
+}
 .task-sheet > *:first-child {
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
