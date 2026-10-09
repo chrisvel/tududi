@@ -6,7 +6,7 @@ How a new account's first visit works. For technical details see `/backend/modul
 
 ## The welcome screen: pick a starter
 
-Every account's first visit to `/` or `/today` opens a full-screen starter picker over Today. Existing accounts see it once too (the column that records the choice starts null for everyone). Any other path (a shared note, an invitation, the inbox) opens as usual, and the screen waits for the next visit to Today.
+Until an account has picked a starter, every signed-in page redirects to `/welcome`, a page inside the normal layout (navbar and sidebar stay). Existing accounts see it once too: the column that records the choice starts null for everyone. Once a starter is recorded, `/welcome` redirects to Today.
 
 - **Four starters, one tap.** Running a household, Work and a side project, Studying, and Just me. The first is selected on load; the primary button names the chosen one ("Set up Running a household"). Cards are a radio group: arrow keys move, Enter confirms. A preview beside the cards shows the areas, their goal line and project, the habits, the tasks due today and the note. On phones the selected card shows a compact summary instead.
 - **The welcome video** (YouTube, `youtube-nocookie.com`, id in `WELCOME_VIDEO_ID` in `StarterPicker.tsx`) plays beside the cards. The CSP's `frame-src` allows that host.

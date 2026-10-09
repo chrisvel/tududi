@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import {
@@ -10,15 +10,14 @@ import {
 } from '../../utils/starters';
 import { applyStarter, StarterResult } from '../../utils/onboardingService';
 
-// The screen every account sees once, on its first visit to Today: pick the
-// shape of your week and get areas, goals, projects, habits and a few
-// example tasks in one tap. The welcome video plays beside it. "Start
+// The page at /welcome every account sees once, inside the normal layout:
+// pick the shape of your week and get areas, goals, projects, habits and a
+// few example tasks in one tap. The welcome video plays beside it. "Start
 // empty" records the choice and leaves the account as it is.
 
 export const WELCOME_VIDEO_ID = 'hkwb9EmE4XE';
 
 interface StarterPickerProps {
-    open: boolean;
     onDone: (result: StarterResult, key: StarterKey) => void;
 }
 
@@ -30,7 +29,7 @@ const dot = (color: string) => (
     />
 );
 
-const StarterPicker: React.FC<StarterPickerProps> = ({ open, onDone }) => {
+const StarterPicker: React.FC<StarterPickerProps> = ({ onDone }) => {
     const { t } = useTranslation();
     const starters = useMemo(() => buildStarters(t), [t]);
     const [selectedKey, setSelectedKey] = useState<StarterKey>(starters[0].key);
@@ -41,15 +40,6 @@ const StarterPicker: React.FC<StarterPickerProps> = ({ open, onDone }) => {
     const selected =
         starters.find((starter) => starter.key === selectedKey) ?? starters[0];
     const counts = starterCounts(selected);
-
-    useEffect(() => {
-        if (!open) return;
-        const previous = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = previous;
-        };
-    }, [open]);
 
     const submit = async (starter: Starter | null) => {
         if (busy) return;
@@ -73,8 +63,6 @@ const StarterPicker: React.FC<StarterPickerProps> = ({ open, onDone }) => {
         cardRefs.current[next]?.focus();
     };
 
-    if (!open) return null;
-
     const todayTasks = selected.areas.flatMap((area) =>
         [...area.tasks, ...area.projects.flatMap((p) => p.tasks)].filter(
             (task) => task.due === 'today'
@@ -83,13 +71,11 @@ const StarterPicker: React.FC<StarterPickerProps> = ({ open, onDone }) => {
 
     return (
         <div
-            className="fixed inset-0 z-50 overflow-y-auto bg-gray-50 dark:bg-gray-900"
-            role="dialog"
-            aria-modal="true"
+            className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-10"
             aria-labelledby="starter-picker-title"
             data-testid="starter-picker"
         >
-            <div className="mx-auto w-full max-w-5xl px-4 pb-28 pt-8 sm:px-6 sm:pt-12 lg:pb-12">
+            <div className="mx-auto w-full max-w-7xl">
                 <div className="grid gap-6 lg:grid-cols-2 lg:gap-x-10">
                     <header className="lg:col-start-1 lg:row-start-1">
                         <p className="mb-1 text-sm font-medium text-blue-600 dark:text-blue-400">
@@ -348,7 +334,7 @@ const StarterPicker: React.FC<StarterPickerProps> = ({ open, onDone }) => {
                                 {error}
                             </p>
                         )}
-                        <div className="fixed inset-x-0 bottom-0 z-10 flex flex-col gap-2 bg-gray-50/95 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:flex-row-reverse sm:items-center sm:justify-start lg:static lg:bg-transparent lg:p-0 lg:backdrop-blur-0 dark:bg-gray-900/95 lg:dark:bg-transparent">
+                        <div className="flex flex-col gap-2 sm:flex-row-reverse sm:items-center sm:justify-start">
                             <button
                                 type="button"
                                 onClick={() => submit(selected)}

@@ -275,6 +275,7 @@ const App: React.FC = () => {
         if (user) setUserInStorage(user);
         if (key === 'empty' || key === 'simple') {
             setCurrentUser(user);
+            navigate('/today', { replace: true });
             openBrainDump();
             return;
         }
@@ -434,13 +435,6 @@ const App: React.FC = () => {
                                         toggleDarkMode={toggleDarkMode}
                                     >
                                         <Suspense fallback={null}>
-                                            <StarterPicker
-                                                open={
-                                                    currentUser.onboarding_starter ===
-                                                    null
-                                                }
-                                                onDone={finishStarter}
-                                            />
                                             <FirstPlan
                                                 open={brainDump.open}
                                                 key={brainDump.openCount}
@@ -452,7 +446,13 @@ const App: React.FC = () => {
                                                 onComplete={markOnboarded}
                                             />
                                         </Suspense>
-                                        <Outlet />
+                                        {currentUser.onboarding_starter ===
+                                            null &&
+                                        location.pathname !== '/welcome' ? (
+                                            <Navigate to="/welcome" replace />
+                                        ) : (
+                                            <Outlet />
+                                        )}
                                     </Layout>
                                 </SubscriptionGate>
                             }
@@ -462,6 +462,20 @@ const App: React.FC = () => {
                                 element={<Navigate to="/today" replace />}
                             />
                             <Route path="/today" element={<TodayPage />} />
+                            <Route
+                                path="/welcome"
+                                element={
+                                    currentUser.onboarding_starter === null ? (
+                                        <Suspense fallback={<LoadingScreen />}>
+                                            <StarterPicker
+                                                onDone={finishStarter}
+                                            />
+                                        </Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
                             <Route
                                 path="/today_legacy"
                                 element={<Navigate to="/today" replace />}

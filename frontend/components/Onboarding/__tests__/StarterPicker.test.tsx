@@ -34,13 +34,8 @@ describe('StarterPicker', () => {
         applyStarter.mockResolvedValue(result);
     });
 
-    it('renders nothing when closed', () => {
-        render(<StarterPicker open={false} onDone={jest.fn()} />);
-        expect(screen.queryByTestId('starter-picker')).toBeNull();
-    });
-
     it('shows the four starters, the video and the household preview first', () => {
-        render(<StarterPicker open onDone={jest.fn()} />);
+        render(<StarterPicker onDone={jest.fn()} />);
 
         expect(screen.getByTestId('starter-video')).toHaveAttribute(
             'src',
@@ -60,7 +55,7 @@ describe('StarterPicker', () => {
     });
 
     it('switches the preview and button when another card is picked', () => {
-        render(<StarterPicker open onDone={jest.fn()} />);
+        render(<StarterPicker onDone={jest.fn()} />);
 
         fireEvent.click(screen.getByTestId('starter-card-studying'));
 
@@ -77,7 +72,7 @@ describe('StarterPicker', () => {
     });
 
     it('moves the selection with the arrow keys', () => {
-        render(<StarterPicker open onDone={jest.fn()} />);
+        render(<StarterPicker onDone={jest.fn()} />);
 
         fireEvent.keyDown(screen.getByTestId('starter-card-household'), {
             key: 'ArrowDown',
@@ -91,7 +86,7 @@ describe('StarterPicker', () => {
 
     it('sends the chosen starter with its structure and reports back', async () => {
         const onDone = jest.fn();
-        render(<StarterPicker open onDone={onDone} />);
+        render(<StarterPicker onDone={onDone} />);
 
         fireEvent.click(screen.getByTestId('starter-submit'));
 
@@ -121,7 +116,7 @@ describe('StarterPicker', () => {
             ...result,
             onboarding_starter: 'empty',
         });
-        render(<StarterPicker open onDone={onDone} />);
+        render(<StarterPicker onDone={onDone} />);
 
         fireEvent.click(screen.getByTestId('starter-empty'));
 
@@ -133,7 +128,7 @@ describe('StarterPicker', () => {
     it('keeps the screen and shows the error when setting up fails', async () => {
         applyStarter.mockRejectedValue(new Error('Plan limit reached'));
         const onDone = jest.fn();
-        render(<StarterPicker open onDone={onDone} />);
+        render(<StarterPicker onDone={onDone} />);
 
         fireEvent.click(screen.getByTestId('starter-submit'));
 
