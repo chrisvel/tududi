@@ -96,6 +96,8 @@ const CalendarFeed = require('./calendar_feed')(sequelize);
 const DailyPlan = require('./daily_plan')(sequelize);
 const DailyPlanItem = require('./daily_plan_item')(sequelize);
 const Goal = require('./goal')(sequelize);
+const UserGoalOrder = require('./user_goal_order')(sequelize);
+const UserAreaOrder = require('./user_area_order')(sequelize);
 const Person = require('./person')(sequelize);
 const UserProjectArea = require('./user_project_area')(sequelize);
 const UserProjectOrder = require('./user_project_order')(sequelize);
@@ -451,6 +453,40 @@ UserProjectOrder.belongsTo(Project, {
     as: 'Project',
 });
 
+// UserGoalOrder associations (per-user custom order of the Goals page)
+User.hasMany(UserGoalOrder, {
+    foreignKey: 'user_id',
+    as: 'GoalOrders',
+    onDelete: 'CASCADE',
+});
+UserGoalOrder.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Goal.hasMany(UserGoalOrder, {
+    foreignKey: 'goal_id',
+    as: 'Orders',
+    onDelete: 'CASCADE',
+});
+UserGoalOrder.belongsTo(Goal, {
+    foreignKey: 'goal_id',
+    as: 'Goal',
+});
+
+// UserAreaOrder associations (per-user custom order of the Areas page)
+User.hasMany(UserAreaOrder, {
+    foreignKey: 'user_id',
+    as: 'AreaOrders',
+    onDelete: 'CASCADE',
+});
+UserAreaOrder.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Area.hasMany(UserAreaOrder, {
+    foreignKey: 'area_id',
+    as: 'Orders',
+    onDelete: 'CASCADE',
+});
+UserAreaOrder.belongsTo(Area, {
+    foreignKey: 'area_id',
+    as: 'Area',
+});
+
 // UserTaskOrder associations (per-user manual order of task lists)
 User.hasMany(UserTaskOrder, {
     foreignKey: 'user_id',
@@ -659,6 +695,8 @@ module.exports = {
     Person,
     UserProjectArea,
     UserProjectOrder,
+    UserGoalOrder,
+    UserAreaOrder,
     UserTaskOrder,
     RateLimit,
     BillingAccount,

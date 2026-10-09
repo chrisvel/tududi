@@ -23,6 +23,23 @@ const areasController = {
      * GET /api/areas
      * List all areas for the current user.
      */
+    /**
+     * PUT /api/areas/order
+     * Save the current user's custom order of areas.
+     */
+    async reorder(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await areasService.reorder(
+                userId,
+                req.body?.area_uids
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async list(req, res, next) {
         try {
             const userId = requireUserId(req);

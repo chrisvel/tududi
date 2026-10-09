@@ -1,36 +1,89 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    EllipsisVerticalIcon,
-    FlagIcon,
-    FolderIcon,
-    CheckCircleIcon,
-    PlusIcon,
-    Squares2X2Icon,
-} from '@heroicons/react/24/outline';
+import { PlusIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import NewItemButton from './Shared/NewItemButton';
 import BlankSlate from './Shared/BlankSlate';
 import { useCan } from '../hooks/useCan';
 import { useStore } from '../store/useStore';
-import { deleteGoal } from '../utils/goalsService';
+import { deleteGoal, reorderGoals } from '../utils/goalsService';
 import { Goal } from '../entities/Goal';
 import { Area } from '../entities/Area';
-import { createGoalUrl } from '../utils/slugUtils';
 import GoalModal from './Goal/GoalModal';
+import GoalRow from './Goal/GoalRow';
+import IconSortDropdown from './Shared/IconSortDropdown';
+import { TASK_SHEET_CLASS } from './Task/taskSheet';
+import SortableItem from './Shared/SortableItem';
+import { useToast } from './Shared/ToastContext';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+    mergeVisibleOrder,
+    resetSortableCursor,
+    sortableCursorHandlers,
+    swallowNextClick,
+    useSortableSensors,
+} from './Shared/sortableList';
+import { SortOption } from './Shared/SortFilterButton';
 
-const STATUS_COLORS: Record<string, string> = {
-    active: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-    achieved:
-        'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    paused: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-    dropped: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
+const GOAL_STATUS_ORDER: Record<string, number> = {
+    active: 0,
+    paused: 1,
+    achieved: 2,
+    dropped: 3,
+};
+
+const projectsCountOf = (goal: Goal) =>
+    (goal as any).projects_count ?? goal.Projects?.length ?? 0;
+
+const tasksCountOf = (goal: Goal) =>
+    (goal as any).tasks_count ?? goal.Tasks?.length ?? 0;
+
+const compareCustomOrder = (a: Goal, b: Goal) => {
+    const posA = a.sort_position ?? null;
+    const posB = b.sort_position ?? null;
+    if (posA === null || posB === null) {
+        if (posA !== posB) return posA === null ? -1 : 1;
+        const createdA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const createdB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return createdB - createdA;
+    }
+    return posA - posB;
+};
+
+const compareGoals = (a: Goal, b: Goal, orderBy: string): number => {
+    const [field, direction] = orderBy.split(':');
+    if (field === 'custom') return compareCustomOrder(a, b);
+    const sign = direction === 'desc' ? -1 : 1;
+    let result: number;
+    switch (field) {
+        case 'status':
+            result = GOAL_STATUS_ORDER[a.status] - GOAL_STATUS_ORDER[b.status];
+            break;
+        case 'horizon':
+            result = a.horizon.localeCompare(b.horizon);
+            break;
+        case 'area':
+            result = (a.Area?.name ?? '').localeCompare(b.Area?.name ?? '');
+            break;
+        case 'projects':
+            result = projectsCountOf(a) - projectsCountOf(b);
+            break;
+        case 'tasks':
+            result = tasksCountOf(a) - tasksCountOf(b);
+            break;
+        default:
+            return sign * a.title.localeCompare(b.title);
+    }
+    return sign * result || a.title.localeCompare(b.title);
 };
 
 const Goals: React.FC = () => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
 
     const {
         goals,
@@ -38,6 +91,10 @@ const Goals: React.FC = () => {
         hasLoaded,
         loadGoals,
     } = useStore((state: any) => state.goalsStore);
+
+    const setGoals = useStore((state: any) => state.goalsStore.setGoals);
+    const { showErrorToast } = useToast();
+    const sensors = useSortableSensors();
 
     const areas: Area[] = useStore((state: any) => state.areasStore.areas);
     const areasLoaded = useStore((state: any) => state.areasStore.hasLoaded);
@@ -48,9 +105,38 @@ const Goals: React.FC = () => {
     const [selectedAreaUid, setSelectedAreaUid] = useState<string | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
-    const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
-    const justOpenedRef = useRef(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [orderBy, setOrderBy] = useState<string>(() => {
+        try {
+            return localStorage.getItem('goalsSortOrder') || 'title:asc';
+        } catch {
+            return 'title:asc';
+        }
+    });
+
+    useEffect(() => {
+        try {
+            localStorage.setItem('goalsSortOrder', orderBy);
+        } catch {
+            // Storage can be unavailable (private mode), sorting still works
+        }
+    }, [orderBy]);
+
+    const sortOptions: SortOption[] = [
+        { value: 'title:asc', label: t('goals.sort.titleAsc', 'Title A to Z') },
+        {
+            value: 'title:desc',
+            label: t('goals.sort.titleDesc', 'Title Z to A'),
+        },
+        { value: 'status:asc', label: t('goals.sort.status', 'Status') },
+        { value: 'horizon:asc', label: t('goals.sort.horizon', 'Horizon') },
+        { value: 'area:asc', label: t('goals.sort.area', 'Area') },
+        {
+            value: 'projects:desc',
+            label: t('goals.sort.projects', 'Most projects'),
+        },
+        { value: 'tasks:desc', label: t('goals.sort.tasks', 'Most tasks') },
+        { value: 'custom:asc', label: t('goals.sort.custom', 'Custom order') },
+    ];
 
     useEffect(() => {
         if (!hasLoaded && !loading) loadGoals();
@@ -59,34 +145,6 @@ const Goals: React.FC = () => {
     useEffect(() => {
         if (!areasLoaded) loadAreas();
     }, [areasLoaded, loadAreas]);
-
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (justOpenedRef.current) {
-                justOpenedRef.current = false;
-                return;
-            }
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(e.target as Node)
-            ) {
-                setDropdownOpen(null);
-            }
-        };
-        if (dropdownOpen !== null) {
-            const id = setTimeout(
-                () =>
-                    document.addEventListener('mousedown', handleClickOutside),
-                100
-            );
-            return () => {
-                clearTimeout(id);
-                document.removeEventListener('mousedown', handleClickOutside);
-            };
-        }
-        return () =>
-            document.removeEventListener('mousedown', handleClickOutside);
-    }, [dropdownOpen]);
 
     const handleDeleteGoal = async () => {
         if (!goalToDelete?.uid) return;
@@ -117,6 +175,53 @@ const Goals: React.FC = () => {
         ? goals.filter((g: Goal) => g.Area?.uid === selectedAreaUid)
         : goals;
 
+    const sortedGoals = [...filteredGoals].sort((a: Goal, b: Goal) =>
+        compareGoals(a, b, orderBy)
+    );
+
+    const isCustomOrder = orderBy.startsWith('custom:');
+
+    const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+        resetSortableCursor();
+        if (!over || active.id === over.id) return;
+        swallowNextClick();
+
+        const visibleUids = sortedGoals.map((g: Goal) => g.uid as string);
+        const from = visibleUids.indexOf(active.id as string);
+        const to = visibleUids.indexOf(over.id as string);
+        if (from === -1 || to === -1) return;
+        const movedVisible = arrayMove(visibleUids, from, to);
+
+        const fullOrder = [...goals]
+            .sort((a: Goal, b: Goal) => compareGoals(a, b, orderBy))
+            .map((g: Goal) => g.uid as string);
+        const newOrder = mergeVisibleOrder(fullOrder, movedVisible);
+
+        const positionByUid = new Map(newOrder.map((uid, i) => [uid, i]));
+        const prevGoals = goals;
+        setGoals(
+            goals.map((g: Goal) =>
+                g.uid && positionByUid.has(g.uid)
+                    ? { ...g, sort_position: positionByUid.get(g.uid) }
+                    : g
+            )
+        );
+        // Dragging under another sort starts a custom order from what is
+        // on screen.
+        const prevOrderBy = orderBy;
+        if (!isCustomOrder) setOrderBy('custom:asc');
+        try {
+            await reorderGoals(newOrder);
+        } catch (error) {
+            console.error('Error saving goal order:', error);
+            setGoals(prevGoals);
+            setOrderBy(prevOrderBy);
+            showErrorToast(
+                t('goals.reorderError', 'Failed to save goal order')
+            );
+        }
+    };
+
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
@@ -133,45 +238,57 @@ const Goals: React.FC = () => {
                     )}
                 </div>
 
-                {/* Area filter tabs */}
-                {areasWithGoals.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-6">
-                        <button
-                            onClick={() => setSelectedAreaUid(null)}
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                selectedAreaUid === null
-                                    ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-                            }`}
-                        >
-                            {t('common.all', 'All')}
-                        </button>
-                        {areasWithGoals.map((area) => (
+                {/* Area filter tabs and sort */}
+                {goals.length > 0 && (
+                    <div className="flex items-start justify-between gap-2 mb-6">
+                        <div className="flex flex-wrap gap-2">
                             <button
-                                key={area.uid}
-                                onClick={() =>
-                                    setSelectedAreaUid(
-                                        area.uid === selectedAreaUid
-                                            ? null
-                                            : area.uid!
-                                    )
-                                }
+                                onClick={() => setSelectedAreaUid(null)}
                                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                    selectedAreaUid === area.uid
-                                        ? 'text-white'
+                                    selectedAreaUid === null
+                                        ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900'
                                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
                                 }`}
-                                style={
-                                    selectedAreaUid === area.uid && area.color
-                                        ? { backgroundColor: area.color }
-                                        : selectedAreaUid === area.uid
-                                          ? { backgroundColor: '#374151' }
-                                          : {}
-                                }
                             >
-                                {area.name}
+                                {t('common.all', 'All')}
                             </button>
-                        ))}
+                            {areasWithGoals.map((area) => (
+                                <button
+                                    key={area.uid}
+                                    onClick={() =>
+                                        setSelectedAreaUid(
+                                            area.uid === selectedAreaUid
+                                                ? null
+                                                : area.uid!
+                                        )
+                                    }
+                                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                        selectedAreaUid === area.uid
+                                            ? 'text-white'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                                    }`}
+                                    style={
+                                        selectedAreaUid === area.uid &&
+                                        area.color
+                                            ? { backgroundColor: area.color }
+                                            : selectedAreaUid === area.uid
+                                              ? { backgroundColor: '#374151' }
+                                              : {}
+                                    }
+                                >
+                                    {area.name}
+                                </button>
+                            ))}
+                        </div>
+                        <IconSortDropdown
+                            options={sortOptions}
+                            value={orderBy}
+                            onChange={setOrderBy}
+                            ariaLabel={t('goals.sort.label', 'Sort goals')}
+                            title={t('goals.sort.label', 'Sort goals')}
+                            dropdownLabel={t('goals.sort.label', 'Sort goals')}
+                            align="right"
+                        />
                     </div>
                 )}
 
@@ -209,225 +326,41 @@ const Goals: React.FC = () => {
                         />
                     )
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {filteredGoals.map((goal: Goal) => {
-                            const goalUrl = goal.uid
-                                ? createGoalUrl({
-                                      uid: goal.uid,
-                                      title: goal.title,
-                                  })
-                                : '/goals';
-                            const effectiveColor =
-                                goal.color || goal.Area?.color;
-                            const hasColor = !!effectiveColor;
-
-                            return (
-                                <Link
-                                    key={goal.uid}
-                                    to={goalUrl}
-                                    className={`rounded-xl shadow-sm relative flex flex-col group hover:shadow-md transition-shadow cursor-pointer ${
-                                        !hasColor
-                                            ? 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
-                                            : ''
-                                    } ${dropdownOpen === goal.uid ? 'z-50' : ''}`}
-                                    style={
-                                        hasColor
-                                            ? {
-                                                  backgroundColor:
-                                                      effectiveColor,
-                                              }
-                                            : {}
-                                    }
-                                >
-                                    {/* Three-dot menu */}
-                                    <div
-                                        className="absolute top-2 right-2 z-10"
-                                        ref={dropdownRef}
-                                    >
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                const next =
-                                                    dropdownOpen === goal.uid
-                                                        ? null
-                                                        : goal.uid!;
-                                                if (next)
-                                                    justOpenedRef.current = true;
-                                                setDropdownOpen(next);
-                                            }}
-                                            className={`focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded ${
-                                                hasColor
-                                                    ? 'text-white/60 hover:text-white hover:bg-white/20'
-                                                    : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
-                                            }`}
-                                        >
-                                            <EllipsisVerticalIcon className="h-4 w-4" />
-                                        </button>
-                                        {dropdownOpen === goal.uid && (
-                                            <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        setDropdownOpen(null);
-                                                        navigate(goalUrl);
-                                                    }}
-                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
-                                                >
-                                                    {t('common.edit', 'Edit')}
-                                                </button>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        openConfirmDelete(goal);
-                                                        setDropdownOpen(null);
-                                                    }}
-                                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
-                                                >
-                                                    {t(
-                                                        'common.delete',
-                                                        'Delete'
-                                                    )}
-                                                </button>
-                                            </div>
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        {...sortableCursorHandlers}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <SortableContext
+                            items={sortedGoals.map(
+                                (g: Goal) => g.uid as string
+                            )}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            <div
+                                className={`task-list-container overflow-visible ${TASK_SHEET_CLASS} task-sheet-rails`}
+                            >
+                                {sortedGoals.map((goal: Goal) => (
+                                    <SortableItem
+                                        key={goal.uid}
+                                        id={goal.uid as string}
+                                        label={goal.title}
+                                        roleDescription={t(
+                                            'sortable.goal',
+                                            'sortable goal'
                                         )}
-                                    </div>
-
-                                    {/* Card content */}
-                                    <div className="px-5 pt-6 pb-4 flex-1 flex items-center justify-center text-center">
-                                        <div>
-                                            <div className="flex items-center justify-center gap-2 mb-2">
-                                                <FlagIcon
-                                                    className={`h-4 w-4 flex-shrink-0 ${hasColor ? 'text-white/70' : 'text-blue-500'}`}
-                                                />
-                                            </div>
-                                            <h3
-                                                className={`text-sm font-semibold tracking-wide line-clamp-2 ${
-                                                    hasColor
-                                                        ? 'text-white'
-                                                        : 'text-gray-800 dark:text-gray-100'
-                                                }`}
-                                            >
-                                                {goal.title}
-                                            </h3>
-                                            {goal.why && (
-                                                <p
-                                                    className={`text-xs mt-2 line-clamp-2 leading-relaxed ${
-                                                        hasColor
-                                                            ? 'text-white/70'
-                                                            : 'text-gray-500 dark:text-gray-400'
-                                                    }`}
-                                                >
-                                                    {goal.why}
-                                                </p>
-                                            )}
-                                            <div className="flex flex-wrap justify-center gap-1 mt-3">
-                                                <span
-                                                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                                        hasColor
-                                                            ? 'bg-white/20 text-white'
-                                                            : (STATUS_COLORS[
-                                                                  goal.status
-                                                              ] ?? '')
-                                                    }`}
-                                                >
-                                                    {t(
-                                                        `goals.status.${goal.status}`,
-                                                        goal.status
-                                                    )}
-                                                </span>
-                                                <span
-                                                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                                        hasColor
-                                                            ? 'bg-white/15 text-white/80'
-                                                            : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-                                                    }`}
-                                                >
-                                                    {t(
-                                                        `goals.horizon.${goal.horizon}`,
-                                                        goal.horizon
-                                                    )}
-                                                </span>
-                                            </div>
-                                            {goal.Area && (
-                                                <p
-                                                    className={`text-xs mt-2 ${hasColor ? 'text-white/55' : 'text-gray-400 dark:text-gray-500'}`}
-                                                >
-                                                    {goal.Area.name}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Stats footer */}
-                                    <div
-                                        className={`rounded-b-xl flex items-stretch divide-x ${
-                                            hasColor
-                                                ? 'bg-black/20 divide-white/10'
-                                                : 'bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-600 divide-gray-200 dark:divide-gray-600'
-                                        }`}
+                                        testIdPrefix="sortable-goal"
                                     >
-                                        {[
-                                            {
-                                                icon: (
-                                                    <FolderIcon className="h-3.5 w-3.5" />
-                                                ),
-                                                count:
-                                                    (goal as any)
-                                                        .projects_count ??
-                                                    goal.Projects?.length ??
-                                                    0,
-                                                label: t(
-                                                    'goals.stats.projects',
-                                                    'projects'
-                                                ),
-                                            },
-                                            {
-                                                icon: (
-                                                    <CheckCircleIcon className="h-3.5 w-3.5" />
-                                                ),
-                                                count:
-                                                    (goal as any).tasks_count ??
-                                                    goal.Tasks?.length ??
-                                                    0,
-                                                label: t(
-                                                    'goals.stats.tasks',
-                                                    'tasks'
-                                                ),
-                                            },
-                                        ].map(({ icon, count, label }) => (
-                                            <div
-                                                key={label}
-                                                className="flex-1 flex flex-col items-center py-3 gap-1"
-                                            >
-                                                <span
-                                                    className={`text-base font-semibold leading-none ${
-                                                        hasColor
-                                                            ? 'text-white'
-                                                            : 'text-gray-700 dark:text-gray-200'
-                                                    }`}
-                                                >
-                                                    {count}
-                                                </span>
-                                                <span
-                                                    className={`flex items-center gap-1 text-[10px] leading-none ${
-                                                        hasColor
-                                                            ? 'text-white/55'
-                                                            : 'text-gray-400 dark:text-gray-500'
-                                                    }`}
-                                                >
-                                                    {icon}
-                                                    {label}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </Link>
-                            );
-                        })}
-                    </div>
+                                        <GoalRow
+                                            goal={goal}
+                                            onDelete={openConfirmDelete}
+                                        />
+                                    </SortableItem>
+                                ))}
+                            </div>
+                        </SortableContext>
+                    </DndContext>
                 )}
             </div>
 

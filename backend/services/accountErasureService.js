@@ -42,6 +42,8 @@ const {
     Person,
     UserProjectArea,
     UserProjectOrder,
+    UserGoalOrder,
+    UserAreaOrder,
     UserTaskOrder,
     BillingAccount,
     UsageCounter,
@@ -212,6 +214,8 @@ async function eraseUserAccount(userId) {
         await Note.destroy(byUser);
         await UserProjectArea.destroy(byUser);
         await UserProjectOrder.destroy(byUser);
+        await UserGoalOrder.destroy(byUser);
+        await UserAreaOrder.destroy(byUser);
         await Project.destroy(byUser);
         await Goal.destroy(byUser);
         await Area.destroy(byUser);

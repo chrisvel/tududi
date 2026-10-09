@@ -71,7 +71,6 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                     }`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        setIsExpanded(true);
                         handleNavClick('/notes', t('sidebar.notes'), <BookOpenIcon className="h-4 w-4 mr-2" />);
                     }}
                 >

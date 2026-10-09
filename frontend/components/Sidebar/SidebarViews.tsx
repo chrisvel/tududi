@@ -282,7 +282,6 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                     }`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        setIsExpanded(true);
                         handleNavClick(
                             '/views',
                             t('sidebar.views'),

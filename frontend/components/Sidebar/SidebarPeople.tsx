@@ -84,7 +84,6 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                     }`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        setIsExpanded(true);
                         handleNavClick(
                             '/people',
                             t('sidebar.people', 'People'),

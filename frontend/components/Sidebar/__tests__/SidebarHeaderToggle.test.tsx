@@ -67,7 +67,7 @@ describe('sidebar section header row', () => {
             'sidebar.projects',
             expect.anything()
         );
-        expect(screen.getByText('Garden')).toBeInTheDocument();
+        expect(screen.queryByText('Garden')).not.toBeInTheDocument();
     });
 
     it('toggles the areas list from the header row instead of navigating', () => {

@@ -11,6 +11,8 @@ const {
 
 const { ACCESS } = permissionsService;
 
+const MAX_REORDER_GOALS = 5000;
+
 class GoalsService {
     // A goal can only be placed in an area the caller owns or can edit.
     // Nonexistent and inaccessible areas get the same error so area ids
@@ -31,6 +33,7 @@ class GoalsService {
     }
 
     async getAll(userId, areaId, areaUid) {
+        let goals;
         if (areaUid || areaId) {
             const area = await Area.findOne({
                 where: areaUid ? { uid: areaUid } : { id: areaId },
@@ -40,9 +43,54 @@ class GoalsService {
                 ? await permissionsService.getAccess(userId, 'area', area.uid)
                 : ACCESS.NONE;
             if (access === ACCESS.NONE) return [];
-            return goalsRepository.findAllByArea(userId, area.id);
+            goals = await goalsRepository.findAllByArea(userId, area.id);
+        } else {
+            goals = await goalsRepository.findAllByUser(userId);
         }
-        return goalsRepository.findAllByUser(userId);
+
+        const positions = await goalsRepository.getUserGoalPositions(userId);
+        return goals.map((goal) => ({
+            ...goal,
+            sort_position: positions[goal.id] ?? null,
+        }));
+    }
+
+    /**
+     * Save the user's custom order of the Goals page.
+     */
+    async reorder(userId, goalUids) {
+        if (
+            !Array.isArray(goalUids) ||
+            goalUids.some((uid) => typeof uid !== 'string' || !uid)
+        ) {
+            throw new ValidationError('goal_uids must be a list of UIDs.');
+        }
+        if (goalUids.length > MAX_REORDER_GOALS) {
+            throw new ValidationError(
+                `Cannot order more than ${MAX_REORDER_GOALS} goals.`
+            );
+        }
+        if (new Set(goalUids).size !== goalUids.length) {
+            throw new ValidationError('goal_uids contains duplicates.');
+        }
+
+        const whereClause = await permissionsService.ownershipOrPermissionWhere(
+            'goal',
+            userId
+        );
+        const goals = goalUids.length
+            ? await goalsRepository.findIdsByUids(whereClause, goalUids)
+            : [];
+        if (goals.length !== goalUids.length) {
+            throw new NotFoundError('One or more goals not found.');
+        }
+
+        const idByUid = new Map(goals.map((g) => [g.uid, g.id]));
+        await goalsRepository.replaceUserGoalOrder(
+            userId,
+            goalUids.map((uid) => idByUid.get(uid))
+        );
+        return { goal_uids: goalUids };
     }
 
     // The goal and the caller's access to it; a goal they cannot see reads

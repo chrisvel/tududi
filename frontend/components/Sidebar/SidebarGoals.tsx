@@ -77,7 +77,6 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                     }`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        setIsExpanded(true);
                         handleNavClick(
                             '/goals',
                             t('sidebar.goals', 'Goals'),

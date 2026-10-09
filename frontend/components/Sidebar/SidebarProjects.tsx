@@ -89,7 +89,6 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                     }`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        setIsExpanded(true);
                         handleNavClick('/projects', t('sidebar.projects'), <FolderIcon className="h-4 w-4 mr-2" />);
                     }}
                 >

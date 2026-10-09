@@ -12,9 +12,14 @@ import {
 } from '@heroicons/react/24/outline';
 import { Person } from '../../entities/Person';
 import { Task } from '../../entities/Task';
-import { fetchPersonByUid, updatePerson, deletePerson } from '../../utils/peopleService';
+import {
+    fetchPersonByUid,
+    updatePerson,
+    deletePerson,
+} from '../../utils/peopleService';
 import { useToast } from '../Shared/ToastContext';
 import PersonModal from './PersonModal';
+import PersonHero from './PersonHero';
 import SignInLinkModal from './SignInLinkModal';
 import MemberEditModal from './MemberEditModal';
 import { removeMember } from '../../utils/membersService';
@@ -51,9 +56,7 @@ const PersonDetails: React.FC = () => {
     };
 
     const handleTaskDelete = (taskUid: string) => {
-        setAssignedTasks((prev) =>
-            prev.filter((task) => task.uid !== taskUid)
-        );
+        setAssignedTasks((prev) => prev.filter((task) => task.uid !== taskUid));
     };
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -71,7 +74,10 @@ const PersonDetails: React.FC = () => {
 
             const response = await fetch(
                 `/api/tasks?assigned_to=${encodeURIComponent(uid)}&status=active`,
-                { credentials: 'include', headers: { Accept: 'application/json' } }
+                {
+                    credentials: 'include',
+                    headers: { Accept: 'application/json' },
+                }
             );
             if (response.ok) {
                 const data = await response.json();
@@ -98,11 +104,17 @@ const PersonDetails: React.FC = () => {
     const handleArchive = async () => {
         if (!person?.uid) return;
         try {
-            const result = await updatePerson(person.uid, { archived: !person.archived });
+            const result = await updatePerson(person.uid, {
+                archived: !person.archived,
+            });
             setPerson(result.person);
-            showSuccessToast(person.archived ? 'Person unarchived' : 'Person archived');
+            showSuccessToast(
+                person.archived ? 'Person unarchived' : 'Person archived'
+            );
         } catch (err: unknown) {
-            showErrorToast(err instanceof Error ? err.message : 'Failed to archive');
+            showErrorToast(
+                err instanceof Error ? err.message : 'Failed to archive'
+            );
         }
     };
 
@@ -113,7 +125,9 @@ const PersonDetails: React.FC = () => {
             showSuccessToast('Person deleted');
             navigate('/people');
         } catch (err: unknown) {
-            showErrorToast(err instanceof Error ? err.message : 'Failed to delete person');
+            showErrorToast(
+                err instanceof Error ? err.message : 'Failed to delete person'
+            );
         } finally {
             setIsConfirmDialogOpen(false);
         }
@@ -138,7 +152,9 @@ const PersonDetails: React.FC = () => {
 
     // A member you added: you can rename it, give it an email, or remove it.
     const managesMember =
-        person?.kind === 'member' && person.can_manage === true && person.can_edit === false;
+        person?.kind === 'member' &&
+        person.can_manage === true &&
+        person.can_edit === false;
 
     if (loading) {
         return (
@@ -156,179 +172,175 @@ const PersonDetails: React.FC = () => {
         );
     }
 
-    const hasColor = !!person.color;
+    const pillClass =
+        'inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800';
 
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
-            {/* Person Header Banner */}
-            <div
-                className="rounded-xl mb-8 overflow-hidden"
-                style={hasColor ? { backgroundColor: person.color! } : undefined}
-            >
-                <div className={`p-6 ${hasColor ? '' : 'bg-gray-50 dark:bg-gray-900 rounded-xl'}`}>
-                    <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                            <p className={`text-xs font-medium uppercase tracking-widest mb-1 ${
-                                hasColor ? 'text-white/60' : 'text-gray-400 dark:text-gray-500'
-                            }`}>
-                                Person
-                            </p>
-                            <h1 className={`text-3xl font-light ${
-                                hasColor ? 'text-white' : 'text-gray-900 dark:text-gray-100'
-                            }`}>
-                                {person.name}
-                            </h1>
-                            <div className={`mt-3 flex flex-wrap gap-4 text-xs ${
-                                hasColor ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'
-                            }`}>
-                                <span>{RELATIONSHIP_LABELS[person.relationship_type ?? 'other']}</span>
-                                {person.linked_user_id != null && (
-                                    <span className="flex items-center gap-1">
-                                        <UserIcon className="h-3.5 w-3.5" />
-                                        Linked account
-                                    </span>
-                                )}
-                                {assignedTasks.length > 0 && (
-                                    <span>{assignedTasks.length} assigned {assignedTasks.length === 1 ? 'task' : 'tasks'}</span>
-                                )}
-                                {person.archived && (
-                                    <span className={hasColor ? 'text-white/90' : 'text-amber-600 dark:text-amber-400'}>
-                                        Archived
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                        {(person.can_edit !== false || person.can_sign_in_link || managesMember) && (
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                            {person.can_sign_in_link && (
-                            <button
-                                onClick={() => setSignInLinkOpen(true)}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    hasColor
-                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                                title="Sign-in link"
-                                data-testid="person-sign-in-link"
-                            >
-                                <LinkIcon className="h-5 w-5" />
-                            </button>
-                            )}
-                            {managesMember && (
-                            <>
-                            <button
-                                onClick={() => setMemberEditOpen(true)}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    hasColor
-                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                                title={t('members.editTitle', 'Edit member')}
-                                data-testid="member-edit"
-                            >
-                                <PencilSquareIcon className="h-5 w-5" />
-                            </button>
-                            <button
-                                onClick={() => setMemberRemoveOpen(true)}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    hasColor
-                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
-                                        : 'text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                                title={t('members.remove', 'Remove member')}
-                                data-testid="member-remove"
-                            >
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
-                            </>
-                            )}
-                            {person.can_edit !== false && (
-                            <button
-                                onClick={() => setModalOpen(true)}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    hasColor
-                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                                title="Edit person"
-                            >
-                                <PencilSquareIcon className="h-5 w-5" />
-                            </button>
-                            )}
-                            {person.can_edit !== false && person.kind !== 'member' && (
-                            <>
-                            <button
-                                onClick={handleArchive}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    hasColor
-                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                                title={person.archived ? 'Unarchive' : 'Archive'}
-                            >
-                                <ArchiveBoxIcon className="h-5 w-5" />
-                            </button>
-                            <button
-                                onClick={() => setIsConfirmDialogOpen(true)}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    hasColor
-                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
-                                        : 'text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                                title="Delete person"
-                            >
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
-                            </>
-                            )}
-                        </div>
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-12">
+            {/* Person header, same card as the other detail pages */}
+            <PersonHero
+                name={person.name}
+                tint={person.color || '#3b82f6'}
+                doneCount={
+                    assignedTasks.filter((task) =>
+                        [2, 3, 'done', 'archived'].includes(task.status as any)
+                    ).length
+                }
+                totalCount={assignedTasks.length}
+                meta={
+                    <>
+                        <span className="rounded-md bg-gray-100 px-2 py-0.5 font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                            {person.kind === 'member'
+                                ? t('people.member', 'Member')
+                                : t('people.contact', 'Contact')}
+                        </span>
+                        <span>
+                            {
+                                RELATIONSHIP_LABELS[
+                                    person.relationship_type ?? 'other'
+                                ]
+                            }
+                        </span>
+                        {person.linked_user_id != null && (
+                            <span className="flex items-center gap-1">
+                                <UserIcon className="h-3.5 w-3.5" />
+                                Linked account
+                            </span>
                         )}
-                    </div>
-
-                    {/* Contact info */}
-                    <div className="mt-4 space-y-2">
+                        {assignedTasks.length > 0 && (
+                            <span>
+                                {assignedTasks.length} assigned{' '}
+                                {assignedTasks.length === 1 ? 'task' : 'tasks'}
+                            </span>
+                        )}
+                        {person.archived && (
+                            <span className="text-amber-600 dark:text-amber-400">
+                                Archived
+                            </span>
+                        )}
+                    </>
+                }
+                description={
+                    <div className="space-y-2">
                         {person.email && (
-                            <div className={`flex items-center gap-2 text-sm ${
-                                hasColor ? 'text-white/80' : 'text-gray-600 dark:text-gray-300'
-                            }`}>
-                                <EnvelopeIcon className={`h-4 w-4 ${hasColor ? 'text-white/60' : 'text-gray-400'}`} />
-                                <a href={`mailto:${person.email}`} className="hover:underline">
+                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                <EnvelopeIcon className="h-4 w-4 text-gray-400" />
+                                <a
+                                    href={`mailto:${person.email}`}
+                                    className="hover:underline"
+                                >
                                     {person.email}
                                 </a>
                             </div>
                         )}
                         {person.phone && (
-                            <div className={`flex items-center gap-2 text-sm ${
-                                hasColor ? 'text-white/80' : 'text-gray-600 dark:text-gray-300'
-                            }`}>
-                                <PhoneIcon className={`h-4 w-4 ${hasColor ? 'text-white/60' : 'text-gray-400'}`} />
-                                <a href={`tel:${person.phone}`} className="hover:underline">
+                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                <PhoneIcon className="h-4 w-4 text-gray-400" />
+                                <a
+                                    href={`tel:${person.phone}`}
+                                    className="hover:underline"
+                                >
                                     {person.phone}
                                 </a>
                             </div>
                         )}
                         {person.notes && (
-                            <p className={`text-sm mt-3 whitespace-pre-line ${
-                                hasColor ? 'text-white/80' : 'text-gray-600 dark:text-gray-300'
-                            }`}>
+                            <p className="max-w-3xl whitespace-pre-line text-sm leading-relaxed text-gray-600 dark:text-gray-400">
                                 {person.notes}
                             </p>
                         )}
                     </div>
-                </div>
+                }
+                actions={
+                    <>
+                        {person.can_sign_in_link && (
+                            <button
+                                type="button"
+                                onClick={() => setSignInLinkOpen(true)}
+                                className={pillClass}
+                                data-testid="person-sign-in-link"
+                            >
+                                <LinkIcon className="h-4 w-4" />
+                                Sign-in link
+                            </button>
+                        )}
+                        {managesMember && (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() => setMemberEditOpen(true)}
+                                    className={pillClass}
+                                    data-testid="member-edit"
+                                >
+                                    <PencilSquareIcon className="h-4 w-4" />
+                                    {t('members.editTitle', 'Edit member')}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setMemberRemoveOpen(true)}
+                                    className={pillClass}
+                                    data-testid="member-remove"
+                                >
+                                    <TrashIcon className="h-4 w-4" />
+                                    {t('members.remove', 'Remove member')}
+                                </button>
+                            </>
+                        )}
+                        {person.can_edit !== false && (
+                            <button
+                                type="button"
+                                onClick={() => setModalOpen(true)}
+                                className={pillClass}
+                                title="Edit person"
+                            >
+                                <PencilSquareIcon className="h-4 w-4" />
+                                {t('common.edit', 'Edit')}
+                            </button>
+                        )}
+                        {person.can_edit !== false &&
+                            person.kind !== 'member' && (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={handleArchive}
+                                        className={pillClass}
+                                        title={
+                                            person.archived
+                                                ? 'Unarchive'
+                                                : 'Archive'
+                                        }
+                                    >
+                                        <ArchiveBoxIcon className="h-4 w-4" />
+                                        {person.archived
+                                            ? 'Unarchive'
+                                            : 'Archive'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setIsConfirmDialogOpen(true)
+                                        }
+                                        className={pillClass}
+                                        title="Delete person"
+                                    >
+                                        <TrashIcon className="h-4 w-4" />
+                                        {t('common.delete', 'Delete')}
+                                    </button>
+                                </>
+                            )}
+                    </>
+                }
+            />
+
+            {/* Tabs */}
+            <div className="mb-4 flex items-center min-h-[2.5rem] gap-4 sm:gap-6 pl-2 sm:pl-3">
+                <span className="relative flex items-center self-stretch py-2.5 text-sm font-medium text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100">
+                    {t('tasks.title', 'Tasks')} ({assignedTasks.length})
+                </span>
             </div>
 
             {/* Assigned Tasks */}
             <div>
-                <h2 className="text-lg font-light text-gray-700 dark:text-gray-300 mb-3">
-                    Assigned Tasks
-                    {assignedTasks.length > 0 && (
-                        <span className="ml-2 text-sm font-normal text-gray-400">
-                            ({assignedTasks.length})
-                        </span>
-                    )}
-                </h2>
-
                 {assignedTasks.length === 0 ? (
                     <p className="text-sm text-gray-400 dark:text-gray-500">
                         No tasks assigned to {person.name}.

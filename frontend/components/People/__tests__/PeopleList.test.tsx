@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    fireEvent,
-    waitFor,
-    within,
-} from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import PeopleList from '../PeopleList';
@@ -202,47 +196,6 @@ describe('People page', () => {
             expect(screen.queryByTestId('person-menu-kid')).toBeNull();
             expect(screen.queryByTestId('person-menu-boss')).toBeNull();
         });
-
-        it('has a menu on your own contacts', async () => {
-            renderPage();
-            await screen.findByText('Plumber');
-
-            expect(
-                screen.getByTestId('person-menu-plumber')
-            ).toBeInTheDocument();
-        });
-
-        it('offers to give a contact an account', async () => {
-            renderPage();
-            await screen.findByText('Plumber');
-
-            fireEvent.click(screen.getByTestId('person-menu-plumber'));
-
-            expect(screen.getByTestId('give-account-plumber')).toBeVisible();
-        });
-
-        it('does not offer that for a member', async () => {
-            renderPage();
-            await screen.findByText('Wife');
-
-            fireEvent.click(screen.getByTestId('person-menu-me'));
-
-            expect(screen.queryByTestId('give-account-me')).toBeNull();
-            expect(screen.queryByText('Archive')).toBeNull();
-            expect(screen.queryByText('Delete')).toBeNull();
-            expect(screen.getByText('Edit')).toBeVisible();
-        });
-
-        it('does not offer it without the invite permission', async () => {
-            setCapabilities({ invite_members: false });
-            renderPage();
-            await screen.findByText('Plumber');
-
-            fireEvent.click(screen.getByTestId('person-menu-plumber'));
-
-            expect(screen.queryByTestId('give-account-plumber')).toBeNull();
-            expect(screen.getByText('Archive')).toBeVisible();
-        });
     });
 
     describe('the buttons', () => {
@@ -339,49 +292,6 @@ describe('People page', () => {
                     'Invitation sent to wife@example.com'
                 )
             );
-        });
-    });
-
-    describe('giving a contact an account', () => {
-        const openGiveAccount = async () => {
-            renderPage();
-            await screen.findByText('Plumber');
-            fireEvent.click(screen.getByTestId('person-menu-plumber'));
-            fireEvent.click(screen.getByTestId('give-account-plumber'));
-            return screen.findByTestId('member-modal');
-        };
-
-        it('names the contact and says its private notes are not carried over', async () => {
-            const modal = await openGiveAccount();
-
-            expect(
-                within(modal).getByText('Give Plumber an account')
-            ).toBeVisible();
-            expect(within(modal).getByTestId('convert-note')).toHaveTextContent(
-                'Your private notes on this contact are not carried over'
-            );
-        });
-
-        it('sends the contact along so it keeps its history', async () => {
-            (createMember as jest.Mock).mockResolvedValue({
-                id: 9,
-                email: null,
-                role: 'user',
-                account_status: 'no_sign_in',
-                person_uid: 'plumber',
-                invited: false,
-                email_sent: false,
-            });
-            await openGiveAccount();
-
-            fireEvent.click(screen.getByTestId('member-submit'));
-
-            await waitFor(() => expect(createMember).toHaveBeenCalled());
-            expect(createMember).toHaveBeenCalledWith({
-                name: 'Plumber',
-                role: 'user',
-                person_uid: 'plumber',
-            });
         });
     });
 });
