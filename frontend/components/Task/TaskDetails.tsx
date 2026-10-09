@@ -41,6 +41,7 @@ import {
     TaskGoalCard,
 } from './TaskDetails/';
 import TaskAIInsights, { TaskAIInsightsHandle } from '../AI/TaskAIInsights';
+import TaskModal from './TaskModal';
 import {
     isTaskOverdueInTodayPlan,
     isTaskPastDue,
@@ -98,6 +99,7 @@ const TaskDetails: React.FC = () => {
     const [loading, setLoading] = useState(!task);
     const [error, setError] = useState<string | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const [isTaskPanelOpen, setIsTaskPanelOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
     const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
     const [isOverdueBubbleVisible, setIsOverdueBubbleVisible] = useState(false);
@@ -1543,6 +1545,7 @@ const TaskDetails: React.FC = () => {
                     commentCount={commentCount}
                     autoEditTitle={isNewTask}
                     ancestorChain={ancestorChain}
+                    onEdit={() => setIsTaskPanelOpen(true)}
                 />
 
                 {aiAssistantEnabled && (
@@ -1696,6 +1699,14 @@ const TaskDetails: React.FC = () => {
                         </div>
                     )}
                 </div>
+
+                {task && (
+                    <TaskModal
+                        isOpen={isTaskPanelOpen}
+                        onClose={() => setIsTaskPanelOpen(false)}
+                        task={task}
+                    />
+                )}
 
                 {isConfirmDialogOpen && taskToDelete && (
                     <ConfirmDialog
