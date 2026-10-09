@@ -372,7 +372,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     title={t('modals.deleteProject.title', 'Delete Project')}
                     message={t(
                         'modals.deleteProject.message',
-                        'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?'
+                        'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?',
+                        { projectName: project?.name }
                     )}
                     onConfirm={handleDeleteConfirm}
                     onCancel={() => setShowConfirmDialog(false)}

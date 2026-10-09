@@ -937,7 +937,7 @@
     },
     "deleteProject": {
       "title": "Delete Project",
-      "message": "Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?"
+      "message": "Deleting the project \"{{projectName}}\" will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?"
     },
     "deleteGoal": {
       "title": "Delete Goal",
