@@ -613,6 +613,14 @@ const InboxItems: React.FC = () => {
                                               index === openIndex - 1
                                                   ? 'rounded-b-2xl pb-1.5'
                                                   : ''
+                                          } ${
+                                              // A soft line between rows, as in task
+                                              // sheets. It drops next to the open item.
+                                              index > 0 &&
+                                              index !== openIndex &&
+                                              index !== openIndex + 1
+                                                  ? 'border-t border-gray-100 dark:border-white/5'
+                                                  : ''
                                           }`;
                                     return (
                                         <div
