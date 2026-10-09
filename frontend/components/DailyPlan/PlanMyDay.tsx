@@ -1107,7 +1107,7 @@ const PlanMyDay: React.FC = () => {
                                 today={date ?? ''}
                             />
                         </aside>
-                        <section className="min-w-0 flex-1 rounded-xl bg-white px-4 py-5 sm:px-6 md:overflow-y-auto dark:bg-gray-900">
+                        <section className="isolate min-w-0 flex-1 rounded-xl bg-white px-4 py-5 sm:px-6 md:overflow-y-auto dark:bg-gray-900">
                             {aiDraft && (
                                 <section
                                     className="mb-3 flex flex-col gap-2.5 rounded-xl bg-violet-50/70 px-4 py-3 dark:bg-violet-900/15"
@@ -1179,6 +1179,9 @@ const PlanMyDay: React.FC = () => {
                             )}
 
                             {tips.length > 0 && (
+                                // Sticky above the timeline's own layers; the
+                                // section is isolated so this never rises
+                                // above the navbar and its menu.
                                 <div className="sticky -top-5 z-40 -mx-1 -mt-5 mb-3 bg-white px-1 pb-1 pt-5 dark:bg-gray-900">
                                     <PlanTips
                                         tips={tips}
