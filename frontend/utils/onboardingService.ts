@@ -1,10 +1,5 @@
 import { getApiPath } from '../config/paths';
-import {
-    getDefaultHeaders,
-    getPostHeadersWithCsrf,
-    handleAuthResponse,
-} from './authUtils';
-import type { StarterPayload } from './starters';
+import { getPostHeadersWithCsrf, handleAuthResponse } from './authUtils';
 
 // Records that the brain dump is done with, whether the person planned a
 // day or skipped it. The server keeps the first time it was called.
@@ -33,38 +28,18 @@ export interface StarterResult {
     };
 }
 
-// Applies a starter from the welcome screen and saves the choice. "empty"
-// saves the choice and creates nothing.
-export const applyStarter = async (
-    payload: StarterPayload | { key: 'empty' }
-): Promise<StarterResult> => {
+// Records the welcome page as seen. The welcome page sends the "empty"
+// starter, which creates nothing; the same endpoint accepts a full starter
+// (areas, habits, note) for API clients that want to seed an account.
+export const applyStarter = async (payload: {
+    key: string;
+}): Promise<StarterResult> => {
     const response = await fetch(getApiPath('onboarding/starter'), {
         method: 'POST',
         credentials: 'include',
         headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(payload),
     });
-    await handleAuthResponse(response, 'Failed to set up the starter.');
+    await handleAuthResponse(response, 'Failed to finish the welcome page.');
     return response.json();
-};
-
-export const fetchExampleCount = async (): Promise<number> => {
-    const response = await fetch(getApiPath('onboarding/examples'), {
-        credentials: 'include',
-        headers: getDefaultHeaders(),
-    });
-    await handleAuthResponse(response, 'Failed to load examples.');
-    const data = await response.json();
-    return data.count ?? 0;
-};
-
-export const removeExamples = async (): Promise<number> => {
-    const response = await fetch(getApiPath('onboarding/examples'), {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: await getPostHeadersWithCsrf(),
-    });
-    await handleAuthResponse(response, 'Failed to remove the examples.');
-    const data = await response.json();
-    return data.removed ?? 0;
 };

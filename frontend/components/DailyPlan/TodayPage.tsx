@@ -33,7 +33,6 @@ import { useDailyPlanProgress } from '../../store/dailyPlanStore';
 import { useStore } from '../../store/useStore';
 import TodayUnplanned from './TodayUnplanned';
 import TodayPlanned from './TodayPlanned';
-import StarterFollowUp from '../Onboarding/StarterFollowUp';
 import { mergeVisibleOrder } from '../Shared/sortableList';
 import { buildTips, rescheduleMissed } from './tips';
 import { useDailyQuote } from './useDailyQuote';
@@ -85,9 +84,6 @@ const TodayPage: React.FC = () => {
     const [candidates, setCandidates] = useState<PlanCandidates | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [busyUid, setBusyUid] = useState<string | null>(null);
-    // Bumped when something outside the page changes the day, like clearing
-    // the starter's example tasks, so the plan and candidates reload.
-    const [reloadTick, setReloadTick] = useState(0);
     const [now, setNow] = useState(() =>
         minuteOfDay(new Date(), getUserTimezone())
     );
@@ -126,7 +122,7 @@ const TodayPage: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [t, reloadTick]);
+    }, [t]);
 
     // Calendar feeds belong to the Calendar feature; with it off Today shows
     // no events and no prompt to connect a calendar.
@@ -509,15 +505,6 @@ const TodayPage: React.FC = () => {
                     <p className="text-gray-500 dark:text-gray-400">
                         {t('common.loading', 'Loading...')}
                     </p>
-                )}
-
-                {planResponse && (
-                    <StarterFollowUp
-                        started={started}
-                        onExamplesRemoved={() =>
-                            setReloadTick((tick) => tick + 1)
-                        }
-                    />
                 )}
 
                 {planResponse && !started && (

@@ -67,8 +67,7 @@ import {
     openBrainDump,
 } from './utils/brainDumpUi';
 import type { StarterResult } from './utils/onboardingService';
-import type { StarterKey } from './utils/starters';
-import { getApiPath, getBasePath, getLocalesPath } from './config/paths';
+import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
@@ -84,9 +83,7 @@ const PublicNotePage = lazy(
 const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
 const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
 const FirstPlan = lazy(() => import('./components/Onboarding/FirstPlan'));
-const StarterPicker = lazy(
-    () => import('./components/Onboarding/StarterPicker')
-);
+const Welcome = lazy(() => import('./components/Onboarding/Welcome'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 // Declared at module scope: the users page switches tabs through the query
@@ -260,11 +257,8 @@ const App: React.FC = () => {
         });
     };
 
-    // The starter picker is done with. A starter that created things is
-    // followed by a full reload of Today, so every list and count on the
-    // page and in the sidebar picks the new records up; the empty ones open
-    // the brain dump instead, the way the welcome used to.
-    const finishStarter = (result: StarterResult, key: StarterKey) => {
+    // The welcome page is done with: Today opens with the brain dump.
+    const finishWelcome = (result: StarterResult) => {
         const user = currentUser
             ? {
                   ...currentUser,
@@ -273,13 +267,9 @@ const App: React.FC = () => {
               }
             : null;
         if (user) setUserInStorage(user);
-        if (key === 'empty' || key === 'simple') {
-            setCurrentUser(user);
-            navigate('/today', { replace: true });
-            openBrainDump();
-            return;
-        }
-        window.location.assign(`${getBasePath() || ''}/today`);
+        setCurrentUser(user);
+        navigate('/today', { replace: true });
+        openBrainDump();
     };
 
     // The Inbox keeps offering a claimed share while the user stays on it (the
@@ -467,9 +457,7 @@ const App: React.FC = () => {
                                 element={
                                     currentUser.onboarding_starter === null ? (
                                         <Suspense fallback={<LoadingScreen />}>
-                                            <StarterPicker
-                                                onDone={finishStarter}
-                                            />
+                                            <Welcome onDone={finishWelcome} />
                                         </Suspense>
                                     ) : (
                                         <Navigate to="/today" replace />
