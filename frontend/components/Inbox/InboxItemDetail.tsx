@@ -57,6 +57,13 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         onEditingChange?.(isEditing);
     }, [isEditing]);
 
+    // Tell the list in the same render that this item is opening, so its
+    // rounded corners and background change together with the card.
+    const startEditing = () => {
+        setIsEditing(true);
+        onEditingChange?.(true);
+    };
+
     useEffect(() => {
         if (!isEditing) return;
 
@@ -485,10 +492,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 /* ── Flat row (no card, no shadow) ─────────────────────────── */
                 <div
                     className={`group flex items-start gap-2.5 px-4 py-2.5 rounded-lg cursor-pointer hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors${isNew ? ' animate-inbox-row-in' : ''}`}
-                    onClick={() => setIsEditing(true)}
+                    onClick={startEditing}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsEditing(true); } }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startEditing(); } }}
                 >
                     {/* Text content */}
                     <div className="flex-1 min-w-0">
