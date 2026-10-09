@@ -57,6 +57,9 @@ const Welcome: React.FC<WelcomeProps> = ({ onDone }) => {
                             'A one minute tour of tududi'
                         )}
                         loading="lazy"
+                        // The app sends Referrer-Policy: no-referrer, and YouTube
+                        // refuses to play an embed without a referrer (error 153).
+                        referrerPolicy="strict-origin-when-cross-origin"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         allowFullScreen
                         data-testid="welcome-video"
