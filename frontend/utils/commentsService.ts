@@ -1,4 +1,5 @@
 import { Comment, CommentReactionResult } from '../entities/Comment';
+import { FileAttachment } from '../entities/Attachment';
 import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
@@ -32,6 +33,26 @@ export const createComment = async (
         }),
     });
     await handleAuthResponse(response, 'Failed to post comment.');
+    return response.json();
+};
+
+// Upload an image pasted into a comment
+export const uploadCommentImage = async (
+    taskUid: string,
+    file: File
+): Promise<FileAttachment> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch(
+        getApiPath(`task/${taskUid}/comments/images`),
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'x-csrf-token': await getCsrfToken() },
+            body: formData,
+        }
+    );
+    await handleAuthResponse(response, 'Failed to upload image.');
     return response.json();
 };
 

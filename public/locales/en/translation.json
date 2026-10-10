@@ -254,7 +254,9 @@
     "failedToDelete": "Failed to delete comment",
     "like": "Like",
     "dislike": "Dislike",
-    "failedToReact": "Failed to update reaction"
+    "failedToReact": "Failed to update reaction",
+    "uploadingImage": "Uploading image...",
+    "imageUploadFailed": "Could not upload image"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",
