@@ -43,10 +43,16 @@ jest.mock('../../../utils/untangleService', () => ({
 const result = {
     today: { title: 'Call the landlord', reason: 'Someone is waiting.' },
     drop: [{ title: 'Piano', reason: 'No date.' }],
-    question: {
-        text: 'Is Crete this month or someday?',
-        options: ['This month', 'Someday'],
-    },
+    questions: [
+        {
+            text: 'Is Crete this month or someday?',
+            options: ['This month', 'Someday'],
+        },
+        {
+            text: 'When are the taxes due?',
+            options: ['This month', 'Next month'],
+        },
+    ],
     areas: [
         {
             name: 'Home',
@@ -167,12 +173,15 @@ describe('UntanglePage', () => {
         expect(screen.getByText('waiting for Maria')).toBeInTheDocument();
         expect(screen.getByText('habit, 3x weekly')).toBeInTheDocument();
         expect(screen.getByText('30m')).toBeInTheDocument();
-        expect(screen.getByTestId('untangle-question')).toHaveTextContent(
+        expect(screen.getByTestId('untangle-questions')).toHaveTextContent(
             'Is Crete this month or someday?'
+        );
+        expect(screen.getByTestId('untangle-questions')).toHaveTextContent(
+            'When are the taxes due?'
         );
     });
 
-    it('re-runs with the answer when an option is tapped', async () => {
+    it('re-runs once with every answer after all questions are picked', async () => {
         renderPage();
         fireEvent.change(await screen.findByTestId('untangle-textarea'), {
             target: { value: 'crete??' },
@@ -180,7 +189,14 @@ describe('UntanglePage', () => {
         fireEvent.click(screen.getByTestId('untangle-run'));
         await screen.findByTestId('untangle-result');
 
+        const update = screen.getByTestId('untangle-answer');
+        expect(update).toBeDisabled();
         fireEvent.click(screen.getByRole('button', { name: 'Someday' }));
+        expect(update).toBeDisabled();
+        expect(service.untangle).toHaveBeenCalledTimes(1);
+        fireEvent.click(screen.getByRole('button', { name: 'Next month' }));
+        expect(update).toBeEnabled();
+        fireEvent.click(update);
 
         await waitFor(() => expect(service.untangle).toHaveBeenCalledTimes(2));
         expect(service.untangle).toHaveBeenLastCalledWith(
@@ -189,6 +205,10 @@ describe('UntanglePage', () => {
                     {
                         question: 'Is Crete this month or someday?',
                         answer: 'Someday',
+                    },
+                    {
+                        question: 'When are the taxes due?',
+                        answer: 'Next month',
                     },
                 ],
             })

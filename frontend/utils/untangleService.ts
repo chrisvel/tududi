@@ -34,7 +34,7 @@ export interface UntangleArea {
 export interface UntangleResult {
     today: { title: string; reason: string };
     drop: { title: string; reason: string }[];
-    question: { text: string; options: string[] } | null;
+    questions: { text: string; options: string[] }[];
     areas: UntangleArea[];
     week: {
         date: string;

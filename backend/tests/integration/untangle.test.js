@@ -31,10 +31,13 @@ const modelAnswer = () => ({
         { title: 'Learn piano', reason: 'No date, no pressure.' },
         { title: 'Read Atomic Habits', reason: 'Nice to have.' },
     ],
-    question: {
-        text: 'Is the Crete trip this month or someday?',
-        options: ['This month', 'Someday'],
-    },
+    questions: [
+        {
+            text: 'Is the Crete trip this month or someday?',
+            options: ['This month', 'Someday', 'Someday'],
+        },
+        { text: 'Only one option, dropped', options: ['Yes'] },
+    ],
     areas: [
         {
             name: 'Home',
@@ -195,7 +198,12 @@ describe('Untangle', () => {
 
         expect(result.today.title).toBe('Call the landlord about the deposit');
         expect(result.drop).toHaveLength(2);
-        expect(result.question.options).toEqual(['This month', 'Someday']);
+        expect(result.questions).toEqual([
+            {
+                text: 'Is the Crete trip this month or someday?',
+                options: ['This month', 'Someday'],
+            },
+        ]);
 
         expect(result.week).toHaveLength(7);
         expect(result.week[0].date).toBe(today());
@@ -244,9 +252,9 @@ describe('Untangle', () => {
         expect(mockCreate).not.toHaveBeenCalled();
     });
 
-    it('passes earlier answers back to the model', async () => {
+    it('passes earlier answers back to the model and asks nothing more', async () => {
         mockCreate.mockResolvedValue(reply(modelAnswer()));
-        await request(app)
+        const res = await request(app)
             .post('/api/untangle/parse')
             .send({
                 text: 'crete??',
@@ -257,6 +265,8 @@ describe('Untangle', () => {
         const content = mockCreate.mock.calls[0][0].messages[1].content;
         expect(content).toContain('Answers to earlier questions');
         expect(content).toContain('Is Crete this month? Someday');
+        // The model still returned a question; the second round never asks
+        expect(res.body.result.questions).toEqual([]);
     });
 
     it('answers 502 when the model returns nothing usable', async () => {

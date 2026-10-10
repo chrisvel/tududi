@@ -300,6 +300,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
             setResult(res.result);
             setToken(res.token);
             setAnswers(nextAnswers);
+            setPicked({});
             setStage('result');
             window.scrollTo({ top: 0 });
         } catch (err) {
@@ -312,11 +313,19 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
         }
     };
 
-    const answer = (option: string) => {
-        if (!result?.question) return;
+    // One round of questions: pick an option for each, then re-plan once.
+    const [picked, setPicked] = useState<Record<string, string>>({});
+    const questions = result?.questions || [];
+    const allAnswered =
+        questions.length > 0 && questions.every((q) => picked[q.text]);
+    const answerAll = () => {
+        if (!allAnswered) return;
         void run([
             ...answers,
-            { question: result.question.text, answer: option },
+            ...questions.map((q) => ({
+                question: q.text,
+                answer: picked[q.text],
+            })),
         ]);
     };
 
@@ -345,6 +354,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
         setResult(null);
         setToken(null);
         setAnswers([]);
+        setPicked({});
         setError(null);
         setStage('input');
     };
@@ -633,32 +643,77 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                 </div>
                             )}
 
-                            {result.question && (
+                            {questions.length > 0 && (
                                 <div
                                     className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800"
-                                    data-testid="untangle-question"
+                                    data-testid="untangle-questions"
                                 >
                                     <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                                        {t(
-                                            'untangle.oneQuestion',
-                                            'One question'
-                                        )}
+                                        {questions.length === 1
+                                            ? t(
+                                                  'untangle.oneQuestion',
+                                                  'One question'
+                                              )
+                                            : t(
+                                                  'untangle.fewQuestions',
+                                                  'A few questions'
+                                              )}
                                     </p>
-                                    <p className="mt-1 text-base font-medium">
-                                        {result.question.text}
-                                    </p>
-                                    <div className="mt-3 flex flex-wrap gap-2">
-                                        {result.question.options.map((o) => (
-                                            <button
-                                                key={o}
-                                                type="button"
-                                                onClick={() => answer(o)}
-                                                className="rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-200 dark:hover:bg-blue-900/50"
-                                            >
-                                                {o}
-                                            </button>
+                                    <div className="mt-2 flex flex-col gap-4">
+                                        {questions.map((q) => (
+                                            <div key={q.text}>
+                                                <p className="text-base font-medium">
+                                                    {q.text}
+                                                </p>
+                                                <div className="mt-2 flex flex-wrap gap-2">
+                                                    {q.options.map((o) => {
+                                                        const on =
+                                                            picked[q.text] ===
+                                                            o;
+                                                        return (
+                                                            <button
+                                                                key={o}
+                                                                type="button"
+                                                                aria-pressed={
+                                                                    on
+                                                                }
+                                                                onClick={() =>
+                                                                    setPicked(
+                                                                        (
+                                                                            prev
+                                                                        ) => ({
+                                                                            ...prev,
+                                                                            [q.text]:
+                                                                                o,
+                                                                        })
+                                                                    )
+                                                                }
+                                                                className={`rounded-lg px-3 py-2 text-sm ${
+                                                                    on
+                                                                        ? 'bg-blue-600 text-white dark:bg-blue-500'
+                                                                        : 'bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-200 dark:hover:bg-blue-900/50'
+                                                                }`}
+                                                            >
+                                                                {o}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
                                         ))}
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={answerAll}
+                                        disabled={!allAnswered}
+                                        className="mt-4 h-11 w-full rounded-xl bg-gray-900 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-40 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white"
+                                        data-testid="untangle-answer"
+                                    >
+                                        {t(
+                                            'untangle.updatePlan',
+                                            'Update the plan'
+                                        )}
+                                    </button>
                                 </div>
                             )}
 

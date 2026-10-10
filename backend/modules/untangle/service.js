@@ -28,6 +28,7 @@ const LIMITS = {
     projectTasks: 6,
     items: 40,
     drop: 3,
+    questions: 3,
     options: 4,
     answers: 3,
     title: 200,
@@ -85,13 +86,13 @@ Structure:
 - minutes: a realistic estimate for a task: 15, 30, 45, 60, 90, 120, 180 or 240. Errands and calls are short; writing and research take longer.
 - today: the single best thing to do today, with one sentence on why. Prefer things another person is waiting on, things overdue, and things that unblock the most.
 - drop: 1 to 3 things that can wait, each with a short reason. Pick from someday items and low-urgency tasks, using the exact titles you gave them.
-- question: at most one question whose answer would change the plan most (for example whether a trip is this month or someday, or when a deadline is), with 2 to 4 short options. Leave text empty when nothing important is unclear.
+- questions: up to 3 questions whose answers would change the plan (for example whether a trip is this month or someday, or when a deadline is), each with 2 to 4 options of at most 4 words. Ask all of them now, in this one reply; there is no second round. Return an empty list when nothing important is unclear.
 
 Rules:
 - Use the person's own words for names. Fix spelling, drop noise like "!!", "??" and ":(".
 - Do not invent items, people or dates. Do not merge unrelated lines.
 - Every line of the input appears exactly once: as a project, a project's task, or an item. Never drop a line silently; drop means listing it under drop.
-- When answers to earlier questions are given, apply them and do not ask the same question again.
+- When answers to earlier questions are given, apply them and return an empty questions list: the person has answered once and will not be asked again.
 - Plain text, no markdown. Return only the JSON object.`;
 
 const str = { type: 'string' };
@@ -101,7 +102,7 @@ const int = { type: 'integer' };
 const SCHEMA = {
     type: 'object',
     additionalProperties: false,
-    required: ['today', 'drop', 'question', 'areas'],
+    required: ['today', 'drop', 'questions', 'areas'],
     properties: {
         today: {
             type: 'object',
@@ -118,11 +119,17 @@ const SCHEMA = {
                 properties: { title: str, reason: str },
             },
         },
-        question: {
-            type: 'object',
-            additionalProperties: false,
-            required: ['text', 'options'],
-            properties: { text: str, options: { type: 'array', items: str } },
+        questions: {
+            type: 'array',
+            items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['text', 'options'],
+                properties: {
+                    text: str,
+                    options: { type: 'array', items: str },
+                },
+            },
         },
         areas: {
             type: 'array',
@@ -297,7 +304,8 @@ function cleanMinutes(value) {
     return best;
 }
 
-function sanitizeResult(parsed, { timezone }) {
+function sanitizeResult(parsed, { timezone, answers = [] }) {
+    const answered = answers.length;
     const today = moment.tz(timezone).format('YYYY-MM-DD');
     const rawAreas = Array.isArray(parsed?.areas) ? parsed.areas : [];
     const seenAreas = new Set();
@@ -410,20 +418,28 @@ function sanitizeResult(parsed, { timezone }) {
         drop.push({ title: dtitle, reason: title(d?.reason, LIMITS.reason) });
     }
 
-    let question = null;
-    const qtext = title(parsed?.question?.text, LIMITS.reason);
-    const options = Array.isArray(parsed?.question?.options)
-        ? parsed.question.options
-              .map((o) => title(o, 60))
-              .filter(Boolean)
-              .slice(0, LIMITS.options)
-        : [];
-    if (qtext && options.length >= 2) question = { text: qtext, options };
+    // One round only: once the person has answered, nothing more is asked,
+    // whatever the model says.
+    const questions = [];
+    if (answered === 0) {
+        for (const q of Array.isArray(parsed?.questions)
+            ? parsed.questions
+            : []) {
+            if (questions.length >= LIMITS.questions) break;
+            const text = title(q?.text, LIMITS.reason);
+            const options = Array.isArray(q?.options)
+                ? [...new Set(q.options.map((o) => title(o, 60)))]
+                      .filter(Boolean)
+                      .slice(0, LIMITS.options)
+                : [];
+            if (text && options.length >= 2) questions.push({ text, options });
+        }
+    }
 
     return {
         today: todayPick,
         drop,
-        question,
+        questions,
         areas,
         week: buildWeek(areas, timezone),
     };

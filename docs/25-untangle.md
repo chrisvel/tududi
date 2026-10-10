@@ -14,7 +14,7 @@ Untangle is the public page at `/untangle`. Anyone, signed in or not, pastes a m
 - **Today**: the single best thing to do today and why
 - **Drop for now**: one to three things that can wait
 - **Your week**: seven days of load in minutes
-- **One question**, at most, whose answer reshuffles the plan
+- **Questions**, up to three, asked once; answering them all reshuffles the plan and nothing more is asked
 
 **Keep it** writes the plan into an account. A signed-in person gets it immediately. A stranger has the plan parked in their browser, is sent to sign up, and the plan is applied on their first signed-in load, which also counts as the welcome page being seen so they land on Today.
 
@@ -55,7 +55,7 @@ When it is off, or no provider is configured, `GET /api/untangle/status` and `PO
 }
 ```
 
-`text` (up to 6000 chars) or `image` (PNG, JPEG or WebP data URL, up to 6 MB) is required. `answers` carries the person's replies to earlier questions, so answering re-runs the same parse with that context.
+`text` (up to 6000 chars) or `image` (PNG, JPEG or WebP data URL, up to 6 MB) is required. `answers` carries the person's replies to the questions, so answering re-runs the same parse with that context. A reply with answers never carries questions: one round only.
 
 Response: `{ result, token }` where `result` is:
 
@@ -63,7 +63,7 @@ Response: `{ result, token }` where `result` is:
 {
   "today": { "title": "...", "reason": "..." },
   "drop": [{ "title": "...", "reason": "..." }],
-  "question": { "text": "...", "options": ["...", "..."] },
+  "questions": [{ "text": "...", "options": ["...", "..."] }],
   "areas": [{
     "name": "Home",
     "goal": { "title": "...", "why": "..." },
