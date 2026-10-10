@@ -379,7 +379,7 @@ const Register: React.FC = () => {
                                 >
                                     {t(
                                         'untangle.signUpToKeep',
-                                        'Your plan is saved on this device. Sign up and it will be waiting for you.'
+                                        'Your list is saved on this device. Sign up free, verify your email, and it gets untangled right away.'
                                     )}
                                 </p>
                             )}

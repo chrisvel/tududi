@@ -26,19 +26,36 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const service = {
-    isUntangleAvailable: jest.fn(),
+    fetchUntangleStatus: jest.fn(),
     untangle: jest.fn(),
+    untangleSample: jest.fn(),
     keepUntangled: jest.fn(),
     stashPendingUntangle: jest.fn(),
+    readPendingUntangle: jest.fn(),
+    clearPendingUntangle: jest.fn(),
 };
 jest.mock('../../../utils/untangleService', () => ({
-    isUntangleAvailable: (...args: unknown[]) =>
-        service.isUntangleAvailable(...args),
+    fetchUntangleStatus: (...args: unknown[]) =>
+        service.fetchUntangleStatus(...args),
     untangle: (...args: unknown[]) => service.untangle(...args),
+    untangleSample: (...args: unknown[]) => service.untangleSample(...args),
     keepUntangled: (...args: unknown[]) => service.keepUntangled(...args),
     stashPendingUntangle: (...args: unknown[]) =>
         service.stashPendingUntangle(...args),
+    readPendingUntangle: (...args: unknown[]) =>
+        service.readPendingUntangle(...args),
+    clearPendingUntangle: (...args: unknown[]) =>
+        service.clearPendingUntangle(...args),
 }));
+
+const samples = [
+    { key: 'family', label: 'Family week', text: 'dentist for Leo\ngym x3' },
+    {
+        key: 'moving',
+        label: 'Moving flat',
+        text: 'moving nov 1!!!\nask Sara about the van',
+    },
+];
 
 const result = {
     today: { title: 'Call the landlord', reason: 'Someone is waiting.' },
@@ -116,14 +133,26 @@ describe('UntanglePage', () => {
     beforeEach(() => {
         navigate.mockReset();
         Object.values(service).forEach((fn) => fn.mockReset());
-        service.isUntangleAvailable.mockResolvedValue(true);
+        service.fetchUntangleStatus.mockResolvedValue({
+            available: true,
+            samples,
+        });
         service.untangle.mockResolvedValue({ result, token: 'signed.token' });
+        service.untangleSample.mockResolvedValue({
+            result,
+            token: 'sample.token',
+            sample: 'family',
+        });
         service.stashPendingUntangle.mockReturnValue(true);
+        service.readPendingUntangle.mockReturnValue(null);
         window.scrollTo = jest.fn();
     });
 
     it('says so when the instance has it switched off', async () => {
-        service.isUntangleAvailable.mockResolvedValue(false);
+        service.fetchUntangleStatus.mockResolvedValue({
+            available: false,
+            samples: [],
+        });
         renderPage();
         expect(
             await screen.findByText('Untangle is not available here')
@@ -148,19 +177,87 @@ describe('UntanglePage', () => {
         expect(run).toBeEnabled();
     });
 
-    it('fills the box with a sample list for people who keep their own private', async () => {
-        renderPage();
+    it('runs a sample for anyone, no account needed', async () => {
+        renderPage(false);
         fireEvent.click(await screen.findByTestId('untangle-sample-moving'));
         const box = screen.getByTestId(
             'untangle-textarea'
         ) as HTMLTextAreaElement;
-        expect(box.value).toContain('moving nov 1!!!');
         expect(box.value).toContain('ask Sara about the van');
-        expect(screen.getByTestId('untangle-run')).toBeEnabled();
+        fireEvent.click(screen.getByTestId('untangle-run'));
+
+        expect(
+            await screen.findByTestId('untangle-result')
+        ).toBeInTheDocument();
+        expect(service.untangleSample).toHaveBeenCalledWith(
+            expect.objectContaining({ key: 'moving', answers: [] })
+        );
+        expect(service.untangle).not.toHaveBeenCalled();
+        expect(navigate).not.toHaveBeenCalled();
+        // A sample result invites the person to try their own list
+        expect(screen.getByTestId('untangle-own')).toBeInTheDocument();
+        expect(screen.queryByTestId('untangle-keep')).not.toBeInTheDocument();
+    });
+
+    it('parks an own list and sends a stranger to sign up', async () => {
+        renderPage(false);
+        fireEvent.change(await screen.findByTestId('untangle-textarea'), {
+            target: { value: 'call landlord\ngym x3' },
+        });
+        expect(screen.getByTestId('untangle-run')).toHaveTextContent(
+            'free with an account'
+        );
+        fireEvent.click(screen.getByTestId('untangle-run'));
+
+        expect(service.stashPendingUntangle).toHaveBeenCalledWith(
+            expect.objectContaining({
+                text: 'call landlord\ngym x3',
+                image: null,
+            })
+        );
+        expect(navigate).toHaveBeenCalledWith('/register', {
+            state: { untangle: true },
+        });
+        expect(service.untangle).not.toHaveBeenCalled();
+    });
+
+    it('runs a parked list as soon as the person is signed in', async () => {
+        service.readPendingUntangle.mockReturnValue({
+            text: 'parked list',
+            image: null,
+            timezone: 'UTC',
+            language: 'en',
+        });
+        renderPage(true);
+
+        expect(
+            await screen.findByTestId('untangle-result')
+        ).toBeInTheDocument();
+        expect(service.clearPendingUntangle).toHaveBeenCalled();
+        expect(service.untangle).toHaveBeenCalledWith(
+            expect.objectContaining({ text: 'parked list', answers: [] })
+        );
+        expect(screen.getByTestId('untangle-keep')).toBeInTheDocument();
+    });
+
+    it('explains when the free untangle is spent', async () => {
+        const err = Object.assign(new Error('Your free plan allows 0'), {
+            code: 'PLAN_LIMIT_REACHED',
+        });
+        service.untangle.mockRejectedValue(err);
+        renderPage(true);
+        fireEvent.change(await screen.findByTestId('untangle-textarea'), {
+            target: { value: 'another list' },
+        });
+        fireEvent.click(screen.getByTestId('untangle-run'));
+
+        expect(await screen.findByRole('alert')).toHaveTextContent(
+            'used your free untangle'
+        );
     });
 
     it('shows the structure, the week and the question after a parse', async () => {
-        renderPage();
+        renderPage(true);
         fireEvent.change(await screen.findByTestId('untangle-textarea'), {
             target: { value: 'call landlord\ngym x3' },
         });
@@ -202,7 +299,7 @@ describe('UntanglePage', () => {
     });
 
     it('re-runs once with every answer after all questions are picked', async () => {
-        renderPage();
+        renderPage(true);
         fireEvent.change(await screen.findByTestId('untangle-textarea'), {
             target: { value: 'crete??' },
         });
@@ -235,22 +332,18 @@ describe('UntanglePage', () => {
         );
     });
 
-    it('parks the plan and goes to sign-up on Keep it when signed out', async () => {
+    it('goes back to an empty box for an own list after a sample', async () => {
         renderPage(false);
-        fireEvent.change(await screen.findByTestId('untangle-textarea'), {
-            target: { value: 'gym x3' },
-        });
+        fireEvent.click(await screen.findByTestId('untangle-sample-family'));
         fireEvent.click(screen.getByTestId('untangle-run'));
         await screen.findByTestId('untangle-result');
 
-        fireEvent.click(screen.getByTestId('untangle-keep'));
+        fireEvent.click(screen.getByTestId('untangle-own'));
 
-        expect(service.stashPendingUntangle).toHaveBeenCalledWith(
-            'signed.token'
-        );
-        expect(navigate).toHaveBeenCalledWith('/register', {
-            state: { untangle: true },
-        });
+        const box = (await screen.findByTestId(
+            'untangle-textarea'
+        )) as HTMLTextAreaElement;
+        expect(box.value).toBe('');
         expect(service.keepUntangled).not.toHaveBeenCalled();
     });
 
@@ -285,7 +378,7 @@ describe('UntanglePage', () => {
 
     it('stays on the input and shows the error when the parse fails', async () => {
         service.untangle.mockRejectedValue(new Error('Too many tries'));
-        renderPage();
+        renderPage(true);
         fireEvent.change(await screen.findByTestId('untangle-textarea'), {
             target: { value: 'gym x3' },
         });

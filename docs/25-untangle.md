@@ -16,9 +16,16 @@ Untangle is the public page at `/untangle`. Anyone, signed in or not, pastes a m
 - **Your week**: seven days of load in minutes
 - **Questions**, up to three, asked once; answering them all reshuffles the plan and nothing more is asked
 
-**Keep it** writes the plan into an account. A signed-in person gets it immediately. A stranger has the plan parked in their browser, is sent to sign up, and the plan is applied on their first signed-in load, which also counts as the welcome page being seen so they land on Today.
+## The funnel
+
+1. **Samples run for anyone.** Five ready-made lists (family week, side project, moving flat, exam season, job hunt) sit above the box. A tap runs one and shows the full layout. Results are cached on the server per sample, day, language and answers, so the first run of the day costs one call and every run after that is instant.
+2. **A person's own list needs a free tududi account.** Signed out, the text (and screenshot) is parked in the browser (`localStorage` key `untangle_pending_input`), the person is sent to sign up with a note that their list is waiting, and after email verification and login the page picks it up and runs it.
+3. **The first untangle is free for every account**, including trials with no AI credits. The hash of the text it was spent on is stored in `users.untangle_free_key`, so answering the questions and re-running on the same text stays free. A different list costs one AI credit on a hosted instance (402 `PLAN_LIMIT_REACHED` when there are none) and is simply allowed on a self-hosted one.
+4. **Keep it** writes the plan into the account and marks onboarding done, so the person lands on their organized Today.
 
 Nothing is stored server-side until Keep it. The parsed result travels in a signed token (HMAC over the JSON, keyed by the session secret, valid for 7 days). The server only accepts back what it signed.
+
+A possible later step, not built: a pack of untangles sold without an account (for example ten for five euros), which needs a checkout, a code bound to an email, and a way to spend it on the parse route.
 
 ---
 
@@ -41,9 +48,13 @@ When it is off, or no provider is configured, `GET /api/untangle/status` and `PO
 
 ### `GET /api/untangle/status` (public)
 
-`{ "available": true }` or 404.
+`{ "available": true, "samples": [{ "key", "label", "text" }] }` or 404.
 
-### `POST /api/untangle/parse` (public, rate limited)
+### `POST /api/untangle/sample` (public, rate limited per IP)
+
+`{ "key": "family", "timezone": "Europe/Athens", "language": "en", "answers": [] }` → the same response shape as parse, plus `sample` and `cached`.
+
+### `POST /api/untangle/parse` (signed in)
 
 ```json
 {
@@ -74,7 +85,9 @@ Response: `{ result, token }` where `result` is:
 }
 ```
 
-Errors: 400 for bad input, 429 over the per-IP limit, 503 at the daily cap, 502 `AI_NO_ANSWER` when the model returned nothing usable, 502 `AI_UNAVAILABLE` when the provider call failed (the provider's own message is logged, never returned).
+Response also carries `free`: whether this was the account's free untangle.
+
+Errors: 400 for bad input, 401 signed out, 402 `PLAN_LIMIT_REACHED` when the free untangle is spent and the plan has no AI credits, 429 over the per-IP limit (samples), 503 at the daily cap, 502 `AI_NO_ANSWER` when the model returned nothing usable, 502 `AI_UNAVAILABLE` when the provider call failed (the provider's own message is logged, never returned).
 
 ### `POST /api/untangle/keep` (signed in)
 
@@ -100,11 +113,10 @@ Tasks carry no `example_of` mark: they are the person's real items.
 ## Frontend
 
 - `frontend/components/Untangle/UntanglePage.tsx`: the page, outside the app layout, rendered for both signed-in and signed-out visitors (route in `App.tsx` next to `/public/notes` and `/blog`).
-- `frontend/utils/untangleService.ts`: `isUntangleAvailable`, `untangle`, `keepUntangled`, and the pending-token helpers (`localStorage` key `untangle_pending`).
-- `App.tsx`: `finishUntangle` (updates the current user and opens Today) and the effect that applies a pending token after login, holding the welcome redirect while it runs.
-- `Register.tsx` shows a one-line notice when a plan is waiting in the browser.
-
-Five sample lists (family week, side project, moving flat, exam season, job hunt) sit above the box for people who would rather not paste their own list on a phone they are being shown; a tap fills the box and the rest is the same.
+- `frontend/components/Untangle/UntangleResult.tsx`: the sections (today, drop, tips, questions, the structure graph, areas, people, habits, tags, the week and coming-up list); `StructureGraph.tsx` draws the tree as an SVG on wide screens and an indented outline on phones.
+- `frontend/utils/untangleService.ts`: `fetchUntangleStatus`, `untangleSample`, `untangle`, `keepUntangled`, and the pending-input helpers.
+- `App.tsx`: `finishUntangle` (updates the current user and opens Today) and the effect that sends a signed-in person with a parked list to `/untangle`.
+- `Register.tsx` shows a one-line notice when a list is waiting in the browser.
 
 Screenshots are downscaled to 1600px and sent as JPEG. Speech uses the browser's `SpeechRecognition` where available (Chrome, Safari); the button is hidden elsewhere.
 
@@ -112,7 +124,7 @@ Screenshots are downscaled to 1600px and sent as JPEG. Speech uses the browser's
 
 ## Backend
 
-- `backend/modules/untangle/service.js`: the prompt, the strict JSON schema, input checks, sanitizing, week placement, the signed token and the daily cap.
+- `backend/modules/untangle/service.js`: the prompt, the strict JSON schema, input checks, sanitizing, week placement, the signed token, the daily cap, the sample cache and the free-untangle rule; `samples.js` holds the sample lists.
 - `backend/modules/untangle/seed.js`: Keep it.
 - `backend/modules/untangle/routes.js`: `publicRoutes` (mounted before `requireAuth`) and `routes` (after).
 - Tests: `backend/tests/integration/untangle.test.js` (provider mocked).

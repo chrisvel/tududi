@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, Suspense, lazy } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import {
     Routes,
     Route,
@@ -74,7 +74,6 @@ import {
 } from './utils/shareTargetService';
 import {
     clearPendingUntangle,
-    keepUntangled,
     readPendingUntangle,
 } from './utils/untangleService';
 import type { KeepResult } from './utils/untangleService';
@@ -271,29 +270,14 @@ const App: React.FC = () => {
         finishWelcome(result);
     };
 
-    // A plan parked in this browser before sign-up: apply it on the first
-    // signed-in load. The welcome redirect waits for it so the person lands
-    // on their organized Today, not on the video.
-    const [applyingUntangle, setApplyingUntangle] = useState(
-        () => !!readPendingUntangle()
-    );
-    const untangleAppliedRef = useRef(false);
+    // A list parked in this browser before sign-up: the Untangle page
+    // picks it up and runs it as the account's free untangle.
     useEffect(() => {
-        if (!currentUser || untangleAppliedRef.current) return;
-        const token = readPendingUntangle();
-        if (!token) {
-            setApplyingUntangle(false);
-            return;
-        }
-        untangleAppliedRef.current = true;
-        keepUntangled(token)
-            .then((result) => finishUntangle(result))
-            .catch(() => {
-                // An expired or foreign token: forget it and carry on.
-                clearPendingUntangle();
-            })
-            .finally(() => setApplyingUntangle(false));
-    }, [currentUser]);
+        if (!currentUser) return;
+        if (location.pathname === '/untangle') return;
+        if (!readPendingUntangle()) return;
+        navigate('/untangle', { replace: true });
+    }, [currentUser, location.pathname, navigate]);
 
     // The Inbox keeps offering a claimed share while the user stays on it (the
     // page remounts whenever Layout shows its first-load spinner), so the claim
@@ -458,11 +442,9 @@ const App: React.FC = () => {
                                         isDarkMode={isDarkMode}
                                         toggleDarkMode={toggleDarkMode}
                                     >
-                                        {applyingUntangle ? (
-                                            <LoadingScreen />
-                                        ) : currentUser.onboarding_starter ===
-                                              null &&
-                                          location.pathname !== '/welcome' ? (
+                                        {currentUser.onboarding_starter ===
+                                            null &&
+                                        location.pathname !== '/welcome' ? (
                                             <Navigate to="/welcome" replace />
                                         ) : (
                                             <Outlet />

@@ -69,6 +69,30 @@ export interface UntangleRequest {
 export interface UntangleResponse {
     result: UntangleResult;
     token: string;
+    // Set on sample runs
+    sample?: string;
+    cached?: boolean;
+    // Set on a person's own list: whether this was their free untangle
+    free?: boolean;
+}
+
+export interface UntangleSample {
+    key: string;
+    label: string;
+    text: string;
+}
+
+export interface UntangleStatus {
+    available: boolean;
+    samples: UntangleSample[];
+}
+
+// What a signed-out person typed, waiting for their account
+export interface PendingUntangle {
+    text: string;
+    image: string | null;
+    timezone: string;
+    language: string;
 }
 
 export interface KeepResult {
@@ -96,24 +120,29 @@ export class UntangleError extends Error {
     }
 }
 
-const PENDING_KEY = 'untangle_pending';
+const PENDING_KEY = 'untangle_pending_input';
 
-export const isUntangleAvailable = async (): Promise<boolean> => {
+export const fetchUntangleStatus = async (): Promise<UntangleStatus> => {
     try {
         const res = await fetch(getApiPath('untangle/status'), {
             credentials: 'include',
             headers: { Accept: 'application/json' },
         });
-        return res.ok;
+        if (!res.ok) return { available: false, samples: [] };
+        const body = await res.json();
+        return {
+            available: body.available === true,
+            samples: Array.isArray(body.samples) ? body.samples : [],
+        };
     } catch {
-        return false;
+        return { available: false, samples: [] };
     }
 };
 
 // A signed-in browser carries a session, and the server then expects the
 // CSRF token on every POST; a stranger has no session and the token is
 // optional. So ask for one and carry on without it when that fails.
-const parseHeaders = async (): Promise<Record<string, string>> => {
+const postHeaders = async (): Promise<Record<string, string>> => {
     try {
         return await getPostHeadersWithCsrf();
     } catch {
@@ -122,14 +151,15 @@ const parseHeaders = async (): Promise<Record<string, string>> => {
 };
 
 // Plain fetch on purpose: the shared response helpers bounce a 401 to the
-// login page, and this call has no session to lose.
-export const untangle = async (
-    payload: UntangleRequest
+// login page, and these calls handle sign-in themselves.
+const post = async (
+    path: string,
+    payload: unknown
 ): Promise<UntangleResponse> => {
-    const res = await fetch(getApiPath('untangle/parse'), {
+    const res = await fetch(getApiPath(path), {
         method: 'POST',
         credentials: 'include',
-        headers: await parseHeaders(),
+        headers: await postHeaders(),
         body: JSON.stringify(payload),
     });
     if (!res.ok) {
@@ -147,6 +177,16 @@ export const untangle = async (
     return res.json();
 };
 
+// A sample list: open to anyone, cached on the server for the day
+export const untangleSample = async (
+    payload: { key: string } & Omit<UntangleRequest, 'text' | 'image'>
+): Promise<UntangleResponse> => post('untangle/sample', payload);
+
+// A person's own list: needs an account; the first one is free
+export const untangle = async (
+    payload: UntangleRequest
+): Promise<UntangleResponse> => post('untangle/parse', payload);
+
 export const keepUntangled = async (token: string): Promise<KeepResult> => {
     const response = await fetch(getApiPath('untangle/keep'), {
         method: 'POST',
@@ -158,21 +198,32 @@ export const keepUntangled = async (token: string): Promise<KeepResult> => {
     return response.json();
 };
 
-// The token waits in this browser while the person signs up and verifies
-// their email. Storage can be missing or refuse writes (private windows), in
-// which case Keep it still works for someone already signed in.
-export const stashPendingUntangle = (token: string): boolean => {
+// What the person typed waits in this browser while they sign up and
+// verify their email. Storage can be missing or refuse writes (private
+// windows), so every call is guarded.
+export const stashPendingUntangle = (input: PendingUntangle): boolean => {
     try {
-        window.localStorage.setItem(PENDING_KEY, token);
+        window.localStorage.setItem(PENDING_KEY, JSON.stringify(input));
         return true;
     } catch {
         return false;
     }
 };
 
-export const readPendingUntangle = (): string | null => {
+export const readPendingUntangle = (): PendingUntangle | null => {
     try {
-        return window.localStorage.getItem(PENDING_KEY);
+        const raw = window.localStorage.getItem(PENDING_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed.text !== 'string') return null;
+        return {
+            text: parsed.text,
+            image: typeof parsed.image === 'string' ? parsed.image : null,
+            timezone:
+                typeof parsed.timezone === 'string' ? parsed.timezone : 'UTC',
+            language:
+                typeof parsed.language === 'string' ? parsed.language : 'en',
+        };
     } catch {
         return null;
     }

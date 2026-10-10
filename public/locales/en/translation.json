@@ -3280,7 +3280,7 @@
   },
   "untangle": {
     "title": "Paste your mess.",
-    "lede": "A Notes list, a screenshot, whatever you have been carrying around. Ten seconds later it is a plan.",
+    "lede": "Try a sample and watch it turn into a plan. Then paste your own: a free tududi account untangles it for you.",
     "placeholder": "call landlord re deposit!!\ncrete??\ndentist\ngym x3\nmum bday 24th\nask Maria about the contract",
     "samples": {
       "kicker": "No list handy? Try one of these",
@@ -3324,11 +3324,12 @@
     "startOver": "Start over",
     "keep": "Keep it",
     "keeping": "Keeping...",
-    "signUpToKeep": "Your plan is saved on this device. Sign up and it will be waiting for you.",
+    "signUpToKeep": "Your list is saved on this device. Sign up free, verify your email, and it gets untangled right away.",
     "errors": {
       "image": "Could not read that image.",
       "generic": "Could not untangle that.",
-      "keep": "Could not keep the plan."
+      "keep": "Could not keep the plan.",
+      "used": "You have used your free untangle. AI credits on a paid plan cover more."
     },
     "tips": "Tips",
     "people": "People",
@@ -3361,6 +3362,9 @@
       "datesTitle": "The next seven days"
     },
     "personItem": "1 item",
-    "personItems": "{{count}} items"
+    "personItems": "{{count}} items",
+    "runSignUp": "Untangle it, free with an account",
+    "tryOwn": "Try your own list",
+    "ownCta": "Untangle my own list"
   }
 }

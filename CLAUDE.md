@@ -329,7 +329,8 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
 34. **[Untangle](docs/25-untangle.md)**
     - Public page at `/untangle`: paste a messy list or a screenshot, see it as areas, goals, projects, tasks, waiting-fors and habits
     - One thing for today, things to drop, a week of load, at most one question
-    - "Keep it" seeds the account; signed out, the plan waits in the browser through sign-up
+    - Samples run for anyone (cached per day); an own list needs a free account, one free untangle each, then AI credits
+    - "Keep it" seeds the account; signed out, the list waits in the browser through sign-up
     - Hosted-only by default, per-IP and per-day limits, nothing stored until kept
 
 ---

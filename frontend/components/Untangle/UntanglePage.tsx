@@ -7,15 +7,18 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline';
 import {
-    isUntangleAvailable,
+    clearPendingUntangle,
+    fetchUntangleStatus,
     keepUntangled,
+    readPendingUntangle,
     stashPendingUntangle,
     untangle,
+    untangleSample,
     KeepResult,
     UntangleAnswer,
     UntangleResult as Result,
+    UntangleSample,
 } from '../../utils/untangleService';
-import { SAMPLES } from './samples';
 import UntangleResult from './UntangleResult';
 
 // The public Untangle page: paste a messy list (or a screenshot of one),
@@ -102,11 +105,14 @@ const UntanglingLine: React.FC = () => (
 
 const Wordmark: React.FC = () => (
     <header className="mb-8 text-center" data-testid="untangle-logo">
-        <span className="font-display text-[17vw] font-bold leading-none tracking-tighter sm:text-8xl md:text-9xl">
+        <span
+            className="text-[17vw] font-bold leading-none tracking-tighter sm:text-8xl md:text-9xl"
+            style={{
+                fontFamily: 'Arial, Helvetica, "Instrument Sans", sans-serif',
+            }}
+        >
             untangle
-            <span className="font-medium italic text-brand dark:text-brand-300">
-                .my
-            </span>
+            <span className="text-brand dark:text-brand-300">.my</span>
         </span>
     </header>
 );
@@ -126,6 +132,11 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
     const [picked, setPicked] = useState<Record<string, string>>({});
     const [seconds, setSeconds] = useState(0);
     const [keeping, setKeeping] = useState(false);
+    const [samples, setSamples] = useState<UntangleSample[]>([]);
+    // The sample the box holds, or null when the text is the person's own
+    const [sampleKey, setSampleKey] = useState<string | null>(null);
+    const [resultIsSample, setResultIsSample] = useState(false);
+    const [pendingStart, setPendingStart] = useState(false);
 
     const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -133,13 +144,34 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
 
     useEffect(() => {
         let active = true;
-        isUntangleAvailable().then((ok) => {
-            if (active) setStage(ok ? 'input' : 'unavailable');
+        fetchUntangleStatus().then((status) => {
+            if (!active) return;
+            setSamples(status.samples);
+            if (!status.available) {
+                setStage('unavailable');
+                return;
+            }
+            // A list parked before sign-up: it runs now, as the free one
+            const pending = isSignedIn ? readPendingUntangle() : null;
+            if (pending) {
+                clearPendingUntangle();
+                setText(pending.text);
+                setImage(pending.image);
+                setSampleKey(null);
+                setPendingStart(true);
+            }
+            setStage('input');
         });
         return () => {
             active = false;
         };
     }, []);
+
+    useEffect(() => {
+        if (!pendingStart || stage !== 'input') return;
+        setPendingStart(false);
+        void run([]);
+    }, [pendingStart, stage]);
 
     useEffect(() => {
         if (stage !== 'busy') return undefined;
@@ -223,31 +255,61 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
         setListening(true);
     };
 
+    const timezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const language = () => (i18n.language || 'en').slice(0, 2);
+
+    // Samples run for anyone. A person's own list needs an account: signed
+    // out, the list waits in this browser and sign-up takes over.
     const run = async (nextAnswers: UntangleAnswer[]) => {
+        if (!sampleKey && !isSignedIn) {
+            stashPendingUntangle({
+                text,
+                image,
+                timezone: timezone(),
+                language: language(),
+            });
+            navigate('/register', { state: { untangle: true } });
+            return;
+        }
         setError(null);
         setStage('busy');
         try {
-            const res = await untangle({
-                text,
-                image,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                language: (i18n.language || 'en').slice(0, 2),
+            const common = {
+                timezone: timezone(),
+                language: language(),
                 answers: nextAnswers,
-            });
+            };
+            const res = sampleKey
+                ? await untangleSample({ key: sampleKey, ...common })
+                : await untangle({ text, image, ...common });
             setResult(res.result);
             setToken(res.token);
+            setResultIsSample(!!sampleKey);
             setAnswers(nextAnswers);
             setPicked({});
             setStage('result');
             window.scrollTo({ top: 0 });
         } catch (err) {
+            const code = (err as { code?: string })?.code;
             setError(
-                err instanceof Error
-                    ? err.message
-                    : t('untangle.errors.generic', 'Could not untangle that.')
+                code === 'PLAN_LIMIT_REACHED'
+                    ? t(
+                          'untangle.errors.used',
+                          'You have used your free untangle. AI credits on a paid plan cover more.'
+                      )
+                    : err instanceof Error
+                      ? err.message
+                      : t('untangle.errors.generic', 'Could not untangle that.')
             );
             setStage(result ? 'result' : 'input');
         }
+    };
+
+    const loadSample = (sample: UntangleSample) => {
+        setText(sample.text);
+        setImage(null);
+        setError(null);
+        setSampleKey(sample.key);
     };
 
     // One round of questions: pick an option for each, then re-plan once.
@@ -268,8 +330,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
     const keep = async () => {
         if (!token || keeping) return;
         if (!isSignedIn) {
-            stashPendingUntangle(token);
-            navigate('/register', { state: { untangle: true } });
+            navigate('/register');
             return;
         }
         setKeeping(true);
@@ -286,12 +347,17 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
         }
     };
 
-    const startOver = () => {
+    const startOver = (ownList = false) => {
         setResult(null);
         setToken(null);
         setAnswers([]);
         setPicked({});
         setError(null);
+        if (ownList) {
+            setText('');
+            setImage(null);
+            setSampleKey(null);
+        }
         setStage('input');
     };
 
@@ -347,7 +413,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                             <p className="mt-3 max-w-prose text-lg leading-relaxed text-gray-600 dark:text-gray-400">
                                 {t(
                                     'untangle.lede',
-                                    'A Notes list, a screenshot, whatever you have been carrying around. Ten seconds later it is a plan.'
+                                    'Try a sample and watch it turn into a plan. Then paste your own: a free tududi account untangles it for you.'
                                 )}
                             </p>
 
@@ -359,15 +425,11 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                     )}
                                 </p>
                                 <div className="mt-2 flex flex-wrap gap-2">
-                                    {SAMPLES.map((sample) => (
+                                    {samples.map((sample) => (
                                         <button
                                             key={sample.key}
                                             type="button"
-                                            onClick={() => {
-                                                setText(sample.text);
-                                                setImage(null);
-                                                setError(null);
-                                            }}
+                                            onClick={() => loadSample(sample)}
                                             className="rounded-full bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm hover:bg-brand-50 hover:text-brand-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                                             data-testid={`untangle-sample-${sample.key}`}
                                         >
@@ -384,7 +446,10 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                 <textarea
                                     id="untangle-text"
                                     value={text}
-                                    onChange={(e) => setText(e.target.value)}
+                                    onChange={(e) => {
+                                        setText(e.target.value);
+                                        setSampleKey(null);
+                                    }}
                                     onPaste={handlePaste}
                                     rows={10}
                                     placeholder={t(
@@ -486,7 +551,12 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                 className="mt-5 h-12 w-full rounded-xl bg-brand text-base font-semibold text-white shadow-sm hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
                                 data-testid="untangle-run"
                             >
-                                {t('untangle.run', 'Untangle it')}
+                                {sampleKey || isSignedIn
+                                    ? t('untangle.run', 'Untangle it')
+                                    : t(
+                                          'untangle.runSignUp',
+                                          'Untangle it, free with an account'
+                                      )}
                             </button>
                             <p className="mt-3 text-center text-xs text-gray-500 dark:text-gray-400">
                                 {t(
@@ -545,25 +615,50 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                 <div className="mx-auto flex w-full max-w-5xl items-center gap-3">
                                     <button
                                         type="button"
-                                        onClick={startOver}
+                                        onClick={() =>
+                                            startOver(resultIsSample)
+                                        }
                                         className="h-12 rounded-xl bg-white px-4 text-sm text-gray-700 shadow-sm hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                                        data-testid="untangle-start-over"
                                     >
-                                        {t('untangle.startOver', 'Start over')}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={keep}
-                                        disabled={keeping}
-                                        className="h-12 flex-1 rounded-xl bg-brand text-base font-semibold text-white shadow-sm hover:bg-brand-600 disabled:opacity-50 md:max-w-xs"
-                                        data-testid="untangle-keep"
-                                    >
-                                        {keeping
+                                        {resultIsSample
                                             ? t(
-                                                  'untangle.keeping',
-                                                  'Keeping...'
+                                                  'untangle.tryOwn',
+                                                  'Try your own list'
                                               )
-                                            : t('untangle.keep', 'Keep it')}
+                                            : t(
+                                                  'untangle.startOver',
+                                                  'Start over'
+                                              )}
                                     </button>
+                                    {resultIsSample && !isSignedIn ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => startOver(true)}
+                                            className="h-12 flex-1 rounded-xl bg-brand text-base font-semibold text-white shadow-sm hover:bg-brand-600 md:max-w-xs"
+                                            data-testid="untangle-own"
+                                        >
+                                            {t(
+                                                'untangle.ownCta',
+                                                'Untangle my own list'
+                                            )}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={keep}
+                                            disabled={keeping}
+                                            className="h-12 flex-1 rounded-xl bg-brand text-base font-semibold text-white shadow-sm hover:bg-brand-600 disabled:opacity-50 md:max-w-xs"
+                                            data-testid="untangle-keep"
+                                        >
+                                            {keeping
+                                                ? t(
+                                                      'untangle.keeping',
+                                                      'Keeping...'
+                                                  )
+                                                : t('untangle.keep', 'Keep it')}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </>
