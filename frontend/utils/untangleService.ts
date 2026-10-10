@@ -15,13 +15,20 @@ export interface UntangleTask {
     title: string;
     due: string | null;
     minutes: number;
+    person: string | null;
+    tags: string[];
 }
 
 export interface UntangleItem extends UntangleTask {
     kind: UntangleKind;
-    person: string | null;
     habit_period: 'daily' | 'weekly' | 'monthly' | null;
     habit_times: number | null;
+}
+
+export interface UntanglePerson {
+    name: string;
+    items: string[];
+    waiting: number;
 }
 
 export interface UntangleArea {
@@ -34,8 +41,10 @@ export interface UntangleArea {
 export interface UntangleResult {
     today: { title: string; reason: string };
     drop: { title: string; reason: string }[];
+    tips: string[];
     questions: { text: string; options: string[] }[];
     areas: UntangleArea[];
+    people: UntanglePerson[];
     week: {
         date: string;
         weekday: string;

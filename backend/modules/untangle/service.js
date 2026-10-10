@@ -4,7 +4,9 @@ const crypto = require('crypto');
 const moment = require('moment-timezone');
 const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
+const entitlements = require('../../services/entitlementsService');
 const ai = require('../ai-assistant/service');
+const { findSample } = require('./samples');
 const { languageInstruction } = require('../daily-plan/ai');
 const { getSafeTimezone } = require('../../utils/timezone-utils');
 const {
@@ -576,17 +578,8 @@ function visionModel(defaultModel) {
     return process.env.LLM_VISION_MODEL || defaultModel;
 }
 
-async function untangle(body) {
-    if (!(await isUntangleEnabled())) {
-        throw new ServiceUnavailableError('Untangle is not available');
-    }
-    const input = normalizeInput(body);
-    if (!takeDailySlot()) {
-        throw new ServiceUnavailableError(
-            'Untangle has done enough for today. Try again tomorrow.'
-        );
-    }
-
+// The model call itself, shared by samples and real lists.
+async function runModel(input) {
     const client = await ai.getOpenAIClient(null);
     const model = await ai.getAIModel(null);
     const userText = buildUserMessage(input);
@@ -632,6 +625,80 @@ async function untangle(body) {
     }
     const result = sanitizeResult(parsed, input);
     return { result, token: signResult(result) };
+}
+
+async function assertAvailable() {
+    if (!(await isUntangleEnabled())) {
+        throw new ServiceUnavailableError('Untangle is not available');
+    }
+}
+
+function takeSlotOrThrow() {
+    if (!takeDailySlot()) {
+        throw new ServiceUnavailableError(
+            'Untangle has done enough for today. Try again tomorrow.'
+        );
+    }
+}
+
+// Samples: anyone can run them, and the result is cached for the day (the
+// dates in it depend on the day and the timezone), so a demo at a table
+// costs one call per sample per day and answers instantly after that.
+const sampleCache = new Map();
+const SAMPLE_TTL_MS = 24 * 60 * 60 * 1000;
+
+function sha(text) {
+    return crypto.createHash('sha256').update(text).digest('hex');
+}
+
+async function untangleSample(body = {}) {
+    await assertAvailable();
+    const sample = findSample(body.key);
+    if (!sample) throw new ValidationError('Unknown sample');
+    const input = normalizeInput({ ...body, text: sample.text, image: null });
+    const today = moment.tz(input.timezone).format('YYYY-MM-DD');
+    const cacheKey = sha(
+        JSON.stringify([sample.key, today, input.language, input.answers])
+    );
+    const hit = sampleCache.get(cacheKey);
+    if (hit && hit.expires > Date.now()) {
+        return { ...hit.value, sample: sample.key, cached: true };
+    }
+    takeSlotOrThrow();
+    const value = await runModel(input);
+    sampleCache.set(cacheKey, { value, expires: Date.now() + SAMPLE_TTL_MS });
+    return { ...value, sample: sample.key, cached: false };
+}
+
+function clearSampleCache() {
+    sampleCache.clear();
+}
+
+// A real list needs an account. The first one is free and stays free for
+// that same text, so answering the questions costs nothing; a different
+// list is an AI credit on a hosted instance (and simply allowed on a
+// self-hosted one, where the operator's own key is in use).
+async function untangleOwn(user, body = {}) {
+    await assertAvailable();
+    const input = normalizeInput(body);
+    const freeKey = sha(
+        `${input.text}\n${input.image ? sha(input.image) : ''}`
+    );
+    const { User } = require('../../models');
+    const row = await User.findByPk(user.id, {
+        attributes: ['id', 'untangle_free_key'],
+    });
+    const spentOn = row ? row.untangle_free_key : null;
+    const free = !spentOn || spentOn === freeKey;
+    if (!free) {
+        await entitlements.consumeMonthlyUsage(user.id, 'ai_credits');
+    }
+    takeSlotOrThrow();
+    const value = await runModel(input);
+    if (!spentOn && row) {
+        await row.update({ untangle_free_key: freeKey });
+    }
+    return { ...value, free };
 }
 
 // ---------------------------------------------------------------------------
@@ -688,7 +755,9 @@ function verifyToken(token) {
 
 module.exports = {
     isUntangleEnabled,
-    untangle,
+    untangleSample,
+    untangleOwn,
+    clearSampleCache,
     signResult,
     verifyToken,
     sanitizeResult,

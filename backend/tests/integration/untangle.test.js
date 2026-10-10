@@ -7,9 +7,19 @@ const request = require('supertest');
 const moment = require('moment-timezone');
 const app = require('../../app');
 const { getConfig } = require('../../config/config');
-const { Area, Goal, Project, Task, Person, Tag } = require('../../models');
+const {
+    Area,
+    Goal,
+    Project,
+    Task,
+    Person,
+    Tag,
+    User,
+    Role,
+} = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 const untangle = require('../../modules/untangle/service');
+const entitlements = require('../../services/entitlementsService');
 
 const config = getConfig();
 
@@ -122,12 +132,34 @@ const modelAnswer = () => ({
     ],
 });
 
+// A fresh account with a session, for the routes behind sign-in
+const signIn = async (extra = {}) => {
+    const user = await createTestUser({
+        email: `untangle-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@example.com`,
+        timezone: 'UTC',
+        onboarding_starter: null,
+        ...extra,
+    });
+    // The first account on a test database becomes admin, and admins are
+    // exempt from plan limits on a hosted instance
+    await Role.update(
+        { is_admin: false, role: 'user' },
+        { where: { user_id: user.id } }
+    );
+    const agent = request.agent(app);
+    await agent
+        .post('/api/login')
+        .send({ email: user.email, password: 'password123' });
+    return { user, agent };
+};
+
 describe('Untangle', () => {
     beforeEach(() => {
         process.env.LLM_API_KEY = 'test-key';
         config.untangle.enabled = true;
         config.untangle.dailyCap = 500;
         untangle.resetDailyCounter();
+        untangle.clearSampleCache();
         mockCreate.mockReset();
         OpenAI.mockImplementation(() => ({
             chat: { completions: { create: (...args) => mockCreate(...args) } },
@@ -146,8 +178,11 @@ describe('Untangle', () => {
             404
         );
         expect(
-            (await request(app).post('/api/untangle/parse').send({ text: 'x' }))
-                .status
+            (
+                await request(app)
+                    .post('/api/untangle/sample')
+                    .send({ key: 'family' })
+            ).status
         ).toBe(404);
 
         config.untangle.enabled = true;
@@ -163,22 +198,128 @@ describe('Untangle', () => {
         }
     });
 
-    it('answers status when on', async () => {
+    it('answers status with the samples when on', async () => {
         const res = await request(app).get('/api/untangle/status');
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ available: true });
+        expect(res.body.available).toBe(true);
+        expect(res.body.samples.map((s) => s.key)).toEqual([
+            'family',
+            'sideProject',
+            'moving',
+            'exams',
+            'jobHunt',
+        ]);
+        expect(res.body.samples[0].text).toContain('dentist for Leo');
+    });
+
+    it('keeps a real list behind sign-in', async () => {
+        const res = await request(app)
+            .post('/api/untangle/parse')
+            .send({ text: 'gym x3' });
+        expect(res.status).toBe(401);
+        expect(mockCreate).not.toHaveBeenCalled();
     });
 
     it('refuses an empty paste', async () => {
-        const res = await request(app).post('/api/untangle/parse').send({});
+        const { agent } = await signIn();
+        const res = await agent.post('/api/untangle/parse').send({});
         expect(res.status).toBe(400);
         expect(mockCreate).not.toHaveBeenCalled();
     });
 
+    it('runs a sample for anyone and caches it for the day', async () => {
+        mockCreate.mockResolvedValue(reply(modelAnswer()));
+        const first = await request(app)
+            .post('/api/untangle/sample')
+            .send({ key: 'moving', timezone: 'UTC' });
+        expect(first.status).toBe(200);
+        expect(first.body.sample).toBe('moving');
+        expect(first.body.cached).toBe(false);
+        expect(first.body.result.areas).toHaveLength(2);
+        expect(mockCreate.mock.calls[0][0].messages[1].content).toContain(
+            'ask Sara about the van'
+        );
+
+        const again = await request(app)
+            .post('/api/untangle/sample')
+            .send({ key: 'moving', timezone: 'UTC' });
+        expect(again.status).toBe(200);
+        expect(again.body.cached).toBe(true);
+        expect(again.body.result).toEqual(first.body.result);
+        expect(mockCreate).toHaveBeenCalledTimes(1);
+
+        // Answers make it a different plan, so a different cache entry
+        const answered = await request(app)
+            .post('/api/untangle/sample')
+            .send({
+                key: 'moving',
+                timezone: 'UTC',
+                answers: [{ question: 'Van?', answer: 'Yes' }],
+            });
+        expect(answered.body.cached).toBe(false);
+        expect(mockCreate).toHaveBeenCalledTimes(2);
+
+        expect(
+            (
+                await request(app)
+                    .post('/api/untangle/sample')
+                    .send({ key: 'nope' })
+            ).status
+        ).toBe(400);
+    });
+
+    it('gives every account one free untangle, kept free for the same text', async () => {
+        mockCreate.mockResolvedValue(reply(modelAnswer()));
+        const { agent, user } = await signIn();
+
+        const first = await agent
+            .post('/api/untangle/parse')
+            .send({ text: 'crete??', timezone: 'UTC' });
+        expect(first.status).toBe(200);
+        expect(first.body.free).toBe(true);
+        const row = await User.findByPk(user.id);
+        expect(row.untangle_free_key).toHaveLength(64);
+
+        // Same text again (the answer round): still free
+        const again = await agent.post('/api/untangle/parse').send({
+            text: 'crete??',
+            timezone: 'UTC',
+            answers: [{ question: 'When?', answer: 'Someday' }],
+        });
+        expect(again.status).toBe(200);
+        expect(again.body.free).toBe(true);
+
+        // A new list on a hosted instance costs an AI credit, which a
+        // fresh account does not have
+        config.hosted.enabled = true;
+        entitlements.invalidate();
+        try {
+            const other = await agent
+                .post('/api/untangle/parse')
+                .send({ text: 'taxes :(', timezone: 'UTC' });
+            expect(other.status).toBe(402);
+            expect(other.body.code).toBe('PLAN_LIMIT_REACHED');
+        } finally {
+            config.hosted.enabled = false;
+            entitlements.invalidate();
+        }
+
+        // Self-hosted: simply allowed
+        const selfHosted = await agent
+            .post('/api/untangle/parse')
+            .send({ text: 'taxes :(', timezone: 'UTC' });
+        expect(selfHosted.status).toBe(200);
+        expect(selfHosted.body.free).toBe(false);
+        expect((await User.findByPk(user.id)).untangle_free_key).toBe(
+            row.untangle_free_key
+        );
+    });
+
     it('parses text into a sanitized structure with a week and a signed token', async () => {
+        const { agent } = await signIn();
         mockCreate.mockResolvedValue(reply(modelAnswer()));
 
-        const res = await request(app).post('/api/untangle/parse').send({
+        const res = await agent.post('/api/untangle/parse').send({
             text: 'call landlord re deposit!!\ntaxes :(\ngym x3\npiano?',
             timezone: 'UTC',
         });
@@ -259,11 +400,12 @@ describe('Untangle', () => {
     });
 
     it('sends a screenshot as an image part, with the vision model when set', async () => {
+        const { agent } = await signIn();
         process.env.LLM_VISION_MODEL = 'vision-model';
         mockCreate.mockResolvedValue(reply(modelAnswer()));
         const image = `data:image/png;base64,${Buffer.from('png').toString('base64')}`;
 
-        const res = await request(app)
+        const res = await agent
             .post('/api/untangle/parse')
             .send({ image, timezone: 'UTC' });
         expect(res.status).toBe(200);
@@ -279,7 +421,8 @@ describe('Untangle', () => {
     });
 
     it('refuses an image that is not a PNG, JPEG or WebP data URL', async () => {
-        const res = await request(app)
+        const { agent } = await signIn();
+        const res = await agent
             .post('/api/untangle/parse')
             .send({ image: 'data:text/html;base64,PGI+' });
         expect(res.status).toBe(400);
@@ -287,15 +430,12 @@ describe('Untangle', () => {
     });
 
     it('passes earlier answers back to the model and asks nothing more', async () => {
+        const { agent } = await signIn();
         mockCreate.mockResolvedValue(reply(modelAnswer()));
-        const res = await request(app)
-            .post('/api/untangle/parse')
-            .send({
-                text: 'crete??',
-                answers: [
-                    { question: 'Is Crete this month?', answer: 'Someday' },
-                ],
-            });
+        const res = await agent.post('/api/untangle/parse').send({
+            text: 'crete??',
+            answers: [{ question: 'Is Crete this month?', answer: 'Someday' }],
+        });
         const content = mockCreate.mock.calls[0][0].messages[1].content;
         expect(content).toContain('Answers to earlier questions');
         expect(content).toContain('Is Crete this month? Someday');
@@ -304,8 +444,9 @@ describe('Untangle', () => {
     });
 
     it('answers 502 when the model returns nothing usable', async () => {
+        const { agent } = await signIn();
         mockCreate.mockResolvedValue(reply({ areas: [] }));
-        const res = await request(app)
+        const res = await agent
             .post('/api/untangle/parse')
             .send({ text: 'hello' });
         expect(res.status).toBe(502);
@@ -313,10 +454,11 @@ describe('Untangle', () => {
     });
 
     it('hides provider errors behind a generic 502', async () => {
+        const { agent } = await signIn();
         mockCreate.mockRejectedValue(
             new Error('401 Incorrect API key provided: sk-secret')
         );
-        const res = await request(app)
+        const res = await agent
             .post('/api/untangle/parse')
             .send({ text: 'hello' });
         expect(res.status).toBe(502);
@@ -328,12 +470,18 @@ describe('Untangle', () => {
         config.untangle.dailyCap = 1;
         mockCreate.mockResolvedValue(reply(modelAnswer()));
         expect(
-            (await request(app).post('/api/untangle/parse').send({ text: 'a' }))
-                .status
+            (
+                await request(app)
+                    .post('/api/untangle/sample')
+                    .send({ key: 'family' })
+            ).status
         ).toBe(200);
         expect(
-            (await request(app).post('/api/untangle/parse').send({ text: 'b' }))
-                .status
+            (
+                await request(app)
+                    .post('/api/untangle/sample')
+                    .send({ key: 'exams' })
+            ).status
         ).toBe(503);
         expect(mockCreate).toHaveBeenCalledTimes(1);
     });
@@ -342,15 +490,7 @@ describe('Untangle', () => {
         let user, agent;
 
         beforeEach(async () => {
-            user = await createTestUser({
-                email: `untangle-${Date.now()}@example.com`,
-                timezone: 'UTC',
-                onboarding_starter: null,
-            });
-            agent = request.agent(app);
-            await agent
-                .post('/api/login')
-                .send({ email: user.email, password: 'password123' });
+            ({ user, agent } = await signIn());
         });
 
         const parsed = () =>

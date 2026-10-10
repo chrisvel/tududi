@@ -43,6 +43,8 @@ jest.mock('../../../utils/untangleService', () => ({
 const result = {
     today: { title: 'Call the landlord', reason: 'Someone is waiting.' },
     drop: [{ title: 'Piano', reason: 'No date.' }],
+    tips: ['Two things wait on other people.'],
+    people: [{ name: 'Maria', items: ['Contract from Maria'], waiting: 1 }],
     questions: [
         {
             text: 'Is Crete this month or someday?',
@@ -61,7 +63,13 @@ const result = {
                 {
                     name: 'Taxes',
                     tasks: [
-                        { title: 'Gather receipts', due: null, minutes: 60 },
+                        {
+                            title: 'Gather receipts',
+                            due: null,
+                            minutes: 60,
+                            person: null,
+                            tags: ['admin'],
+                        },
                     ],
                 },
             ],
@@ -71,6 +79,7 @@ const result = {
                     kind: 'waiting',
                     due: null,
                     person: 'Maria',
+                    tags: [],
                     minutes: 15,
                     habit_period: null,
                     habit_times: null,
@@ -80,6 +89,7 @@ const result = {
                     kind: 'habit',
                     due: null,
                     person: null,
+                    tags: [],
                     minutes: 60,
                     habit_period: 'weekly',
                     habit_times: 3,
@@ -123,7 +133,7 @@ describe('UntanglePage', () => {
     it('wears its own name, not the app navbar', async () => {
         renderPage();
         expect(await screen.findByTestId('untangle-logo')).toHaveTextContent(
-            'untangle.me'
+            'untangle.my'
         );
         expect(screen.queryByAltText('tududi')).not.toBeInTheDocument();
     });
@@ -169,10 +179,20 @@ describe('UntanglePage', () => {
         expect(screen.getByText('Call the landlord')).toBeInTheDocument();
         expect(screen.getByText('Piano')).toBeInTheDocument();
         expect(screen.getByText('Goal: Settle the flat')).toBeInTheDocument();
-        expect(screen.getByText('Taxes')).toBeInTheDocument();
+        expect(screen.getAllByText('Taxes').length).toBeGreaterThan(0);
         expect(screen.getByText('waiting for Maria')).toBeInTheDocument();
         expect(screen.getByText('habit, 3x weekly')).toBeInTheDocument();
         expect(screen.getByText('30m')).toBeInTheDocument();
+        // The sections: tips, the graph, people, habits, tags
+        expect(screen.getByTestId('untangle-tips')).toHaveTextContent(
+            'Two things wait on other people.'
+        );
+        expect(screen.getByTestId('untangle-graph')).toBeInTheDocument();
+        expect(screen.getByTestId('untangle-people')).toHaveTextContent(
+            'Maria'
+        );
+        expect(screen.getByTestId('untangle-habits')).toHaveTextContent('Gym');
+        expect(screen.getByTestId('untangle-tags')).toHaveTextContent('#admin');
         expect(screen.getByTestId('untangle-questions')).toHaveTextContent(
             'Is Crete this month or someday?'
         );

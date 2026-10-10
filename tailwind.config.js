@@ -7,6 +7,26 @@ module.exports = {
     ],
     theme: {
         extend: {
+            colors: {
+                // tududi's own palette, as used on the marketing site
+                brand: {
+                    DEFAULT: '#1e86e5',
+                    50: '#eaf3fc',
+                    100: '#d4e7f9',
+                    200: '#a9cff3',
+                    300: '#7db7ec',
+                    400: '#4d9fe8',
+                    500: '#1e86e5',
+                    600: '#176fc1',
+                    700: '#125a9c',
+                    900: '#0b3a66',
+                },
+                paper: {
+                    DEFAULT: '#f7f6f3',
+                    deep: '#f4f1ec',
+                },
+                ink: '#111827',
+            },
             fontFamily: {
                 // The Untangle page's pair, self-hosted (see public/index.html)
                 display: ['Fraunces', 'Lora', 'Georgia', 'serif'],

@@ -3329,6 +3329,38 @@
       "image": "Could not read that image.",
       "generic": "Could not untangle that.",
       "keep": "Could not keep the plan."
-    }
+    },
+    "tips": "Tips",
+    "people": "People",
+    "habits": "Habits",
+    "tags": "Tags",
+    "noPeople": "Nobody else is in this list.",
+    "noHabits": "Nothing repeats yet. Add one later.",
+    "noTags": "No tags needed for this list.",
+    "waitingOn": "waiting on them",
+    "habitShort": "{{n}}x {{period}}",
+    "comingUp": "Coming up",
+    "noDates": "Nothing has a date yet.",
+    "graph": {
+      "root": "Your list",
+      "area": "Area",
+      "goal": "Goal",
+      "project": "Project",
+      "task": "Task",
+      "waiting": "Waiting for",
+      "habit": "Habit",
+      "someday": "Someday",
+      "alt": "The plan as areas, goals, projects and tasks"
+    },
+    "sections": {
+      "shapeEyebrow": "The shape of it",
+      "shapeTitle": "Your list as areas, goals, projects and tasks",
+      "areasEyebrow": "Areas",
+      "areasTitle": "Everything, filed where it belongs",
+      "datesEyebrow": "Dates",
+      "datesTitle": "The next seven days"
+    },
+    "personItem": "1 item",
+    "personItems": "{{count}} items"
   }
 }
