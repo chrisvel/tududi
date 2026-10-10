@@ -162,7 +162,7 @@ describe('UntanglePage', () => {
     it('wears its own name, not the app navbar', async () => {
         renderPage();
         expect(await screen.findByTestId('untangle-logo')).toHaveTextContent(
-            'untangle.my'
+            'untangled.my'
         );
         expect(screen.queryByAltText('tududi')).not.toBeInTheDocument();
     });

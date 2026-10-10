@@ -30,7 +30,14 @@ module.exports = {
             fontFamily: {
                 // The Untangle page's pair, self-hosted (see public/index.html)
                 display: ['Fraunces', 'Lora', 'Georgia', 'serif'],
-                hand: ['Caveat', '"Comic Sans MS"', 'cursive'],
+                // The untangled.my wordmark
+                wordmark: [
+                    '"Bricolage Grotesque"',
+                    '"Arial Black"',
+                    'Arial',
+                    'sans-serif',
+                ],
+                hand: ['"Dancing Script"', '"Brush Script MT"', 'cursive'],
                 ui: [
                     '"Instrument Sans"',
                     'ui-sans-serif',
