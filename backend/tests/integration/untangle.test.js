@@ -23,6 +23,11 @@ const today = () => moment.utc().format('YYYY-MM-DD');
 const inDays = (n) => moment.utc().add(n, 'days').format('YYYY-MM-DD');
 
 const modelAnswer = () => ({
+    tips: [
+        'Two things wait on other people; chase them first.',
+        '',
+        'Nothing in Health has a date yet.',
+    ],
     today: {
         title: 'Call the landlord about the deposit',
         reason: 'Someone is waiting on you.',
@@ -50,11 +55,15 @@ const modelAnswer = () => ({
                             title: 'Gather receipts',
                             due: inDays(2),
                             minutes: 60,
+                            person: null,
+                            tags: ['#Admin', 'admin', 'money', 'extra'],
                         },
                         {
                             title: 'File the return',
                             due: inDays(20),
                             minutes: 120,
+                            person: 'Accountant',
+                            tags: [],
                         },
                     ],
                 },
@@ -65,6 +74,7 @@ const modelAnswer = () => ({
                     kind: 'waiting',
                     due: today(),
                     person: 'Landlord',
+                    tags: ['call'],
                     minutes: 15,
                     habit_period: null,
                     habit_times: 0,
@@ -74,6 +84,7 @@ const modelAnswer = () => ({
                     kind: 'task',
                     due: '2020-01-01',
                     person: null,
+                    tags: [],
                     minutes: 37,
                     habit_period: null,
                     habit_times: 0,
@@ -90,6 +101,7 @@ const modelAnswer = () => ({
                     kind: 'habit',
                     due: null,
                     person: null,
+                    tags: [],
                     minutes: 60,
                     habit_period: 'weekly',
                     habit_times: 3,
@@ -98,7 +110,8 @@ const modelAnswer = () => ({
                     title: 'Learn piano',
                     kind: 'someday',
                     due: inDays(1),
-                    person: null,
+                    person: 'Leo',
+                    tags: [],
                     minutes: 60,
                     habit_period: null,
                     habit_times: 0,
@@ -197,6 +210,25 @@ describe('Untangle', () => {
         });
         // Someday items never carry a date
         expect(health[1].due).toBeNull();
+
+        // Tags are lowercased, de-hashed, deduplicated and capped at two
+        expect(result.areas[0].projects[0].tasks[0].tags).toEqual([
+            'admin',
+            'money',
+        ]);
+        expect(result.tips).toEqual([
+            'Two things wait on other people; chase them first.',
+            'Nothing in Health has a date yet.',
+        ]);
+        expect(result.people).toEqual([
+            { name: 'Accountant', items: ['File the return'], waiting: 0 },
+            {
+                name: 'Landlord',
+                items: ['Call the landlord about the deposit'],
+                waiting: 1,
+            },
+            { name: 'Leo', items: ['Learn piano'], waiting: 0 },
+        ]);
 
         expect(result.today.title).toBe('Call the landlord about the deposit');
         expect(result.drop).toHaveLength(2);
@@ -355,7 +387,7 @@ describe('Untangle', () => {
                 projects: 1,
                 tasks: 5,
                 habits: 1,
-                people: 1,
+                people: 3,
             });
 
             const areas = await Area.findAll({
@@ -404,6 +436,21 @@ describe('Untangle', () => {
             });
             expect(piano.due_date).toBeNull();
             expect(piano.Tags.map((t) => t.name)).toEqual(['someday']);
+            // A person on a non-waiting item is involved, not assigned
+            const leo = await Person.findOne({
+                where: { user_id: user.id, name: 'Leo' },
+            });
+            expect(piano.assigned_to).toBeNull();
+            expect(piano.involves).toEqual([leo.uid]);
+
+            const receipts = await Task.findOne({
+                where: { user_id: user.id, name: 'Gather receipts' },
+                include: [{ model: Tag }],
+            });
+            expect(receipts.Tags.map((t) => t.name).sort()).toEqual([
+                'admin',
+                'money',
+            ]);
         });
 
         it('reuses same-name areas, projects, habits and people on a second run', async () => {

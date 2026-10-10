@@ -28,6 +28,8 @@ const LIMITS = {
     projectTasks: 6,
     items: 40,
     drop: 3,
+    tips: 4,
+    tags: 2,
     questions: 3,
     options: 4,
     answers: 3,
@@ -82,10 +84,13 @@ Structure:
   - waiting: something another person owes this person. Set person to that person's name.
   - habit: something repeated ("gym x3", "read every evening", "call mum on Sundays"). Set habit_period and habit_times.
   - someday: an intention with no urgency (wishes, "maybe", books to read, hobbies to start).
+- person: the other person a line involves, when it names one ("dentist for Leo" names Leo, "call mum" names Mum, "ask Maria" names Maria). Otherwise null. Never invent names.
+- tags: 0 to 2 short lowercase labels that would help filing, such as errand, call, admin, health, money, kids, home. Only when natural; most lines get none.
 - due: YYYY-MM-DD only when the text names or clearly implies a date or deadline, resolved from today's date. Appointments and birthdays keep their date. Otherwise null.
 - minutes: a realistic estimate for a task: 15, 30, 45, 60, 90, 120, 180 or 240. Errands and calls are short; writing and research take longer.
 - today: the single best thing to do today, with one sentence on why. Prefer things another person is waiting on, things overdue, and things that unblock the most.
 - drop: 1 to 3 things that can wait, each with a short reason. Pick from someday items and low-urgency tasks, using the exact titles you gave them.
+- tips: 2 to 4 short, specific observations that help this person see their list differently, grounded in it: what is waiting on other people, what has no date yet, which day is overloaded, what repeats and could be a habit. At most 18 words each, no generic advice.
 - questions: up to 3 questions whose answers would change the plan (for example whether a trip is this month or someday, or when a deadline is), each with 2 to 4 options of at most 4 words. Ask all of them now, in this one reply; there is no second round. Return an empty list when nothing important is unclear.
 
 Rules:
@@ -103,8 +108,9 @@ const int = { type: 'integer' };
 const SCHEMA = {
     type: 'object',
     additionalProperties: false,
-    required: ['today', 'drop', 'questions', 'areas'],
+    required: ['today', 'drop', 'tips', 'questions', 'areas'],
     properties: {
+        tips: { type: 'array', items: str },
         today: {
             type: 'object',
             additionalProperties: false,
@@ -159,11 +165,22 @@ const SCHEMA = {
                                     items: {
                                         type: 'object',
                                         additionalProperties: false,
-                                        required: ['title', 'due', 'minutes'],
+                                        required: [
+                                            'title',
+                                            'due',
+                                            'minutes',
+                                            'person',
+                                            'tags',
+                                        ],
                                         properties: {
                                             title: str,
                                             due: nullableStr,
                                             minutes: int,
+                                            person: nullableStr,
+                                            tags: {
+                                                type: 'array',
+                                                items: str,
+                                            },
                                         },
                                     },
                                 },
@@ -180,6 +197,7 @@ const SCHEMA = {
                                 'kind',
                                 'due',
                                 'person',
+                                'tags',
                                 'minutes',
                                 'habit_period',
                                 'habit_times',
@@ -189,6 +207,7 @@ const SCHEMA = {
                                 kind: { type: 'string', enum: KINDS },
                                 due: nullableStr,
                                 person: nullableStr,
+                                tags: { type: 'array', items: str },
                                 minutes: int,
                                 habit_period: {
                                     type: ['string', 'null'],
@@ -301,6 +320,25 @@ function cleanDue(value, today) {
     return value < today ? today : value;
 }
 
+function cleanTags(value) {
+    if (!Array.isArray(value)) return [];
+    const seen = new Set();
+    const tags = [];
+    for (const raw of value) {
+        if (typeof raw !== 'string') continue;
+        const tag = raw.replace(/^#/, '').trim().toLowerCase().slice(0, 30);
+        if (!tag || seen.has(tag)) continue;
+        seen.add(tag);
+        tags.push(tag);
+        if (tags.length >= LIMITS.tags) break;
+    }
+    return tags;
+}
+
+function cleanPerson(value) {
+    return title(value, 80) || null;
+}
+
 function cleanMinutes(value) {
     const n = Number(value);
     if (!Number.isFinite(n) || n <= 0) return 30;
@@ -349,6 +387,8 @@ function sanitizeResult(parsed, { timezone, answers = [] }) {
                     title: ttitle,
                     due: cleanDue(t?.due, today),
                     minutes: cleanMinutes(t?.minutes),
+                    person: cleanPerson(t?.person),
+                    tags: cleanTags(t?.tags),
                 });
                 titles.add(ttitle.toLowerCase());
             }
@@ -366,8 +406,8 @@ function sanitizeResult(parsed, { timezone, answers = [] }) {
                 title: ititle,
                 kind,
                 due: kind === 'someday' ? null : cleanDue(it?.due, today),
-                person:
-                    kind === 'waiting' ? title(it?.person, 80) || null : null,
+                person: cleanPerson(it?.person),
+                tags: cleanTags(it?.tags),
                 minutes: cleanMinutes(it?.minutes),
                 habit_period:
                     kind === 'habit' && PERIODS.includes(it?.habit_period)
@@ -443,13 +483,45 @@ function sanitizeResult(parsed, { timezone, answers = [] }) {
         }
     }
 
+    const tips = [];
+    for (const tip of Array.isArray(parsed?.tips) ? parsed.tips : []) {
+        if (tips.length >= LIMITS.tips) break;
+        const text = title(tip, 220);
+        if (text) tips.push(text);
+    }
+
     return {
         today: todayPick,
         drop,
+        tips,
         questions,
         areas,
+        people: collectPeople(areas),
         week: buildWeek(areas, timezone),
     };
+}
+
+// Everyone the list mentions, with what they are tied to, so the page can
+// show a People section and Keep it can create them once each.
+function collectPeople(areas) {
+    const byName = new Map();
+    for (const area of areas) {
+        const entries = [
+            ...area.projects.flatMap((p) => p.tasks.map((t) => [t, 'task'])),
+            ...area.items.map((it) => [it, it.kind]),
+        ];
+        for (const [entry, kind] of entries) {
+            if (!entry.person) continue;
+            const key = entry.person.toLowerCase();
+            if (!byName.has(key)) {
+                byName.set(key, { name: entry.person, items: [], waiting: 0 });
+            }
+            const person = byName.get(key);
+            person.items.push(entry.title);
+            if (kind === 'waiting') person.waiting += 1;
+        }
+    }
+    return [...byName.values()];
 }
 
 // Seven days of load, in minutes. Dated work lands on its day (overdue on

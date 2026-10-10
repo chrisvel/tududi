@@ -81,16 +81,22 @@ async function keep(user, body = {}) {
             transaction,
         });
 
-        let somedayTag = null;
-        const findSomedayTag = async () => {
-            if (somedayTag) return somedayTag;
+        const tagCache = new Map();
+        const findTag = async (name) => {
+            if (tagCache.has(name)) return tagCache.get(name);
             const [tag] = await Tag.findOrCreate({
-                where: { user_id: userId, name: SOMEDAY_TAG },
-                defaults: { user_id: userId, name: SOMEDAY_TAG },
+                where: { user_id: userId, name },
+                defaults: { user_id: userId, name },
                 transaction,
             });
-            somedayTag = tag;
+            tagCache.set(name, tag);
             return tag;
+        };
+        const attachTags = async (row, names) => {
+            if (!names || names.length === 0) return;
+            const tags = [];
+            for (const name of names) tags.push(await findTag(name));
+            await row.setTags(tags, { transaction });
         };
 
         const findPerson = async (name) => {
@@ -165,7 +171,7 @@ async function keep(user, body = {}) {
                     created.projects += 1;
                 }
                 for (const task of project.tasks) {
-                    await Task.create(
+                    const row = await Task.create(
                         {
                             name: task.title,
                             user_id: userId,
@@ -174,9 +180,13 @@ async function keep(user, body = {}) {
                             due_date: dueFor(task.due),
                             estimated_minutes: task.minutes,
                             status: Task.STATUS.NOT_STARTED,
+                            involves: task.person
+                                ? [(await findPerson(task.person)).uid]
+                                : null,
                         },
                         { transaction }
                     );
+                    await attachTags(row, task.tags);
                     created.tasks += 1;
                 }
             }
@@ -207,6 +217,10 @@ async function keep(user, body = {}) {
                     continue;
                 }
 
+                const person = item.person
+                    ? await findPerson(item.person)
+                    : null;
+                const waiting = item.kind === 'waiting';
                 const row = await Task.create(
                     {
                         name: item.title,
@@ -214,22 +228,18 @@ async function keep(user, body = {}) {
                         area_id: areaRow.id,
                         due_date: dueFor(item.due),
                         estimated_minutes: item.minutes,
-                        status:
-                            item.kind === 'waiting'
-                                ? Task.STATUS.WAITING
-                                : Task.STATUS.NOT_STARTED,
-                        assigned_to:
-                            item.kind === 'waiting' && item.person
-                                ? (await findPerson(item.person)).uid
-                                : null,
+                        status: waiting
+                            ? Task.STATUS.WAITING
+                            : Task.STATUS.NOT_STARTED,
+                        assigned_to: waiting && person ? person.uid : null,
+                        involves: !waiting && person ? [person.uid] : null,
                     },
                     { transaction }
                 );
-                if (item.kind === 'someday') {
-                    await row.setTags([await findSomedayTag()], {
-                        transaction,
-                    });
-                }
+                await attachTags(row, [
+                    ...(item.tags || []),
+                    ...(item.kind === 'someday' ? [SOMEDAY_TAG] : []),
+                ]);
                 created.tasks += 1;
             }
         }
