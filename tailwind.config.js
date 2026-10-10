@@ -23,6 +23,20 @@ module.exports = {
                     800: '#45413a',
                     900: '#2d2a25',
                 },
+                steel: {
+                    // The blue of the tududi logo's other livery
+                    DEFAULT: '#5a7d9a',
+                    50: '#eef3f7',
+                    100: '#d8e3ec',
+                    200: '#b4c8d8',
+                    300: '#8fabc3',
+                    400: '#6f93ae',
+                    500: '#5a7d9a',
+                    600: '#4a6a85',
+                    700: '#3b566d',
+                    800: '#2d4253',
+                    900: '#1f2d39',
+                },
                 paper: {
                     DEFAULT: '#f7f6f3',
                     deep: '#f4f1ec',

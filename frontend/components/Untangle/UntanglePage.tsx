@@ -82,7 +82,7 @@ const STRAIGHT =
 const UntanglingLine: React.FC = () => (
     <svg
         viewBox="0 0 124 40"
-        className="h-10 w-32 text-brand dark:text-brand-300"
+        className="h-10 w-32 text-steel-600 dark:text-steel-300"
         aria-hidden="true"
     >
         <path
@@ -110,13 +110,13 @@ const Wordmark: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
         <button
             type="button"
             onClick={onClick}
-            className="inline-flex items-baseline justify-center rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+            className="inline-flex items-baseline justify-center rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-steel/50"
             aria-label="untangled.my"
         >
             <span className="font-wordmark text-[13.5vw] font-black leading-none tracking-[-0.045em] sm:text-7xl md:text-8xl">
                 untangled
             </span>
-            <span className="font-hand ml-1 inline-block -rotate-3 text-[15vw] font-semibold leading-none text-brand sm:text-7xl md:text-[6.25rem] dark:text-brand-300">
+            <span className="font-hand ml-1 inline-block -rotate-3 text-[15vw] font-semibold leading-none text-steel-600 sm:text-7xl md:text-[6.25rem] dark:text-steel-300">
                 .my
             </span>
         </button>
@@ -431,15 +431,15 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                             <h1 className="font-display text-4xl font-medium leading-tight tracking-tight [text-wrap:balance] sm:text-5xl">
                                 {t('untangle.title', 'Paste your mess.')}
                             </h1>
-                            <p className="mt-3 max-w-prose text-lg leading-relaxed text-gray-600 dark:text-gray-400">
+                            <p className="mt-3 max-w-prose text-lg leading-relaxed text-gray-700 dark:text-gray-300">
                                 {t(
                                     'untangle.lede',
-                                    'Try a sample and watch it turn into a plan. Then paste your own: a free tududi account untangles it for you.'
+                                    'Try a sample and watch it turn into a plan. Then paste your own, or upload a photo of your handwritten notes: a free tududi account untangles it for you.'
                                 )}
                             </p>
 
                             <div className="mt-5">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 dark:text-gray-300">
                                     {t(
                                         'untangle.samples.kicker',
                                         'No list handy? Try one of these'
@@ -451,7 +451,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                             key={sample.key}
                                             type="button"
                                             onClick={() => loadSample(sample)}
-                                            className="rounded-full bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm hover:bg-brand-50 hover:text-brand-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                                            className="rounded-full bg-white px-3 py-1.5 text-sm text-gray-800 shadow-sm hover:bg-steel-50 hover:text-steel-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                                             data-testid={`untangle-sample-${sample.key}`}
                                         >
                                             {t(
@@ -477,29 +477,29 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                         'untangle.placeholder',
                                         'call landlord re deposit!!\ncrete??\ndentist\ngym x3\nmum bday 24th\nask Maria about the contract'
                                     )}
-                                    className="w-full resize-y rounded-xl bg-paper px-4 py-3 text-lg leading-relaxed text-ink placeholder:text-gray-400/80 focus:outline-none focus:ring-2 focus:ring-brand/50 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500"
+                                    className="w-full resize-y rounded-xl bg-paper px-4 py-3 text-lg leading-relaxed text-ink placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-steel/50 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500"
                                     data-testid="untangle-textarea"
                                 />
                                 {image && (
-                                    <div className="mt-3 flex items-center gap-3 rounded-xl bg-brand-50 px-3 py-2 dark:bg-brand-900/30">
+                                    <div className="mt-3 flex items-center gap-3 rounded-xl bg-steel-50 px-3 py-2 dark:bg-steel-900/40">
                                         <img
                                             src={image}
                                             alt=""
                                             className="h-12 w-12 rounded-lg object-cover"
                                         />
-                                        <span className="flex-1 text-sm text-brand-700 dark:text-brand-200">
+                                        <span className="flex-1 text-sm text-steel-700 dark:text-steel-200">
                                             {t(
                                                 'untangle.screenshotAttached',
-                                                'Screenshot attached'
+                                                'Notes attached'
                                             )}
                                         </span>
                                         <button
                                             type="button"
                                             onClick={() => setImage(null)}
-                                            className="p-1 text-brand-700 hover:text-brand-900 dark:text-brand-200"
+                                            className="p-1 text-steel-700 hover:text-steel-900 dark:text-steel-200"
                                             aria-label={t(
                                                 'untangle.removeScreenshot',
-                                                'Remove screenshot'
+                                                'Remove the notes'
                                             )}
                                         >
                                             <XMarkIcon className="h-5 w-5" />
@@ -512,7 +512,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                         onClick={() =>
                                             fileInputRef.current?.click()
                                         }
-                                        className="inline-flex items-center gap-2 rounded-lg bg-paper-deep px-3 py-2 text-sm text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                                        className="inline-flex items-center gap-2 rounded-lg bg-paper-deep px-3 py-2 text-sm text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                                         data-testid="untangle-screenshot"
                                     >
                                         <CameraIcon className="h-5 w-5" />
@@ -540,7 +540,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                             className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${
                                                 listening
                                                     ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-200'
-                                                    : 'bg-paper-deep text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
+                                                    : 'bg-paper-deep text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
                                             }`}
                                             data-testid="untangle-mic"
                                         >
@@ -569,7 +569,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                 type="button"
                                 onClick={() => run([])}
                                 disabled={!canRun}
-                                className="mt-5 h-12 w-full rounded-xl bg-brand text-base font-semibold text-white shadow-sm hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="mt-5 h-12 w-full rounded-xl bg-steel-600 text-base font-semibold text-white shadow-sm hover:bg-steel-700 disabled:cursor-not-allowed disabled:opacity-50"
                                 data-testid="untangle-run"
                             >
                                 {sampleKey || isSignedIn
@@ -579,7 +579,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                           'Untangle it, free with an account'
                                       )}
                             </button>
-                            <p className="mt-3 text-center text-xs text-gray-500 dark:text-gray-400">
+                            <p className="mt-3 text-center text-xs text-gray-600 dark:text-gray-300">
                                 {t(
                                     'untangle.privacy',
                                     'Nothing is stored until you choose to keep it.'
@@ -602,7 +602,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                     ]
                                 }
                             </p>
-                            <p className="mt-1 text-sm tabular-nums text-gray-500 dark:text-gray-400">
+                            <p className="mt-1 text-sm tabular-nums text-gray-600 dark:text-gray-300">
                                 {seconds}s
                             </p>
                         </section>
@@ -639,7 +639,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                         onClick={() =>
                                             startOver(resultIsSample)
                                         }
-                                        className="h-12 rounded-xl bg-white px-4 text-sm text-gray-700 shadow-sm hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                                        className="h-12 rounded-xl bg-white px-4 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                                         data-testid="untangle-start-over"
                                     >
                                         {resultIsSample
@@ -656,7 +656,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                         <button
                                             type="button"
                                             onClick={() => startOver(true)}
-                                            className="h-12 flex-1 rounded-xl bg-brand text-base font-semibold text-white shadow-sm hover:bg-brand-600 md:max-w-xs"
+                                            className="h-12 flex-1 rounded-xl bg-steel-600 text-base font-semibold text-white shadow-sm hover:bg-steel-700 md:max-w-xs"
                                             data-testid="untangle-own"
                                         >
                                             {t(
@@ -669,7 +669,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                             type="button"
                                             onClick={keep}
                                             disabled={keeping}
-                                            className="h-12 flex-1 rounded-xl bg-brand text-base font-semibold text-white shadow-sm hover:bg-brand-600 disabled:opacity-50 md:max-w-xs"
+                                            className="h-12 flex-1 rounded-xl bg-steel-600 text-base font-semibold text-white shadow-sm hover:bg-steel-700 disabled:opacity-50 md:max-w-xs"
                                             data-testid="untangle-keep"
                                         >
                                             {keeping

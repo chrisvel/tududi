@@ -46,7 +46,7 @@ const COLOR: Record<NodeType, string> = {
     task: '#e7e3da',
     waiting: '#ffb4b4',
     habit: '#d9c9ff',
-    someday: '#cfc9bb',
+    someday: '#dcd7c9',
 };
 
 const RADIUS: Record<NodeType, number> = {
@@ -210,13 +210,13 @@ const OutlineNode: React.FC<{
                         : node.type === 'goal' || node.type === 'project'
                           ? 'font-medium text-white'
                           : node.type === 'someday' || node.type === 'root'
-                            ? 'text-white/70'
-                            : 'text-white/90'
+                            ? 'text-white/80'
+                            : 'text-white'
                 }`}
             >
                 {node.label}
                 {node.sub && (
-                    <span className="ml-1.5 text-xs text-white/70">
+                    <span className="ml-1.5 text-xs text-white/85">
                         {node.sub}
                     </span>
                 )}
@@ -331,7 +331,7 @@ const StructureGraph: React.FC<{ areas: UntangleArea[] }> = ({ areas }) => {
             data-testid="untangle-graph"
         >
             <style>{`
-                .ug-panel { background: radial-gradient(120% 80% at 10% 0%, #b3ae9c 0%, #a39e8c 55%, #8f8a78 100%); }
+                .ug-panel { background: radial-gradient(120% 80% at 10% 0%, #6f93ae 0%, #5a7d9a 55%, #3b566d 100%); }
                 .ug-panel::before { content: ''; position: absolute; inset: 0; pointer-events: none;
                     background-image: linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px);
                     background-size: 28px 28px; mask-image: radial-gradient(80% 80% at 50% 40%, #000 30%, transparent 100%); -webkit-mask-image: radial-gradient(80% 80% at 50% 40%, #000 30%, transparent 100%); }
@@ -358,7 +358,7 @@ const StructureGraph: React.FC<{ areas: UntangleArea[] }> = ({ areas }) => {
                             className={`ug-chip inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 ${
                                 on
                                     ? 'bg-white/30 text-white'
-                                    : 'bg-white/10 text-white/90 hover:bg-white/20'
+                                    : 'bg-white/15 text-white hover:bg-white/25'
                             }`}
                             data-testid={`untangle-graph-kind-${l.type}`}
                         >
@@ -383,7 +383,7 @@ const StructureGraph: React.FC<{ areas: UntangleArea[] }> = ({ areas }) => {
                         </button>
                     );
                 })}
-                <span className="ml-auto hidden text-white/70 sm:inline">
+                <span className="ml-auto hidden text-white/85 sm:inline">
                     {t(
                         'untangle.graph.hint',
                         'Hover or tap a node to follow its path'
@@ -442,7 +442,7 @@ const StructureGraph: React.FC<{ areas: UntangleArea[] }> = ({ areas }) => {
                                         stroke={
                                             on && lit
                                                 ? COLOR[p.node.type]
-                                                : 'rgba(255,255,255,0.45)'
+                                                : 'rgba(255,255,255,0.6)'
                                         }
                                     />
                                 );
@@ -502,7 +502,7 @@ const StructureGraph: React.FC<{ areas: UntangleArea[] }> = ({ areas }) => {
                                                     r={r}
                                                     fill={
                                                         p.node.type === 'goal'
-                                                            ? '#a39e8c'
+                                                            ? '#5a7d9a'
                                                             : color
                                                     }
                                                     stroke={

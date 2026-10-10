@@ -3280,7 +3280,7 @@
   },
   "untangle": {
     "title": "Paste your mess.",
-    "lede": "Try a sample and watch it turn into a plan. Then paste your own: a free tududi account untangles it for you.",
+    "lede": "Try a sample and watch it turn into a plan. Then paste your own, or upload a photo of your handwritten notes: a free tududi account untangles it for you.",
     "placeholder": "call landlord re deposit!!\ncrete??\ndentist\ngym x3\nmum bday 24th\nask Maria about the contract",
     "samples": {
       "kicker": "No list handy? Try one of these",
@@ -3290,9 +3290,9 @@
       "exams": "Exam season",
       "jobHunt": "Job hunt"
     },
-    "addScreenshot": "Screenshot",
-    "screenshotAttached": "Screenshot attached",
-    "removeScreenshot": "Remove screenshot",
+    "addScreenshot": "Upload handwritten notes",
+    "screenshotAttached": "Notes attached",
+    "removeScreenshot": "Remove the notes",
     "talk": "Talk",
     "listening": "Listening, tap to stop",
     "run": "Untangle it",

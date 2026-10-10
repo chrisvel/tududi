@@ -20,7 +20,7 @@ interface UntangleResultProps {
 }
 
 const EYEBROW =
-    'text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400';
+    'text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 dark:text-gray-300';
 const CARD = 'rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800';
 
 // A small speech bubble for the "why" next to a decision: playful, still
@@ -32,10 +32,10 @@ const Bubble: React.FC<{
 }> = ({ children, tone = 'light', className = '' }) => {
     const fill =
         tone === 'light'
-            ? 'bg-white/15 text-white before:bg-white/15'
+            ? 'bg-white/20 text-white before:bg-white/20'
             : tone === 'amber'
               ? 'bg-amber-100 text-amber-900 before:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-100 dark:before:bg-amber-900/40'
-              : 'bg-paper-deep text-gray-700 before:bg-paper-deep dark:bg-gray-700 dark:text-gray-200 dark:before:bg-gray-700';
+              : 'bg-paper-deep text-gray-800 before:bg-paper-deep dark:bg-gray-700 dark:text-gray-100 dark:before:bg-gray-700';
     return (
         <span
             className={`relative inline-block rounded-2xl rounded-tl-sm px-3 py-2 text-sm leading-snug before:absolute before:-left-1 before:top-2 before:h-3 before:w-3 before:rotate-45 before:rounded-sm ${fill} ${className}`}
@@ -88,7 +88,7 @@ const Section: React.FC<{
 );
 
 const Tag: React.FC<{ name: string; count?: number }> = ({ name, count }) => (
-    <span className="inline-flex items-center gap-1 rounded-full bg-paper-deep px-2.5 py-1 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-200">
+    <span className="inline-flex items-center gap-1 rounded-full bg-paper-deep px-2.5 py-1 text-xs text-gray-800 dark:bg-gray-700 dark:text-gray-100">
         #{name}
         {count !== undefined && count > 1 && (
             <span className="tabular-nums text-gray-400 dark:text-gray-500">
@@ -130,7 +130,7 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
                 <Tag key={tag} name={tag} />
             ))}
             {entry.due && (
-                <span className="text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                <span className="text-xs tabular-nums text-gray-600 dark:text-gray-300">
                     {dueLabel(entry.due)}
                 </span>
             )}
@@ -160,7 +160,7 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
                     >
                         <div className="flex items-center justify-between gap-2">
                             <span className="font-medium">{project.name}</span>
-                            <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] text-brand-700 dark:bg-brand-900/40 dark:text-brand-200">
+                            <span className="rounded-full bg-steel-100 px-2 py-0.5 text-[11px] text-steel-800 dark:bg-steel-800 dark:text-steel-50">
                                 {t('untangle.project', 'project')}
                             </span>
                         </div>
@@ -168,7 +168,7 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
                             {project.tasks.map((task) => (
                                 <li
                                     key={task.title}
-                                    className="flex items-center justify-between gap-2 text-sm text-gray-700 dark:text-gray-300"
+                                    className="flex items-center justify-between gap-2 text-sm text-gray-800 dark:text-gray-200"
                                 >
                                     <span className="min-w-0 break-words">
                                         {task.title}
@@ -194,7 +194,7 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
                             <span
                                 className={
                                     item.kind === 'someday'
-                                        ? 'text-gray-500 dark:text-gray-400'
+                                        ? 'text-gray-600 dark:text-gray-300'
                                         : ''
                                 }
                             >
@@ -208,7 +208,7 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
                                 </span>
                             )}
                             {item.kind !== 'waiting' && item.person && (
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                <span className="text-xs text-gray-600 dark:text-gray-300">
                                     · {item.person}
                                 </span>
                             )}
@@ -307,12 +307,12 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
         <div className="flex flex-col gap-10" data-testid="untangle-result">
             {/* The five-second brief: what to do, in reading order */}
             <section
-                className="rounded-3xl bg-brand-400 p-6 text-white shadow-sm sm:p-8"
+                className="rounded-3xl bg-brand-600 p-6 text-white shadow-sm sm:p-8"
                 data-testid="untangle-brief"
             >
                 {result.today.title && (
                     <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-100">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-50">
                             {t('untangle.today', 'Today')}
                         </p>
                         <p className="mt-1 font-display text-3xl font-medium leading-tight [text-wrap:balance] sm:text-4xl">
@@ -326,7 +326,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                     </div>
                 )}
 
-                <p className="mt-6 text-sm text-brand-100">
+                <p className="mt-6 text-sm text-white/90">
                     {t(
                         'untangle.brief.summary',
                         '{{lines}} things, filed into {{areas}} areas, {{projects}} projects, {{habits}} habits and {{people}} people.',
@@ -342,7 +342,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
 
                 <div className="mt-5 grid gap-6 sm:grid-cols-2">
                     <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-100">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-50">
                             {t('untangle.brief.then', 'Then, this week')}
                         </p>
                         {nextUp.length === 0 ? (
@@ -359,7 +359,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                                         key={`${n.title}-${i}`}
                                         className="flex items-baseline gap-3 text-sm"
                                     >
-                                        <span className="w-4 shrink-0 text-right tabular-nums text-brand-100">
+                                        <span className="w-4 shrink-0 text-right tabular-nums text-brand-50">
                                             {i + 2}
                                         </span>
                                         <span className="min-w-0 flex-1 leading-snug">
@@ -376,7 +376,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                     <div className="flex flex-col gap-4">
                         {waitingOn.length > 0 && (
                             <div>
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-100">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-50">
                                     {t('untangle.brief.waiting', 'Waiting on')}
                                 </p>
                                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -386,7 +386,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                                             className="rounded-full bg-white/20 px-2.5 py-1 text-xs text-white"
                                         >
                                             {w.name}
-                                            <span className="text-brand-100">
+                                            <span className="text-brand-50">
                                                 {' '}
                                                 · {w.items[0]}
                                             </span>
@@ -397,7 +397,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                         )}
                         {result.drop.length > 0 && (
                             <div>
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-100">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-50">
                                     {t('untangle.brief.wait', 'Can wait')}
                                 </p>
                                 <p className="mt-2 text-sm text-brand-50">
@@ -482,7 +482,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                 <div className={CARD} data-testid="untangle-people">
                     <p className={EYEBROW}>{t('untangle.people', 'People')}</p>
                     {result.people.length === 0 ? (
-                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                             {t(
                                 'untangle.noPeople',
                                 'Nobody else is in this list.'
@@ -496,7 +496,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                                     className="flex items-center justify-between gap-2 text-sm"
                                 >
                                     <span className="flex items-center gap-2">
-                                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-50 text-xs font-semibold text-brand-700 dark:bg-brand-900/40 dark:text-brand-200">
+                                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-steel-100 text-xs font-semibold text-steel-800 dark:bg-steel-800 dark:text-steel-50">
                                             {person.name
                                                 .slice(0, 1)
                                                 .toUpperCase()}
@@ -505,7 +505,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                                             {person.name}
                                         </span>
                                     </span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    <span className="text-xs text-gray-600 dark:text-gray-300">
                                         {person.waiting > 0
                                             ? t(
                                                   'untangle.waitingOn',
@@ -533,7 +533,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                 <div className={CARD} data-testid="untangle-habits">
                     <p className={EYEBROW}>{t('untangle.habits', 'Habits')}</p>
                     {habits.length === 0 ? (
-                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                             {t(
                                 'untangle.noHabits',
                                 'Nothing repeats yet. Add one later.'
@@ -568,7 +568,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                 <div className={CARD} data-testid="untangle-tags">
                     <p className={EYEBROW}>{t('untangle.tags', 'Tags')}</p>
                     {tags.length === 0 ? (
-                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                             {t(
                                 'untangle.noTags',
                                 'No tags needed for this list.'
@@ -603,7 +603,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                                 >
                                     <div className="flex h-24 w-full items-end">
                                         <div
-                                            className="w-full rounded-md bg-brand/85 dark:bg-brand-300/85"
+                                            className="w-full rounded-md bg-steel-500 dark:bg-steel-300"
                                             style={{
                                                 height: `${Math.max(
                                                     4,
@@ -613,10 +613,10 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                                             }}
                                         />
                                     </div>
-                                    <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                                    <span className="text-[11px] text-gray-600 dark:text-gray-300">
                                         {day.weekday}
                                     </span>
-                                    <span className="text-[11px] font-medium tabular-nums text-gray-500 dark:text-gray-400">
+                                    <span className="text-[11px] font-medium tabular-nums text-gray-700 dark:text-gray-200">
                                         {loadLabel(day.minutes)}
                                     </span>
                                 </div>
@@ -628,7 +628,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                             {t('untangle.comingUp', 'Coming up')}
                         </p>
                         {dated.length === 0 ? (
-                            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                                 {t(
                                     'untangle.noDates',
                                     'Nothing has a date yet.'
@@ -644,7 +644,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                                         <span className="min-w-0 break-words">
                                             {d.title}
                                         </span>
-                                        <span className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                                        <span className="shrink-0 text-xs tabular-nums text-gray-600 dark:text-gray-300">
                                             {dueLabel(d.due)}
                                         </span>
                                     </li>
@@ -660,7 +660,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                     <button
                         type="button"
                         onClick={() => setShowQuestions(true)}
-                        className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-ink shadow-sm hover:bg-brand-50 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                        className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-ink shadow-sm hover:bg-steel-50 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
                         data-testid="untangle-refine"
                     >
                         {t('untangle.refine', 'Refine with more questions')}
@@ -694,8 +694,8 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                                                 }
                                                 className={`rounded-lg px-3 py-2 text-sm ${
                                                     on
-                                                        ? 'bg-brand text-white'
-                                                        : 'bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-900/40 dark:text-brand-200 dark:hover:bg-brand-900/60'
+                                                        ? 'bg-steel-600 text-white'
+                                                        : 'bg-steel-100 text-steel-800 hover:bg-steel-200 dark:bg-steel-800 dark:text-steel-50 dark:hover:bg-steel-700'
                                                 }`}
                                             >
                                                 {o}
