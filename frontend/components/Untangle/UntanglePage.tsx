@@ -34,10 +34,6 @@ type Stage = 'checking' | 'unavailable' | 'input' | 'busy' | 'result';
 
 const MAX_IMAGE_EDGE = 1600;
 
-// Lora is the serif the app already ships for notes (see public/index.html);
-// the wordmark and the headline borrow it so the page reads as its own thing.
-const WORDMARK_FONT = "'Lora', Georgia, 'Times New Roman', serif";
-
 // Phone screenshots are big; the model reads them fine at 1600px, and the
 // request stays small. Always a JPEG afterwards.
 async function fileToDataUrl(file: File): Promise<string> {
@@ -367,7 +363,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
 
     return (
         <div
-            className="min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100"
+            className="min-h-screen bg-gray-100 font-ui text-gray-900 antialiased dark:bg-gray-900 dark:text-gray-100"
             data-testid="untangle-page"
         >
             <main
@@ -382,12 +378,9 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                         className="mb-8 text-center"
                         data-testid="untangle-logo"
                     >
-                        <span
-                            className="text-6xl font-bold leading-none tracking-tight sm:text-8xl"
-                            style={{ fontFamily: WORDMARK_FONT }}
-                        >
+                        <span className="font-display text-6xl font-semibold leading-none tracking-tight sm:text-8xl">
                             untangle
-                            <span className="text-blue-600 dark:text-blue-400">
+                            <span className="font-normal italic text-blue-600 dark:text-blue-400">
                                 .me
                             </span>
                         </span>
@@ -417,13 +410,10 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
 
                     {stage === 'input' && (
                         <section data-testid="untangle-input">
-                            <h1
-                                className="text-3xl sm:text-4xl"
-                                style={{ fontFamily: WORDMARK_FONT }}
-                            >
+                            <h1 className="font-display text-4xl font-medium leading-tight tracking-tight [text-wrap:balance] sm:text-5xl">
                                 {t('untangle.title', 'Paste your mess.')}
                             </h1>
-                            <p className="mt-3 text-gray-600 dark:text-gray-400">
+                            <p className="mt-3 max-w-prose text-lg leading-relaxed text-gray-600 dark:text-gray-400">
                                 {t(
                                     'untangle.lede',
                                     'A Notes list, a screenshot, whatever you have been carrying around. Ten seconds later it is a plan.'
@@ -431,7 +421,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                             </p>
 
                             <div className="mt-5">
-                                <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">
                                     {t(
                                         'untangle.samples.kicker',
                                         'No list handy? Try one of these'
@@ -465,12 +455,12 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                     value={text}
                                     onChange={(e) => setText(e.target.value)}
                                     onPaste={handlePaste}
-                                    rows={12}
+                                    rows={10}
                                     placeholder={t(
                                         'untangle.placeholder',
                                         'call landlord re deposit!!\ncrete??\ndentist\ngym x3\nmum bday 24th\nask Maria about the contract'
                                     )}
-                                    className="w-full resize-y rounded-xl bg-gray-50 px-4 py-3 text-lg leading-relaxed text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500"
+                                    className="w-full resize-y rounded-xl bg-gray-50 px-4 py-3 text-lg leading-relaxed text-gray-900 placeholder:text-gray-400/80 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500"
                                     data-testid="untangle-textarea"
                                 />
                                 {image && (
@@ -562,7 +552,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                 type="button"
                                 onClick={() => run([])}
                                 disabled={!canRun}
-                                className="mt-5 h-12 w-full rounded-xl bg-blue-600 text-base font-medium text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+                                className="mt-5 h-12 w-full rounded-xl bg-blue-600 text-base font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
                                 data-testid="untangle-run"
                             >
                                 {t('untangle.run', 'Untangle it')}
@@ -603,10 +593,10 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                         >
                             {result.today.title && (
                                 <div className="rounded-2xl bg-blue-600 p-5 text-white shadow-sm dark:bg-blue-500">
-                                    <p className="text-xs font-medium uppercase tracking-wider text-blue-100">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-100">
                                         {t('untangle.today', 'Today')}
                                     </p>
-                                    <p className="mt-1 text-xl font-medium">
+                                    <p className="mt-1 font-display text-2xl font-medium leading-snug [text-wrap:balance]">
                                         {result.today.title}
                                     </p>
                                     {result.today.reason && (
@@ -619,7 +609,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
 
                             {result.drop.length > 0 && (
                                 <div className="rounded-2xl bg-amber-50 px-5 py-4 dark:bg-amber-900/20">
-                                    <p className="text-xs font-medium uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-300">
                                         {t('untangle.drop', 'Drop for now')}
                                     </p>
                                     <ul className="mt-2 flex flex-col gap-1">
@@ -648,7 +638,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                     className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800"
                                     data-testid="untangle-questions"
                                 >
-                                    <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">
                                         {questions.length === 1
                                             ? t(
                                                   'untangle.oneQuestion',
@@ -662,7 +652,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                     <div className="mt-2 flex flex-col gap-4">
                                         {questions.map((q) => (
                                             <div key={q.text}>
-                                                <p className="text-base font-medium">
+                                                <p className="font-display text-lg font-medium leading-snug">
                                                     {q.text}
                                                 </p>
                                                 <div className="mt-2 flex flex-wrap gap-2">
@@ -722,7 +712,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                             ))}
 
                             <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
-                                <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">
                                     {t('untangle.week', 'Your week')}
                                 </p>
                                 <div className="mt-3 grid grid-cols-7 gap-2">
@@ -748,7 +738,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                             <span className="text-[11px] text-gray-500 dark:text-gray-400">
                                                 {day.weekday}
                                             </span>
-                                            <span className="text-[11px] tabular-nums text-gray-400 dark:text-gray-500">
+                                            <span className="text-[11px] font-medium tabular-nums text-gray-500 dark:text-gray-400">
                                                 {loadLabel(day.minutes)}
                                             </span>
                                         </div>
@@ -778,7 +768,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                         type="button"
                                         onClick={keep}
                                         disabled={keeping}
-                                        className="h-12 flex-1 rounded-xl bg-blue-600 text-base font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+                                        className="h-12 flex-1 rounded-xl bg-blue-600 text-base font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
                                         data-testid="untangle-keep"
                                     >
                                         {keeping
@@ -834,7 +824,7 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
             className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800"
             data-testid="untangle-area"
         >
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">
                 {area.name}
             </p>
             {area.goal && (
@@ -871,7 +861,7 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
                                     <span className="min-w-0 truncate">
                                         {task.title}
                                     </span>
-                                    <span className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
+                                    <span className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">
                                         {dueLabel(task.due)}
                                     </span>
                                 </li>
@@ -902,7 +892,7 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
                                 </span>
                             )}
                         </span>
-                        <span className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
+                        <span className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">
                             {dueLabel(item.due)}
                         </span>
                     </li>

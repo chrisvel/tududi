@@ -90,6 +90,7 @@ Structure:
 
 Rules:
 - Use the person's own words for names. Fix spelling, drop noise like "!!", "??" and ":(".
+- No dashes inside titles or reasons; split with a comma instead ("Birthday party Saturday 3pm, bring a gift").
 - Do not invent items, people or dates. Do not merge unrelated lines.
 - Every line of the input appears exactly once: as a project, a project's task, or an item. Never drop a line silently; drop means listing it under drop.
 - When answers to earlier questions are given, apply them and return an empty questions list: the person has answered once and will not be asked again.
@@ -282,8 +283,14 @@ function buildUserMessage({ text, image, timezone, answers }) {
 // ---------------------------------------------------------------------------
 // Output
 
+// Trims, caps and turns the dashes models love into commas.
 function title(value, max = LIMITS.title) {
-    return typeof value === 'string' ? value.trim().slice(0, max) : '';
+    if (typeof value !== 'string') return '';
+    return value
+        .replace(/\s*[\u2013\u2014]\s*/g, ', ')
+        .replace(/\s+-\s+/g, ', ')
+        .trim()
+        .slice(0, max);
 }
 
 function cleanDue(value, today) {

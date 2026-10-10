@@ -70,7 +70,7 @@ const modelAnswer = () => ({
                     habit_times: 0,
                 },
                 {
-                    title: 'Insurance renewal',
+                    title: 'Insurance renewal \u2014 call the broker',
                     kind: 'task',
                     due: '2020-01-01',
                     person: null,
@@ -183,7 +183,9 @@ describe('Untangle', () => {
         const home = result.areas[0].items;
         expect(home[0].kind).toBe('waiting');
         expect(home[0].person).toBe('Landlord');
-        // A past due date is pulled up to today, minutes snap to the grid
+        // A past due date is pulled up to today, minutes snap to the grid,
+        // and the model's dash becomes a comma
+        expect(home[1].title).toBe('Insurance renewal, call the broker');
         expect(home[1].due).toBe(today());
         expect(home[1].minutes).toBe(30);
 
