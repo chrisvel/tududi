@@ -31,7 +31,7 @@ module.exports = {
                 // The Untangle page's pair, self-hosted (see public/index.html)
                 display: ['Fraunces', 'Lora', 'Georgia', 'serif'],
                 // The untangled.my wordmark
-                wordmark: ['Outfit', '"Arial Black"', 'Arial', 'sans-serif'],
+                wordmark: ['Lexend', '"Arial Black"', 'Arial', 'sans-serif'],
                 hand: ['"Dancing Script"', '"Brush Script MT"', 'cursive'],
                 ui: [
                     '"Instrument Sans"',

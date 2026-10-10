@@ -106,7 +106,7 @@ const UntanglingLine: React.FC = () => (
 const Wordmark: React.FC = () => (
     <header className="mb-10 text-center" data-testid="untangle-logo">
         <span className="inline-flex items-baseline justify-center">
-            <span className="font-wordmark text-[14vw] font-black leading-none tracking-[-0.03em] sm:text-7xl md:text-8xl">
+            <span className="font-wordmark text-[13.5vw] font-black leading-none tracking-[-0.045em] sm:text-7xl md:text-8xl">
                 untangled
             </span>
             <span className="font-hand ml-1 inline-block -rotate-3 text-[15vw] font-semibold leading-none text-brand sm:text-7xl md:text-[6.25rem] dark:text-brand-300">
