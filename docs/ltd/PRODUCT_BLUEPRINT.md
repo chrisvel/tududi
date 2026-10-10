@@ -6,7 +6,7 @@
 | مورد | مقدار |
 |---|---|
 | تاریخ پژوهش | **2026-10-10** (همهٔ بازیابی‌ها در همین روز انجام شده است) |
-| وضعیت سند | v1.0 — نسخهٔ تصمیم (Decision Blueprint)، پیش از شروع پیاده‌سازی |
+| وضعیت سند | v1.1 — فاز ۰ انجام شد؛ تصمیم: ادامه با fork tududi (`docs/ltd/spikes/DECISION.md`) |
 | نوع اجرا | پژوهش فنی + طراحی محصول؛ هیچ کد محصولی نوشته یا fork واقعی ساخته نشده است |
 | مخاطب | توسعه‌دهندهٔ تک‌نفره + Coding Agentها (Claude Code و مشابه) |
 | زبان | فارسی، با اصطلاحات فنی انگلیسی |
@@ -1876,61 +1876,76 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 ## 28. Architecture Decision Records
 
 > قالب: Context ← Decision ← Alternatives (رد شده) ← Consequences. وضعیت همه **Proposed** است تا پایان فاز ۰، سپس Accepted یا Superseded.
+>
+> **به‌روزرسانی فاز ۰ (2026-10-11):** هر ۱۳ ADR **Accepted** شد و هیچ‌کدام Superseded نشد. شاهد هر کدام در خط *Status* زیر آن و در [`spikes/DECISION.md`](spikes/DECISION.md) است. «آزمایش نشده» یعنی تصمیم برنامه‌ریزی است و spike آن را نسنجید.
 
 **ADR-001: پایه = fork tududi**
+- *Status:* Accepted (2026-10-11) — G1، G2 و G3 سبز: اجرا، بکاپ و MCP بدون تغییر کار کرد؛ سلسله‌مراتب با 55 خط در هسته؛ RTL بدون مهاجرت stack.
 - *Context:* نیاز به SSOT سمت سرور برای MCP، AI و Calendar؛ حداقل بازنویسی؛ توسعه‌دهندهٔ تنها.
 - *Decision:* fork کامل `chrisvel/tududi` (MIT) با استراتژی upstream-first و ماژول‌های `ltd-*`.
 - *Alternatives:* dayGLANCE (local-first، zero-knowledge، App.jsx یکپارچه)؛ Super Productivity (Angular، بدون هدف، self-host سخت)؛ Custom core (هزینهٔ ۲ تا ۳ برابر، به‌عنوان Fallback ثبت شده).
 - *Consequences:* هزینهٔ merge ماهانه؛ UX روزانهٔ dayGLANCE باید با PORT جبران شود.
 
 **ADR-002: SSOT = SQLite (WAL) سمت سرور**
+- *Status:* Accepted (2026-10-11) — G1: یک فایل `/app/db/production.sqlite3` (WAL) با `sqlite3 .backup` بکاپ و روی پوشهٔ خالی بازیابی شد؛ G2: roll-up روی SQLite 11ms.
 - *Decision:* یک فایل SQLite؛ PostgreSQL فقط برای چندکاربره یا همزمانی بالا.
 - *Alternatives:* Postgres از روز اول (سرویس و بکاپ اضافه بدون نیاز)؛ local-first (ADR-004).
 - *Consequences:* بکاپ ساده؛ تک‌نویسنده؛ مسیر ارتقای موجود ✅.
 
 **ADR-003: E2EE نیست؛ سرور مورد اعتماد است**
+- *Status:* Accepted (2026-10-11) — تصمیم برنامه‌ریزی، در فاز ۰ آزمایش نشده.
 - *Decision:* سرور plaintext می‌بیند. جبران: TLS، دیسک رمزشده، بکاپ رمزشده، رضایت per-feature، Ollama.
 - *Alternatives:* E2EE با Trusted Peer دارای کلید (پیچیده و عملاً همان اعتماد به سرور)؛ E2EE واقعی (MCP و AI سمت سرور ناممکن).
 - *Consequences:* صادق‌بودن در UI و مستندات الزامی است.
 
 **ADR-004: کنار گذاشتن glance-sync، vault و intents**
+- *Status:* Accepted (2026-10-11) — تصمیم برنامه‌ریزی، در فاز ۰ آزمایش نشده.
 - *Decision:* استفاده نمی‌شوند. فقط Importer یک‌باره از بکاپ JSON.
 - *Consequences:* هیچ وابستگی به نسخه‌گذاری پرنوسان sync GLANCE (مثلاً تغییر رفتاری v2.0.0).
 
 **ADR-005: سلسله‌مراتب = توسعهٔ جدول `goals`، نه موجودیت جدید**
+- *Status:* Accepted (2026-10-11) — G2: migration افزایشی، 8 تست قاعده، کل تست‌های upstream و schema parity سبز.
 - *Decision:* `parent_goal_id` + horizonها (`vision`، `five_year`، `year`، `season`، `month`، `week`). Objective = هدف فصلی. اولویت هفته = هدف هفتگی.
 - *Alternatives:* جدول‌های جدای Vision، Objective و KR (تکرار مفهوم)؛ goal_links چندبه‌چند از روز اول (YAGNI).
 - *Consequences:* یک UI و یک API؛ PR قابل ارائه به upstream.
 
 **ADR-006: سه سیگنال پیشرفت؛ منطق قطعی**
+- *Status:* Accepted (2026-10-11) — تصمیم برنامه‌ریزی، در فاز ۰ آزمایش نشده (فقط query سیگنال فعالیت در G2 سنجیده شد).
 - *Decision:* A (فعالیت)، O (پیامد) و Achievement (فقط تصمیم انسان)؛ ظرفیت و بار قطعی.
 - *Consequences:* AI هرگز وضعیت «محقق شد» را تعیین نمی‌کند.
 
 **ADR-007: Journal + Proposal برای همهٔ نوشتن‌های غیرانسانی؛ حذف سخت ممنوع**
+- *Status:* Accepted (2026-10-11) — تصمیم برنامه‌ریزی، در فاز ۰ آزمایش نشده (G5 نشان داد نوشتن‌ها idempotent نیستند).
 - *Decision:* `ltd_journal` (قبل و بعد، Undo)؛ `ltd_proposals` برای R2 و R3؛ سطوح ریسک بخش ۱۶.۳.
 - *Alternatives:* تأیید داخل client (ChatGPT تأیید می‌گیرد، اما Claude لزوماً نه)؛ اعمال مستقیم (خطرناک).
 
 **ADR-008: OAuth AS تعبیه‌شده (`oidc-provider`)**
+- *Status:* Accepted (2026-10-11) — G4: 23/23 قلم قراردادی در همان فرایند Express؛ اتصال واقعی claude.ai هنوز آزموده نشده (YELLOW).
 - *Decision:* AS در همان فرایند؛ DCR با allowlist redirect؛ PKCE؛ aud از `resource`؛ refresh چرخشی؛ هدف بعدی CIMD.
 - *Alternatives:* Keycloak (CIMD آزمایشی و ناسازگار با CIMD ChatGPT)؛ authentik و Zitadel (DCR ندارند)؛ better-auth (fallback ۱)؛ Pomerium (fallback ۲)؛ فقط Bearer (claude.ai و ChatGPT پشتیبانی نمی‌کنند، جز static headers بتا برای سازمان‌ها).
 
 **ADR-009: Provider abstraction با Vercel AI SDK**
+- *Status:* Accepted (2026-10-11) — تصمیم برنامه‌ریزی، در فاز ۰ آزمایش نشده.
 - *Decision:* `ltd-llm` port + AI SDK v7 (`@ai-sdk/openai`، `@ai-sdk/anthropic`)؛ Ollama از مسیر OpenAI-compatible.
 - *Alternatives:* فقط کلاینت `openai` فعلی tududi (tool calling و structured output بین providerها یکدست نیست)؛ LangChain (سنگین، YAGNI).
 
 **ADR-010: بدون مهاجرت stack frontend در MVP**
+- *Status:* Accepted (2026-10-11) — G3: Tailwind 3.4.19 همهٔ utilityهای منطقی و `rtl:` را دارد؛ RTL ۵ صفحه بدون تغییر stack.
 - *Decision:* Webpack، Tailwind 3.4، React 18، Zustand و SWR حفظ می‌شوند. RTL با utilityهای منطقی Tailwind 3.3+.
 - *Consequences:* merge ساده‌تر با upstream.
 
 **ADR-011: Google Calendar مرحله‌ای؛ نوشتن فقط در تقویم اختصاصی**
+- *Status:* Accepted (2026-10-11) — تصمیم برنامه‌ریزی، در فاز ۰ آزمایش نشده (فید iCal در G1، BLOCKED تا دریافت آدرس).
 - *Decision:* A: فید iCal مخفی (موجود)؛ B: API خواندنی با syncToken؛ C: `calendar.app.created`.
 - *Alternatives:* `calendar.events` با نوشتن در تقویم اصلی (ریسک تغییر ناخواسته)؛ CalDAV گوگل.
 
 **ADR-012: Modular monolith در یک کانتینر**
+- *Status:* Accepted (2026-10-11) — G1 یک container؛ G4 همان AS را داخل همان فرایند Express بالا آورد.
 - *Decision:* API، SPA، MCP، AS و Workerها در یک فرایند؛ Caddy جدا.
 - *Alternatives:* سرویس جدا برای MCP یا AI (شبکه، auth و استقرار اضافه، بدون مزیت برای تک‌کاربر).
 
 **ADR-013: نگهداری fork**
+- *Status:* Accepted (2026-10-11) — تصمیم برنامه‌ریزی، در فاز ۰ آزمایش نشده (G6 هنوز DRAFT است؛ codemod RTL idempotent است).
 - *Decision:* merge ماهانه (نه rebase)؛ `LTD-PATCH`؛ `UPSTREAM.md`؛ PRهای عمومی به upstream.
 - *Consequences:* اگر هزینهٔ merge بیش از ۱ روز در ماه برای ۳ ماه متوالی باشد، ADR-001 بازنگری می‌شود.
 
@@ -1940,22 +1955,22 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 
 ### ۲۹.۱ فرض‌ها (با ابطال‌گر)
 
-| ID | فرض | ابطال‌گر | بررسی در |
-|---|---|---|---|
-| A-01 | MVP تک‌کاربره است | نیاز به اشتراک با همسر یا تیم | — (پرسش ۱) |
-| A-02 | کاربر سرور همیشه‌روشن با دامنه و HTTPS دارد | فقط شبکهٔ خانگی بدون IP عمومی ← Tunnel لازم است | فاز ۲ |
-| A-03 | کش و صف آفلاین tududi برای استفادهٔ روزمره کافی است | بیش از ۱ ساعت در روز کار آفلاین طولانی ← S4 | ۴ هفته استفاده |
-| A-04 | upstream tududi فعال و MIT می‌ماند | آرشیو یا تغییر لایسنس | ماهانه |
-| A-05 | VPS با ۲ vCPU و ۲ تا ۴ GB کافی است | مصرف حافظه بیش از ۷۰٪ | فاز ۲ |
-| A-06 | ChatGPT Developer Mode با پلن کاربر در دسترس است | عدم دسترسی | G4 |
-| A-07 | استفاده نکردن از برند tududi لازم یا کافی است | — | فاز ۱ |
-| A-08 | tududi در create، uid سمت‌کلاینت نمی‌پذیرد | پذیرفتن (کار کمتر) | G5 |
-| A-09 | نسخهٔ پایدار `date-fns-jalali` قابل استفاده است | فقط پیش‌انتشار ← فقط Intl و محاسبهٔ دستی | فاز ۳ |
-| A-10 | ضریب تخمین پیش‌فرض 1.3 معقول است | دادهٔ Focus واقعی | ۴ هفته پس از MVP |
-| A-11 | محور زمانی در RTL پیش‌فرض LTR باشد (عرف نمودارها) | ترجیح کاربر | فاز ۶ |
-| A-12 | ظرفیت توسعه حدود ۱۵ ساعت در هفته است | — | پرسش ۲ |
-| A-13 | `oidc-provider` بدون CIMD برای Claude و ChatGPT کافی است | الزام CIMD توسط یکی از clientها | G4 |
-| A-14 | روی image tududi ابزار `wget` یا `sqlite3` برای healthcheck و بکاپ موجود است | نبود ← استفاده از `node -e` یا sidecar | فاز ۲ |
+| ID | فرض | ابطال‌گر | بررسی در | وضعیت پس از فاز ۰ (2026-10-11) |
+|---|---|---|---|---|
+| A-01 | MVP تک‌کاربره است | نیاز به اشتراک با همسر یا تیم | — (پرسش ۱) | باز (پرسش ۱) |
+| A-02 | کاربر سرور همیشه‌روشن با دامنه و HTTPS دارد | فقط شبکهٔ خانگی بدون IP عمومی ← Tunnel لازم است | فاز ۲ | آزموده نشد (فاز ۲) |
+| A-03 | کش و صف آفلاین tududi برای استفادهٔ روزمره کافی است | بیش از ۱ ساعت در روز کار آفلاین طولانی ← S4 | ۴ هفته استفاده | ❌ **رد شد** (G5): صف آفلاین بدنه را خالی ذخیره کرد (`body: ""` در 2 از 2 ورودی)؛ پاسخ گم‌شده برای 1 کنش 2 سطر ساخت؛ iOS مسیر replay ندارد. رفع در فاز ۳ Must است. |
+| A-04 | upstream tududi فعال و MIT می‌ماند | آرشیو یا تغییر لایسنس | ماهانه | ✅ برقرار: v1.9.0 در 2026-10-10 منتشر شد؛ لایسنس MIT |
+| A-05 | VPS با ۲ vCPU و ۲ تا ۴ GB کافی است | مصرف حافظه بیش از ۷۰٪ | فاز ۲ | آزموده نشد (فاز ۲) |
+| A-06 | ChatGPT Developer Mode با پلن کاربر در دسترس است | عدم دسترسی | G4 | ⛔ BLOCKED (G4): پلن شما نامعلوم است؛ مستند OpenAI: MCP کامل فقط Business، Enterprise و Edu؛ Pro فقط read/fetch |
+| A-07 | استفاده نکردن از برند tududi لازم یا کافی است | — | فاز ۱ | آزموده نشد (فاز ۱) |
+| A-08 | tududi در create، uid سمت‌کلاینت نمی‌پذیرد | پذیرفتن (کار کمتر) | G5 | ✅ تأیید شد (G5): `uid` ارسالی نادیده گرفته شد؛ 2 درخواست یکسان ← `201`، `201` و 2 سطر با uid متفاوت |
+| A-09 | نسخهٔ پایدار `date-fns-jalali` قابل استفاده است | فقط پیش‌انتشار ← فقط Intl و محاسبهٔ دستی | فاز ۳ | آزموده نشد (فاز ۳)؛ یادداشت G3: `Intl` با `fa` به‌تنهایی تاریخ جلالی می‌دهد |
+| A-10 | ضریب تخمین پیش‌فرض 1.3 معقول است | دادهٔ Focus واقعی | ۴ هفته پس از MVP | آزموده نشد |
+| A-11 | محور زمانی در RTL پیش‌فرض LTR باشد (عرف نمودارها) | ترجیح کاربر | فاز ۶ | آزموده نشد (فاز ۶) |
+| A-12 | ظرفیت توسعه حدود ۱۵ ساعت در هفته است | — | پرسش ۲ | باز (پرسش ۲) |
+| A-13 | `oidc-provider` بدون CIMD برای Claude و ChatGPT کافی است | الزام CIMD توسط یکی از clientها | G4 | 🟡 تأیید مستند، نه عملی (G4): Claude بدون اعلام CIMD به DCR برمی‌گردد؛ OpenAI: «DCR is still supported» |
+| A-14 | روی image tududi ابزار `wget` یا `sqlite3` برای healthcheck و بکاپ موجود است | نبود ← استفاده از `node -e` یا sidecar | فاز ۲ | ✅ تأیید شد (G1): `wget` و `sqlite3` در image هستند، `curl` نیست؛ DB در `/app/db/production.sqlite3` |
 
 ### ۲۹.۲ پرسش‌های باز (مالک: شما)
 
@@ -2287,3 +2302,4 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 | تاریخ | نسخه | تغییر |
 |---|---|---|
 | 2026-10-10 | 1.0 | نسخهٔ اول: پژوهش، تصمیم پایه (fork tududi)، معماری، MVP، نقشهٔ راه، backlog |
+| 2026-10-11 | 1.1 | نتایج فاز ۰: G1 GREEN، G2 GREEN، G3 GREEN (7.5 روز در برابر 8)، G4 YELLOW، G5 GREEN-ثبت‌شده (دستگاه‌ها BLOCKED)، G6 DRAFT. هر ۱۳ ADR Accepted. A-03 رد شد؛ A-08 و A-14 تأیید شدند؛ A-06 BLOCKED؛ A-13 فقط از مستند. تصمیم: ادامه با fork tududi؛ فاز ۳ فقط پس از فاز ۱ و ۲. شاهد: `docs/ltd/spikes/` |
