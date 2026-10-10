@@ -3279,10 +3279,17 @@
     }
   },
   "untangle": {
-    "kicker": "Untangle",
     "title": "Paste your mess.",
     "lede": "A Notes list, a screenshot, whatever you have been carrying around. Ten seconds later it is a plan.",
     "placeholder": "call landlord re deposit!!\ncrete??\ndentist\ngym x3\nmum bday 24th\nask Maria about the contract",
+    "samples": {
+      "kicker": "No list handy? Try one of these",
+      "family": "Family week",
+      "sideProject": "Side project",
+      "moving": "Moving flat",
+      "exams": "Exam season",
+      "jobHunt": "Job hunt"
+    },
     "addScreenshot": "Screenshot",
     "screenshotAttached": "Screenshot attached",
     "removeScreenshot": "Remove screenshot",

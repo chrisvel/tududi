@@ -1,15 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     ArrowPathIcon,
     CameraIcon,
     MicrophoneIcon,
-    MoonIcon,
-    SunIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { getAssetPath } from '../../config/paths';
 import {
     isUntangleAvailable,
     keepUntangled,
@@ -30,8 +27,6 @@ import {
 
 interface UntanglePageProps {
     isSignedIn: boolean;
-    isDarkMode: boolean;
-    toggleDarkMode: () => void;
     onKept: (result: KeepResult) => void;
 }
 
@@ -87,12 +82,96 @@ const kindTint: Record<UntangleItem['kind'], string> = {
     someday: 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400',
 };
 
-const UntanglePage: React.FC<UntanglePageProps> = ({
-    isSignedIn,
-    isDarkMode,
-    toggleDarkMode,
-    onKept,
-}) => {
+// Ready-made messes for people who would rather not paste their own list
+// into a phone they are being shown. Deliberately scrappy, like real notes.
+const SAMPLES: { key: string; label: string; text: string }[] = [
+    {
+        key: 'family',
+        label: 'Family week',
+        text: [
+            'school forms by friday!!',
+            'dentist for Leo',
+            'groceries - milk eggs the good bread',
+            'call mum back',
+            'pay nursery',
+            'birthday party sat 3pm bring gift',
+            'gym (ha)',
+            'sort the garage someday',
+            'book summer camp',
+            'car service light is on',
+            'date night??',
+            'return library books',
+        ].join('\n'),
+    },
+    {
+        key: 'sideProject',
+        label: 'Side project',
+        text: [
+            'launch the app finally',
+            '- landing page',
+            '- fix login bug',
+            '- app store screenshots',
+            'reply to Dan re pricing',
+            'newsletter draft',
+            'taxes deadline oct 31',
+            'read that marketing book',
+            'post updates 3x week',
+            'find a designer',
+            'renew domain',
+        ].join('\n'),
+    },
+    {
+        key: 'moving',
+        label: 'Moving flat',
+        text: [
+            'moving nov 1!!!',
+            'notice to landlord',
+            'movers quotes x3',
+            'change address bank post electricity',
+            'pack books',
+            'sell the sofa',
+            'cleaning for deposit',
+            'internet at new place',
+            'ask Sara about the van',
+            'find a vet nearby someday',
+        ].join('\n'),
+    },
+    {
+        key: 'exams',
+        label: 'Exam season',
+        text: [
+            'stats exam nov 12',
+            'essay draft due mon',
+            'group project meet thu',
+            'ask prof about extension',
+            'gym 3x',
+            'laundry',
+            'call home sunday',
+            'part time job application',
+            'read chapters 4-6',
+            'buy printer ink',
+            'sleep more lol',
+        ].join('\n'),
+    },
+    {
+        key: 'jobHunt',
+        label: 'Job hunt',
+        text: [
+            'update cv',
+            'new linkedin photo',
+            'apply: acme, globex, initech',
+            'message Priya re referral',
+            'interview tue 10am prep!!',
+            'portfolio case study',
+            'learn sql basics',
+            'follow up with the recruiter from last week',
+            'invoice for the side gig',
+            'run 2x week',
+        ].join('\n'),
+    },
+];
+
+const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
 
@@ -277,56 +356,19 @@ const UntanglePage: React.FC<UntanglePageProps> = ({
             className="min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100"
             data-testid="untangle-page"
         >
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow-sm">
-                <div className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
-                    <Link to={isSignedIn ? '/today' : '/login'}>
-                        <img
-                            src={getAssetPath(
-                                isDarkMode
-                                    ? 'wide-logo-light.png'
-                                    : 'wide-logo-dark.png'
-                            )}
-                            alt="tududi"
-                            className="h-9 w-auto"
-                        />
-                    </Link>
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        <button
-                            type="button"
-                            onClick={toggleDarkMode}
-                            className="p-2 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none"
-                            aria-label={t(
-                                'publicNote.toggleTheme',
-                                'Toggle dark mode'
-                            )}
-                        >
-                            {isDarkMode ? (
-                                <SunIcon className="h-5 w-5" />
-                            ) : (
-                                <MoonIcon className="h-5 w-5" />
-                            )}
-                        </button>
-                        {isSignedIn ? (
-                            <Link
-                                to="/today"
-                                className="px-4 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
-                            >
-                                {t('publicNote.openApp', 'Open tududi')}
-                            </Link>
-                        ) : (
-                            <Link
-                                to="/login"
-                                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"
-                            >
-                                {t('auth.signin', 'Sign In')}
-                            </Link>
-                        )}
-                    </div>
-                </div>
-            </nav>
-
-            <main className="pt-20 pb-28 px-4 sm:px-6 lg:px-8">
+            <main className="pt-10 pb-28 px-4 sm:px-6 lg:px-8">
                 <div className="mx-auto w-full max-w-2xl">
+                    <header
+                        className="mb-8 text-center"
+                        data-testid="untangle-logo"
+                    >
+                        <span className="text-5xl font-bold tracking-tight sm:text-6xl">
+                            untangle
+                            <span className="text-blue-600 dark:text-blue-400">
+                                .me
+                            </span>
+                        </span>
+                    </header>
                     {stage === 'checking' && (
                         <p className="text-center text-gray-500 dark:text-gray-400">
                             {t('untangle.loading', 'One moment...')}
@@ -352,10 +394,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({
 
                     {stage === 'input' && (
                         <section data-testid="untangle-input">
-                            <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                                {t('untangle.kicker', 'Untangle')}
-                            </p>
-                            <h1 className="mt-1 text-3xl font-light sm:text-4xl">
+                            <h1 className="text-3xl font-light sm:text-4xl">
                                 {t('untangle.title', 'Paste your mess.')}
                             </h1>
                             <p className="mt-3 text-gray-600 dark:text-gray-400">
@@ -365,7 +404,36 @@ const UntanglePage: React.FC<UntanglePageProps> = ({
                                 )}
                             </p>
 
-                            <div className="mt-6 rounded-2xl bg-white p-3 shadow-sm dark:bg-gray-800">
+                            <div className="mt-5">
+                                <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                    {t(
+                                        'untangle.samples.kicker',
+                                        'No list handy? Try one of these'
+                                    )}
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {SAMPLES.map((sample) => (
+                                        <button
+                                            key={sample.key}
+                                            type="button"
+                                            onClick={() => {
+                                                setText(sample.text);
+                                                setImage(null);
+                                                setError(null);
+                                            }}
+                                            className="rounded-full bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm hover:bg-blue-50 hover:text-blue-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                                            data-testid={`untangle-sample-${sample.key}`}
+                                        >
+                                            {t(
+                                                `untangle.samples.${sample.key}`,
+                                                sample.label
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="mt-4 rounded-2xl bg-white p-3 shadow-sm dark:bg-gray-800">
                                 <textarea
                                     id="untangle-text"
                                     value={text}

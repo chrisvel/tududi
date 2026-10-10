@@ -422,8 +422,6 @@ const App: React.FC = () => {
                     element={
                         <UntanglePage
                             isSignedIn={!!currentUser}
-                            isDarkMode={isDarkMode}
-                            toggleDarkMode={toggleDarkMode}
                             onKept={finishUntangle}
                         />
                     }

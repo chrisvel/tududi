@@ -104,6 +104,8 @@ Tasks carry no `example_of` mark: they are the person's real items.
 - `App.tsx`: `finishUntangle` (updates the current user and opens Today) and the effect that applies a pending token after login, holding the welcome redirect while it runs.
 - `Register.tsx` shows a one-line notice when a plan is waiting in the browser.
 
+Five sample lists (family week, side project, moving flat, exam season, job hunt) sit above the box for people who would rather not paste their own list on a phone they are being shown; a tap fills the box and the rest is the same.
+
 Screenshots are downscaled to 1600px and sent as JPEG. Speech uses the browser's `SpeechRecognition` where available (Chrome, Safari); the button is hidden elsewhere.
 
 ---

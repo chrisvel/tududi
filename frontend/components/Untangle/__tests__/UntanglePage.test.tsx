@@ -92,12 +92,7 @@ const result = {
 const renderPage = (isSignedIn = false, onKept = jest.fn()) =>
     render(
         <MemoryRouter>
-            <UntanglePage
-                isSignedIn={isSignedIn}
-                isDarkMode={false}
-                toggleDarkMode={jest.fn()}
-                onKept={onKept}
-            />
+            <UntanglePage isSignedIn={isSignedIn} onKept={onKept} />
         </MemoryRouter>
     );
 
@@ -119,6 +114,14 @@ describe('UntanglePage', () => {
         ).toBeInTheDocument();
     });
 
+    it('wears its own name, not the app navbar', async () => {
+        renderPage();
+        expect(await screen.findByTestId('untangle-logo')).toHaveTextContent(
+            'untangle.me'
+        );
+        expect(screen.queryByAltText('tududi')).not.toBeInTheDocument();
+    });
+
     it('needs something pasted before it runs', async () => {
         renderPage();
         const run = await screen.findByTestId('untangle-run');
@@ -127,6 +130,17 @@ describe('UntanglePage', () => {
             target: { value: 'gym x3' },
         });
         expect(run).toBeEnabled();
+    });
+
+    it('fills the box with a sample list for people who keep their own private', async () => {
+        renderPage();
+        fireEvent.click(await screen.findByTestId('untangle-sample-moving'));
+        const box = screen.getByTestId(
+            'untangle-textarea'
+        ) as HTMLTextAreaElement;
+        expect(box.value).toContain('moving nov 1!!!');
+        expect(box.value).toContain('ask Sara about the van');
+        expect(screen.getByTestId('untangle-run')).toBeEnabled();
     });
 
     it('shows the structure, the week and the question after a parse', async () => {
