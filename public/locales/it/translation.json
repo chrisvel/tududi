@@ -2980,5 +2980,22 @@
     "missingBody": "Potrebbe essere stato spostato o rimosso. Gli altri articoli sono a un clic.",
     "allPosts": "Tutti gli articoli",
     "morePosts": "Altro dal blog"
+  },
+  "focus": {
+    "chip": "Focus",
+    "title": "Concentrati su",
+    "activeTitle": "Focus: {{label}}",
+    "area": "Area",
+    "anyArea": "Qualsiasi area",
+    "project": "Progetto",
+    "anyProject": "Qualsiasi progetto",
+    "tags": "Tag",
+    "hint": "Oggi, In arrivo, Attività, Progetti, Note e la ricerca mostrano solo questo. Le nuove attività ricevono il progetto e i tag.",
+    "apply": "Applica",
+    "clear": "Rimuovi",
+    "clearFocus": "Rimuovi focus",
+    "locked": "Impostato dal tuo focus. Rimuovilo dal chip nella barra in alto.",
+    "emptyHint": "Mostra solo {{label}}",
+    "saveError": "Impossibile salvare il focus."
   }
 }

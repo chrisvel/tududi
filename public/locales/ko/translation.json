@@ -2978,5 +2978,22 @@
     "missingBody": "옮겨졌거나 내려갔을 수 있습니다. 다른 글은 바로 볼 수 있습니다.",
     "allPosts": "모든 글",
     "morePosts": "블로그의 다른 글"
+  },
+  "focus": {
+    "chip": "포커스",
+    "title": "포커스 대상",
+    "activeTitle": "포커스: {{label}}",
+    "area": "영역",
+    "anyArea": "모든 영역",
+    "project": "프로젝트",
+    "anyProject": "모든 프로젝트",
+    "tags": "태그",
+    "hint": "오늘, 예정, 작업, 프로젝트, 노트, 검색에 이것만 표시됩니다. 새 작업에는 이 프로젝트와 태그가 붙습니다.",
+    "apply": "적용",
+    "clear": "해제",
+    "clearFocus": "포커스 해제",
+    "locked": "포커스로 설정되었습니다. 상단 바의 칩에서 해제하세요.",
+    "emptyHint": "{{label}}만 표시 중",
+    "saveError": "포커스를 저장할 수 없습니다."
   }
 }

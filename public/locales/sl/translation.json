@@ -2985,5 +2985,22 @@
     "missingBody": "Morda je bila premaknjena ali odstranjena. Druge objave so le en klik stran.",
     "allPosts": "Vse objave",
     "morePosts": "Več z bloga"
+  },
+  "focus": {
+    "chip": "Fokus",
+    "title": "Osredotoči se na",
+    "activeTitle": "Fokus: {{label}}",
+    "area": "Področje",
+    "anyArea": "Katero koli področje",
+    "project": "Projekt",
+    "anyProject": "Kateri koli projekt",
+    "tags": "Oznake",
+    "hint": "Danes, Prihajajoče, Naloge, Projekti, Zapiski in iskanje prikazujejo samo to. Nove naloge dobijo projekt in oznake.",
+    "apply": "Uporabi",
+    "clear": "Počisti",
+    "clearFocus": "Počisti fokus",
+    "locked": "Nastavljeno z vašim fokusom. Počistite ga v čipu v zgornji vrstici.",
+    "emptyHint": "Prikazano samo {{label}}",
+    "saveError": "Fokusa ni bilo mogoče shraniti."
   }
 }

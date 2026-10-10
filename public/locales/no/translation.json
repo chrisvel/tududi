@@ -2984,5 +2984,22 @@
     "missingBody": "Det kan ha blitt flyttet eller fjernet. De andre innleggene er ett klikk unna.",
     "allPosts": "Alle innlegg",
     "morePosts": "Mer fra bloggen"
+  },
+  "focus": {
+    "chip": "Fokus",
+    "title": "Fokuser på",
+    "activeTitle": "Fokus: {{label}}",
+    "area": "Område",
+    "anyArea": "Alle områder",
+    "project": "Prosjekt",
+    "anyProject": "Alle prosjekter",
+    "tags": "Tagger",
+    "hint": "I dag, Kommende, Oppgaver, Prosjekter, Notater og søk viser bare dette. Nye oppgaver får prosjektet og taggene.",
+    "apply": "Bruk",
+    "clear": "Fjern",
+    "clearFocus": "Fjern fokus",
+    "locked": "Satt av fokuset ditt. Fjern det fra brikken i topplinjen.",
+    "emptyHint": "Viser bare {{label}}",
+    "saveError": "Fokuset kunne ikke lagres."
   }
 }

@@ -2979,5 +2979,22 @@
     "missingBody": "Det kan ha flyttats eller tagits bort. De andra inläggen är ett klick bort.",
     "allPosts": "Alla inlägg",
     "morePosts": "Mer från bloggen"
+  },
+  "focus": {
+    "chip": "Fokus",
+    "title": "Fokusera på",
+    "activeTitle": "Fokus: {{label}}",
+    "area": "Område",
+    "anyArea": "Alla områden",
+    "project": "Projekt",
+    "anyProject": "Alla projekt",
+    "tags": "Taggar",
+    "hint": "Idag, Kommande, Uppgifter, Projekt, Anteckningar och sök visar bara detta. Nya uppgifter får projektet och taggarna.",
+    "apply": "Använd",
+    "clear": "Rensa",
+    "clearFocus": "Rensa fokus",
+    "locked": "Satt av ditt fokus. Rensa det från chippet i övre fältet.",
+    "emptyHint": "Visar bara {{label}}",
+    "saveError": "Fokuset kunde inte sparas."
   }
 }

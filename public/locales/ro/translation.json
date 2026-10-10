@@ -2984,5 +2984,22 @@
     "missingBody": "Poate a fost mutat sau retras. Celelalte articole sunt la un clic distanță.",
     "allPosts": "Toate articolele",
     "morePosts": "Mai multe de pe blog"
+  },
+  "focus": {
+    "chip": "Focus",
+    "title": "Concentrare pe",
+    "activeTitle": "Focus: {{label}}",
+    "area": "Domeniu",
+    "anyArea": "Orice domeniu",
+    "project": "Proiect",
+    "anyProject": "Orice proiect",
+    "tags": "Etichete",
+    "hint": "Azi, Viitoare, Sarcini, Proiecte, Notițe și căutarea arată doar asta. Sarcinile noi primesc proiectul și etichetele.",
+    "apply": "Aplică",
+    "clear": "Șterge",
+    "clearFocus": "Șterge focusul",
+    "locked": "Setat de focusul tău. Șterge-l din cipul din bara de sus.",
+    "emptyHint": "Se afișează doar {{label}}",
+    "saveError": "Focusul nu a putut fi salvat."
   }
 }

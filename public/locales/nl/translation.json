@@ -2979,5 +2979,22 @@
     "missingBody": "Het is misschien verplaatst of verwijderd. De andere berichten zijn één klik verwijderd.",
     "allPosts": "Alle berichten",
     "morePosts": "Meer van de blog"
+  },
+  "focus": {
+    "chip": "Focus",
+    "title": "Focus op",
+    "activeTitle": "Focus: {{label}}",
+    "area": "Gebied",
+    "anyArea": "Elk gebied",
+    "project": "Project",
+    "anyProject": "Elk project",
+    "tags": "Tags",
+    "hint": "Vandaag, Binnenkort, Taken, Projecten, Notities en zoeken tonen alleen dit. Nieuwe taken krijgen het project en de tags.",
+    "apply": "Toepassen",
+    "clear": "Wissen",
+    "clearFocus": "Focus wissen",
+    "locked": "Ingesteld door je focus. Wis hem via de chip in de bovenbalk.",
+    "emptyHint": "Toont alleen {{label}}",
+    "saveError": "De focus kon niet worden opgeslagen."
   }
 }

@@ -2979,5 +2979,22 @@
     "missingBody": "Taşınmış ya da kaldırılmış olabilir. Diğer yazılar bir tık uzakta.",
     "allPosts": "Tüm yazılar",
     "morePosts": "Blogdan daha fazlası"
+  },
+  "focus": {
+    "chip": "Odak",
+    "title": "Odaklan",
+    "activeTitle": "Odak: {{label}}",
+    "area": "Alan",
+    "anyArea": "Herhangi bir alan",
+    "project": "Proje",
+    "anyProject": "Herhangi bir proje",
+    "tags": "Etiketler",
+    "hint": "Bugün, Yaklaşan, Görevler, Projeler, Notlar ve arama yalnızca bunu gösterir. Yeni görevler projeyi ve etiketleri alır.",
+    "apply": "Uygula",
+    "clear": "Temizle",
+    "clearFocus": "Odağı temizle",
+    "locked": "Odağınız tarafından ayarlandı. Üst çubuktaki çipten temizleyin.",
+    "emptyHint": "Yalnızca {{label}} gösteriliyor",
+    "saveError": "Odak kaydedilemedi."
   }
 }
