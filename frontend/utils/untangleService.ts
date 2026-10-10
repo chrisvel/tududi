@@ -1,5 +1,9 @@
 import { getApiPath } from '../config/paths';
-import { getPostHeadersWithCsrf, handleAuthResponse } from './authUtils';
+import {
+    getPostHeaders,
+    getPostHeadersWithCsrf,
+    handleAuthResponse,
+} from './authUtils';
 
 // The public Untangle page: parse is open to anyone, keep needs a session.
 // The parsed result travels inside a signed token so the browser can hold
@@ -97,18 +101,26 @@ export const isUntangleAvailable = async (): Promise<boolean> => {
     }
 };
 
-// Plain fetch on purpose: the shared helpers bounce a 401 to the login
-// page, and this call has no session to lose.
+// A signed-in browser carries a session, and the server then expects the
+// CSRF token on every POST; a stranger has no session and the token is
+// optional. So ask for one and carry on without it when that fails.
+const parseHeaders = async (): Promise<Record<string, string>> => {
+    try {
+        return await getPostHeadersWithCsrf();
+    } catch {
+        return getPostHeaders();
+    }
+};
+
+// Plain fetch on purpose: the shared response helpers bounce a 401 to the
+// login page, and this call has no session to lose.
 export const untangle = async (
     payload: UntangleRequest
 ): Promise<UntangleResponse> => {
     const res = await fetch(getApiPath('untangle/parse'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await parseHeaders(),
         body: JSON.stringify(payload),
     });
     if (!res.ok) {

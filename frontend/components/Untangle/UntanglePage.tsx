@@ -34,6 +34,10 @@ type Stage = 'checking' | 'unavailable' | 'input' | 'busy' | 'result';
 
 const MAX_IMAGE_EDGE = 1600;
 
+// Lora is the serif the app already ships for notes (see public/index.html);
+// the wordmark and the headline borrow it so the page reads as its own thing.
+const WORDMARK_FONT = "'Lora', Georgia, 'Times New Roman', serif";
+
 // Phone screenshots are big; the model reads them fine at 1600px, and the
 // request stays small. Always a JPEG afterwards.
 async function fileToDataUrl(file: File): Promise<string> {
@@ -356,13 +360,22 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
             className="min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100"
             data-testid="untangle-page"
         >
-            <main className="pt-10 pb-28 px-4 sm:px-6 lg:px-8">
+            <main
+                className={`px-4 pb-28 sm:px-6 lg:px-8 ${
+                    stage === 'result'
+                        ? 'pt-10'
+                        : 'flex min-h-screen items-center justify-center py-10'
+                }`}
+            >
                 <div className="mx-auto w-full max-w-2xl">
                     <header
                         className="mb-8 text-center"
                         data-testid="untangle-logo"
                     >
-                        <span className="text-5xl font-bold tracking-tight sm:text-6xl">
+                        <span
+                            className="text-6xl font-bold leading-none tracking-tight sm:text-8xl"
+                            style={{ fontFamily: WORDMARK_FONT }}
+                        >
                             untangle
                             <span className="text-blue-600 dark:text-blue-400">
                                 .me
@@ -394,7 +407,10 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
 
                     {stage === 'input' && (
                         <section data-testid="untangle-input">
-                            <h1 className="text-3xl font-light sm:text-4xl">
+                            <h1
+                                className="text-3xl sm:text-4xl"
+                                style={{ fontFamily: WORDMARK_FONT }}
+                            >
                                 {t('untangle.title', 'Paste your mess.')}
                             </h1>
                             <p className="mt-3 text-gray-600 dark:text-gray-400">
@@ -439,12 +455,12 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                                     value={text}
                                     onChange={(e) => setText(e.target.value)}
                                     onPaste={handlePaste}
-                                    rows={8}
+                                    rows={12}
                                     placeholder={t(
                                         'untangle.placeholder',
                                         'call landlord re deposit!!\ncrete??\ndentist\ngym x3\nmum bday 24th\nask Maria about the contract'
                                     )}
-                                    className="w-full resize-y rounded-xl bg-gray-50 px-4 py-3 text-base leading-relaxed text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500"
+                                    className="w-full resize-y rounded-xl bg-gray-50 px-4 py-3 text-lg leading-relaxed text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500"
                                     data-testid="untangle-textarea"
                                 />
                                 {image && (
