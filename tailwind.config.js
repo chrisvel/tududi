@@ -30,6 +30,7 @@ module.exports = {
             fontFamily: {
                 // The Untangle page's pair, self-hosted (see public/index.html)
                 display: ['Fraunces', 'Lora', 'Georgia', 'serif'],
+                hand: ['Caveat', '"Comic Sans MS"', 'cursive'],
                 ui: [
                     '"Instrument Sans"',
                     'ui-sans-serif',

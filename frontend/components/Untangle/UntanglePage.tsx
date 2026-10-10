@@ -104,15 +104,21 @@ const UntanglingLine: React.FC = () => (
 );
 
 const Wordmark: React.FC = () => (
-    <header className="mb-8 text-center" data-testid="untangle-logo">
-        <span
-            className="text-[17vw] font-bold leading-none tracking-tighter sm:text-8xl md:text-9xl"
-            style={{
-                fontFamily: 'Arial, Helvetica, "Instrument Sans", sans-serif',
-            }}
-        >
-            untangle
-            <span className="text-brand dark:text-brand-300">.my</span>
+    <header className="mb-10 text-center" data-testid="untangle-logo">
+        <span className="inline-flex items-baseline justify-center">
+            <span
+                className="text-[15vw] leading-none tracking-[-0.045em] sm:text-7xl md:text-8xl"
+                style={{
+                    fontFamily:
+                        'Arial, "Helvetica Neue", Helvetica, sans-serif',
+                    fontWeight: 700,
+                }}
+            >
+                untangle
+            </span>
+            <span className="font-hand ml-0.5 inline-block -rotate-3 text-[17vw] font-semibold leading-none text-brand sm:text-8xl md:text-[6.75rem] dark:text-brand-300">
+                .my
+            </span>
         </span>
     </header>
 );
