@@ -16,8 +16,8 @@ interface FilterDropdownProps {
     // Takes its share of a row on phones, cutting long labels short; a
     // fixed width from sm up. The menu still shows labels in full.
     fill?: boolean;
-    // Fills its container at every width, menu included (for forms and
-    // popovers)
+    // Fills its container at every width, menu included, and keeps a long
+    // menu scrollable (for forms and popovers)
     fullWidth?: boolean;
     className?: string;
 }
@@ -125,7 +125,9 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                     className={`origin-top-right absolute right-0 mt-1 ${fill ? 'min-w-full' : ''} ${fullWidth ? 'left-0 w-full' : !autoWidth ? (isMobile ? 'w-36' : 'w-40') : ''} rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50`}
                     style={autoWidth && !fullWidth ? dynamicStyles : {}}
                 >
-                    <div className="p-1">
+                    <div
+                        className={`p-1${fullWidth ? ' max-h-60 overflow-y-auto' : ''}`}
+                    >
                         {options.map((option, index) =>
                             option.value === 'divider' ? (
                                 <div
