@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import FocusChip from '../FocusChip';
 import { useStore } from '../../../store/useStore';
 import { updateUiSettings } from '../../../utils/profileService';
@@ -81,19 +81,22 @@ describe('FocusChip', () => {
     it('saves the picked area, project and tags', async () => {
         render(<FocusChip />);
         fireEvent.click(screen.getByTestId('focus-chip'));
-        fireEvent.change(screen.getByTestId('focus-area'), {
-            target: { value: 'work' },
-        });
+        const pick = (testId: string, label: string) => {
+            const field = within(screen.getByTestId(testId));
+            fireEvent.click(field.getAllByRole('button')[0]);
+            fireEvent.click(field.getByRole('button', { name: label }));
+        };
+        pick('focus-area', 'Work');
         // Only projects of the chosen area are offered
+        const projectField = within(screen.getByTestId('focus-project'));
+        fireEvent.click(projectField.getAllByRole('button')[0]);
         expect(
-            Array.from(
-                (screen.getByTestId('focus-project') as HTMLSelectElement)
-                    .options
-            ).map((option) => option.value)
-        ).toEqual(['', 'launch']);
-        fireEvent.change(screen.getByTestId('focus-project'), {
-            target: { value: 'launch' },
-        });
+            projectField
+                .getAllByRole('button')
+                .slice(1)
+                .map((button) => button.textContent)
+        ).toEqual(['Any project', 'Launch']);
+        fireEvent.click(projectField.getByRole('button', { name: 'Launch' }));
         fireEvent.change(screen.getByTestId('focus-tags'), {
             target: { value: 'urgent' },
         });

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import TagInput from '../Tag/TagInput';
+import FilterDropdown from '../Shared/FilterDropdown';
 import { applyFocus, Focus } from '../../utils/focus';
 import type { Area } from '../../entities/Area';
 import type { Project } from '../../entities/Project';
@@ -18,8 +19,6 @@ interface FocusPopoverProps {
     onClose: () => void;
 }
 
-const FIELD =
-    'w-full rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:bg-gray-800 dark:text-gray-100';
 const LABEL =
     'mb-1 block text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400';
 
@@ -100,46 +99,46 @@ const FocusPopover: React.FC<FocusPopoverProps> = ({ focus, onClose }) => {
             </div>
             <div className="space-y-3">
                 <div>
-                    <label className={LABEL} htmlFor="focus-area">
-                        {t('focus.area', 'Area')}
-                    </label>
-                    <select
-                        id="focus-area"
-                        className={FIELD}
-                        value={areaUid}
-                        onChange={(event) => changeArea(event.target.value)}
-                        data-testid="focus-area"
-                    >
-                        <option value="">
-                            {t('focus.anyArea', 'Any area')}
-                        </option>
-                        {areas.map((area) => (
-                            <option key={area.uid} value={area.uid}>
-                                {area.name}
-                            </option>
-                        ))}
-                    </select>
+                    <span className={LABEL}>{t('focus.area', 'Area')}</span>
+                    <div data-testid="focus-area">
+                        <FilterDropdown
+                            options={[
+                                {
+                                    value: '',
+                                    label: t('focus.anyArea', 'Any area'),
+                                },
+                                ...areas.map((area) => ({
+                                    value: area.uid,
+                                    label: area.name,
+                                })),
+                            ]}
+                            value={areaUid}
+                            onChange={changeArea}
+                            fullWidth
+                        />
+                    </div>
                 </div>
                 <div>
-                    <label className={LABEL} htmlFor="focus-project">
+                    <span className={LABEL}>
                         {t('focus.project', 'Project')}
-                    </label>
-                    <select
-                        id="focus-project"
-                        className={FIELD}
-                        value={projectUid}
-                        onChange={(event) => setProjectUid(event.target.value)}
-                        data-testid="focus-project"
-                    >
-                        <option value="">
-                            {t('focus.anyProject', 'Any project')}
-                        </option>
-                        {projectOptions.map((project) => (
-                            <option key={project.uid} value={project.uid}>
-                                {project.name}
-                            </option>
-                        ))}
-                    </select>
+                    </span>
+                    <div data-testid="focus-project">
+                        <FilterDropdown
+                            options={[
+                                {
+                                    value: '',
+                                    label: t('focus.anyProject', 'Any project'),
+                                },
+                                ...projectOptions.map((project) => ({
+                                    value: project.uid,
+                                    label: project.name,
+                                })),
+                            ]}
+                            value={projectUid}
+                            onChange={setProjectUid}
+                            fullWidth
+                        />
+                    </div>
                 </div>
                 <div>
                     <span className={LABEL}>{t('focus.tags', 'Tags')}</span>
