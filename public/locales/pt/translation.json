@@ -2980,5 +2980,22 @@
     "missingBody": "Pode ter sido movido ou removido. Os outros artigos estão a um clique.",
     "allPosts": "Todos os artigos",
     "morePosts": "Mais do blog"
+  },
+  "focus": {
+    "chip": "Foco",
+    "title": "Focar em",
+    "activeTitle": "Foco: {{label}}",
+    "area": "Área",
+    "anyArea": "Qualquer área",
+    "project": "Projeto",
+    "anyProject": "Qualquer projeto",
+    "tags": "Etiquetas",
+    "hint": "Hoje, Próximas, Tarefas, Projetos, Notas e a pesquisa mostram apenas isto. As novas tarefas recebem o projeto e as etiquetas.",
+    "apply": "Aplicar",
+    "clear": "Limpar",
+    "clearFocus": "Limpar foco",
+    "locked": "Definido pelo seu foco. Limpe-o no chip da barra superior.",
+    "emptyHint": "A mostrar apenas {{label}}",
+    "saveError": "Não foi possível guardar o foco."
   }
 }

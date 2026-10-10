@@ -2978,5 +2978,22 @@
     "missingBody": "Mungkin sudah dipindahkan atau dihapus. Tulisan lain hanya sekali klik.",
     "allPosts": "Semua tulisan",
     "morePosts": "Lainnya dari blog"
+  },
+  "focus": {
+    "chip": "Fokus",
+    "title": "Fokus pada",
+    "activeTitle": "Fokus: {{label}}",
+    "area": "Area",
+    "anyArea": "Semua area",
+    "project": "Proyek",
+    "anyProject": "Semua proyek",
+    "tags": "Tag",
+    "hint": "Hari Ini, Mendatang, Tugas, Proyek, Catatan, dan pencarian hanya menampilkan ini. Tugas baru mendapatkan proyek dan tag tersebut.",
+    "apply": "Terapkan",
+    "clear": "Hapus",
+    "clearFocus": "Hapus fokus",
+    "locked": "Diatur oleh fokus Anda. Hapus dari chip di bilah atas.",
+    "emptyHint": "Hanya menampilkan {{label}}",
+    "saveError": "Fokus tidak dapat disimpan."
   }
 }

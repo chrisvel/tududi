@@ -2997,5 +2997,22 @@
         "sending": "Odosiela sa...",
         "sent": "Ďakujeme! Vaša spätná väzba bola odoslaná.",
         "failed": "Spätnú väzbu sa nepodarilo odoslať"
+    },
+    "focus": {
+        "chip": "Fokus",
+        "title": "Zamerať sa na",
+        "activeTitle": "Fokus: {{label}}",
+        "area": "Oblasť",
+        "anyArea": "Ľubovoľná oblasť",
+        "project": "Projekt",
+        "anyProject": "Ľubovoľný projekt",
+        "tags": "Značky",
+        "hint": "Dnes, Nadchádzajúce, Úlohy, Projekty, Poznámky a vyhľadávanie zobrazujú len toto. Nové úlohy dostanú projekt a značky.",
+        "apply": "Použiť",
+        "clear": "Zrušiť",
+        "clearFocus": "Zrušiť fokus",
+        "locked": "Nastavené vaším fokusom. Zrušte ho v čipe na hornej lište.",
+        "emptyHint": "Zobrazuje sa len {{label}}",
+        "saveError": "Fokus sa nepodarilo uložiť."
     }
 }

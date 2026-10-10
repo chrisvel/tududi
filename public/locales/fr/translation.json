@@ -2980,5 +2980,22 @@
     "missingBody": "Il a peut-être été déplacé ou retiré. Les autres articles sont à un clic.",
     "allPosts": "Tous les articles",
     "morePosts": "Plus sur le blog"
+  },
+  "focus": {
+    "chip": "Focus",
+    "title": "Se concentrer sur",
+    "activeTitle": "Focus : {{label}}",
+    "area": "Domaine",
+    "anyArea": "Tous les domaines",
+    "project": "Projet",
+    "anyProject": "Tous les projets",
+    "tags": "Étiquettes",
+    "hint": "Aujourd'hui, À venir, Tâches, Projets, Notes et la recherche n'affichent que cela. Les nouvelles tâches reçoivent le projet et les étiquettes.",
+    "apply": "Appliquer",
+    "clear": "Effacer",
+    "clearFocus": "Effacer le focus",
+    "locked": "Défini par votre focus. Effacez-le depuis la puce de la barre du haut.",
+    "emptyHint": "Affiche uniquement {{label}}",
+    "saveError": "Impossible d'enregistrer le focus."
   }
 }
