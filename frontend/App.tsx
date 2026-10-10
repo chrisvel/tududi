@@ -72,12 +72,18 @@ import {
     clearSharedText,
     hasPendingSharedText,
 } from './utils/shareTargetService';
+import {
+    clearPendingUntangle,
+    readPendingUntangle,
+} from './utils/untangleService';
+import type { KeepResult } from './utils/untangleService';
 const PublicNotePage = lazy(
     () => import('./components/PublicNote/PublicNotePage')
 );
 const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
 const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
 const Welcome = lazy(() => import('./components/Onboarding/Welcome'));
+const UntanglePage = lazy(() => import('./components/Untangle/UntanglePage'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 // Declared at module scope: the users page switches tabs through the query
@@ -242,7 +248,9 @@ const App: React.FC = () => {
     }, [currentUser, location.pathname, navigate]);
 
     // The welcome page is done with: Today opens.
-    const finishWelcome = (result: StarterResult) => {
+    const finishWelcome = (
+        result: Pick<StarterResult, 'onboarding_starter' | 'onboarded_at'>
+    ) => {
         const user = currentUser
             ? {
                   ...currentUser,
@@ -254,6 +262,22 @@ const App: React.FC = () => {
         setCurrentUser(user);
         navigate('/today', { replace: true });
     };
+
+    // "Keep it" on the Untangle page wrote the plan into the account, which
+    // also counts as the welcome being seen.
+    const finishUntangle = (result: KeepResult) => {
+        clearPendingUntangle();
+        finishWelcome(result);
+    };
+
+    // A list parked in this browser before sign-up: the Untangle page
+    // picks it up and runs it as the account's free untangle.
+    useEffect(() => {
+        if (!currentUser) return;
+        if (location.pathname === '/untangled-my') return;
+        if (!readPendingUntangle()) return;
+        navigate('/untangled-my', { replace: true });
+    }, [currentUser, location.pathname, navigate]);
 
     // The Inbox keeps offering a claimed share while the user stays on it (the
     // page remounts whenever Layout shows its first-load spinner), so the claim
@@ -374,6 +398,21 @@ const App: React.FC = () => {
                             toggleDarkMode={toggleDarkMode}
                         />
                     }
+                />
+                {/* Untangle: paste a messy list, see it organized, keep it.
+                    Public, outside the app layout, signed in or not. */}
+                <Route
+                    path="/untangled-my"
+                    element={
+                        <UntanglePage
+                            isSignedIn={!!currentUser}
+                            onKept={finishUntangle}
+                        />
+                    }
+                />
+                <Route
+                    path="/untangle"
+                    element={<Navigate to="/untangled-my" replace />}
                 />
                 {currentUser ? (
                     <>

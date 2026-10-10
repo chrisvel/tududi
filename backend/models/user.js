@@ -301,6 +301,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+            untangle_free_key: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             email_verification_token: {
                 type: DataTypes.STRING,
                 allowNull: true,

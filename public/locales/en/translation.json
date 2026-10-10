@@ -3277,5 +3277,105 @@
       "letsStart": "I'm done, let's start",
       "settingUp": "Setting up..."
     }
+  },
+  "untangle": {
+    "title": "Paste your mess.",
+    "lede": "Try a sample and watch it turn into a plan. Then paste your own, or upload a photo of your handwritten notes: a free tududi account untangles it for you.",
+    "placeholder": "call landlord re deposit!!\ncrete??\ndentist\ngym x3\nmum bday 24th\nask Maria about the contract",
+    "samples": {
+      "kicker": "No list handy? Try one of these",
+      "family": "Family week",
+      "sideProject": "Side project",
+      "moving": "Moving flat",
+      "exams": "Exam season",
+      "jobHunt": "Job hunt"
+    },
+    "addScreenshot": "Upload handwritten notes",
+    "screenshotAttached": "Notes attached",
+    "removeScreenshot": "Remove the notes",
+    "talk": "Talk",
+    "listening": "Listening, tap to stop",
+    "run": "Untangle it",
+    "privacy": "Nothing is stored until you choose to keep it.",
+    "loading": "One moment...",
+    "unavailableTitle": "Untangle is not available here",
+    "unavailableBody": "This instance has it switched off.",
+    "busy": {
+      "reading": "Reading every line",
+      "sorting": "Sorting it into areas",
+      "people": "Spotting people and habits",
+      "dates": "Working out the dates",
+      "today": "Picking one thing for today"
+    },
+    "today": "Today",
+    "drop": "Drop for now",
+    "oneQuestion": "One question",
+    "fewQuestions": "A few questions",
+    "updatePlan": "Update the plan",
+    "week": "Your week",
+    "goal": "Goal",
+    "project": "project",
+    "kind": {
+      "waiting": "waiting",
+      "waitingFor": "waiting for {{name}}",
+      "habit": "habit, {{n}}x {{period}}",
+      "someday": "someday"
+    },
+    "startOver": "Start over",
+    "keep": "Keep it",
+    "keeping": "Keeping...",
+    "signUpToKeep": "Your list is saved on this device. Sign up free, verify your email, and it gets untangled right away.",
+    "errors": {
+      "image": "Could not read that image.",
+      "generic": "Could not untangle that.",
+      "keep": "Could not keep the plan.",
+      "used": "You have used your free untangle. AI credits on a paid plan cover more."
+    },
+    "tips": "Tips",
+    "people": "People",
+    "habits": "Habits",
+    "tags": "Tags",
+    "noPeople": "Nobody else is in this list.",
+    "noHabits": "Nothing repeats yet. Add one later.",
+    "noTags": "No tags needed for this list.",
+    "waitingOn": "waiting on them",
+    "habitShort": "{{n}}x {{period}}",
+    "comingUp": "Coming up",
+    "noDates": "Nothing has a date yet.",
+    "graph": {
+      "root": "Your list",
+      "area": "Area",
+      "goal": "Goal",
+      "project": "Project",
+      "task": "Task",
+      "waiting": "Waiting for",
+      "habit": "Habit",
+      "someday": "Someday",
+      "alt": "The plan as areas, goals, projects and tasks",
+      "hint": "Hover or tap a node to follow its path"
+    },
+    "sections": {
+      "shapeEyebrow": "The shape of it",
+      "shapeTitle": "Your list as areas, goals, projects and tasks",
+      "areasEyebrow": "Areas",
+      "areasTitle": "Everything, filed where it belongs",
+      "datesEyebrow": "Dates",
+      "datesTitle": "The next seven days"
+    },
+    "personItem": "1 item",
+    "personItems": "{{count}} items",
+    "runSignUp": "Untangle it, free with an account",
+    "tryOwn": "Try your own list",
+    "ownCta": "Untangle my own list",
+    "refine": "Refine with more questions",
+    "brief": {
+      "kicker": "Your list, untangled",
+      "summary": "{{lines}} things, filed into {{areas}} areas, {{projects}} projects, {{habits}} habits and {{people}} people.",
+      "first": "Do this first",
+      "then": "Then, this week",
+      "nothingDated": "Nothing else has a date. Pick what matters when you keep it.",
+      "waiting": "Waiting on",
+      "wait": "Can wait"
+    }
   }
 }

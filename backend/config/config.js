@@ -215,6 +215,21 @@ const config = {
             : 60,
     },
 
+    // Untangle: the public page where anyone pastes a messy list and sees it
+    // organized before signing up. On by default in hosted mode only, since
+    // it is an unauthenticated LLM call; TUDUDI_UNTANGLE_ENABLED overrides
+    // either way. The daily cap bounds the whole instance's spend.
+    untangle: {
+        enabled:
+            process.env.TUDUDI_UNTANGLE_ENABLED !== undefined
+                ? process.env.TUDUDI_UNTANGLE_ENABLED === 'true'
+                : process.env.TUDUDI_HOSTED_MODE === 'true',
+        dailyCap: process.env.TUDUDI_UNTANGLE_DAILY_CAP
+            ? parseInt(process.env.TUDUDI_UNTANGLE_DAILY_CAP, 10)
+            : 500,
+        tokenDays: 7,
+    },
+
     // Bot protection on registration, password reset and verification
     // resend (Cloudflare Turnstile). Off unless both keys are set.
     captcha: {
@@ -487,6 +502,16 @@ const config = {
                 parseInt(process.env.RATE_LIMIT_WAITLIST_WINDOW_MS) ||
                 10 * 60 * 1000, // 10 minutes
             max: parseInt(process.env.RATE_LIMIT_WAITLIST_MAX) || 5, // 5 submissions per window
+        },
+
+        // Untangle parses per IP. Each one is an LLM call made for a
+        // stranger, so the window is generous for a person trying twice
+        // and tight for a script.
+        untangle: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_UNTANGLE_WINDOW_MS) ||
+                60 * 60 * 1000, // 1 hour
+            max: parseInt(process.env.RATE_LIMIT_UNTANGLE_MAX) || 8,
         },
     },
 };

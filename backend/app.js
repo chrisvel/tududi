@@ -390,6 +390,7 @@ const authModule = require('./modules/auth');
 const backupModule = require('./modules/backup');
 const featureFlagsModule = require('./modules/feature-flags');
 const demoModule = require('./modules/demo');
+const untangleModule = require('./modules/untangle');
 const habitsModule = require('./modules/habits');
 const inboxModule = require('./modules/inbox');
 const notesModule = require('./modules/notes');
@@ -504,6 +505,8 @@ const registerApiRoutes = (basePath) => {
     // Public note links: reachable without signing in
     app.use(basePath, notesModule.publicRoutes);
     app.use(basePath, blogModule.routes);
+    // Untangle: anyone can paste a list and see it organized
+    app.use(basePath, untangleModule.publicRoutes);
 
     app.use(basePath, requireAuth);
     // Instances that sell access close everything past this point until the
@@ -520,6 +523,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, goalsModule.routes);
     app.use(basePath, dailyPlanModule.routes);
     app.use(basePath, onboardingModule.routes);
+    app.use(basePath, untangleModule.routes);
     app.use(basePath, calendarFeedsModule.routes);
     app.use(basePath, notesModule.routes);
     app.use(basePath, tagsModule.routes);
