@@ -268,6 +268,18 @@ describe('Untangle', () => {
         expect(res.body.code).toBe('AI_NO_ANSWER');
     });
 
+    it('hides provider errors behind a generic 502', async () => {
+        mockCreate.mockRejectedValue(
+            new Error('401 Incorrect API key provided: sk-secret')
+        );
+        const res = await request(app)
+            .post('/api/untangle/parse')
+            .send({ text: 'hello' });
+        expect(res.status).toBe(502);
+        expect(res.body.code).toBe('AI_UNAVAILABLE');
+        expect(JSON.stringify(res.body)).not.toContain('sk-secret');
+    });
+
     it('stops at the daily cap', async () => {
         config.untangle.dailyCap = 1;
         mockCreate.mockResolvedValue(reply(modelAnswer()));

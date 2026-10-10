@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const moment = require('moment-timezone');
 const { getConfig } = require('../../config/config');
+const { logError } = require('../../services/logService');
 const ai = require('../ai-assistant/service');
 const { languageInstruction } = require('../daily-plan/ai');
 const { getSafeTimezone } = require('../../utils/timezone-utils');
@@ -501,19 +502,31 @@ async function untangle(body) {
           ]
         : userText;
 
-    const response = await ai.callWithFallback(client, null, {
-        model: input.image ? visionModel(model) : model,
-        messages: [
-            {
-                role: 'system',
-                content: `${SYSTEM_PROMPT}${languageInstruction(input.language)}`,
-            },
-            { role: 'user', content },
-        ],
-        max_tokens: ai.getMaxTokens('LLM_MAX_TOKENS_UNTANGLE', 8000),
-        ...ai.getExtraBodyParams(),
-        response_format: ai.buildResponseFormat('untangle', SCHEMA),
-    });
+    let response;
+    try {
+        response = await ai.callWithFallback(client, null, {
+            model: input.image ? visionModel(model) : model,
+            messages: [
+                {
+                    role: 'system',
+                    content: `${SYSTEM_PROMPT}${languageInstruction(input.language)}`,
+                },
+                { role: 'user', content },
+            ],
+            max_tokens: ai.getMaxTokens('LLM_MAX_TOKENS_UNTANGLE', 8000),
+            ...ai.getExtraBodyParams(),
+            response_format: ai.buildResponseFormat('untangle', SCHEMA),
+        });
+    } catch (err) {
+        // The provider's own message can name the model, the key or the
+        // account; a stranger gets none of that.
+        logError('Untangle provider call failed:', err);
+        throw new AppError(
+            'Untangle is having trouble right now. Try again in a moment.',
+            502,
+            'AI_UNAVAILABLE'
+        );
+    }
 
     const raw = ai.extractMessageContent(response.choices?.[0]?.message);
     let parsed = {};
