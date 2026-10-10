@@ -10,6 +10,7 @@ import { Note } from '../../entities/Note';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import InboxItemAttachments from './InboxItemAttachments';
 import { useStore } from '../../store/useStore';
+import { getFocus, mergeFocusTags } from '../../utils/focus';
 import QuickCaptureInput, {
     InboxComposerFooterContext,
     QuickCaptureInputHandle,
@@ -328,6 +329,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             );
             if (matchingProject) projectUid = matchingProject.uid;
         }
+        // The Focus project fills in when the text names none
+        if (!projectUid && getFocus()?.project_uid) {
+            projectUid = getFocus()?.project_uid ?? undefined;
+        }
 
         return { sourceText, cleanedContent: cleaned, tagObjects, projectUid, projectRefsList: sourceProjectRefs, hashtagsList: sourceHashtags };
     };
@@ -351,7 +356,16 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 name: analysis?.cleaned_content || payload.cleanedContent || displayText,
                 status: 'not_started',
                 priority: null,
-                tags: payload.tagObjects,
+                tags: mergeFocusTags(
+                    payload.tagObjects.map((tag) => tag.name),
+                    getFocus()
+                ).map(
+                    (name) =>
+                        payload.tagObjects.find((tag) => tag.name === name) ??
+                        tags.find(
+                            (tag) => tag.name.toLowerCase() === name.toLowerCase()
+                        ) ?? { name }
+                ),
                 project_uid: payload.projectUid,
                 completed_at: null,
             },

@@ -35,6 +35,7 @@ import {
     draftDayWithAi,
     estimateWithAi,
 } from '../../utils/dailyPlanService';
+import { focusKey, focusScopeParams, useFocus } from '../../utils/focus';
 import {
     CalendarEvent,
     fetchCalendarEvents,
@@ -161,6 +162,8 @@ const collisionDetection: CollisionDetection = (args) => {
 
 const PlanMyDay: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const focus = useFocus();
+    const focusId = focusKey(focus);
     const navigate = useNavigate();
     const { showErrorToast, showSuccessToast } = useToast();
     const narrow = useIsNarrow();
@@ -233,9 +236,10 @@ const PlanMyDay: React.FC = () => {
         let cancelled = false;
         (async () => {
             try {
+                const scope = focusScopeParams(focus);
                 const [planResponse, candidateList] = await Promise.all([
-                    fetchDailyPlan(),
-                    fetchPlanCandidates(),
+                    fetchDailyPlan(undefined, scope),
+                    fetchPlanCandidates(undefined, scope),
                 ]);
                 if (cancelled) return;
                 setDate(planResponse.date);
@@ -256,7 +260,7 @@ const PlanMyDay: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [t]);
+    }, [t, focusId]);
 
     // Calendar feeds belong to the Calendar feature; with it off the day
     // is planned without events.
@@ -281,13 +285,13 @@ const PlanMyDay: React.FC = () => {
     useEffect(() => {
         const refresh = () => {
             if (document.visibilityState !== 'visible') return;
-            fetchPlanCandidates(suggestedLimit.current)
+            fetchPlanCandidates(suggestedLimit.current, focusScopeParams(focus))
                 .then(setCandidates)
                 .catch(() => undefined);
         };
         document.addEventListener('visibilitychange', refresh);
         return () => document.removeEventListener('visibilitychange', refresh);
-    }, []);
+    }, [focusId]);
 
     // The server keeps each feed for a while; this asks it to fetch again.
     const refreshEvents = useCallback(async () => {
@@ -539,7 +543,10 @@ const PlanMyDay: React.FC = () => {
         );
         setLoadingMore(true);
         try {
-            const list = await fetchPlanCandidates(next);
+            const list = await fetchPlanCandidates(
+                next,
+                focusScopeParams(focus)
+            );
             suggestedLimit.current = next;
             setCandidates(list);
         } catch (err) {

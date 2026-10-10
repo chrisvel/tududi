@@ -31,6 +31,8 @@ import NoteEditorView from './Note/NoteEditorView';
 import NoteCard from './Shared/NoteCard';
 import NewItemButton from './Shared/NewItemButton';
 import BlankSlate from './Shared/BlankSlate';
+import { noteMatchesFocus, useFocus } from '../utils/focus';
+import FocusEmptyHint from './Focus/FocusEmptyHint';
 
 // The editor is always live, so the user may have kept typing while a save
 // was in flight. Only take the server's identity and timestamps, never its
@@ -49,6 +51,7 @@ const mergeSavedNote = (current: Note | null, saved: Note): Note | null => {
 
 const Notes: React.FC = () => {
     const { t } = useTranslation();
+    const focus = useFocus();
     const { showSuccessToast } = useToast();
     const { uid } = useParams<{ uid?: string }>();
     const navigate = useNavigate();
@@ -362,20 +365,46 @@ const Notes: React.FC = () => {
         }
     };
 
+    // A Focus narrows the list in memory; the store keeps every note
     const sortedNotes = useMemo(
-        () => sortNotesByOrder(notes, orderBy),
-        [notes, orderBy]
+        () =>
+            sortNotesByOrder(
+                focus
+                    ? notes.filter((note) =>
+                          noteMatchesFocus(note, focus, projects)
+                      )
+                    : notes,
+                orderBy
+            ),
+        [notes, orderBy, focus, projects]
     );
 
     const startNewNote = useCallback(() => {
         // Fresh blank note opened straight in the inline editor; nothing is
-        // persisted until the user types a title and saves.
+        // persisted until the user types a title and saves. A Focus project
+        // is filled in so the note lands where the user is working.
+        const focusProject = focus?.project_uid
+            ? projects.find((project) => project.uid === focus.project_uid)
+            : undefined;
         setPreviewNote(null);
-        setEditingNote({ title: '', content: '' });
+        setEditingNote({
+            title: '',
+            content: '',
+            ...(focusProject
+                ? {
+                      project_uid: focusProject.uid,
+                      project: {
+                          id: focusProject.id as number,
+                          uid: focusProject.uid,
+                          name: focusProject.name,
+                      },
+                  }
+                : {}),
+        });
         setIsEditing(true);
         setSaveStatus('saved');
         setIsFocusMode(false);
-    }, []);
+    }, [focus, projects]);
 
     // Open a blank editor when navigated here with the "new note" flag
     // (sidebar + button, footer create menu, keyboard shortcut). The ref
@@ -602,6 +631,7 @@ const Notes: React.FC = () => {
                                         },
                                     ]}
                                 />
+                                <FocusEmptyHint className="mx-auto mt-4 max-w-md" />
                             </div>
                         ) : null}
                     </div>

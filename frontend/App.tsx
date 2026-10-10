@@ -64,6 +64,7 @@ import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import type { StarterResult } from './utils/onboardingService';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
+import { sanitizeFocus } from './utils/focus';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
 import { resyncPush } from './utils/pushService';
@@ -179,6 +180,11 @@ const App: React.FC = () => {
                     .getState()
                     .userSettingsStore.setSidebarWidthPercent(
                         data.user.sidebar_settings?.widthPercent
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setFocus(
+                        sanitizeFocus(data.user.ui_settings?.focus)
                     );
             } else {
                 setCurrentUser(null);

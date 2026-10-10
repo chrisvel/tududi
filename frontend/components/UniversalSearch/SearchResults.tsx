@@ -9,6 +9,7 @@ import {
     TagIcon,
 } from '@heroicons/react/24/outline';
 import { searchUniversal } from '../../utils/searchService';
+import { focusKey, focusScopeParams, useFocus } from '../../utils/focus';
 
 interface SearchResultsProps {
     searchQuery: string;
@@ -45,6 +46,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     onClose,
 }) => {
     const { t } = useTranslation();
+    const focus = useFocus();
+    const focusId = focusKey(focus);
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -78,6 +81,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     tags: selectedTags.length > 0 ? selectedTags : undefined,
                     extras:
                         selectedExtras.length > 0 ? selectedExtras : undefined,
+                    scope: focusScopeParams(focus),
                 });
                 setResults(data.results);
             } catch (error) {
@@ -99,6 +103,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         selectedDefer,
         selectedTags,
         selectedExtras,
+        focusId,
     ]);
 
     const getIcon = (type: string) => {

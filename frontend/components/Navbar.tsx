@@ -15,7 +15,8 @@ import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
 import SidebarPanelIcon from './Sidebar/SidebarPanelIcon';
 import NotificationsDropdown from './Notifications/NotificationsDropdown';
-import { getApiPath } from '../config/paths';
+import FocusChip from './Focus/FocusChip';
+import { getApiPath, getAssetPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import PlanBadge from './Billing/PlanBadge';
 import { setUserTimezone } from '../utils/dateUtils';
@@ -193,18 +194,35 @@ const Navbar: React.FC<NavbarProps> = ({
         >
             {/* Main bar row */}
             <div className="h-14 flex items-center justify-between">
-                {/* With the sidebar closed, the button that brings it back */}
-                <div className="flex items-center pl-3 sm:pl-4 flex-shrink-0">
+                {/* On phones with the sidebar closed, the button that brings
+                    it back and the logo (the sidebar's logo is off screen);
+                    then the Focus chip that scopes the app */}
+                <div className="flex items-center gap-1 pl-3 sm:pl-4 flex-shrink-0 min-w-0">
                     {!isSidebarOpen && (
-                        <button
-                            onClick={() => setIsSidebarOpen(true)}
-                            className="sm:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                            aria-label="Expand Sidebar"
-                            data-testid="sidebar-expand"
-                        >
-                            <SidebarPanelIcon className="h-5 w-5" />
-                        </button>
+                        <>
+                            <button
+                                onClick={() => setIsSidebarOpen(true)}
+                                className="sm:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                aria-label="Expand Sidebar"
+                                data-testid="sidebar-expand"
+                            >
+                                <SidebarPanelIcon className="h-5 w-5" />
+                            </button>
+                            <Link
+                                to="/"
+                                className="sm:hidden flex items-center justify-center h-9 w-9"
+                                aria-label="tududi"
+                                data-testid="navbar-logo"
+                            >
+                                <img
+                                    src={getAssetPath('icon-logo.png')}
+                                    alt="tududi"
+                                    className="h-7 w-7 rounded-md"
+                                />
+                            </Link>
+                        </>
                     )}
+                    <FocusChip />
                 </div>
                 {/* Search, toward the right next to the actions (hidden on mobile) */}
                 <div className="hidden md:flex flex-1 justify-end px-2">

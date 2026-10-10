@@ -29,6 +29,8 @@ interface ProjectModalProps {
     onDelete?: (projectUid: string) => Promise<void>;
     project?: Project;
     areas: Area[];
+    // Pre-selected area for a new project (the Focus area, when one is set)
+    defaultAreaId?: number | null;
 }
 
 const MAX_NAME_LENGTH = 150;
@@ -44,8 +46,11 @@ const emptyProject = (): Project => ({
 });
 
 // Dates from the API can carry a time part; the date input wants YYYY-MM-DD
-const toFormData = (project?: Project | null): Project => {
-    if (!project) return emptyProject();
+const toFormData = (
+    project?: Project | null,
+    defaultAreaId: number | null = null
+): Project => {
+    if (!project) return { ...emptyProject(), area_id: defaultAreaId };
     let dueDateValue = project.due_date_at;
     if (dueDateValue && dueDateValue.includes('T')) {
         dueDateValue = dueDateValue.split('T')[0];
@@ -64,6 +69,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     onDelete,
     project,
     areas,
+    defaultAreaId = null,
 }) => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
@@ -73,7 +79,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const { addNewTags } = tagsStore;
 
     const [formData, setFormData] = useState<Project>(() =>
-        toFormData(project)
+        toFormData(project, defaultAreaId)
     );
     const [tags, setTags] = useState<string[]>(
         project?.tags?.map((tag) => tag.name) || []
@@ -86,7 +92,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     // Start from the saved project each time the panel opens
     useEffect(() => {
         if (!isOpen) return;
-        setFormData(toFormData(project));
+        setFormData(toFormData(project, defaultAreaId));
         setTags(project?.tags?.map((tag) => tag.name) || []);
         setError(null);
         setShowConfirmDialog(false);

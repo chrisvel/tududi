@@ -364,6 +364,10 @@ Each section can be collapsed or expanded:
 - Separate from regular tasks
 - Have their own "Habits completed today" subsection in Completed
 
+### When a Focus is active
+
+With a Focus set from the chip in the top bar (see [Focus](25-focus.md)), every section lists only tasks in the Focus area, project and tags, including the suggested ones. The page sends the Focus as `area_uid`, `project_uid` and `tags` on its requests; nothing is applied on the server from the saved setting. Tasks already in the day's plan stay in it and are dimmed when they fall outside the Focus.
+
 ---
 
 ## Performance & Limits
