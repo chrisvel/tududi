@@ -110,6 +110,15 @@ describe('FocusChip', () => {
                 .slice(1)
                 .map((button) => button.textContent)
         ).toEqual(['Any project', 'Launch']);
+        fireEvent.change(projectField.getByTestId('filter-dropdown-search'), {
+            target: { value: 'lau' },
+        });
+        expect(
+            projectField
+                .getAllByRole('button')
+                .slice(1)
+                .map((button) => button.textContent)
+        ).toEqual(['Launch']);
         fireEvent.click(projectField.getByRole('button', { name: 'Launch' }));
         fireEvent.change(screen.getByTestId('focus-tags'), {
             target: { value: 'urgent' },

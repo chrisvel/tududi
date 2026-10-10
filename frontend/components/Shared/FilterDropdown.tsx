@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 export interface FilterOption {
@@ -19,6 +20,8 @@ interface FilterDropdownProps {
     // Fills its container at every width, menu included, and keeps a long
     // menu scrollable (for forms and popovers)
     fullWidth?: boolean;
+    // A search box at the top of the menu narrows the options by label
+    searchable?: boolean;
     className?: string;
 }
 
@@ -31,10 +34,31 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
     autoWidth = false,
     fill = false,
     fullWidth = false,
+    searchable = false,
     className = '',
 }) => {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
+    const [search, setSearch] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLInputElement>(null);
+
+    // A fresh search each time the menu opens, with the box ready to type in
+    useEffect(() => {
+        if (!isOpen) return;
+        setSearch('');
+        if (searchable) searchRef.current?.focus();
+    }, [isOpen, searchable]);
+
+    const query = search.trim().toLowerCase();
+    const visibleOptions =
+        searchable && query
+            ? options.filter(
+                  (option) =>
+                      option.value !== 'divider' &&
+                      option.label.toLowerCase().includes(query)
+              )
+            : options;
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -125,10 +149,37 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                     className={`origin-top-right absolute right-0 mt-1 ${fill ? 'min-w-full' : ''} ${fullWidth ? 'left-0 w-full' : !autoWidth ? (isMobile ? 'w-36' : 'w-40') : ''} rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50`}
                     style={autoWidth && !fullWidth ? dynamicStyles : {}}
                 >
+                    {searchable && (
+                        <div className="p-1 pb-0">
+                            <input
+                                ref={searchRef}
+                                type="text"
+                                value={search}
+                                onChange={(event) =>
+                                    setSearch(event.target.value)
+                                }
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Escape') {
+                                        event.stopPropagation();
+                                        setIsOpen(false);
+                                    }
+                                }}
+                                placeholder={t('common.search', 'Search')}
+                                aria-label={t('common.search', 'Search')}
+                                className="w-full rounded bg-gray-100 px-2 py-1.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400"
+                                data-testid="filter-dropdown-search"
+                            />
+                        </div>
+                    )}
                     <div
                         className={`p-1${fullWidth ? ' max-h-60 overflow-y-auto' : ''}`}
                     >
-                        {options.map((option, index) =>
+                        {visibleOptions.length === 0 && (
+                            <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                {t('search.noResults', 'No results found')}
+                            </div>
+                        )}
+                        {visibleOptions.map((option, index) =>
                             option.value === 'divider' ? (
                                 <div
                                     key={`divider-${index}`}

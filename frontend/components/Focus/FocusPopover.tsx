@@ -123,6 +123,7 @@ const FocusPopover: React.FC<FocusPopoverProps> = ({ focus, onClose }) => {
                             value={areaUid}
                             onChange={changeArea}
                             fullWidth
+                            searchable
                         />
                     </div>
                 </div>
@@ -145,6 +146,7 @@ const FocusPopover: React.FC<FocusPopoverProps> = ({ focus, onClose }) => {
                             value={projectUid}
                             onChange={setProjectUid}
                             fullWidth
+                            searchable
                         />
                     </div>
                 </div>
