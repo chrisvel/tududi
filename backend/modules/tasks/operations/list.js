@@ -50,7 +50,8 @@ async function addDashboardLists(
     timezone,
     queryType,
     includeLists,
-    serializationOptions
+    serializationOptions,
+    scopeWhere = null
 ) {
     if (queryType !== 'today' || includeLists !== 'true') {
         return;
@@ -60,7 +61,9 @@ async function addDashboardLists(
     const metricsData = await computeTaskMetrics(
         userId,
         timezone,
-        permissionCache
+        permissionCache,
+        null,
+        scopeWhere
     );
 
     const listKeyMap = {

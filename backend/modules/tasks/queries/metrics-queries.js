@@ -465,7 +465,8 @@ async function fetchSomedayFallbackTasks(
     userId,
     usedTaskIds,
     somedayTaskIds,
-    limit = null
+    limit = null,
+    scopeWhere = null
 ) {
     if (somedayTaskIds.length === 0) {
         return [];
@@ -479,6 +480,7 @@ async function fetchSomedayFallbackTasks(
             },
             parent_task_id: null,
             recurring_parent_id: null,
+            ...(scopeWhere ? { [Op.and]: [scopeWhere] } : {}),
         },
         include: getTaskIncludeConfigLight(),
         order: [
@@ -506,7 +508,11 @@ async function fetchSomedayFallbackTasks(
     return await Task.findAll(queryOptions);
 }
 
-async function fetchTasksCompletedToday(userId, userTimezone) {
+async function fetchTasksCompletedToday(
+    userId,
+    userTimezone,
+    scopeWhere = null
+) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
@@ -522,6 +528,7 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
                 [Op.gte]: todayBounds.start,
                 [Op.lte]: todayBounds.end,
             },
+            ...(scopeWhere ? { [Op.and]: [scopeWhere] } : {}),
         },
         include: getTaskIncludeConfigLight(),
     });
@@ -543,6 +550,7 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
                 where: {
                     user_id: userId,
                     parent_task_id: null,
+                    ...(scopeWhere ? { [Op.and]: [scopeWhere] } : {}),
                 },
                 include: getTaskIncludeConfigLight(),
             },

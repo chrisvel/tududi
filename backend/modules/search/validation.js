@@ -32,6 +32,8 @@ function parseSearchParams(query) {
         excludeSubtasks,
         status: statusParam,
         task_status: taskStatusParam,
+        area_uid: areaUid,
+        project_uid: projectUid,
     } = query;
 
     const searchQuery = q ? q.trim() : '';
@@ -80,6 +82,8 @@ function parseSearchParams(query) {
         excludeSubtasks: excludeSubtasks === 'true',
         status,
         taskStatus,
+        areaUid: typeof areaUid === 'string' ? areaUid.trim() : '',
+        projectUid: typeof projectUid === 'string' ? projectUid.trim() : '',
     };
 }
 

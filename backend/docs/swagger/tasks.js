@@ -93,6 +93,22 @@
  *           type: integer
  *         description: Filter by project ID
  *       - in: query
+ *         name: area_uid
+ *         schema:
+ *           type: string
+ *         description: Focus scope. Only items in this area, including those of its projects
+ *       - in: query
+ *         name: project_uid
+ *         schema:
+ *           type: string
+ *         description: Focus scope. Only items of this project (must sit in area_uid when both are given)
+ *       - in: query
+ *         name: tags
+ *         schema:
+ *           type: string
+ *           example: "urgent,deep"
+ *         description: Focus scope. Comma-separated tag names; items must carry every one
+ *       - in: query
  *         name: groupBy
  *         schema:
  *           type: string

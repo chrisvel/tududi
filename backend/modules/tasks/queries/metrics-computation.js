@@ -2,6 +2,7 @@ const { Task, RecurringCompletion } = require('../../../models');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
 const permissionsService = require('../../../services/permissionsService');
+const { withScope } = require('../../../services/scopeService');
 const {
     countTotalOpenTasks,
     countTasksPendingOverMonth,
@@ -83,7 +84,8 @@ async function computeSuggestedTasks(
     tasksDueToday,
     tasksOverdue,
     todayPlanTasks,
-    planning = null
+    planning = null,
+    scopeWhere = null
 ) {
     if (
         totalOpenTasks < 3 &&
@@ -136,7 +138,9 @@ async function computeSuggestedTasks(
         const somedayFallbackTasks = await fetchSomedayFallbackTasks(
             userId,
             usedTaskIds,
-            somedayTaskIds
+            somedayTaskIds,
+            null,
+            scopeWhere
         );
 
         combinedTasks = [
@@ -252,18 +256,23 @@ async function computeWeeklyCompletions(userId, userTimezone) {
     return weeklyData;
 }
 
+// `scopeWhere` (from scopeService.taskScopeWhere) narrows every list to a
+// Focus scope; the visible-tasks where then carries it into each query.
 async function computeTaskMetrics(
     userId,
     userTimezone = 'UTC',
     permissionCache = null,
-    planning = null
+    planning = null,
+    scopeWhere = null
 ) {
-    const visibleTasksWhere =
+    const visibleTasksWhere = withScope(
         await permissionsService.ownershipOrPermissionWhere(
             'task',
             userId,
             permissionCache
-        );
+        ),
+        scopeWhere
+    );
 
     const somedayExcludedIds = await fetchSomedayExcludedTaskIds(userId);
 
@@ -295,7 +304,7 @@ async function computeTaskMetrics(
             somedayExcludedIds,
             permissionCache
         ),
-        fetchTasksCompletedToday(userId, userTimezone),
+        fetchTasksCompletedToday(userId, userTimezone, scopeWhere),
         computeWeeklyCompletions(userId, userTimezone),
     ]);
 
@@ -307,7 +316,8 @@ async function computeTaskMetrics(
         tasksDueToday,
         tasksOverdue,
         todayPlanTasks,
-        planning
+        planning,
+        scopeWhere
     );
 
     return {
