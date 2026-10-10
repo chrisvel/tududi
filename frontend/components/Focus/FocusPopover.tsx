@@ -46,16 +46,24 @@ const FocusPopover: React.FC<FocusPopoverProps> = ({ focus, onClose }) => {
         return () => document.removeEventListener('keydown', onKey);
     }, [onClose]);
 
-    // Only projects of the chosen area can be picked; without an area any
-    // project can.
+    // Only open projects of the chosen area can be picked (without an area,
+    // any open project). A finished project that is the current focus stays
+    // listed so the picker still shows it.
     const projectOptions = useMemo(
         () =>
             projects.filter((project) => {
+                if (
+                    project.uid !== projectUid &&
+                    (project.status === 'done' ||
+                        project.status === 'cancelled')
+                ) {
+                    return false;
+                }
                 if (!areaUid) return true;
                 const projectAreaUid = project.area?.uid ?? project.area_uid;
                 return projectAreaUid === areaUid;
             }),
-        [projects, areaUid]
+        [projects, areaUid, projectUid]
     );
 
     const changeArea = (uid: string) => {
