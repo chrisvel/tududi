@@ -183,7 +183,9 @@ async function keep(user, body = {}) {
 
             for (const item of area.items) {
                 if (item.kind === 'habit') {
-                    if (existingHabits.find((h) => sameName(h.name, item.title)))
+                    if (
+                        existingHabits.find((h) => sameName(h.name, item.title))
+                    )
                         continue;
                     await Task.create(
                         {
@@ -234,7 +236,8 @@ async function keep(user, body = {}) {
 
         const userRow = await User.findByPk(userId, { transaction });
         const changes = {};
-        if (!userRow.onboarding_starter) changes.onboarding_starter = 'untangle';
+        if (!userRow.onboarding_starter)
+            changes.onboarding_starter = 'untangle';
         if (!userRow.onboarded_at) changes.onboarded_at = new Date();
         if (Object.keys(changes).length > 0) {
             await userRow.update(changes, { transaction });

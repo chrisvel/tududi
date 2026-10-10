@@ -208,9 +208,7 @@ function parseImage(value) {
     if (typeof value !== 'string') {
         throw new ValidationError('image must be a data URL');
     }
-    const match = /^data:(image\/[a-z]+);base64,([A-Za-z0-9+/=]+)$/.exec(
-        value
-    );
+    const match = /^data:(image\/[a-z]+);base64,([A-Za-z0-9+/=]+)$/.exec(value);
     if (!match || !IMAGE_TYPES.includes(match[1])) {
         throw new ValidationError('image must be a PNG, JPEG or WebP data URL');
     }
@@ -569,7 +567,12 @@ function verifyToken(token) {
         throw new ValidationError('That plan is not valid. Untangle it again.');
     }
     const maxAge = (untangleConfig().tokenDays || 7) * 24 * 60 * 60 * 1000;
-    if (!data || data.v !== 1 || !data.result || Date.now() - data.iat > maxAge) {
+    if (
+        !data ||
+        data.v !== 1 ||
+        !data.result ||
+        Date.now() - data.iat > maxAge
+    ) {
         throw new ValidationError('That plan has expired. Untangle it again.');
     }
     return data.result;

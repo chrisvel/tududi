@@ -3277,5 +3277,49 @@
       "letsStart": "I'm done, let's start",
       "settingUp": "Setting up..."
     }
+  },
+  "untangle": {
+    "kicker": "Untangle",
+    "title": "Paste your mess.",
+    "lede": "A Notes list, a screenshot, whatever you have been carrying around. Ten seconds later it is a plan.",
+    "placeholder": "call landlord re deposit!!\ncrete??\ndentist\ngym x3\nmum bday 24th\nask Maria about the contract",
+    "addScreenshot": "Screenshot",
+    "screenshotAttached": "Screenshot attached",
+    "removeScreenshot": "Remove screenshot",
+    "talk": "Talk",
+    "listening": "Listening, tap to stop",
+    "run": "Untangle it",
+    "privacy": "Nothing is stored until you choose to keep it.",
+    "loading": "One moment...",
+    "unavailableTitle": "Untangle is not available here",
+    "unavailableBody": "This instance has it switched off.",
+    "busy": {
+      "reading": "Reading every line",
+      "sorting": "Sorting it into areas",
+      "people": "Spotting people and habits",
+      "dates": "Working out the dates",
+      "today": "Picking one thing for today"
+    },
+    "today": "Today",
+    "drop": "Drop for now",
+    "oneQuestion": "One question",
+    "week": "Your week",
+    "goal": "Goal",
+    "project": "project",
+    "kind": {
+      "waiting": "waiting",
+      "waitingFor": "waiting for {{name}}",
+      "habit": "habit, {{n}}x {{period}}",
+      "someday": "someday"
+    },
+    "startOver": "Start over",
+    "keep": "Keep it",
+    "keeping": "Keeping...",
+    "signUpToKeep": "Your plan is saved on this device. Sign up and it will be waiting for you.",
+    "errors": {
+      "image": "Could not read that image.",
+      "generic": "Could not untangle that.",
+      "keep": "Could not keep the plan."
+    }
   }
 }

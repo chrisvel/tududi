@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense, lazy } from 'react';
+import React, { useEffect, useRef, useState, Suspense, lazy } from 'react';
 import {
     Routes,
     Route,
@@ -72,12 +72,19 @@ import {
     clearSharedText,
     hasPendingSharedText,
 } from './utils/shareTargetService';
+import {
+    clearPendingUntangle,
+    keepUntangled,
+    readPendingUntangle,
+} from './utils/untangleService';
+import type { KeepResult } from './utils/untangleService';
 const PublicNotePage = lazy(
     () => import('./components/PublicNote/PublicNotePage')
 );
 const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
 const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
 const Welcome = lazy(() => import('./components/Onboarding/Welcome'));
+const UntanglePage = lazy(() => import('./components/Untangle/UntanglePage'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 // Declared at module scope: the users page switches tabs through the query
@@ -242,7 +249,9 @@ const App: React.FC = () => {
     }, [currentUser, location.pathname, navigate]);
 
     // The welcome page is done with: Today opens.
-    const finishWelcome = (result: StarterResult) => {
+    const finishWelcome = (
+        result: Pick<StarterResult, 'onboarding_starter' | 'onboarded_at'>
+    ) => {
         const user = currentUser
             ? {
                   ...currentUser,
@@ -254,6 +263,37 @@ const App: React.FC = () => {
         setCurrentUser(user);
         navigate('/today', { replace: true });
     };
+
+    // "Keep it" on the Untangle page wrote the plan into the account, which
+    // also counts as the welcome being seen.
+    const finishUntangle = (result: KeepResult) => {
+        clearPendingUntangle();
+        finishWelcome(result);
+    };
+
+    // A plan parked in this browser before sign-up: apply it on the first
+    // signed-in load. The welcome redirect waits for it so the person lands
+    // on their organized Today, not on the video.
+    const [applyingUntangle, setApplyingUntangle] = useState(
+        () => !!readPendingUntangle()
+    );
+    const untangleAppliedRef = useRef(false);
+    useEffect(() => {
+        if (!currentUser || untangleAppliedRef.current) return;
+        const token = readPendingUntangle();
+        if (!token) {
+            setApplyingUntangle(false);
+            return;
+        }
+        untangleAppliedRef.current = true;
+        keepUntangled(token)
+            .then((result) => finishUntangle(result))
+            .catch(() => {
+                // An expired or foreign token: forget it and carry on.
+                clearPendingUntangle();
+            })
+            .finally(() => setApplyingUntangle(false));
+    }, [currentUser]);
 
     // The Inbox keeps offering a claimed share while the user stays on it (the
     // page remounts whenever Layout shows its first-load spinner), so the claim
@@ -375,6 +415,19 @@ const App: React.FC = () => {
                         />
                     }
                 />
+                {/* Untangle: paste a messy list, see it organized, keep it.
+                    Public, outside the app layout, signed in or not. */}
+                <Route
+                    path="/untangle"
+                    element={
+                        <UntanglePage
+                            isSignedIn={!!currentUser}
+                            isDarkMode={isDarkMode}
+                            toggleDarkMode={toggleDarkMode}
+                            onKept={finishUntangle}
+                        />
+                    }
+                />
                 {currentUser ? (
                     <>
                         <Route
@@ -407,9 +460,11 @@ const App: React.FC = () => {
                                         isDarkMode={isDarkMode}
                                         toggleDarkMode={toggleDarkMode}
                                     >
-                                        {currentUser.onboarding_starter ===
-                                            null &&
-                                        location.pathname !== '/welcome' ? (
+                                        {applyingUntangle ? (
+                                            <LoadingScreen />
+                                        ) : currentUser.onboarding_starter ===
+                                              null &&
+                                          location.pathname !== '/welcome' ? (
                                             <Navigate to="/welcome" replace />
                                         ) : (
                                             <Outlet />

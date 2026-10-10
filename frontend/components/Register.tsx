@@ -6,8 +6,11 @@ import { PASSWORD_MIN_LENGTH } from '../utils/passwordPolicy';
 import CaptchaWidget from './Auth/CaptchaWidget';
 import OIDCProviderButtons from './Auth/OIDCProviderButtons';
 import { fetchCaptchaConfig, CaptchaConfig } from '../utils/captcha';
+import { readPendingUntangle } from '../utils/untangleService';
 
 const Register: React.FC = () => {
+    // A plan from the Untangle page is waiting in this browser for an account
+    const untanglePending = !!readPendingUntangle();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -368,6 +371,17 @@ const Register: React.FC = () => {
                                         </span>
                                     </div>
                                 </div>
+                            )}
+                            {untanglePending && (
+                                <p
+                                    className="mb-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:bg-blue-900/30 dark:text-blue-200"
+                                    data-testid="register-untangle-pending"
+                                >
+                                    {t(
+                                        'untangle.signUpToKeep',
+                                        'Your plan is saved on this device. Sign up and it will be waiting for you.'
+                                    )}
+                                </p>
                             )}
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-4">

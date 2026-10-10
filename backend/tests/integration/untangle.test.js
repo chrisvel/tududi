@@ -43,8 +43,16 @@ const modelAnswer = () => ({
                 {
                     name: 'Taxes',
                     tasks: [
-                        { title: 'Gather receipts', due: inDays(2), minutes: 60 },
-                        { title: 'File the return', due: inDays(20), minutes: 120 },
+                        {
+                            title: 'Gather receipts',
+                            due: inDays(2),
+                            minutes: 60,
+                        },
+                        {
+                            title: 'File the return',
+                            due: inDays(20),
+                            minutes: 120,
+                        },
                     ],
                 },
             ],
@@ -154,12 +162,10 @@ describe('Untangle', () => {
     it('parses text into a sanitized structure with a week and a signed token', async () => {
         mockCreate.mockResolvedValue(reply(modelAnswer()));
 
-        const res = await request(app)
-            .post('/api/untangle/parse')
-            .send({
-                text: 'call landlord re deposit!!\ntaxes :(\ngym x3\npiano?',
-                timezone: 'UTC',
-            });
+        const res = await request(app).post('/api/untangle/parse').send({
+            text: 'call landlord re deposit!!\ntaxes :(\ngym x3\npiano?',
+            timezone: 'UTC',
+        });
         expect(res.status).toBe(200);
 
         const { result, token } = res.body;
@@ -203,7 +209,9 @@ describe('Untangle', () => {
         // What went to the provider
         const params = mockCreate.mock.calls[0][0];
         expect(params.messages[0].role).toBe('system');
-        expect(params.messages[1].content).toContain('call landlord re deposit');
+        expect(params.messages[1].content).toContain(
+            'call landlord re deposit'
+        );
         expect(params.messages[1].content).toContain(`Today: ${today()}`);
         expect(params.response_format.json_schema.name).toBe('untangle');
     });
