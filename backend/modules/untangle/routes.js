@@ -38,20 +38,28 @@ function buildParseLimiter() {
 
 const publicRoutes = express.Router();
 
-publicRoutes.get('/untangle/status', (req, res) => {
-    if (!service.isUntangleEnabled()) {
-        return res.status(404).json({ error: 'Not found' });
+publicRoutes.get('/untangle/status', async (req, res, next) => {
+    try {
+        if (!(await service.isUntangleEnabled())) {
+            return res.status(404).json({ error: 'Not found' });
+        }
+        res.json({ available: true });
+    } catch (err) {
+        next(err);
     }
-    res.json({ available: true });
 });
 
 publicRoutes.post(
     '/untangle/parse',
-    (req, res, next) => {
-        if (!service.isUntangleEnabled()) {
-            return res.status(404).json({ error: 'Not found' });
+    async (req, res, next) => {
+        try {
+            if (!(await service.isUntangleEnabled())) {
+                return res.status(404).json({ error: 'Not found' });
+            }
+            next();
+        } catch (err) {
+            next(err);
         }
-        next();
     },
     buildParseLimiter(),
     async (req, res, next) => {

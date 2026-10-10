@@ -41,8 +41,9 @@ function untangleConfig() {
     return getConfig().untangle || {};
 }
 
-function isUntangleEnabled() {
-    return untangleConfig().enabled === true && ai.isAIConfigured(null);
+async function isUntangleEnabled() {
+    if (untangleConfig().enabled !== true) return false;
+    return ai.isAIConfigured(null);
 }
 
 // A whole-instance ceiling on parses per UTC day, so a burst from many
@@ -482,7 +483,7 @@ function visionModel(defaultModel) {
 }
 
 async function untangle(body) {
-    if (!isUntangleEnabled()) {
+    if (!(await isUntangleEnabled())) {
         throw new ServiceUnavailableError('Untangle is not available');
     }
     const input = normalizeInput(body);
