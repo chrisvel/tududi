@@ -326,6 +326,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Superadmin picks the front page in Admin → Blog
     - `/blog` in the app, or the root of `TUDUDI_BLOG_HOSTS` (blog.tududi.com)
 
+34. **[Focus](docs/25-focus.md)**
+    - The Focus chip in the top bar: one area, optionally a project and tags, saved in `ui_settings.focus`
+    - Scopes Today, Upcoming, Tasks, Projects, Notes and live search; capture defaults to the Focus project and tags
+    - `area_uid`, `project_uid` and `tags` query params resolved by `backend/services/scopeService.js`; the API, MCP and Telegram stay unscoped
+
 ---
 
 ## Project Overview

@@ -19,6 +19,7 @@ import {
     saveDailyPlanItems,
     toPlanItemInputs,
 } from '../../utils/dailyPlanService';
+import { focusKey, focusScopeParams, useFocus } from '../../utils/focus';
 import {
     CalendarEvent,
     fetchCalendarEvents,
@@ -67,6 +68,8 @@ const movedPastDay = (
 const TodayPage: React.FC = () => {
     const aiAllowed = useAiAllowed();
     const { t, i18n } = useTranslation();
+    const focus = useFocus();
+    const focusId = focusKey(focus);
     const { showErrorToast, showUndoToast } = useToast();
     const setProgress = useDailyPlanProgress((s) => s.setProgress);
     const quote = useDailyQuote(i18n.language);
@@ -100,13 +103,15 @@ const TodayPage: React.FC = () => {
         let cancelled = false;
         (async () => {
             try {
-                const plan = await fetchDailyPlan();
+                const scope = focusScopeParams(focus);
+                const plan = await fetchDailyPlan(undefined, scope);
                 if (cancelled) return;
                 setPlanResponse(plan);
 
-                const candidateList = await fetchPlanCandidates().catch(
-                    () => null
-                );
+                const candidateList = await fetchPlanCandidates(
+                    undefined,
+                    scope
+                ).catch(() => null);
                 if (cancelled) return;
                 setCandidates(candidateList);
             } catch (err) {
@@ -122,7 +127,7 @@ const TodayPage: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [t]);
+    }, [t, focusId]);
 
     // Calendar feeds belong to the Calendar feature; with it off Today shows
     // no events and no prompt to connect a calendar.

@@ -9,6 +9,8 @@ import { getDescription } from './Task/getDescription';
 import { createTask, GroupedTasks, saveTaskOrder } from '../utils/tasksService';
 import { mergeVisibleOrder } from './Shared/sortableList';
 import { useStore } from '../store/useStore';
+import { appendFocusParams, focusKey, useFocus } from '../utils/focus';
+import FocusEmptyHint from './Focus/FocusEmptyHint';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
 import IconSortDropdown from './Shared/IconSortDropdown';
@@ -41,6 +43,8 @@ const getSearchPlaceholder = (language: string): string => {
 
 const Tasks: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const activeFocus = useFocus();
+    const focusId = focusKey(activeFocus);
     const { showSuccessToast, showErrorToast } = useToast();
 
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -193,6 +197,7 @@ const Tasks: React.FC = () => {
 
             const allTasksUrl = new URLSearchParams(query.toString());
             allTasksUrl.set('client_side_filtering', 'true');
+            appendFocusParams(allTasksUrl, activeFocus);
 
             if (type === 'upcoming') {
                 allTasksUrl.set('type', 'upcoming');
@@ -323,7 +328,7 @@ const Tasks: React.FC = () => {
                   }
                 : undefined
         );
-    }, [location, isMobile, groupBy, isUpcomingView]);
+    }, [location, isMobile, groupBy, isUpcomingView, focusId]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -1125,6 +1130,7 @@ const Tasks: React.FC = () => {
                                             'Start by creating a new task or changing your filters.'
                                         )}
                                     </p>
+                                    <FocusEmptyHint className="mt-6" />
                                 </div>
                             </div>
                         )}

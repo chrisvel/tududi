@@ -15,6 +15,7 @@ import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
 import SidebarPanelIcon from './Sidebar/SidebarPanelIcon';
 import NotificationsDropdown from './Notifications/NotificationsDropdown';
+import FocusChip from './Focus/FocusChip';
 import { getApiPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import PlanBadge from './Billing/PlanBadge';
@@ -193,8 +194,9 @@ const Navbar: React.FC<NavbarProps> = ({
         >
             {/* Main bar row */}
             <div className="h-14 flex items-center justify-between">
-                {/* With the sidebar closed, the button that brings it back */}
-                <div className="flex items-center pl-3 sm:pl-4 flex-shrink-0">
+                {/* With the sidebar closed, the button that brings it back,
+                    then the Focus chip that scopes the app */}
+                <div className="flex items-center gap-1 pl-3 sm:pl-4 flex-shrink-0 min-w-0">
                     {!isSidebarOpen && (
                         <button
                             onClick={() => setIsSidebarOpen(true)}
@@ -205,6 +207,7 @@ const Navbar: React.FC<NavbarProps> = ({
                             <SidebarPanelIcon className="h-5 w-5" />
                         </button>
                     )}
+                    <FocusChip />
                 </div>
                 {/* Search, toward the right next to the actions (hidden on mobile) */}
                 <div className="hidden md:flex flex-1 justify-end px-2">

@@ -9,6 +9,7 @@ import { InboxItem } from '../entities/InboxItem';
 import { Goal } from '../entities/Goal';
 import { Person } from '../entities/Person';
 import type { SidebarVisibleSections } from '../components/Profile/types';
+import type { Focus } from '../utils/focus';
 import {
     DEFAULT_LINK_ORDER,
     DEFAULT_SECTION_ORDER,
@@ -148,6 +149,9 @@ interface UserSettingsStore {
     }) => void;
     sidebarWidthPercent: number;
     setSidebarWidthPercent: (percent: number | undefined) => void;
+    // The Focus chip's scope (see utils/focus.ts); null when none is set
+    focus: Focus | null;
+    setFocus: (focus: Focus | null) => void;
 }
 
 interface GoalsStore {
@@ -1154,6 +1158,14 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     sidebarWidthPercent: clampSidebarPercent(percent),
+                },
+            })),
+        focus: null,
+        setFocus: (focus) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    focus,
                 },
             })),
     },

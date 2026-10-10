@@ -29,6 +29,11 @@ export interface UiSettings {
             showMetrics?: boolean;
         };
     };
+    focus?: {
+        area_uid?: string | null;
+        project_uid?: string | null;
+        tags?: string[];
+    } | null;
     [key: string]: unknown;
 }
 

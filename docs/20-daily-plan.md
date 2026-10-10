@@ -123,6 +123,8 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 | GET                   | `/api/calendar-feeds/events?date=`       | `{ date, events, errors }` for that day                                                                                                                                                      |
 | GET                   | `/api/calendar-feeds/events?start=&end=` | `{ start, end, events, errors }` for up to 62 days; each event carries its `date`, and a multi-day event appears once per day. Hidden calendars are included, the Calendar page filters them |
 
+`GET /api/daily-plan` and `GET /api/daily-plan/candidates` also take the Focus scope params `area_uid`, `project_uid` and `tags` (see [Focus](25-focus.md)). Candidates are then narrowed to the scope. The plan keeps every item, since `PUT /api/daily-plan/:date` and carry-over replace the whole list from what the client holds, and marks each item `in_focus: true|false` instead; Today and the planner dim the ones outside the Focus.
+
 ---
 
 ## AI help

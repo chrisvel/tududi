@@ -13,6 +13,8 @@ interface SearchParams {
     excludeSubtasks?: boolean;
     status?: 'active' | 'completed' | 'all';
     taskStatus?: string;
+    // Focus scope for live search; saved Views never pass it
+    scope?: { area_uid?: string; project_uid?: string };
 }
 
 interface SearchResult {
@@ -82,6 +84,14 @@ export const searchUniversal = async (
 
         if (params.extras && params.extras.length > 0) {
             queryParams.append('extras', params.extras.join(','));
+        }
+
+        if (params.scope?.area_uid) {
+            queryParams.append('area_uid', params.scope.area_uid);
+        }
+
+        if (params.scope?.project_uid) {
+            queryParams.append('project_uid', params.scope.project_uid);
         }
 
         if (params.limit !== undefined) {

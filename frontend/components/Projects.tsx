@@ -40,6 +40,8 @@ import { PROJECT_TABLE_GRID } from './Project/projectTableLayout';
 import SortableItem from './Shared/SortableItem';
 import NewItemButton from './Shared/NewItemButton';
 import BlankSlate from './Shared/BlankSlate';
+import { projectMatchesFocus, useFocus } from '../utils/focus';
+import FocusEmptyHint from './Focus/FocusEmptyHint';
 import { useCan } from '../hooks/useCan';
 import {
     mergeVisibleOrder,
@@ -135,6 +137,7 @@ const cacheListFilters = (filters: ProjectsListFilters) => {
 
 const Projects: React.FC = () => {
     const { t } = useTranslation();
+    const focus = useFocus();
     const { showErrorToast, showSuccessToast } = useToast();
     const {
         areas,
@@ -544,10 +547,12 @@ const Projects: React.FC = () => {
         setSearchParams(params);
     };
 
-    // Update the area filter when areas are loaded (to handle area UID lookups)
+    // Update the area filter when areas are loaded (to handle area UID lookups).
+    // While a Focus names an area, the page is locked to it.
+    const focusAreaUid = focus?.area_uid ?? '';
     const actualAreaFilter = useMemo(() => {
-        return getAreaUidFromParams();
-    }, [searchParams, areas]);
+        return focusAreaUid || getAreaUidFromParams();
+    }, [searchParams, areas, focusAreaUid]);
 
     // Filter, sort and search projects
     const displayProjects = useMemo(() => {
@@ -575,6 +580,17 @@ const Projects: React.FC = () => {
                 const projectArea = project.area || (project as any).Area;
                 return projectArea?.uid === actualAreaFilter;
             });
+        }
+
+        // A Focus project or tags narrow the list further (the area is
+        // already applied above)
+        if (focus && (focus.project_uid || focus.tags?.length)) {
+            filteredProjects = filteredProjects.filter((project) =>
+                projectMatchesFocus(project, {
+                    project_uid: focus.project_uid,
+                    tags: focus.tags,
+                })
+            );
         }
 
         // Hide someday-tagged projects unless the setting shows them
@@ -617,6 +633,7 @@ const Projects: React.FC = () => {
         projects,
         statusFilter,
         actualAreaFilter,
+        focus,
         somedayFilter,
         completedFilter,
         searchQuery,
@@ -863,14 +880,28 @@ const Projects: React.FC = () => {
                         autoWidth={true}
                         fill
                     />
-                    <FilterDropdown
-                        options={areaOptions}
-                        value={actualAreaFilter}
-                        onChange={handleAreaFilterChange}
-                        size="desktop"
-                        autoWidth={true}
-                        fill
-                    />
+                    {focusAreaUid ? (
+                        <span
+                            className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-blue-50 px-3 text-sm text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                            title={t(
+                                'focus.locked',
+                                'Set by your Focus. Clear it from the chip in the top bar.'
+                            )}
+                            data-testid="projects-area-locked"
+                        >
+                            {areas.find((area) => area.uid === focusAreaUid)
+                                ?.name ?? t('focus.chip', 'Focus')}
+                        </span>
+                    ) : (
+                        <FilterDropdown
+                            options={areaOptions}
+                            value={actualAreaFilter}
+                            onChange={handleAreaFilterChange}
+                            size="desktop"
+                            autoWidth={true}
+                            fill
+                        />
+                    )}
                 </div>
 
                 {/* Collapsible Search Bar */}
@@ -941,38 +972,41 @@ const Projects: React.FC = () => {
                             ]}
                         />
                     ) : (
-                        <BlankSlate
-                            title={t(
-                                'projects.noProjectsFound',
-                                'No projects found'
-                            )}
-                            hint={t(
-                                'projects.blankSlateFilteredHint',
-                                'Try changing your filters or search.'
-                            )}
-                            actions={[
-                                {
-                                    label: t(
-                                        'projects.blankSlateShowAll',
-                                        'Show all projects'
-                                    ),
-                                    icon: FunnelIcon,
-                                    onClick: handleShowAllProjects,
-                                },
-                                ...(canCreateProjects
-                                    ? [
-                                          {
-                                              label: t(
-                                                  'projects.new',
-                                                  'New Project'
-                                              ),
-                                              icon: PlusIcon,
-                                              onClick: handleNewProject,
-                                          },
-                                      ]
-                                    : []),
-                            ]}
-                        />
+                        <>
+                            <BlankSlate
+                                title={t(
+                                    'projects.noProjectsFound',
+                                    'No projects found'
+                                )}
+                                hint={t(
+                                    'projects.blankSlateFilteredHint',
+                                    'Try changing your filters or search.'
+                                )}
+                                actions={[
+                                    {
+                                        label: t(
+                                            'projects.blankSlateShowAll',
+                                            'Show all projects'
+                                        ),
+                                        icon: FunnelIcon,
+                                        onClick: handleShowAllProjects,
+                                    },
+                                    ...(canCreateProjects
+                                        ? [
+                                              {
+                                                  label: t(
+                                                      'projects.new',
+                                                      'New Project'
+                                                  ),
+                                                  icon: PlusIcon,
+                                                  onClick: handleNewProject,
+                                              },
+                                          ]
+                                        : []),
+                                ]}
+                            />
+                            <FocusEmptyHint className="mx-auto mt-4 max-w-md" />
+                        </>
                     )
                 ) : displayProjects.every((p) => p.uid) ? (
                     <DndContext
@@ -1047,6 +1081,10 @@ const Projects: React.FC = () => {
                     }}
                     project={modalState.projectToEdit || undefined}
                     areas={areas}
+                    defaultAreaId={
+                        areas.find((area) => area.uid === focusAreaUid)?.id ??
+                        null
+                    }
                 />
             )}
 

@@ -21,6 +21,7 @@ import { Person } from './entities/Person';
 import { Project } from './entities/Project';
 import { User } from './entities/User';
 import { useStore } from './store/useStore';
+import { applyFocus, isFocusDangling, useFocus } from './utils/focus';
 import { createArea, updateArea } from './utils/areasService';
 import { createTag, updateTag } from './utils/tagsService';
 import { createPerson, updatePerson } from './utils/peopleService';
@@ -131,6 +132,20 @@ const Layout: React.FC<LayoutProps> = ({
     const contentBackground = findContentBackground(
         useStore((state) => state.userSettingsStore.contentBackground)
     );
+
+    // A Focus pointing at a deleted area or project, or at a project that
+    // left its area, is cleared once the lists it needs are loaded.
+    const focus = useFocus();
+    const haveAreas = useStore((state) => state.areasStore.hasLoaded);
+    useEffect(() => {
+        if (!focus || !haveAreas) return;
+        if (focus.project_uid && projects.length === 0) return;
+        if (isFocusDangling(focus, areas, projects)) {
+            applyFocus(null).catch(() => undefined);
+        }
+    }, [focus, haveAreas, areas, projects]);
+    const focusAreaId =
+        areas.find((area) => area.uid === focus?.area_uid)?.id ?? null;
 
     // Task shortcuts and the sidebar's New > Task open the shared capture
     // box on Task. The navbar and phone buttons open it on Inbox.
@@ -537,6 +552,7 @@ const Layout: React.FC<LayoutProps> = ({
                                 }
                             }}
                             areas={areas}
+                            defaultAreaId={focusAreaId}
                         />
                     )}
 

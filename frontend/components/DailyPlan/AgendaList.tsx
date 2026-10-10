@@ -150,7 +150,9 @@ const AgendaList: React.FC<AgendaListProps> = ({
                 const row = (
                     <div
                         key={`task-${item.task_uid}`}
-                        className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3"
+                        className={`flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3${
+                            item.in_focus === false ? ' opacity-50' : ''
+                        }`}
                         data-testid={`agenda-task-${item.task_uid}`}
                     >
                         <span
