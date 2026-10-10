@@ -274,9 +274,9 @@ const App: React.FC = () => {
     // picks it up and runs it as the account's free untangle.
     useEffect(() => {
         if (!currentUser) return;
-        if (location.pathname === '/untangle') return;
+        if (location.pathname === '/untangled-my') return;
         if (!readPendingUntangle()) return;
-        navigate('/untangle', { replace: true });
+        navigate('/untangled-my', { replace: true });
     }, [currentUser, location.pathname, navigate]);
 
     // The Inbox keeps offering a claimed share while the user stays on it (the
@@ -402,13 +402,17 @@ const App: React.FC = () => {
                 {/* Untangle: paste a messy list, see it organized, keep it.
                     Public, outside the app layout, signed in or not. */}
                 <Route
-                    path="/untangle"
+                    path="/untangled-my"
                     element={
                         <UntanglePage
                             isSignedIn={!!currentUser}
                             onKept={finishUntangle}
                         />
                     }
+                />
+                <Route
+                    path="/untangle"
+                    element={<Navigate to="/untangled-my" replace />}
                 />
                 {currentUser ? (
                     <>

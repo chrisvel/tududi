@@ -6,7 +6,7 @@
 
 ## Overview
 
-Untangle is the public page at `/untangle`. Anyone, signed in or not, pastes a messy list (or a screenshot of one, or talks it in) and about ten seconds later sees it organized the tududi way:
+Untangle is the public page at `/untangled-my`. Anyone, signed in or not, pastes a messy list (or a screenshot of one, or talks it in) and about ten seconds later sees it organized the tududi way:
 
 - **Areas**, each with an optional inferred **goal**
 - **Projects** with 2 to 5 tasks, for anything that needs several steps
@@ -115,7 +115,7 @@ Tasks carry no `example_of` mark: they are the person's real items.
 - `frontend/components/Untangle/UntanglePage.tsx`: the page, outside the app layout, rendered for both signed-in and signed-out visitors (route in `App.tsx` next to `/public/notes` and `/blog`).
 - `frontend/components/Untangle/UntangleResult.tsx`: the sections (today, drop, tips, questions, the structure graph, areas, people, habits, tags, the week and coming-up list); `StructureGraph.tsx` draws the tree as an SVG on wide screens and an indented outline on phones.
 - `frontend/utils/untangleService.ts`: `fetchUntangleStatus`, `untangleSample`, `untangle`, `keepUntangled`, and the pending-input helpers.
-- `App.tsx`: `finishUntangle` (updates the current user and opens Today) and the effect that sends a signed-in person with a parked list to `/untangle`.
+- `App.tsx`: `finishUntangle` (updates the current user and opens Today) and the effect that sends a signed-in person with a parked list to `/untangled-my`.
 - `Register.tsx` shows a one-line notice when a list is waiting in the browser.
 
 Screenshots are downscaled to 1600px and sent as JPEG. Speech uses the browser's `SpeechRecognition` where available (Chrome, Safari); the button is hidden elsewhere.
