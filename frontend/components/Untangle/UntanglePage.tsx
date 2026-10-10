@@ -72,6 +72,14 @@ function speechRecognitionClass(): (new () => SpeechRecognitionLike) | null {
     return w.SpeechRecognition || w.webkitSpeechRecognition || null;
 }
 
+// "30m", "1h", "1.5h": whole hours when they are whole, halves otherwise
+function loadLabel(minutes: number): string {
+    if (minutes <= 0) return '';
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.round((minutes / 60) * 2) / 2;
+    return `${hours}h`;
+}
+
 const kindTint: Record<UntangleItem['kind'], string> = {
     task: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
     waiting: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300',
@@ -602,9 +610,7 @@ const UntanglePage: React.FC<UntanglePageProps> = ({
                                                 {day.weekday}
                                             </span>
                                             <span className="text-[11px] tabular-nums text-gray-400 dark:text-gray-500">
-                                                {day.minutes > 0
-                                                    ? `${Math.round(day.minutes / 60)}h`
-                                                    : ''}
+                                                {loadLabel(day.minutes)}
                                             </span>
                                         </div>
                                     ))}
