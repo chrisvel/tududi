@@ -35,6 +35,8 @@ interface UntanglePageProps {
 type Stage = 'checking' | 'unavailable' | 'input' | 'busy' | 'result';
 
 const MAX_IMAGE_EDGE = 1600;
+// Under test there is no one to watch the lines go by
+const SAMPLE_MIN_BUSY_MS = process.env.NODE_ENV === 'test' ? 0 : 4500;
 
 // Phone screenshots are big; the model reads them fine at 1600px, and the
 // request stays small. Always a JPEG afterwards.
@@ -103,16 +105,21 @@ const UntanglingLine: React.FC = () => (
     </svg>
 );
 
-const Wordmark: React.FC = () => (
+const Wordmark: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
     <header className="mb-10 text-center" data-testid="untangle-logo">
-        <span className="inline-flex items-baseline justify-center">
+        <button
+            type="button"
+            onClick={onClick}
+            className="inline-flex items-baseline justify-center rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+            aria-label="untangled.my"
+        >
             <span className="font-wordmark text-[13.5vw] font-black leading-none tracking-[-0.045em] sm:text-7xl md:text-8xl">
                 untangled
             </span>
             <span className="font-hand ml-1 inline-block -rotate-3 text-[15vw] font-semibold leading-none text-brand sm:text-7xl md:text-[6.25rem] dark:text-brand-300">
                 .my
             </span>
-        </span>
+        </button>
     </header>
 );
 
@@ -278,9 +285,19 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                 language: language(),
                 answers: nextAnswers,
             };
+            // A cached sample answers in milliseconds, which reads as fake;
+            // hold the working screen for a few seconds so the person sees
+            // the lines go by and the result land.
+            const started = Date.now();
             const res = sampleKey
                 ? await untangleSample({ key: sampleKey, ...common })
                 : await untangle({ text, image, ...common });
+            if (sampleKey) {
+                const left = SAMPLE_MIN_BUSY_MS - (Date.now() - started);
+                if (left > 0) {
+                    await new Promise((r) => window.setTimeout(r, left));
+                }
+            }
             setResult(res.result);
             setToken(res.token);
             setResultIsSample(!!sampleKey);
@@ -379,7 +396,12 @@ const UntanglePage: React.FC<UntanglePageProps> = ({ isSignedIn, onKept }) => {
                         stage === 'result' ? 'max-w-5xl' : 'max-w-2xl'
                     }`}
                 >
-                    <Wordmark />
+                    <Wordmark
+                        onClick={() => {
+                            if (stage === 'result') startOver(resultIsSample);
+                            else window.scrollTo({ top: 0 });
+                        }}
+                    />
 
                     {stage === 'checking' && (
                         <p className="text-center text-gray-500 dark:text-gray-400">

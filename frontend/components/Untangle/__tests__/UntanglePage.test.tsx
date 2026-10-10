@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    waitFor,
+    within,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import UntanglePage from '../UntanglePage';
@@ -47,6 +53,8 @@ jest.mock('../../../utils/untangleService', () => ({
     clearPendingUntangle: (...args: unknown[]) =>
         service.clearPendingUntangle(...args),
 }));
+
+jest.mock('../UntanglePage', () => jest.requireActual('../UntanglePage'));
 
 const samples = [
     { key: 'family', label: 'Family week', text: 'dentist for Leo\ngym x3' },
@@ -274,11 +282,15 @@ describe('UntanglePage', () => {
             })
         );
         expect(screen.getByText('Call the landlord')).toBeInTheDocument();
-        expect(screen.getByText('Piano')).toBeInTheDocument();
+        expect(screen.getAllByText('Piano').length).toBeGreaterThan(0);
         expect(screen.getByText('Goal: Settle the flat')).toBeInTheDocument();
         expect(screen.getAllByText('Taxes').length).toBeGreaterThan(0);
-        expect(screen.getByText('waiting for Maria')).toBeInTheDocument();
-        expect(screen.getByText('habit, 3x weekly')).toBeInTheDocument();
+        expect(screen.getAllByText('waiting for Maria').length).toBeGreaterThan(
+            0
+        );
+        expect(screen.getAllByText('habit, 3x weekly').length).toBeGreaterThan(
+            0
+        );
         expect(screen.getByText('30m')).toBeInTheDocument();
         // The sections: tips, the graph, people, habits, tags
         expect(screen.getByTestId('untangle-tips')).toHaveTextContent(
@@ -290,12 +302,11 @@ describe('UntanglePage', () => {
         );
         expect(screen.getByTestId('untangle-habits')).toHaveTextContent('Gym');
         expect(screen.getByTestId('untangle-tags')).toHaveTextContent('#admin');
-        expect(screen.getByTestId('untangle-questions')).toHaveTextContent(
-            'Is Crete this month or someday?'
-        );
-        expect(screen.getByTestId('untangle-questions')).toHaveTextContent(
-            'When are the taxes due?'
-        );
+        expect(screen.getByTestId('untangle-brief')).toHaveTextContent('Today');
+        expect(screen.getByTestId('untangle-refine')).toBeInTheDocument();
+        expect(
+            screen.queryByTestId('untangle-questions')
+        ).not.toBeInTheDocument();
     });
 
     it('re-runs once with every answer after all questions are picked', async () => {
@@ -306,12 +317,20 @@ describe('UntanglePage', () => {
         fireEvent.click(screen.getByTestId('untangle-run'));
         await screen.findByTestId('untangle-result');
 
+        // The questions wait behind a button at the bottom
+        expect(
+            screen.queryByTestId('untangle-questions')
+        ).not.toBeInTheDocument();
+        fireEvent.click(screen.getByTestId('untangle-refine'));
         const update = screen.getByTestId('untangle-answer');
         expect(update).toBeDisabled();
-        fireEvent.click(screen.getByRole('button', { name: 'Someday' }));
+        const card = screen.getByTestId('untangle-questions');
+        fireEvent.click(within(card).getByRole('button', { name: 'Someday' }));
         expect(update).toBeDisabled();
         expect(service.untangle).toHaveBeenCalledTimes(1);
-        fireEvent.click(screen.getByRole('button', { name: 'Next month' }));
+        fireEvent.click(
+            within(card).getByRole('button', { name: 'Next month' })
+        );
         expect(update).toBeEnabled();
         fireEvent.click(update);
 

@@ -10,16 +10,18 @@ module.exports = {
             colors: {
                 // tududi's own palette, as used on the marketing site
                 brand: {
-                    DEFAULT: '#1e86e5',
-                    50: '#eaf3fc',
-                    100: '#d4e7f9',
-                    200: '#a9cff3',
-                    300: '#7db7ec',
-                    400: '#4d9fe8',
-                    500: '#1e86e5',
-                    600: '#176fc1',
-                    700: '#125a9c',
-                    900: '#0b3a66',
+                    // The taupe of the tududi logo, white on top
+                    DEFAULT: '#8f8a78',
+                    50: '#f3f1ec',
+                    100: '#e7e3da',
+                    200: '#cfc9bb',
+                    300: '#b8b2a0',
+                    400: '#a39e8c',
+                    500: '#8f8a78',
+                    600: '#7a7565',
+                    700: '#5f5a4b',
+                    800: '#45413a',
+                    900: '#2d2a25',
                 },
                 paper: {
                     DEFAULT: '#f7f6f3',

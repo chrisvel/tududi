@@ -3351,7 +3351,8 @@
       "waiting": "Waiting for",
       "habit": "Habit",
       "someday": "Someday",
-      "alt": "The plan as areas, goals, projects and tasks"
+      "alt": "The plan as areas, goals, projects and tasks",
+      "hint": "Hover or tap a node to follow its path"
     },
     "sections": {
       "shapeEyebrow": "The shape of it",
@@ -3365,6 +3366,16 @@
     "personItems": "{{count}} items",
     "runSignUp": "Untangle it, free with an account",
     "tryOwn": "Try your own list",
-    "ownCta": "Untangle my own list"
+    "ownCta": "Untangle my own list",
+    "refine": "Refine with more questions",
+    "brief": {
+      "kicker": "Your list, untangled",
+      "summary": "{{lines}} things, filed into {{areas}} areas, {{projects}} projects, {{habits}} habits and {{people}} people.",
+      "first": "Do this first",
+      "then": "Then, this week",
+      "nothingDated": "Nothing else has a date. Pick what matters when you keep it.",
+      "waiting": "Waiting on",
+      "wait": "Can wait"
+    }
   }
 }

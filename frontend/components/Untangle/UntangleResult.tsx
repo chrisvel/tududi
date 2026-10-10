@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     UntangleArea,
@@ -22,6 +22,28 @@ interface UntangleResultProps {
 const EYEBROW =
     'text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400';
 const CARD = 'rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800';
+
+// A small speech bubble for the "why" next to a decision: playful, still
+// quiet. `tone` picks the fill; the tail sits top-left.
+const Bubble: React.FC<{
+    children: React.ReactNode;
+    tone?: 'light' | 'paper' | 'amber';
+    className?: string;
+}> = ({ children, tone = 'light', className = '' }) => {
+    const fill =
+        tone === 'light'
+            ? 'bg-white/15 text-white before:bg-white/15'
+            : tone === 'amber'
+              ? 'bg-amber-100 text-amber-900 before:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-100 dark:before:bg-amber-900/40'
+              : 'bg-paper-deep text-gray-700 before:bg-paper-deep dark:bg-gray-700 dark:text-gray-200 dark:before:bg-gray-700';
+    return (
+        <span
+            className={`relative inline-block rounded-2xl rounded-tl-sm px-3 py-2 text-sm leading-snug before:absolute before:-left-1 before:top-2 before:h-3 before:w-3 before:rotate-45 before:rounded-sm ${fill} ${className}`}
+        >
+            <span className="relative">{children}</span>
+        </span>
+    );
+};
 
 const kindTint: Record<UntangleItem['kind'], string> = {
     task: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
@@ -123,13 +145,12 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
                     <span className="font-medium text-ink dark:text-gray-100">
                         {t('untangle.goal', 'Goal')}: {area.goal.title}
                     </span>
-                    {area.goal.why && (
-                        <span className="text-gray-500 dark:text-gray-400">
-                            {' '}
-                            {area.goal.why}
-                        </span>
-                    )}
                 </p>
+            )}
+            {area.goal && area.goal.why && (
+                <div className="mt-2">
+                    <Bubble tone="paper">{area.goal.why}</Bubble>
+                </div>
             )}
             <ul className="mt-3 flex flex-col gap-2">
                 {area.projects.map((project) => (
@@ -149,7 +170,7 @@ const AreaCard: React.FC<{ area: UntangleArea }> = ({ area }) => {
                                     key={task.title}
                                     className="flex items-center justify-between gap-2 text-sm text-gray-700 dark:text-gray-300"
                                 >
-                                    <span className="min-w-0 truncate">
+                                    <span className="min-w-0 break-words">
                                         {task.title}
                                         {task.person && (
                                             <span className="text-gray-500 dark:text-gray-400">
@@ -239,120 +260,156 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
     dated.sort((a, b) => a.due.localeCompare(b.due));
     const maxMinutes = Math.max(60, ...result.week.map((d) => d.minutes));
 
+    // The brief: what to do after the first thing, in order. Dated work
+    // within the week first, then whatever other people are holding.
+    const [showQuestions, setShowQuestions] = useState(false);
+    const lastDay = result.week[result.week.length - 1]?.date || '';
+    const first = result.today.title.toLowerCase();
+    const waitingItems = result.areas.flatMap((a) =>
+        a.items.filter((i) => i.kind === 'waiting')
+    );
+    const nextUp: { title: string; label: string }[] = [];
+    for (const d of dated) {
+        if (nextUp.length >= 4) break;
+        if (d.title.toLowerCase() === first) continue;
+        if (lastDay && d.due > lastDay) continue;
+        nextUp.push({ title: d.title, label: dueLabel(d.due) });
+    }
+    for (const w of waitingItems) {
+        if (nextUp.length >= 4) break;
+        if (w.title.toLowerCase() === first) continue;
+        if (nextUp.some((n) => n.title === w.title)) continue;
+        nextUp.push({
+            title: w.title,
+            label: w.person
+                ? t('untangle.kind.waitingFor', 'waiting for {{name}}', {
+                      name: w.person,
+                  })
+                : t('untangle.kind.waiting', 'waiting'),
+        });
+    }
+    const waitingOn = result.people.filter((p) => p.waiting > 0);
+    const counts = {
+        lines: result.areas.reduce(
+            (n, a) =>
+                n +
+                a.items.length +
+                a.projects.reduce((m, p) => m + p.tasks.length, 0),
+            0
+        ),
+        areas: result.areas.length,
+        projects: result.areas.reduce((n, a) => n + a.projects.length, 0),
+        habits: habits.length,
+        people: result.people.length,
+    };
+
     return (
         <div className="flex flex-col gap-10" data-testid="untangle-result">
-            {/* What matters now */}
-            <div className="grid gap-4 md:grid-cols-3">
+            {/* The five-second brief: what to do, in reading order */}
+            <section
+                className="rounded-3xl bg-brand-400 p-6 text-white shadow-sm sm:p-8"
+                data-testid="untangle-brief"
+            >
                 {result.today.title && (
-                    <div className="rounded-2xl bg-brand p-5 text-white shadow-sm md:col-span-1">
+                    <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-100">
                             {t('untangle.today', 'Today')}
                         </p>
-                        <p className="mt-1 font-display text-2xl font-medium leading-snug [text-wrap:balance]">
+                        <p className="mt-1 font-display text-3xl font-medium leading-tight [text-wrap:balance] sm:text-4xl">
                             {result.today.title}
                         </p>
                         {result.today.reason && (
-                            <p className="mt-2 text-sm text-brand-100">
-                                {result.today.reason}
-                            </p>
+                            <div className="mt-3">
+                                <Bubble>{result.today.reason}</Bubble>
+                            </div>
                         )}
                     </div>
                 )}
-                {result.drop.length > 0 && (
-                    <div className="rounded-2xl bg-amber-50 p-5 dark:bg-amber-900/20">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-300">
-                            {t('untangle.drop', 'Drop for now')}
-                        </p>
-                        <ul className="mt-2 flex flex-col gap-1.5">
-                            {result.drop.map((d) => (
-                                <li
-                                    key={d.title}
-                                    className="text-sm text-amber-900 dark:text-amber-100"
-                                >
-                                    <span className="font-medium">
-                                        {d.title}
-                                    </span>
-                                    {d.reason && (
-                                        <span className="text-amber-700 dark:text-amber-300">
-                                            {' '}
-                                            {d.reason}
-                                        </span>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-                {result.tips.length > 0 && (
-                    <div
-                        className="rounded-2xl bg-paper-deep p-5 dark:bg-gray-800"
-                        data-testid="untangle-tips"
-                    >
-                        <p className={EYEBROW}>{t('untangle.tips', 'Tips')}</p>
-                        <ul className="mt-2 flex flex-col gap-2">
-                            {result.tips.map((tip) => (
-                                <li
-                                    key={tip}
-                                    className="flex gap-2 text-sm text-gray-700 dark:text-gray-300"
-                                >
-                                    <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-                                    <span>{tip}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
 
-            {questions.length > 0 && (
-                <div className={CARD} data-testid="untangle-questions">
-                    <p className={EYEBROW}>
-                        {questions.length === 1
-                            ? t('untangle.oneQuestion', 'One question')
-                            : t('untangle.fewQuestions', 'A few questions')}
-                    </p>
-                    <div className="mt-2 grid gap-4 md:grid-cols-2">
-                        {questions.map((q) => (
-                            <div key={q.text}>
-                                <p className="font-display text-lg font-medium leading-snug">
-                                    {q.text}
+                <p className="mt-6 text-sm text-brand-100">
+                    {t(
+                        'untangle.brief.summary',
+                        '{{lines}} things, filed into {{areas}} areas, {{projects}} projects, {{habits}} habits and {{people}} people.',
+                        {
+                            lines: counts.lines,
+                            areas: counts.areas,
+                            projects: counts.projects,
+                            habits: counts.habits,
+                            people: counts.people,
+                        }
+                    )}
+                </p>
+
+                <div className="mt-5 grid gap-6 sm:grid-cols-2">
+                    <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-100">
+                            {t('untangle.brief.then', 'Then, this week')}
+                        </p>
+                        {nextUp.length === 0 ? (
+                            <p className="mt-2 text-sm text-brand-50">
+                                {t(
+                                    'untangle.brief.nothingDated',
+                                    'Nothing else has a date. Pick what matters when you keep it.'
+                                )}
+                            </p>
+                        ) : (
+                            <ol className="mt-2 flex flex-col gap-2">
+                                {nextUp.map((n, i) => (
+                                    <li
+                                        key={`${n.title}-${i}`}
+                                        className="flex items-baseline gap-3 text-sm"
+                                    >
+                                        <span className="w-4 shrink-0 text-right tabular-nums text-brand-100">
+                                            {i + 2}
+                                        </span>
+                                        <span className="min-w-0 flex-1 leading-snug">
+                                            {n.title}
+                                        </span>
+                                        <span className="shrink-0 rounded-full bg-white/20 px-2 py-0.5 text-[11px] tabular-nums text-white">
+                                            {n.label}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ol>
+                        )}
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        {waitingOn.length > 0 && (
+                            <div>
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-100">
+                                    {t('untangle.brief.waiting', 'Waiting on')}
                                 </p>
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                    {q.options.map((o) => {
-                                        const on = picked[q.text] === o;
-                                        return (
-                                            <button
-                                                key={o}
-                                                type="button"
-                                                aria-pressed={on}
-                                                onClick={() =>
-                                                    onPick(q.text, o)
-                                                }
-                                                className={`rounded-lg px-3 py-2 text-sm ${
-                                                    on
-                                                        ? 'bg-brand text-white'
-                                                        : 'bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-900/40 dark:text-brand-200 dark:hover:bg-brand-900/60'
-                                                }`}
-                                            >
-                                                {o}
-                                            </button>
-                                        );
-                                    })}
+                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                    {waitingOn.map((w) => (
+                                        <span
+                                            key={w.name}
+                                            className="rounded-full bg-white/20 px-2.5 py-1 text-xs text-white"
+                                        >
+                                            {w.name}
+                                            <span className="text-brand-100">
+                                                {' '}
+                                                · {w.items[0]}
+                                            </span>
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
-                        ))}
+                        )}
+                        {result.drop.length > 0 && (
+                            <div>
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-100">
+                                    {t('untangle.brief.wait', 'Can wait')}
+                                </p>
+                                <p className="mt-2 text-sm text-brand-50">
+                                    {result.drop
+                                        .map((d) => d.title)
+                                        .join(' · ')}
+                                </p>
+                            </div>
+                        )}
                     </div>
-                    <button
-                        type="button"
-                        onClick={onAnswerAll}
-                        disabled={!allAnswered}
-                        className="mt-4 h-11 w-full rounded-xl bg-ink text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-40 dark:bg-gray-100 dark:text-ink dark:hover:bg-white md:w-auto md:px-6"
-                        data-testid="untangle-answer"
-                    >
-                        {t('untangle.updatePlan', 'Update the plan')}
-                    </button>
                 </div>
-            )}
+            </section>
 
             <Section
                 eyebrow={t('untangle.sections.shapeEyebrow', 'The shape of it')}
@@ -366,6 +423,45 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                     <StructureGraph areas={result.areas} />
                 </div>
             </Section>
+
+            <div className="grid gap-4 md:grid-cols-2">
+                {result.drop.length > 0 && (
+                    <div className="rounded-2xl bg-amber-50 p-5 dark:bg-amber-900/20">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-300">
+                            {t('untangle.drop', 'Drop for now')}
+                        </p>
+                        <ul className="mt-2 flex flex-col gap-1.5">
+                            {result.drop.map((d) => (
+                                <li
+                                    key={d.title}
+                                    className="flex flex-col gap-1.5 text-sm text-amber-900 dark:text-amber-100"
+                                >
+                                    <span className="font-medium">
+                                        {d.title}
+                                    </span>
+                                    {d.reason && (
+                                        <Bubble tone="amber" className="ml-2">
+                                            {d.reason}
+                                        </Bubble>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+                {result.tips.length > 0 && (
+                    <div className={CARD} data-testid="untangle-tips">
+                        <p className={EYEBROW}>{t('untangle.tips', 'Tips')}</p>
+                        <ul className="mt-2 flex flex-col gap-2">
+                            {result.tips.map((tip) => (
+                                <li key={tip} className="flex">
+                                    <Bubble tone="paper">{tip}</Bubble>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
 
             <Section
                 eyebrow={t('untangle.sections.areasEyebrow', 'Areas')}
@@ -545,7 +641,7 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                                         key={`${d.due}-${d.title}`}
                                         className="flex items-baseline justify-between gap-3 text-sm"
                                     >
-                                        <span className="min-w-0 truncate">
+                                        <span className="min-w-0 break-words">
                                             {d.title}
                                         </span>
                                         <span className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">
@@ -558,6 +654,69 @@ const UntangleResult: React.FC<UntangleResultProps> = ({
                     </div>
                 </div>
             </Section>
+
+            {questions.length > 0 && !showQuestions && (
+                <div className="flex justify-center">
+                    <button
+                        type="button"
+                        onClick={() => setShowQuestions(true)}
+                        className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-ink shadow-sm hover:bg-brand-50 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                        data-testid="untangle-refine"
+                    >
+                        {t('untangle.refine', 'Refine with more questions')}
+                    </button>
+                </div>
+            )}
+
+            {questions.length > 0 && showQuestions && (
+                <div className={CARD} data-testid="untangle-questions">
+                    <p className={EYEBROW}>
+                        {questions.length === 1
+                            ? t('untangle.oneQuestion', 'One question')
+                            : t('untangle.fewQuestions', 'A few questions')}
+                    </p>
+                    <div className="mt-2 grid gap-4 md:grid-cols-2">
+                        {questions.map((q) => (
+                            <div key={q.text}>
+                                <p className="font-display text-lg font-medium leading-snug">
+                                    {q.text}
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {q.options.map((o) => {
+                                        const on = picked[q.text] === o;
+                                        return (
+                                            <button
+                                                key={o}
+                                                type="button"
+                                                aria-pressed={on}
+                                                onClick={() =>
+                                                    onPick(q.text, o)
+                                                }
+                                                className={`rounded-lg px-3 py-2 text-sm ${
+                                                    on
+                                                        ? 'bg-brand text-white'
+                                                        : 'bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-900/40 dark:text-brand-200 dark:hover:bg-brand-900/60'
+                                                }`}
+                                            >
+                                                {o}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onAnswerAll}
+                        disabled={!allAnswered}
+                        className="mt-4 h-11 w-full rounded-xl bg-ink text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-40 dark:bg-gray-100 dark:text-ink dark:hover:bg-white md:w-auto md:px-6"
+                        data-testid="untangle-answer"
+                    >
+                        {t('untangle.updatePlan', 'Update the plan')}
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

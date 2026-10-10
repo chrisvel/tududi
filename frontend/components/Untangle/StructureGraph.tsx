@@ -5,7 +5,10 @@ import { UntangleArea, UntangleKind } from '../../utils/untangleService';
 // The plan drawn as the tree tududi stores: areas hold goals, goals hold
 // projects, projects hold tasks, and the loose items hang off their area.
 // A small tidy-tree layout, no library: leaves stack top to bottom, every
-// parent sits level with the middle of its children.
+// parent sits level with the middle of its children. Labels wrap rather
+// than get cut. The panel is deliberately dark in both themes: links draw
+// themselves in, nodes light up, and hovering or tapping a node lights its
+// whole path while the rest dims.
 
 type NodeType = 'root' | 'area' | 'goal' | 'project' | UntangleKind;
 
@@ -22,52 +25,58 @@ interface Placed {
     x: number;
     y: number;
     depth: number;
+    lines: string[];
+    parent: Placed | null;
 }
 
-const MAX_COLUMN = 180;
-const MIN_COLUMN = 118;
-const ROW = 26;
-const LEFT = 64;
-const RIGHT = 196;
-
-const MARK: Record<NodeType, string> = {
-    root: 'fill-paper-deep stroke-gray-300 dark:fill-gray-700 dark:stroke-gray-600',
-    area: 'fill-brand dark:fill-brand-300',
-    goal: 'fill-white stroke-amber-500 dark:fill-gray-800 dark:stroke-amber-400',
-    project: 'fill-brand-600 dark:fill-brand-400',
-    task: 'fill-gray-400 dark:fill-gray-500',
-    waiting: 'fill-rose-500 dark:fill-rose-400',
-    habit: 'fill-violet-500 dark:fill-violet-400',
-    someday: 'fill-gray-300 dark:fill-gray-600',
-};
-
-// The same marks as HTML dots, for the outline shown on narrow screens
-const DOT: Record<NodeType, string> = {
-    root: 'bg-paper-deep ring-1 ring-gray-300 dark:bg-gray-700 dark:ring-gray-600',
-    area: 'bg-brand dark:bg-brand-300',
-    goal: 'bg-transparent ring-[1.5px] ring-amber-500 dark:ring-amber-400',
-    project: 'rounded-[3px] bg-brand-600 dark:bg-brand-400',
-    task: 'bg-gray-400 dark:bg-gray-500',
-    waiting: 'bg-rose-500 dark:bg-rose-400',
-    habit: 'bg-violet-500 dark:bg-violet-400',
-    someday: 'bg-gray-300 dark:bg-gray-600',
-};
-
+const MAX_COLUMN = 190;
+const MIN_COLUMN = 124;
+const ROW = 20;
+const LEFT = 72;
+const RIGHT = 210;
+const LEAF_CHARS = 28;
+const NODE_CHARS = 18;
 const NARROW = 600;
+
+const COLOR: Record<NodeType, string> = {
+    root: '#e7e3da',
+    area: '#ffffff',
+    goal: '#ffd98a',
+    project: '#f3f1ec',
+    task: '#e7e3da',
+    waiting: '#ffb4b4',
+    habit: '#d9c9ff',
+    someday: '#cfc9bb',
+};
 
 const RADIUS: Record<NodeType, number> = {
     root: 6,
-    area: 7,
+    area: 7.5,
     goal: 6,
     project: 5.5,
-    task: 4.5,
+    task: 4,
     waiting: 4.5,
     habit: 4.5,
-    someday: 4.5,
+    someday: 3.5,
 };
 
-function cut(text: string, max: number): string {
-    return text.length > max ? `${text.slice(0, max - 1).trim()}…` : text;
+// Word-wrap a label into at most two lines of about `max` characters.
+function wrap(text: string, max: number): string[] {
+    const words = text.split(/\s+/);
+    const lines: string[] = [];
+    let current = '';
+    for (const word of words) {
+        const next = current ? `${current} ${word}` : word;
+        if (next.length > max && current) {
+            lines.push(current);
+            current = word;
+        } else {
+            current = next;
+        }
+    }
+    if (current) lines.push(current);
+    if (lines.length > 2) return [lines[0], lines.slice(1).join(' ')];
+    return lines;
 }
 
 function shortDate(iso: string): string {
@@ -131,60 +140,83 @@ function buildTree(areas: UntangleArea[], rootLabel: string): GraphNode {
 function layout(
     root: GraphNode,
     column: number
-): {
-    placed: Placed[];
-    links: [Placed, Placed][];
-    depth: number;
-    leaves: number;
-} {
+): { placed: Placed[]; depth: number; height: number } {
     const placed: Placed[] = [];
-    const links: [Placed, Placed][] = [];
-    let leaf = 0;
+    let cursor = 0;
     let maxDepth = 0;
-    const place = (node: GraphNode, depth: number): Placed => {
+    const place = (
+        node: GraphNode,
+        depth: number,
+        parent: Placed | null
+    ): Placed => {
         maxDepth = Math.max(maxDepth, depth);
-        let y: number;
-        const kids: Placed[] = [];
-        if (node.children.length === 0) {
-            y = leaf * ROW;
-            leaf += 1;
+        const isLeaf = node.children.length === 0;
+        const lines = wrap(node.label, isLeaf ? LEAF_CHARS : NODE_CHARS);
+        const me: Placed = {
+            node,
+            x: depth * column,
+            y: 0,
+            depth,
+            lines,
+            parent,
+        };
+        if (isLeaf) {
+            // A leaf takes a row per line, plus a bit for its sub label
+            const rows = lines.length + (node.sub ? 0.6 : 0);
+            me.y = cursor + (rows * ROW) / 2;
+            cursor += rows * ROW + 6;
         } else {
-            for (const child of node.children)
-                kids.push(place(child, depth + 1));
-            y = (kids[0].y + kids[kids.length - 1].y) / 2;
+            const kids = node.children.map((child) =>
+                place(child, depth + 1, me)
+            );
+            me.y = (kids[0].y + kids[kids.length - 1].y) / 2;
         }
-        const me = { node, x: depth * column, y, depth };
         placed.push(me);
-        for (const kid of kids) links.push([me, kid]);
         return me;
     };
-    place(root, 0);
-    return { placed, links, depth: maxDepth, leaves: leaf };
+    place(root, 0, null);
+    return { placed, depth: maxDepth, height: cursor };
 }
 
-const OutlineNode: React.FC<{ node: GraphNode; depth: number }> = ({
-    node,
-    depth,
-}) => (
-    <li>
+const OutlineNode: React.FC<{
+    node: GraphNode;
+    depth: number;
+    index: number;
+}> = ({ node, depth, index }) => (
+    <li
+        className="ug-pop"
+        style={{ animationDelay: `${Math.min(index * 35, 1200)}ms` }}
+    >
         <div className="flex items-baseline gap-2 py-0.5">
             <span
-                className={`relative top-[1px] inline-block h-2.5 w-2.5 shrink-0 rounded-full ${DOT[node.type]}`}
+                className={`relative top-[1px] inline-block h-2.5 w-2.5 shrink-0 ${
+                    node.type === 'project' ? 'rounded-[3px]' : 'rounded-full'
+                }`}
+                style={{
+                    background:
+                        node.type === 'goal' ? 'transparent' : COLOR[node.type],
+                    boxShadow:
+                        node.type === 'goal'
+                            ? `inset 0 0 0 1.5px ${COLOR.goal}`
+                            : node.type === 'area'
+                              ? `0 0 10px ${COLOR.area}`
+                              : undefined,
+                }}
             />
             <span
-                className={`min-w-0 text-sm ${
+                className={`min-w-0 break-words text-sm ${
                     node.type === 'area'
-                        ? 'font-semibold'
+                        ? 'font-semibold text-white'
                         : node.type === 'goal' || node.type === 'project'
-                          ? 'font-medium'
+                          ? 'font-medium text-white'
                           : node.type === 'someday' || node.type === 'root'
-                            ? 'text-gray-500 dark:text-gray-400'
-                            : ''
+                            ? 'text-white/70'
+                            : 'text-white/90'
                 }`}
             >
                 {node.label}
                 {node.sub && (
-                    <span className="ml-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    <span className="ml-1.5 text-xs text-white/70">
                         {node.sub}
                     </span>
                 )}
@@ -192,15 +224,16 @@ const OutlineNode: React.FC<{ node: GraphNode; depth: number }> = ({
         </div>
         {node.children.length > 0 && (
             <ul
-                className={`ml-[5px] border-l border-gray-200 pl-4 dark:border-gray-700 ${
+                className={`ml-[5px] border-l border-white/30 pl-4 ${
                     depth === 0 ? 'mt-1 flex flex-col gap-2' : ''
                 }`}
             >
-                {node.children.map((child) => (
+                {node.children.map((child, i) => (
                     <OutlineNode
                         key={child.id}
                         node={child}
                         depth={depth + 1}
+                        index={index + i + 1}
                     />
                 ))}
             </ul>
@@ -214,8 +247,9 @@ const StructureGraph: React.FC<{ areas: UntangleArea[] }> = ({ areas }) => {
         () => buildTree(areas, t('untangle.graph.root', 'Your list')),
         [areas, t]
     );
-    // Columns stretch to the card on a wide screen and shrink to a floor on
-    // a narrow one, past which the card scrolls sideways.
+
+    // Columns stretch to the panel on a wide screen and shrink to a floor
+    // on a narrow one, past which the panel scrolls sideways.
     const boxRef = useRef<HTMLDivElement | null>(null);
     const [boxWidth, setBoxWidth] = useState(0);
     useEffect(() => {
@@ -238,12 +272,45 @@ const StructureGraph: React.FC<{ areas: UntangleArea[] }> = ({ areas }) => {
                 : MAX_COLUMN
         )
     );
-    const { placed, links, depth, leaves } = useMemo(
+    const { placed, depth, height } = useMemo(
         () => layout(tree, column),
         [tree, column]
     );
     const width = LEFT + depth * column + RIGHT;
-    const height = Math.max(1, leaves - 1) * ROW + 40;
+    const svgHeight = height + 40;
+
+    // Focus: a hovered or tapped node lights its ancestors and descendants;
+    // a legend chip lights every node of that kind.
+    const [focusId, setFocusId] = useState<string | null>(null);
+    const [pinnedId, setPinnedId] = useState<string | null>(null);
+    const [kindFilter, setKindFilter] = useState<NodeType | null>(null);
+    const activeId = pinnedId || focusId;
+    const lit = useMemo(() => {
+        const set = new Set<string>();
+        if (kindFilter) {
+            for (const p of placed) {
+                if (p.node.type === kindFilter) set.add(p.node.id);
+            }
+            return set;
+        }
+        if (!activeId) return null;
+        const me = placed.find((p) => p.node.id === activeId);
+        if (!me) return null;
+        let up: Placed | null = me;
+        while (up) {
+            set.add(up.node.id);
+            up = up.parent;
+        }
+        const down = (n: GraphNode) => {
+            set.add(n.id);
+            n.children.forEach(down);
+        };
+        down(me.node);
+        return set;
+    }, [activeId, kindFilter, placed]);
+    const isLit = (id: string) => !lit || lit.has(id);
+    const linkLit = (a: Placed, b: Placed) =>
+        !lit || (lit.has(a.node.id) && lit.has(b.node.id));
 
     const legend: { type: NodeType; label: string }[] = [
         { type: 'area', label: t('untangle.graph.area', 'Area') },
@@ -255,145 +322,263 @@ const StructureGraph: React.FC<{ areas: UntangleArea[] }> = ({ areas }) => {
         { type: 'someday', label: t('untangle.graph.someday', 'Someday') },
     ];
 
+    const narrow = boxWidth > 0 && boxWidth < NARROW;
+    const order = new Map(placed.map((p, i) => [p.node.id, i]));
+
     return (
-        <div data-testid="untangle-graph">
-            <div className="flex flex-wrap gap-x-4 gap-y-1 px-1 text-xs text-gray-500 dark:text-gray-400">
-                {legend.map((l) => (
-                    <span
-                        key={l.type}
-                        className="inline-flex items-center gap-1.5"
-                    >
-                        <svg viewBox="0 0 12 12" className="h-3 w-3">
-                            {l.type === 'project' ? (
-                                <rect
-                                    x="1.5"
-                                    y="1.5"
-                                    width="9"
-                                    height="9"
-                                    rx="2"
-                                    className={MARK[l.type]}
-                                />
-                            ) : (
-                                <circle
-                                    cx="6"
-                                    cy="6"
-                                    r="4.5"
-                                    strokeWidth="1.5"
-                                    strokeDasharray={
-                                        l.type === 'goal' ? '2 1.5' : undefined
-                                    }
-                                    className={MARK[l.type]}
-                                />
-                            )}
-                        </svg>
-                        {l.label}
-                    </span>
-                ))}
+        <div
+            className="ug-panel relative overflow-hidden rounded-2xl p-4 text-white sm:p-5"
+            data-testid="untangle-graph"
+        >
+            <style>{`
+                .ug-panel { background: radial-gradient(120% 80% at 10% 0%, #b3ae9c 0%, #a39e8c 55%, #8f8a78 100%); }
+                .ug-panel::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+                    background-image: linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px);
+                    background-size: 28px 28px; mask-image: radial-gradient(80% 80% at 50% 40%, #000 30%, transparent 100%); -webkit-mask-image: radial-gradient(80% 80% at 50% 40%, #000 30%, transparent 100%); }
+                .ug-link { stroke-dasharray: 600; stroke-dashoffset: 600; animation: ug-draw 1.1s cubic-bezier(.4,0,.2,1) forwards; transition: opacity .25s, stroke .25s; }
+                .ug-node { transform-origin: 0 0; animation: ug-pop .45s cubic-bezier(.2,.9,.3,1.4) both; transition: opacity .25s; cursor: pointer; }
+                .ug-pop { animation: ug-fade .4s ease-out both; }
+                .ug-dim { opacity: .18; }
+                .ug-chip { transition: background .2s, color .2s; }
+                @keyframes ug-draw { to { stroke-dashoffset: 0; } }
+                @keyframes ug-pop { from { opacity: 0; transform: scale(.3); } to { opacity: 1; transform: scale(1); } }
+                @keyframes ug-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+                @media (prefers-reduced-motion: reduce) { .ug-link, .ug-node, .ug-pop { animation: none; stroke-dashoffset: 0; opacity: 1; } }
+            `}</style>
+
+            <div className="relative flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[11px]">
+                {legend.map((l) => {
+                    const on = kindFilter === l.type;
+                    return (
+                        <button
+                            key={l.type}
+                            type="button"
+                            onClick={() => setKindFilter(on ? null : l.type)}
+                            aria-pressed={on}
+                            className={`ug-chip inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 ${
+                                on
+                                    ? 'bg-white/30 text-white'
+                                    : 'bg-white/10 text-white/90 hover:bg-white/20'
+                            }`}
+                            data-testid={`untangle-graph-kind-${l.type}`}
+                        >
+                            <span
+                                className={`inline-block h-2 w-2 ${
+                                    l.type === 'project'
+                                        ? 'rounded-[2px]'
+                                        : 'rounded-full'
+                                }`}
+                                style={{
+                                    background:
+                                        l.type === 'goal'
+                                            ? 'transparent'
+                                            : COLOR[l.type],
+                                    boxShadow:
+                                        l.type === 'goal'
+                                            ? `inset 0 0 0 1.5px ${COLOR.goal}`
+                                            : undefined,
+                                }}
+                            />
+                            {l.label}
+                        </button>
+                    );
+                })}
+                <span className="ml-auto hidden text-white/70 sm:inline">
+                    {t(
+                        'untangle.graph.hint',
+                        'Hover or tap a node to follow its path'
+                    )}
+                </span>
             </div>
-            <div className="mt-3 overflow-x-auto" ref={boxRef}>
-                {boxWidth > 0 && boxWidth < NARROW ? (
+
+            <div className="relative mt-3 overflow-x-auto" ref={boxRef}>
+                {narrow ? (
                     <ul data-testid="untangle-graph-outline">
-                        <OutlineNode node={tree} depth={0} />
+                        <OutlineNode node={tree} depth={0} index={0} />
                     </ul>
                 ) : (
                     <svg
-                        viewBox={`0 0 ${width} ${height}`}
+                        viewBox={`0 0 ${width} ${svgHeight}`}
                         width={width}
-                        height={height}
+                        height={svgHeight}
                         className="block max-w-none font-ui"
                         role="img"
                         aria-label={t(
                             'untangle.graph.alt',
                             'The plan as areas, goals, projects and tasks'
                         )}
+                        onMouseLeave={() => setFocusId(null)}
                     >
+                        <defs>
+                            <filter
+                                id="ug-glow"
+                                x="-100%"
+                                y="-100%"
+                                width="300%"
+                                height="300%"
+                            >
+                                <feGaussianBlur stdDeviation="3" result="b" />
+                                <feMerge>
+                                    <feMergeNode in="b" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
                         <g transform={`translate(${LEFT},20)`}>
-                            {links.map(([a, b]) => {
-                                const mx = (a.x + b.x) / 2;
+                            {placed.map((p) => {
+                                if (!p.parent) return null;
+                                const on = linkLit(p.parent, p);
+                                const mx = (p.parent.x + p.x) / 2;
                                 return (
                                     <path
-                                        key={`${a.node.id}-${b.node.id}`}
-                                        d={`M${a.x},${a.y} C${mx},${a.y} ${mx},${b.y} ${b.x},${b.y}`}
+                                        key={`l-${p.node.id}`}
+                                        className={`ug-link ${on ? '' : 'ug-dim'}`}
+                                        style={{
+                                            animationDelay: `${(order.get(p.node.id) || 0) * 12}ms`,
+                                        }}
+                                        d={`M${p.parent.x},${p.parent.y} C${mx},${p.parent.y} ${mx},${p.y} ${p.x},${p.y}`}
                                         fill="none"
-                                        strokeWidth="1.4"
-                                        className="stroke-gray-300 dark:stroke-gray-600"
+                                        strokeWidth={on && lit ? 2 : 1.2}
+                                        stroke={
+                                            on && lit
+                                                ? COLOR[p.node.type]
+                                                : 'rgba(255,255,255,0.45)'
+                                        }
                                     />
                                 );
                             })}
                             {placed.map((p) => {
                                 const r = RADIUS[p.node.type];
                                 const isLeaf = p.node.children.length === 0;
-                                const labelX = isLeaf ? r + 7 : -(r + 7);
+                                const labelX = isLeaf ? r + 8 : -(r + 8);
+                                const lines = p.lines;
+                                const firstY = isLeaf
+                                    ? -((lines.length - 1) * 13) / 2 +
+                                      4 -
+                                      (p.node.sub ? 5 : 0)
+                                    : -9 - (lines.length - 1) * 13;
+                                const color = COLOR[p.node.type];
+                                const on = isLit(p.node.id);
+                                const glow =
+                                    p.node.type === 'area' || (on && !!lit);
                                 return (
                                     <g
                                         key={p.node.id}
                                         transform={`translate(${p.x},${p.y})`}
+                                        onMouseEnter={() =>
+                                            setFocusId(p.node.id)
+                                        }
+                                        onClick={() =>
+                                            setPinnedId((cur) =>
+                                                cur === p.node.id
+                                                    ? null
+                                                    : p.node.id
+                                            )
+                                        }
+                                        data-testid={`untangle-graph-node-${p.node.type}`}
                                     >
-                                        {p.node.type === 'project' ? (
-                                            <rect
-                                                x={-r}
-                                                y={-r}
-                                                width={r * 2}
-                                                height={r * 2}
-                                                rx="2.5"
-                                                className={MARK.project}
-                                            />
-                                        ) : (
-                                            <circle
-                                                r={r}
-                                                strokeWidth={
-                                                    p.node.type === 'goal' ||
-                                                    p.node.type === 'root'
-                                                        ? 1.6
-                                                        : 0
-                                                }
-                                                strokeDasharray={
-                                                    p.node.type === 'goal'
-                                                        ? '3 2'
-                                                        : undefined
-                                                }
-                                                className={MARK[p.node.type]}
-                                            />
-                                        )}
-                                        <text
-                                            x={labelX}
-                                            y={
-                                                isLeaf
-                                                    ? p.node.sub
-                                                        ? -1
-                                                        : 4
-                                                    : -9
-                                            }
-                                            textAnchor={
-                                                isLeaf ? 'start' : 'end'
-                                            }
-                                            className={`text-[12px] ${
-                                                p.node.type === 'area'
-                                                    ? 'fill-ink font-semibold dark:fill-gray-100'
-                                                    : p.node.type === 'root'
-                                                      ? 'fill-gray-500 font-semibold dark:fill-gray-400'
-                                                      : p.node.type ===
-                                                          'someday'
-                                                        ? 'fill-gray-500 dark:fill-gray-400'
-                                                        : 'fill-ink dark:fill-gray-100'
-                                            }`}
+                                        <g
+                                            className={`ug-node ${on ? '' : 'ug-dim'}`}
+                                            style={{
+                                                animationDelay: `${(order.get(p.node.id) || 0) * 12 + 250}ms`,
+                                            }}
                                         >
-                                            {cut(
-                                                p.node.label,
-                                                isLeaf
-                                                    ? 30
-                                                    : Math.floor(column / 7)
+                                            {p.node.type === 'project' ? (
+                                                <rect
+                                                    x={-r}
+                                                    y={-r}
+                                                    width={r * 2}
+                                                    height={r * 2}
+                                                    rx="2.5"
+                                                    fill={color}
+                                                    filter={
+                                                        glow
+                                                            ? 'url(#ug-glow)'
+                                                            : undefined
+                                                    }
+                                                />
+                                            ) : (
+                                                <circle
+                                                    r={r}
+                                                    fill={
+                                                        p.node.type === 'goal'
+                                                            ? '#a39e8c'
+                                                            : color
+                                                    }
+                                                    stroke={
+                                                        p.node.type === 'goal'
+                                                            ? color
+                                                            : p.node.type ===
+                                                                'root'
+                                                              ? '#ffffff'
+                                                              : 'none'
+                                                    }
+                                                    strokeWidth={1.6}
+                                                    strokeDasharray={
+                                                        p.node.type === 'goal'
+                                                            ? '3 2'
+                                                            : undefined
+                                                    }
+                                                    filter={
+                                                        glow
+                                                            ? 'url(#ug-glow)'
+                                                            : undefined
+                                                    }
+                                                />
                                             )}
-                                        </text>
-                                        {isLeaf && p.node.sub && (
                                             <text
                                                 x={labelX}
-                                                y={11}
-                                                className="fill-gray-500 text-[10.5px] dark:fill-gray-400"
+                                                y={firstY}
+                                                textAnchor={
+                                                    isLeaf ? 'start' : 'end'
+                                                }
+                                                className="text-[12px]"
+                                                fill={
+                                                    p.node.type === 'area'
+                                                        ? '#ffffff'
+                                                        : p.node.type ===
+                                                                'root' ||
+                                                            p.node.type ===
+                                                                'someday'
+                                                          ? '#e7e3da'
+                                                          : '#ffffff'
+                                                }
+                                                fontWeight={
+                                                    p.node.type === 'area'
+                                                        ? 600
+                                                        : p.node.type ===
+                                                                'goal' ||
+                                                            p.node.type ===
+                                                                'project'
+                                                          ? 500
+                                                          : 400
+                                                }
                                             >
-                                                {cut(p.node.sub, 24)}
+                                                {lines.map((line, i) => (
+                                                    <tspan
+                                                        key={`${i}-${line}`}
+                                                        x={labelX}
+                                                        dy={i === 0 ? 0 : 13}
+                                                    >
+                                                        {line}
+                                                    </tspan>
+                                                ))}
                                             </text>
-                                        )}
+                                            {isLeaf && p.node.sub && (
+                                                <text
+                                                    x={labelX}
+                                                    y={
+                                                        firstY +
+                                                        lines.length * 13 -
+                                                        1
+                                                    }
+                                                    className="text-[10.5px]"
+                                                    fill="#f3f1ec"
+                                                >
+                                                    {p.node.sub}
+                                                </text>
+                                            )}
+                                        </g>
                                     </g>
                                 );
                             })}
