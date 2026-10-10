@@ -34,6 +34,7 @@ const notesController = {
             const notes = await notesService.getAll(userId, {
                 orderBy: req.query.order_by,
                 tagFilter: req.query.tag,
+                scopeQuery: req.query,
             });
             res.json(notes);
         } catch (error) {

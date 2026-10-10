@@ -8,6 +8,7 @@ const {
 } = require('../../../models');
 const { Op, QueryTypes } = require('sequelize');
 const permissionsService = require('../../../services/permissionsService');
+const scopeService = require('../../../services/scopeService');
 const { blockedCondition } = require('../relations/service');
 const { customOrderClause } = require('../order/service');
 const {
@@ -19,12 +20,15 @@ const {
 // `page` ({ limit, offset }) switches to database pagination: the result is
 // then { rows, count } instead of an array. Callers that post-process the
 // list in memory (today, upcoming by day) must not pass it.
+// `scope` is an already-resolved scopeService scope; without it the
+// area_uid / project_uid / tags params are resolved here.
 async function filterTasksByParams(
     params,
     userId,
     userTimezone,
     permissionCache = null,
-    page = null
+    page = null,
+    scope = undefined
 ) {
     const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
         'task',
@@ -384,23 +388,25 @@ async function filterTasksByParams(
         ];
     }
 
-    if (params.project_uid) {
-        const project = await Project.findOne({
-            where: { uid: params.project_uid },
-        });
-        if (project) {
-            whereClause.project_id = project.id;
-        }
-    } else if (params.project_id) {
+    // area_uid / project_uid / tags narrow the list to a scope (see
+    // scopeService): an area includes the tasks of its projects, a project
+    // must sit in the area, tags must all be present. The numeric id params
+    // keep their plain column match.
+    const resolvedScope =
+        scope === undefined
+            ? await scopeService.resolveScope(params, userId)
+            : scope;
+    const scopeWhere = await scopeService.taskScopeWhere(resolvedScope);
+    if (scopeWhere) {
+        whereClause[Op.and] = [
+            ...(Array.isArray(whereClause[Op.and]) ? whereClause[Op.and] : []),
+            scopeWhere,
+        ];
+    }
+    if (!params.project_uid && params.project_id) {
         whereClause.project_id = params.project_id;
     }
-
-    if (params.area_uid) {
-        const area = await Area.findOne({ where: { uid: params.area_uid } });
-        if (area) {
-            whereClause.area_id = area.id;
-        }
-    } else if (params.area_id) {
+    if (!params.area_uid && params.area_id) {
         whereClause.area_id = params.area_id;
     }
 

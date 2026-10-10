@@ -83,6 +83,7 @@ const {
 } = require('./operations/recurring');
 
 const { getTaskMetrics } = require('./queries/metrics-computation');
+const scopeService = require('../../services/scopeService');
 
 const { getSubtasks } = require('./operations/subtasks');
 
@@ -201,6 +202,10 @@ router.get('/tasks', async (req, res) => {
 
         await handleRecurringTasks(userId, type);
 
+        // One resolved scope (area_uid / project_uid / tags) serves the
+        // list, the upcoming projects and the Today lists alike.
+        const scope = await scopeService.resolveScope(req.query, userId);
+
         const hasPagination =
             limitParam !== undefined || offsetParam !== undefined;
         const limit = parseInt(limitParam, 10) || 20;
@@ -220,12 +225,20 @@ router.get('/tasks', async (req, res) => {
                 userId,
                 timezone,
                 null,
-                { limit, offset }
+                { limit, offset },
+                scope
             );
             tasks = paged.rows;
             totalCount = paged.count;
         } else {
-            tasks = await filterTasksByParams(req.query, userId, timezone);
+            tasks = await filterTasksByParams(
+                req.query,
+                userId,
+                timezone,
+                null,
+                null,
+                scope
+            );
         }
 
         // Fetch projects with upcoming due dates for the upcoming view
@@ -243,15 +256,21 @@ router.get('/tasks', async (req, res) => {
                 );
 
             upcomingProjects = await Project.findAll({
-                where: {
-                    ...ownedOrShared,
-                    due_date_at: {
-                        [Op.between]: [upcomingRange.start, upcomingRange.end],
+                where: scopeService.withScope(
+                    {
+                        ...ownedOrShared,
+                        due_date_at: {
+                            [Op.between]: [
+                                upcomingRange.start,
+                                upcomingRange.end,
+                            ],
+                        },
+                        status: {
+                            [Op.notIn]: ['done', 'cancelled'],
+                        },
                     },
-                    status: {
-                        [Op.notIn]: ['done', 'cancelled'],
-                    },
-                },
+                    await scopeService.projectScopeWhere(scope)
+                ),
                 order: [['due_date_at', 'ASC NULLS FIRST']],
             });
         }
@@ -356,7 +375,8 @@ router.get('/tasks', async (req, res) => {
             timezone,
             type,
             include_lists,
-            serializationOptions
+            serializationOptions,
+            await scopeService.taskScopeWhere(scope)
         );
 
         if (hasPagination) {

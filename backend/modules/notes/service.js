@@ -12,6 +12,7 @@ const {
 const { Tag, Project } = require('../../models');
 const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
+const scopeService = require('../../services/scopeService');
 const { sortTags } = require('../tasks/core/serializers');
 const { logError } = require('../../services/logService');
 const { noteAttachments } = require('../../services/entityAttachments');
@@ -128,12 +129,16 @@ class NotesService {
      * Get all notes for a user with optional filtering.
      */
     async getAll(userId, options = {}) {
-        const { orderBy = 'title:asc', tagFilter } = options;
+        const { orderBy = 'title:asc', tagFilter, scopeQuery } = options;
         const [orderColumn, orderDirection] = orderBy.split(':');
 
-        const whereClause = await permissionsService.ownershipOrPermissionWhere(
-            'note',
-            userId
+        // area_uid / project_uid / tags narrow the list to a Focus scope
+        const scope = scopeQuery
+            ? await scopeService.resolveScope(scopeQuery, userId)
+            : null;
+        const whereClause = scopeService.withScope(
+            await permissionsService.ownershipOrPermissionWhere('note', userId),
+            await scopeService.noteScopeWhere(scope)
         );
 
         const notes = await notesRepository.findAllWithIncludes(whereClause, {

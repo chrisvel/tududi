@@ -1,10 +1,12 @@
 'use strict';
 
 const moment = require('moment-timezone');
+const { Op } = require('sequelize');
 const { Task } = require('../../models');
 const repository = require('./repository');
 const slots = require('./slots');
 const permissionsService = require('../../services/permissionsService');
+const scopeService = require('../../services/scopeService');
 const { serializeTasks } = require('../tasks/core/serializers');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
 const {
@@ -146,7 +148,11 @@ async function visibleTaskWhere(userId) {
     return permissionsService.ownershipOrPermissionWhere('task', userId);
 }
 
-async function serializePlan(plan, userId, timezone) {
+// A Focus scope never hides plan items: the planner replaces the whole
+// list on every drag or carry-over from what the client holds, so a hidden
+// item would be dropped on the next save. Items outside the scope are
+// marked in_focus: false and the client dims them instead.
+async function serializePlan(plan, userId, timezone, scopeWhere = null) {
     if (!plan) return null;
 
     const items = plan.Items || [];
@@ -155,6 +161,20 @@ async function serializePlan(plan, userId, timezone) {
         visibleWhere,
         items.map((item) => item.task_id)
     );
+    const inFocusIds = scopeWhere
+        ? new Set(
+              (
+                  await Task.findAll({
+                      where: scopeService.withScope(
+                          { id: { [Op.in]: tasks.map((task) => task.id) } },
+                          scopeWhere
+                      ),
+                      attributes: ['id'],
+                      raw: true,
+                  })
+              ).map((row) => row.id)
+          )
+        : null;
     const serialized = await serializeTasks(tasks, timezone, {
         preserveOriginalName: true,
     });
@@ -198,21 +218,30 @@ async function serializePlan(plan, userId, timezone) {
                 duration_minutes: item.duration_minutes,
                 task: byId.get(item.task_id),
                 occurrence_done: isOccurrenceDone(item.task_id),
+                ...(inFocusIds
+                    ? { in_focus: inFocusIds.has(item.task_id) }
+                    : {}),
             })),
     };
 }
 
-async function getPlan(user, date) {
+async function getPlan(user, date, scopeQuery = null) {
     const timezone = getSafeTimezone(user.timezone);
     const planDate = resolvePlanDate(date, timezone);
-    const [plan, dayHours] = await Promise.all([
+    const [plan, dayHours, scope] = await Promise.all([
         repository.findPlan(user.id, planDate),
         getDayHours(user),
+        scopeQuery ? scopeService.resolveScope(scopeQuery, user.id) : null,
     ]);
     return {
         date: planDate,
         day_hours: dayHours,
-        plan: await serializePlan(plan, user.id, timezone),
+        plan: await serializePlan(
+            plan,
+            user.id,
+            timezone,
+            await scopeService.taskScopeWhere(scope)
+        ),
     };
 }
 
@@ -312,14 +341,26 @@ function parseSuggestedLimit(value) {
 // planning settings decide which tasks count as suggested and how many are
 // shown at first; suggestedLimit raises that cap when the planner asks for
 // more, and suggested_total says how many there are in all.
-async function getCandidates(user, { suggestedLimit = null } = {}) {
+async function getCandidates(
+    user,
+    { suggestedLimit = null, scopeQuery = null } = {}
+) {
     const timezone = getSafeTimezone(user.timezone);
     const { order, suggestions } = await getPlanningSettings(user);
     const cap = suggestedLimit ?? suggestions.maxSuggestions;
+    const scopeWhere = await scopeService.taskScopeWhere(
+        scopeQuery ? await scopeService.resolveScope(scopeQuery, user.id) : null
+    );
     const [metrics, taggedToday] = await Promise.all([
-        computeTaskMetrics(user.id, timezone, null, suggestions),
+        computeTaskMetrics(user.id, timezone, null, suggestions, scopeWhere),
         repository.findTasksTaggedToday(
-            await permissionsService.ownershipOrPermissionWhere('task', user.id)
+            scopeService.withScope(
+                await permissionsService.ownershipOrPermissionWhere(
+                    'task',
+                    user.id
+                ),
+                scopeWhere
+            )
         ),
     ]);
 

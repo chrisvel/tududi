@@ -93,6 +93,49 @@ async function safeDeleteFile(filePath) {
     await fs.unlink(resolvedPath).catch(() => {});
 }
 
+const MAX_FOCUS_TAGS = 10;
+
+// The Focus chip's saved scope: an area, optionally a project inside it and
+// up to ten tag names. Uids are not checked against the database here; a
+// deleted area or project simply makes the lists come back empty and the
+// client clears the focus when it no longer resolves.
+function sanitizeFocus(focus) {
+    if (!focus) return null;
+    if (typeof focus !== 'object' || Array.isArray(focus)) {
+        throw new ValidationError('Focus must be an object or null.');
+    }
+    const areaUid =
+        typeof focus.area_uid === 'string' ? focus.area_uid.trim() : '';
+    const projectUid =
+        typeof focus.project_uid === 'string' ? focus.project_uid.trim() : '';
+    const rawTags =
+        focus.tags === undefined || focus.tags === null ? [] : focus.tags;
+    if (!Array.isArray(rawTags)) {
+        throw new ValidationError('Focus tags must be a list of names.');
+    }
+    const tags = [
+        ...new Set(
+            rawTags
+                .filter((name) => typeof name === 'string')
+                .map((name) => name.trim())
+                .filter(Boolean)
+        ),
+    ];
+    if (tags.length > MAX_FOCUS_TAGS) {
+        throw new ValidationError(
+            `A focus can hold at most ${MAX_FOCUS_TAGS} tags.`
+        );
+    }
+    if (!areaUid && !projectUid && tags.length === 0) {
+        return null;
+    }
+    const clean = {};
+    if (areaUid) clean.area_uid = areaUid;
+    if (projectUid) clean.project_uid = projectUid;
+    if (tags.length > 0) clean.tags = tags;
+    return clean;
+}
+
 class UsersService {
     // The user directory is an admin view. Regular users share by typing an
     // exact email, so they never need (and must not get) the full list.
@@ -249,9 +292,14 @@ class UsersService {
                     current = null;
                 }
             }
+            // The Focus chip saves through its own endpoint too, so a
+            // profile save must not clear it.
+            const kept = {};
+            if (current?.planning) kept.planning = current.planning;
+            if (current?.focus !== undefined) kept.focus = current.focus;
             allowedUpdates.ui_settings =
-                ui_settings && current?.planning
-                    ? { ...ui_settings, planning: current.planning }
+                ui_settings && Object.keys(kept).length > 0
+                    ? { ...ui_settings, ...kept }
                     : ui_settings;
         }
         if (notification_preferences !== undefined)
@@ -706,7 +754,7 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { project, appearance, inbox } = data;
+        const { project, appearance, inbox, focus } = data;
 
         const currentSettings =
             user.ui_settings && typeof user.ui_settings === 'object'
@@ -745,6 +793,10 @@ class UsersService {
                 ...(currentSettings.inbox || {}),
                 ...inbox,
             };
+        }
+
+        if (focus !== undefined) {
+            newSettings.focus = sanitizeFocus(focus);
         }
 
         await usersRepository.update(user, { ui_settings: newSettings });
