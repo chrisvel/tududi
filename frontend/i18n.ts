@@ -87,7 +87,7 @@ i18nInstance
         ns: ['translation'],
         backend: {
             loadPath: 'locales/{{lng}}/{{ns}}.json',
-            queryStringParams: { v: '1' },
+            queryStringParams: { v: '2' },
             requestOptions: {
                 cache: 'default',
                 credentials: 'same-origin',

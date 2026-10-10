@@ -55,6 +55,20 @@ describe('FocusChip', () => {
         state.projectsStore.setProjects([
             { id: 10, uid: 'launch', name: 'Launch', area_uid: 'work' },
             { id: 11, uid: 'garden', name: 'Garden', area_uid: 'home' },
+            {
+                id: 12,
+                uid: 'shipped',
+                name: 'Shipped',
+                area_uid: 'work',
+                status: 'done',
+            },
+            {
+                id: 13,
+                uid: 'dropped',
+                name: 'Dropped',
+                area_uid: 'work',
+                status: 'cancelled',
+            },
         ] as unknown as Project[]);
         state.userSettingsStore.setFocus(null);
     });
@@ -87,7 +101,7 @@ describe('FocusChip', () => {
             fireEvent.click(field.getByRole('button', { name: label }));
         };
         pick('focus-area', 'Work');
-        // Only projects of the chosen area are offered
+        // Only open projects of the chosen area are offered
         const projectField = within(screen.getByTestId('focus-project'));
         fireEvent.click(projectField.getAllByRole('button')[0]);
         expect(
@@ -96,6 +110,15 @@ describe('FocusChip', () => {
                 .slice(1)
                 .map((button) => button.textContent)
         ).toEqual(['Any project', 'Launch']);
+        fireEvent.change(projectField.getByTestId('filter-dropdown-search'), {
+            target: { value: 'lau' },
+        });
+        expect(
+            projectField
+                .getAllByRole('button')
+                .slice(1)
+                .map((button) => button.textContent)
+        ).toEqual(['Launch']);
         fireEvent.click(projectField.getByRole('button', { name: 'Launch' }));
         fireEvent.change(screen.getByTestId('focus-tags'), {
             target: { value: 'urgent' },
