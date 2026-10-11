@@ -383,7 +383,10 @@ const ProjectDetails: React.FC = () => {
         const token = /\s/.test(project.name)
             ? `+"${project.name}"`
             : `+${project.name}`;
-        openCapture(target, null, `${token} `);
+        openCapture(target, null, `${token} `, {
+            uid: project.uid,
+            name: project.name,
+        });
     };
 
     const handleDeleteNote = async (noteIdentifier: string) => {
