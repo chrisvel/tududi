@@ -6,8 +6,10 @@ import {
     render,
     screen,
     waitFor,
+    within,
 } from '@testing-library/react';
 import CaptureHost from '../CaptureHost';
+import LtdNav from '../../Nav/LtdNav';
 import {
     CaptureSavedEvent,
     closeCapture,
@@ -64,7 +66,13 @@ describe('CaptureHost', () => {
     const renderHost = (path = '/today') =>
         render(
             <MemoryRouter initialEntries={[path]}>
-                <button data-testid="opener">opener</button>
+                <button
+                    data-testid="opener"
+                    onClick={() => toggleCapture('inbox')}
+                >
+                    opener
+                </button>
+                <LtdNav />
                 <CaptureHost />
             </MemoryRouter>
         );
@@ -73,17 +81,25 @@ describe('CaptureHost', () => {
         act(() => closeCapture());
     });
 
-    it('shows nothing but the phone button until it is opened', () => {
+    it('uses only the mobile navigation Add button until it is opened', () => {
         renderHost();
         expect(screen.queryByTestId('capture-dialog')).not.toBeInTheDocument();
-        expect(screen.getByTestId('capture-phone-button')).toHaveTextContent(
-            'Add'
-        );
+        expect(
+            within(screen.getByTestId('ltd-nav-mobile')).getAllByRole(
+                'button',
+                {
+                    name: 'Add',
+                }
+            )
+        ).toHaveLength(1);
+        expect(
+            screen.queryByTestId('capture-phone-button')
+        ).not.toBeInTheDocument();
     });
 
-    it('opens on Inbox from the phone button and hides the button', async () => {
+    it('opens on Inbox from the mobile navigation button', async () => {
         renderHost();
-        fireEvent.click(screen.getByTestId('capture-phone-button'));
+        fireEvent.click(screen.getByTestId('ltd-nav-capture'));
 
         const dialog = screen.getByTestId('capture-dialog');
         expect(dialog).not.toHaveAttribute('hidden');
@@ -97,6 +113,18 @@ describe('CaptureHost', () => {
         await waitFor(() =>
             expect(screen.getByTestId('quick-capture-input')).toHaveFocus()
         );
+    });
+
+    it('opens and closes through the existing desktop toggle path', () => {
+        renderHost();
+        fireEvent.click(screen.getByTestId('opener'));
+        expect(screen.getByTestId('capture-dialog')).toBeVisible();
+        expect(screen.getByTestId('capture-target-inbox')).toHaveAttribute(
+            'aria-checked',
+            'true'
+        );
+        fireEvent.click(screen.getByTestId('opener'));
+        expect(screen.getByTestId('capture-dialog')).not.toBeVisible();
     });
 
     it('opens on Task when asked to, and starts from Inbox on the next open', () => {
@@ -220,12 +248,14 @@ describe('CaptureHost', () => {
     });
 
     it.each(['/inbox', '/task/abc', '/note/xyz'])(
-        'keeps the phone button out of the way on %s',
+        'uses the mobile navigation without a floating button on %s',
         (path) => {
             renderHost(path);
             expect(
                 screen.queryByTestId('capture-phone-button')
             ).not.toBeInTheDocument();
+            fireEvent.click(screen.getByTestId('ltd-nav-capture'));
+            expect(screen.getByTestId('capture-dialog')).toBeVisible();
         }
     );
 });

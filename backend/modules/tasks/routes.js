@@ -458,9 +458,7 @@ router.post(
             // the original record instead of inserting a duplicate.
             if (req.body.uid !== undefined) {
                 if (!isValidClientUid(req.body.uid)) {
-                    return res
-                        .status(400)
-                        .json({ error: 'Invalid task uid.' });
+                    return res.status(400).json({ error: 'Invalid task uid.' });
                 }
                 const existing = await taskRepository.findByUid(req.body.uid, {
                     include: TASK_INCLUDES_WITH_SUBTASKS,

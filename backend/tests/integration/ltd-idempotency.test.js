@@ -141,6 +141,8 @@ describe('T-305 Idempotency-Key and client uid', () => {
             .post('/api/task')
             .send({ name: 'plain task' });
         expect(response.status).toBe(201);
-        expect(response.body.uid).toMatch(/^[0-9abcdefghijkmnpqrstuvwxyz]{15}$/);
+        expect(response.body.uid).toMatch(
+            /^[0-9abcdefghijkmnpqrstuvwxyz]{15}$/
+        );
     });
 });

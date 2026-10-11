@@ -7,9 +7,17 @@
 const CLIENT_UID_ALPHABET = '0123456789abcdefghijkmnpqrstuvwxyz';
 const CLIENT_UID_LENGTH = 15;
 
+const requireCrypto = (): Crypto => {
+    const crypto = globalThis.crypto;
+    if (!crypto || typeof crypto.getRandomValues !== 'function') {
+        throw new Error('Secure random number generation is unavailable');
+    }
+    return crypto;
+};
+
 const randomBelow = (max: number): number => {
     const array = new Uint32Array(1);
-    crypto.getRandomValues(array);
+    requireCrypto().getRandomValues(array);
     return array[0] % max;
 };
 
@@ -22,7 +30,8 @@ export const newClientUid = (): string => {
 };
 
 export const newIdempotencyKey = (): string => {
-    if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    const crypto = requireCrypto();
+    if (typeof crypto.randomUUID === 'function') {
         return `ltd-${crypto.randomUUID()}`;
     }
     const array = new Uint8Array(16);

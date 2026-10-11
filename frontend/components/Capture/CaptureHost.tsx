@@ -1,28 +1,17 @@
 // LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PlusIcon } from '@heroicons/react/24/outline';
 import QuickCaptureInput, {
     QuickCaptureInputHandle,
 } from '../Inbox/QuickCaptureInput';
 import {
     closeCapture,
     emitCaptureSaved,
-    openCapture,
     useCaptureUi,
 } from '../../utils/captureUi';
 import { useStore } from '../../store/useStore';
-import { useScreenCovered } from './useScreenCovered';
-
-// The Inbox page has this same box inline, and the editors need the screen
-// for typing, so the phone button stays out of their way.
-const PHONE_BUTTON_HIDDEN_ON = ['/inbox', '/task/', '/note/'];
 
 const NAVBAR_BUTTON = '[data-testid="capture-navbar-button"]';
-const PHONE_BUTTON = '[data-testid="capture-phone-button"]';
-// Matches the phone button's lg:hidden.
-const PHONE_QUERY = '(max-width: 1023px)';
 
 const DOCK_WIDTH = '640px';
 const SIDEBAR_WIDTH = 'var(--sidebar-width, 22rem)';
@@ -37,22 +26,11 @@ interface CaptureHostProps {
 const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
     const { t } = useTranslation();
     const { open, target, scope, initialText, openCount } = useCaptureUi();
-    const location = useLocation();
     const projects = useStore((state) => state.projectsStore.projects);
     const inputRef = useRef<QuickCaptureInputHandle>(null);
     const dialogRef = useRef<HTMLDivElement>(null);
     const returnFocusRef = useRef<HTMLElement | null>(null);
     const [everOpened, setEverOpened] = useState(false);
-    const [isPhoneWidth, setIsPhoneWidth] = useState(
-        () => window.matchMedia?.(PHONE_QUERY).matches ?? false
-    );
-    useEffect(() => {
-        const query = window.matchMedia?.(PHONE_QUERY);
-        if (!query) return undefined;
-        const onChange = () => setIsPhoneWidth(query.matches);
-        query.addEventListener('change', onChange);
-        return () => query.removeEventListener('change', onChange);
-    }, []);
     // A click or tap anywhere outside closes it. The navbar button toggles
     // on its own, so it is left out.
     useEffect(() => {
@@ -98,36 +76,8 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
         return () => cancelAnimationFrame(frame);
     }, [open, openCount, everOpened]);
 
-    const phoneButtonAllowed =
-        !open &&
-        !PHONE_BUTTON_HIDDEN_ON.some((path) =>
-            location.pathname.startsWith(path)
-        );
-    // Modals and sheets keep their Save buttons at the bottom right, right
-    // where the phone button sits, so it steps aside while one is open.
-    const screenCovered = useScreenCovered(
-        phoneButtonAllowed && isPhoneWidth,
-        PHONE_BUTTON
-    );
-    const phoneButtonVisible = phoneButtonAllowed && !screenCovered;
-
     return (
         <>
-            {/* Always on top: task rows lift themselves to z-[10000] on
-                hover or tap, and pickers open at z-[10050]. */}
-            {/* LTD-PATCH(T-304): capture lives in LtdNav on phones; keep the
-                existing FAB off so two Add buttons never overlap. */}
-            {false && phoneButtonVisible && (
-                <button
-                    type="button"
-                    data-testid="capture-phone-button"
-                    onClick={() => openCapture('inbox')}
-                    className="lg:hidden fixed end-4 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-[10100] flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-semibold ps-3.5 pe-5 h-12 shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2"
-                >
-                    <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                    {t('capture.add', 'Add')}
-                </button>
-            )}
             {open && (
                 // Dims the page so the box reads as the one thing in front.
                 // A click on it closes the box through the outside-click
