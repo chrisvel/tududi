@@ -22,6 +22,8 @@ import { getApiPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import PlanBadge from './Billing/PlanBadge';
 import { setUserTimezone } from '../utils/dateUtils';
+// LTD-PATCH(T-303): hydrate calendar/digit display preferences
+import { setLocalePreferences } from '../utils/jalali';
 import {
     fetchProfile as fetchProfileFromService,
     invalidateProfileCache,
@@ -129,6 +131,11 @@ const Navbar: React.FC<NavbarProps> = ({
                 if (profile.timezone) {
                     setUserTimezone(profile.timezone);
                 }
+                // LTD-PATCH(T-303)
+                setLocalePreferences(
+                    (profile.ui_settings as { locale?: object } | undefined)
+                        ?.locale
+                );
             } catch (error) {
                 console.error('Error fetching profile:', error);
             }
@@ -228,7 +235,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {/* Right section - Actions and user menu */}
-                <div className="flex items-center justify-end space-x-2 sm:space-x-4 px-4 sm:px-6 lg:px-8 flex-shrink-0">
+                <div className="flex items-center justify-end space-x-2 sm:space-x-4 px-4 sm:px-6 lg:px-8 flex-shrink-0 rtl:space-x-reverse">
                     {/* Mobile search toggle button */}
                     <button
                         onClick={() =>
@@ -279,11 +286,11 @@ const Navbar: React.FC<NavbarProps> = ({
                         {isDropdownOpen && (
                             <div
                                 ref={dropdownRef}
-                                className="absolute right-0 top-full mt-2 min-w-48 w-max bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border border-gray-200 dark:border-gray-700"
+                                className="absolute end-0 top-full mt-2 min-w-48 w-max bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border border-gray-200 dark:border-gray-700"
                             >
                                 {currentUser?.email && (
                                     <div className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600 flex items-center">
-                                        <EnvelopeIcon className="h-4 w-4 mr-2" />
+                                        <EnvelopeIcon className="h-4 w-4 me-2" />
                                         {currentUser.email}
                                     </div>
                                 )}
@@ -296,10 +303,10 @@ const Navbar: React.FC<NavbarProps> = ({
                                         data-testid="navbar-admin-link"
                                     >
                                         <span className="flex items-center">
-                                            <ShieldCheckIcon className="h-4 w-4 mr-2 shrink-0" />
+                                            <ShieldCheckIcon className="h-4 w-4 me-2 shrink-0" />
                                             {t('navigation.admin', 'Admin')}
                                         </span>
-                                        <span className="ml-3 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                                        <span className="ms-3 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
                                             {featureFlags.hosted
                                                 ? t(
                                                       'admin.roles.names.superadmin',
@@ -317,7 +324,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
-                                    <Cog6ToothIcon className="h-4 w-4 mr-2 shrink-0" />
+                                    <Cog6ToothIcon className="h-4 w-4 me-2 shrink-0" />
                                     {t(
                                         'navigation.profileSettings',
                                         'Profile Settings'
@@ -328,7 +335,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
-                                    <CircleStackIcon className="h-4 w-4 mr-2 shrink-0" />
+                                    <CircleStackIcon className="h-4 w-4 me-2 shrink-0" />
                                     {t(
                                         'navigation.backupRestore',
                                         'Backup & Restore'
@@ -340,7 +347,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                         className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         onClick={() => setIsDropdownOpen(false)}
                                     >
-                                        <InformationCircleIcon className="h-4 w-4 mr-2 shrink-0" />
+                                        <InformationCircleIcon className="h-4 w-4 me-2 shrink-0" />
                                         {t('navigation.about', 'About')}
                                     </Link>
                                 )}
@@ -352,7 +359,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                     }}
                                     className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
-                                    <ArrowRightStartOnRectangleIcon className="h-4 w-4 mr-2 shrink-0" />
+                                    <ArrowRightStartOnRectangleIcon className="h-4 w-4 me-2 shrink-0" />
                                     {t('navigation.logout', 'Logout')}
                                 </button>
                             </div>

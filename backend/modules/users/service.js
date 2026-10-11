@@ -754,7 +754,8 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { project, appearance, inbox, focus } = data;
+        // LTD-PATCH(T-303): accept the locale (calendar/digits) preference bag
+        const { project, appearance, inbox, focus, locale } = data;
 
         const currentSettings =
             user.ui_settings && typeof user.ui_settings === 'object'
@@ -797,6 +798,29 @@ class UsersService {
 
         if (focus !== undefined) {
             newSettings.focus = sanitizeFocus(focus);
+        }
+
+        // LTD-PATCH(T-303): validate and merge calendar_system / latin_digits
+        if (locale !== undefined) {
+            const current =
+                currentSettings.locale &&
+                typeof currentSettings.locale === 'object'
+                    ? currentSettings.locale
+                    : {};
+            const next = { ...current };
+            if (locale.calendarSystem !== undefined) {
+                if (!['gregorian', 'persian'].includes(locale.calendarSystem)) {
+                    throw new ValidationError(
+                        'Invalid calendar system.',
+                        'calendarSystem'
+                    );
+                }
+                next.calendarSystem = locale.calendarSystem;
+            }
+            if (locale.latinDigits !== undefined) {
+                next.latinDigits = Boolean(locale.latinDigits);
+            }
+            newSettings.locale = next;
         }
 
         await usersRepository.update(user, { ui_settings: newSettings });

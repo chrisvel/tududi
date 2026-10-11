@@ -9,6 +9,8 @@ import { getApiPath } from '../../../config/paths';
 import LanguageDropdown from '../../Shared/LanguageDropdown';
 import TimezoneDropdown from '../../Shared/TimezoneDropdown';
 import FirstDayOfWeekDropdown from '../../Shared/FirstDayOfWeekDropdown';
+// LTD-PATCH(T-301): calendar + digit preferences beside the language setting
+import LocalePreferencesSection from '../LocalePreferencesSection';
 import type { ProfileFormData } from '../types';
 import type {
     getRegionDisplayName,
@@ -75,7 +77,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <UserIcon className="w-6 h-6 mr-3 text-blue-500" />
+                <UserIcon className="w-6 h-6 me-3 text-blue-500" />
                 {t('profile.accountSettings', 'Account & Preferences')}
             </h3>
 
@@ -94,7 +96,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
                     )}
                     <label
                         htmlFor="avatar-upload"
-                        className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 cursor-pointer transition-colors"
+                        className="absolute bottom-0 end-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 cursor-pointer transition-colors"
                     >
                         <PhotoIcon className="w-5 h-5" />
                         <input
@@ -191,6 +193,9 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
                         onChange={onFirstDayChange}
                     />
                 </div>
+
+                {/* LTD-PATCH(T-301) */}
+                <LocalePreferencesSection />
             </div>
         </div>
     );

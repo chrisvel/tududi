@@ -11,6 +11,17 @@ import {
 } from '../../utils/profileService';
 import { useTranslation } from 'react-i18next';
 import { resolveUserLocale } from '../../utils/localeUtils';
+// LTD-PATCH(T-303): Jalali month grid; selection still stored as ISO Gregorian
+import {
+    isPersianCalendar,
+    toPersianPartsInTz,
+    jalaliToLocalDate,
+    persianMonthLength,
+    persianMonthName,
+    formatDisplayNumber,
+    formatDisplayDate as formatJalaliDisplayDate,
+    PERSIAN_WEEK_START,
+} from '../../utils/jalali';
 
 interface DatePickerProps {
     value: string;
@@ -38,6 +49,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
         () => resolveUserLocale(i18n?.language),
         [i18n?.language]
     );
+    // LTD-PATCH(T-303)
+    const persian = isPersianCalendar();
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState({
         top: 0,
@@ -68,6 +81,16 @@ const DatePicker: React.FC<DatePickerProps> = ({
     // Generate days array based on first day of week setting
     const getAllDays = () => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const getDaysOfWeek = () => {
+        // LTD-PATCH(T-303): localized weekday names; Jalali weeks from Saturday
+        if (persian) {
+            // 2024-03-16 was a Saturday; one label per weekday.
+            return Array.from({ length: 7 }, (_, i) =>
+                formatJalaliDisplayDate(
+                    new Date(2024, 2, 16 + i),
+                    { weekday: 'short' }
+                )
+            );
+        }
         const allDays = getAllDays();
         return [
             ...allDays.slice(firstDayOfWeek),
@@ -90,6 +113,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
         if (!dateString) return placeholder;
         const date = parseDate(dateString);
         if (!date || isNaN(date.getTime())) return placeholder;
+        // LTD-PATCH(T-303)
+        if (persian) {
+            return formatJalaliDisplayDate(date, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+            });
+        }
         return date.toLocaleDateString(displayLocale, {
             year: 'numeric',
             month: 'short',
@@ -149,17 +180,27 @@ const DatePicker: React.FC<DatePickerProps> = ({
             if (value) {
                 const selectedDate = parseDate(value);
                 if (selectedDate && !isNaN(selectedDate.getTime())) {
+                    // LTD-PATCH(T-303): in Jalali mode any day inside the
+                    // target month works; the grid derives the month itself.
                     setCurrentMonth(
-                        new Date(
-                            selectedDate.getFullYear(),
-                            selectedDate.getMonth(),
-                            1
-                        )
+                        persian
+                            ? selectedDate
+                            : new Date(
+                                  selectedDate.getFullYear(),
+                                  selectedDate.getMonth(),
+                                  1
+                              )
                     );
                 }
             } else {
                 setCurrentMonth(
-                    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                    persian
+                        ? new Date()
+                        : new Date(
+                              new Date().getFullYear(),
+                              new Date().getMonth(),
+                              1
+                          )
                 );
             }
         }
@@ -195,6 +236,21 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
     const navigateMonth = (direction: 'prev' | 'next') => {
         setCurrentMonth((prev) => {
+            // LTD-PATCH(T-303): move one Jalali month, wrap at year boundary
+            if (persian) {
+                const { year, month } = toPersianPartsInTz(prev);
+                const step = direction === 'prev' ? -1 : 1;
+                let newYear = year;
+                let newMonthNum = month + step;
+                if (newMonthNum < 1) {
+                    newMonthNum = 12;
+                    newYear -= 1;
+                } else if (newMonthNum > 12) {
+                    newMonthNum = 1;
+                    newYear += 1;
+                }
+                return jalaliToLocalDate(newYear, newMonthNum, 1);
+            }
             const newMonth = new Date(prev);
             if (direction === 'prev') {
                 newMonth.setMonth(newMonth.getMonth() - 1);
@@ -206,6 +262,22 @@ const DatePicker: React.FC<DatePickerProps> = ({
     };
 
     const getDaysInMonth = () => {
+        // LTD-PATCH(T-303): Jalali month grid, week from Saturday
+        if (persian) {
+            const { year, month } = toPersianPartsInTz(currentMonth);
+            const monthLength = persianMonthLength(year, month);
+            const firstLocal = jalaliToLocalDate(year, month, 1);
+            const adjustedStartingDay =
+                (firstLocal.getDay() - PERSIAN_WEEK_START + 7) % 7;
+            const days: (Date | null)[] = [];
+            for (let i = 0; i < adjustedStartingDay; i++) {
+                days.push(null);
+            }
+            for (let day = 1; day <= monthLength; day++) {
+                days.push(jalaliToLocalDate(year, month, day));
+            }
+            return days;
+        }
         const year = currentMonth.getFullYear();
         const month = currentMonth.getMonth();
         const firstDay = new Date(year, month, 1);
@@ -279,7 +351,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
             ref={dropdownRef}
             data-testid="datepicker"
             data-state={isOpen ? 'open' : 'closed'}
-            className={`relative inline-block text-left ${renderTrigger ? '' : 'w-full'} ${className}`}
+            className={`relative inline-block text-start ${renderTrigger ? '' : 'w-full'} ${className}`}
         >
             {renderTrigger ? (
                 renderTrigger({
@@ -308,7 +380,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                         >
                             {formatDisplayDate(value)}
                         </span>
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-1 rtl:space-x-reverse">
                             <CalendarDaysIcon className="w-5 h-5 text-gray-500 dark:text-gray-300" />
                         </div>
                     </button>
@@ -316,7 +388,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                         <button
                             type="button"
                             onClick={handleClear}
-                            className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xs w-4 h-4 flex items-center justify-center"
+                            className="absolute end-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xs w-4 h-4 flex items-center justify-center"
                         >
                             ×
                         </button>
@@ -344,18 +416,24 @@ const DatePicker: React.FC<DatePickerProps> = ({
                                 onClick={() => navigateMonth('prev')}
                                 className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
                             >
-                                <ChevronLeftIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                <ChevronLeftIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 rtl:-scale-x-100" />
                             </button>
                             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                {months[currentMonth.getMonth()]}{' '}
-                                {currentMonth.getFullYear()}
+                                {/* LTD-PATCH(T-303) */}
+                                {persian
+                                    ? (() => {
+                                          const { year, month } =
+                                              toPersianPartsInTz(currentMonth);
+                                          return `${persianMonthName(year, month)} ${formatDisplayNumber(year, { useGrouping: false })}`;
+                                      })()
+                                    : `${months[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`}
                             </span>
                             <button
                                 type="button"
                                 onClick={() => navigateMonth('next')}
                                 className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
                             >
-                                <ChevronRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                <ChevronRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 rtl:-scale-x-100" />
                             </button>
                         </div>
 
@@ -391,7 +469,15 @@ const DatePicker: React.FC<DatePickerProps> = ({
                                                           : 'hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100'
                                                 }`}
                                             >
-                                                {date.getDate()}
+                                                {/* LTD-PATCH(T-303) */}
+                                                {persian
+                                                    ? formatDisplayNumber(
+                                                          toPersianPartsInTz(
+                                                              date
+                                                          ).day,
+                                                          { useGrouping: false }
+                                                      )
+                                                    : date.getDate()}
                                             </button>
                                         )}
                                     </div>

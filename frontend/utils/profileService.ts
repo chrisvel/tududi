@@ -1,5 +1,7 @@
 import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
+// LTD-PATCH(T-303): Jalali weeks start on Saturday regardless of stored value
+import { getEffectiveWeekStart } from './jalali';
 
 interface Profile {
     id: number;
@@ -36,6 +38,11 @@ interface Profile {
             project_uid?: string | null;
             tags?: string[];
         } | null;
+        // LTD-PATCH(T-303): calendar system and digit display preferences
+        locale?: {
+            calendarSystem?: 'gregorian' | 'persian';
+            latinDigits?: boolean;
+        };
     };
 }
 
@@ -257,11 +264,14 @@ export const getFirstDayOfWeek = async (): Promise<number> => {
     try {
         const profile = await fetchProfile();
         if (profile.first_day_of_week !== undefined) {
-            return profile.first_day_of_week;
+            // LTD-PATCH(T-303)
+            return getEffectiveWeekStart(profile.first_day_of_week);
         }
 
         // Fallback to locale-based default
-        return getLocaleFirstDayOfWeek(profile.language);
+        return getEffectiveWeekStart(
+            getLocaleFirstDayOfWeek(profile.language)
+        );
     } catch (error) {
         console.error('Error fetching first day of week setting:', error);
         // Default fallback based on browser locale

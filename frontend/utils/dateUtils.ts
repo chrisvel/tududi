@@ -4,6 +4,12 @@ import { enUS } from 'date-fns/locale/en-US';
 import { es } from 'date-fns/locale/es';
 import { el } from 'date-fns/locale/el';
 import i18n from '../i18n';
+// LTD-PATCH(T-303): Jalali display layer; storage stays ISO Gregorian
+import {
+    isPersianCalendar,
+    formatDisplayDate,
+    setDisplayTimezone,
+} from './jalali';
 import {
     isTaskInProgress,
     isTaskPlanned,
@@ -54,6 +60,8 @@ let userTimezone: string | null = null;
 
 export const setUserTimezone = (timezone: string): void => {
     userTimezone = timezone;
+    // LTD-PATCH(T-303): keep the Jalali display layer in sync
+    setDisplayTimezone(timezone);
 };
 
 /**
@@ -181,6 +189,15 @@ export const getDateFormatPattern = (
  * @returns The formatted date string
  */
 export const formatLongDate = (date: Date | number): string => {
+    // LTD-PATCH(T-303)
+    if (isPersianCalendar()) {
+        return formatDisplayDate(date, {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    }
     return formatLocalizedDate(
         date,
         getDateFormatPattern('long', 'EEEE, MMMM d, yyyy')
@@ -195,6 +212,14 @@ export const formatLongDate = (date: Date | number): string => {
  * @returns The formatted date string
  */
 export const formatShortDate = (date: Date | number): string => {
+    // LTD-PATCH(T-303)
+    if (isPersianCalendar()) {
+        return formatDisplayDate(date, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+    }
     return formatLocalizedDate(
         date,
         getDateFormatPattern('short', 'MMM d, yyyy')
@@ -209,6 +234,10 @@ export const formatShortDate = (date: Date | number): string => {
  * @returns The formatted date string
  */
 export const formatMonthYear = (date: Date | number): string => {
+    // LTD-PATCH(T-303)
+    if (isPersianCalendar()) {
+        return formatDisplayDate(date, { year: 'numeric', month: 'long' });
+    }
     return formatLocalizedDate(
         date,
         getDateFormatPattern('monthYear', 'MMMM yyyy')
@@ -223,6 +252,10 @@ export const formatMonthYear = (date: Date | number): string => {
  * @returns The formatted date string
  */
 export const formatDayMonth = (date: Date | number): string => {
+    // LTD-PATCH(T-303)
+    if (isPersianCalendar()) {
+        return formatDisplayDate(date, { month: 'long', day: 'numeric' });
+    }
     return formatLocalizedDate(
         date,
         getDateFormatPattern('dayMonth', 'MMMM d')
@@ -237,6 +270,13 @@ export const formatDayMonth = (date: Date | number): string => {
  * @returns The formatted time string
  */
 export const formatTime = (date: Date | number): string => {
+    // LTD-PATCH(T-303)
+    if (isPersianCalendar()) {
+        return formatDisplayDate(date, {
+            hour: 'numeric',
+            minute: '2-digit',
+        });
+    }
     return formatLocalizedDate(date, getDateFormatPattern('time', 'h:mm a'));
 };
 
@@ -254,6 +294,16 @@ export const formatDateTime = (
     useTimezone: boolean = true
 ): string => {
     const dateToFormat = useTimezone ? convertToUserTimezone(date) : date;
+    // LTD-PATCH(T-303)
+    if (isPersianCalendar()) {
+        return formatDisplayDate(dateToFormat, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+        });
+    }
     return formatLocalizedDate(
         dateToFormat,
         getDateFormatPattern('dateTime', 'MMM d, yyyy h:mm a')
