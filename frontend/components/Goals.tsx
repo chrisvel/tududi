@@ -1,3 +1,6 @@
+// LTD-PATCH(T-405): show horizon tree alongside the existing goals list and filters.
+import { Link } from 'react-router-dom';
+import GoalTree from './GoalTree/GoalTree';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PlusIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
@@ -238,6 +241,15 @@ const Goals: React.FC = () => {
                     )}
                 </div>
 
+                <div className="mb-6 min-w-0 space-y-4">
+                    <Link
+                        className="text-sm text-blue-600 hover:underline"
+                        to="/plan/week"
+                    >
+                        {t('ltdPlanning.weeklyPlan')}
+                    </Link>
+                    <GoalTree areaUid={selectedAreaUid} />
+                </div>
                 {/* Area filter tabs and sort */}
                 {goals.length > 0 && (
                     <div className="flex items-start justify-between gap-2 mb-6">

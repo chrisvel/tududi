@@ -1,4 +1,5 @@
 'use strict';
+// LTD-PATCH(T-407): Legacy destructive tools are unavailable; verify records remain intact.
 
 const request = require('supertest');
 const app = require('../../../app');
@@ -1820,12 +1821,12 @@ describe('MCP Tools Integration', () => {
                         relation_uid: listed.relations[0].uid,
                     })
                 );
-                expect(removed.content.message).toBe('Relation removed');
+                expect(removed.isError).toBe(true);
             });
         });
 
         describe('delete_task', () => {
-            it('should delete a task', async () => {
+            it('should deny deletion of a task', async () => {
                 const task = await Task.create({
                     user_id: user.id,
                     name: 'Delete Me',
@@ -1840,11 +1841,11 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
-                expect(content.message).toBe('Task deleted successfully');
+                expect(content._rawError).toBe('Error: Tool is unavailable');
 
-                // Verify task is gone
+                // Verify task remains
                 const deletedTask = await Task.findByPk(task.id);
-                expect(deletedTask).toBeNull();
+                expect(deletedTask).not.toBeNull();
             });
         });
 
@@ -2741,7 +2742,7 @@ describe('MCP Tools Integration', () => {
         });
 
         describe('delete_project', () => {
-            it('should delete a project by UID', async () => {
+            it('should deny deletion of a project by UID', async () => {
                 const project = await Project.create({
                     user_id: user.id,
                     name: 'Doomed Project',
@@ -2756,7 +2757,8 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const deleted = await Project.findByPk(project.id);
-                expect(deleted).toBeNull();
+                expect(getToolContent(response).isError).toBe(true);
+                expect(deleted).not.toBeNull();
             });
         });
     });
@@ -3013,7 +3015,7 @@ describe('MCP Tools Integration', () => {
         });
 
         describe('delete_inbox_item', () => {
-            it('should delete an inbox item', async () => {
+            it('should deny deletion of an inbox item', async () => {
                 const item = await InboxItem.create({
                     user_id: user.id,
                     content: 'To delete',
@@ -3028,11 +3030,11 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
-                expect(content.message).toBe('Inbox item deleted successfully');
+                expect(content._rawError).toBe('Error: Tool is unavailable');
 
-                // Soft-deleted: no longer active
+                // Denied: record remains active
                 await item.reload();
-                expect(item.status).toBe('deleted');
+                expect(item.status).toBe('added');
             });
         });
     });
@@ -3163,7 +3165,7 @@ describe('MCP Tools Integration', () => {
         });
 
         describe('delete_note', () => {
-            it('should delete a note', async () => {
+            it('should deny deletion of a note', async () => {
                 const note = await Note.create({
                     user_id: user.id,
                     title: 'To Delete',
@@ -3178,7 +3180,8 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const deleted = await Note.findByPk(note.id);
-                expect(deleted).toBeNull();
+                expect(getToolContent(response).isError).toBe(true);
+                expect(deleted).not.toBeNull();
             });
         });
     });
@@ -3350,7 +3353,7 @@ describe('MCP Tools Integration', () => {
         });
 
         describe('delete_tag', () => {
-            it('should delete a tag', async () => {
+            it('should deny deletion of a tag', async () => {
                 const tag = await Tag.create({
                     user_id: user.id,
                     name: 'to-delete',
@@ -3364,7 +3367,8 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const deleted = await Tag.findByPk(tag.id);
-                expect(deleted).toBeNull();
+                expect(getToolContent(response).isError).toBe(true);
+                expect(deleted).not.toBeNull();
             });
         });
 
@@ -3502,11 +3506,11 @@ describe('MCP Tools Integration', () => {
             expect(toolNames).toContain('create_task');
             expect(toolNames).toContain('update_task');
             expect(toolNames).toContain('complete_task');
-            expect(toolNames).toContain('delete_task');
+            expect(toolNames).not.toContain('delete_task');
             expect(toolNames).toContain('add_subtask');
             expect(toolNames).toContain('create_task_relation');
             expect(toolNames).toContain('list_task_relations');
-            expect(toolNames).toContain('remove_task_relation');
+            expect(toolNames).not.toContain('remove_task_relation');
             expect(toolNames).toContain('get_task_metrics');
             expect(toolNames).toContain('list_task_comments');
             expect(toolNames).toContain('add_task_comment');
@@ -3519,12 +3523,12 @@ describe('MCP Tools Integration', () => {
             expect(toolNames).toContain('get_inbox_item');
             expect(toolNames).toContain('update_inbox_item');
             expect(toolNames).toContain('process_inbox_item');
-            expect(toolNames).toContain('delete_inbox_item');
+            expect(toolNames).not.toContain('delete_inbox_item');
             expect(toolNames).toContain('list_notes');
             expect(toolNames).toContain('get_note');
             expect(toolNames).toContain('create_note');
             expect(toolNames).toContain('update_note');
-            expect(toolNames).toContain('delete_note');
+            expect(toolNames).not.toContain('delete_note');
             expect(toolNames).toContain('list_areas');
             expect(toolNames).toContain('list_tags');
             expect(toolNames).toContain('search');

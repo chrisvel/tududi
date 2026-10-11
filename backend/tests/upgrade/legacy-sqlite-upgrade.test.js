@@ -110,6 +110,62 @@ describe.each(fixtures)('upgrade from $name', (fixture) => {
         }
     });
 
+    // LTD-PATCH(T-401): the planning migration must upgrade actual legacy fixtures.
+    it('adds phase 4 planning tables and preserves existing goal horizons', async () => {
+        const columns = await inspect.query(
+            temp.file,
+            'PRAGMA table_info(goals)'
+        );
+        expect(columns.map((column) => column.name)).toEqual(
+            expect.arrayContaining([
+                'parent_goal_id',
+                'period_start',
+                'period_end',
+                'achieved_at',
+            ])
+        );
+        const tables = await inspect.tableNames(temp.file);
+        expect(tables).toEqual(
+            expect.arrayContaining([
+                'ltd_goal_metrics',
+                'ltd_metric_checkins',
+                'ltd_journal',
+            ])
+        );
+        const indexes = await inspect.query(
+            temp.file,
+            'PRAGMA index_list(goals)'
+        );
+        expect(
+            indexes.some((index) => index.name.includes('parent_goal_id'))
+        ).toBe(true);
+        const oldHorizons = await inspect.query(
+            fixture.file,
+            'SELECT id, horizon FROM goals ORDER BY id'
+        );
+        const horizons = await inspect.query(
+            temp.file,
+            'SELECT id, horizon FROM goals ORDER BY id'
+        );
+        expect(horizons).toEqual(oldHorizons);
+        expect(
+            columns.find((column) => column.name === 'horizon').dflt_value
+        ).toBe("'season'");
+        const foreignKeys = await inspect.query(
+            temp.file,
+            'PRAGMA foreign_key_list(goals)'
+        );
+        expect(foreignKeys).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    from: 'parent_goal_id',
+                    table: 'goals',
+                    on_delete: 'SET NULL',
+                }),
+            ])
+        );
+    });
+
     it('records every migration file in SequelizeMeta', async () => {
         expect(await inspect.metaNames(temp.file)).toEqual(migrationFiles());
     });

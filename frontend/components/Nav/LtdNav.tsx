@@ -1,7 +1,8 @@
 // Life-to-Day (T-304): six primary destinations + mobile bottom bar.
 // Existing pages stay reachable via the desktop sidebar or "More".
 import React, { useEffect, useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+// LTD-PATCH(T-406): custom active paths include weekly planning; use explicit accessible link state.
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CalendarDaysIcon,
@@ -17,7 +18,12 @@ import { openCapture } from '../../utils/captureUi';
 
 export const PRIMARY_DESTINATIONS = [
     { id: 'today', path: '/today', shortcut: 't', icon: CalendarDaysIcon },
-    { id: 'plan', path: '/today/plan', shortcut: 'p', icon: ClipboardDocumentListIcon },
+    {
+        id: 'plan',
+        path: '/today/plan',
+        shortcut: 'p',
+        icon: ClipboardDocumentListIcon,
+    },
     { id: 'goals', path: '/goals', shortcut: 'g', icon: FlagIcon },
     { id: 'life', path: '/life', shortcut: 'l', icon: GlobeAltIcon },
     { id: 'inbox', path: '/inbox', shortcut: 'i', icon: InboxIcon },
@@ -44,6 +50,8 @@ const isTypingTarget = (el: EventTarget | null): boolean => {
 
 const isActivePath = (pathname: string, path: string): boolean => {
     if (path === '/today') return pathname === '/today';
+    // LTD-PATCH(T-406): day and week share the same planning destination.
+    if (path === '/today/plan' && pathname.startsWith('/plan/')) return true;
     return pathname === path || pathname.startsWith(`${path}/`);
 };
 
@@ -85,7 +93,7 @@ const LtdNav: React.FC = () => {
                     const Icon = dest.icon;
                     const active = isActivePath(location.pathname, dest.path);
                     return (
-                        <NavLink
+                        <Link
                             key={dest.id}
                             to={dest.path}
                             data-testid={`ltd-nav-${dest.id}`}
@@ -101,7 +109,7 @@ const LtdNav: React.FC = () => {
                             <kbd className="ms-1 text-[10px] uppercase">
                                 {dest.shortcut}
                             </kbd>
-                        </NavLink>
+                        </Link>
                     );
                 })}
             </nav>
@@ -165,36 +173,36 @@ const LtdNav: React.FC = () => {
                             data-testid="ltd-nav-more-menu"
                             className="absolute end-0 bottom-12 min-w-[10rem] rounded-md border border-[var(--ltd-nav-border)] bg-[var(--ltd-nav-bg)] py-1 shadow-lg"
                         >
-                            <NavLink
+                            <Link
                                 to="/life"
                                 data-testid="ltd-nav-more-life"
                                 className="block px-3 py-2 text-sm text-[var(--ltd-nav-ink)]"
                             >
                                 {label('life')}
-                            </NavLink>
-                            <NavLink
+                            </Link>
+                            <Link
                                 to="/inbox"
                                 data-testid="ltd-nav-more-inbox"
                                 className="block px-3 py-2 text-sm text-[var(--ltd-nav-ink)]"
                             >
                                 {label('inbox')}
-                            </NavLink>
-                            <NavLink
+                            </Link>
+                            <Link
                                 to="/review"
                                 data-testid="ltd-nav-more-review"
                                 className="block px-3 py-2 text-sm text-[var(--ltd-nav-ink)]"
                             >
                                 {label('review')}
-                            </NavLink>
+                            </Link>
                             {MORE_LINKS.map((link) => (
-                                <NavLink
+                                <Link
                                     key={link.id}
                                     to={link.path}
                                     data-testid={`ltd-nav-more-${link.id}`}
                                     className="block px-3 py-2 text-sm text-[var(--ltd-nav-ink)]"
                                 >
                                     {label(link.id)}
-                                </NavLink>
+                                </Link>
                             ))}
                         </div>
                     )}
@@ -211,7 +219,7 @@ const MobileLink: React.FC<{
     label: string;
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }> = ({ to, testId, active, label, icon: Icon }) => (
-    <NavLink
+    <Link
         to={to}
         data-testid={testId}
         aria-current={active ? 'page' : undefined}
@@ -223,7 +231,7 @@ const MobileLink: React.FC<{
     >
         <Icon className="h-6 w-6" aria-hidden="true" />
         {label}
-    </NavLink>
+    </Link>
 );
 
 export default LtdNav;

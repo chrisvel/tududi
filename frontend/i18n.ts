@@ -89,7 +89,8 @@ i18nInstance
         defaultNS: 'translation',
         ns: ['translation'],
         backend: {
-            loadPath: 'locales/{{lng}}/{{ns}}.json',
+            // LTD-PATCH(T-405): Resolve locale reloads from the app base on nested goal/week routes.
+            loadPath: getLocalesPath('{{lng}}/{{ns}}.json'),
             queryStringParams: { v: '1' },
             requestOptions: {
                 cache: 'default',

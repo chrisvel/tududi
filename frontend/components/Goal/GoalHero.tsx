@@ -1,8 +1,9 @@
+// LTD-PATCH(T-405): render service-derived activity and outcome separately instead of task-count progress.
 // LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TFunction } from 'i18next';
-import { format } from 'date-fns';
+import { formatDisplayDate } from '../../utils/jalali';
 import {
     CheckIcon,
     ChevronDownIcon,
@@ -11,6 +12,9 @@ import {
     PencilSquareIcon,
     ShareIcon,
 } from '@heroicons/react/24/outline';
+import useSWR from 'swr';
+import { fetchGoalProgress, planningKeys } from '../../utils/planningService';
+import GoalProgressBars from '../GoalTree/GoalProgressBars';
 import { Goal, GoalStatus } from '../../entities/Goal';
 
 const GOAL_STATUSES: GoalStatus[] = ['active', 'paused', 'achieved', 'dropped'];
@@ -35,12 +39,10 @@ interface GoalHeroProps {
 }
 
 // Same card as the project header: tinted surface, status pill, title,
-// actions, and a progress bar with a time marker.
+// actions, and separate activity and outcome signals.
 const GoalHero: React.FC<GoalHeroProps> = ({
     goal,
     t,
-    doneCount,
-    totalCount,
     onStatusChange,
     onShareClick,
     onEditClick,
@@ -73,27 +75,11 @@ const GoalHero: React.FC<GoalHeroProps> = ({
         await onStatusChange(status).catch(() => undefined);
     };
 
-    const percent =
-        totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
-
-    const startDate = goal.created_at ? new Date(goal.created_at) : null;
+    const { data: progress, error: progressError } = useSWR(
+        goal.uid ? planningKeys.progress(goal.uid) : null,
+        () => fetchGoalProgress(goal.uid!)
+    );
     const targetDate = goal.target_date ? new Date(goal.target_date) : null;
-    const today = new Date();
-    // How much of the time between creation and target date has passed.
-    const timeUsed =
-        startDate && targetDate && targetDate > startDate
-            ? Math.min(
-                  100,
-                  Math.max(
-                      0,
-                      Math.round(
-                          ((today.getTime() - startDate.getTime()) /
-                              (targetDate.getTime() - startDate.getTime())) *
-                              100
-                      )
-                  )
-              )
-            : null;
 
     const tint = goal.color || goal.Area?.color || '#3b82f6';
     const actionClass =
@@ -187,7 +173,11 @@ const GoalHero: React.FC<GoalHeroProps> = ({
                                     <span>·</span>
                                     <span>
                                         {t('goals.targetDate', 'Target')}{' '}
-                                        {format(targetDate, 'MMM d, yyyy')}
+                                        {formatDisplayDate(targetDate, {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                        })}
                                     </span>
                                 </>
                             )}
@@ -208,11 +198,11 @@ const GoalHero: React.FC<GoalHeroProps> = ({
                             className="line-clamp-2 text-xl font-semibold leading-tight text-gray-900 sm:text-2xl dark:text-gray-100"
                             data-testid="goal-title"
                         >
-                            {goal.title}
+                            <bdi>{goal.title}</bdi>
                         </h1>
                         {goal.why && (
                             <p className="max-w-3xl whitespace-pre-wrap text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                                {goal.why}
+                                <bdi>{goal.why}</bdi>
                             </p>
                         )}
                     </div>
@@ -265,55 +255,27 @@ const GoalHero: React.FC<GoalHeroProps> = ({
                     </div>
                 </div>
 
-                <div
-                    className="space-y-2"
-                    title={
-                        timeUsed !== null
-                            ? t(
-                                  'goals.progressHint',
-                                  'Bar: tasks done. Line: time passed between creation and target date.'
-                              )
-                            : undefined
-                    }
-                >
-                    <div className="flex items-baseline justify-between gap-3 text-xs text-gray-500 tabular-nums dark:text-gray-400">
-                        <span>
-                            {t(
-                                'goals.progressSummary',
-                                'Goal progress · {{done}} of {{total}} tasks done',
-                                {
-                                    done: doneCount,
-                                    total: totalCount,
-                                }
-                            )}
-                            {timeUsed !== null &&
-                                ` · ${t('project.timeUsed', '{{percent}}% of time used', { percent: timeUsed })}`}
-                        </span>
-                        <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                            {percent}
-                            <span className="ms-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
-                                %
-                            </span>
-                        </span>
-                    </div>
-                    <div
-                        className="relative h-1.5 rounded-full"
-                        style={{
-                            backgroundColor: `color-mix(in srgb, ${tint} 20%, transparent)`,
-                        }}
-                    >
-                        <div
-                            className="absolute inset-y-0 start-0 rounded-full bg-blue-500 transition-all duration-300"
-                            style={{ width: `${percent}%` }}
-                        />
-                        {timeUsed !== null && (
-                            <div
-                                className="absolute -top-1 h-3.5 w-0.5 rounded-full bg-gray-900/50 dark:bg-gray-100/50"
-                                style={{ left: `${timeUsed}%` }}
-                            />
-                        )}
-                    </div>
-                </div>
+                {/* LTD-PATCH(T-405): a computed signal may suggest achievement; only a user click changes status. */}
+                {goal.status === 'active' &&
+                    progress?.achievement_suggested && (
+                        <div className="flex flex-wrap items-center gap-2 text-sm">
+                            <p>{t('ltdPlanning.achievementQuestion')}</p>
+                            <button
+                                type="button"
+                                className={actionClass}
+                                onClick={() => void changeStatus('achieved')}
+                            >
+                                {t('ltdPlanning.markAchieved')}
+                            </button>
+                        </div>
+                    )}
+                {progress ? (
+                    <GoalProgressBars progress={progress} />
+                ) : progressError ? (
+                    <p role="alert">{progressError.message}</p>
+                ) : (
+                    <p>{t('common.loading', 'Loading...')}</p>
+                )}
             </div>
         </div>
     );

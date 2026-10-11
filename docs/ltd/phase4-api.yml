@@ -1,0 +1,232 @@
+openapi: 3.0.3
+info: { title: Life-to-Day Phase 4, version: '4.0' }
+servers: [{ url: /api }]
+paths:
+    /goals:
+        post:
+            description: Create an owned goal. Omitted dates use horizon/calendar defaults; null explicitly clears a boundary. Bearer actors cannot mark achieved.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema: { $ref: '#/components/schemas/GoalWrite' }
+            responses:
+                '201':
+                    {
+                        description: '{goal: GoalNode, active_goals_count: number}',
+                    }
+                '400':
+                    {
+                        description: Invalid parent,
+                        cycle,
+                        depth,
+                        horizon or period,
+                    }
+    /goals/{uid}:
+        patch:
+            parameters: [{ $ref: '#/components/parameters/Uid' }]
+            description: Owner hierarchy edits are validated and journaled atomically. Only submitted fields change; a human achieved status sets achieved_at.
+            requestBody:
+                content:
+                    application/json:
+                        schema: { $ref: '#/components/schemas/GoalWrite' }
+            responses:
+                '200':
+                    {
+                        description: '{goal: GoalNode, active_goals_count: number}',
+                    }
+                '400':
+                    {
+                        description: Invalid hierarchy or period; nothing is written,
+                    }
+                '404': { description: Goal unavailable }
+        /goals/tree:
+            get:
+                responses:
+                    '200':
+                        description: Owned goals only, recursively nested; each node includes progress.
+                        content:
+                            application/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        goals:
+                                            {
+                                                type: array,
+                                                items:
+                                                    {
+                                                        $ref: '#/components/schemas/GoalNode',
+                                                    },
+                                            }
+        /goals/{uid}/progress:
+            get:
+                parameters: [{ $ref: '#/components/parameters/Uid' }]
+                responses:
+                    '200':
+                        description: Computed progress, never persisted.
+                        content:
+                            application/json:
+                                schema:
+                                    { $ref: '#/components/schemas/Progress' }
+        /tasks/{uid}/why-chain:
+            get:
+                parameters: [{ $ref: '#/components/parameters/Uid' }]
+                responses:
+                    {
+                        '200':
+                            {
+                                description: '{whyChain: [goal nearest to task, ..., root]}',
+                            },
+                    }
+        /goals/{uid}/metrics:
+            get:
+                parameters: [{ $ref: '#/components/parameters/Uid' }]
+                responses:
+                    {
+                        '200':
+                            {
+                                description: '{metrics: Metric[] with checkins[]}',
+                            },
+                    }
+            post:
+                parameters: [{ $ref: '#/components/parameters/Uid' }]
+                requestBody:
+                    content:
+                        application/json:
+                            schema: { $ref: '#/components/schemas/Metric' }
+                responses: { '201': { description: '{metric: Metric}' } }
+        /metrics/{uid}:
+            patch:
+                parameters: [{ $ref: '#/components/parameters/Uid' }]
+                responses: { '200': { description: '{metric: Metric}' } }
+            delete:
+                parameters: [{ $ref: '#/components/parameters/Uid' }]
+                responses: { '204': { description: Human-only deletion } }
+        /metrics/{uid}/checkins:
+            post:
+                parameters: [{ $ref: '#/components/parameters/Uid' }]
+                requestBody:
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                required: [value]
+                                properties:
+                                    value: { type: number }
+                                    note: { type: string }
+                                    recorded_at:
+                                        { type: string, format: date-time }
+                responses:
+                    {
+                        '201':
+                            {
+                                description: '{metric: Metric, checkin: Checkin, journal_uid: string}',
+                            },
+                    }
+        /journal:
+            get:
+                responses:
+                    {
+                        '200':
+                            {
+                                description: '{entries: Journal[]}, current user only',
+                            },
+                    }
+        /journal/{uid}/revert:
+            post:
+                parameters: [{ $ref: '#/components/parameters/Uid' }]
+                responses:
+                    {
+                        '200':
+                            {
+                                description: '{entries: Journal[]}, atomic undo',
+                            },
+                    }
+        /journal/revert:
+            post:
+                requestBody:
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                required: [uids]
+                                properties:
+                                    uids:
+                                        { type: array, items: { type: string } }
+                responses:
+                    {
+                        '200':
+                            {
+                                description: '{entries: Journal[]}, all-or-nothing in reverse chronological order',
+                            },
+                    }
+components:
+    parameters:
+        Uid: { in: path, name: uid, required: true, schema: { type: string } }
+    schemas:
+    GoalWrite:
+        type: object
+        properties:
+            title: { type: string }
+            why: { type: string, nullable: true }
+            horizon:
+                {
+                    type: string,
+                    enum: [vision, five_year, year, season, month, week],
+                    default: season,
+                }
+            parent_goal_id: { type: integer, nullable: true }
+            parent_goal_uid: { type: string, nullable: true }
+            period_start: { type: string, format: date, nullable: true }
+            period_end: { type: string, format: date, nullable: true }
+            status: { type: string, enum: [active, achieved, paused, dropped] }
+            Progress:
+                type: object
+                properties:
+                    A: { type: number, nullable: true }
+                    O: { type: number, nullable: true }
+                    expected: { type: number, nullable: true }
+                    health:
+                        {
+                            type: string,
+                            nullable: true,
+                            enum: [on_track, needs_love, stalled],
+                        }
+                    achievement_suggested: { type: boolean }
+                    whyChain: { type: array, items: { type: object } }
+            GoalNode:
+                type: object
+                properties:
+                    id: { type: integer }
+                    uid: { type: string }
+                    title: { type: string }
+                    horizon:
+                        {
+                            type: string,
+                            enum:
+                                [vision, five_year, year, season, month, week],
+                        }
+                    parent_goal_id: { type: integer, nullable: true }
+                    period_start: { type: string, format: date, nullable: true }
+                    period_end: { type: string, format: date, nullable: true }
+                    achieved_at:
+                        { type: string, format: date-time, nullable: true }
+                    progress: { $ref: '#/components/schemas/Progress' }
+                    children:
+                        {
+                            type: array,
+                            items: { $ref: '#/components/schemas/GoalNode' },
+                        }
+            Metric:
+                type: object
+                required: [name, baseline, target]
+                properties:
+                    uid: { type: string, readOnly: true }
+                    name: { type: string }
+                    unit: { type: string, nullable: true }
+                    baseline: { type: number }
+                    target: { type: number }
+                    direction: { type: string, enum: [increase, decrease] }
+                    current_value: { type: number, readOnly: true }
+                    weight: { type: number, default: 1 }
+                    source: { type: string, enum: [manual, habit, task_count] }

@@ -13,6 +13,9 @@ const { registerViewTools } = require('./tools/viewTools');
 const { registerPeopleTools } = require('./tools/peopleTools');
 const { registerGoalTools } = require('./tools/goalTools');
 
+// LTD-PATCH(T-407): Neither MCP transport may advertise or dispatch legacy hard deletion tools.
+const isDestructiveTool = (name) => /^(delete|remove)_/.test(name);
+
 function registerAllTools(server, context, tools) {
     registerTaskTools(server, context, tools);
     registerCommentTools(server, context, tools);
@@ -26,6 +29,9 @@ function registerAllTools(server, context, tools) {
     registerViewTools(server, context, tools);
     registerPeopleTools(server, context, tools);
     registerGoalTools(server, context, tools);
+    for (let index = tools.length - 1; index >= 0; index--) {
+        if (isDestructiveTool(tools[index].name)) tools.splice(index, 1);
+    }
 }
 
-module.exports = { registerAllTools };
+module.exports = { registerAllTools, isDestructiveTool };

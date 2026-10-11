@@ -1,4 +1,5 @@
 'use strict';
+// LTD-PATCH(T-407): Settings include the new read-only planning catalogue.
 
 const request = require('supertest');
 const app = require('../../../app');
@@ -51,7 +52,7 @@ describe('MCP Routing', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.tools).toBeInstanceOf(Array);
-            expect(response.body.tools.length).toBe(9);
+            expect(response.body.tools.length).toBe(10);
 
             const categories = response.body.tools.map((t) => t.category);
             expect(categories).toContain('Tasks');

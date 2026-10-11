@@ -298,6 +298,8 @@ module.exports = (sequelize) => {
         {
             tableName: 'tasks',
             indexes: [
+                // LTD-PATCH(T-401): indexed direct goal contribution lookup.
+                { fields: ['goal_id'], name: 'tasks_goal_id_idx' },
                 {
                     fields: ['user_id'],
                 },

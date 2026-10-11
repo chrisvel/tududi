@@ -30,7 +30,11 @@ const { isSqlite, truncateTables } = require('../../utils/db-dialect');
 
 // Children before parents: PostgreSQL deletes these with constraints on.
 // LTD-PATCH(T-305): fork-only table must be cleaned before users (FK).
+// LTD-PATCH(T-404): remove planning children before goals/users on both dialects.
 const CLEANUP_TABLES = [
+    'ltd_metric_checkins',
+    'ltd_goal_metrics',
+    'ltd_journal',
     'ltd_idempotency_keys',
     'tasks_tags',
     'notes_tags',

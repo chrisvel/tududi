@@ -59,3 +59,13 @@ describe('LtdNav shortcuts', () => {
         document.body.removeChild(editable);
     });
 });
+
+// LTD-PATCH(T-406): week and day belong to one accessible Plan navigation destination.
+it('marks Plan active while weekly priorities are visible', () => {
+    const { getByTestId } = renderNav('/plan/week');
+    expect(getByTestId('ltd-nav-plan')).toHaveAttribute('aria-current', 'page');
+    expect(getByTestId('ltd-nav-mobile-plan')).toHaveAttribute(
+        'aria-current',
+        'page'
+    );
+});

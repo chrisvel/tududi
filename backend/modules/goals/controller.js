@@ -1,6 +1,8 @@
 'use strict';
 
 const goalsService = require('./service');
+// LTD-PATCH(T-404): bearer integrations are non-human journal actors.
+const { actorFromRequest } = require('../ltd-journal/actor');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const { UnauthorizedError } = require('../../shared/errors');
 
@@ -52,7 +54,11 @@ const goalsController = {
     async create(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const goal = await goalsService.create(userId, req.body);
+            const goal = await goalsService.create(
+                userId,
+                req.body,
+                actorFromRequest(req, userId)
+            );
             const activeCount = await goalsService.countActive(userId);
             res.status(201).json({ goal, active_goals_count: activeCount });
         } catch (err) {
@@ -66,7 +72,8 @@ const goalsController = {
             const goal = await goalsService.update(
                 userId,
                 req.params.uid,
-                req.body
+                req.body,
+                actorFromRequest(req, userId)
             );
             const activeCount = await goalsService.countActive(userId);
             res.json({ goal, active_goals_count: activeCount });
@@ -78,6 +85,13 @@ const goalsController = {
     async delete(req, res, next) {
         try {
             const userId = requireUserId(req);
+            // LTD-PATCH(T-404): hard deletion belongs only to the signed-in human UI.
+            if (!req.session?.userId || req.headers.authorization) {
+                const { ForbiddenError } = require('../../shared/errors');
+                throw new ForbiddenError(
+                    'Only the signed-in human can delete a goal'
+                );
+            }
             await goalsService.delete(userId, req.params.uid);
             res.status(204).send();
         } catch (err) {

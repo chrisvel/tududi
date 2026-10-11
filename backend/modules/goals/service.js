@@ -1,7 +1,11 @@
 'use strict';
 
 const goalsRepository = require('./repository');
-const { Area } = require('../../models');
+// LTD-PATCH(T-401): validate and journal hierarchy changes through domain services.
+const { Area, Goal } = require('../../models');
+const hierarchy = require('../ltd-progress/hierarchy');
+const { defaultPeriod } = require('../ltd-progress/periods');
+const { withJournal } = require('../ltd-journal/service');
 const permissionsService = require('../../services/permissionsService');
 const {
     NotFoundError,
@@ -109,26 +113,72 @@ class GoalsService {
         return goal;
     }
 
-    async create(userId, data) {
+    async create(
+        userId,
+        data,
+        actor = { user_id: userId, actor_type: 'user' }
+    ) {
         const { title, area_id, why, horizon, target_date, status, color } =
             data;
         if (!title || !title.trim()) {
             throw new ValidationError('Goal title is required');
         }
         const resolvedAreaId = await this.resolveAreaId(userId, area_id);
-        return goalsRepository.create({
-            user_id: userId,
-            area_id: resolvedAreaId,
-            title: title.trim(),
-            why: why || null,
-            horizon: horizon || 'season',
-            target_date: target_date || null,
-            status: status || 'active',
-            color: color || null,
+        // LTD-PATCH(T-401): all hierarchy validation and writes share one transaction.
+        return withJournal(actor, async (transaction, record) => {
+            const user = await hierarchy.lockOwner(userId, transaction);
+            const parent = await hierarchy.resolveParent(
+                userId,
+                data,
+                transaction
+            );
+            const values = {
+                user_id: userId,
+                area_id: resolvedAreaId,
+                title: title.trim(),
+                why: why || null,
+                horizon: horizon || 'season',
+                target_date: target_date || null,
+                status: status || 'active',
+                color: color || null,
+                ...defaultPeriod(horizon || 'season', user),
+                parent_goal_id: parent ?? null,
+            };
+            for (const key of ['period_start', 'period_end']) {
+                if (data[key] !== undefined) values[key] = data[key] || null;
+            }
+            if (values.status === 'achieved') {
+                if (actor.actor_type !== 'user')
+                    throw new ForbiddenError(
+                        'Only a user can mark a goal achieved'
+                    );
+                values.achieved_at = new Date();
+            }
+            hierarchy.validatePeriod(values);
+            await hierarchy.validateHierarchy(
+                userId,
+                null,
+                values,
+                transaction
+            );
+            const goal = await Goal.create(values, { transaction });
+            await record({
+                op: 'goal_create',
+                entity_type: 'goal',
+                entity_uid: goal.uid,
+                before: null,
+                after: goal.toJSON(),
+            });
+            return goal;
         });
     }
 
-    async update(userId, uid, data) {
+    async update(
+        userId,
+        uid,
+        data,
+        actor = { user_id: userId, actor_type: 'user' }
+    ) {
         const { goal, access } = await this.findAccessible(userId, uid);
         if (access !== ACCESS.RW && access !== ACCESS.ADMIN) {
             throw new ForbiddenError('Forbidden');
@@ -148,7 +198,66 @@ class GoalsService {
         if (status !== undefined) updates.status = status;
         if (color !== undefined) updates.color = color || null;
 
-        return goalsRepository.update(goal, updates);
+        // LTD-PATCH(T-401): owner-scoped hierarchy edits and explicit achievement, with atomic Undo.
+        const hierarchyEdit = [
+            'parent_goal_id',
+            'parent_goal_uid',
+            'horizon',
+            'period_start',
+            'period_end',
+        ].some((key) => data[key] !== undefined);
+        if (goal.user_id !== userId) {
+            if (hierarchyEdit || status === 'achieved')
+                throw new ForbiddenError(
+                    'Only the owner can change goal planning'
+                );
+            return goalsRepository.update(goal, updates);
+        }
+        return withJournal(actor, async (transaction, record) => {
+            await hierarchy.lockOwner(userId, transaction);
+            const current = await Goal.findOne({
+                where: { uid, user_id: userId },
+                transaction,
+            });
+            const parent = await hierarchy.resolveParent(
+                userId,
+                data,
+                transaction
+            );
+            if (parent !== undefined) updates.parent_goal_id = parent;
+            for (const key of ['period_start', 'period_end']) {
+                if (data[key] !== undefined) updates[key] = data[key] || null;
+            }
+            if (status === 'achieved' && current.status !== 'achieved') {
+                if (actor.actor_type !== 'user')
+                    throw new ForbiddenError(
+                        'Only a user can mark a goal achieved'
+                    );
+                updates.achieved_at = new Date();
+            } else if (status !== undefined && status !== 'achieved')
+                updates.achieved_at = null;
+            hierarchy.validatePeriod({ ...current.toJSON(), ...updates });
+            await hierarchy.validateHierarchy(
+                userId,
+                current.id,
+                updates,
+                transaction
+            );
+            const before = Object.fromEntries(
+                Object.keys(updates).map((key) => [key, current.get(key)])
+            );
+            await current.update(updates, { transaction });
+            await record({
+                op: parent !== undefined ? 'reparent' : 'goal_update',
+                entity_type: 'goal',
+                entity_uid: uid,
+                before,
+                after: Object.fromEntries(
+                    Object.keys(updates).map((key) => [key, current.get(key)])
+                ),
+            });
+            return current;
+        });
     }
 
     async delete(userId, uid) {

@@ -85,6 +85,10 @@ const PublicNotePage = lazy(
     () => import('./components/PublicNote/PublicNotePage')
 );
 const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
+// LTD-PATCH(T-406): weekly priorities use week-horizon goals in the existing plan navigation.
+const WeeklyPlan = React.lazy(
+    () => import('./components/WeeklyPlan/WeeklyPlan')
+);
 const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
 const Welcome = lazy(() => import('./components/Onboarding/Welcome'));
 // Lazy load Tasks component to prevent issues with tags loading
@@ -219,8 +223,9 @@ const App: React.FC = () => {
         if (window.matchMedia('(display-mode: standalone)').matches) {
             void requestPersistentStorage();
         }
-        window.addEventListener('appinstalled', () =>
-            void requestPersistentStorage()
+        window.addEventListener(
+            'appinstalled',
+            () => void requestPersistentStorage()
         );
     }, []);
 
@@ -294,7 +299,10 @@ const App: React.FC = () => {
 
     useEffect(() => {
         if (i18n.isInitialized) {
-            fetch(getLocalesPath(`${i18n.language}/translation.json`))
+            // LTD-PATCH(T-405): Wait for a resolved language before nested-route bootstrap fetches.
+            const language = i18n.resolvedLanguage || i18n.language;
+            if (!language) return;
+            fetch(getLocalesPath(`${language}/translation.json`))
                 .then((response) => {
                     return response.json();
                 })
@@ -466,6 +474,15 @@ const App: React.FC = () => {
                             <Route
                                 path="/today_legacy"
                                 element={<Navigate to="/today" replace />}
+                            />
+                            {/* LTD-PATCH(T-406): keep weekly planning inside the Phase 3 shell. */}
+                            <Route
+                                path="/plan/week"
+                                element={
+                                    <Suspense fallback={<LoadingScreen />}>
+                                        <WeeklyPlan />
+                                    </Suspense>
+                                }
                             />
                             <Route
                                 path="/today/plan"
