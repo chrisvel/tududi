@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -167,7 +168,7 @@ const SignInLinkModal: React.FC<SignInLinkModalProps> = ({
                     >
                         {t('signInLink.revoke', 'Take access back')}
                     </button>
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 rtl:space-x-reverse">
                         <button
                             type="button"
                             onClick={onClose}

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -576,9 +577,9 @@ const Tasks: React.FC = () => {
                             {title}
                         </h2>
                         {tag && (
-                            <div className="ml-4 flex items-center space-x-2">
+                            <div className="ms-4 flex items-center space-x-2 rtl:space-x-reverse">
                                 <button
-                                    className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                                    className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rtl:space-x-reverse"
                                     onClick={handleRemoveTag}
                                 >
                                     <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
@@ -594,7 +595,7 @@ const Tasks: React.FC = () => {
                     <div
                         className={`flex items-center gap-2 flex-shrink-0 ${
                             isUpcomingView
-                                ? 'md:fixed md:right-4 md:top-20 md:px-3 md:py-2 md:z-20'
+                                ? 'md:fixed md:end-4 md:top-20 md:px-3 md:py-2 md:z-20'
                                 : ''
                         }`}
                     >
@@ -670,7 +671,7 @@ const Tasks: React.FC = () => {
                                                                 val
                                                             );
                                                         }}
-                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                        className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                             groupBy === val
                                                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -800,7 +801,7 @@ const Tasks: React.FC = () => {
                                                                 );
                                                             }
                                                         }}
-                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                        className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                             isActive
                                                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -855,7 +856,7 @@ const Tasks: React.FC = () => {
                                                                 newOrderBy
                                                             );
                                                         }}
-                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                        className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                             isActive
                                                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -906,7 +907,7 @@ const Tasks: React.FC = () => {
                         } overflow-hidden`}
                     >
                         <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
-                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
+                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 me-2" />
                             <input
                                 type="text"
                                 placeholder={getSearchPlaceholder(
@@ -1056,7 +1057,7 @@ const Tasks: React.FC = () => {
                                             {isLoadingMore ? (
                                                 <>
                                                     <svg
-                                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                                                        className="animate-spin -ms-1 me-2 h-4 w-4 text-gray-500"
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -1082,7 +1083,7 @@ const Tasks: React.FC = () => {
                                                 </>
                                             ) : (
                                                 <>
-                                                    <QueueListIcon className="h-4 w-4 mr-2" />
+                                                    <QueueListIcon className="h-4 w-4 me-2" />
                                                     {t(
                                                         'common.loadMore',
                                                         'Load More'
@@ -1116,7 +1117,7 @@ const Tasks: React.FC = () => {
                             </>
                         ) : (
                             <div className="flex justify-center items-center mt-4">
-                                <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
+                                <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-s px-10 py-24 flex flex-col items-center opacity-95">
                                     <InformationCircleIcon className="h-20 w-20 text-gray-400 opacity-30 mb-6" />
                                     <p className="text-2xl font-light text-center text-gray-600 dark:text-gray-300 mb-2">
                                         {t(

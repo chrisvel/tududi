@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -352,7 +353,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
                         type="button"
                         onClick={onClose}
                         aria-label={t('common.close', 'Close')}
-                        className="-mr-2 p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        className="-me-2 p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-700 transition-colors"
                     >
                         <XMarkIcon className="w-5 h-5" />
                     </button>
@@ -592,7 +593,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
                                                 <div className="text-sm text-gray-900 dark:text-gray-100 truncate">
                                                     {label}
                                                     {isMe && (
-                                                        <span className="ml-1 text-gray-400">
+                                                        <span className="ms-1 text-gray-400">
                                                             (
                                                             {t(
                                                                 'shares.you',

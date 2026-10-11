@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
@@ -97,7 +98,7 @@ const NumberSelectDropdown: React.FC<NumberSelectDropdownProps> = ({
     return (
         <div
             ref={dropdownRef}
-            className={`relative inline-block text-left w-full ${className}`}
+            className={`relative inline-block text-start w-full ${className}`}
         >
             <button
                 type="button"
@@ -142,7 +143,7 @@ const NumberSelectDropdown: React.FC<NumberSelectDropdownProps> = ({
                                     e.stopPropagation();
                                     handleSelect(option.value);
                                 }}
-                                className={`flex items-center justify-between px-4 py-2 text-sm w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600 first:rounded-t-md last:rounded-b-md ${
+                                className={`flex items-center justify-between px-4 py-2 text-sm w-full text-start hover:bg-gray-100 dark:hover:bg-gray-600 first:rounded-t-md last:rounded-b-md ${
                                     option.value === value
                                         ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-900 dark:text-blue-100'
                                         : 'text-gray-900 dark:text-gray-100'

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
@@ -104,7 +105,7 @@ const SidebarResizeHandle: React.FC = () => {
             aria-valuenow={percent}
             tabIndex={0}
             data-testid="sidebar-resize-handle"
-            className="hidden sm:block absolute top-0 right-0 h-full w-1.5 cursor-col-resize touch-none z-10 transition-colors duration-150 hover:bg-blue-500/30 focus-visible:bg-blue-500/40 active:bg-blue-500/50 focus:outline-none"
+            className="hidden sm:block absolute top-0 end-0 h-full w-1.5 cursor-col-resize touch-none z-10 transition-colors duration-150 hover:bg-blue-500/30 focus-visible:bg-blue-500/40 active:bg-blue-500/50 focus:outline-none"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={endDrag}

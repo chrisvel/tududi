@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -105,7 +106,7 @@ const UpgradeModal: React.FC = () => {
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center">
-                    <SparklesIcon className="w-6 h-6 mr-3 text-blue-500" />
+                    <SparklesIcon className="w-6 h-6 me-3 text-blue-500" />
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                         {t('billing.upgradeTitle', 'Upgrade to keep going')}
                     </h3>
@@ -119,7 +120,7 @@ const UpgradeModal: React.FC = () => {
                         )}
                     </p>
                 </div>
-                <div className="px-6 py-4 flex justify-end space-x-2">
+                <div className="px-6 py-4 flex justify-end space-x-2 rtl:space-x-reverse">
                     <button
                         type="button"
                         onClick={() => setDetail(null)}

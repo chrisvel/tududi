@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -102,11 +103,11 @@ const SignupBars: React.FC<{ days: Trends['days'] }> = ({ days }) => {
                         </span>
                         <div className="relative w-full flex-1">
                             <div
-                                className="absolute bottom-0 left-0 right-0 rounded-t bg-gray-200 dark:bg-gray-700"
+                                className="absolute bottom-0 start-0 end-0 rounded-t bg-gray-200 dark:bg-gray-700"
                                 style={{ height: pct(prev) }}
                             />
                             <div
-                                className="absolute bottom-0 left-1/4 right-1/4 rounded-t bg-blue-500 dark:bg-blue-400"
+                                className="absolute bottom-0 start-1/4 end-1/4 rounded-t bg-blue-500 dark:bg-blue-400"
                                 style={{ height: pct(day.signups) }}
                             />
                         </div>

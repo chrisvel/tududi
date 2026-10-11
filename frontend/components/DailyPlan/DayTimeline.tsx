@@ -92,7 +92,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
     return (
         <div
             ref={setNodeRef}
-            className={`group absolute left-1 right-1 rounded-md bg-blue-100 text-blue-950 dark:bg-blue-900/60 dark:text-blue-50 ${
+            className={`group absolute start-1 end-1 rounded-md bg-blue-100 text-blue-950 dark:bg-blue-900/60 dark:text-blue-50 ${
                 isDragging ? 'z-20 opacity-80 shadow-lg' : 'z-10'
             }`}
             style={{
@@ -151,7 +151,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
                 onClick={onRemove}
                 onPointerDown={(e) => e.stopPropagation()}
                 aria-label={t('dailyPlan.removeFromPlan', 'Remove from plan')}
-                className="absolute right-1 top-1 hidden h-6 w-6 items-center justify-center rounded text-blue-900 hover:bg-blue-200 group-hover:flex focus:flex dark:text-blue-100 dark:hover:bg-blue-800"
+                className="absolute end-1 top-1 hidden h-6 w-6 items-center justify-center rounded text-blue-900 hover:bg-blue-200 group-hover:flex focus:flex dark:text-blue-100 dark:hover:bg-blue-800"
             >
                 <XMarkIcon className="h-4 w-4" />
             </button>
@@ -208,7 +208,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                 </p>
             )}
 
-            <div className="relative ml-14" style={{ height }}>
+            <div className="relative ms-14" style={{ height }}>
                 <div
                     ref={setNodeRef}
                     className={`absolute inset-0 rounded-md ${isOver ? 'bg-blue-50/60 dark:bg-blue-900/10' : ''}`}
@@ -250,7 +250,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                         return (
                             <div
                                 key={`${event.feed_uid}-${event.uid}-${event.start}`}
-                                className={`absolute left-1 right-1 flex items-start gap-2 overflow-hidden rounded-md px-2.5 text-[13px] ${
+                                className={`absolute start-1 end-1 flex items-start gap-2 overflow-hidden rounded-md px-2.5 text-[13px] ${
                                     event.busy
                                         ? 'bg-gray-100/80 text-gray-600 dark:bg-gray-800/50 dark:text-gray-400'
                                         : 'bg-gray-50 text-gray-400 dark:bg-gray-800/20 dark:text-gray-500'
@@ -275,7 +275,7 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                         freeGaps(items, events, range).map((gap) => (
                             <div
                                 key={`gap-${gap.start}`}
-                                className="pointer-events-none absolute left-1 right-1 flex items-center justify-center text-[11px] text-gray-400 dark:text-gray-500"
+                                className="pointer-events-none absolute start-1 end-1 flex items-center justify-center text-[11px] text-gray-400 dark:text-gray-500"
                                 style={{
                                     top:
                                         (gap.start - range.start) *
@@ -394,7 +394,7 @@ const UnscheduledTray: React.FC<{
 }> = ({ items, onRemove }) => {
     const { t } = useTranslation();
     return (
-        <div className="ml-14 flex flex-col gap-2 rounded-lg bg-gray-50 p-3 dark:bg-gray-800/40">
+        <div className="ms-14 flex flex-col gap-2 rounded-lg bg-gray-50 p-3 dark:bg-gray-800/40">
             <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 {t('dailyPlan.noTimeYet', 'Today, no time yet')}
             </p>

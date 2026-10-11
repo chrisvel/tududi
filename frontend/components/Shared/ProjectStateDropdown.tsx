@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import {
     ChevronDownIcon,
@@ -180,14 +181,14 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
     return (
         <div
             ref={dropdownRef}
-            className="relative inline-block text-left w-full"
+            className="relative inline-block text-start w-full"
         >
             <button
                 type="button"
                 className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
                 onClick={handleToggle}
             >
-                <span className="flex items-center space-x-2">
+                <span className="flex items-center space-x-2 rtl:space-x-reverse">
                     {selectedState ? (
                         selectedState.icon
                     ) : (
@@ -210,9 +211,9 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
                             onClick={() => handleSelect(state.value)}
                             className="flex items-center justify-between w-full px-4 py-3 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600 first:rounded-t-md last:rounded-b-md transition duration-150 ease-in-out"
                         >
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-3 rtl:space-x-reverse">
                                 {state.icon}
-                                <div className="text-left">
+                                <div className="text-start">
                                     <div className="font-medium">
                                         {state.label}
                                     </div>

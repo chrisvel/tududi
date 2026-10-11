@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -30,8 +31,8 @@ const PersonRow: React.FC<PersonRowProps> = ({ person }) => {
 
     return (
         <div
-            className="flex items-center gap-4 -ml-1.5 py-2.5 pl-5 pr-2 border-l-4 border-gray-300 dark:border-gray-600"
-            style={{ borderLeftColor: person.color || undefined }}
+            className="flex items-center gap-4 -ms-1.5 py-2.5 ps-5 pe-2 border-s-4 border-gray-300 dark:border-gray-600"
+            style={{ borderInlineStartColor: person.color || undefined }}
         >
             <Link
                 to={`/person/${person.uid}`}

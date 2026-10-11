@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { ListBulletIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { SortOption } from './SortFilterButton';
@@ -78,14 +79,14 @@ const IconSortDropdown: React.FC<IconSortDropdownProps> = ({
                 <ListBulletIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                 {active && (
                     <span
-                        className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500"
+                        className="absolute top-1 end-1 h-2 w-2 rounded-full bg-blue-500"
                         data-testid="icon-sort-active"
                     />
                 )}
             </button>
             {isOpen && (
                 <div
-                    className={`absolute ${align === 'left' ? 'left-0' : 'right-0'} mt-1 w-56 max-h-[70vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50`}
+                    className={`absolute ${align === 'left' ? 'start-0' : 'end-0'} mt-1 w-56 max-h-[70vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50`}
                 >
                     {dropdownLabel && (
                         <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
@@ -100,7 +101,7 @@ const IconSortDropdown: React.FC<IconSortDropdownProps> = ({
                                     onChange(option.value);
                                     setIsOpen(false);
                                 }}
-                                className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                                className={`w-full text-start px-3 py-2 text-sm transition-colors ${
                                     value === option.value
                                         ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -127,7 +128,7 @@ const IconSortDropdown: React.FC<IconSortDropdownProps> = ({
                                         onClick={() =>
                                             section.onChange(option.value)
                                         }
-                                        className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                                        className={`w-full text-start px-3 py-2 text-sm transition-colors ${
                                             section.value === option.value
                                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'

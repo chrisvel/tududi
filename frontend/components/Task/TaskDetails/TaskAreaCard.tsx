@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -89,7 +90,7 @@ const TaskAreaCard: React.FC<TaskAreaCardProps> = ({
                             className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex-shrink-0"
                             title={t('area.viewArea', 'Go to area')}
                         >
-                            <ArrowRightIcon className="h-4 w-4" />
+                            <ArrowRightIcon className="h-4 w-4 rtl:-scale-x-100" />
                         </Link>
                     )}
                 </div>
@@ -114,7 +115,7 @@ const TaskAreaCard: React.FC<TaskAreaCardProps> = ({
                             {effectiveArea && (
                                 <button
                                     onClick={handleClear}
-                                    className="w-full text-left text-sm px-3 py-1.5 rounded text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                                    className="w-full text-start text-sm px-3 py-1.5 rounded text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
                                 >
                                     <XMarkIcon className="h-3.5 w-3.5" />
                                     {t('area.clearArea', 'Remove area')}
@@ -129,7 +130,7 @@ const TaskAreaCard: React.FC<TaskAreaCardProps> = ({
                                     <button
                                         key={area.id}
                                         onClick={() => handleSelect(area)}
-                                        className="w-full text-left text-sm px-3 py-1.5 rounded text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2"
+                                        className="w-full text-start text-sm px-3 py-1.5 rounded text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2"
                                     >
                                         <span
                                             className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 border border-gray-300 dark:border-gray-600"
@@ -165,7 +166,7 @@ const TaskAreaCard: React.FC<TaskAreaCardProps> = ({
                                     className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
                                     title={t('area.viewArea', 'Go to area')}
                                 >
-                                    <ArrowRightIcon className="h-4 w-4" />
+                                    <ArrowRightIcon className="h-4 w-4 rtl:-scale-x-100" />
                                 </Link>
                             )}
                             <button

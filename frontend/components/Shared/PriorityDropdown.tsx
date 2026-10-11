@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -131,7 +132,7 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
             ref={dropdownRef}
             data-testid="priority-dropdown"
             data-state={isOpen ? 'open' : 'closed'}
-            className={`relative inline-block text-left ${renderTrigger ? '' : 'w-full'}`}
+            className={`relative inline-block text-start ${renderTrigger ? '' : 'w-full'}`}
         >
             {renderTrigger ? (
                 renderTrigger({
@@ -147,7 +148,7 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
                     className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-900 rounded-md shadow-sm focus:outline-none"
                     onClick={handleToggle}
                 >
-                    <span className="flex items-center space-x-2">
+                    <span className="flex items-center space-x-2 rtl:space-x-reverse">
                         {selectedPriority ? selectedPriority.icon : ''}
                         <span>
                             {selectedPriority
@@ -177,7 +178,7 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
                                 onClick={() =>
                                     handleSelect(priority.value as PriorityType)
                                 }
-                                className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 w-full first:rounded-t-md last:rounded-b-md"
+                                className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 w-full first:rounded-t-md last:rounded-b-md rtl:space-x-reverse"
                                 data-testid={`priority-option-${priority.value || 'none'}`}
                                 title={priority.label}
                             >

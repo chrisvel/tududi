@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -62,7 +63,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                     .toLowerCase()
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/^-|-$/g, '')}`}
-                className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col hover:opacity-80 transition-opacity duration-300 ease-in-out cursor-pointer border-l-4 border-l-blue-400 dark:border-l-blue-500"
+                className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col hover:opacity-80 transition-opacity duration-300 ease-in-out cursor-pointer border-s-4 border-s-blue-400 dark:border-s-blue-500"
                 style={{
                     minHeight: '280px',
                     maxHeight: '280px',
@@ -72,7 +73,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                 <div className="p-4 flex flex-col h-full">
                     {/* Title - Default Height with Trimming */}
                     <div>
-                        <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 text-left truncate leading-tight">
+                        <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 text-start truncate leading-tight">
                             {note.title || t('notes.untitled', 'Untitled Note')}
                         </h3>
                     </div>
@@ -134,7 +135,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                     }}
                                     className="flex items-center min-w-0 hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors bg-transparent border-none p-0 cursor-pointer"
                                 >
-                                    <FolderIcon className="h-3 w-3 mr-1 flex-shrink-0" />
+                                    <FolderIcon className="h-3 w-3 me-1 flex-shrink-0" />
                                     <span className="truncate">
                                         {project.name}
                                     </span>
@@ -142,7 +143,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                             )}
                             {tags.length > 0 && (
                                 <div className="flex items-center min-w-0 flex-1 overflow-hidden">
-                                    <TagIcon className="h-3 w-3 mr-1 flex-shrink-0" />
+                                    <TagIcon className="h-3 w-3 me-1 flex-shrink-0" />
                                     <div className="truncate">
                                         {tags.map((tag, index) => (
                                             <span
@@ -193,7 +194,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
 
             {/* Three Dots Dropdown - Outside Link */}
             {showActions && (onEdit || onDelete || onTogglePin) && (
-                <div className="absolute bottom-2 right-2" ref={dropdownRef}>
+                <div className="absolute bottom-2 end-2" ref={dropdownRef}>
                     <button
                         onClick={(e) => {
                             e.preventDefault();
@@ -209,7 +210,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                     </button>
 
                     {dropdownOpen && (
-                        <div className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[9999]">
+                        <div className="absolute end-0 top-full mt-1 w-40 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[9999]">
                             {onTogglePin && (
                                 <button
                                     onClick={(e) => {
@@ -218,7 +219,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         onTogglePin(note);
                                         setDropdownOpen(false);
                                     }}
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start rounded-t-md"
                                 >
                                     {note.pin_to_sidebar ? t('notes.unpinFromSidebar', 'Unpin from sidebar') : t('notes.pinToSidebar', 'Pin to sidebar')}
                                 </button>
@@ -231,7 +232,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         onEdit(note);
                                         setDropdownOpen(false);
                                     }}
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start"
                                     data-testid={`note-edit-${noteIdentifier}`}
                                 >
                                     {t('notes.edit', 'Edit')}
@@ -245,7 +246,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         onDelete(note);
                                         setDropdownOpen(false);
                                     }}
-                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start rounded-b-md"
                                     data-testid={`note-delete-${note.uid}`}
                                 >
                                     {t('notes.delete', 'Delete')}

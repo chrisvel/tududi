@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClockIcon } from '@heroicons/react/24/outline';
@@ -136,7 +137,7 @@ const TaskDeferUntilCard: React.FC<TaskDeferUntilCardProps> = ({
                                 'Select defer until date and time'
                             )}
                         />
-                        <div className="flex justify-end space-x-2">
+                        <div className="flex justify-end space-x-2 rtl:space-x-reverse">
                             <button
                                 onClick={onSave}
                                 className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
@@ -155,7 +156,7 @@ const TaskDeferUntilCard: React.FC<TaskDeferUntilCardProps> = ({
                     <button
                         type="button"
                         onClick={onStartEdit}
-                        className="flex w-full items-center justify-between text-left"
+                        className="flex w-full items-center justify-between text-start"
                     >
                         {task.defer_until ? (
                             (() => {
@@ -165,7 +166,7 @@ const TaskDeferUntilCard: React.FC<TaskDeferUntilCardProps> = ({
                                 if (!display) return null;
 
                                 return (
-                                    <div className="flex items-center space-x-2 flex-1 min-w-0 text-gray-900 dark:text-gray-100">
+                                    <div className="flex items-center space-x-2 flex-1 min-w-0 text-gray-900 dark:text-gray-100 rtl:space-x-reverse">
                                         <ClockIcon className="h-4 w-4 flex-shrink-0 text-gray-500 dark:text-gray-400" />
                                         <span className="text-sm font-medium">
                                             {display.formattedDateTime}

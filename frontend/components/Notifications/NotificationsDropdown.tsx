@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import {
     BellIcon,
@@ -325,7 +326,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
             >
                 <BellIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
                 {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] rounded-full h-4 min-w-4 px-1 flex items-center justify-center font-medium">
+                    <span className="absolute -top-0.5 -end-0.5 bg-red-500 text-white text-[10px] rounded-full h-4 min-w-4 px-1 flex items-center justify-center font-medium">
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                 )}
@@ -333,7 +334,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 
             {isOpen && (
                 <div
-                    className={`absolute right-0 mt-2 w-96 rounded-lg shadow-lg z-50 ${
+                    className={`absolute end-0 mt-2 w-96 rounded-lg shadow-lg z-50 ${
                         isDarkMode ? 'bg-gray-800' : 'bg-white'
                     } border ${
                         isDarkMode ? 'border-gray-700' : 'border-gray-200'
@@ -395,7 +396,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                             : 'bg-gray-50'
                                     } transition-colors`}
                                 >
-                                    <div className="flex items-start space-x-3">
+                                    <div className="flex items-start space-x-3 rtl:space-x-reverse">
                                         {getLevelIcon(notification.level)}
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-start justify-between">
@@ -428,7 +429,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                                     {isPendingInvitation(
                                                         notification
                                                     ) && (
-                                                        <div className="flex items-center space-x-2 mt-2">
+                                                        <div className="flex items-center space-x-2 mt-2 rtl:space-x-reverse">
                                                             <button
                                                                 onClick={(
                                                                     e
@@ -483,7 +484,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                                         </p>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center space-x-1 ml-2">
+                                                <div className="flex items-center space-x-1 ms-2 rtl:space-x-reverse">
                                                     {!notification.read_at && (
                                                         <button
                                                             onClick={(e) => {

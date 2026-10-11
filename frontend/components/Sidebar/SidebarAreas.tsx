@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect } from 'react';
 import {
     Squares2X2Icon,
@@ -45,7 +46,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
     const isAreasPageActive = location.pathname === '/areas';
 
     const itemClass = (path: string) =>
-        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+        `group flex justify-between items-center rounded-[8px] ps-[30px] pe-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             location.pathname === path
                 ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]'
                 : ''
@@ -55,7 +56,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
         handleNavClick(
             getAreaPath(area),
             area.name,
-            <Squares2X2Icon className="h-4 w-4 mr-2" />
+            <Squares2X2Icon className="h-4 w-4 me-2" />
         );
 
     return (
@@ -79,11 +80,11 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                         handleNavClick(
                             '/areas',
                             'Areas',
-                            <Squares2X2Icon className="h-5 w-5 mr-2" />
+                            <Squares2X2Icon className="h-5 w-5 me-2" />
                         );
                     }}
                 >
-                    <Squares2X2Icon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
+                    <Squares2X2Icon className="h-[14px] w-[14px] me-[6px] shrink-0" />
                     {t('sidebar.areas')}
                 </span>
                 <div className="flex items-center gap-1">
@@ -114,7 +115,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                                 className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
-                                    className="h-3 w-3 transition-transform duration-150"
+                                    className="h-3 w-3 transition-transform duration-150 rtl:-scale-x-100"
                                     style={{
                                         transform: isExpanded
                                             ? 'rotate(90deg)'

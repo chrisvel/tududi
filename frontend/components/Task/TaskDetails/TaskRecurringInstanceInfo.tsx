@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -31,7 +32,7 @@ const TaskRecurringInstanceInfo: React.FC<TaskRecurringInstanceInfoProps> = ({
                 </p>
                 {loadingParent && (
                     <div className="flex items-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 me-2"></div>
                         <span className="text-sm text-gray-600 dark:text-gray-400">
                             {t('common.loading', 'Loading parent task...')}
                         </span>

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -219,7 +220,7 @@ const EisenhowerMatrix: React.FC = () => {
             dragOverBg: 'bg-red-100 dark:bg-red-900/20',
             badgeColor: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
             headerColor: 'text-red-700 dark:text-red-400',
-            cellBorder: 'border-r border-b border-gray-200 dark:border-gray-700',
+            cellBorder: 'border-e border-b border-gray-200 dark:border-gray-700',
         },
         schedule: {
             label: t('tasks.eisenhower.schedule', 'Schedule'),
@@ -235,7 +236,7 @@ const EisenhowerMatrix: React.FC = () => {
             dragOverBg: 'bg-yellow-100 dark:bg-yellow-900/20',
             badgeColor: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300',
             headerColor: 'text-yellow-700 dark:text-yellow-400',
-            cellBorder: 'border-r border-gray-200 dark:border-gray-700',
+            cellBorder: 'border-e border-gray-200 dark:border-gray-700',
         },
         eliminate: {
             label: t('tasks.eisenhower.eliminate', 'Eliminate'),
@@ -281,11 +282,11 @@ const EisenhowerMatrix: React.FC = () => {
 
                 <button
                     onClick={() => toggleCollapsed(key)}
-                    className="flex items-center justify-between px-4 py-3 text-left w-full flex-shrink-0"
+                    className="flex items-center justify-between px-4 py-3 text-start w-full flex-shrink-0"
                 >
                     <div className="flex items-center gap-2">
                         {isCollapsed
-                            ? <ChevronRightIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                            ? <ChevronRightIcon className="h-4 w-4 text-gray-400 flex-shrink-0 rtl:-scale-x-100" />
                             : <ChevronDownIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
                         }
                         <span className={`text-sm font-semibold ${cfg.headerColor}`}>
@@ -374,7 +375,7 @@ const EisenhowerMatrix: React.FC = () => {
                     <div className="flex-1 grid grid-cols-[36px_minmax(0,1fr)_minmax(0,1fr)] grid-rows-[1fr_1fr] min-h-0 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
 
                         {/* Row 1 axis label */}
-                        <div className="flex items-center justify-center bg-white dark:bg-gray-900 border-r border-b border-gray-200 dark:border-gray-700 min-h-0">
+                        <div className="flex items-center justify-center bg-white dark:bg-gray-900 border-e border-b border-gray-200 dark:border-gray-700 min-h-0">
                             <span style={axisLabelStyle} className="text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase">
                                 {t('tasks.eisenhower.important', 'Important')}
                             </span>
@@ -384,7 +385,7 @@ const EisenhowerMatrix: React.FC = () => {
                         {renderCell(quadrants[1])}
 
                         {/* Row 2 axis label */}
-                        <div className="flex items-center justify-center bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 min-h-0">
+                        <div className="flex items-center justify-center bg-white dark:bg-gray-900 border-e border-gray-200 dark:border-gray-700 min-h-0">
                             <span style={axisLabelStyle} className="text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase">
                                 {t('tasks.eisenhower.notImportant', 'Not Important')}
                             </span>

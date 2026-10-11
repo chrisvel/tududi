@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import RecurrenceDisplay from '../RecurrenceDisplay';
@@ -88,7 +89,7 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
             return (
                 <div className="flex items-center justify-center py-4">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                    <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                    <span className="ms-2 text-sm text-gray-500 dark:text-gray-400">
                         {t('common.loading', 'Loading...')}
                     </span>
                 </div>
@@ -175,7 +176,7 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
                             completionBased={recurrenceForm.completion_based}
                             onChange={onChange}
                         />
-                        <div className="flex justify-end space-x-2">
+                        <div className="flex justify-end space-x-2 rtl:space-x-reverse">
                             <button
                                 onClick={onSave}
                                 className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
@@ -282,7 +283,7 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
                                                         iter.date
                                                     ).isToday
                                             ) && (
-                                                <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
+                                                <span className="ms-2 text-xs text-blue-600 dark:text-blue-400">
                                                     (
                                                     {t(
                                                         'task.includingToday',

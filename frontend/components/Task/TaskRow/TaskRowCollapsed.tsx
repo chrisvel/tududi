@@ -306,7 +306,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                     )}
                     {task.is_blocked && !isTaskCompleted(task.status) && (
                         <span
-                            className="ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex-shrink-0"
+                            className="ms-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex-shrink-0"
                             title={t(
                                 'relations.blockedTooltip',
                                 'Blocked by {{count}} open task(s)',
@@ -322,7 +322,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                     )}
                     {!editable && commentCount > 0 && (
                         <span
-                            className="ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full text-gray-400 dark:text-gray-500 flex-shrink-0"
+                            className="ms-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full text-gray-400 dark:text-gray-500 flex-shrink-0"
                             title={t('comments.count', '{{count}} comments', {
                                 count: commentCount,
                             })}
@@ -346,7 +346,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                     ? t('tasks.hideSubtasks', 'Hide subtasks')
                                     : t('tasks.showSubtasks', 'Show subtasks')
                             }
-                            className={`ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full border transition-colors flex-shrink-0 ${
+                            className={`ms-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full border transition-colors flex-shrink-0 ${
                                 showSubtasks
                                     ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-100'
                                     : 'text-gray-400 border-transparent hover:border-gray-200 hover:text-gray-600 dark:hover:border-gray-600'
@@ -367,7 +367,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         <PriorityBadge priority={task.priority} />
                         {task.parent_task && (
                             <span className="flex items-center">
-                                <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
+                                <ArrowUpIcon className="h-3 w-3 me-1 flex-shrink-0" />
                                 <Link
                                     to={`/task/${task.parent_task.uid}`}
                                     onClick={stop}
@@ -379,7 +379,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         )}
                         {showProject && (
                             <span className="flex items-center">
-                                <FolderIcon className="h-3 w-3 mr-1" />
+                                <FolderIcon className="h-3 w-3 me-1" />
                                 <Link
                                     to={projectHref}
                                     onClick={stop}
@@ -418,32 +418,32 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         )}
                         {task.due_date && (
                             <span className="flex items-center whitespace-nowrap">
-                                <CalendarIcon className="h-3 w-3 mr-1" />
+                                <CalendarIcon className="h-3 w-3 me-1" />
                                 {formatDue(task.due_date)}
                             </span>
                         )}
                         {isTaskCompleted(task.status) && task.completed_at && (
                             <span className="flex items-center whitespace-nowrap">
-                                <CheckIcon className="h-3 w-3 mr-1" />
+                                <CheckIcon className="h-3 w-3 me-1" />
                                 {formatDue(task.completed_at.split('T')[0])}
                             </span>
                         )}
                         {task.recurrence_type &&
                             task.recurrence_type !== 'none' && (
                                 <span className="flex items-center">
-                                    <ArrowPathIcon className="h-3 w-3 mr-1" />
+                                    <ArrowPathIcon className="h-3 w-3 me-1" />
                                     {formatRecurrence(task.recurrence_type)}
                                 </span>
                             )}
                         {task.recurring_parent_id && (
                             <span className="flex items-center">
-                                <ArrowPathIcon className="h-3 w-3 mr-1" />
+                                <ArrowPathIcon className="h-3 w-3 me-1" />
                                 {t('recurrence.instance', 'Recurring instance')}
                             </span>
                         )}
                         {deferText && (
                             <span className="flex items-center whitespace-nowrap">
-                                <CalendarDaysIcon className="h-3 w-3 mr-1" />
+                                <CalendarDaysIcon className="h-3 w-3 me-1" />
                                 {deferText}
                             </span>
                         )}
@@ -477,7 +477,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                     {isActionsMenuOpen && (
                         <div
                             role="menu"
-                            className="absolute right-0 top-full mt-1 w-36 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 overflow-hidden"
+                            className="absolute end-0 top-full mt-1 w-36 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 overflow-hidden"
                         >
                             {onEdit && (
                                 <button

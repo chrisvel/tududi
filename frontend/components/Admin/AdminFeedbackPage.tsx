@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -172,7 +173,7 @@ const AdminFeedbackPage: React.FC = () => {
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center mb-6">
-                <BugAntIcon className="w-7 h-7 mr-3 text-rose-500" />
+                <BugAntIcon className="w-7 h-7 me-3 text-rose-500" />
                 {t('admin.feedback.title', 'Feedback')}
             </h1>
 
@@ -298,7 +299,7 @@ const AdminFeedbackPage: React.FC = () => {
                                         </span>
                                     )}
                                     <time
-                                        className={`w-24 shrink-0 text-right text-xs ${
+                                        className={`w-24 shrink-0 text-end text-xs ${
                                             resolved
                                                 ? 'text-gray-400 dark:text-gray-500'
                                                 : 'font-medium text-gray-700 dark:text-gray-200'
@@ -313,7 +314,7 @@ const AdminFeedbackPage: React.FC = () => {
                                 </div>
 
                                 {isOpen && (
-                                    <div className="px-4 pb-4 sm:pl-[4.25rem]">
+                                    <div className="px-4 pb-4 sm:ps-[4.25rem]">
                                         {entry.user?.name && (
                                             <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                                                 {entry.user.email}
@@ -330,7 +331,7 @@ const AdminFeedbackPage: React.FC = () => {
                                                         className="inline-flex items-center max-w-full px-2 py-1 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20"
                                                         title={entry.page_url}
                                                     >
-                                                        <LinkIcon className="w-3.5 h-3.5 mr-1 shrink-0" />
+                                                        <LinkIcon className="w-3.5 h-3.5 me-1 shrink-0" />
                                                         <span className="truncate">
                                                             {entry.page_url}
                                                         </span>
@@ -349,17 +350,17 @@ const AdminFeedbackPage: React.FC = () => {
                                                         entry.user_agent || ''
                                                     }
                                                 >
-                                                    <ComputerDesktopIcon className="w-3.5 h-3.5 mr-1" />
+                                                    <ComputerDesktopIcon className="w-3.5 h-3.5 me-1" />
                                                     {browser}
                                                 </span>
                                             )}
                                             {entry.app_version && (
                                                 <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-600 dark:bg-gray-700/60 dark:text-gray-300">
-                                                    <TagIcon className="w-3.5 h-3.5 mr-1" />
+                                                    <TagIcon className="w-3.5 h-3.5 me-1" />
                                                     {entry.app_version}
                                                 </span>
                                             )}
-                                            <span className="text-gray-400 dark:text-gray-500 ml-1">
+                                            <span className="text-gray-400 dark:text-gray-500 ms-1">
                                                 {new Date(
                                                     entry.created_at
                                                 ).toLocaleString()}
@@ -379,9 +380,9 @@ const AdminFeedbackPage: React.FC = () => {
                                                 data-testid="admin-feedback-toggle"
                                             >
                                                 {resolved ? (
-                                                    <ArrowUturnLeftIcon className="w-4 h-4 mr-1.5" />
+                                                    <ArrowUturnLeftIcon className="w-4 h-4 me-1.5 rtl:-scale-x-100" />
                                                 ) : (
-                                                    <CheckCircleIcon className="w-4 h-4 mr-1.5" />
+                                                    <CheckCircleIcon className="w-4 h-4 me-1.5" />
                                                 )}
                                                 {resolved
                                                     ? t(
@@ -401,7 +402,7 @@ const AdminFeedbackPage: React.FC = () => {
                                                 className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
                                                 data-testid="admin-feedback-delete"
                                             >
-                                                <TrashIcon className="w-4 h-4 mr-1.5" />
+                                                <TrashIcon className="w-4 h-4 me-1.5" />
                                                 {t('common.delete', 'Delete')}
                                             </button>
                                         </div>

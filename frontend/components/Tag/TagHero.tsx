@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { TFunction } from 'i18next';
 import {
@@ -175,7 +176,7 @@ const TagHero: React.FC<TagHeroProps> = ({
                         </span>
                         <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                             {percent}
-                            <span className="ml-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+                            <span className="ms-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
                                 %
                             </span>
                         </span>
@@ -187,7 +188,7 @@ const TagHero: React.FC<TagHeroProps> = ({
                         }}
                     >
                         <div
-                            className="absolute inset-y-0 left-0 rounded-full bg-blue-500 transition-all duration-300"
+                            className="absolute inset-y-0 start-0 rounded-full bg-blue-500 transition-all duration-300"
                             style={{ width: `${percent}%` }}
                         />
                     </div>

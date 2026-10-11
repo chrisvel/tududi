@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import {
@@ -71,7 +72,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                     }`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        handleNavClick('/notes', t('sidebar.notes'), <BookOpenIcon className="h-4 w-4 mr-2" />);
+                        handleNavClick('/notes', t('sidebar.notes'), <BookOpenIcon className="h-4 w-4 me-2" />);
                     }}
                 >
                     <BookOpenIcon className="h-[14px] w-[14px]" />
@@ -103,8 +104,8 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                                 className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
-                                    className="h-3 w-3 transition-transform duration-150"
-                                    style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                                    className="h-3 w-3 transition-transform duration-150 rtl:-scale-x-100"
+                                    style={{ transform: isExpanded ? 'rotate(90deg)' : undefined }}
                                 />
                             </button>
                         </>
@@ -115,7 +116,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
             {isExpanded && (
                 <>
                     {notes.length > 0 && (
-                        <div className="flex items-center gap-[6px] ml-[30px] mr-[10px] mt-1 mb-1 px-[8px] py-[3px] rounded-md bg-gray-100 dark:bg-white/5">
+                        <div className="flex items-center gap-[6px] ms-[30px] me-[10px] mt-1 mb-1 px-[8px] py-[3px] rounded-md bg-gray-100 dark:bg-white/5">
                             <MagnifyingGlassIcon className="h-3 w-3 text-gray-400 dark:text-gray-500 flex-shrink-0" />
                             <input
                                 type="text"

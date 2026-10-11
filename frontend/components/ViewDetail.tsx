@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, {
     useState,
     useEffect,
@@ -913,7 +914,7 @@ const ViewDetail: React.FC = () => {
                                                   100
                                           )
                                         : 0}
-                                    <span className="ml-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+                                    <span className="ms-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
                                         %
                                     </span>
                                 </span>
@@ -926,7 +927,7 @@ const ViewDetail: React.FC = () => {
                                 }}
                             >
                                 <div
-                                    className="absolute inset-y-0 left-0 rounded-full bg-blue-500 transition-all duration-300"
+                                    className="absolute inset-y-0 start-0 rounded-full bg-blue-500 transition-all duration-300"
                                     style={{
                                         width: `${tasks.length > 0 ? Math.round((doneTaskCount / tasks.length) * 100) : 0}%`,
                                     }}
@@ -945,7 +946,7 @@ const ViewDetail: React.FC = () => {
                     } overflow-hidden`}
                 >
                     <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
-                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
+                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 me-2" />
                         <input
                             type="text"
                             placeholder={t(
@@ -962,7 +963,7 @@ const ViewDetail: React.FC = () => {
                 {/* Tabs */}
                 <div className="mb-4">
                     <div className="flex items-center min-h-[2.5rem]">
-                        <div className="flex items-center gap-4 sm:gap-6 self-stretch pl-2 sm:pl-3">
+                        <div className="flex items-center gap-4 sm:gap-6 self-stretch ps-2 sm:ps-3">
                             {(
                                 [
                                     [
@@ -988,7 +989,7 @@ const ViewDetail: React.FC = () => {
                                     onClick={() => setActiveTab(tab)}
                                     className={`relative flex items-center self-stretch py-2.5 text-sm font-medium transition-colors ${
                                         activeTab === tab
-                                            ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
+                                            ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:start-px after:end-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
                                             : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'
                                     }`}
                                     aria-pressed={activeTab === tab}
@@ -1029,7 +1030,7 @@ const ViewDetail: React.FC = () => {
                                                                         | 'project'
                                                                 )
                                                             }
-                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                                 groupBy === val
                                                                     ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -1100,7 +1101,7 @@ const ViewDetail: React.FC = () => {
                                                                             | 'completed'
                                                                     )
                                                                 }
-                                                                className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                                className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                                     isActive
                                                                         ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -1160,7 +1161,7 @@ const ViewDetail: React.FC = () => {
                                                                     `${field}:${dir.key}`
                                                                 );
                                                             }}
-                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                                 isActive
                                                                     ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -1223,7 +1224,7 @@ const ViewDetail: React.FC = () => {
                                             {isLoadingMore ? (
                                                 <>
                                                     <svg
-                                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                                                        className="animate-spin -ms-1 me-2 h-4 w-4 text-gray-500"
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -1249,7 +1250,7 @@ const ViewDetail: React.FC = () => {
                                                 </>
                                             ) : (
                                                 <>
-                                                    <QueueListIcon className="h-4 w-4 mr-2" />
+                                                    <QueueListIcon className="h-4 w-4 me-2" />
                                                     {t(
                                                         'common.loadMore',
                                                         'Load More'
@@ -1297,7 +1298,7 @@ const ViewDetail: React.FC = () => {
                                                 setHoveredNoteId(null)
                                             }
                                         >
-                                            <div className="flex-grow overflow-hidden pr-4">
+                                            <div className="flex-grow overflow-hidden pe-4">
                                                 <div className="flex items-center flex-wrap gap-2">
                                                     <Link
                                                         to={
@@ -1344,7 +1345,7 @@ const ViewDetail: React.FC = () => {
                                                                             `/tag/${encodeURIComponent(noteTag.name)}`
                                                                         );
                                                                     }}
-                                                                    className="flex items-center space-x-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                                                    className="flex items-center space-x-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors rtl:space-x-reverse"
                                                                 >
                                                                     <TagIcon className="h-3 w-3 text-gray-500 dark:text-gray-300" />
                                                                     <span className="text-gray-700 dark:text-gray-300">
@@ -1358,7 +1359,7 @@ const ViewDetail: React.FC = () => {
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="flex space-x-2">
+                                            <div className="flex space-x-2 rtl:space-x-reverse">
                                                 <button
                                                     onClick={
                                                         () => {} // Edit functionality not implemented yet

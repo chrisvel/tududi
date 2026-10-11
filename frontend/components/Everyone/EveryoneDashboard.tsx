@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UsersIcon } from '@heroicons/react/24/outline';
@@ -243,7 +244,7 @@ const EveryoneDashboard: React.FC = () => {
                                         ? t('everyone.you', 'You')
                                         : col.person.name}
                                 </span>
-                                <span className="ml-auto text-xs tabular-nums text-gray-400 dark:text-gray-500">
+                                <span className="ms-auto text-xs tabular-nums text-gray-400 dark:text-gray-500">
                                     {total}
                                 </span>
                             </div>

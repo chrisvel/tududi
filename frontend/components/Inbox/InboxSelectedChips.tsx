@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -247,7 +248,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
             onClick={onClick}
             title={title}
             aria-label={title}
-            className="ml-0.5 text-gray-400 hover:text-red-500 dark:text-gray-500 transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded-sm"
+            className="ms-0.5 text-gray-400 hover:text-red-500 dark:text-gray-500 transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded-sm"
         >
             <XMarkIcon className="h-3 w-3" />
         </button>
@@ -340,7 +341,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                         data-testid="selected-due-date"
                         className="flex items-center"
                     >
-                        <CalendarIcon className="h-3 w-3 mr-1 flex-shrink-0" />
+                        <CalendarIcon className="h-3 w-3 me-1 flex-shrink-0" />
                         <span>{formatDateLabel(dueDate)}</span>
                         {onDismissDate &&
                             removeButton(
@@ -354,10 +355,10 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                         data-testid="selected-assignee"
                         className="flex items-center"
                     >
-                        <UserIcon className="h-3 w-3 mr-1 flex-shrink-0" />
+                        <UserIcon className="h-3 w-3 me-1 flex-shrink-0" />
                         {assignee.color && (
                             <span
-                                className="h-2 w-2 mr-1 rounded-full"
+                                className="h-2 w-2 me-1 rounded-full"
                                 style={{ backgroundColor: assignee.color }}
                                 aria-hidden="true"
                             />
@@ -378,14 +379,14 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
         <>
             {dueDate && (
                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
-                    <CalendarDaysIcon className="h-3 w-3 mr-1" />
+                    <CalendarDaysIcon className="h-3 w-3 me-1" />
                     {renderDateChip(dueDate)}
                 </div>
             )}
 
             {assignee && (
                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
-                    <UserIcon className="h-3 w-3 mr-1" />
+                    <UserIcon className="h-3 w-3 me-1" />
                     {renderPersonChip(assignee)}
                 </div>
             )}
@@ -395,7 +396,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                     data-testid="selected-tags-container"
                     className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1"
                 >
-                    <TagIcon className="h-3 w-3 mr-1" />
+                    <TagIcon className="h-3 w-3 me-1" />
                     <div className="flex flex-wrap gap-1">
                         {selectedTags.map((tagName, index) =>
                             renderTagChip(tagName, index)
@@ -409,7 +410,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                     data-testid="selected-projects-container"
                     className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1"
                 >
-                    <FolderIcon className="h-3 w-3 mr-1" />
+                    <FolderIcon className="h-3 w-3 me-1" />
                     <div className="flex flex-wrap gap-1">
                         {selectedProjects.map((projectName, index) =>
                             renderProjectChip(projectName, index)

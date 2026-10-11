@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState } from 'react';
 import { RecurrenceType } from '../../../entities/Task';
 import { useTranslation } from 'react-i18next';
@@ -132,7 +133,7 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t('forms.task.labels.recurrenceInterval', 'Every')}
                 </label>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 rtl:space-x-reverse">
                     <div className="w-20">
                         <NumberSelectDropdown
                             value={recurrenceInterval || 1}
@@ -462,7 +463,7 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
                                 disabled={disabled}
                             />
                         ) : (
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2 rtl:space-x-reverse">
                                 <div className="w-20">
                                     <NumberSelectDropdown
                                         value={recurrenceInterval || 1}

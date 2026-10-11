@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -130,7 +131,7 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
     return (
         <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
             <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                <LinkIcon className="w-5 h-5 mr-2 text-green-500" />
+                <LinkIcon className="w-5 h-5 me-2 text-green-500" />
                 {t('profile.connectedAccounts.title', 'Connected Accounts')}
             </h4>
 
@@ -144,7 +145,7 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
             {error && (
                 <div className="mb-4 p-3 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-800 rounded text-red-800 dark:text-red-200">
                     <p className="text-sm flex items-center">
-                        <ExclamationTriangleIcon className="w-4 h-4 inline mr-2" />
+                        <ExclamationTriangleIcon className="w-4 h-4 inline me-2" />
                         {error}
                     </p>
                 </div>
@@ -175,7 +176,7 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
                                                 <span>{identity.email}</span>
                                             )}
                                             {identity.first_login_at && (
-                                                <span className="ml-2">
+                                                <span className="ms-2">
                                                     •{' '}
                                                     {t(
                                                         'profile.connectedAccounts.linkedOn',
@@ -192,7 +193,7 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
                                     )}
                                 </div>
 
-                                <div className="ml-4">
+                                <div className="ms-4">
                                     {isLinked ? (
                                         confirmUnlinkId === identity?.id ? (
                                             <div className="flex items-center gap-2">
@@ -273,7 +274,7 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
             {!hasPassword && identities.length > 0 && (
                 <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-800 rounded text-yellow-800 dark:text-yellow-200">
                     <p className="text-sm flex items-center">
-                        <ExclamationTriangleIcon className="w-4 h-4 inline mr-2" />
+                        <ExclamationTriangleIcon className="w-4 h-4 inline me-2" />
                         {t(
                             'profile.connectedAccounts.noPasswordWarning',
                             'You have no password set. Consider setting one to have an alternative login method.'

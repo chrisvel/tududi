@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { Location } from 'react-router-dom';
 import { FireIcon } from '@heroicons/react/24/outline';
@@ -32,11 +33,11 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
                         handleNavClick(
                             '/habits',
                             'Habits',
-                            <FireIcon className="h-5 w-5 mr-2" />
+                            <FireIcon className="h-5 w-5 me-2" />
                         )
                     }
                 >
-                    <FireIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
+                    <FireIcon className="h-[14px] w-[14px] me-[6px] shrink-0" />
                     {t('sidebar.habits', 'Habits')}
                 </li>
             </ul>

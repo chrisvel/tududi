@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDownIcon, FlagIcon } from '@heroicons/react/24/outline';
@@ -85,14 +86,14 @@ const GoalDropdown: React.FC<GoalDropdownProps> = ({
     return (
         <div
             ref={dropdownRef}
-            className="relative inline-block text-left w-full"
+            className="relative inline-block text-start w-full"
         >
             <button
                 type="button"
                 className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
                 onClick={handleToggle}
             >
-                <span className="flex items-center space-x-2">
+                <span className="flex items-center space-x-2 rtl:space-x-reverse">
                     <FlagIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     <span>{getLabel()}</span>
                 </span>

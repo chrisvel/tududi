@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -159,7 +160,7 @@ const HabitHeatmap: React.FC<HabitHeatmapProps> = ({
                         className="p-1 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30"
                         aria-label={t('habits.previousYear', 'Previous year')}
                     >
-                        <ChevronLeftIcon className="h-4 w-4" />
+                        <ChevronLeftIcon className="h-4 w-4 rtl:-scale-x-100" />
                     </button>
                     <span className="text-sm font-medium tabular-nums text-gray-700 dark:text-gray-200 w-12 text-center">
                         {year}
@@ -171,7 +172,7 @@ const HabitHeatmap: React.FC<HabitHeatmapProps> = ({
                         className="p-1 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30"
                         aria-label={t('habits.nextYear', 'Next year')}
                     >
-                        <ChevronRightIcon className="h-4 w-4" />
+                        <ChevronRightIcon className="h-4 w-4 rtl:-scale-x-100" />
                     </button>
                 </div>
             </div>

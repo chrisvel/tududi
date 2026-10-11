@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -148,7 +149,7 @@ const TaskProjectCard: React.FC<TaskProjectCardProps> = ({
                                         'Go to project'
                                     )}
                                 >
-                                    <ArrowRightIcon className="h-4 w-4" />
+                                    <ArrowRightIcon className="h-4 w-4 rtl:-scale-x-100" />
                                     <span className="sr-only">
                                         {t(
                                             'project.viewProject',

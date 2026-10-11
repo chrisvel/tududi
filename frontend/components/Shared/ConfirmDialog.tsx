@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +34,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 <p className="text-gray-700 dark:text-gray-300 mb-8">
                     {message}
                 </p>
-                <div className="flex justify-end space-x-4">
+                <div className="flex justify-end space-x-4 rtl:space-x-reverse">
                     <button
                         type="button"
                         onClick={onCancel}

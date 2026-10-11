@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getApiPath } from '../../config/paths';
@@ -64,7 +65,7 @@ const TONE = {
 
 const cell = 'px-4 py-2 whitespace-nowrap';
 const COLUMNS = 7;
-const headerCell = 'px-4 py-2 text-left font-medium';
+const headerCell = 'px-4 py-2 text-start font-medium';
 
 // Who is on the instance and where each of them stands: signed up or added
 // as a member, verified, on the trial and for how long, and paying.
@@ -183,7 +184,7 @@ const AdminUserStatusTable: React.FC = () => {
                     {t('admin.userStatus.title', 'Users')}
                     {users !== null && filters.length > 0 && (
                         <span
-                            className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            className="ms-2 text-sm font-normal text-gray-500 dark:text-gray-400"
                             data-testid="admin-user-filter-count"
                         >
                             {t('admin.userFilter.showing', {
@@ -557,7 +558,7 @@ const AdminUserStatusTable: React.FC = () => {
                                                                             `admin.userStatus.kinds.${kind}`,
                                                                             label
                                                                         )}
-                                                                        <span className="ml-1.5 font-semibold">
+                                                                        <span className="ms-1.5 font-semibold">
                                                                             {n}
                                                                         </span>
                                                                     </span>

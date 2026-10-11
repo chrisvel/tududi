@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalendarIcon, PlusIcon } from '@heroicons/react/24/outline';
@@ -119,7 +120,7 @@ const CalDAVTab: React.FC<CalDAVTabProps> = ({ isActive }) => {
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <CalendarIcon className="w-6 h-6 mr-3 text-indigo-500" />
+                <CalendarIcon className="w-6 h-6 me-3 text-indigo-500" />
                 {t('profile.caldav.title', 'CalDAV Synchronization')}
             </h3>
 
@@ -140,7 +141,7 @@ const CalDAVTab: React.FC<CalDAVTabProps> = ({ isActive }) => {
                         onClick={() => setShowForm(true)}
                         className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md transition-colors"
                     >
-                        <PlusIcon className="w-5 h-5 mr-2" />
+                        <PlusIcon className="w-5 h-5 me-2" />
                         {t('profile.caldav.addCalendar', 'Add Calendar')}
                     </button>
                 </div>
@@ -179,7 +180,7 @@ const CalDAVTab: React.FC<CalDAVTabProps> = ({ isActive }) => {
                                     onClick={() => setShowForm(true)}
                                     className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md"
                                 >
-                                    <PlusIcon className="w-5 h-5 mr-2" />
+                                    <PlusIcon className="w-5 h-5 me-2" />
                                     {t('profile.caldav.addCalendar', 'Add Calendar')}
                                 </button>
                             </div>

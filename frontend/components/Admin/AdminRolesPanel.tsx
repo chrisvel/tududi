@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHostedMode } from '../../hooks/useHostedMode';
@@ -23,7 +24,7 @@ interface AdminRolesPanelProps {
 }
 
 const headerCell =
-    'px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider align-top';
+    'px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider align-top';
 
 const Allowed: React.FC<{ allowed: boolean; label: string }> = ({
     allowed,

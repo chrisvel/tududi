@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -58,7 +59,7 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <KeyIcon className="w-6 h-6 mr-3 text-indigo-500" />
+                <KeyIcon className="w-6 h-6 me-3 text-indigo-500" />
                 {t('profile.apiKeys.title', 'API Keys')}
             </h3>
 
@@ -153,7 +154,7 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
                             onClick={onCopyGeneratedToken}
                             className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-500"
                         >
-                            <ClipboardDocumentListIcon className="w-5 h-5 mr-2" />
+                            <ClipboardDocumentListIcon className="w-5 h-5 me-2" />
                             {t('profile.apiKeys.copyButton', 'Copy key')}
                         </button>
                     </div>
@@ -181,37 +182,37 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
                             <thead className="bg-gray-100 dark:bg-gray-800">
                                 <tr>
-                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th className="px-4 py-2 text-start text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         {t(
                                             'profile.apiKeys.table.name',
                                             'Name'
                                         )}
                                     </th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th className="px-4 py-2 text-start text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         {t(
                                             'profile.apiKeys.table.prefix',
                                             'Prefix'
                                         )}
                                     </th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th className="px-4 py-2 text-start text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         {t(
                                             'profile.apiKeys.table.status',
                                             'Status'
                                         )}
                                     </th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th className="px-4 py-2 text-start text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         {t(
                                             'profile.apiKeys.table.lastUsed',
                                             'Last used'
                                         )}
                                     </th>
-                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th className="px-4 py-2 text-start text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         {t(
                                             'profile.apiKeys.table.expires',
                                             'Expires'
                                         )}
                                     </th>
-                                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th className="px-4 py-2 text-end text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         {t(
                                             'profile.apiKeys.table.actions',
                                             'Actions'
@@ -265,8 +266,8 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
                                                           'None'
                                                       )}
                                             </td>
-                                            <td className="px-4 py-3 text-right text-sm">
-                                                <div className="flex justify-end space-x-2">
+                                            <td className="px-4 py-3 text-end text-sm">
+                                                <div className="flex justify-end space-x-2 rtl:space-x-reverse">
                                                     <button
                                                         type="button"
                                                         onClick={() =>

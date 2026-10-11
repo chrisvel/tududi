@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/useStore';
@@ -238,7 +239,7 @@ const Habits: React.FC = () => {
                                     <button
                                         type="button"
                                         onClick={() => openHabit(habit)}
-                                        className="min-w-0 text-left"
+                                        className="min-w-0 text-start"
                                     >
                                         <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                                             {habit.name}
@@ -261,7 +262,7 @@ const Habits: React.FC = () => {
                                         onClick={() => handleRestore(habit)}
                                         className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     >
-                                        <ArrowUturnLeftIcon className="h-3.5 w-3.5" />
+                                        <ArrowUturnLeftIcon className="h-3.5 w-3.5 rtl:-scale-x-100" />
                                         {t('habits.restore', 'Restore')}
                                     </button>
                                 </li>

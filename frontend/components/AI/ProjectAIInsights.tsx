@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, {
     useState,
     useEffect,
@@ -196,7 +197,7 @@ const ProjectAIInsights = forwardRef<
                     <span className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
                         {t('aiAssistant.projectInsightsTitle', 'AI Insights')}
                     </span>
-                    <ArrowPathIcon className="h-3 w-3 text-gray-300 dark:text-gray-600 animate-spin ml-1" />
+                    <ArrowPathIcon className="h-3 w-3 text-gray-300 dark:text-gray-600 animate-spin ms-1" />
                 </div>
             </div>
         );
@@ -356,7 +357,7 @@ const TaskStatsBar: React.FC<{
     taskStats: NonNullable<ProjectAIInsightsProps['taskStats']>;
     t: ReturnType<typeof import('react-i18next').useTranslation>['t'];
 }> = ({ taskStats, t }) => (
-    <div className="grid grid-cols-4 divide-x divide-gray-100 dark:divide-gray-800 border-b border-gray-100 dark:border-gray-800">
+    <div className="grid grid-cols-4 divide-x divide-gray-100 dark:divide-gray-800 border-b border-gray-100 dark:border-gray-800 rtl:divide-x-reverse">
         <div className="px-3 py-3 text-center">
             <p className="text-2xl font-bold text-gray-800 dark:text-gray-100 tabular-nums">
                 {taskStats.total}

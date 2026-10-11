@@ -69,7 +69,7 @@ const AdminBlogSettings: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         id="admin-blog-title"
                         className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center"
                     >
-                        <NewspaperIcon className="w-5 h-5 mr-2" />
+                        <NewspaperIcon className="w-5 h-5 me-2" />
                         {t('admin.blog.title', 'Blog')}
                     </h2>
                     <button
@@ -142,11 +142,11 @@ const AdminBlogSettings: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                                 {status.note.title}
                             </span>{' '}
                             {status.note.shared ? (
-                                <span className="ml-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs">
+                                <span className="ms-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs">
                                     {t('admin.blog.shared', 'Public')}
                                 </span>
                             ) : (
-                                <span className="ml-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs">
+                                <span className="ms-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs">
                                     {t(
                                         'admin.blog.notShared',
                                         'Not shared yet: share it from the note to publish the blog'

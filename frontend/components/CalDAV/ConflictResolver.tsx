@@ -357,7 +357,7 @@ const ConflictResolver: React.FC<ConflictResolverProps> = ({
                                     <div className="bg-gray-50 dark:bg-gray-800 px-4 py-2 font-medium text-sm text-gray-700 dark:text-gray-300">
                                         {getFieldLabel(field)}
                                     </div>
-                                    <div className="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700">
+                                    <div className="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700 rtl:divide-x-reverse">
                                         <button
                                             type="button"
                                             onClick={() =>
@@ -367,7 +367,7 @@ const ConflictResolver: React.FC<ConflictResolverProps> = ({
                                                     'local'
                                                 )
                                             }
-                                            className={`p-4 text-left transition-colors ${
+                                            className={`p-4 text-start transition-colors ${
                                                 resolution?.choice === 'local'
                                                     ? 'bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-500'
                                                     : 'hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -402,7 +402,7 @@ const ConflictResolver: React.FC<ConflictResolverProps> = ({
                                                     'remote'
                                                 )
                                             }
-                                            className={`p-4 text-left transition-colors ${
+                                            className={`p-4 text-start transition-colors ${
                                                 resolution?.choice === 'remote'
                                                     ? 'bg-amber-50 dark:bg-amber-900/30 border-2 border-amber-500'
                                                     : 'hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -471,7 +471,7 @@ const ConflictResolver: React.FC<ConflictResolverProps> = ({
                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                             }`}
                         >
-                            <ChevronLeftIcon className="w-5 h-5 mr-1" />
+                            <ChevronLeftIcon className="w-5 h-5 me-1 rtl:-scale-x-100" />
                             {t(
                                 'profile.conflictResolver.prevConflict',
                                 'Previous'
@@ -499,7 +499,7 @@ const ConflictResolver: React.FC<ConflictResolverProps> = ({
                                 'profile.conflictResolver.nextConflict',
                                 'Next'
                             )}
-                            <ChevronRightIcon className="w-5 h-5 ml-1" />
+                            <ChevronRightIcon className="w-5 h-5 ms-1 rtl:-scale-x-100" />
                         </button>
                     </div>
 

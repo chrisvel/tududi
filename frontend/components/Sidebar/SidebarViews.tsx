@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -80,7 +81,7 @@ const SortableViewItem: React.FC<SortableViewItemProps> = ({
         <li
             ref={setNodeRef}
             style={style}
-            className={`group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+            className={`group flex justify-between items-center rounded-[8px] ps-[30px] pe-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
                 isActive ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
             } ${isDragging ? 'opacity-50' : ''}`}
             onClick={handleClick}
@@ -285,7 +286,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                         handleNavClick(
                             '/views',
                             t('sidebar.views'),
-                            <QueueListIcon className="h-5 w-5 mr-2" />
+                            <QueueListIcon className="h-5 w-5 me-2" />
                         );
                     }}
                 >
@@ -305,8 +306,8 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                             aria-label={isExpanded ? t('sidebar.collapseViews', 'Collapse views list') : t('sidebar.expandViews', 'Expand views list')}
                         >
                             <ChevronRightIcon
-                                className="h-3 w-3 transition-transform duration-150"
-                                style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                                className="h-3 w-3 transition-transform duration-150 rtl:-scale-x-100"
+                                style={{ transform: isExpanded ? 'rotate(90deg)' : undefined }}
                             />
                         </button>
                     </div>
@@ -336,7 +337,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                                             handleNavClick(
                                                 `/views/${view.uid}`,
                                                 view.name,
-                                                <QueueListIcon className="h-5 w-5 mr-2" />
+                                                <QueueListIcon className="h-5 w-5 me-2" />
                                             )
                                         }
                                         onTogglePin={(e) =>

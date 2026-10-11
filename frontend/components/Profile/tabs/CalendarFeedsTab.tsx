@@ -37,7 +37,7 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
     return (
         <div>
             <h3 className="mb-6 flex items-center text-xl font-semibold text-gray-900 dark:text-white">
-                <CalendarDaysIcon className="mr-3 h-6 w-6 text-blue-500" />
+                <CalendarDaysIcon className="me-3 h-6 w-6 text-blue-500" />
                 {t('profile.calendars.title', 'Calendars')}
             </h3>
 

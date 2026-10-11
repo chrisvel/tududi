@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -443,13 +444,13 @@ const Areas: React.FC = () => {
                                             testIdPrefix="sortable-area"
                                         >
                                             <div
-                                                className={`relative flex items-center gap-4 -ml-1.5 py-2.5 pl-[2.375rem] pr-2 border-l-4 border-gray-300 dark:border-gray-600 group ${
+                                                className={`relative flex items-center gap-4 -ms-1.5 py-2.5 ps-[2.375rem] pe-2 border-s-4 border-gray-300 dark:border-gray-600 group ${
                                                     dropdownOpen === area.uid
                                                         ? 'z-50'
                                                         : ''
                                                 }`}
                                                 style={{
-                                                    borderLeftColor:
+                                                    borderInlineStartColor:
                                                         area.color || undefined,
                                                 }}
                                             >
@@ -518,7 +519,7 @@ const Areas: React.FC = () => {
 
                                                     {dropdownOpen ===
                                                         area.uid && (
-                                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
+                                                        <div className="absolute end-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
                                                             <button
                                                                 onClick={(
                                                                     e
@@ -532,7 +533,7 @@ const Areas: React.FC = () => {
                                                                         null
                                                                     );
                                                                 }}
-                                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start rounded-t-md"
                                                                 data-testid={`area-edit-${area.uid}`}
                                                             >
                                                                 {t(
@@ -553,7 +554,7 @@ const Areas: React.FC = () => {
                                                                         null
                                                                     );
                                                                 }}
-                                                                className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                                                className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start rounded-b-md"
                                                                 data-testid={`area-delete-${area.uid}`}
                                                             >
                                                                 {t(

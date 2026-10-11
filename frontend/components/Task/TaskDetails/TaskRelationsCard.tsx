@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -166,7 +167,7 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
             <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
                 {t('relations.title', 'Relations')}
                 {relations.length > 0 && (
-                    <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
+                    <span className="ms-2 text-xs text-gray-400 dark:text-gray-500">
                         ({relations.length})
                     </span>
                 )}
@@ -203,7 +204,7 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
                                         onClick={() =>
                                             void handleRemove(relation)
                                         }
-                                        className="ml-3 p-1 text-gray-400 hover:text-red-500 focus:outline-none"
+                                        className="ms-3 p-1 text-gray-400 hover:text-red-500 focus:outline-none"
                                         aria-label={t(
                                             'relations.remove',
                                             'Remove relation'
@@ -242,7 +243,7 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
                             {typeOpen && (
                                 <ul
                                     role="listbox"
-                                    className="absolute left-0 top-full z-20 mt-1 min-w-[10rem] rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black/5 dark:ring-white/10"
+                                    className="absolute start-0 top-full z-20 mt-1 min-w-[10rem] rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black/5 dark:ring-white/10"
                                 >
                                     {RELATION_TYPES.map((relationType) => (
                                         <li key={relationType}>
@@ -257,7 +258,7 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
                                                     setType(relationType);
                                                     setTypeOpen(false);
                                                 }}
-                                                className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                className="flex w-full items-center justify-between gap-3 px-3 py-2 text-start text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                                             >
                                                 <span>
                                                     {typeLabel(relationType)}
@@ -301,7 +302,7 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
                                     <button
                                         type="button"
                                         onClick={() => void handleAdd(hit.uid)}
-                                        className="block w-full truncate rounded-md px-3 py-2 text-left text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        className="block w-full truncate rounded-md px-3 py-2 text-start text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     >
                                         {hit.name}
                                     </button>
@@ -317,7 +318,7 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
                     className="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                     data-testid="task-relation-add"
                 >
-                    <PlusCircleIcon className="h-5 w-5 mr-2" />
+                    <PlusCircleIcon className="h-5 w-5 me-2" />
                     {t('relations.add', 'Add relation')}
                 </button>
             )}

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import MarkdownRenderer, { PublicNoteLink } from '../Shared/MarkdownRenderer';
@@ -113,7 +114,7 @@ export const PublicNoteBackground: React.FC<{
             {showCredit && (
                 <PhotoCredit
                     background={photo}
-                    className="fixed bottom-3 left-3 z-10"
+                    className="fixed bottom-3 start-3 z-10"
                 />
             )}
         </>

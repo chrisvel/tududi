@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -200,7 +201,7 @@ const OidcProviderConfig: React.FC = () => {
 
             <div className="rounded-lg border border-gray-200 dark:border-gray-700 mb-4">
                 <div className="flex items-center justify-between px-4 py-4">
-                    <div className="pr-8">
+                    <div className="pe-8">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             {t('profile.oidcEnabled', 'OIDC/SSO enabled')}
                         </label>
@@ -220,8 +221,8 @@ const OidcProviderConfig: React.FC = () => {
                         onClick={() => setEnabled((v) => !v)}
                     >
                         <span
-                            className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                                enabled ? 'translate-x-6' : 'translate-x-0'
+                            className={`absolute start-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                                enabled ? 'translate-x-6 rtl:-translate-x-6' : 'translate-x-0'
                             }`}
                         />
                     </div>
@@ -356,7 +357,7 @@ const OidcProviderConfig: React.FC = () => {
                                         autoProvision: e.target.checked,
                                     })
                                 }
-                                className="mr-2"
+                                className="me-2"
                             />
                             <label
                                 htmlFor={`oidc-auto-provision-${index}`}
@@ -378,7 +379,7 @@ const OidcProviderConfig: React.FC = () => {
                     onClick={addProvider}
                     className="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                    <PlusIcon className="w-4 h-4 mr-1" />
+                    <PlusIcon className="w-4 h-4 me-1" />
                     {t('profile.oidcAddProvider', 'Add provider')}
                 </button>
 

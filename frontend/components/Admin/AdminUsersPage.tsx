@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHostedMode } from '../../hooks/useHostedMode';
@@ -458,7 +459,7 @@ const AddUserModal: React.FC<{
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                             {t('admin.email', 'Email')}
-                            <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                            <span className="text-xs text-gray-500 dark:text-gray-400 ms-2">
                                 ({t('admin.emailOptional', 'optional')})
                             </span>
                         </label>
@@ -512,7 +513,7 @@ const AddUserModal: React.FC<{
                         <div>
                             <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                                 {t('admin.password', 'Password')}
-                                <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                                <span className="text-xs text-gray-500 dark:text-gray-400 ms-2">
                                     (
                                     {editingUser
                                         ? t(
@@ -532,7 +533,7 @@ const AddUserModal: React.FC<{
                                         type={
                                             showPassword ? 'text' : 'password'
                                         }
-                                        className="w-full rounded border pl-3 pr-16 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                                        className="w-full rounded border ps-3 pe-16 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                                         value={password}
                                         onChange={(e) => {
                                             setPassword(e.target.value);
@@ -542,7 +543,7 @@ const AddUserModal: React.FC<{
                                         autoComplete="new-password"
                                         data-testid="admin-user-password"
                                     />
-                                    <div className="absolute inset-y-0 right-2 flex items-center gap-1">
+                                    <div className="absolute inset-y-0 end-2 flex items-center gap-1">
                                         <button
                                             type="button"
                                             onClick={() =>
@@ -640,7 +641,7 @@ const AddUserModal: React.FC<{
                                                         false
                                                     );
                                                 }}
-                                                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                                                className="block w-full text-start px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                                             >
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-gray-900 dark:text-gray-100">
@@ -768,7 +769,7 @@ const AddUserModal: React.FC<{
                                 <span
                                     className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
                                         requireVerification && password
-                                            ? 'translate-x-5'
+                                            ? 'translate-x-5 rtl:-translate-x-5'
                                             : 'translate-x-0'
                                     }`}
                                 />
@@ -780,7 +781,7 @@ const AddUserModal: React.FC<{
                             {error}
                         </div>
                     )}
-                    <div className="flex justify-end space-x-3 pt-2">
+                    <div className="flex justify-end space-x-3 pt-2 rtl:space-x-reverse">
                         <button
                             type="button"
                             onClick={onClose}
@@ -915,7 +916,7 @@ const AdminUsersPanel: React.FC<{
                                     sortKey={sortKey}
                                     sortDir={sortDir}
                                     onSort={toggle}
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                    className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                 />
                                 <SortHeader
                                     column="name"
@@ -923,7 +924,7 @@ const AdminUsersPanel: React.FC<{
                                     sortKey={sortKey}
                                     sortDir={sortDir}
                                     onSort={toggle}
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                    className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                 />
                                 <SortHeader
                                     column="surname"
@@ -931,7 +932,7 @@ const AdminUsersPanel: React.FC<{
                                     sortKey={sortKey}
                                     sortDir={sortDir}
                                     onSort={toggle}
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                    className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                 />
                                 <SortHeader
                                     column="created"
@@ -939,7 +940,7 @@ const AdminUsersPanel: React.FC<{
                                     sortKey={sortKey}
                                     sortDir={sortDir}
                                     onSort={toggle}
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                    className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                 />
                                 <SortHeader
                                     column="verified"
@@ -947,7 +948,7 @@ const AdminUsersPanel: React.FC<{
                                     sortKey={sortKey}
                                     sortDir={sortDir}
                                     onSort={toggle}
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                    className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                 />
                                 <SortHeader
                                     column="role"
@@ -955,9 +956,9 @@ const AdminUsersPanel: React.FC<{
                                     sortKey={sortKey}
                                     sortDir={sortDir}
                                     onSort={toggle}
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                    className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                 />
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     {t('admin.actions', 'Actions')}
                                 </th>
                             </tr>
@@ -1047,7 +1048,7 @@ const AdminUsersPanel: React.FC<{
                                                 </span>
                                             ) : u.email_verified ? (
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                                    <CheckIcon className="w-3.5 h-3.5 mr-1" />
+                                                    <CheckIcon className="w-3.5 h-3.5 me-1" />
                                                     {t(
                                                         'admin.verifiedYes',
                                                         'Verified'
@@ -1076,8 +1077,8 @@ const AdminUsersPanel: React.FC<{
                                                 {roleName(t, u.role, hosted)}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <div className="flex items-center justify-end space-x-2">
+                                        <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                            <div className="flex items-center justify-end space-x-2 rtl:space-x-reverse">
                                                 {u.account_status ===
                                                     'no_sign_in' &&
                                                     !u.email &&
@@ -1296,7 +1297,7 @@ const AdminUsersPage: React.FC = () => {
 
                 <div
                     role="tablist"
-                    className="flex space-x-6 border-b border-gray-200 dark:border-gray-700"
+                    className="flex space-x-6 border-b border-gray-200 dark:border-gray-700 rtl:space-x-reverse"
                 >
                     {tabs.map((tab) => (
                         <button

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -196,7 +197,7 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
 
     return createPortal(
         <div
-            className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
+            className={`fixed top-16 start-0 end-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
                 isClosing ? 'opacity-0' : 'opacity-100'
             }`}
             onMouseDown={(e) => {
@@ -259,7 +260,7 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
                                                 <button
                                                     type="button"
                                                     onClick={handleRemoveImage}
-                                                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 shadow-lg"
+                                                    className="absolute top-2 end-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 shadow-lg"
                                                 >
                                                     ×
                                                 </button>
@@ -298,7 +299,7 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
                                                         alt={`Banner by ${banner.creator}`}
                                                         className="w-full h-24 object-cover"
                                                     />
-                                                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1 text-center">
+                                                    <div className="absolute bottom-0 start-0 end-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1 text-center">
                                                         {banner.creator}
                                                     </div>
                                                 </button>
@@ -328,7 +329,7 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
                                             className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                                         >
                                             <svg
-                                                className="w-4 h-4 mr-2"
+                                                className="w-4 h-4 me-2"
                                                 fill="none"
                                                 stroke="currentColor"
                                                 viewBox="0 0 24 24"
@@ -357,7 +358,7 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
                             </div>
                         </div>
 
-                        <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-end space-x-3 sm:rounded-b-lg">
+                        <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-end space-x-3 sm:rounded-b-lg rtl:space-x-reverse">
                             <button
                                 type="button"
                                 onClick={handleClose}

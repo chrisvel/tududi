@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Project } from '../../entities/Project';
@@ -157,7 +158,7 @@ const LifeBalance: React.FC<Props> = ({ projects }) => {
                             </div>
                             <div className="flex-1 relative h-3.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                 <div
-                                    className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+                                    className="absolute inset-y-0 start-0 rounded-full transition-all duration-500"
                                     style={{
                                         width: `${area.share}%`,
                                         backgroundColor: area.color,
@@ -165,16 +166,16 @@ const LifeBalance: React.FC<Props> = ({ projects }) => {
                                     }}
                                 />
                                 <div
-                                    className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+                                    className="absolute inset-y-0 start-0 rounded-full transition-all duration-500"
                                     style={{
                                         width: `${area.total > 0 ? (area.done / area.total) * area.share : 0}%`,
                                         backgroundColor: area.color,
                                     }}
                                 />
                             </div>
-                            <div className="w-20 text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 text-right">
+                            <div className="w-20 text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 text-end">
                                 {area.done}/{area.total}
-                                <span className="text-gray-400 dark:text-gray-600 ml-1">
+                                <span className="text-gray-400 dark:text-gray-600 ms-1">
                                     ({Math.round(area.share)}%)
                                 </span>
                             </div>

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 
 interface SuggestionsDropdownProps<T> {
@@ -37,7 +38,7 @@ const SuggestionsDropdown = <T,>({
                 <button
                     key={index}
                     onClick={() => onSelect(item)}
-                    className={`w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md ${
+                    className={`w-full text-start px-3 py-2 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md ${
                         selectedIndex === index
                             ? 'bg-blue-100 dark:bg-blue-800'
                             : 'hover:bg-gray-100 dark:hover:bg-gray-600'

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { FORM } from '../../constants/formClasses';
@@ -91,7 +92,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 aria-expanded={isOpen}
                 onClick={() => (isOpen ? setIsOpen(false) : open())}
                 onKeyDown={onKeyDown}
-                className={`${FORM.input} w-full flex items-center justify-between gap-2 text-left`}
+                className={`${FORM.input} w-full flex items-center justify-between gap-2 text-start`}
             >
                 <span
                     className={`truncate ${selected ? '' : 'text-gray-400 dark:text-gray-500'}`}
@@ -132,7 +133,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                                 <span className="truncate">
                                     {option.label}
                                     {option.hint && (
-                                        <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
+                                        <span className="ms-2 text-xs text-gray-400 dark:text-gray-500">
                                             {option.hint}
                                         </span>
                                     )}

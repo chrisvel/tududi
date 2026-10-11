@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 
 interface ToggleSwitchProps {
@@ -24,7 +25,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
     };
 
     return (
-        <div className={`flex items-start space-x-3 ${className}`}>
+        <div className={`flex items-start space-x-3 ${className} rtl:space-x-reverse`}>
             <button
                 type="button"
                 onClick={handleToggle}
@@ -48,7 +49,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
                     className={`
             pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 
             transition duration-200 ease-in-out
-            ${checked ? 'translate-x-5' : 'translate-x-0'}
+            ${checked ? 'translate-x-5 rtl:-translate-x-5' : 'translate-x-0'}
           `}
                 />
             </button>

@@ -494,7 +494,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 <div className="px-4 py-3">
                     <button
                         onClick={() => setShowCriteria(!showCriteria)}
-                        className="flex items-center justify-between w-full text-left text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                        className="flex items-center justify-between w-full text-start text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                     >
                         <span>{t('search.criteria')}</span>
                         {showCriteria ? (

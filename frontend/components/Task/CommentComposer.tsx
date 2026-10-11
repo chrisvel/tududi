@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -280,7 +281,7 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
         <div className="relative">
             <div className="relative">
                 {!hasContent && (
-                    <span className="pointer-events-none absolute left-3.5 top-3 text-sm text-gray-400 dark:text-gray-500">
+                    <span className="pointer-events-none absolute start-3.5 top-3 text-sm text-gray-400 dark:text-gray-500">
                         {placeholder ??
                             t(
                                 'comments.placeholder',

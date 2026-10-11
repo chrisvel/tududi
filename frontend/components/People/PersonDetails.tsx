@@ -334,8 +334,8 @@ const PersonDetails: React.FC = () => {
             />
 
             {/* Tabs */}
-            <div className="mb-4 flex items-center min-h-[2.5rem] gap-4 sm:gap-6 pl-2 sm:pl-3">
-                <span className="relative flex items-center self-stretch py-2.5 text-sm font-medium text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100">
+            <div className="mb-4 flex items-center min-h-[2.5rem] gap-4 sm:gap-6 ps-2 sm:ps-3">
+                <span className="relative flex items-center self-stretch py-2.5 text-sm font-medium text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:start-px after:end-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100">
                     {t('tasks.title', 'Tasks')} ({assignedTasks.length})
                 </span>
             </div>

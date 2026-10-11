@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { XMarkIcon } from '@heroicons/react/24/outline';
@@ -104,7 +105,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
             {notePhoto && (
                 <PhotoCredit
                     background={notePhoto}
-                    className="absolute bottom-2 right-3 z-10"
+                    className="absolute bottom-2 end-3 z-10"
                 />
             )}
             {/* Minimal header */}
@@ -186,7 +187,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                             {/* Pull the editor's 24px block handle gutter
                                 into the margin so its text lines up with
                                 the title. */}
-                            <div className="-ml-6">
+                            <div className="-ms-6">
                                 <MarkdownEditor
                                     noteUid={note.uid}
                                     value={note.content || ''}

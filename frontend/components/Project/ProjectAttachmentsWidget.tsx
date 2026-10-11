@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { TFunction } from 'i18next';
 import { CloudArrowUpIcon, PlusIcon } from '@heroicons/react/24/outline';
@@ -181,7 +182,7 @@ const ProjectAttachmentsWidget: React.FC<ProjectAttachmentsWidgetProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => setViewing(index)}
-                                    className="-mx-2 flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    className="-mx-2 flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-start transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                                 >
                                     {file.mime_type.startsWith('image/') &&
                                     file.file_url ? (

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
@@ -145,8 +146,8 @@ const NoteSidePanel: React.FC<NoteSidePanelProps> = ({
                 onMouseDown={close}
             />
             <aside
-                className={`fixed inset-y-0 right-0 z-[60] flex w-full flex-col overflow-hidden shadow-2xl transition-transform duration-200 ease-out motion-reduce:transition-none sm:w-[40rem] ${
-                    shown ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed inset-y-0 end-0 z-[60] flex w-full flex-col overflow-hidden shadow-2xl transition-transform duration-200 ease-out motion-reduce:transition-none sm:w-[40rem] ${
+                    shown ? 'translate-x-0' : 'translate-x-full rtl:-translate-x-full'
                 } ${
                     color ? '' : 'bg-white dark:bg-gray-900'
                 } ${photo ? 'bg-cover bg-center [--note-tint:rgb(255_255_255/0.75)] dark:[--note-tint:rgb(17_24_39/0.75)]' : ''}`}
@@ -157,7 +158,7 @@ const NoteSidePanel: React.FC<NoteSidePanelProps> = ({
                 {photo && (
                     <PhotoCredit
                         background={photo}
-                        className="absolute bottom-2 right-3 z-10"
+                        className="absolute bottom-2 end-3 z-10"
                     />
                 )}
                 {loaded ? (

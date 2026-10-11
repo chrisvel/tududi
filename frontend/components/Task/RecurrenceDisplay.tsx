@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RecurrenceType } from '../../entities/Task';
@@ -148,7 +149,7 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
                     {formatRecurrenceText()}
                 </span>
                 {completionBased && (
-                    <span className="ml-2 text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded">
+                    <span className="ms-2 text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded">
                         {t('recurrence.completionBased', 'After completion')}
                     </span>
                 )}

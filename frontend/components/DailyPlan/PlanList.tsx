@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
@@ -78,7 +79,7 @@ const PlanRow: React.FC<{
                 >
                     <Bars3Icon className="h-4 w-4" />
                 </button>
-                <span className="w-5 shrink-0 text-right text-xs text-gray-500">
+                <span className="w-5 shrink-0 text-end text-xs text-gray-500">
                     {index + 1}
                 </span>
                 <span
@@ -103,7 +104,7 @@ const PlanRow: React.FC<{
                     </Link>
                 </span>
             </div>
-            <div className="flex flex-wrap items-center gap-2 pl-11 sm:pl-0">
+            <div className="flex flex-wrap items-center gap-2 ps-11 sm:ps-0">
                 <label className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
                     <span className="sr-only">
                         {t('dailyPlan.startTime', 'Start time')}

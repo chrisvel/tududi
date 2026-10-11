@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { XMarkIcon } from '@heroicons/react/24/outline';
@@ -79,7 +80,7 @@ const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                             {t('templates.area', 'Area')}
-                            <span className="ml-1 font-normal text-gray-400 dark:text-gray-500 text-xs">{t('common.optional', '(optional)')}</span>
+                            <span className="ms-1 font-normal text-gray-400 dark:text-gray-500 text-xs">{t('common.optional', '(optional)')}</span>
                         </label>
                         <select
                             value={areaUid}
@@ -98,7 +99,7 @@ const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                             {t('templates.startDate', 'Start Date')}
-                            <span className="ml-1 font-normal text-gray-400 dark:text-gray-500 text-xs">{t('templates.startDateHint2', 'adjusts relative due dates')}</span>
+                            <span className="ms-1 font-normal text-gray-400 dark:text-gray-500 text-xs">{t('templates.startDateHint2', 'adjusts relative due dates')}</span>
                         </label>
                         <input
                             type="date"

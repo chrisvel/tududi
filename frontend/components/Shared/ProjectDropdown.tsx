@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Project } from '../../entities/Project';
@@ -187,7 +188,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                             <button
                                 type="button"
                                 onClick={onClearProject}
-                                className="ml-1.5 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100 focus:outline-none"
+                                className="ms-1.5 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100 focus:outline-none"
                                 aria-label={`Remove project ${selectedProject.name}`}
                             >
                                 &times;
@@ -210,7 +211,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                             onChange={(e) => onProjectSearch(e.target.value)}
                             onKeyDown={handleKeyDown}
                             disabled={disabled}
-                            className="w-full bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100 disabled:cursor-not-allowed pr-8"
+                            className="w-full bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100 disabled:cursor-not-allowed pe-8"
                             autoComplete="off"
                             autoFocus={dropdownOpen}
                         />
@@ -218,7 +219,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                             type="button"
                             onClick={onShowAllProjects}
                             disabled={disabled}
-                            className="absolute inset-y-0 right-0 flex items-center pr-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                            className="absolute inset-y-0 end-0 flex items-center pe-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                             aria-label={
                                 dropdownOpen
                                     ? 'Hide projects'
@@ -251,7 +252,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                                     key={project.id}
                                     type="button"
                                     onClick={() => onProjectSelection(project)}
-                                    className={`flex items-center gap-3 w-full text-gray-700 dark:text-gray-300 text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                                    className={`flex items-center gap-3 w-full text-gray-700 dark:text-gray-300 text-start px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                                         index === highlightedIndex
                                             ? 'bg-blue-50 dark:bg-blue-900/30'
                                             : ''
@@ -289,7 +290,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                             type="button"
                             onClick={() => onCreateProject(projectName.trim())}
                             disabled={isCreatingProject}
-                            className="block w-full text-left px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+                            className="block w-full text-start px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
                         >
                             {isCreatingProject
                                 ? t('forms.task.creatingProject', 'Creating...')

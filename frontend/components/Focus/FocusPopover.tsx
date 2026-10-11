@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
@@ -91,7 +92,7 @@ const FocusPopover: React.FC<FocusPopoverProps> = ({ focus, onClose }) => {
         <div
             role="dialog"
             aria-label={t('focus.title', 'Focus on')}
-            className="fixed inset-x-3 top-16 z-50 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-900 sm:absolute sm:inset-x-auto sm:left-0 sm:top-full sm:mt-2 sm:w-80"
+            className="fixed inset-x-3 top-16 z-50 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-900 sm:absolute sm:inset-x-auto sm:start-0 sm:top-full sm:mt-2 sm:w-80"
             data-testid="focus-popover"
         >
             <div className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CommandLineIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
@@ -151,7 +152,7 @@ const KeyboardShortcutsTab: React.FC<KeyboardShortcutsTabProps> = ({
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <CommandLineIcon className="w-6 h-6 mr-3 text-purple-500" />
+                <CommandLineIcon className="w-6 h-6 me-3 text-purple-500" />
                 {t('profile.keyboardShortcuts', 'Keyboard Shortcuts')}
             </h3>
 
@@ -177,8 +178,8 @@ const KeyboardShortcutsTab: React.FC<KeyboardShortcutsTabProps> = ({
                     onClick={handleToggleEnabled}
                 >
                     <span
-                        className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                            activeConfig.enabled ? 'translate-x-6' : 'translate-x-0'
+                        className={`absolute start-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                            activeConfig.enabled ? 'translate-x-6 rtl:-translate-x-6' : 'translate-x-0'
                         }`}
                     ></span>
                 </div>
@@ -217,13 +218,13 @@ const KeyboardShortcutsTab: React.FC<KeyboardShortcutsTabProps> = ({
                             </div>
 
                             {isEditing ? (
-                                <div className="flex items-center space-x-2">
+                                <div className="flex items-center space-x-2 rtl:space-x-reverse">
                                     {isRecording ? (
                                         <div className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-400 dark:border-blue-600 rounded text-blue-700 dark:text-blue-300 text-sm font-mono animate-pulse">
                                             {t('profile.shortcuts.pressKeys', 'Press keys...')}
                                         </div>
                                     ) : tempShortcut ? (
-                                        <div className="flex items-center space-x-2">
+                                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
                                             <kbd className="px-3 py-1.5 text-sm font-mono bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-sm text-gray-700 dark:text-gray-300">
                                                 {formatShortcutDisplay(tempShortcut)}
                                             </kbd>
@@ -260,7 +261,7 @@ const KeyboardShortcutsTab: React.FC<KeyboardShortcutsTabProps> = ({
                                     </button>
                                 </div>
                             ) : (
-                                <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-3 rtl:space-x-reverse">
                                     {shortcut && (
                                         <kbd className="px-3 py-1.5 text-sm font-mono bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-sm text-gray-700 dark:text-gray-300">
                                             {formatShortcutDisplay(shortcut)}
@@ -291,7 +292,7 @@ const KeyboardShortcutsTab: React.FC<KeyboardShortcutsTabProps> = ({
                     onClick={handleResetToDefaults}
                     className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                    <ArrowPathIcon className="w-4 h-4 mr-2" />
+                    <ArrowPathIcon className="w-4 h-4 me-2" />
                     {t('profile.shortcuts.resetToDefaults', 'Reset to Defaults')}
                 </button>
             </div>

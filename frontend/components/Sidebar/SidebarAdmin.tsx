@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { Location } from 'react-router-dom';
 import { RectangleStackIcon, UsersIcon } from '@heroicons/react/24/outline';
@@ -53,7 +54,7 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
                         )
                     }
                 >
-                    <RectangleStackIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
+                    <RectangleStackIcon className="h-[14px] w-[14px] me-[6px] shrink-0" />
                     {t('navigation.templates', 'Templates')}
                 </li>
             )}
@@ -67,7 +68,7 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
                         )
                     }
                 >
-                    <UsersIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
+                    <UsersIcon className="h-[14px] w-[14px] me-[6px] shrink-0" />
                     {t('admin.access.title', 'Access')}
                 </li>
             )}

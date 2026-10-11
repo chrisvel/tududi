@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -143,7 +144,7 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
                     >
                         <div className="flex flex-wrap items-center gap-3">
                             <div className="flex items-center">
-                                <ClockIcon className="h-3 w-3 mr-1" />
+                                <ClockIcon className="h-3 w-3 me-1" />
                                 <span>
                                     {note.updated_at
                                         ? new Date(
@@ -155,14 +156,14 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
                             <button
                                 type="button"
                                 onClick={toggleProjectPicker}
-                                className="flex items-center hover:underline text-left"
+                                className="flex items-center hover:underline text-start"
                                 title={
                                     note.project
                                         ? 'Change project'
                                         : 'Add project'
                                 }
                             >
-                                <FolderIcon className="h-3 w-3 mr-1" />
+                                <FolderIcon className="h-3 w-3 me-1" />
                                 {note.project
                                     ? note.project.name
                                     : 'Add project'}
@@ -170,14 +171,14 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
                             <button
                                 type="button"
                                 onClick={toggleTagsInput}
-                                className="flex items-center hover:underline text-left"
+                                className="flex items-center hover:underline text-start"
                                 title={
                                     note.tags && note.tags.length > 0
                                         ? 'Change tags'
                                         : 'Add tags'
                                 }
                             >
-                                <TagIconOutline className="h-3 w-3 mr-1" />
+                                <TagIconOutline className="h-3 w-3 me-1" />
                                 <span>
                                     {note.tags && note.tags.length > 0
                                         ? note.tags.map((tag, idx) => (
@@ -276,7 +277,7 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
                             <EllipsisVerticalIcon className="h-5 w-5" />
                         </button>
                         {showOptions && (
-                            <div className="absolute right-0 mt-1 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div className="absolute end-0 mt-1 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                                 <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
                                         Background Color
@@ -329,7 +330,7 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
                                             onSaveNow();
                                             setShowOptions(false);
                                         }}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                        className="w-full text-start px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                     >
                                         <PencilIcon className="h-4 w-4" />
                                         {t('notes.save', 'Save')}
@@ -340,7 +341,7 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
                                                 onTogglePin();
                                                 setShowOptions(false);
                                             }}
-                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                            className="w-full text-start px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                         >
                                             <PushPinIcon className="h-4 w-4" />
                                             {note.pin_to_sidebar
@@ -360,7 +361,7 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
                                                 onDelete();
                                                 setShowOptions(false);
                                             }}
-                                            className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                            className="w-full text-start px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                         >
                                             <TrashIcon className="h-4 w-4" />
                                             {t('notes.delete', 'Delete')}
@@ -427,7 +428,7 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
 
             {/* The editor keeps a 24px gutter for the block
                 handle, so its text lines up with the title. */}
-            <div className="flex-1 overflow-y-auto pl-0 pr-6 md:pl-2 md:pr-8 py-4">
+            <div className="flex-1 overflow-y-auto ps-0 pe-6 md:ps-2 md:pe-8 py-4">
                 <MarkdownEditor
                     noteUid={note.uid}
                     value={note.content || ''}

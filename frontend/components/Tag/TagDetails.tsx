@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -535,7 +536,7 @@ const TagDetails: React.FC = () => {
                 } overflow-hidden`}
             >
                 <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
-                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
+                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 me-2" />
                     <input
                         type="text"
                         placeholder={t(
@@ -552,7 +553,7 @@ const TagDetails: React.FC = () => {
             {/* Tabs */}
             <div className="mb-4">
                 <div className="flex items-center min-h-[2.5rem]">
-                    <div className="flex items-center gap-4 sm:gap-6 self-stretch pl-2 sm:pl-3">
+                    <div className="flex items-center gap-4 sm:gap-6 self-stretch ps-2 sm:ps-3">
                         {(
                             [
                                 [
@@ -578,7 +579,7 @@ const TagDetails: React.FC = () => {
                                 onClick={() => setActiveTab(tab)}
                                 className={`relative flex items-center self-stretch py-2.5 text-sm font-medium transition-colors ${
                                     activeTab === tab
-                                        ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
+                                        ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:start-px after:end-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
                                         : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'
                                 }`}
                                 aria-pressed={activeTab === tab}
@@ -619,7 +620,7 @@ const TagDetails: React.FC = () => {
                                                                 | 'project'
                                                         )
                                                     }
-                                                    className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                    className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                         groupBy === val
                                                             ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -686,7 +687,7 @@ const TagDetails: React.FC = () => {
                                                                     | 'completed'
                                                             )
                                                         }
-                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                        className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                             isActive
                                                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -740,7 +741,7 @@ const TagDetails: React.FC = () => {
                                                                 `${field}:${dir.key}`
                                                             );
                                                         }}
-                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                        className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                             isActive
                                                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -816,7 +817,7 @@ const TagDetails: React.FC = () => {
                                     }
                                     onMouseLeave={() => setHoveredNoteId(null)}
                                 >
-                                    <div className="flex-grow overflow-hidden pr-4">
+                                    <div className="flex-grow overflow-hidden pe-4">
                                         {/* Note Title */}
                                         <Link
                                             to={
@@ -843,7 +844,7 @@ const TagDetails: React.FC = () => {
                                                 {/* Project */}
                                                 {noteProject && (
                                                     <div className="flex items-center">
-                                                        <FolderOutlineIcon className="h-3 w-3 mr-1" />
+                                                        <FolderOutlineIcon className="h-3 w-3 me-1" />
                                                         <Link
                                                             to={
                                                                 noteProject.uid
@@ -871,7 +872,7 @@ const TagDetails: React.FC = () => {
                                                 {/* Tags */}
                                                 {noteTags.length > 0 && (
                                                     <div className="flex items-center">
-                                                        <TagIcon className="h-3 w-3 mr-1" />
+                                                        <TagIcon className="h-3 w-3 me-1" />
                                                         <span>
                                                             {noteTags.map(
                                                                 (
@@ -923,7 +924,7 @@ const TagDetails: React.FC = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex space-x-2 pt-1">
+                                    <div className="flex space-x-2 pt-1 rtl:space-x-reverse">
                                         <button
                                             onClick={() => handleEditNote(note)}
                                             className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.uid ? 'opacity-100' : 'opacity-0'}`}

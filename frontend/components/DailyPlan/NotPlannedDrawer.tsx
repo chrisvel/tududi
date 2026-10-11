@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronRightIcon, PlusIcon } from '@heroicons/react/24/outline';
@@ -74,11 +75,11 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
                 type="button"
                 onClick={() => setOpen((value) => !value)}
                 aria-expanded={open}
-                className="flex min-h-[48px] items-center gap-3 rounded-xl bg-gray-100/70 px-5 text-left hover:bg-gray-100 dark:bg-gray-800/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-gray-900"
+                className="flex min-h-[48px] items-center gap-3 rounded-xl bg-gray-100/70 px-5 text-start hover:bg-gray-100 dark:bg-gray-800/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-gray-900"
                 data-testid="not-planned-toggle"
             >
                 <ChevronRightIcon
-                    className={`h-4 w-4 text-gray-500 transition-transform ${open ? 'rotate-90' : ''}`}
+                    className={`h-4 w-4 text-gray-500 transition-transform ${open ? 'rotate-90' : ''} rtl:-scale-x-100`}
                 />
                 <span className="text-sm text-gray-800 dark:text-gray-200">
                     {t('dailyPlan.notPlanned', 'Not planned ({{count}})', {

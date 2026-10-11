@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -555,7 +556,7 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
     return (
         <div>
             <h3 className="mb-2 flex items-center text-xl font-semibold text-gray-900 dark:text-white">
-                <QueueListIcon className="mr-3 h-6 w-6 text-blue-500" />
+                <QueueListIcon className="me-3 h-6 w-6 text-blue-500" />
                 {t('profile.planning.title', 'Planning')}
             </h3>
             <p className="mb-6 text-sm text-gray-600 dark:text-gray-300">
@@ -712,7 +713,7 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
                                 'Inside each group'
                             )}
                         </h5>
-                        <ol className="flex list-decimal flex-col gap-1 pl-5 text-sm text-gray-700 dark:text-gray-300">
+                        <ol className="flex list-decimal flex-col gap-1 ps-5 text-sm text-gray-700 dark:text-gray-300">
                             {tieBreakers.map((rule) => (
                                 <li key={rule}>{rule}</li>
                             ))}
@@ -842,7 +843,7 @@ const PlanningTab: React.FC<PlanningTabProps> = ({ isActive }) => {
                                     {excludedProjects.map((project) => (
                                         <li
                                             key={project.id}
-                                            className="inline-flex items-center gap-1 rounded-full bg-white py-1 pl-3 pr-1 text-xs font-medium text-gray-800 dark:bg-gray-900/60 dark:text-gray-200"
+                                            className="inline-flex items-center gap-1 rounded-full bg-white py-1 ps-3 pe-1 text-xs font-medium text-gray-800 dark:bg-gray-900/60 dark:text-gray-200"
                                         >
                                             {project.name}
                                             <button

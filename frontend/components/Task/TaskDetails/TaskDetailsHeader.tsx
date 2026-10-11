@@ -223,11 +223,11 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         const priority = task.priority;
 
         if (priority === null || priority === undefined) {
-            return 'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ml-1 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
+            return 'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ms-1 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
         }
 
         const baseClass =
-            'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ml-1 border';
+            'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ms-1 border';
 
         if (priority === 'low' || priority === 0) {
             return `${baseClass} border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30`;
@@ -361,9 +361,9 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                 <ChevronDownIcon className="h-4 w-4" />
                                             </button>
                                             {priorityDropdownOpen && (
-                                                <div className="absolute left-0 sm:right-0 sm:left-auto mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
+                                                <div className="absolute start-0 sm:end-0 sm:start-auto mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
                                                     <button
-                                                        className={`w-full text-left px-3 py-2 text-sm rounded-t-lg flex items-center gap-2 ${
+                                                        className={`w-full text-start px-3 py-2 text-sm rounded-t-lg flex items-center gap-2 ${
                                                             task.priority ===
                                                                 null ||
                                                             task.priority ===
@@ -396,7 +396,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                         )}
                                                     </button>
                                                     <button
-                                                        className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
+                                                        className={`w-full text-start px-3 py-2 text-sm flex items-center gap-2 ${
                                                             task.priority ===
                                                                 'low' ||
                                                             task.priority === 0
@@ -428,7 +428,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                         )}
                                                     </button>
                                                     <button
-                                                        className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
+                                                        className={`w-full text-start px-3 py-2 text-sm flex items-center gap-2 ${
                                                             task.priority ===
                                                                 'medium' ||
                                                             task.priority === 1
@@ -460,7 +460,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                         )}
                                                     </button>
                                                     <button
-                                                        className={`w-full text-left px-3 py-2 text-sm rounded-b-lg flex items-center gap-2 ${
+                                                        className={`w-full text-start px-3 py-2 text-sm rounded-b-lg flex items-center gap-2 ${
                                                             task.priority ===
                                                                 'high' ||
                                                             task.priority === 2
@@ -509,7 +509,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         )}
 
                                         {formattedUpdatedAt && (
-                                            <span className="text-xs text-gray-400 dark:text-gray-600 sm:pl-1 mt-1 sm:mt-0 break-words">
+                                            <span className="text-xs text-gray-400 dark:text-gray-600 sm:ps-1 mt-1 sm:mt-0 break-words">
                                                 {t(
                                                     'task.updatedAt',
                                                     'Updated at'
@@ -546,7 +546,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         )}
                                         {task.tags && task.tags.length > 0 && (
                                             <div className="flex items-center">
-                                                <TagIcon className="h-4 w-4 mr-1" />
+                                                <TagIcon className="h-4 w-4 me-1" />
                                                 <span>
                                                     {task.tags.map(
                                                         (
@@ -622,7 +622,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                         >
                             {t('task.attachments', 'Attachments')}
                             {attachmentCount > 0 && (
-                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
+                                <span className="absolute -top-0.5 -end-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
                             )}
                         </button>
                         <button
@@ -635,7 +635,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                         >
                             {t('task.comments', 'Comments')}
                             {commentCount > 0 && (
-                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
+                                <span className="absolute -top-0.5 -end-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
                             )}
                         </button>
                         <button
@@ -780,7 +780,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                     >
                                                         <XMarkIcon className="h-3.5 w-3.5" />
                                                     </button>
-                                                    <div className="flex items-start space-x-2 pr-4">
+                                                    <div className="flex items-start space-x-2 pe-4 rtl:space-x-reverse">
                                                         <ExclamationTriangleIcon className="h-4 w-4 text-secondary dark:text-secondary mt-0.5 flex-shrink-0" />
                                                         <div>
                                                             <p className="font-medium">
@@ -839,7 +839,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         >
                                             {onEdit && (
                                                 <button
-                                                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                                    className="w-full text-start px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
@@ -857,7 +857,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                             )}
                                             {onSkipOccurrence && (
                                                 <button
-                                                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                                    className="w-full text-start px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
@@ -874,7 +874,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                 </button>
                                             )}
                                             <button
-                                                className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                                className="w-full text-start px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();

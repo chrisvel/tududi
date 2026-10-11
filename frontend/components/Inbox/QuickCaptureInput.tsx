@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, {
     useState,
     useEffect,
@@ -2494,7 +2495,7 @@ const QuickCaptureInput = React.forwardRef<
                                 .finally(() => setIsPreparingFiles(false));
                         }}
                     />
-                    <div className="order-3 sm:order-2 ml-auto flex items-center gap-2">
+                    <div className="order-3 sm:order-2 ms-auto flex items-center gap-2">
                         <button
                             type="button"
                             data-testid="capture-attach"
@@ -2556,7 +2557,7 @@ const QuickCaptureInput = React.forwardRef<
                                     onClick={() =>
                                         void undoCaptured(status.items ?? [])
                                     }
-                                    className={`ml-2 ${linkButtonClass}`}
+                                    className={`ms-2 ${linkButtonClass}`}
                                 >
                                     {t('capture.undo', 'Undo')}
                                 </button>
@@ -2629,7 +2630,7 @@ const QuickCaptureInput = React.forwardRef<
                         strokeWidth="0.9"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="absolute right-6 top-5 pointer-events-none opacity-[0.09] dark:opacity-[0.08] text-gray-400 dark:text-[oklch(55%_0.006_95)]"
+                        className="absolute end-6 top-5 pointer-events-none opacity-[0.09] dark:opacity-[0.08] text-gray-400 dark:text-[oklch(55%_0.006_95)]"
                         aria-hidden="true"
                     >
                         <path d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M2.25 13.5V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.5M2.25 13.5V9.75A2.25 2.25 0 014.5 7.5h15a2.25 2.25 0 012.25 2.25v3.75" />
@@ -2646,7 +2647,7 @@ const QuickCaptureInput = React.forwardRef<
                             >
                                 {!inputText && !isEditMode && (
                                     <div
-                                        className={`absolute z-0 pointer-events-none select-none ${compact ? 'left-3.5 top-2.5 text-[17px]' : 'left-0 top-[5px] text-[18px]'} leading-relaxed font-normal text-gray-400 dark:text-gray-500 transition-opacity duration-300 ${
+                                        className={`absolute z-0 pointer-events-none select-none ${compact ? 'start-3.5 top-2.5 text-[17px]' : 'start-0 top-[5px] text-[18px]'} leading-relaxed font-normal text-gray-400 dark:text-gray-500 transition-opacity duration-300 ${
                                             placeholderFading
                                                 ? 'opacity-0'
                                                 : 'opacity-100'
@@ -2899,7 +2900,7 @@ const QuickCaptureInput = React.forwardRef<
                                         <div className="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex items-start flex-1">
-                                                    <div className="text-purple-600 dark:text-purple-400 mr-2 mt-0.5">
+                                                    <div className="text-purple-600 dark:text-purple-400 me-2 mt-0.5">
                                                         <svg
                                                             className="h-3 w-3"
                                                             fill="currentColor"
@@ -2938,7 +2939,7 @@ const QuickCaptureInput = React.forwardRef<
                                                     </div>
                                                 </div>
                                                 {isAnalyzing && (
-                                                    <div className="ml-2 h-3 w-3 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                                                    <div className="ms-2 h-3 w-3 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
                                                 )}
                                             </div>
                                         </div>

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
@@ -55,7 +56,7 @@ const CodeBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({
             </pre>
             <button
                 onClick={handleCopy}
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-700 dark:bg-gray-600 text-white text-xs px-2 py-1 rounded"
+                className="absolute top-2 end-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-700 dark:bg-gray-600 text-white text-xs px-2 py-1 rounded"
                 aria-label="Copy code"
             >
                 {copied ? 'Copied!' : 'Copy'}
@@ -370,7 +371,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     // Customize list styles
                     ul: ({ ...props }) => (
                         <ul
-                            className={`mb-3 list-disc ml-4 pl-5 space-y-1 ${!noteColor ? 'text-gray-700 dark:text-gray-300' : ''}`}
+                            className={`mb-3 list-disc ms-4 ps-5 space-y-1 ${!noteColor ? 'text-gray-700 dark:text-gray-300' : ''}`}
                             style={{
                                 color: textColor,
                             }}
@@ -379,7 +380,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     ),
                     ol: ({ ...props }) => (
                         <ol
-                            className={`mb-3 list-decimal ml-4 pl-5 space-y-1 ${!noteColor ? 'text-gray-700 dark:text-gray-300' : ''}`}
+                            className={`mb-3 list-decimal ms-4 ps-5 space-y-1 ${!noteColor ? 'text-gray-700 dark:text-gray-300' : ''}`}
                             style={{
                                 color: textColor,
                             }}
@@ -557,7 +558,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                         }
                         return (
                             <blockquote
-                                className="mb-4 pl-4 border-l-4 border-gray-300 dark:border-gray-600 italic text-gray-600 dark:text-gray-400"
+                                className="mb-4 ps-4 border-s-4 border-gray-300 dark:border-gray-600 italic text-gray-600 dark:text-gray-400"
                                 {...props}
                             >
                                 {children}
@@ -589,7 +590,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     th: ({ ...props }) =>
                         summaryMode ? null : (
                             <th
-                                className="px-3 py-2 text-left font-semibold text-gray-900 dark:text-gray-100"
+                                className="px-3 py-2 text-start font-semibold text-gray-900 dark:text-gray-100"
                                 {...props}
                             />
                         ),

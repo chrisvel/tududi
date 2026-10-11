@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -273,7 +274,7 @@ const HabitDetails: React.FC = () => {
                 onClick={() => navigate('/habits')}
                 className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
             >
-                <ArrowLeftIcon className="h-4 w-4" />
+                <ArrowLeftIcon className="h-4 w-4 rtl:-scale-x-100" />
                 {t('habits.backToHabits', 'Habits')}
             </button>
 
@@ -304,7 +305,7 @@ const HabitDetails: React.FC = () => {
                     ) : (
                         <button
                             type="button"
-                            className="text-left text-3xl font-bold text-gray-900 dark:text-white break-words hover:text-gray-700 dark:hover:text-gray-300"
+                            className="text-start text-3xl font-bold text-gray-900 dark:text-white break-words hover:text-gray-700 dark:hover:text-gray-300"
                             onClick={() => setEditingName(true)}
                         >
                             {habit.name}
@@ -338,7 +339,7 @@ const HabitDetails: React.FC = () => {
                             className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             {habit.habit_archived ? (
-                                <ArrowUturnLeftIcon className="h-4 w-4" />
+                                <ArrowUturnLeftIcon className="h-4 w-4 rtl:-scale-x-100" />
                             ) : (
                                 <ArchiveBoxIcon className="h-4 w-4" />
                             )}

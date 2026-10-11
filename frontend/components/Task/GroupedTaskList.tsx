@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useMemo } from 'react';
 import {
     ChevronRightIcon,
@@ -342,7 +343,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             <div className="task-board-container">
                 {Object.keys(filteredGroupedTasks).length === 0 ? (
                     <div className="flex justify-center items-center mt-4">
-                        <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
+                        <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-s px-10 py-24 flex flex-col items-center opacity-95">
                             <svg
                                 className="h-20 w-20 text-gray-400 opacity-30 mb-6"
                                 fill="none"
@@ -618,7 +619,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                                 group.template.id!
                                             )
                                         }
-                                        className="absolute top-3 right-3 flex items-center space-x-2 px-3 py-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                                        className="absolute top-3 end-3 flex items-center space-x-2 px-3 py-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors rtl:space-x-reverse"
                                     >
                                         <ArrowPathIcon className="h-3 w-3" />
                                         <span>
@@ -628,7 +629,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                         {isExpanded ? (
                                             <ChevronDownIcon className="h-3 w-3" />
                                         ) : (
-                                            <ChevronRightIcon className="h-3 w-3" />
+                                            <ChevronRightIcon className="h-3 w-3 rtl:-scale-x-100" />
                                         )}
                                     </button>
                                 )}
@@ -637,7 +638,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
                         {/* For virtual templates, show a simple header */}
                         {isVirtualTemplate && group.instances.length > 0 && (
-                            <div className="mb-2 flex items-center space-x-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <div className="mb-2 flex items-center space-x-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 rtl:space-x-reverse">
                                 <ArrowPathIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                 <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
                                     {group.template.name} -{' '}
@@ -654,10 +655,10 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                         {/* Expanded instances */}
                         {isExpanded && group.instances.length > 0 && (
                             <div
-                                className={`mt-2 space-y-1.5 border-l-2 border-blue-200 dark:border-blue-800 pl-4 ${!isVirtualTemplate ? 'ml-8' : 'ml-4'}`}
+                                className={`mt-2 space-y-1.5 border-s-2 border-blue-200 dark:border-blue-800 ps-4 ${!isVirtualTemplate ? 'ms-8' : 'ms-4'}`}
                             >
                                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center">
-                                    <ArrowPathIcon className="h-3 w-3 mr-1" />
+                                    <ArrowPathIcon className="h-3 w-3 me-1" />
                                     {formatRecurrence(
                                         group.template.recurrence_type!
                                     )}{' '}
@@ -705,7 +706,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
             {standaloneTask.length === 0 && recurringGroups.length === 0 && (
                 <div className="flex justify-center items-center mt-4">
-                    <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
+                    <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-s px-10 py-24 flex flex-col items-center opacity-95">
                         <svg
                             className="h-20 w-20 text-gray-400 opacity-30 mb-6"
                             fill="none"

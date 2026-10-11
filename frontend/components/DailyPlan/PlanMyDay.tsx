@@ -981,7 +981,7 @@ const PlanMyDay: React.FC = () => {
                                 <EllipsisHorizontalIcon className="h-5 w-5" />
                             </button>
                             {moreOpen && (
-                                <div className="absolute right-0 z-[45] mt-1 flex w-48 flex-col rounded-lg bg-white p-1 text-sm shadow-lg dark:bg-gray-800 dark:bg-gray-900">
+                                <div className="absolute end-0 z-[45] mt-1 flex w-48 flex-col rounded-lg bg-white p-1 text-sm shadow-lg dark:bg-gray-800 dark:bg-gray-900">
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -989,7 +989,7 @@ const PlanMyDay: React.FC = () => {
                                             openCapture('task', 'today');
                                         }}
                                         disabled={!date}
-                                        className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+                                        className="rounded-md px-3 py-2 text-start hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
                                         data-testid="plan-add-task"
                                     >
                                         {t('dailyPlan.addTask', 'Add task')}
@@ -1002,7 +1002,7 @@ const PlanMyDay: React.FC = () => {
                                                 void refreshEvents();
                                             }}
                                             disabled={refreshingEvents || !date}
-                                            className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+                                            className="rounded-md px-3 py-2 text-start hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
                                             data-testid="plan-refresh-calendar"
                                         >
                                             {t(
@@ -1022,7 +1022,7 @@ const PlanMyDay: React.FC = () => {
                                                 );
                                                 setMoreOpen(false);
                                             }}
-                                            className="rounded-md px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+                                            className="rounded-md px-3 py-2 text-start hover:bg-gray-100 dark:hover:bg-gray-800"
                                         >
                                             {mode === 'timeline'
                                                 ? t(
@@ -1039,7 +1039,7 @@ const PlanMyDay: React.FC = () => {
                                         type="button"
                                         onClick={() => leave(false)}
                                         disabled={leaving}
-                                        className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+                                        className="rounded-md px-3 py-2 text-start hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
                                     >
                                         {t(
                                             'dailyPlan.leaveWithoutStarting',
@@ -1086,13 +1086,13 @@ const PlanMyDay: React.FC = () => {
                                           )}
                                 </button>
                                 {draftChoiceOpen && (
-                                    <div className="absolute right-0 z-[45] mt-1 flex w-56 flex-col rounded-lg bg-white p-1 shadow-lg ring-0 dark:bg-gray-800 dark:bg-gray-900">
+                                    <div className="absolute end-0 z-[45] mt-1 flex w-56 flex-col rounded-lg bg-white p-1 shadow-lg ring-0 dark:bg-gray-800 dark:bg-gray-900">
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 void runDraft('fill')
                                             }
-                                            className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                                            className="rounded-md px-3 py-2 text-start text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
                                         >
                                             <span className="block font-medium">
                                                 {t(
@@ -1112,7 +1112,7 @@ const PlanMyDay: React.FC = () => {
                                             onClick={() =>
                                                 void runDraft('replace')
                                             }
-                                            className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                                            className="rounded-md px-3 py-2 text-start text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
                                         >
                                             <span className="block font-medium">
                                                 {t(

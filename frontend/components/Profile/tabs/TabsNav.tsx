@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 
 interface TabConfig {
@@ -26,8 +27,8 @@ const TabsNav: React.FC<TabsNavProps> = ({ tabs, activeTab, onChange }) => (
                         : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50'
                 }`}
             >
-                <span className="mr-2 lg:mr-3 flex-shrink-0">{tab.icon}</span>
-                <span className="text-left">{tab.name}</span>
+                <span className="me-2 lg:me-3 flex-shrink-0">{tab.icon}</span>
+                <span className="text-start">{tab.name}</span>
             </button>
         ))}
     </nav>

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -32,13 +33,13 @@ const TaskTree: React.FC<{ task: Task }> = ({ task }) => {
                 <CheckCircleIcon className="h-4 w-4 text-gray-300 dark:text-gray-600 flex-shrink-0 mt-0.5" />
                 <span className="text-sm text-gray-700 dark:text-gray-300">{task.name}</span>
                 {(task as any).due_date && (
-                    <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto whitespace-nowrap">
+                    <span className="text-xs text-gray-400 dark:text-gray-500 ms-auto whitespace-nowrap">
                         {new Date((task as any).due_date).toLocaleDateString()}
                     </span>
                 )}
             </div>
             {subtasks.length > 0 && (
-                <div className="ml-6 pl-3 border-l-2 border-gray-100 dark:border-gray-700 mb-1">
+                <div className="ms-6 ps-3 border-s-2 border-gray-100 dark:border-gray-700 mb-1">
                     {subtasks.map((sub: Task, i: number) => (
                         <div key={i} className="flex items-start gap-2 py-1">
                             <span className="text-gray-300 dark:text-gray-600 text-xs mt-px">—</span>
@@ -105,7 +106,7 @@ const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
                 <div className="px-6 py-3 flex-shrink-0">
                     <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">
                         {t('templates.taskList', 'Tasks')}
-                        {tasks.length > 0 && <span className="ml-1.5 normal-case font-normal">({tasks.length})</span>}
+                        {tasks.length > 0 && <span className="ms-1.5 normal-case font-normal">({tasks.length})</span>}
                     </p>
                 </div>
 

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
@@ -111,7 +112,7 @@ const TimezoneDropdown: React.FC<TimezoneDropdownProps> = ({
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-left flex items-center justify-between"
+                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-start flex items-center justify-between"
             >
                 <span className="truncate">{selectedTimezone}</span>
                 <ChevronDownIcon
@@ -144,7 +145,7 @@ const TimezoneDropdown: React.FC<TimezoneDropdownProps> = ({
                             <button
                                 type="button"
                                 onClick={() => handleSelect('UTC')}
-                                className={`w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${
+                                className={`w-full text-start px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${
                                     value === 'UTC'
                                         ? 'bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300'
                                         : 'text-gray-900 dark:text-gray-100'
@@ -170,7 +171,7 @@ const TimezoneDropdown: React.FC<TimezoneDropdownProps> = ({
                                                 onClick={() =>
                                                     handleSelect(tz.value)
                                                 }
-                                                className={`w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${
+                                                className={`w-full text-start px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${
                                                     value === tz.value
                                                         ? 'bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300'
                                                         : 'text-gray-900 dark:text-gray-100'

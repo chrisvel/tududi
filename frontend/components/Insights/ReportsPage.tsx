@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getApiPath } from '../../config/paths';
@@ -106,7 +107,8 @@ function BarChart({ weeks }: { weeks: WeekData[] }) {
     }, [maxCount]);
 
     return (
-        <div ref={containerRef} className="w-full" style={{ height: HEIGHT }}>
+        // LTD-PATCH(T-302): chart axes stay LTR under an RTL document
+        <div ref={containerRef} dir="ltr" className="w-full" style={{ height: HEIGHT }}>
             <svg width={width} height={HEIGHT} style={{ display: 'block', overflow: 'visible' }}>
                 {yTicks.map((tick) => {
                     const y = CHART_MARGINS.top + plotH - (tick / maxCount) * plotH;
@@ -234,7 +236,7 @@ function AreaBalanceChart({ areas }: { areas: AreaBalance[] }) {
                                     </span>
                                 )}
                             </div>
-                            <div className="flex items-center gap-3 ml-2 flex-shrink-0">
+                            <div className="flex items-center gap-3 ms-2 flex-shrink-0">
                                 <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
                                     {t('reports.doneOpen', {
                                         done: area.completed,
@@ -619,7 +621,7 @@ const ReportsPage: React.FC = () => {
                                             <span className="inline-block w-3 h-2 rounded bg-indigo-200 dark:bg-indigo-800" />
                                             {t('reports.open', 'Open')}
                                         </span>
-                                        <span className="flex items-center gap-1 ml-auto">
+                                        <span className="flex items-center gap-1 ms-auto">
                                             {t('reports.completionRateLegend', '% = completion rate')}
                                         </span>
                                     </div>

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, {
     useCallback,
     useEffect,
@@ -421,7 +422,7 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                                             );
                                             setOpenSection(null);
                                         }}
-                                        className={`block w-full truncate rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                                        className={`block w-full truncate rounded px-2 py-1.5 text-start text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
                                             selectedProject?.id === p.id
                                                 ? 'text-blue-600 dark:text-blue-300 font-medium'
                                                 : 'text-gray-800 dark:text-gray-200'

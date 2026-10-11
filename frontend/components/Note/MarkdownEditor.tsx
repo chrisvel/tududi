@@ -667,7 +667,13 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         : [];
 
     return (
+        // LTD-PATCH(T-302): dir=ltr is deliberate and temporary — the
+        // CodeMirror block-handle geometry is left-anchored (paddingLeft on
+        // .cm-content, left-positioned handles), so an RTL editor needs the
+        // handles re-anchored first. Persian text still renders per Unicode
+        // bidi inside lines. Documented in docs/ltd/phases/PHASE-3.md.
         <div
+            dir="ltr"
             className={`relative cm-editor-wrapper ${className}`}
             style={{ minHeight }}
             onClick={onClick}

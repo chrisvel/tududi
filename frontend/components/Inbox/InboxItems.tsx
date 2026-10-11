@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { Task } from '../../entities/Task';
@@ -572,7 +573,7 @@ const InboxItems: React.FC = () => {
                                         return next;
                                     })
                                 }
-                                className="flex items-center gap-2.5 w-full px-4 py-2.5 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
+                                className="flex items-center gap-2.5 w-full px-4 py-2.5 rounded-lg text-start hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
                             >
                                 <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
                                     {t('inbox.recentlyCaptured', 'Recently captured')}
@@ -584,7 +585,7 @@ const InboxItems: React.FC = () => {
                                 <span className="flex-1" />
 
                                 <svg
-                                    className={`w-3 h-3 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${inboxListExpanded ? 'rotate-90' : ''}`}
+                                    className={`w-3 h-3 text-gray-400 dark:text-gray-500 transition-transform duration-150 rtl:-scale-x-100 ${inboxListExpanded ? 'rotate-90' : ''}`}
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"

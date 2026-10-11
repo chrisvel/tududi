@@ -162,7 +162,8 @@ const WrapUpCard: React.FC<WrapUpCardProps> = ({
                                 }
                             />
                             <span>
-                                {item.name}
+                                {/* LTD-PATCH(T-302): isolate user text direction */}
+                                <bdi>{item.name}</bdi>
                                 {item.reason && (
                                     <span className="text-gray-500 dark:text-gray-400">
                                         {' '}

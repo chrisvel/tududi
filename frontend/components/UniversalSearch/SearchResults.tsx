@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -254,13 +255,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                             <button
                                 key={`${result.type}-${result.id}`}
                                 onClick={() => handleResultClick(result)}
-                                className="w-full px-4 py-3 flex items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                                className="w-full px-4 py-3 flex items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-start"
                                 data-testid={`search-result-${result.type.toLowerCase()}-${result.id}`}
                             >
                                 <div className="flex-shrink-0">
                                     {getIcon(result.type)}
                                 </div>
-                                <div className="ml-3 flex-1 min-w-0">
+                                <div className="ms-3 flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                                         {result.name || result.title}
                                     </p>

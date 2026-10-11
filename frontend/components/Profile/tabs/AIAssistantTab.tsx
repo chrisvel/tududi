@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { XMarkIcon } from '@heroicons/react/24/outline';
@@ -246,7 +247,7 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
                 </h4>
                 <div className="rounded-lg border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center justify-between px-4 py-4">
-                        <div className="pr-8">
+                        <div className="pe-8">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {t(
                                     'profile.aiAssistantLabel',
@@ -273,9 +274,9 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
                             }}
                         >
                             <span
-                                className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                                className={`absolute start-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
                                     aiEnabled
-                                        ? 'translate-x-6'
+                                        ? 'translate-x-6 rtl:-translate-x-6'
                                         : 'translate-x-0'
                                 }`}
                             />
@@ -309,7 +310,7 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
                     )}
                     className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
-                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500 text-right">
+                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500 text-end">
                     {(formData.ai_profile || '').length} / 500
                 </p>
             </div>

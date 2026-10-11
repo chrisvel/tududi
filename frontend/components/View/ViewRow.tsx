@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -69,11 +70,11 @@ const ViewRow: React.FC<ViewRowProps> = ({
         .join(' · ');
 
     const menuItemClass =
-        'block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600';
+        'block px-4 py-2 text-sm w-full text-start hover:bg-gray-100 dark:hover:bg-gray-600';
 
     return (
         <div
-            className={`relative flex items-center gap-4 -ml-1.5 py-2.5 pl-5 pr-2 border-l-4 border-gray-300 dark:border-gray-600 group ${
+            className={`relative flex items-center gap-4 -ms-1.5 py-2.5 ps-5 pe-2 border-s-4 border-gray-300 dark:border-gray-600 group ${
                 menuOpen ? 'z-50' : ''
             }`}
         >
@@ -118,7 +119,7 @@ const ViewRow: React.FC<ViewRowProps> = ({
                     <EllipsisVerticalIcon className="h-4 w-4" />
                 </button>
                 {menuOpen && (
-                    <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60] overflow-hidden">
+                    <div className="absolute end-0 top-full mt-1 w-32 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60] overflow-hidden">
                         <button
                             type="button"
                             onClick={(e) => {

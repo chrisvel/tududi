@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -420,7 +421,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
                     </span>
                 </div>
             ) : (
-                <div className="space-y-6 mb-6 max-h-[32rem] overflow-y-auto pr-2">
+                <div className="space-y-6 mb-6 max-h-[32rem] overflow-y-auto pe-2">
                     {comments.map((comment) => (
                         <div key={comment.uid}>
                             <CommentRow
@@ -438,7 +439,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
                             />
                             {(comment.replies.length > 0 ||
                                 replyingToUid === comment.uid) && (
-                                <div className="ml-14 mt-4 space-y-4">
+                                <div className="ms-14 mt-4 space-y-4">
                                     {comment.replies.map((reply) => (
                                         <CommentRow
                                             key={reply.uid}

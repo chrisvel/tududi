@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckIcon, FunnelIcon } from '@heroicons/react/24/outline';
@@ -178,7 +179,7 @@ const AdminUserFilter: React.FC<AdminUserFilterProps> = ({
             </button>
             {open && (
                 <div
-                    className="absolute right-0 z-50 mt-1 w-56 rounded-lg bg-white p-1 shadow-lg dark:bg-gray-800"
+                    className="absolute end-0 z-50 mt-1 w-56 rounded-lg bg-white p-1 shadow-lg dark:bg-gray-800"
                     role="menu"
                     data-testid="admin-user-filter-menu"
                 >
@@ -196,7 +197,7 @@ const AdminUserFilter: React.FC<AdminUserFilterProps> = ({
                                         role="menuitemcheckbox"
                                         aria-checked={checked}
                                         onClick={() => toggle(choice.value)}
-                                        className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                                        className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-start text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                                         data-testid={`admin-user-filter-${choice.value}`}
                                     >
                                         <span>{choice.label}</span>
@@ -215,7 +216,7 @@ const AdminUserFilter: React.FC<AdminUserFilterProps> = ({
                         <button
                             type="button"
                             onClick={() => onChange([])}
-                            className="mt-1 w-full rounded-md bg-gray-50 px-3 py-1.5 text-left text-sm text-gray-600 hover:bg-gray-100 dark:bg-gray-900/40 dark:text-gray-300 dark:hover:bg-gray-700"
+                            className="mt-1 w-full rounded-md bg-gray-50 px-3 py-1.5 text-start text-sm text-gray-600 hover:bg-gray-100 dark:bg-gray-900/40 dark:text-gray-300 dark:hover:bg-gray-700"
                             data-testid="admin-user-filter-clear"
                         >
                             {t('admin.userFilter.clear', 'Clear filters')}

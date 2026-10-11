@@ -49,19 +49,19 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
     return (
         <div className="mb-8">
             <h3 className="text-xl font-semibold text-blue-700 dark:text-blue-300 mb-6 flex items-center">
-                <TelegramIcon className="w-6 h-6 mr-3 text-blue-500" />
+                <TelegramIcon className="w-6 h-6 me-3 text-blue-500" />
                 {t('profile.telegramIntegration', 'Telegram Integration')}
             </h3>
 
             <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                    <CogIcon className="w-5 h-5 mr-2 text-blue-500" />
+                    <CogIcon className="w-5 h-5 me-2 text-blue-500" />
                     {t('profile.botSetup', 'Bot Setup')}
                 </h4>
 
                 <div className="space-y-4">
                     <div className="text-sm text-gray-600 dark:text-gray-300 flex items-start">
-                        <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
+                        <InformationCircleIcon className="h-5 w-5 me-2 flex-shrink-0 text-blue-500" />
                         <p>
                             {t(
                                 'profile.telegramDescription',
@@ -116,7 +116,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                                 <p className="font-semibold text-gray-600 dark:text-gray-300">
                                     {t('profile.examples', 'Examples:')}
                                 </p>
-                                <ul className="list-disc list-inside ml-2 space-y-0.5">
+                                <ul className="list-disc list-inside ms-2 space-y-0.5">
                                     <li>
                                         <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
                                             @alice, @bob
@@ -200,7 +200,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                                     </p>
                                     <div className="flex items-center mb-2">
                                         <div
-                                            className={`w-3 h-3 rounded-full mr-2 ${isPolling ? 'bg-green-500' : 'bg-red-500'}`}
+                                            className={`w-3 h-3 rounded-full me-2 ${isPolling ? 'bg-green-500' : 'bg-red-500'}`}
                                         ></div>
                                         <span>
                                             {isPolling
@@ -277,7 +277,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                     {telegramSetupStatus === 'success' && (
                         <div className="mt-2 flex items-center text-green-600 dark:text-green-400">
                             <svg
-                                className="w-5 h-5 mr-2"
+                                className="w-5 h-5 me-2"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                             >
@@ -299,7 +299,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                     {telegramSetupStatus === 'error' && (
                         <div className="mt-2 flex items-center text-red-600 dark:text-red-400">
                             <svg
-                                className="w-5 h-5 mr-2"
+                                className="w-5 h-5 me-2"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                             >
@@ -322,7 +322,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
 
             <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                    <ClipboardDocumentListIcon className="w-5 h-5 mr-2 text-green-500" />
+                    <ClipboardDocumentListIcon className="w-5 h-5 me-2 text-green-500" />
                     {t(
                         'profile.taskSummaryNotifications',
                         'Task Summary Notifications'
@@ -330,7 +330,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                 </h4>
 
                 <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
-                    <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
+                    <InformationCircleIcon className="h-5 w-5 me-2 flex-shrink-0 text-blue-500" />
                     <p>
                         {t(
                             'profile.taskSummaryDescription',
@@ -355,9 +355,9 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                         onClick={onToggleSummary}
                     >
                         <span
-                            className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                            className={`absolute start-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
                                 formData.task_summary_enabled
-                                    ? 'translate-x-6'
+                                    ? 'translate-x-6 rtl:-translate-x-6'
                                     : 'translate-x-0'
                             }`}
                         ></span>

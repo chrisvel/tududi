@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -52,7 +53,7 @@ const DiscardChangesDialog: React.FC<DiscardChangesDialogProps> = ({
                         'You have unsaved changes. Are you sure you want to discard them?'
                     )}
                 </p>
-                <div className="flex justify-end space-x-4">
+                <div className="flex justify-end space-x-4 rtl:space-x-reverse">
                     <button
                         ref={cancelButtonRef}
                         onClick={onCancel}

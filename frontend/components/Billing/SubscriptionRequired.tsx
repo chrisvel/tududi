@@ -277,7 +277,7 @@ const SubscriptionRequired: React.FC = () => {
                                         key={perk}
                                         className="flex items-start text-gray-700 dark:text-gray-300"
                                     >
-                                        <CheckIcon className="w-5 h-5 mr-2 mt-0.5 text-green-500 shrink-0" />
+                                        <CheckIcon className="w-5 h-5 me-2 mt-0.5 text-green-500 shrink-0" />
                                         <span>{perk}</span>
                                     </li>
                                 ))}

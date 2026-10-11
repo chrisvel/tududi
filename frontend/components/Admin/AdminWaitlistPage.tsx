@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -105,7 +106,7 @@ const AdminWaitlistPage: React.FC = () => {
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <h1 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center">
-                    <EnvelopeIcon className="w-7 h-7 mr-3 text-blue-500" />
+                    <EnvelopeIcon className="w-7 h-7 me-3 text-blue-500" />
                     {t('admin.waitlist.title', 'Waitlist')}
                 </h1>
                 <button
@@ -115,7 +116,7 @@ const AdminWaitlistPage: React.FC = () => {
                     className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-60"
                     data-testid="admin-waitlist-export"
                 >
-                    <ArrowDownTrayIcon className="w-4 h-4 mr-2" />
+                    <ArrowDownTrayIcon className="w-4 h-4 me-2" />
                     {t('admin.waitlist.export', 'Export CSV')}
                 </button>
             </div>
@@ -149,7 +150,7 @@ const AdminWaitlistPage: React.FC = () => {
 
             <div className={ADMIN_TABLE_WRAPPER}>
                 <table className="min-w-full text-sm">
-                    <thead className="bg-gray-50 dark:bg-gray-900 text-left text-gray-600 dark:text-gray-300">
+                    <thead className="bg-gray-50 dark:bg-gray-900 text-start text-gray-600 dark:text-gray-300">
                         <tr>
                             <SortHeader
                                 column="email"
@@ -199,7 +200,7 @@ const AdminWaitlistPage: React.FC = () => {
                                 sortDir={sortDir}
                                 onSort={toggle}
                             />
-                            <th className="px-4 py-2 text-right">
+                            <th className="px-4 py-2 text-end">
                                 {t('common.actions', 'Actions')}
                             </th>
                         </tr>
@@ -256,7 +257,7 @@ const AdminWaitlistPage: React.FC = () => {
                                     <td className="px-4 py-2 text-gray-500 dark:text-gray-400 font-mono text-xs">
                                         {entry.ip_address || '-'}
                                     </td>
-                                    <td className="px-4 py-2 text-right">
+                                    <td className="px-4 py-2 text-end">
                                         <button
                                             type="button"
                                             onClick={() =>

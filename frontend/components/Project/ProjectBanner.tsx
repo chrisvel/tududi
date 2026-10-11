@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import {
     TagIcon,
@@ -106,12 +107,12 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                 )}
                 {project.color && (
                     <div
-                        className="absolute top-4 left-4 w-8 h-8 rounded-full ring-1 ring-black/30 shadow-md select-none z-10"
+                        className="absolute top-4 start-4 w-8 h-8 rounded-full ring-1 ring-black/30 shadow-md select-none z-10"
                         style={{ backgroundColor: project.color }}
                     />
                 )}
                 {creatorName && (
-                    <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+                    <div className="absolute top-2 end-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
                         Photo by {creatorName}
                     </div>
                 )}
@@ -129,7 +130,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                     </div>
                 </div>
 
-                <div className="absolute bottom-2 left-2 right-14 flex items-center flex-wrap gap-2">
+                <div className="absolute bottom-2 start-2 end-14 flex items-center flex-wrap gap-2">
                     {project.status && (
                         <BannerBadge>
                             {getStatusIcon(project.status)}
@@ -218,7 +219,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                     )}
                 </div>
 
-                <div className="absolute bottom-2 right-2 flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-2 end-2 flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rtl:space-x-reverse">
                     {onEditBannerClick && (
                         <button
                             type="button"
@@ -248,7 +249,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                             <EllipsisVerticalIcon className="h-5 w-5" />
                         </button>
                         {dropdownOpen && (
-                            <div className="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
+                            <div className="absolute end-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -256,7 +257,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                         onEditClick();
                                         setDropdownOpen(false);
                                     }}
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start rounded-t-md"
                                 >
                                     {t('projectItem.edit', 'Edit')}
                                 </button>
@@ -267,7 +268,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                         onShareClick();
                                         setDropdownOpen(false);
                                     }}
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start"
                                 >
                                     {t('projectItem.share', 'Share')}
                                 </button>
@@ -279,7 +280,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                         onSaveAsTemplate();
                                         setDropdownOpen(false);
                                     }}
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start"
                                 >
                                     {t('projectItem.saveAsTemplate', 'Save as Template')}
                                 </button>
@@ -292,7 +293,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                         onTogglePin();
                                         setDropdownOpen(false);
                                     }}
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start"
                                 >
                                     {project.pin_to_sidebar
                                         ? t('projectItem.unpinFromSidebar', 'Unpin from sidebar')
@@ -306,7 +307,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                         onDeleteClick();
                                         setDropdownOpen(false);
                                     }}
-                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start rounded-b-md"
                                 >
                                     {t('common.delete', 'Delete')}
                                 </button>

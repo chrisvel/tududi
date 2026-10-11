@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -119,7 +120,7 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <CreditCardIcon className="w-6 h-6 mr-3 text-blue-500" />
+                <CreditCardIcon className="w-6 h-6 me-3 text-blue-500" />
                 {t('billing.title', 'Plan & Billing')}
             </h3>
 
@@ -131,14 +132,14 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                 <div className="space-y-6">
                     {status.subscription?.status === 'past_due' && (
                         <div className="p-4 rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700 text-amber-800 dark:text-amber-200 flex items-start">
-                            <ExclamationTriangleIcon className="w-5 h-5 mr-2 flex-shrink-0" />
+                            <ExclamationTriangleIcon className="w-5 h-5 me-2 flex-shrink-0" />
                             <div className="text-sm">
                                 {t(
                                     'billing.pastDue',
                                     'Your last payment did not go through. Update your card to keep your plan.'
                                 )}
                                 {status.grace_until && (
-                                    <span className="ml-1">
+                                    <span className="ms-1">
                                         {t('billing.graceUntil', {
                                             defaultValue:
                                                 'Pro stays active until {{date}}.',
@@ -314,14 +315,14 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                             </h4>
                             <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 mb-4">
                                 <li className="flex items-center">
-                                    <CheckIcon className="w-4 h-4 mr-2 text-green-500" />
+                                    <CheckIcon className="w-4 h-4 me-2 text-green-500" />
                                     {t(
                                         'billing.perkUnlimited',
                                         'Unlimited tasks, projects and notes'
                                     )}
                                 </li>
                                 <li className="flex items-center">
-                                    <CheckIcon className="w-4 h-4 mr-2 text-green-500" />
+                                    <CheckIcon className="w-4 h-4 me-2 text-green-500" />
                                     {t('billing.perkStorage', {
                                         defaultValue:
                                             '{{size}} of attachment storage',
@@ -333,7 +334,7 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                                     })}
                                 </li>
                                 <li className="flex items-center">
-                                    <CheckIcon className="w-4 h-4 mr-2 text-green-500" />
+                                    <CheckIcon className="w-4 h-4 me-2 text-green-500" />
                                     {t(
                                         'billing.perkFeatures',
                                         'AI assistant, MCP, CalDAV sync, Telegram bot, backup import'
@@ -342,7 +343,7 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                             </ul>
                             {status.intervals.month &&
                                 status.intervals.year && (
-                                    <div className="flex items-center space-x-2 mb-4">
+                                    <div className="flex items-center space-x-2 mb-4 rtl:space-x-reverse">
                                         {(['month', 'year'] as const).map(
                                             (opt) => (
                                                 <button

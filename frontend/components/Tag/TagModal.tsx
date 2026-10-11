@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { Tag } from '../../entities/Tag';
 import { useToast } from '../Shared/ToastContext';
@@ -162,7 +163,7 @@ const TagModal: React.FC<TagModalProps> = ({
                         }))
                     }
                     aria-pressed={!!formData.pinned}
-                    className={`rounded-md px-3 py-2 text-left text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                    className={`rounded-md px-3 py-2 text-start text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                         formData.pinned
                             ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-700'

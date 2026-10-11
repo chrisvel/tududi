@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { XMarkIcon } from '@heroicons/react/24/outline';
@@ -31,7 +32,7 @@ const CaptureFiles: React.FC<CaptureFilesProps> = ({
                 <li
                     key={id}
                     data-testid="capture-file"
-                    className="flex items-center gap-2 max-w-[15rem] rounded-lg bg-black/[0.05] dark:bg-white/[0.06] pl-1.5 pr-1 py-1 text-xs text-gray-700 dark:text-gray-200"
+                    className="flex items-center gap-2 max-w-[15rem] rounded-lg bg-black/[0.05] dark:bg-white/[0.06] ps-1.5 pe-1 py-1 text-xs text-gray-700 dark:text-gray-200"
                 >
                     {previewUrl ? (
                         <img

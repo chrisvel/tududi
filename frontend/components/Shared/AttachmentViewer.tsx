@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -251,21 +252,21 @@ const AttachmentViewer: React.FC<AttachmentViewerProps> = ({
                         <button
                             type="button"
                             onClick={() => step(-1)}
-                            className={`${navButton} left-3`}
+                            className={`${navButton} start-3`}
                             aria-label={t(
                                 'attachments.previous',
                                 'Previous file'
                             )}
                         >
-                            <ChevronLeftIcon className="h-6 w-6" />
+                            <ChevronLeftIcon className="h-6 w-6 rtl:-scale-x-100" />
                         </button>
                         <button
                             type="button"
                             onClick={() => step(1)}
-                            className={`${navButton} right-3`}
+                            className={`${navButton} end-3`}
                             aria-label={t('attachments.next', 'Next file')}
                         >
-                            <ChevronRightIcon className="h-6 w-6" />
+                            <ChevronRightIcon className="h-6 w-6 rtl:-scale-x-100" />
                         </button>
                     </>
                 )}

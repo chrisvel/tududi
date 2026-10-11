@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
@@ -25,7 +26,7 @@ const BackButton: React.FC<BackButtonProps> = ({
             onClick={() => navigate(-1)}
             className={`${baseClass} ${className}`}
         >
-            <ArrowLeftIcon className="h-4 w-4" />
+            <ArrowLeftIcon className="h-4 w-4 rtl:-scale-x-100" />
             <span>{t('common.back', 'Back')}</span>
         </button>
     );

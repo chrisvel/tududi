@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -304,7 +305,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
             ref={dropdownRef}
             data-testid="datetimepicker"
             data-state={isOpen ? 'open' : 'closed'}
-            className={`relative inline-block text-left ${renderTrigger ? '' : 'w-full'} ${className}`}
+            className={`relative inline-block text-start ${renderTrigger ? '' : 'w-full'} ${className}`}
         >
             {renderTrigger ? (
                 renderTrigger({
@@ -333,7 +334,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                         >
                             {formatDisplayDateTime(value)}
                         </span>
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-1 rtl:space-x-reverse">
                             <ClockIcon className="w-5 h-5 text-gray-500 dark:text-gray-300" />
                         </div>
                     </button>
@@ -341,7 +342,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                         <button
                             type="button"
                             onClick={handleClear}
-                            className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xs w-4 h-4 flex items-center justify-center"
+                            className="absolute end-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xs w-4 h-4 flex items-center justify-center"
                         >
                             ×
                         </button>
@@ -368,7 +369,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                                 onClick={() => navigateMonth('prev')}
                                 className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
                             >
-                                <ChevronLeftIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                <ChevronLeftIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 rtl:-scale-x-100" />
                             </button>
                             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                 {months[currentMonth.getMonth()]}{' '}
@@ -379,7 +380,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                                 onClick={() => navigateMonth('next')}
                                 className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
                             >
-                                <ChevronRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                                <ChevronRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300 rtl:-scale-x-100" />
                             </button>
                         </div>
 
@@ -471,7 +472,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                             >
                                 Now
                             </button>
-                            <div className="flex space-x-2">
+                            <div className="flex space-x-2 rtl:space-x-reverse">
                                 {value && (
                                     <button
                                         type="button"

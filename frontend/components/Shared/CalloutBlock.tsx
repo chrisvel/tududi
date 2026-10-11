@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 
 export type CalloutType = 'NOTE' | 'WARNING' | 'TIP' | 'IMPORTANT' | 'DANGER';
@@ -59,7 +60,7 @@ const CalloutBlock: React.FC<CalloutBlockProps> = ({ type, title, children }) =>
 
     return (
         <div
-            className={`callout callout-${type.toLowerCase()} rounded-lg border-l-4 ${config.borderClass} ${config.bgClass} px-4 py-3 my-4 not-prose`}
+            className={`callout callout-${type.toLowerCase()} rounded-lg border-s-4 ${config.borderClass} ${config.bgClass} px-4 py-3 my-4 not-prose`}
         >
             <div className={`flex items-center gap-1.5 font-semibold text-sm mb-1 ${config.headerClass}`}>
                 <span role="img" aria-hidden="true">{config.icon}</span>

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 
 interface LoadingSpinnerProps {
@@ -26,7 +27,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     };
 
     const spinnerContent = (
-        <div className={`flex items-center space-x-3 ${className}`}>
+        <div className={`flex items-center space-x-3 ${className} rtl:space-x-reverse`}>
             <div
                 className={`animate-spin rounded-full ${sizeClasses[size]} border-b-2 border-blue-600`}
             ></div>

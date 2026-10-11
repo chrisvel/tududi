@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TFunction } from 'i18next';
@@ -143,7 +144,7 @@ const GoalHero: React.FC<GoalHeroProps> = ({
                                 {statusOpen && (
                                     <div
                                         role="menu"
-                                        className="absolute left-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-md bg-white py-1 shadow-lg dark:bg-gray-800"
+                                        className="absolute start-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-md bg-white py-1 shadow-lg dark:bg-gray-800"
                                     >
                                         {GOAL_STATUSES.map((status) => (
                                             <button
@@ -153,7 +154,7 @@ const GoalHero: React.FC<GoalHeroProps> = ({
                                                 onClick={() =>
                                                     changeStatus(status)
                                                 }
-                                                className={`flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                                                className={`flex w-full items-center justify-between gap-2 px-3 py-1.5 text-start text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
                                                     status === goal.status
                                                         ? 'text-gray-900 dark:text-gray-100'
                                                         : 'text-gray-700 dark:text-gray-300'
@@ -247,10 +248,10 @@ const GoalHero: React.FC<GoalHeroProps> = ({
                                 <EllipsisHorizontalIcon className="h-5 w-5" />
                             </button>
                             {menuOpen && (
-                                <div className="absolute right-0 top-full z-30 mt-1 w-52 overflow-hidden rounded-md bg-white py-1 shadow-lg dark:bg-gray-800">
+                                <div className="absolute end-0 top-full z-30 mt-1 w-52 overflow-hidden rounded-md bg-white py-1 shadow-lg dark:bg-gray-800">
                                     <button
                                         type="button"
-                                        className="block w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
+                                        className="block w-full px-4 py-2 text-start text-sm text-red-500 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
                                         onClick={() => {
                                             setMenuOpen(false);
                                             onDeleteClick();
@@ -290,7 +291,7 @@ const GoalHero: React.FC<GoalHeroProps> = ({
                         </span>
                         <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                             {percent}
-                            <span className="ml-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+                            <span className="ms-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
                                 %
                             </span>
                         </span>
@@ -302,7 +303,7 @@ const GoalHero: React.FC<GoalHeroProps> = ({
                         }}
                     >
                         <div
-                            className="absolute inset-y-0 left-0 rounded-full bg-blue-500 transition-all duration-300"
+                            className="absolute inset-y-0 start-0 rounded-full bg-blue-500 transition-all duration-300"
                             style={{ width: `${percent}%` }}
                         />
                         {timeUsed !== null && (

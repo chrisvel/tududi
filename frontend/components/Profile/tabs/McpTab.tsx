@@ -90,7 +90,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <CpuChipIcon className="w-6 h-6 mr-3 text-indigo-500" />
+                <CpuChipIcon className="w-6 h-6 me-3 text-indigo-500" />
                 {t('profile.mcp.title', 'MCP Integration')}
             </h3>
 
@@ -103,7 +103,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
 
             <div className="space-y-8">
                 {/* Step 1: API Token */}
-                <section className="border-l-4 border-indigo-500 pl-4">
+                <section className="border-s-4 border-indigo-500 ps-4">
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                         {t('profile.mcp.step1.title', '1. Generate API Token')}
                     </h4>
@@ -122,7 +122,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                 </section>
 
                 {/* Step 2: Configuration */}
-                <section className="border-l-4 border-indigo-500 pl-4">
+                <section className="border-s-4 border-indigo-500 ps-4">
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                         {t(
                             'profile.mcp.step2.title',
@@ -146,7 +146,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                                 disabled={loading}
                                 className="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-indigo-600 rounded hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                             >
-                                <DocumentDuplicateIcon className="w-4 h-4 mr-1" />
+                                <DocumentDuplicateIcon className="w-4 h-4 me-1" />
                                 {t('profile.mcp.step2.copy', 'Copy')}
                             </button>
                         </div>
@@ -185,7 +185,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                             <code className="px-1 py-0.5 bg-green-100 dark:bg-green-900 rounded">mcp-remote</code>{' '}
                             {t('profile.mcp.remote.usesSuffix', 'to connect via HTTP. This means you can:')}
                         </p>
-                        <ul className="text-xs text-green-700 dark:text-green-400 mt-2 ml-4 space-y-1">
+                        <ul className="text-xs text-green-700 dark:text-green-400 mt-2 ms-4 space-y-1">
                             <li>• {t('profile.mcp.remote.local', 'Access local Life-to-Day (localhost)')}</li>
                             <li>• {t('profile.mcp.remote.cloud', 'Access remote Life-to-Day (cloud servers)')}</li>
                             <li>• {t('profile.mcp.remote.docker', 'Use from Docker deployments')}</li>
@@ -195,7 +195,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                 </section>
 
                 {/* Step 3: Available Tools */}
-                <section className="border-l-4 border-indigo-500 pl-4">
+                <section className="border-s-4 border-indigo-500 ps-4">
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                         {t(
                             'profile.mcp.step3.title',
@@ -234,7 +234,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                 </section>
 
                 {/* Step 4: Usage */}
-                <section className="border-l-4 border-indigo-500 pl-4">
+                <section className="border-s-4 border-indigo-500 ps-4">
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                         {t('profile.mcp.step4.title', '4. Start Using')}
                     </h4>
@@ -274,7 +274,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                         <p className="text-xs text-yellow-700 dark:text-yellow-400">
                             {t('profile.mcp.troubleshooting.intro', "If your MCP client can't connect, check that:")}
                         </p>
-                        <ul className="text-xs text-yellow-700 dark:text-yellow-400 mt-2 ml-4 space-y-1">
+                        <ul className="text-xs text-yellow-700 dark:text-yellow-400 mt-2 ms-4 space-y-1">
                             <li>• {t('profile.mcp.troubleshooting.token', 'Your API token is valid and not expired')}</li>
                             <li>• {t('profile.mcp.troubleshooting.server', 'The Life-to-Day server is running and accessible')}</li>
                             <li>• {t('profile.mcp.troubleshooting.restart', "You've restarted your MCP client completely")}</li>

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import {
     CheckCircleIcon,
@@ -61,7 +62,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     return (
         <ToastContext.Provider value={{ showSuccessToast, showErrorToast, showUndoToast }}>
             {children}
-            <div className="fixed top-20 right-4 z-50 space-y-2">
+            <div className="fixed top-20 end-4 z-50 space-y-2">
                 {toasts.map((toast, index) => (
                     <ToastComponent
                         key={toast.id}

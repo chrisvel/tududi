@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, {
     useState,
     useEffect,
@@ -47,13 +48,13 @@ const getPriorityBorderClassName = (
     }
     switch (p) {
         case 'high':
-            return 'border-l-[3px] border-l-red-500';
+            return 'border-s-[3px] border-s-red-500';
         case 'medium':
-            return 'border-l-[3px] border-l-yellow-400';
+            return 'border-s-[3px] border-s-yellow-400';
         case 'low':
-            return 'border-l-[3px] border-l-blue-400';
+            return 'border-s-[3px] border-s-blue-400';
         default:
-            return 'border-l-[3px] border-l-transparent';
+            return 'border-s-[3px] border-s-transparent';
     }
 };
 
@@ -415,7 +416,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
 
     const priorityBorderClass =
         isInCompletedSection || isTaskCompleted(task.status)
-            ? 'border-l-[3px] border-l-green-500'
+            ? 'border-s-[3px] border-s-green-500'
             : getPriorityBorderClassName(task.priority);
 
     const hasInitialSubtasks = !!(task.subtasks && task.subtasks.length > 0);
@@ -435,7 +436,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
             }`}
         >
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 [.task-sheet_&]:rounded-[10px] [.task-sheet_&]:bg-transparent [.task-sheet_&]:shadow-none [.task-sheet_&]:border-l-0 [.task-sheet_&]:ring-0 [.task-sheet_&]:hover:ring-0 dark:[.task-sheet_&]:bg-transparent ${priorityBorderClass} ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 [.task-sheet_&]:rounded-[10px] [.task-sheet_&]:bg-transparent [.task-sheet_&]:shadow-none [.task-sheet_&]:border-s-0 [.task-sheet_&]:ring-0 [.task-sheet_&]:hover:ring-0 dark:[.task-sheet_&]:bg-transparent ${priorityBorderClass} ${
                     isExpanded
                         ? 'ring-1 ring-blue-400/70 dark:ring-blue-600/70'
                         : ''
@@ -522,7 +523,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
                         );
                     return (
                         <div
-                            className="flex items-center gap-2 ml-4 px-3 py-1.5 rounded-b-lg text-[11px] select-none"
+                            className="flex items-center gap-2 ms-4 px-3 py-1.5 rounded-b-lg text-[11px] select-none"
                             style={{
                                 backgroundColor: `${reasonColor}12`,
                                 color: `${reasonColor}cc`,
@@ -539,7 +540,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
             {showSubtasks &&
                 (subtasks.length > 0 || loadingSubtasks) &&
                 !(task.status === 'archived' || task.status === 3) && (
-                    <div className="mt-1 ml-4 space-y-1 relative z-0">
+                    <div className="mt-1 ms-4 space-y-1 relative z-0">
                         {loadingSubtasks ? (
                             <div className="text-sm text-gray-500 dark:text-gray-400 px-3 py-2">
                                 {t('loading.subtasks', 'Loading subtasks...')}

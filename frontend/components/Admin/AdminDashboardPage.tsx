@@ -158,7 +158,7 @@ const AdminDashboardPage: React.FC = () => {
                     to="/admin/users"
                     className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                    <UsersIcon className="w-4 h-4 mr-2" />
+                    <UsersIcon className="w-4 h-4 me-2" />
                     {t('admin.users.title', 'Users')}
                 </Link>
                 {data.billing.hosted && (
@@ -167,14 +167,14 @@ const AdminDashboardPage: React.FC = () => {
                             to="/admin/billing"
                             className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
-                            <CreditCardIcon className="w-4 h-4 mr-2" />
+                            <CreditCardIcon className="w-4 h-4 me-2" />
                             {t('admin.billing.title', 'Billing')}
                         </Link>
                         <Link
                             to="/admin/ai-usage"
                             className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
-                            <SparklesIcon className="w-4 h-4 mr-2" />
+                            <SparklesIcon className="w-4 h-4 me-2" />
                             {t('admin.aiUsage.title', 'AI Usage')}
                         </Link>
                     </>
@@ -183,7 +183,7 @@ const AdminDashboardPage: React.FC = () => {
                     to="/admin/waitlist"
                     className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                    <EnvelopeIcon className="w-4 h-4 mr-2" />
+                    <EnvelopeIcon className="w-4 h-4 me-2" />
                     {t('admin.waitlist.title', 'Waitlist')}
                 </Link>
                 <Link
@@ -191,10 +191,10 @@ const AdminDashboardPage: React.FC = () => {
                     className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                     data-testid="admin-dashboard-feedback-link"
                 >
-                    <BugAntIcon className="w-4 h-4 mr-2" />
+                    <BugAntIcon className="w-4 h-4 me-2" />
                     {t('admin.feedback.title', 'Feedback')}
                     {data.feedback?.open > 0 && (
-                        <span className="ml-2 px-1.5 rounded-full bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 text-xs">
+                        <span className="ms-2 px-1.5 rounded-full bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 text-xs">
                             {data.feedback.open}
                         </span>
                     )}
@@ -205,11 +205,11 @@ const AdminDashboardPage: React.FC = () => {
                     className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                     data-testid="admin-dashboard-blog-button"
                 >
-                    <NewspaperIcon className="w-4 h-4 mr-2" />
+                    <NewspaperIcon className="w-4 h-4 me-2" />
                     {t('admin.blog.title', 'Blog')}
                 </button>
                 <span className="inline-flex items-center px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400">
-                    <RectangleStackIcon className="w-4 h-4 mr-2" />
+                    <RectangleStackIcon className="w-4 h-4 me-2" />
                     {data.instance.registration_enabled
                         ? t('admin.dashboard.regOpen', 'Registration open')
                         : t('admin.dashboard.regClosed', 'Registration closed')}

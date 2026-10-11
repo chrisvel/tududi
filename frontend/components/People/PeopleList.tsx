@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import PersonModal from './PersonModal';
@@ -159,7 +160,7 @@ const PeopleList: React.FC = () => {
                 <TrialLockNotice feature="members" className="mb-6" />
                 <div
                     role="tablist"
-                    className="mb-4 flex items-center min-h-[2.5rem] gap-4 sm:gap-6 pl-2 sm:pl-3"
+                    className="mb-4 flex items-center min-h-[2.5rem] gap-4 sm:gap-6 ps-2 sm:ps-3"
                     data-testid="people-filters"
                 >
                     {(
@@ -189,7 +190,7 @@ const PeopleList: React.FC = () => {
                             onClick={() => setFilter(id)}
                             className={`relative flex items-center self-stretch py-2.5 text-sm font-medium transition-colors ${
                                 filter === id
-                                    ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
+                                    ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:start-px after:end-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
                                     : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'
                             }`}
                         >

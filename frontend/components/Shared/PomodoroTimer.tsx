@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect, useRef } from 'react';
 import {
     PlayIcon,
@@ -188,8 +189,8 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
     }
 
     return (
-        <div className={`relative flex items-center space-x-2 ${className}`}>
-            <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-1">
+        <div className={`relative flex items-center space-x-2 ${className} rtl:space-x-reverse`}>
+            <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-1 rtl:space-x-reverse">
                 <span className="text-sm font-mono font-semibold text-gray-900 dark:text-white">
                     {formatTime(timeLeft)}
                 </span>
@@ -227,8 +228,8 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
 
             {/* Completion Message */}
             {showCompletionMessage && (
-                <div className="absolute top-full mt-2 right-0 bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 text-green-800 dark:text-green-200 px-3 py-2 rounded-lg shadow-lg z-50 whitespace-nowrap">
-                    <div className="flex items-center space-x-2 mb-2">
+                <div className="absolute top-full mt-2 end-0 bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 text-green-800 dark:text-green-200 px-3 py-2 rounded-lg shadow-lg z-50 whitespace-nowrap">
+                    <div className="flex items-center space-x-2 mb-2 rtl:space-x-reverse">
                         <span className="text-sm font-medium">
                             🍅 {t('pomodoro.complete')}
                         </span>

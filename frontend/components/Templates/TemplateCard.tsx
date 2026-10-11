@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import {
     EllipsisVerticalIcon,
@@ -72,7 +73,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
             />
 
             <div className="p-4 flex flex-col gap-2.5 flex-1 relative">
-                <div className="absolute top-2 right-2 z-10" ref={dropdownRef}>
+                <div className="absolute top-2 end-2 z-10" ref={dropdownRef}>
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -86,29 +87,29 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
                     </button>
 
                     {dropdownOpen && (
-                        <div className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-gray-700 shadow-lg rounded-lg border border-gray-100 dark:border-gray-600 z-[60] py-1">
+                        <div className="absolute end-0 top-full mt-1 w-36 bg-white dark:bg-gray-700 shadow-lg rounded-lg border border-gray-100 dark:border-gray-600 z-[60] py-1">
                             <button
                                 onClick={(e) => { e.stopPropagation(); onClone(template); setDropdownOpen(false); }}
-                                className="block px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 w-full text-left"
+                                className="block px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 w-full text-start"
                             >
                                 {t('templates.useTemplate', 'Use Template')}
                             </button>
                             <button
                                 onClick={(e) => { e.stopPropagation(); onPreview(template); setDropdownOpen(false); }}
-                                className="block px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 w-full text-left"
+                                className="block px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 w-full text-start"
                             >
                                 {t('templates.preview', 'Preview')}
                             </button>
                             <button
                                 onClick={(e) => { e.stopPropagation(); onEdit(template); setDropdownOpen(false); }}
-                                className="block px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 w-full text-left"
+                                className="block px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 w-full text-start"
                             >
                                 {t('common.edit', 'Edit')}
                             </button>
                             <div className="my-1 border-t border-gray-100 dark:border-gray-600" />
                             <button
                                 onClick={(e) => { e.stopPropagation(); onDelete(template); setDropdownOpen(false); }}
-                                className="block px-3 py-1.5 text-sm text-red-500 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-600 w-full text-left"
+                                className="block px-3 py-1.5 text-sm text-red-500 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-600 w-full text-start"
                             >
                                 {t('common.delete', 'Delete')}
                             </button>
@@ -116,7 +117,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
                     )}
                 </div>
 
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white pr-6 leading-snug">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white pe-6 leading-snug">
                     {template.name}
                 </h3>
 
@@ -135,7 +136,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
                 )}
             </div>
 
-            <div className="flex items-stretch divide-x divide-gray-100 dark:divide-gray-700 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
+            <div className="flex items-stretch divide-x divide-gray-100 dark:divide-gray-700 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 rtl:divide-x-reverse">
                 {[
                     { icon: <CheckCircleIcon className="h-3.5 w-3.5" />, count: template.task_count ?? 0, label: t('templates.tasks', 'tasks') },
                     { icon: <ArrowDownTrayIcon className="h-3.5 w-3.5" />, count: template.clone_count ?? 0, label: t('templates.uses', 'uses') },

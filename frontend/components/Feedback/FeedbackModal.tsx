@@ -80,7 +80,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
             >
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center">
-                        <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-500/10 mr-3">
+                        <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-500/10 me-3">
                             <BugAntIcon className="w-5 h-5 text-rose-500" />
                         </span>
                         <div>

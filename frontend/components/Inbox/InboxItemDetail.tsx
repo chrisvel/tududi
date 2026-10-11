@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect, useRef } from 'react';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
@@ -232,14 +233,15 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         key={`tag-${idx}`}
                         className="inline-flex items-center gap-0.5 mx-0.5 align-middle text-[11px] font-semibold leading-none text-blue-700 dark:text-blue-300 bg-blue-100/70 dark:bg-blue-400/10 rounded-full px-2 py-[3px]"
                     >
-                        #{tagName}
+                        {/* LTD-PATCH(T-302): keep the hashtag pill readable in RTL */}
+                        <bdi>#{tagName}</bdi>
                         <button
                             type="button"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 void removeTokenFromText(raw);
                             }}
-                            className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
+                            className="ms-0.5 opacity-50 hover:opacity-100 transition-opacity"
                             aria-label={`Remove tag ${tagName}`}
                         >
                             ×
@@ -261,7 +263,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 e.stopPropagation();
                                 void removeTokenFromText(raw);
                             }}
-                            className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
+                            className="ms-0.5 opacity-50 hover:opacity-100 transition-opacity"
                             aria-label={`Remove person ${personName}`}
                         >
                             ×
@@ -283,7 +285,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 e.stopPropagation();
                                 void removeTokenFromText(raw);
                             }}
-                            className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
+                            className="ms-0.5 opacity-50 hover:opacity-100 transition-opacity"
                             aria-label={`Remove project ${projectName}`}
                         >
                             ×
@@ -514,6 +516,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     {/* Text content */}
                     <div className="flex-1 min-w-0">
                         <p className="text-[13.5px] font-normal text-gray-700 dark:text-gray-300 leading-relaxed break-words">
+                            {/* LTD-PATCH(T-302): isolate user text direction */}
+                            <bdi>
                             {isBlank ? (
                                 <span className="italic text-gray-400 dark:text-gray-500">
                                     {t('inbox.emptyItem', '(Empty item)')}
@@ -521,8 +525,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             ) : (
                                 renderInlineSegments(displayText)
                             )}
+                            </bdi>
                             {extraLineCount > 0 && (
-                                <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500">
+                                <span className="ms-2 text-xs font-normal text-gray-400 dark:text-gray-500">
                                     +{extraLineCount}{' '}
                                     {extraLineCount === 1 ? t('inbox.line', 'line') : t('inbox.lines', 'lines')}
                                 </span>

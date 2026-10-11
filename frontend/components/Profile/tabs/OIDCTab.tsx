@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { LinkIcon } from '@heroicons/react/24/outline';
@@ -22,7 +23,7 @@ const OIDCTab: React.FC<OIDCTabProps> = ({
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <LinkIcon className="w-6 h-6 mr-3 text-green-500" />
+                <LinkIcon className="w-6 h-6 me-3 text-green-500" />
                 {t('profile.tabs.oidc', 'OIDC/SSO')}
             </h3>
 

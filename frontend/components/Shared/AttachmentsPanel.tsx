@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CloudArrowUpIcon, PaperClipIcon } from '@heroicons/react/24/outline';
@@ -188,7 +189,7 @@ const AttachmentsPanel: React.FC<AttachmentsPanelProps> = ({
             <div>
                 {showTitle && (
                     <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
-                        <PaperClipIcon className="h-4 w-4 mr-2" />
+                        <PaperClipIcon className="h-4 w-4 me-2" />
                         {t('task.attachments.title', 'Attachments')}
                     </h4>
                 )}
@@ -205,7 +206,7 @@ const AttachmentsPanel: React.FC<AttachmentsPanelProps> = ({
         <div>
             {showTitle && (
                 <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
-                    <PaperClipIcon className="h-4 w-4 mr-2" />
+                    <PaperClipIcon className="h-4 w-4 me-2" />
                     {t('task.attachments.title', 'Attachments')} (
                     {attachments.length})
                 </h4>

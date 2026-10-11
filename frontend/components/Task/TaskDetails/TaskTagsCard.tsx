@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -77,7 +78,7 @@ const TaskTagsCard: React.FC<TaskTagsCardProps> = ({
                                 }
                             }}
                         />
-                        <div className="flex justify-end space-x-2">
+                        <div className="flex justify-end space-x-2 rtl:space-x-reverse">
                             <button
                                 onClick={handleSave}
                                 className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
@@ -107,7 +108,7 @@ const TaskTagsCard: React.FC<TaskTagsCardProps> = ({
                                         e.stopPropagation();
                                         handleStartEdit();
                                     }}
-                                    className="flex items-center space-x-2 min-w-0 flex-1 text-left"
+                                    className="flex items-center space-x-2 min-w-0 flex-1 text-start rtl:space-x-reverse"
                                 >
                                     <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                     <span className="text-sm text-gray-900 dark:text-gray-100 truncate">
@@ -120,7 +121,7 @@ const TaskTagsCard: React.FC<TaskTagsCardProps> = ({
                                     className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex-shrink-0"
                                     title={t('tag.viewTag', 'Go to tag')}
                                 >
-                                    <ArrowRightIcon className="h-4 w-4" />
+                                    <ArrowRightIcon className="h-4 w-4 rtl:-scale-x-100" />
                                 </Link>
                             </div>
                         ))}

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -37,7 +38,7 @@ const ToggleRow: React.FC<ToggleRowProps> = ({
             last ? '' : 'border-b border-gray-200 dark:border-gray-700'
         }`}
     >
-        <div className="pr-8">
+        <div className="pe-8">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {label}
             </label>
@@ -52,8 +53,8 @@ const ToggleRow: React.FC<ToggleRowProps> = ({
             onClick={onToggle}
         >
             <span
-                className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                    value ? 'translate-x-6' : 'translate-x-0'
+                className={`absolute start-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                    value ? 'translate-x-6 rtl:-translate-x-6' : 'translate-x-0'
                 }`}
             />
         </div>

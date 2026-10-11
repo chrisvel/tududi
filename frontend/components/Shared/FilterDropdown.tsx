@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
 
@@ -122,7 +123,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
             </button>
             {isOpen && (
                 <div
-                    className={`origin-top-right absolute right-0 mt-1 ${fill ? 'min-w-full' : ''} ${fullWidth ? 'left-0 w-full' : !autoWidth ? (isMobile ? 'w-36' : 'w-40') : ''} rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50`}
+                    className={`origin-top-right absolute end-0 mt-1 ${fill ? 'min-w-full' : ''} ${fullWidth ? 'start-0 w-full' : !autoWidth ? (isMobile ? 'w-36' : 'w-40') : ''} rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50`}
                     style={autoWidth && !fullWidth ? dynamicStyles : {}}
                 >
                     <div className="p-1">
@@ -140,13 +141,13 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                                         onChange(option.value);
                                         setIsOpen(false);
                                     }}
-                                    className={`block ${isMobile ? 'px-4 py-2 text-xs' : 'px-4 py-2 text-sm'} text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left`}
+                                    className={`block ${isMobile ? 'px-4 py-2 text-xs' : 'px-4 py-2 text-sm'} text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start`}
                                 >
                                     <span className="flex items-center justify-between">
                                         <span>{option.label}</span>
                                         {value === option.value && (
                                             <CheckIcon
-                                                className={`${iconSize} ml-2`}
+                                                className={`${iconSize} ms-2`}
                                             />
                                         )}
                                     </span>

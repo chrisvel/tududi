@@ -179,37 +179,37 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
         {
             label: 'Inbox',
             translationKey: 'dropdown.inbox',
-            icon: <InboxIcon className="h-5 w-5 mr-2" />,
+            icon: <InboxIcon className="h-5 w-5 me-2" />,
             action: 'inbox' as ShortcutAction,
         },
         {
             label: 'Task',
             translationKey: 'dropdown.task',
-            icon: <CheckIcon className="h-5 w-5 mr-2" />,
+            icon: <CheckIcon className="h-5 w-5 me-2" />,
             action: 'task' as ShortcutAction,
         },
         {
             label: 'Project',
             translationKey: 'dropdown.project',
-            icon: <FolderIcon className="h-5 w-5 mr-2" />,
+            icon: <FolderIcon className="h-5 w-5 me-2" />,
             action: 'project' as ShortcutAction,
         },
         {
             label: 'Note',
             translationKey: 'dropdown.note',
-            icon: <BookOpenIcon className="h-5 w-5 mr-2" />,
+            icon: <BookOpenIcon className="h-5 w-5 me-2" />,
             action: 'note' as ShortcutAction,
         },
         {
             label: 'Area',
             translationKey: 'dropdown.area',
-            icon: <Squares2X2Icon className="h-5 w-5 mr-2" />,
+            icon: <Squares2X2Icon className="h-5 w-5 me-2" />,
             action: 'area' as ShortcutAction,
         },
         {
             label: 'Tag',
             translationKey: 'dropdown.tag',
-            icon: <TagIcon className="h-5 w-5 mr-2" />,
+            icon: <TagIcon className="h-5 w-5 me-2" />,
             action: 'tag' as ShortcutAction,
         },
     ];
@@ -236,7 +236,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     </button>
 
                     {isDropdownOpen && (
-                        <div className="absolute bottom-full left-0 mb-2 w-60 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                        <div className="absolute bottom-full start-0 mb-2 w-60 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                             <div className="py-1">
                                 {dropdownItems.map(
                                     ({
@@ -250,7 +250,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                             onClick={() =>
                                                 handleDropdownSelect(label)
                                             }
-                                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
+                                            className="w-full text-start px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
                                         >
                                             <div className="flex items-center">
                                                 {icon}

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -200,7 +201,7 @@ const AreaDetails: React.FC = () => {
     const tabClass = (tab: AreaTab) =>
         `relative flex items-center self-stretch py-2.5 text-sm font-medium transition-colors ${
             activeTab === tab
-                ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
+                ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:start-px after:end-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
                 : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'
         }`;
 
@@ -220,7 +221,7 @@ const AreaDetails: React.FC = () => {
 
             <div className="mb-4">
                 <div className="flex items-center min-h-[2.5rem]">
-                    <div className="flex items-center gap-4 sm:gap-6 self-stretch pl-2 sm:pl-3">
+                    <div className="flex items-center gap-4 sm:gap-6 self-stretch ps-2 sm:ps-3">
                         <button
                             type="button"
                             onClick={() => setActiveTab('projects')}

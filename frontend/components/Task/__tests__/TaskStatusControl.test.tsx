@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -103,11 +104,11 @@ describe('TaskStatusControl menu placement', () => {
 
     it('hangs the menu off the left edge when the control sits at the left of a narrow screen', () => {
         placeControl(40, 112, 390);
-        expect(openMenu().className).toContain('left-0');
+        expect(openMenu().className).toContain('start-0');
     });
 
     it('keeps the menu on the right edge when the control sits at the right', () => {
         placeControl(300, 372, 390);
-        expect(openMenu().className).toContain('right-0');
+        expect(openMenu().className).toContain('end-0');
     });
 });

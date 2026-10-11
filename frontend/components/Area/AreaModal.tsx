@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect, useRef } from 'react';
 import { Area } from '../../entities/Area';
 import { Goal } from '../../entities/Goal';
@@ -261,7 +262,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
                         <button
                             type="button"
                             onClick={() => setIsGoalDropdownOpen((v) => !v)}
-                            className={`${sidePanelInputClass} flex items-center justify-between gap-2 text-left`}
+                            className={`${sidePanelInputClass} flex items-center justify-between gap-2 text-start`}
                         >
                             <span className="truncate">
                                 {selectedGoals.length === 0
@@ -279,7 +280,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
                         </button>
 
                         {isGoalDropdownOpen && (
-                            <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-52 overflow-y-auto rounded-md bg-white shadow-lg dark:bg-gray-800">
+                            <div className="absolute start-0 end-0 top-full z-50 mt-1 max-h-52 overflow-y-auto rounded-md bg-white shadow-lg dark:bg-gray-800">
                                 {availableGoals.length === 0 ? (
                                     <p className="px-3 py-2.5 text-sm text-gray-400 dark:text-gray-500">
                                         {t(
@@ -300,7 +301,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                                 onClick={() =>
                                                     toggleGoal(goal.uid!)
                                                 }
-                                                className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                className="flex w-full items-center gap-3 px-3 py-2.5 text-start transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
                                             >
                                                 <div
                                                     className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border ${

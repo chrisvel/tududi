@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -62,7 +63,7 @@ const TaskContentCard: React.FC<TaskContentCardProps> = ({
                 <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-blue-500 dark:border-blue-400 p-6">
                     <div className="relative">
                         {/* Floating toggle buttons */}
-                        <div className="absolute top-2 right-2 z-10 flex space-x-1">
+                        <div className="absolute top-2 end-2 z-10 flex space-x-1 rtl:space-x-reverse">
                             <button
                                 type="button"
                                 onClick={() => setContentTab('edit')}
@@ -97,14 +98,14 @@ const TaskContentCard: React.FC<TaskContentCardProps> = ({
                                     setEditedContent(e.target.value)
                                 }
                                 onKeyDown={handleKeyDown}
-                                className="w-full min-h-[200px] bg-transparent border-none focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100 resize-y font-normal pr-20"
+                                className="w-full min-h-[200px] bg-transparent border-none focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100 resize-y font-normal pe-20"
                                 placeholder={t(
                                     'task.contentPlaceholder',
                                     'Add content here... (Markdown supported)'
                                 )}
                             />
                         ) : (
-                            <div className="w-full min-h-[200px] bg-gray-50 dark:bg-gray-800 rounded p-3 pr-20 overflow-y-auto">
+                            <div className="w-full min-h-[200px] bg-gray-50 dark:bg-gray-800 rounded p-3 pe-20 overflow-y-auto">
                                 {editedContent ? (
                                     <MarkdownRenderer
                                         content={editedContent}
@@ -129,7 +130,7 @@ const TaskContentCard: React.FC<TaskContentCardProps> = ({
                                 'Press Cmd/Ctrl+Enter to save, Esc to cancel'
                             )}
                         </span>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-2 rtl:space-x-reverse">
                             <button
                                 onClick={handleSave}
                                 className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"

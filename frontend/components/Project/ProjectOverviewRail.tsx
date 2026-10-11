@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TFunction } from 'i18next';
@@ -84,7 +85,7 @@ const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({
 }) => (
     <div className="flex items-center justify-between gap-3 py-2 text-sm">
         <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
-        <dd className="flex min-w-0 flex-wrap items-center justify-end gap-1.5 text-right text-gray-800 dark:text-gray-200">
+        <dd className="flex min-w-0 flex-wrap items-center justify-end gap-1.5 text-end text-gray-800 dark:text-gray-200">
             {children}
         </dd>
     </div>
@@ -115,7 +116,7 @@ const EditableRow: React.FC<{
     <div className="group py-2 text-sm">
         <div className="flex items-center justify-between gap-3">
             <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
-            <dd className="flex min-w-0 flex-wrap items-center justify-end gap-1.5 text-right text-gray-800 dark:text-gray-200">
+            <dd className="flex min-w-0 flex-wrap items-center justify-end gap-1.5 text-end text-gray-800 dark:text-gray-200">
                 {hasValue ? (
                     <>
                         <button
@@ -567,7 +568,7 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => onOpenNote(note)}
-                                    className="block w-full py-2 text-left"
+                                    className="block w-full py-2 text-start"
                                 >
                                     <span className="block truncate text-sm font-medium text-gray-900 hover:underline dark:text-gray-100">
                                         {note.title ||

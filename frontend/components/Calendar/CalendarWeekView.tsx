@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import {
     format,
@@ -88,13 +89,13 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
         <div className="h-full bg-white dark:bg-gray-700 rounded-xl shadow-sm overflow-hidden flex flex-col border border-gray-200 dark:border-gray-600">
             {/* Day headers */}
             <div className="grid grid-cols-8 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
-                <div className="p-3 text-center text-xs font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500 border-r border-gray-200 dark:border-gray-600">
+                <div className="p-3 text-center text-xs font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500 border-e border-gray-200 dark:border-gray-600">
                     {/* time col */}
                 </div>
                 {weekDays.map((day) => (
                     <div
                         key={day.toString()}
-                        className={`p-3 text-center border-l border-gray-200 dark:border-gray-600 ${
+                        className={`p-3 text-center border-s border-gray-200 dark:border-gray-600 ${
                             isToday(day) ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                         }`}
                     >
@@ -129,7 +130,7 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
                         key={hour}
                         className="grid grid-cols-8 border-b border-gray-100 dark:border-gray-600"
                     >
-                        <div className="py-3 px-2 text-xs font-medium text-gray-400 dark:text-gray-500 text-center border-r border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
+                        <div className="py-3 px-2 text-xs font-medium text-gray-400 dark:text-gray-500 text-center border-e border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
                             {format(addHours(new Date().setHours(hour, 0, 0, 0), 0), 'HH:mm')}
                         </div>
                         {weekDays.map((day) => {
@@ -142,7 +143,7 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
                                     onClick={() => onTimeSlotClick?.(day, hour)}
                                     onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
                                     onDrop={(e) => handleDrop(day, hour, e)}
-                                    className={`min-h-[72px] p-1.5 border-l border-gray-100 dark:border-gray-600 cursor-pointer transition-colors hover:bg-blue-50/30 dark:hover:bg-blue-900/10 relative ${
+                                    className={`min-h-[72px] p-1.5 border-s border-gray-100 dark:border-gray-600 cursor-pointer transition-colors hover:bg-blue-50/30 dark:hover:bg-blue-900/10 relative ${
                                         isToday(day) ? 'bg-blue-50/10 dark:bg-blue-900/5' : ''
                                     }`}
                                 >

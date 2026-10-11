@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +26,7 @@ export interface EntitySidePanelProps {
     children: React.ReactNode;
 }
 
-// One right-side panel for create and edit forms. It slides in over the
+// One end-side panel for create and edit forms. It slides in over the
 // page, keeps the page visible behind a scrim, and asks before discarding
 // unsaved changes. Every entity form renders its fields as children.
 const EntitySidePanel: React.FC<EntitySidePanelProps> = ({
@@ -122,8 +123,8 @@ const EntitySidePanel: React.FC<EntitySidePanelProps> = ({
                 aria-modal="true"
                 aria-label={title}
                 data-testid={testId}
-                className={`fixed inset-y-0 right-0 z-[60] flex w-full flex-col bg-white shadow-2xl transition-transform duration-200 ease-out motion-reduce:transition-none dark:bg-gray-800 sm:w-[32rem] ${
-                    shown ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed inset-y-0 end-0 z-[60] flex w-full flex-col bg-white shadow-2xl transition-transform duration-200 ease-out motion-reduce:transition-none dark:bg-gray-800 sm:w-[32rem] ${
+                    shown ? 'translate-x-0' : 'translate-x-full rtl:-translate-x-full'
                 }`}
             >
                 <header className="flex flex-shrink-0 items-start justify-between gap-4 px-5 pb-3 pt-5">

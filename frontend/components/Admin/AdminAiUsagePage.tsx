@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SparklesIcon } from '@heroicons/react/24/outline';
@@ -52,7 +53,7 @@ const AdminAiUsagePage: React.FC = () => {
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <SparklesIcon className="w-7 h-7 mr-3 text-blue-500" />
+                <SparklesIcon className="w-7 h-7 me-3 text-blue-500" />
                 {t('admin.aiUsage.title', 'AI Usage')}
             </h1>
 
@@ -109,7 +110,7 @@ const AdminAiUsagePage: React.FC = () => {
 
             <div className={ADMIN_TABLE_WRAPPER}>
                 <table className="min-w-full text-sm">
-                    <thead className="bg-gray-50 dark:bg-gray-900 text-left text-gray-600 dark:text-gray-300">
+                    <thead className="bg-gray-50 dark:bg-gray-900 text-start text-gray-600 dark:text-gray-300">
                         <tr>
                             <SortHeader
                                 column="user"

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState } from 'react';
 import { useToast } from '../../components/Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +40,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
     return (
         <div>
             <div className="flex items-center justify-between py-3.5 px-5 border-b border-gray-200 dark:border-gray-800 rounded-lg shadow-sm bg-white dark:bg-gray-900">
-                <span className="text-xl text-gray-500 dark:text-gray-400 mr-2">
+                <span className="text-xl text-gray-500 dark:text-gray-400 me-2">
                     <PlusCircleIcon className="h-5 w-5" />
                 </span>
                 <input

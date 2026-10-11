@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, {
     useCallback,
     useEffect,
@@ -588,7 +589,7 @@ const ProjectDetails: React.FC = () => {
                                         opt.key as TaskStatusFilter
                                     )
                                 }
-                                className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                     isActive
                                         ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -626,7 +627,7 @@ const ProjectDetails: React.FC = () => {
                                     const newOrderBy = `${field}:${dir.key}`;
                                     handleSortChange(newOrderBy);
                                 }}
-                                className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                     isActive
                                         ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -667,8 +668,8 @@ const ProjectDetails: React.FC = () => {
                 <div className="w-full">
                     <div className="mb-4">
                         <div className="flex items-center justify-between min-h-[2.5rem]">
-                            <div className="flex items-center gap-4 sm:gap-6 self-stretch pl-2 sm:pl-3">
-                                <span className="relative flex items-center self-stretch py-2.5 text-sm font-medium text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100">
+                            <div className="flex items-center gap-4 sm:gap-6 self-stretch ps-2 sm:ps-3">
+                                <span className="relative flex items-center self-stretch py-2.5 text-sm font-medium text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:start-px after:end-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100">
                                     {t('tasks.title', 'Tasks')}
                                 </span>
                             </div>
@@ -767,7 +768,7 @@ const ProjectDetails: React.FC = () => {
                                 } overflow-hidden`}
                             >
                                 <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
-                                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
+                                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 me-2" />
                                     <input
                                         type="text"
                                         placeholder={t(

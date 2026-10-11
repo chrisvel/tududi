@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -353,7 +354,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                     key={index}
                     className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
                 >
-                    <div className="flex items-start space-x-3 mb-3">
+                    <div className="flex items-start space-x-3 mb-3 rtl:space-x-reverse">
                         <insight.icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${insight.color}`} />
                         <div>
                             <h4 className="font-medium text-gray-900 dark:text-gray-100">
@@ -367,7 +368,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                             </p>
                         </div>
                     </div>
-                    <div className="space-y-1 pl-8">
+                    <div className="space-y-1 ps-8">
                         {(expandedInsights.has(index)
                             ? insight.items
                             : insight.items.slice(0, 3)
@@ -375,7 +376,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                             <div key={itemIndex} className="text-sm">
                                 <button
                                     onClick={() => handleItemClick(item)}
-                                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left"
+                                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-start"
                                 >
                                     • {item.name}
                                 </button>

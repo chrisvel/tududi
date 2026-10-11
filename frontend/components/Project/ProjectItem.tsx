@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -322,7 +323,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     };
 
     const menuItemClass =
-        'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left';
+        'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start';
 
     const actionsMenu = (
         <div className="relative dropdown-container">
@@ -335,7 +336,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 <EllipsisVerticalIcon className="h-5 w-5" />
             </button>
             {project.id !== undefined && activeDropdown === project.id && (
-                <div className="absolute right-0 top-8 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
+                <div className="absolute end-0 top-8 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
                     <button
                         onClick={(e) => {
                             e.preventDefault();
@@ -405,7 +406,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             setProjectToDelete(project);
                             setIsConfirmDialogOpen(true);
                         }}
-                        className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                        className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start"
                         data-testid={`project-delete-${project.id}`}
                     >
                         {t('projectItem.delete')}
@@ -446,7 +447,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                 onStatusChange(project, value);
                                 setStatusDropdownOpen(false);
                             }}
-                            className={`flex items-center gap-2 px-3 py-2 text-sm w-full text-left transition-colors ${
+                            className={`flex items-center gap-2 px-3 py-2 text-sm w-full text-start transition-colors ${
                                 project.status === value
                                     ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -540,7 +541,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                 <span>{getStatusLabel(project.status, t)}</span>
                             </>,
                             'flex items-center gap-1 rounded px-1 py-0.5 hover:bg-gray-200 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors',
-                            'right-0 bottom-full mb-1'
+                            'end-0 bottom-full mb-1'
                         )}
                     </>
                 }
@@ -608,7 +609,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 {renderStatusPicker(
                     getStatusLabel(project.status, t),
                     `rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-opacity hover:opacity-80 ${getProjectStatusTint(project.status)}`,
-                    'left-0 top-full mt-1'
+                    'start-0 top-full mt-1'
                 )}
             </div>
 
@@ -668,7 +669,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 {isComplete ? (
                     <CheckCircleSolidIcon className="h-4 w-4 flex-shrink-0 text-green-500" />
                 ) : (
-                    <span className="w-8 text-right text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                    <span className="w-8 text-end text-xs tabular-nums text-gray-500 dark:text-gray-400">
                         {percent}%
                     </span>
                 )}

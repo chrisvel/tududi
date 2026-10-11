@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
@@ -134,7 +135,7 @@ const GroupModal: React.FC<GroupModalProps> = ({ group, onClose, onSaved }) => {
                         </div>
                     )}
                 </div>
-                <div className="flex justify-end space-x-2 px-6 pb-5">
+                <div className="flex justify-end space-x-2 px-6 pb-5 rtl:space-x-reverse">
                     <button
                         type="button"
                         onClick={onClose}
@@ -424,7 +425,7 @@ const MembersModal: React.FC<MembersModalProps> = ({
                                             <li
                                                 key={`${s.resource_type}-${s.resource_uid}`}
                                             >
-                                                <span className="uppercase text-xs text-gray-400 mr-2">
+                                                <span className="uppercase text-xs text-gray-400 me-2">
                                                     {s.resource_type}
                                                 </span>
                                                 {s.resource_name ||
@@ -518,7 +519,7 @@ const AdminGroupsPanel: React.FC = () => {
     });
 
     const headerCell =
-        'px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider';
+        'px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider';
 
     return (
         <div className="w-full space-y-6" data-testid="admin-groups-panel">
@@ -572,7 +573,7 @@ const AdminGroupsPanel: React.FC = () => {
                                 onSort={toggle}
                                 className={headerCell}
                             />
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {t('admin.actions', 'Actions')}
                             </th>
                         </tr>
@@ -629,8 +630,8 @@ const AdminGroupsPanel: React.FC = () => {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                         {g.share_count}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div className="flex items-center justify-end space-x-3">
+                                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                        <div className="flex items-center justify-end space-x-3 rtl:space-x-reverse">
                                             <button
                                                 onClick={() => setManaging(g)}
                                                 className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"

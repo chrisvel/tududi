@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
@@ -59,11 +60,11 @@ const ProjectsListSettings: React.FC<ProjectsListSettingsProps> = ({
             >
                 <Cog6ToothIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                 {changed && (
-                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500" />
+                    <span className="absolute top-1 end-1 h-2 w-2 rounded-full bg-blue-500" />
                 )}
             </button>
             {isOpen && (
-                <div className="absolute right-0 mt-1 w-72 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 z-50 p-4 space-y-4">
+                <div className="absolute end-0 mt-1 w-72 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 z-50 p-4 space-y-4">
                     <ToggleSwitch
                         checked={value.showSomeday}
                         onChange={(checked) =>

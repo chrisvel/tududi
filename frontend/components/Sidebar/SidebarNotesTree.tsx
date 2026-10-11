@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useMemo } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -80,7 +81,7 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
     }).filter((row) => row.type !== 'section-header');
 
     const itemClass = (isActive: boolean) =>
-        `flex justify-between items-center gap-2 rounded-[8px] py-[4px] pr-[10px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+        `flex justify-between items-center gap-2 rounded-[8px] py-[4px] pe-[10px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             isActive ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
         }`;
 
@@ -88,7 +89,7 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
         return (
             <div className="flex flex-col mb-1.5">
                 <span
-                    style={{ paddingLeft: BASE_PADDING_PX }}
+                    style={{ paddingInlineStart: BASE_PADDING_PX }}
                     className="text-[13.5px] text-gray-400 dark:text-gray-500"
                 >
                     {t('notes.noNotesFound', 'No notes found')}
@@ -107,7 +108,7 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
                         <div
                             key={row.key}
                             onClick={() => toggle(row.key)}
-                            style={{ paddingLeft: indent }}
+                            style={{ paddingInlineStart: indent }}
                             className={itemClass(false)}
                         >
                             <span className="truncate min-w-0">
@@ -116,7 +117,7 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
                             <span className="flex-shrink-0 flex items-center gap-1 text-gray-400 dark:text-gray-500">
                                 {row.count}
                                 <ChevronRightIcon
-                                    className="h-3 w-3 transition-transform duration-150"
+                                    className="h-3 w-3 transition-transform duration-150 rtl:-scale-x-100"
                                     style={{
                                         transform: row.expanded
                                             ? 'rotate(90deg)'
@@ -136,10 +137,10 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
                             handleNavClick(
                                 path,
                                 row.note.title,
-                                <BookOpenIcon className="h-4 w-4 mr-2" />
+                                <BookOpenIcon className="h-4 w-4 me-2" />
                             )
                         }
-                        style={{ paddingLeft: indent }}
+                        style={{ paddingInlineStart: indent }}
                         className={itemClass(location.pathname === path)}
                     >
                         <span className="truncate min-w-0">

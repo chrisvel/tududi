@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, {
     useState,
     useEffect,
@@ -1886,7 +1887,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <div className="flex justify-end dark:border-gray-700">
                                     <button
                                         type="submit"
-                                        className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-2"
+                                        className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-2 rtl:space-x-reverse"
                                     >
                                         <CheckIcon className="w-5 h-5" />
                                         <span>

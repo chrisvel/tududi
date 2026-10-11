@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { FunnelIcon, CheckIcon } from '@heroicons/react/24/outline';
 
@@ -61,9 +62,9 @@ const SortFilterButton: React.FC<SortFilterButtonProps> = ({
     const buttonStyle = { width: `${optimalWidth}rem` };
 
     const iconSize = isMobile ? 'h-3 w-3' : 'h-4 w-4';
-    const iconMargin = isMobile ? 'mr-1' : 'mr-2';
+    const iconMargin = isMobile ? 'me-1' : 'me-2';
     const textSize = isMobile ? 'text-xs' : 'text-sm';
-    const arrowMargin = isMobile ? 'ml-1' : 'ml-2';
+    const arrowMargin = isMobile ? 'ms-1' : 'ms-2';
 
     return (
         <div className={`relative ${className}`} ref={dropdownRef}>
@@ -85,7 +86,7 @@ const SortFilterButton: React.FC<SortFilterButtonProps> = ({
             </button>
             {isOpen && (
                 <div
-                    className={`origin-top-right absolute right-0 mt-1 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50`}
+                    className={`origin-top-right absolute end-0 mt-1 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50`}
                     style={buttonStyle}
                 >
                     <div className="p-1">
@@ -97,7 +98,7 @@ const SortFilterButton: React.FC<SortFilterButtonProps> = ({
                                     onChange(option.value);
                                     setIsOpen(false);
                                 }}
-                                className={`block ${isMobile ? 'px-4 py-2 text-xs' : 'px-4 py-2 text-sm'} text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left`}
+                                className={`block ${isMobile ? 'px-4 py-2 text-xs' : 'px-4 py-2 text-sm'} text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-start`}
                             >
                                 <span className="flex items-center justify-between">
                                     <span>{option.label}</span>

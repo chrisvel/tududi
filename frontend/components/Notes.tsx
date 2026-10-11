@@ -557,7 +557,7 @@ const Notes: React.FC = () => {
                         {activeNotePhoto && (
                             <PhotoCredit
                                 background={activeNotePhoto}
-                                className="absolute bottom-2 right-3 z-10"
+                                className="absolute bottom-2 end-3 z-10"
                             />
                         )}
                         {isEditing && editingNote ? (

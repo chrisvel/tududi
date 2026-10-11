@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -135,7 +136,7 @@ const UniversalSearch: React.FC = () => {
                         ref={inputRef}
                         type="text"
                         placeholder={t('search.placeholder')}
-                        className="flex-1 ml-2 bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                        className="flex-1 ms-2 bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onClick={handleInputClick}
@@ -156,7 +157,7 @@ const UniversalSearch: React.FC = () => {
                     {searchQuery && (
                         <button
                             onClick={() => setSearchQuery('')}
-                            className="ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            className="ms-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                         >
                             <XMarkIcon className="h-4 w-4" />
                         </button>

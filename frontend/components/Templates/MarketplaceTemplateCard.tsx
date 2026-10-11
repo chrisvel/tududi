@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -92,7 +93,7 @@ const MarketplaceTemplateCard: React.FC<MarketplaceTemplateCardProps> = ({
                     <button
                         onClick={() => onInstall(template)}
                         disabled={installing}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors ml-auto"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors ms-auto"
                     >
                         <ArrowDownTrayIcon className="h-3.5 w-3.5" />
                         {installing

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { InboxAttachment } from '../../entities/Attachment';
@@ -44,7 +45,7 @@ const InboxItemAttachments: React.FC<InboxItemAttachmentsProps> = ({
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             title={attachment.original_filename}
-                            className="flex items-center gap-1.5 max-w-[14rem] rounded-md bg-gray-100 dark:bg-white/[0.06] hover:bg-gray-200/70 dark:hover:bg-white/[0.1] pl-1 pr-2 py-1 text-xs text-gray-600 dark:text-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                            className="flex items-center gap-1.5 max-w-[14rem] rounded-md bg-gray-100 dark:bg-white/[0.06] hover:bg-gray-200/70 dark:hover:bg-white/[0.1] ps-1 pe-2 py-1 text-xs text-gray-600 dark:text-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         >
                             {isImage ? (
                                 <img
@@ -56,7 +57,7 @@ const InboxItemAttachments: React.FC<InboxItemAttachmentsProps> = ({
                             ) : (
                                 <FileIcon
                                     mimeType={attachment.mime_type}
-                                    className="h-4 w-4 flex-shrink-0 ml-0.5"
+                                    className="h-4 w-4 flex-shrink-0 ms-0.5"
                                 />
                             )}
                             <span className="truncate">

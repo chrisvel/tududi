@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { EditorView } from '@codemirror/view';
@@ -331,7 +332,7 @@ const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({
                     key={cmd.id}
                     ref={i === clampedIndex ? activeItemRef : null}
                     type="button"
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-start transition-colors ${
                         i === clampedIndex
                             ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'

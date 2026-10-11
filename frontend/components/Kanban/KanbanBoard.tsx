@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
@@ -321,7 +322,7 @@ const KanbanBoard: React.FC = () => {
                     </button>
 
                     {settingsOpen && (
-                        <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg py-1">
+                        <div className="absolute end-0 top-full mt-1 z-50 w-52 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg py-1">
                             <p className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
                                 {t('tasks.kanban.columns', 'Columns')}
                             </p>

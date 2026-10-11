@@ -53,8 +53,8 @@ const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, locat
                     <span className="h-3.5 w-3.5" aria-hidden="true" />
                     <button onClick={toggleCollapsed} className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none">
                         <ChevronRightIcon
-                            className="h-3 w-3 transition-transform duration-150"
-                            style={{ transform: !isCollapsed ? 'rotate(90deg)' : 'none' }}
+                            className="h-3 w-3 transition-transform duration-150 rtl:-scale-x-100"
+                            style={{ transform: !isCollapsed ? 'rotate(90deg)' : undefined }}
                         />
                     </button>
                 </div>

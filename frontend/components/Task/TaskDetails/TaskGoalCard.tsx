@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -80,7 +81,7 @@ const TaskGoalCard: React.FC<TaskGoalCardProps> = ({
                             {selectedGoal && (
                                 <button
                                     onClick={handleClear}
-                                    className="w-full text-left text-sm px-3 py-1.5 rounded text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                                    className="w-full text-start text-sm px-3 py-1.5 rounded text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
                                 >
                                     <XMarkIcon className="h-3.5 w-3.5" />
                                     {t('goals.clearGoal', 'Remove goal')}
@@ -96,7 +97,7 @@ const TaskGoalCard: React.FC<TaskGoalCardProps> = ({
                                         <button
                                             key={goal.id}
                                             onClick={() => handleSelect(goal)}
-                                            className="w-full text-left text-sm px-3 py-1.5 rounded text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2"
+                                            className="w-full text-start text-sm px-3 py-1.5 rounded text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2"
                                         >
                                             <FlagIcon className="h-3.5 w-3.5 text-blue-500 flex-shrink-0" />
                                             {goal.title}
@@ -111,7 +112,7 @@ const TaskGoalCard: React.FC<TaskGoalCardProps> = ({
                                                 <button
                                                     key={goal.id}
                                                     onClick={() => handleSelect(goal)}
-                                                    className="w-full text-left text-sm px-3 py-1.5 rounded text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2"
+                                                    className="w-full text-start text-sm px-3 py-1.5 rounded text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2"
                                                 >
                                                     <FlagIcon className="h-3.5 w-3.5 flex-shrink-0" />
                                                     {goal.title} ({t(`goals.status.${goal.status}`, goal.status)})
@@ -144,7 +145,7 @@ const TaskGoalCard: React.FC<TaskGoalCardProps> = ({
                                     className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
                                     title={t('goals.viewGoal', 'Go to goal')}
                                 >
-                                    <ArrowRightIcon className="h-4 w-4" />
+                                    <ArrowRightIcon className="h-4 w-4 rtl:-scale-x-100" />
                                 </Link>
                             )}
                             <button

@@ -145,7 +145,8 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
                         className="self-start max-w-full truncate text-sm text-gray-900 hover:underline underline-offset-2 dark:text-gray-100"
                         data-testid={`candidate-open-${task.uid}`}
                     >
-                        {task.name}
+                        {/* LTD-PATCH(T-302): isolate user text direction */}
+                        <bdi>{task.name}</bdi>
                     </Link>
                     <span className="flex items-center gap-1.5 truncate text-xs text-gray-500 dark:text-gray-400">
                         {group === 'overdue' && (
@@ -182,7 +183,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
                             suggested={suggested}
                         />
                         {group === 'overdue' && (
-                            <div className="ml-auto flex gap-3">
+                            <div className="ms-auto flex gap-3">
                                 <button
                                     type="button"
                                     onClick={() => onReschedule('tomorrow')}

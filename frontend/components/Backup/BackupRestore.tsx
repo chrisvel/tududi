@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
@@ -306,7 +307,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                         : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                                 }`}
                             >
-                                <div className="flex items-center justify-center space-x-2">
+                                <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse">
                                     <ArrowDownTrayIcon className="h-5 w-5" />
                                     <span>
                                         {t(
@@ -324,7 +325,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                         : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                                 }`}
                             >
-                                <div className="flex items-center justify-center space-x-2">
+                                <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse">
                                     <ArrowUpTrayIcon className="h-5 w-5" />
                                     <span>
                                         {t(
@@ -364,7 +365,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                     {isExporting ? (
                                         <>
                                             <svg
-                                                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                                className="animate-spin -ms-1 me-3 h-5 w-5 text-white"
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
@@ -390,7 +391,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                         </>
                                     ) : (
                                         <>
-                                            <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+                                            <ArrowDownTrayIcon className="h-5 w-5 me-2" />
                                             {t(
                                                 'backup.createBackupNow',
                                                 'Create Backup Now'
@@ -414,7 +415,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                             className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center"
                                         >
                                             <ArrowPathIcon
-                                                className={`h-4 w-4 mr-1 ${isLoadingBackups ? 'animate-spin' : ''}`}
+                                                className={`h-4 w-4 me-1 ${isLoadingBackups ? 'animate-spin' : ''}`}
                                             />
                                             {t('common.refresh', 'Refresh')}
                                         </button>
@@ -436,31 +437,31 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                                 <thead className="bg-gray-50 dark:bg-gray-700">
                                                     <tr>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             {t(
                                                                 'backup.createdAt',
                                                                 'Created'
                                                             )}
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             {t(
                                                                 'backup.version',
                                                                 'Version'
                                                             )}
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             {t(
                                                                 'backup.size',
                                                                 'Size'
                                                             )}
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             {t(
                                                                 'backup.contents',
                                                                 'Contents'
                                                             )}
                                                         </th>
-                                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             {t(
                                                                 'backup.actions',
                                                                 'Actions'
@@ -533,8 +534,8 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                                                         ) : null}
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                                    <div className="flex items-center justify-end space-x-2">
+                                                                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                                                    <div className="flex items-center justify-end space-x-2 rtl:space-x-reverse">
                                                                         <button
                                                                             onClick={() =>
                                                                                 handleRestoreBackup(
@@ -700,7 +701,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                                     </p>
                                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-600 dark:text-gray-400">
                                                         <div className="flex items-center">
-                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            <CheckIcon className="h-4 w-4 me-2 text-green-600" />
                                                             {
                                                                 validationResult
                                                                     .summary
@@ -709,7 +710,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                                             tasks
                                                         </div>
                                                         <div className="flex items-center">
-                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            <CheckIcon className="h-4 w-4 me-2 text-green-600" />
                                                             {
                                                                 validationResult
                                                                     .summary
@@ -718,7 +719,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                                             projects
                                                         </div>
                                                         <div className="flex items-center">
-                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            <CheckIcon className="h-4 w-4 me-2 text-green-600" />
                                                             {
                                                                 validationResult
                                                                     .summary
@@ -727,7 +728,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                                             notes
                                                         </div>
                                                         <div className="flex items-center">
-                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            <CheckIcon className="h-4 w-4 me-2 text-green-600" />
                                                             {
                                                                 validationResult
                                                                     .summary
@@ -736,7 +737,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                                             tags
                                                         </div>
                                                         <div className="flex items-center">
-                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            <CheckIcon className="h-4 w-4 me-2 text-green-600" />
                                                             {
                                                                 validationResult
                                                                     .summary
@@ -745,7 +746,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                                             areas
                                                         </div>
                                                         <div className="flex items-center">
-                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            <CheckIcon className="h-4 w-4 me-2 text-green-600" />
                                                             {
                                                                 validationResult
                                                                     .summary
@@ -834,7 +835,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                         {isImporting ? (
                                             <>
                                                 <svg
-                                                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                                    className="animate-spin -ms-1 me-3 h-5 w-5 text-white"
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     fill="none"
                                                     viewBox="0 0 24 24"
@@ -860,7 +861,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({
                                             </>
                                         ) : (
                                             <>
-                                                <ArrowUpTrayIcon className="h-5 w-5 mr-2" />
+                                                <ArrowUpTrayIcon className="h-5 w-5 me-2" />
                                                 {t(
                                                     'backup.restoreBackup',
                                                     'Restore Backup'

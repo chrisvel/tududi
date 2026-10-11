@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -95,7 +96,7 @@ const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
                 <div className="px-6 py-3 flex-shrink-0">
                     <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">
                         {t('templates.taskList', 'Tasks')}
-                        {!loading && tasks.length > 0 && <span className="ml-1.5 normal-case font-normal">({tasks.length})</span>}
+                        {!loading && tasks.length > 0 && <span className="ms-1.5 normal-case font-normal">({tasks.length})</span>}
                     </p>
                 </div>
 
@@ -117,7 +118,7 @@ const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
                                         <span className="text-sm text-gray-700 dark:text-gray-300">{task.name}</span>
                                     </div>
                                     {(task.subtasks || []).length > 0 && (
-                                        <div className="ml-6 pl-3 border-l-2 border-gray-100 dark:border-gray-700 mb-1">
+                                        <div className="ms-6 ps-3 border-s-2 border-gray-100 dark:border-gray-700 mb-1">
                                             {(task.subtasks || []).map((sub, si) => (
                                                 <div key={si} className="flex items-start gap-2 py-1">
                                                     <span className="text-gray-300 dark:text-gray-600 text-xs mt-px">—</span>
@@ -136,10 +137,10 @@ const MarketplacePreviewModal: React.FC<MarketplacePreviewModalProps> = ({
                     <span className="text-xs text-gray-400 dark:text-gray-500">
                         {tasks.length > 0 && <>{tasks.length} {t('templates.tasks', 'tasks')}</>}
                         {full.clone_count !== undefined && full.clone_count > 0 && (
-                            <span className="ml-2 text-gray-300 dark:text-gray-600">&bull;</span>
+                            <span className="ms-2 text-gray-300 dark:text-gray-600">&bull;</span>
                         )}
                         {full.clone_count !== undefined && full.clone_count > 0 && (
-                            <span className="ml-2">{full.clone_count} {t('templates.uses', 'uses')}</span>
+                            <span className="ms-2">{full.clone_count} {t('templates.uses', 'uses')}</span>
                         )}
                     </span>
                     <button

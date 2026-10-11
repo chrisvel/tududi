@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -165,7 +166,7 @@ const AdminBillingPage: React.FC = () => {
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                <CreditCardIcon className="w-7 h-7 mr-3 text-blue-500" />
+                <CreditCardIcon className="w-7 h-7 me-3 text-blue-500" />
                 {t('admin.billing.title', 'Billing')}
             </h1>
 
@@ -238,7 +239,7 @@ const AdminBillingPage: React.FC = () => {
 
             <div className={ADMIN_TABLE_WRAPPER}>
                 <table className="min-w-full text-sm">
-                    <thead className="bg-gray-50 dark:bg-gray-900 text-left text-gray-600 dark:text-gray-300">
+                    <thead className="bg-gray-50 dark:bg-gray-900 text-start text-gray-600 dark:text-gray-300">
                         <tr>
                             <SortHeader
                                 column="user"
@@ -382,7 +383,7 @@ const AdminBillingPage: React.FC = () => {
                                             </span>
                                         )}
                                         {a.cancel_at_period_end && (
-                                            <span className="ml-1 text-xs text-gray-500">
+                                            <span className="ms-1 text-xs text-gray-500">
                                                 {t(
                                                     'admin.billing.cancelling',
                                                     'cancelling'
@@ -536,7 +537,7 @@ const AdminBillingPage: React.FC = () => {
                                 />
                             </label>
                         </div>
-                        <div className="px-6 py-4 flex justify-end space-x-2">
+                        <div className="px-6 py-4 flex justify-end space-x-2 rtl:space-x-reverse">
                             <button
                                 type="button"
                                 onClick={() => setEditing(null)}

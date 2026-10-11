@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
@@ -97,7 +98,7 @@ const FirstDayOfWeekDropdown: React.FC<FirstDayOfWeekDropdownProps> = ({
                 }}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
-                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-left flex items-center justify-between text-sm font-medium"
+                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-start flex items-center justify-between text-sm font-medium"
             >
                 <span>{selectedWeekday.label}</span>
                 <ChevronDownIcon
@@ -119,7 +120,7 @@ const FirstDayOfWeekDropdown: React.FC<FirstDayOfWeekDropdownProps> = ({
                             onClick={() => handleSelect(weekday)}
                             role="option"
                             aria-selected={value === weekday.value}
-                            className={`w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150 ${
+                            className={`w-full px-3 py-2 text-start hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150 ${
                                 weekday.value === value
                                     ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                     : 'text-gray-900 dark:text-gray-100'

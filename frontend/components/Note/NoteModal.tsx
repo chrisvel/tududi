@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, {
     useState,
     useEffect,
@@ -458,7 +459,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
     return (
         <>
             <div
-                className={`fixed top-16 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 overflow-hidden sm:overflow-y-auto ${
+                className={`fixed top-16 start-0 end-0 bottom-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 overflow-hidden sm:overflow-y-auto ${
                     isClosing ? 'opacity-0' : 'opacity-100'
                 }`}
                 onClick={(e) => {
@@ -535,7 +536,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                                 supported)
                                                             </span>
                                                         </label>
-                                                        <div className="flex space-x-1">
+                                                        <div className="flex space-x-1 rtl:space-x-reverse">
                                                             <button
                                                                 type="button"
                                                                 onClick={() =>
@@ -697,7 +698,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                 <div className="flex-shrink-0 bg-white dark:bg-gray-800 px-3 py-2">
                                     <div className="flex items-center justify-between">
                                         {/* Left side: Section icons */}
-                                        <div className="flex items-center space-x-1">
+                                        <div className="flex items-center space-x-1 rtl:space-x-reverse">
                                             {/* Tags Toggle */}
                                             <button
                                                 type="button"
@@ -715,7 +716,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                 {formData.tags &&
                                                     formData.tags.length >
                                                         0 && (
-                                                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                                                        <span className="absolute -top-1 -end-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                     )}
                                             </button>
 
@@ -737,7 +738,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                             >
                                                 <FolderIcon className="h-5 w-5" />
                                                 {formData.project && (
-                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                                                    <span className="absolute -top-1 -end-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
                                             </button>
                                         </div>
@@ -747,7 +748,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                 {/* Action Buttons - Below border with custom layout */}
                                 <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between sm:rounded-b-lg">
                                     {/* Left side: Delete and Cancel */}
-                                    <div className="flex items-center space-x-3">
+                                    <div className="flex items-center space-x-3 rtl:space-x-reverse">
                                         {note && note.uid && onDelete && (
                                             <button
                                                 type="button"

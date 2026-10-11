@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { format, addHours, isToday } from 'date-fns';
 
@@ -137,7 +138,7 @@ const CalendarDayView: React.FC<CalendarDayViewProps> = ({
                             className="relative border-b border-gray-100 dark:border-gray-600"
                         >
                             <div className="flex">
-                                <div className="w-20 py-3 px-2 text-xs font-medium text-gray-400 dark:text-gray-500 text-center border-r border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 shrink-0">
+                                <div className="w-20 py-3 px-2 text-xs font-medium text-gray-400 dark:text-gray-500 text-center border-e border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 shrink-0">
                                     {format(addHours(new Date().setHours(hour, 0, 0, 0), 0), 'HH:mm')}
                                 </div>
                                 <div

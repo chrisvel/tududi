@@ -412,7 +412,7 @@ const Calendar: React.FC = () => {
                             onClick={() => navigateView('prev')}
                             className="p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 hover:shadow-sm transition-all"
                         >
-                            <ChevronLeftIcon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                            <ChevronLeftIcon className="h-4 w-4 text-gray-600 dark:text-gray-300 rtl:-scale-x-100" />
                         </button>
 
                         <button
@@ -426,7 +426,7 @@ const Calendar: React.FC = () => {
                             onClick={() => navigateView('next')}
                             className="p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 hover:shadow-sm transition-all"
                         >
-                            <ChevronRightIcon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                            <ChevronRightIcon className="h-4 w-4 text-gray-600 dark:text-gray-300 rtl:-scale-x-100" />
                         </button>
                     </div>
                 </div>
@@ -588,7 +588,7 @@ const CalendarsModal: React.FC<CalendarsModalProps> = ({
                 onClick={(event) => event.stopPropagation()}
             >
                 <div className="flex items-start justify-between p-5 pb-2">
-                    <div className="pr-3">
+                    <div className="pe-3">
                         <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                             {t('calendar.manageCalendars', 'Calendars')}
                         </h3>
@@ -652,7 +652,7 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({ isOpen, task, onClose, 
             >
                 {/* Header */}
                 <div className="shrink-0 flex items-start justify-between p-5 pb-4">
-                    <div className="flex-1 min-w-0 pr-3">
+                    <div className="flex-1 min-w-0 pe-3">
                         <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500 mb-1.5">
                             {t('calendar.task', 'Task')}
                         </p>

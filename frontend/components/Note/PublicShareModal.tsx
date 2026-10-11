@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -277,7 +278,7 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
                             disabled={saving}
                             onClick={() => handleInheritChange(!inheritStyle)}
                             data-testid="public-share-inherit"
-                            className="flex items-center gap-2.5 text-left text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50"
+                            className="flex items-center gap-2.5 text-start text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50"
                         >
                             <span
                                 className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded transition-colors ${
@@ -327,7 +328,7 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
                         </label>
                         <div className="flex gap-2">
                             <div className="relative flex-1 min-w-0">
-                                <LinkIcon className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                                <LinkIcon className="pointer-events-none absolute start-2.5 top-2.5 h-4 w-4 text-gray-400" />
                                 <input
                                     id="public-share-link"
                                     ref={linkRef}
@@ -335,7 +336,7 @@ const PublicShareModal: React.FC<PublicShareModalProps> = ({
                                     value={link}
                                     onFocus={(e) => e.target.select()}
                                     data-testid="public-share-link"
-                                    className="w-full rounded border pl-8 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                                    className="w-full rounded border ps-8 pe-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                                 />
                             </div>
                             <button

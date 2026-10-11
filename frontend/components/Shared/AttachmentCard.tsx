@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import {
     TrashIcon,
@@ -69,7 +70,7 @@ const AttachmentCard: React.FC<AttachmentCardProps> = ({
 
                 {/* Action buttons overlay - visible on hover */}
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 rtl:space-x-reverse">
                         {canPreview && (
                             <button
                                 onClick={(e) => {

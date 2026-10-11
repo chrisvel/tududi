@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -92,7 +93,7 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
                 className={`
                     inline-block h-3 w-3 transform rounded-full
                     bg-white transition-transform duration-200 ease-in-out
-                    ${isEnabled && isAvailable ? 'translate-x-5' : 'translate-x-1'}
+                    ${isEnabled && isAvailable ? 'translate-x-5 rtl:-translate-x-5' : 'translate-x-1 rtl:-translate-x-1'}
                 `}
             />
         </button>
@@ -101,7 +102,7 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
     return (
         <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30">
             <td className="py-4 px-4">
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 rtl:space-x-reverse">
                     <Icon className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
                     <div>
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -279,7 +280,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                <BellIcon className="w-6 h-6 mr-3 text-purple-500" />
+                <BellIcon className="w-6 h-6 me-3 text-purple-500" />
                 {t('profile.tabs.notifications', 'Notifications')}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
@@ -296,7 +297,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 <table className="w-full">
                     <thead>
                         <tr className="border-b-2 border-gray-300 dark:border-gray-600">
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <th className="py-3 px-4 text-start text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 {t(
                                     'notifications.table.type',
                                     'Notification Type'

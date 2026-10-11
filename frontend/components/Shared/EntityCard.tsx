@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -64,7 +65,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
                     {title}
                 </Link>
                 {actions && (
-                    <div className="-mr-2 -mt-0.5 flex flex-shrink-0 items-center">
+                    <div className="-me-2 -mt-0.5 flex flex-shrink-0 items-center">
                         {actions}
                     </div>
                 )}

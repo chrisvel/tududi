@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DURATION_OPTIONS, formatDuration } from './planUtils';
@@ -57,7 +58,7 @@ const DurationChips: React.FC<DurationChipsProps> = ({
                         {formatDuration(minutes)}
                         {isSuggestion && (
                             <span
-                                className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-violet-500"
+                                className="absolute -end-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-violet-500"
                                 aria-hidden="true"
                             />
                         )}

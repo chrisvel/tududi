@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import {
@@ -58,7 +59,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
     const isActive = (path: string) => location.pathname === path;
 
     const itemClass = (path: string) =>
-        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+        `group flex justify-between items-center rounded-[8px] ps-[30px] pe-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             isActive(path) ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
         }`;
 
@@ -66,7 +67,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
         handleNavClick(
             getProjectPath(project),
             project.name,
-            <FolderIcon className="h-4 w-4 mr-2" />
+            <FolderIcon className="h-4 w-4 me-2" />
         );
 
     return (
@@ -89,7 +90,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                     }`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        handleNavClick('/projects', t('sidebar.projects'), <FolderIcon className="h-4 w-4 mr-2" />);
+                        handleNavClick('/projects', t('sidebar.projects'), <FolderIcon className="h-4 w-4 me-2" />);
                     }}
                 >
                     <FolderIcon className="h-[14px] w-[14px]" />
@@ -123,8 +124,8 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                                 className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
-                                    className="h-3 w-3 transition-transform duration-150"
-                                    style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                                    className="h-3 w-3 transition-transform duration-150 rtl:-scale-x-100"
+                                    style={{ transform: isExpanded ? 'rotate(90deg)' : undefined }}
                                 />
                             </button>
                         </>

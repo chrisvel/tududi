@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ViewfinderCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -63,7 +64,7 @@ const FocusChip: React.FC = () => {
                 <span className="relative shrink-0">
                     <ViewfinderCircleIcon className="h-5 w-5" />
                     {active && (
-                        <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-blue-500 sm:hidden" />
+                        <span className="absolute -end-0.5 -top-0.5 h-2 w-2 rounded-full bg-blue-500 sm:hidden" />
                     )}
                 </span>
                 <span className="hidden truncate sm:inline">{label}</span>
@@ -74,7 +75,7 @@ const FocusChip: React.FC = () => {
                     onClick={() => void applyFocus(null).catch(() => undefined)}
                     aria-label={t('focus.clearFocus', 'Clear focus')}
                     title={t('focus.clearFocus', 'Clear focus')}
-                    className="ml-0.5 hidden h-7 w-7 items-center justify-center rounded-md text-blue-600 hover:bg-blue-100 dark:text-blue-300 dark:hover:bg-blue-900/50 sm:inline-flex"
+                    className="ms-0.5 hidden h-7 w-7 items-center justify-center rounded-md text-blue-600 hover:bg-blue-100 dark:text-blue-300 dark:hover:bg-blue-900/50 sm:inline-flex"
                     data-testid="focus-chip-clear"
                 >
                     <XMarkIcon className="h-4 w-4" />
