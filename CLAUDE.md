@@ -420,3 +420,15 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 **Document Version:** 1.0.0
 **Last Updated:** 2026-09-20
 **Maintainer:** Update when architecture changes or patterns evolve
+
+---
+
+## Life-to-Day
+
+- This repository is a fork of `chrisvel/tududi`. Product source of truth: [docs/ltd/PRODUCT_BLUEPRINT.md](docs/ltd/PRODUCT_BLUEPRINT.md). Phase reports live in `docs/ltd/phases/`, Phase 0 spikes in `docs/ltd/spikes/`.
+- New code: backend in `backend/modules/ltd-*` (CommonJS, same pattern as tududi modules), frontend in `frontend/components/<Feature>/` (TSX).
+- LTD-PATCH rule: any change to tududi core gets a `// LTD-PATCH(T-xxx): why` comment and a row in [docs/ltd/UPSTREAM.md](docs/ltd/UPSTREAM.md). `bash scripts/ltd-patches.sh` lists them. Upstream sync policy is in the same file.
+- Journal rule: every non-human write (AI, MCP, rules) goes through the Journal/Proposal layer with preview and Undo, and never hard-deletes. The Journal is built in Phase 4.
+- RTL uses Tailwind logical utilities (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`). That work and its ESLint rule belong to Phase 3.
+- `spike/*` branches are throwaway and never merge into `main`.
+- Ported code (PORT) needs an attribution header and an entry in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

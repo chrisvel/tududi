@@ -139,7 +139,7 @@
     "@codemirror/state": "^6.7.1",
     "@codemirror/view": "^6.43.6",
     "@lezer/highlight": "^1.2.5",
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "@playwright/test": "^1.57.0",
     "axios": "^1.16.0",
     "bcrypt": "~6.0.0",

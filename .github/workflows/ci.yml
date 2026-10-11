@@ -88,3 +88,98 @@ jobs:
     # also compares the PostgreSQL schema produced by db-prepare.
     - name: Upgrade legacy SQLite databases and check schema parity
       run: npm run backend:test:upgrade
+
+  # Life-to-Day (T-103). Added beside tududi's jobs; the jobs above stay as upstream wrote them.
+  frontend-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run frontend tests
+      run: npm run frontend:test
+
+  license:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+
+    # license-checker only reads package.json files, so install scripts are not needed.
+    - name: Install dependencies
+      run: npm ci --ignore-scripts
+
+    - name: Fail on copyleft production licenses
+      run: npx --yes license-checker@25.0.1 --production --failOn "AGPL-1.0;AGPL-3.0;AGPL-3.0-only;AGPL-3.0-or-later;SSPL-1.0"
+
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+      with:
+        node-version-file: '.nvmrc'
+
+    - name: Audit production dependencies
+      run: npm audit --omit=dev --audit-level=high
+
+  image-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+    - name: Build image
+      run: docker build -t ltd:ci .
+
+    # v0.35.0 is the release published after the March 2026 tag hijack (CVE-2026-33634); keep the SHA pin.
+    - name: Scan image with Trivy
+      uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+      with:
+        image-ref: 'ltd:ci'
+        severity: 'HIGH,CRITICAL'
+        exit-code: '1'
+
+  e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright Chromium
+      run: npx playwright install --with-deps chromium
+
+    - name: Run E2E tests
+      run: npm run test:ui

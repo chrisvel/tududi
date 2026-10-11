@@ -75,7 +75,7 @@ test.describe.serial('Enabled', () => {
         expect(validationMessage).toBeTruthy();
     });
 
-    test('Register successfully', async ({ page }) => {
+    test('Shows verification instructions or an unavailable email service', async ({ page }) => {
         const timestamp = Date.now();
         const email = `test${timestamp}@example.com`;
         const password = 'password123';
@@ -84,7 +84,12 @@ test.describe.serial('Enabled', () => {
         await page.getByTestId('register-password').fill(password);
         await page.getByTestId('register-confirm-password').fill(password);
 
+        const registration = page.waitForResponse(response =>
+            response.url().endsWith('/api/register') &&
+            response.request().method() === 'POST'
+        );
         await page.getByTestId('register-submit').click();
+        const response = await registration;
 
         await page.waitForFunction(() => {
             const successHeading = document.querySelector('[data-testid="register-success-heading"]');
@@ -96,12 +101,17 @@ test.describe.serial('Enabled', () => {
         const errorVisible = await page.getByTestId('register-error').isVisible().catch(() => false);
 
         if (successVisible) {
+            expect(response.status()).toBe(201);
             await expect(page.getByTestId('register-success-heading')).toBeVisible();
             await expect(page.getByTestId('register-success-message')).toBeVisible();
             await expect(page.getByTestId('register-success-back-link')).toBeVisible();
         } else if (errorVisible) {
+            // LTD-PATCH(T-103): the runner has no SMTP service; fail closed.
+            expect(response.status()).toBe(503);
             await expect(page.getByTestId('register-error')).toBeVisible();
-            await expect(page.getByTestId('register-error')).toContainText(/failed|error/i);
+            await expect(page.getByTestId('register-error')).toContainText(
+                'verification emails cannot be sent'
+            );
         } else {
             throw new Error('Neither success nor error message appeared');
         }

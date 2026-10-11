@@ -1,22 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { login as loginViaUI } from '../helpers/testHelpers';
 
 test.describe('Inbox', () => {
-    async function loginViaUI(page, baseURL) {
-        const appUrl =
-            baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
-        await page.goto(`${appUrl}/login`);
-
-        await page
-            .getByTestId('login-email')
-            .fill(process.env.E2E_EMAIL || 'test@tududi.com');
-        await page
-            .getByTestId('login-password')
-            .fill(process.env.E2E_PASSWORD || 'password123');
-        await page.getByTestId('login-submit').click();
-
-        await page.waitForURL(/\/(dashboard|today)/, { timeout: 10000 });
-    }
-
     async function cleanupInboxItems(context, appUrl, contentPattern: string) {
         const response = await context.request.get(`${appUrl}/api/inbox`);
         if (response.ok()) {

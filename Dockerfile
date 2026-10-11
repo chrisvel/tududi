@@ -61,8 +61,13 @@ RUN apk add --no-cache \
     su-exec && \
     rm -rf /tmp/* /var/cache/apk/*
 
-# Update npm to latest version
-RUN npm install -g npm@11.6.4
+# LTD-PATCH(T-103): upgrade runtime npm and only its vulnerable bundled packages.
+# npx is still required by the upstream migration startup command.
+RUN npm install -g npm@11.21.0 && \
+    node -e 'const fs = require("fs"); const file = "/usr/local/lib/node_modules/npm/package.json"; const pkg = JSON.parse(fs.readFileSync(file)); delete pkg.devDependencies; delete pkg.bundleDependencies; delete pkg.bundledDependencies; pkg.overrides = { ...pkg.overrides, "brace-expansion": "5.0.12", "http-cache-semantics": "4.3.0", "picomatch": "4.0.7", "undici": "6.28.1" }; fs.writeFileSync(file, JSON.stringify(pkg));' && \
+    npm update --prefix /usr/local/lib/node_modules/npm \
+        brace-expansion http-cache-semantics picomatch undici \
+        --ignore-scripts --omit=dev --no-audit --no-fund
 
 # Create app user and group
 RUN addgroup -g ${APP_GID} app && \

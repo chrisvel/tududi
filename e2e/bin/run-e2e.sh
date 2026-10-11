@@ -113,16 +113,18 @@ done
 cd "$ROOT_DIR"
 
 yellow "Running Playwright tests..."
+# LTD-PATCH(T-103): direct API tests must use this runner's backend port.
 APP_URL="$FRONTEND_URL" \
+API_URL="$BACKEND_URL" \
 E2E_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
 E2E_PASSWORD="${E2E_PASSWORD:-password123}" \
 bash -c '
   if [ "${E2E_MODE:-}" = "ui" ]; then
-    npx playwright test --ui --config=e2e/playwright.config.ts
+    npx playwright test "$@" --ui --config=e2e/playwright.config.ts
   elif [ "${E2E_MODE:-}" = "headed" ]; then
     # Respect E2E_SLOWMO and run only Chromium sequentially
-    npx playwright test --headed --project=Chromium --workers=1 --config=e2e/playwright.config.ts
+    npx playwright test "$@" --headed --project=Chromium --workers=1 --config=e2e/playwright.config.ts
   else
-    npx playwright test --config=e2e/playwright.config.ts
+    npx playwright test "$@" --config=e2e/playwright.config.ts
   fi
-'
+' -- "$@"

@@ -21,6 +21,15 @@ export async function login(page: Page, baseURL: string | undefined): Promise<st
     await page.getByLabel('Password').fill(password);
     await page.getByRole('button', { name: /login/i }).click();
 
+    // LTD-PATCH(T-103): new accounts must finish the upstream welcome flow.
+    await expect(page).toHaveURL(/\/(today|welcome)$/);
+    const response = await page.context().request.get(`${appUrl}/api/current_user`);
+    expect(response.ok()).toBeTruthy();
+    const { user } = await response.json();
+    if (user.onboarding_starter === null) {
+        await page.goto(`${appUrl}/welcome`);
+        await page.getByTestId('welcome-start').click();
+    }
     await expect(page).toHaveURL(/\/today$/);
 
     return appUrl;
