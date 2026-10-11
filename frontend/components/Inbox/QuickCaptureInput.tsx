@@ -34,6 +34,7 @@ import {
     splitCaptureText,
     splitFirstLine,
 } from '../../utils/captureText';
+import type { CaptureProject } from '../../utils/captureUi';
 import {
     isTouchDevice,
     updateCaptureSettings,
@@ -117,6 +118,9 @@ interface QuickCaptureInputProps {
     resetKey?: number;
     // Text a new open starts with, replacing any half-typed text
     prefillText?: string;
+    // The project the box was opened from. A task or note with no +project,
+    // or with this project's name, is linked to it by uid.
+    defaultProject?: CaptureProject | null;
     compact?: boolean;
     onClose?: () => void;
     onCaptured?: (items: CapturedItem[]) => void;
@@ -201,6 +205,7 @@ const QuickCaptureInput = React.forwardRef<
             scopeLabel,
             resetKey,
             prefillText,
+            defaultProject = null,
             compact = false,
             onClose,
             onCaptured,
@@ -1693,11 +1698,20 @@ const QuickCaptureInput = React.forwardRef<
                 return { target: destination, uid: created.uid, title };
             }
 
+            const projectName =
+                analysis?.parsed_projects?.[0] ?? parseProjectRefs(itemText)[0];
+            // Matched by uid, not name: two projects can share a name, and a
+            // capture from a project page belongs to that page's project.
+            const pageProjectUid =
+                defaultProject &&
+                (!projectName ||
+                    projectName.toLowerCase() ===
+                        defaultProject.name.toLowerCase())
+                    ? defaultProject.uid
+                    : undefined;
             const projectUid =
-                (await resolveOrCreateProject(
-                    analysis?.parsed_projects?.[0] ??
-                        parseProjectRefs(itemText)[0]
-                )) ??
+                pageProjectUid ??
+                (await resolveOrCreateProject(projectName)) ??
                 focus?.project_uid ??
                 undefined;
 

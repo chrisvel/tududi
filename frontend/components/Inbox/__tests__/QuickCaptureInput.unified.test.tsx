@@ -343,6 +343,46 @@ describe('QuickCaptureInput unified capture', () => {
         );
     });
 
+    it('links a task from a project page to that project, not a same-named one', async () => {
+        const sameName = [
+            { id: 1, uid: 'other-uid', name: 'Website' },
+            { id: 2, uid: 'page-uid', name: 'Website' },
+        ];
+        renderBox({
+            projects: sameName,
+            defaultProject: { uid: 'page-uid', name: 'Website' },
+        });
+        chooseTarget('task');
+        type('Draft brief');
+        await clickAdd();
+        expect(createTaskInStore).toHaveBeenLastCalledWith(
+            expect.objectContaining({ project_uid: 'page-uid' })
+        );
+
+        type('Draft brief +Website');
+        await clickAdd();
+        expect(createTaskInStore).toHaveBeenLastCalledWith(
+            expect.objectContaining({ project_uid: 'page-uid' })
+        );
+        expect(createProject).not.toHaveBeenCalled();
+    });
+
+    it('keeps a +project that names another project on that project', async () => {
+        renderBox({
+            projects: [
+                { id: 1, uid: 'proj-uid', name: 'Website' },
+                { id: 2, uid: 'page-uid', name: 'Shop' },
+            ],
+            defaultProject: { uid: 'page-uid', name: 'Shop' },
+        });
+        chooseTarget('task');
+        type('Draft brief +Website');
+        await clickAdd();
+        expect(createTaskInStore).toHaveBeenCalledWith(
+            expect.objectContaining({ project_uid: 'proj-uid' })
+        );
+    });
+
     it('returns to the default target when it is opened again', () => {
         const { rerender } = renderBox({ defaultTarget: 'task', resetKey: 1 });
         expect(screen.getByTestId('capture-target-task')).toHaveAttribute(
