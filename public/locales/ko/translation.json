@@ -1595,6 +1595,7 @@
     "system": "시스템",
     "customize": "사용자 정의",
     "addTag": "태그 추가",
+    "new": "새 태그",
     "loadingTags": "태그를 불러오는 중...",
     "errorLoadingTags": "태그를 불러오지 못했습니다.",
     "toggleDropdownMenu": "메뉴 열기/닫기",

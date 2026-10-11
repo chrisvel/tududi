@@ -11,6 +11,23 @@ export const fetchBillingStatus = async (): Promise<BillingStatus> => {
     return response.json();
 };
 
+// Last known status, so the user menu can show the plan at once instead of
+// waiting for the request on every open.
+let cachedBillingStatus: BillingStatus | null = null;
+
+export const getCachedBillingStatus = (): BillingStatus | null =>
+    cachedBillingStatus;
+
+export const refreshBillingStatus = async (): Promise<BillingStatus> => {
+    const status = await fetchBillingStatus();
+    cachedBillingStatus = status;
+    return status;
+};
+
+export const clearBillingStatusCache = (): void => {
+    cachedBillingStatus = null;
+};
+
 export const fetchBillingCatalog = async (): Promise<BillingCatalog> => {
     const response = await fetch(getApiPath('billing/plans'), {
         credentials: 'include',

@@ -1595,6 +1595,7 @@
     "system": "Systeem",
     "customize": "Aanpassen",
     "addTag": "Label Toevoegen",
+    "new": "Nieuw label",
     "loadingTags": "Tags laden...",
     "errorLoadingTags": "Fout bij het laden van tags.",
     "toggleDropdownMenu": "Menu openen of sluiten",

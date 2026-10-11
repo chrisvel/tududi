@@ -17,7 +17,13 @@ import AdminUserStatusTable from './AdminUserStatusTable';
 import AdminTrends, { Trends } from './AdminTrends';
 
 interface Overview {
-    users: { total: number; admins: number; verified: number; last24h: number };
+    users: {
+        total: number;
+        admins: number;
+        verified: number;
+        last24h: number;
+        empty: number;
+    };
     content: { tasks: number; projects: number; notes: number };
     waitlist: { total: number; last7d: number };
     feedback: { open: number };
@@ -117,6 +123,25 @@ const AdminDashboardPage: React.FC = () => {
                             verified: data.users.verified,
                             admins: data.users.admins,
                             new: data.users.last24h,
+                        }
+                    )}
+                />
+                <Stat
+                    label={t(
+                        'admin.dashboard.emptyAccounts',
+                        'Nothing created'
+                    )}
+                    value={data.users.empty}
+                    hint={t(
+                        'admin.dashboard.emptyAccountsHint',
+                        'accounts that never created anything ({{pct}}% of users)',
+                        {
+                            pct: data.users.total
+                                ? Math.round(
+                                      (data.users.empty / data.users.total) *
+                                          100
+                                  )
+                                : 0,
                         }
                     )}
                 />

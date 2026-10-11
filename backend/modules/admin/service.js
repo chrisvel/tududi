@@ -701,6 +701,8 @@ class AdminService {
             registrationSetting,
             openFeedback,
             trends,
+            itemsByUser,
+            userIds,
         ] = await Promise.all([
             User.count(),
             Role.count({ where: { is_admin: true } }),
@@ -719,10 +721,25 @@ class AdminService {
             Setting.findOne({ where: { key: 'registration_enabled' } }),
             Feedback.count({ where: { resolved_at: null } }),
             this.trends(),
+            adminRepository.countItemsByUser(),
+            User.findAll({ attributes: ['id'], raw: true }),
         ]);
 
+        // Accounts that exist but never created anything: no task, habit,
+        // project, note, area, goal, tag, person, view or inbox item.
+        const empty = userIds.filter((u) => {
+            const entry = itemsByUser.get(u.id);
+            return !entry || Object.keys(entry.counts).length === 0;
+        }).length;
+
         return {
-            users: { total: users, admins, verified, last24h: newUsers },
+            users: {
+                total: users,
+                admins,
+                verified,
+                last24h: newUsers,
+                empty,
+            },
             content: { tasks, projects, notes },
             waitlist: { total: waitlist, last7d: waitlistWeek },
             feedback: { open: openFeedback },

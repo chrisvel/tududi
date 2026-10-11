@@ -24,6 +24,10 @@ import {
     fetchProfile as fetchProfileFromService,
     invalidateProfileCache,
 } from '../utils/profileService';
+import {
+    clearBillingStatusCache,
+    refreshBillingStatus,
+} from '../utils/billingService';
 import { notifySwClearCache } from '../utils/swUtils';
 import { detachPushForLogout } from '../utils/pushService';
 import { resetSessionState } from '../utils/sessionReset';
@@ -135,6 +139,9 @@ const Navbar: React.FC<NavbarProps> = ({
         const fetchFlags = async () => {
             const flags = await getFeatureFlags();
             setFeatureFlags(flags);
+            if (flags.hosted) {
+                refreshBillingStatus().catch(() => {});
+            }
         };
 
         loadProfile();
@@ -164,6 +171,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
     const handleLogout = async () => {
         invalidateProfileCache();
+        clearBillingStatusCache();
         await detachPushForLogout();
         try {
             const response = await fetch(getApiPath('logout'), {

@@ -59,6 +59,25 @@ export const useUserFilterGroups = (hosted: boolean): FilterGroup[] => {
                 },
             ],
         },
+        {
+            key: 'activity',
+            label: t('admin.userFilter.activity', 'Activity'),
+            choices: [
+                {
+                    value: 'created',
+                    label: t('admin.userFilter.created', 'Created something'),
+                    matches: (u) => u.usage.total > 0,
+                },
+                {
+                    value: 'nothingCreated',
+                    label: t(
+                        'admin.userFilter.nothingCreated',
+                        'Nothing created yet'
+                    ),
+                    matches: (u) => u.usage.total === 0,
+                },
+            ],
+        },
     ];
 
     if (hosted) {

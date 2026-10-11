@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { fetchBillingStatus } from '../../utils/billingService';
+import {
+    getCachedBillingStatus,
+    refreshBillingStatus,
+} from '../../utils/billingService';
 import type { BillingStatus } from '../../entities/Billing';
 
 // Small plan indicator for the user menu. Only rendered on hosted instances.
+// Starts from the cached status and refreshes it in the background.
 const PlanBadge: React.FC = () => {
     const { t } = useTranslation();
-    const [status, setStatus] = useState<BillingStatus | null>(null);
+    const [status, setStatus] = useState<BillingStatus | null>(
+        getCachedBillingStatus
+    );
 
     useEffect(() => {
         let cancelled = false;
-        fetchBillingStatus()
+        refreshBillingStatus()
             .then((s) => {
                 if (!cancelled) setStatus(s);
             })

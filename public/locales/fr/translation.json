@@ -1595,6 +1595,7 @@
     "system": "Système",
     "customize": "Personnaliser",
     "addTag": "Ajouter une étiquette",
+    "new": "Nouvelle étiquette",
     "loadingTags": "Chargement des étiquettes...",
     "errorLoadingTags": "Erreur lors du chargement des étiquettes.",
     "toggleDropdownMenu": "Ouvrir ou fermer le menu",

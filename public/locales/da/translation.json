@@ -1595,6 +1595,7 @@
     "system": "System",
     "customize": "Tilpas",
     "addTag": "Tilføj Tag",
+    "new": "Nyt tag",
     "loadingTags": "Indlæser tags...",
     "errorLoadingTags": "Fejl ved indlæsning af tags.",
     "toggleDropdownMenu": "Åbn eller luk menuen",

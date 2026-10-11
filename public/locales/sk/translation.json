@@ -1596,6 +1596,7 @@
     },
     "tags": {
         "addTag": "Pridať štítok",
+        "new": "Nový štítok",
         "loading": "Načítavajú sa štítky...",
         "searchPlaceholder": "Hľadať štítky...",
         "title": "Štítky",

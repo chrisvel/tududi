@@ -1595,6 +1595,7 @@
     "system": "النظام",
     "customize": "تخصيص",
     "addTag": "إضافة علامة",
+    "new": "علامة جديدة",
     "loadingTags": "جارٍ تحميل الوسوم...",
     "errorLoadingTags": "حدث خطأ أثناء تحميل الوسوم.",
     "toggleDropdownMenu": "فتح القائمة أو إغلاقها",

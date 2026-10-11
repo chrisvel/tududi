@@ -1595,6 +1595,7 @@
     "system": "Sistema",
     "customize": "Personalizza",
     "addTag": "Aggiungi Tag",
+    "new": "Nuovo tag",
     "loadingTags": "Caricamento dei tag...",
     "errorLoadingTags": "Errore durante il caricamento dei tag.",
     "toggleDropdownMenu": "Apri o chiudi il menu",
