@@ -9,6 +9,15 @@ services:
       - ./tududi_db:/app/db
       - ./uploads:/app/uploads
       - ./backups:/app/backups
+      # Plugins installed from the app. A named volume rather than a host
+      # directory on purpose: it starts empty, so the plugins that ship with
+      # the image are copied in on the first start, and anything installed
+      # afterwards survives 'docker compose up'. Mount a directory of your own
+      # here instead if you would rather manage the files by hand.
+      - tududi_plugins:/app/plugins
     ports:
       - "3002:3002"
     restart: unless-stopped
+
+volumes:
+  tududi_plugins:

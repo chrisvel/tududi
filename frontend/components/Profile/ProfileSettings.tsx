@@ -15,6 +15,7 @@ import {
     ShieldCheckIcon,
     LinkIcon,
     KeyIcon,
+    PuzzlePieceIcon,
     CheckIcon,
     BellIcon,
     CommandLineIcon,
@@ -51,6 +52,7 @@ import GeneralTab from './tabs/GeneralTab';
 import SecurityTab from './tabs/SecurityTab';
 import OIDCTab from './tabs/OIDCTab';
 import ApiKeysTab from './tabs/ApiKeysTab';
+import PluginsTab from './tabs/PluginsTab';
 import FeaturesTab from './tabs/FeaturesTab';
 import SidebarTab from './tabs/SidebarTab';
 import {
@@ -112,6 +114,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'security',
             'oidc',
             'api-keys',
+            'plugins',
             'productivity',
             'notifications',
             'telegram',
@@ -1413,6 +1416,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <KeyIcon className="w-5 h-5" />,
         },
         {
+            id: 'plugins',
+            name: t('profile.tabs.plugins', 'Plugins'),
+            icon: <PuzzlePieceIcon className="w-5 h-5" />,
+        },
+        {
             id: 'notifications',
             name: t('profile.tabs.notifications', 'Notifications'),
             icon: <BellIcon className="w-5 h-5" />,
@@ -1600,6 +1608,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     isAdmin={currentUser?.is_admin === true}
                                 />
 
+                                <PluginsTab
+                                    isActive={activeTab === 'plugins'}
+                                />
                                 <ApiKeysTab
                                     isActive={activeTab === 'api-keys'}
                                     apiKeys={apiKeys}

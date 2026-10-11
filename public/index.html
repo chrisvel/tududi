@@ -138,8 +138,10 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     
-    <!-- Web app manifest for PWA support -->
-    <link rel="manifest" href="manifest.json">
+    <!-- Web app manifest for PWA support. Served dynamically: the server
+         merges a launcher shortcut for each plugin the user has enabled into
+         public/manifest.json. -->
+    <link rel="manifest" href="manifest.webmanifest">
   </head>
   <body>
     <div id="root"></div>

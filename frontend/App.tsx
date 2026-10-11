@@ -60,6 +60,8 @@ import PeopleList from './components/People/PeopleList';
 import PersonDetails from './components/People/PersonDetails';
 import EveryoneDashboard from './components/Everyone/EveryoneDashboard';
 import Templates from './components/Templates/Templates';
+import PluginRouteHost from './plugins/PluginRouteHost';
+import { PluginProvider } from './plugins/PluginProvider';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import type { StarterResult } from './utils/onboardingService';
 import { getApiPath, getLocalesPath } from './config/paths';
@@ -407,20 +409,30 @@ const App: React.FC = () => {
                         <Route
                             element={
                                 <SubscriptionGate>
-                                    <Layout
-                                        currentUser={currentUser}
-                                        setCurrentUser={setCurrentUser}
-                                        isDarkMode={isDarkMode}
-                                        toggleDarkMode={toggleDarkMode}
-                                    >
-                                        {currentUser.onboarding_starter ===
-                                            null &&
-                                        location.pathname !== '/welcome' ? (
-                                            <Navigate to="/welcome" replace />
-                                        ) : (
-                                            <Outlet />
-                                        )}
-                                    </Layout>
+                                    {/* Plugins load only for a signed-in user:
+                                        their code runs with this session, and
+                                        the choices are per account. Wrapping
+                                        here also covers the sidebar and every
+                                        plugin page inside Layout's Outlet. */}
+                                    <PluginProvider enabled>
+                                        <Layout
+                                            currentUser={currentUser}
+                                            setCurrentUser={setCurrentUser}
+                                            isDarkMode={isDarkMode}
+                                            toggleDarkMode={toggleDarkMode}
+                                        >
+                                            {currentUser.onboarding_starter ===
+                                                null &&
+                                            location.pathname !== '/welcome' ? (
+                                                <Navigate
+                                                    to="/welcome"
+                                                    replace
+                                                />
+                                            ) : (
+                                                <Outlet />
+                                            )}
+                                        </Layout>
+                                    </PluginProvider>
                                 </SubscriptionGate>
                             }
                         >
@@ -461,6 +473,15 @@ const App: React.FC = () => {
                                         <PlanMyDay />
                                     </Suspense>
                                 }
+                            />
+                            {/* One namespace for every plugin page: a
+                                <Routes> only accepts Route children directly,
+                                and the plugin set is only known after an async
+                                load, so the host resolves the path against its
+                                registry instead. */}
+                            <Route
+                                path="/plugins/:pluginId/*"
+                                element={<PluginRouteHost />}
                             />
                             <Route
                                 path="/task/:uid"

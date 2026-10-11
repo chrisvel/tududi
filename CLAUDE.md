@@ -331,6 +331,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Scopes Today, Upcoming, Tasks, Projects, Notes and live search; capture defaults to the Focus project and tags
     - `area_uid`, `project_uid` and `tags` query params resolved by `backend/services/scopeService.js`; the API, MCP and Telegram stay unscoped
 
+35. **[Plugins](docs/26-plugins.md)**
+    - Plugin directories under `plugins/` (or `TUDUDI_PLUGINS_DIR`), validated manifest, listed per install and enabled per account in Profile → Plugins
+    - The host API: routes, themes, settings panels, nav filters; everything namespaced and disposable, and the host’s own React, never a second copy
+    - Authoring guide in [plugins/README.md](plugins/README.md); the worked example is [plugins/calm-mode](plugins/calm-mode)
+
 ---
 
 ## Project Overview

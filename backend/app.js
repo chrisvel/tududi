@@ -15,6 +15,9 @@ const {
 const taskScheduler = require('./modules/tasks/taskScheduler');
 const { initializeEmailService } = require('./services/emailService');
 const { setConfig, getConfig } = require('./config/config');
+// Required here rather than with the other feature modules: the /plugins static
+// mount below needs it, and that sits above them.
+const pluginsModule = require('./modules/plugins');
 const config = getConfig();
 const distIndexPath = path.join(__dirname, 'dist', 'index.html');
 const serveFromDist = config.production || fs.existsSync(distIndexPath);
@@ -285,6 +288,19 @@ app.use(
     })
 );
 
+// The web app manifest is served dynamically, from the same URL the static
+// file used to occupy: `public/manifest.json` says what the app is, and the
+// handler merges in a launcher shortcut for each plugin the signed-in user has
+// enabled. Mounted before the static handlers so it wins for that URL.
+app.use(
+    pluginsModule.pwaManifest.createRouter({
+        baseManifestPaths: [
+            path.join(__dirname, 'dist', 'manifest.json'),
+            path.join(__dirname, '../public', 'manifest.json'),
+        ],
+    })
+);
+
 // Static files. Webpack output is content-hashed, so the bundles can be
 // cached for a year; the shell (index.html) and the service worker must
 // always be revalidated or a deploy would never reach returning visitors.
@@ -330,6 +346,27 @@ const { requireAuth } = require('./middleware/auth');
 const { requireSubscription } = require('./middleware/entitlements');
 const { uploadsAccessControl } = require('./middleware/uploadsAccess');
 const { INLINE_SAFE_EXTENSIONS } = require('./utils/attachment-utils');
+
+// Plugin bundles. Served from the plugins root rather than from `dist`: a
+// build cleans `dist`, and `dist` is served immutable for a year, so an
+// installed plugin would either be deleted or never update. Operators install
+// plugins into that directory (or wherever TUDUDI_PLUGINS_DIR points).
+// The directory is outside the webpack config on purpose, so nothing here is
+// produced by a build.
+//
+// A signed-in session is required to read those files, and deliberately: a
+// plugin directory is served whole, so everything in it that is not a dotfile
+// is reachable - a plugin's own source, its tests, its lockfile. Serving that to
+// anyone who guesses a URL publishes whatever an operator's plugins keep beside
+// their bundles. The bundles themselves are fetched by a signed-in page (a
+// dynamic `import()` and a `<link>` for the stylesheet), with that page's own
+// cookies, so nothing legitimate is turned away. Which requests those are, and
+// why a token does not do, is in `requirePluginFileSession`.
+app.use(
+    '/plugins',
+    pluginsModule.requirePluginFileSession,
+    pluginsModule.staticHandler()
+);
 
 // Serve uploaded files - requires authentication so attachments (which may
 // include private task/project data) aren't readable by anyone who guesses
@@ -544,6 +581,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, groupsModule.routes);
     app.use(basePath, feedbackModule.routes);
     app.use(basePath, pushModule.routes);
+    app.use(basePath, pluginsModule.routes);
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

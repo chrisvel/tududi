@@ -24,6 +24,7 @@ import SidebarResizeHandle from './Sidebar/SidebarResizeHandle';
 import SidebarPanelIcon from './Sidebar/SidebarPanelIcon';
 import SidebarRail from './Sidebar/SidebarRail';
 import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
+import { useOptionalPluginHost } from '../plugins/context';
 import { useStore } from '../store/useStore';
 import type { SidebarVisibleSections } from './Profile/types';
 import { sidebarPercentToRem } from '../utils/sidebarWidth';
@@ -98,8 +99,20 @@ const Sidebar: React.FC<SidebarProps> = ({
     const sectionOrder = useStore(
         (state) => state.userSettingsStore.sidebarSectionOrder
     );
-    const isSectionVisible = (key: keyof SidebarVisibleSections) =>
-        visibleSections[key] !== false;
+
+    // Optional: the sidebar also renders without a plugin host present.
+    const pluginHost = useOptionalPluginHost();
+
+    const isSectionVisible = (key: keyof SidebarVisibleSections) => {
+        if (visibleSections[key] === false) return false;
+        // A plugin may hide a whole section; its routes stay reachable, so the
+        // hierarchy is reduced rather than removed.
+        if (!pluginHost) return true;
+        return pluginHost.registry.isNavItemVisible({
+            path: `section:${key}`,
+            section: String(key),
+        });
+    };
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 

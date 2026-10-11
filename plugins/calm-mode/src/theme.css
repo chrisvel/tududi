@@ -1,0 +1,156 @@
+/*
+ * Calm Mode's appearance layer.
+ *
+ * Scoped to `.calm` on <html>, which the host adds while this theme is active.
+ *
+ * What a single class genuinely can reach is here: motion, reading rhythm,
+ * focus visibility, and the colour families that read as alarm. What it cannot
+ * reach is every component that writes its palette as Tailwind utilities, so
+ * the colour rules below override the specific utility classes that carry
+ * urgency rather than claiming to be a full theming layer.
+ */
+
+:root.calm {
+    --calm-surface: oklch(97.5% 0.006 250);
+    --calm-ink: oklch(28% 0.012 250);
+    --calm-muted: oklch(52% 0.008 250);
+    --calm-focus: oklch(58% 0.09 250);
+    --calm-line-height: 1.75;
+}
+
+/*
+ * Stillness. This applies whether or not the operating system reports a
+ * reduced-motion preference: someone who needs it should not have to find a
+ * second setting, and the OS preference is not set on most devices.
+ */
+:root.calm *,
+:root.calm *::before,
+:root.calm *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* Reading rhythm. line-height is inherited, so this reaches text this plugin
+   never renders. */
+:root.calm body {
+    line-height: var(--calm-line-height);
+    letter-spacing: 0.006em;
+}
+
+/* A focus ring that is hard to lose, for keyboard and switch users. */
+:root.calm :focus-visible {
+    outline: 3px solid var(--calm-focus) !important;
+    outline-offset: 2px !important;
+}
+
+/*
+ * Soften the alarm families. Red and the amber "overdue" tones are what read as
+ * urgency; they become muted but stay distinguishable, so the information is
+ * still there and no longer shouting. Blues and greens are left alone.
+ */
+:root.calm .text-red-400,
+:root.calm .text-red-500,
+:root.calm .text-red-600,
+:root.calm .text-red-700,
+:root.calm .text-red-800,
+:root.calm .text-rose-400,
+:root.calm .text-rose-500,
+:root.calm .text-rose-600,
+:root.calm .text-rose-700 {
+    color: oklch(45% 0.045 30) !important;
+}
+
+:root.calm .text-amber-400,
+:root.calm .text-amber-500,
+:root.calm .text-amber-600,
+:root.calm .text-amber-700,
+:root.calm .text-orange-400,
+:root.calm .text-orange-500,
+:root.calm .text-orange-600 {
+    color: oklch(47% 0.045 65) !important;
+}
+
+:root.calm .bg-red-50,
+:root.calm .bg-red-100,
+:root.calm .bg-red-500,
+:root.calm .bg-red-600,
+:root.calm .bg-rose-50,
+:root.calm .bg-rose-100,
+:root.calm .bg-rose-500 {
+    background-color: oklch(94% 0.014 30) !important;
+}
+
+:root.calm .border-red-200,
+:root.calm .border-red-300,
+:root.calm .border-red-500,
+:root.calm .border-rose-200 {
+    border-color: oklch(85% 0.02 30) !important;
+}
+
+/* A calmer canvas than the default near-white. */
+:root.calm .bg-gray-100 {
+    background-color: var(--calm-surface) !important;
+}
+
+/* Links are not identified by colour alone. */
+:root.calm a {
+    text-underline-offset: 0.18em;
+}
+
+/* Calm Mode's own surfaces. */
+.calm-focus-card {
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 2.5rem;
+}
+
+.calm-focus-task {
+    font-size: 1.5rem;
+    line-height: 1.55;
+    color: var(--calm-ink);
+}
+
+.calm-focus-meta {
+    color: var(--calm-muted);
+    font-size: 0.875rem;
+}
+
+.calm-focus-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+}
+
+.calm-button {
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.calm-button-primary {
+    background-color: oklch(52% 0.08 250);
+    color: oklch(99% 0 0);
+}
+
+.calm-button-quiet {
+    background-color: transparent;
+    border-color: oklch(85% 0.01 250);
+    color: var(--calm-ink);
+}
+
+.calm-field {
+    min-height: 2.75rem;
+    width: 100%;
+    padding: 0 0.9rem;
+    border-radius: 0.75rem;
+    border: 1px solid oklch(85% 0.01 250);
+    font-size: 1rem;
+    color: var(--calm-ink);
+    background-color: oklch(99.5% 0.002 250);
+}

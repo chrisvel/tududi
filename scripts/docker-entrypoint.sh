@@ -77,9 +77,21 @@ else
 fi
 
 echo "Setting ownership of application directories to $TARGET_USER:$TARGET_GROUP"
-mkdir -p /app/db /app/backend/certs /app/uploads /app/backups
+PLUGINS_DIR=${TUDUDI_PLUGINS_DIR:-/app/plugins}
+mkdir -p /app/db /app/backend/certs /app/uploads /app/backups "$PLUGINS_DIR"
+
+# Plugins that ship with the app live in the image, plugins installed from the
+# UI live in the directory mounted over the plugins root - and a mount replaces
+# whatever the image put at that path, so on a first start the root is empty.
+# Seeding only when the root is empty means a bundled plugin an operator
+# removed on purpose stays removed.
+if [ -d /app/plugins-bundled ] && [ -z "$(ls -A "$PLUGINS_DIR" 2>/dev/null)" ]; then
+    echo "Installing bundled plugins into $PLUGINS_DIR"
+    cp -R /app/plugins-bundled/. "$PLUGINS_DIR"/
+fi
+
 chown -R "$TARGET_USER":"$TARGET_GROUP" /app/backend /app/scripts
-chown -R "$TARGET_USER":"$TARGET_GROUP" /app/db /app/uploads /app/backups
+chown -R "$TARGET_USER":"$TARGET_GROUP" /app/db /app/uploads /app/backups "$PLUGINS_DIR"
 chmod 770 /app/db /app/backend/certs /app/uploads
 set_db_file_permissions
 

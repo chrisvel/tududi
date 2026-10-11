@@ -1,7 +1,9 @@
 // v2: manifest.json gained a share_target member, and the static cache is
 // cache-first — existing installs need the stale copy evicted to pick it up
 // v3: push notifications
-const CACHE_VERSION = 'tududi-v3';
+// v4: the manifest is generated per user at /manifest.webmanifest, so it is
+// no longer precached or cached at runtime
+const CACHE_VERSION = 'tududi-v4';
 const API_CACHE = 'tududi-api-v1';
 const SYNC_QUEUE = 'tududi-sync-queue';
 
@@ -22,9 +24,10 @@ const PUSH_ONLY = new URL(self.location.href).searchParams.has('push-only');
 // Used to tag queued mutations and detect cross-principal replays.
 let sessionUserId = null;
 
+// The web app manifest is deliberately absent: it is generated per user (see
+// the fetch handler), so caching it would keep a stale or another user's copy.
 const STATIC_ASSETS = [
     '/',
-    '/manifest.json',
     '/favicon.ico',
     '/apple-touch-icon.png',
     '/icon-logo.png',
@@ -106,6 +109,16 @@ self.addEventListener('fetch', (event) => {
     // A shared note stops working the moment its owner turns sharing off, so
     // it must never be answered from a cache.
     if (url.pathname.startsWith('/api/public/')) return;
+
+    // The web app manifest is built per user from the plugins that user has
+    // enabled. Caching it would keep a stale copy on the device - and, on a
+    // shared one, hand the next user someone else's launcher shortcuts.
+    if (
+        url.pathname === '/manifest.webmanifest' ||
+        url.pathname === '/manifest.json'
+    ) {
+        return;
+    }
 
     // File uploads go straight to the network. WebKit (every iOS browser)
     // loses the file part of a FormData body when a service worker re-sends

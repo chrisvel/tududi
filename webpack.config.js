@@ -122,14 +122,29 @@ module.exports = {
                     // The service worker's static cache name must change per
                     // build, or returning visitors keep the old shell after
                     // a deploy. The API cache name stays stable on purpose.
+                    //
+                    // Match on any version rather than a literal one: this
+                    // replacement used to name `tududi-v1`, and stopped
+                    // matching the day the constant was bumped, which would
+                    // have served every returning visitor a stale shell with
+                    // no error anywhere. A silent no-op is therefore a build
+                    // failure instead.
                     transform(content, absoluteFrom) {
                         if (!absoluteFrom.endsWith('sw.js')) return content;
-                        return content
-                            .toString()
-                            .replace(
-                                "const CACHE_VERSION = 'tududi-v1';",
-                                `const CACHE_VERSION = 'tududi-${buildId}';`
+
+                        const source = content.toString();
+                        const stamped = source.replace(
+                            /const CACHE_VERSION = '[^']*';/,
+                            `const CACHE_VERSION = 'tududi-${buildId}';`
+                        );
+
+                        if (stamped === source) {
+                            throw new Error(
+                                'public/sw.js no longer declares a CACHE_VERSION constant, so the service worker cache could not be stamped with the build id'
                             );
+                        }
+
+                        return stamped;
                     },
                 },
             ],

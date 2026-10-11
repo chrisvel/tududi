@@ -32,6 +32,15 @@ COPY . ./
 # Build frontend
 RUN NODE_ENV=production npm run frontend:build
 
+# Build installed plugins.
+#
+# The production stage has neither a toolchain nor dev dependencies, and a
+# plugin whose entry point is missing is reported by the plugin manager as
+# broken rather than loaded - so shipping one unbuilt would look like a broken
+# install. node_modules is dropped afterwards: the bundle is the artifact.
+RUN npm run plugins:build && \
+    rm -rf plugins/*/node_modules
+
 # Run backend tests
 # RUN npm run backend:test
 
@@ -117,6 +126,20 @@ COPY --from=builder --chown=app:app /app/public/favicon* ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/manifest.json ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
 
+# Plugins that ship with the app, already built.
+#
+# They go to `plugins-bundled` rather than straight into the plugins root so
+# that the root can be a volume without them disappearing behind it: a mount
+# replaces whatever the image put at that path. The entrypoint copies this set
+# into the root the first time the root is empty, which is what a first start
+# looks like - with or without a volume mounted there.
+COPY --from=builder --chown=app:app /app/plugins /app/plugins-bundled
+
+# The plugins root is where an operator installs from the app itself, so it has
+# to exist and be writable by the user the server runs as. Dropping a directory
+# in by hand still works, and is unchanged.
+RUN mkdir -p /app/plugins && chown app:app /app/plugins
+
 # Create necessary directories
 RUN mkdir -p /app/db /app/backend/certs /app/uploads /app/backups && \
     chown -R app:app /app/db /app/backend/certs /app/uploads /app/backups
@@ -124,6 +147,9 @@ RUN mkdir -p /app/db /app/backend/certs /app/uploads /app/backups && \
 VOLUME ["/app/db"]
 VOLUME ["/app/uploads"]
 VOLUME ["/app/backups"]
+# A plugin installed from the UI is state, not build output: without a volume
+# here it would be gone at the next 'docker compose up'.
+VOLUME ["/app/plugins"]
 
 EXPOSE 3002
 
@@ -139,6 +165,7 @@ ENV NODE_ENV=production \
     DISABLE_SCHEDULER=false \
     TUDUDI_UPLOAD_PATH="/app/uploads" \
     TUDUDI_BACKUP_PATH="/app/backups" \
+    TUDUDI_PLUGINS_DIR="/app/plugins" \
     SWAGGER_ENABLED=false
 
 HEALTHCHECK --interval=60s --timeout=3s --start-period=10s --retries=2 \

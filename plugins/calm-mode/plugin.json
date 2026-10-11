@@ -1,0 +1,18 @@
+{
+    "id": "calm-mode",
+    "name": "Calm Mode",
+    "version": "1.0.0",
+    "description": "A lower-stimulation way to use Tududi: one thing at a time, less motion, softer urgency, and fewer interruptions.",
+    "pluginApi": 1,
+    "host": ">=1.9 <2",
+    "entry": "dist/index.js",
+    "styles": ["dist/index.css"],
+    "shortcuts": [
+        {
+            "name": "One thing",
+            "short_name": "One thing",
+            "description": "Open Calm Mode's single-page view",
+            "path": "focus"
+        }
+    ]
+}

@@ -10,6 +10,48 @@
   "background_color": "#ffffff",
   "lang": "en",
   "orientation": "portrait-primary",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "shortcuts": [
+    {
+      "name": "Quick capture",
+      "short_name": "Capture",
+      "description": "Capture without deciding where it goes",
+      "url": "/inbox",
+      "icons": [
+        {
+          "src": "/icon-logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Today",
+      "short_name": "Today",
+      "url": "/today",
+      "icons": [
+        {
+          "src": "/icon-logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Upcoming",
+      "short_name": "Upcoming",
+      "url": "/upcoming?status=active",
+      "icons": [
+        {
+          "src": "/icon-logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
   "share_target": {
     "action": "/inbox",
     "method": "GET",
