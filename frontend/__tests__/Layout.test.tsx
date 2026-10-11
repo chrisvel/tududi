@@ -27,6 +27,11 @@ jest.mock('../components/Navbar', () => ({
     default: () => <div data-testid="navbar" />,
 }));
 
+jest.mock('../components/Nav/LtdNav', () => ({
+    __esModule: true,
+    default: () => <div data-testid="ltd-nav" />,
+}));
+
 jest.mock('../components/Sidebar', () => ({
     __esModule: true,
     default: () => <div data-testid="sidebar" />,

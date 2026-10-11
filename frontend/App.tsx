@@ -49,6 +49,9 @@ import TodayPage from './components/DailyPlan/TodayPage';
 import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
+// LTD-PATCH(T-304): stub destinations for Life and Review
+import LifePage from './components/Life/LifePage';
+import ReviewPage from './components/Reviews/ReviewPage';
 import Habits from './components/Habits/Habits';
 import HabitDetails from './components/Habits/HabitDetails';
 import EisenhowerMatrix from './components/Eisenhower/EisenhowerMatrix';
@@ -533,6 +536,8 @@ const App: React.FC = () => {
                                 element={<ReportsPage />}
                             />
                             <Route path="/inbox" element={<InboxItems />} />
+                            <Route path="/life" element={<LifePage />} />
+                            <Route path="/review" element={<ReviewPage />} />
                             <Route path="/habits" element={<Habits />} />
                             <Route
                                 path="/habit/new"

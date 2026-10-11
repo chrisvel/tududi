@@ -1,3 +1,4 @@
+// LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -114,12 +115,14 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
         <>
             {/* Always on top: task rows lift themselves to z-[10000] on
                 hover or tap, and pickers open at z-[10050]. */}
-            {phoneButtonVisible && (
+            {/* LTD-PATCH(T-304): capture lives in LtdNav on phones; keep the
+                existing FAB off so two Add buttons never overlap. */}
+            {false && phoneButtonVisible && (
                 <button
                     type="button"
                     data-testid="capture-phone-button"
                     onClick={() => openCapture('inbox')}
-                    className="lg:hidden fixed right-4 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-[10100] flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-semibold pl-3.5 pr-5 h-12 shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2"
+                    className="lg:hidden fixed end-4 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-[10100] flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-semibold ps-3.5 pe-5 h-12 shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2"
                 >
                     <PlusIcon className="h-5 w-5" aria-hidden="true" />
                     {t('capture.add', 'Add')}
@@ -147,7 +150,7 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
                             '--capture-dock-left': dockLeft,
                         } as React.CSSProperties
                     }
-                    className="fixed z-50 inset-x-0 bottom-0 pb-[env(safe-area-inset-bottom)] bg-white dark:bg-gray-800 rounded-t-2xl shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.3)] max-h-[85vh] lg:inset-x-auto lg:left-[var(--capture-dock-left)] lg:top-[4.5rem] lg:bottom-auto lg:w-[640px] lg:pb-0 lg:rounded-2xl lg:shadow-[0_18px_40px_-12px_rgba(23,32,43,0.4),0_0_0_1px_theme(colors.gray.300)] dark:lg:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.85),0_0_0_1px_theme(colors.gray.600)]"
+                    className="fixed z-50 inset-x-0 bottom-0 pb-[env(safe-area-inset-bottom)] bg-white dark:bg-gray-800 rounded-t-2xl shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.3)] max-h-[85vh] lg:inset-x-auto lg:start-[var(--capture-dock-left)] lg:top-[4.5rem] lg:bottom-auto lg:w-[640px] lg:pb-0 lg:rounded-2xl lg:shadow-[0_18px_40px_-12px_rgba(23,32,43,0.4),0_0_0_1px_theme(colors.gray.300)] dark:lg:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.85),0_0_0_1px_theme(colors.gray.600)]"
                 >
                     <div className="max-h-[85vh] overflow-y-auto rounded-t-2xl lg:rounded-2xl">
                         <QuickCaptureInput

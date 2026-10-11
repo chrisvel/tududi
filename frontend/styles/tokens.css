@@ -22,6 +22,15 @@ html[lang='fa'] {
         sans-serif;
     --ltd-radius-surface: 12px;
     --ltd-radius-control: 10px;
+    /* LTD-PATCH(T-304): tokens for the six-destination bar only */
+    --ltd-nav-bg: #ffffff;
+    --ltd-nav-border: #e5e7eb;
+    --ltd-nav-ink: #4b5563;
+    --ltd-nav-hover: #f3f4f6;
+    --ltd-nav-active: #eff6ff;
+    --ltd-nav-active-ink: #1d4ed8;
+    --ltd-nav-capture: #2563eb;
+    --ltd-nav-capture-ink: #ffffff;
 }
 .dark {
     color-scheme: dark;
@@ -35,4 +44,12 @@ html[lang='fa'] {
     --ltd-on-primary: #ffffff;
     --ltd-risk: #fbbf24;
     --ltd-paper: #111827;
+    --ltd-nav-bg: #1f2937;
+    --ltd-nav-border: #374151;
+    --ltd-nav-ink: #d1d5db;
+    --ltd-nav-hover: #374151;
+    --ltd-nav-active: #1e3a5f;
+    --ltd-nav-active-ink: #93c5fd;
+    --ltd-nav-capture: #3b82f6;
+    --ltd-nav-capture-ink: #ffffff;
 }

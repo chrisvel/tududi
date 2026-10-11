@@ -5,6 +5,8 @@ import UpgradeModal from './components/Billing/UpgradeModal';
 import TrialBanner from './components/Billing/TrialBanner';
 import { SidebarProvider } from './contexts/SidebarContext';
 import Navbar from './components/Navbar';
+// LTD-PATCH(T-304): six-destination bar + mobile bottom nav
+import LtdNav from './components/Nav/LtdNav';
 import Breadcrumbs from './components/Shared/Breadcrumbs';
 import CaptureHost from './components/Capture/CaptureHost';
 import { openCapture } from './utils/captureUi';
@@ -389,8 +391,8 @@ const Layout: React.FC<LayoutProps> = ({
     };
 
     const mainContentMarginLeft = isSidebarOpen
-        ? 'ml-sidebar'
-        : 'ml-0 sm:ml-rail';
+        ? 'ms-sidebar'
+        : 'ms-0 sm:ms-rail';
 
     // Only show the full-screen loader for a store's *first* load. Once a
     // store has loaded once, subsequent background refreshes (e.g. a page
@@ -431,7 +433,7 @@ const Layout: React.FC<LayoutProps> = ({
             />
             <PhotoCredit
                 background={contentBackground}
-                className="absolute bottom-3 left-3"
+                className="absolute bottom-3 start-3"
             />
         </>
     ) : null;
@@ -475,6 +477,7 @@ const Layout: React.FC<LayoutProps> = ({
                             isSidebarOpen={isSidebarOpen}
                             setIsSidebarOpen={setIsSidebarOpen}
                         />
+                        <LtdNav />
                         {panel}
                     </div>
                 </div>
@@ -510,7 +513,7 @@ const Layout: React.FC<LayoutProps> = ({
                 <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden">
                     <div
                         className={`relative flex-1 flex flex-col py-0 px-0 transition-transform duration-150 ${
-                            isNotesView ? 'pt-0' : 'pt-4'
+                            isNotesView ? 'pt-0' : 'pt-4 pb-16 lg:pb-0'
                         } ${
                             isUpcomingView
                                 ? 'md:px-6 lg:px-8'
