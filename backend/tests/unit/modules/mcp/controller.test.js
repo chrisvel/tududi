@@ -1,4 +1,5 @@
 'use strict';
+// LTD-PATCH(T-407): Settings advertise planning reads and exclude destructive tools.
 
 const controller = require('../../../../modules/mcp/controller');
 
@@ -107,7 +108,7 @@ describe('MCP Controller', () => {
             await controller.listMcpTools({}, res);
 
             const result = res.json.mock.calls[0][0];
-            expect(result.tools).toHaveLength(9);
+            expect(result.tools).toHaveLength(10);
 
             const categories = result.tools.map((t) => t.category);
             expect(categories).toContain('Tasks');
@@ -131,14 +132,14 @@ describe('MCP Controller', () => {
             );
 
             expect(taskCategory).toBeDefined();
-            expect(taskCategory.count).toBe(9);
+            expect(taskCategory.count).toBe(8);
             expect(taskCategory.tools).toContain('list_tasks');
             expect(taskCategory.tools).toContain('get_task');
             expect(taskCategory.tools).toContain('create_task');
             expect(taskCategory.tools).toContain('update_task');
             expect(taskCategory.tools).toContain('complete_task');
             expect(taskCategory.tools).toContain('skip_task_occurrence');
-            expect(taskCategory.tools).toContain('delete_task');
+            expect(taskCategory.tools).not.toContain('delete_task');
             expect(taskCategory.tools).toContain('add_subtask');
             expect(taskCategory.tools).toContain('get_task_metrics');
         });
@@ -168,12 +169,12 @@ describe('MCP Controller', () => {
             );
 
             expect(projectCategory).toBeDefined();
-            expect(projectCategory.count).toBe(5);
+            expect(projectCategory.count).toBe(4);
             expect(projectCategory.tools).toContain('list_projects');
             expect(projectCategory.tools).toContain('get_project');
             expect(projectCategory.tools).toContain('create_project');
             expect(projectCategory.tools).toContain('update_project');
-            expect(projectCategory.tools).toContain('delete_project');
+            expect(projectCategory.tools).not.toContain('delete_project');
         });
 
         it('should list inbox tools', async () => {
@@ -186,13 +187,13 @@ describe('MCP Controller', () => {
             );
 
             expect(inboxCategory).toBeDefined();
-            expect(inboxCategory.count).toBe(6);
+            expect(inboxCategory.count).toBe(5);
             expect(inboxCategory.tools).toContain('list_inbox');
             expect(inboxCategory.tools).toContain('add_to_inbox');
             expect(inboxCategory.tools).toContain('get_inbox_item');
             expect(inboxCategory.tools).toContain('update_inbox_item');
             expect(inboxCategory.tools).toContain('process_inbox_item');
-            expect(inboxCategory.tools).toContain('delete_inbox_item');
+            expect(inboxCategory.tools).not.toContain('delete_inbox_item');
         });
 
         it('should list note tools', async () => {
@@ -205,12 +206,12 @@ describe('MCP Controller', () => {
             );
 
             expect(noteCategory).toBeDefined();
-            expect(noteCategory.count).toBe(5);
+            expect(noteCategory.count).toBe(4);
             expect(noteCategory.tools).toContain('list_notes');
             expect(noteCategory.tools).toContain('get_note');
             expect(noteCategory.tools).toContain('create_note');
             expect(noteCategory.tools).toContain('update_note');
-            expect(noteCategory.tools).toContain('delete_note');
+            expect(noteCategory.tools).not.toContain('delete_note');
         });
 
         it('should list tag tools', async () => {
@@ -221,12 +222,12 @@ describe('MCP Controller', () => {
             const tagCategory = result.tools.find((t) => t.category === 'Tags');
 
             expect(tagCategory).toBeDefined();
-            expect(tagCategory.count).toBe(5);
+            expect(tagCategory.count).toBe(4);
             expect(tagCategory.tools).toContain('list_tags');
             expect(tagCategory.tools).toContain('get_tag');
             expect(tagCategory.tools).toContain('create_tag');
             expect(tagCategory.tools).toContain('update_tag');
-            expect(tagCategory.tools).toContain('delete_tag');
+            expect(tagCategory.tools).not.toContain('delete_tag');
         });
 
         it('should list misc tools', async () => {

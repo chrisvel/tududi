@@ -2,6 +2,7 @@
 'use strict';
 
 const { handleMcpHttpRequest } = require('./httpTransport');
+const { isDestructiveTool } = require('./toolRegistry');
 
 /**
  * Get MCP configuration for Claude Desktop
@@ -176,6 +177,23 @@ async function listMcpTools(req, res) {
         },
     ];
 
+    // LTD-PATCH(T-407): The settings catalogue reflects read-only goal tools and denies deletion.
+    tools.push({
+        category: 'Goals',
+        tools: [
+            'list_goals',
+            'get_goal',
+            'get_goal_progress',
+            'get_life_vision',
+            'explain_contribution',
+        ],
+    });
+    for (const category of tools) {
+        category.tools = category.tools.filter(
+            (name) => !isDestructiveTool(name)
+        );
+        category.count = category.tools.length;
+    }
     res.json({ tools });
 }
 

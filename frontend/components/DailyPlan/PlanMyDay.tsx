@@ -926,6 +926,14 @@ const PlanMyDay: React.FC = () => {
                         })}
                     </h2>
 
+                    {/* LTD-PATCH(T-406): expose weekly goal priorities from the existing Plan tab. */}
+                    <Link
+                        to="/plan/week"
+                        className="rounded border px-3 py-2 text-sm"
+                    >
+                        {t('ltdPlanning.weeklyPlan')}
+                    </Link>
+
                     {candidates && (
                         <div
                             className="flex flex-col items-end gap-1 text-[13px]"

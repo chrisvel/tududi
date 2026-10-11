@@ -1,3 +1,5 @@
+// LTD-PATCH(T-405): refresh computed planning and contribution caches after task changes.
+import { mutate } from 'swr';
 import { Metrics } from '../entities/Metrics';
 import { Task, TaskRelation, TaskRelationType } from '../entities/Task';
 import {
@@ -96,6 +98,7 @@ export const createTask = async (taskData: Task): Promise<Task> => {
     await handleAuthResponse(response, 'Failed to create task.');
     const created = await response.json();
     refreshTagCountsIfTagsChanged(taskData);
+    void mutate((key) => typeof key === 'string' && key.startsWith('ltd:'));
     return created;
 };
 
@@ -127,6 +130,7 @@ export const updateTask = async (
     await handleAuthResponse(response, 'Failed to update task.');
     const updated = await response.json();
     refreshTagCountsIfTagsChanged(taskData);
+    void mutate((key) => typeof key === 'string' && key.startsWith('ltd:'));
     return updated;
 };
 
@@ -140,6 +144,7 @@ export const toggleTaskCompletion = async (
     if (task.habit_mode) {
         const { logHabitCompletion } = await import('./habitsService');
         const result = await logHabitCompletion(taskUid);
+        void mutate((key) => typeof key === 'string' && key.startsWith('ltd:'));
         return result.task;
     }
 
@@ -241,6 +246,7 @@ export const deleteTask = async (taskUid: string): Promise<void> => {
     }
 
     await handleAuthResponse(response, 'Failed to delete task.');
+    void mutate((key) => typeof key === 'string' && key.startsWith('ltd:'));
     refreshTagCountsIfTagsChanged();
 };
 

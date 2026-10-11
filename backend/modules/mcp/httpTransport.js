@@ -51,11 +51,9 @@ async function handleMcpHttpRequest(req, res, user) {
             const toolName = request.params.name;
             const tool = tools.find((t) => t.name === toolName);
 
-            if (!tool) {
-                throw new Error(`Unknown tool: ${toolName}`);
-            }
-
+            // LTD-PATCH(T-407): Denied tools return a protocol error without executing a legacy handler.
             try {
+                if (!tool) throw new Error('Tool is unavailable');
                 const result = await tool.handler(
                     request.params.arguments || {},
                     context

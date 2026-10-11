@@ -41,10 +41,29 @@ module.exports = (sequelize) => {
                 allowNull: true,
             },
             horizon: {
-                type: DataTypes.ENUM('season', 'year'),
+                // LTD-PATCH(T-401): preserve season while extending the optional planning horizons.
+                type: DataTypes.ENUM(
+                    'vision',
+                    'five_year',
+                    'year',
+                    'season',
+                    'month',
+                    'week'
+                ),
                 allowNull: false,
                 defaultValue: 'season',
             },
+            // LTD-PATCH(T-401): additive hierarchy and planning dates; progress is a projection.
+            parent_goal_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: { model: 'goals', key: 'id' },
+                onDelete: 'SET NULL',
+                onUpdate: 'CASCADE',
+            },
+            period_start: { type: DataTypes.DATEONLY, allowNull: true },
+            period_end: { type: DataTypes.DATEONLY, allowNull: true },
+            achieved_at: { type: DataTypes.DATE, allowNull: true },
             target_date: {
                 type: DataTypes.DATEONLY,
                 allowNull: true,
@@ -62,6 +81,11 @@ module.exports = (sequelize) => {
         {
             tableName: 'goals',
             indexes: [
+                // LTD-PATCH(T-401): indexed traversal of the horizon tree.
+                {
+                    fields: ['parent_goal_id'],
+                    name: 'goals_parent_goal_id_idx',
+                },
                 { fields: ['area_id'] },
                 { fields: ['user_id'] },
                 { fields: ['status'] },

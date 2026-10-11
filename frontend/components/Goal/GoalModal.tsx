@@ -1,7 +1,9 @@
+// LTD-PATCH(T-405): edit goal hierarchy, periods and all six horizons in the existing panel.
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Goal, GoalHorizon, GoalStatus } from '../../entities/Goal';
+import { refreshPlanning } from '../../utils/planningService';
 import { createGoal, updateGoal } from '../../utils/goalsService';
 import { createGoalUrl } from '../../utils/slugUtils';
 import { useStore } from '../../store/useStore';
@@ -28,6 +30,9 @@ const emptyGoal = (): Partial<Goal> => ({
     status: 'active' as GoalStatus,
     target_date: '',
     area_id: null,
+    parent_goal_id: null,
+    period_start: '',
+    period_end: '',
     color: '',
 });
 
@@ -40,6 +45,9 @@ const toFormData = (goal?: Goal | null): Partial<Goal> =>
               status: goal.status,
               target_date: goal.target_date ?? '',
               area_id: goal.area_id ?? null,
+              parent_goal_id: goal.parent_goal_id ?? null,
+              period_start: goal.period_start ?? '',
+              period_end: goal.period_end ?? '',
               color: goal.color ?? '',
           }
         : emptyGoal();
@@ -56,6 +64,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
     const navigate = useNavigate();
     const { showSuccessToast, showErrorToast } = useToast();
     const areas = useStore((state: any) => state.areasStore.areas) as any[];
+    const goals = useStore((state: any) => state.goalsStore.goals) as Goal[];
     const loadGoals = useStore((state: any) => state.goalsStore.loadGoals);
 
     const [formData, setFormData] = useState<Partial<Goal>>(() =>
@@ -91,7 +100,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
         setFormData((prev) => ({
             ...prev,
             [name]:
-                name === 'area_id'
+                name === 'area_id' || name === 'parent_goal_id'
                     ? value
                         ? parseInt(value, 10)
                         : null
@@ -111,11 +120,16 @@ const GoalModal: React.FC<GoalModalProps> = ({
                 ...formData,
                 target_date: formData.target_date || null,
                 area_id: formData.area_id || null,
+                parent_goal_id: formData.parent_goal_id || null,
+                period_start:
+                    formData.period_start || (isEdit ? null : undefined),
+                period_end: formData.period_end || (isEdit ? null : undefined),
             };
             if (isEdit) {
                 const result = await updateGoal(goal!.uid!, payload);
                 onSaved?.(result.goal);
                 loadGoals(true);
+                void refreshPlanning();
                 showSuccessToast(t('success.goalUpdated', 'Goal updated!'));
                 onClose();
             } else {
@@ -124,6 +138,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
                 useStore
                     .getState()
                     .goalsStore.setGoals([...current, result.goal]);
+                void refreshPlanning();
                 showSuccessToast(t('success.goalCreated', 'Goal created!'));
                 onClose();
                 navigate(
@@ -206,12 +221,20 @@ const GoalModal: React.FC<GoalModalProps> = ({
                         onChange={handleChange}
                         className={sidePanelInputClass}
                     >
-                        <option value="season">
-                            {t('goals.horizon.season', 'Season')}
-                        </option>
-                        <option value="year">
-                            {t('goals.horizon.year', 'Year')}
-                        </option>
+                        {(
+                            [
+                                'vision',
+                                'five_year',
+                                'year',
+                                'season',
+                                'month',
+                                'week',
+                            ] as const
+                        ).map((horizon) => (
+                            <option key={horizon} value={horizon}>
+                                {t(`goals.horizon.${horizon}`)}
+                            </option>
+                        ))}
                     </select>
                     <select
                         aria-label={t('forms.goalStatus', 'Status')}
@@ -235,6 +258,47 @@ const GoalModal: React.FC<GoalModalProps> = ({
                     </select>
                 </div>
             </SidePanelSection>
+
+            <SidePanelField
+                label={t('ltdPlanning.parent')}
+                htmlFor="goalParent"
+            >
+                <select
+                    id="goalParent"
+                    name="parent_goal_id"
+                    aria-label={t('ltdPlanning.parent')}
+                    value={formData.parent_goal_id ?? ''}
+                    onChange={handleChange}
+                    className={sidePanelInputClass}
+                >
+                    <option value="">{t('ltdPlanning.noParent')}</option>
+                    {goals
+                        .filter((candidate) => candidate.id !== goal?.id)
+                        .map((candidate) => (
+                            <option key={candidate.uid} value={candidate.id}>
+                                {candidate.title} (
+                                {t(`goals.horizon.${candidate.horizon}`)})
+                            </option>
+                        ))}
+                </select>
+            </SidePanelField>
+            {(['period_start', 'period_end'] as const).map((field) => (
+                <SidePanelField
+                    key={field}
+                    label={t(`ltdPlanning.${field}`)}
+                    htmlFor={field}
+                >
+                    <input
+                        id={field}
+                        type="date"
+                        name={field}
+                        aria-label={t(`ltdPlanning.${field}`)}
+                        value={formData[field] ?? ''}
+                        onChange={handleChange}
+                        className={sidePanelInputClass}
+                    />
+                </SidePanelField>
+            ))}
 
             <SidePanelField
                 label={t('forms.goalTargetDate', 'Target Date')}

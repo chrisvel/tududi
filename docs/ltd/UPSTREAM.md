@@ -396,3 +396,45 @@ JSON and font files cannot carry `//` comments; their patch marker is this inven
 | T-305 | `frontend/utils/swUtils.ts` | offline queue clone-before-fetch, session uid, Idempotency-Key replay | No; independent fork |
 | T-305 | `frontend/utils/tasksService.ts` | offline queue clone-before-fetch, session uid, Idempotency-Key replay | No; independent fork |
 | T-305 | `public/sw.js` | offline queue clone-before-fetch, session uid, Idempotency-Key replay | No; independent fork |
+
+## Phase 4 planning domain
+
+<!-- LTD-PATCH(T-401): Keep the additive planning boundary reviewable against upstream. -->
+
+JSON translation files cannot contain JavaScript comments; their patch markers are recorded here. No spike branch was merged. No upstream pull request was created.
+
+| Task | File | Why | Upstream PR |
+| --- | --- | --- | --- |
+| T-401 | `backend/models/goal.js` | Extend the existing horizons without replacing season/year; additive parent, period and achievement fields | No; fork planning domain |
+| T-401 | `backend/models/task.js` | Index the existing nullable goal link for projections | No |
+| T-401 | `backend/models/project.js` | Index the existing nullable goal link for projections | No |
+| T-401 | `backend/models/index.js` | Register parent/child and metric/check-in associations and fork domain models | No |
+| T-401 | `backend/modules/goals/service.js` | Validate graph rules in the service transaction; explicit human achievement and journaled edits | No |
+| T-401 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert additive planning schema, old values and default, and migration idempotence on legacy fixtures | No |
+| T-402 | `backend/app.js` | Mount thin planning routers under the existing API prefixes, before generic goal UID routes | No |
+| T-403 | `backend/models/index.js` | Invalidate disposable projection snapshots for task, habit, goal, project and schedule mutations | No |
+| T-403 | `.github/workflows/ci.yml` | Enforce at least 90% statements, branches, functions and lines for progress and journal | No |
+| T-404 | `backend/modules/goals/controller.js` | Infer journal actor from authentication and deny integration hard deletion | No |
+| T-404 | `backend/tests/helpers/setup.js` | Clean planning children before goal/user parents in both database engines | No |
+| T-405 | `frontend/entities/Goal.ts` | Six optional horizons and additive hierarchy/period fields | No |
+| T-405 | `frontend/components/Goals.tsx` | Add a horizon tree while retaining existing goal list, filters and creation flow | No |
+| T-405 | `frontend/components/Goal/GoalModal.tsx` | Expose horizons, parent and editable periods; revalidate all planning projections | No |
+| T-405 | `frontend/components/Goal/GoalDetails.tsx` | Show computed A/O, metrics, history and reversible journal entries | No |
+| T-405 | `frontend/components/Goal/GoalHero.tsx` | Replace the misleading task-count progress display with separate computed signals | No |
+| T-405 | `frontend/components/Task/TaskRow/TaskRowCollapsed.tsx` | Render the server why-chain on task cards with isolated user text | No |
+| T-405 | `frontend/utils/tasksService.ts` | Revalidate planning reads after task mutations | No |
+| T-405 | `public/locales/*/translation.json` | Add planning strings, Persian copy and English fallback keys to all locales | No |
+| T-406 | `frontend/App.tsx` | Route weekly goal priorities inside the existing planning shell | No |
+| T-407 | `backend/modules/mcp/tools/goalTools.js` | Shared owner-scoped tree, progress, vision and contribution reads; no goal write tools | No |
+| T-407 | `backend/modules/mcp/toolRegistry.js` | Deny registration and execution of legacy hard-deletion tools in both transports | No |
+| T-407 | `backend/modules/mcp/controller.js` | Reflect the read-only goal catalogue and deletion restrictions | No |
+| T-407 | `backend/modules/mcp/httpTransport.js` | Return a protocol tool error for denied or unknown tool calls | No |
+| T-407 | `backend/modules/mcp/server.js` | Apply the same denied-tool behavior to the stdio transport | No |
+| T-407 | `backend/tests/integration/mcp/mcp-tools.test.js` | Assert that denied deletions preserve records and existing reads remain compatible | No |
+| T-407 | `backend/tests/integration/mcp/mcp-routing.test.js` | Include the planning category in the exposed catalogue | No |
+| T-407 | `backend/tests/unit/modules/mcp/controller.test.js` | Verify the catalogue excludes destructive operations and includes planning reads | No |
+| T-406 | `frontend/components/DailyPlan/PlanMyDay.tsx` | Make weekly priorities reachable directly from the existing Plan tab | No |
+| T-406 | `frontend/components/Nav/LtdNav.tsx` | Keep the Plan destination active and accessible for day and week routes | No |
+| T-406 | `frontend/components/Nav/__tests__/LtdNav.test.tsx` | Assert desktop and mobile active Plan state on the weekly route | No |
+| T-405 | `frontend/i18n.ts` | Resolve translation reloads from the app base rather than nested goal/week URLs | No |
+| T-405 | `frontend/App.tsx` | Avoid fetching an undefined locale during nested-route bootstrap | No |

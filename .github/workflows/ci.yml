@@ -32,6 +32,11 @@ jobs:
     - name: Run backend tests
       run: npm run backend:test
 
+    # LTD-PATCH(T-403): enforce 90% coverage for both deterministic progress and atomic Undo.
+    - name: Enforce Phase 4 domain coverage
+      working-directory: backend
+      run: NODE_ENV=test npx jest --config jest.phase4.config.js --runInBand
+
     - name: Upgrade legacy SQLite databases and check schema parity
       run: npm run backend:test:upgrade
 

@@ -522,6 +522,10 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, adminModule.routes);
     app.use(basePath, sharesModule.routes);
     app.use(basePath, areasModule.routes);
+    // LTD-PATCH(T-403): planning projections precede the legacy goals/:uid route.
+    app.use(basePath, require('./modules/ltd-progress/routes'));
+    app.use(basePath, require('./modules/ltd-metrics/routes'));
+    app.use(basePath, require('./modules/ltd-journal/routes'));
     app.use(basePath, goalsModule.routes);
     app.use(basePath, dailyPlanModule.routes);
     app.use(basePath, onboardingModule.routes);

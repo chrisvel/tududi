@@ -1,3 +1,4 @@
+// LTD-PATCH(T-405): add metric check-ins and transactional journal Undo to goal details.
 // LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -20,6 +21,9 @@ import useProjectCardActions from '../Project/useProjectCardActions';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
 import GoalModal from './GoalModal';
+import GoalMetrics from '../Metrics/GoalMetrics';
+import JournalPanel from '../Journal/JournalPanel';
+import { refreshPlanning } from '../../utils/planningService';
 import GoalHero from './GoalHero';
 
 const TASK_STATUS_DONE = [2, 3, 'done', 'archived'];
@@ -111,7 +115,7 @@ const GoalDetails: React.FC = () => {
         try {
             const { goal: updated } = await updateGoal(goal.uid, { status });
             handleGoalSaved(updated);
-            loadGoals(true);
+            await refreshPlanning();
         } catch {
             showErrorToast(
                 t('errors.failedToUpdateGoal', 'Failed to update goal.')
@@ -120,6 +124,7 @@ const GoalDetails: React.FC = () => {
     };
 
     const handleTaskUpdate = async (updatedTask: Task) => {
+        void refreshPlanning();
         setGoal((prev) => {
             if (!prev) return prev;
             return {
@@ -134,6 +139,7 @@ const GoalDetails: React.FC = () => {
     };
 
     const handleTaskDelete = (taskUid: string) => {
+        void refreshPlanning();
         setGoal((prev) => {
             if (!prev) return prev;
             return {
@@ -190,6 +196,13 @@ const GoalDetails: React.FC = () => {
                 onShareClick={() => setIsShareModalOpen(true)}
                 onEditClick={() => setIsEditing(true)}
                 onDeleteClick={() => setIsConfirmDeleteOpen(true)}
+            />
+
+            {goal.uid && <GoalMetrics goalUid={goal.uid} />}
+            <JournalPanel
+                onReverted={async () => {
+                    if (goal.uid) setGoal(await fetchGoalByUid(goal.uid));
+                }}
             />
 
             <div className="mb-4">

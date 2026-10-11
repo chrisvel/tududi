@@ -110,6 +110,10 @@ const UsageCounter = require('./usage_counter')(sequelize);
 const Feedback = require('./feedback')(sequelize);
 const PushSubscription = require('./push_subscription')(sequelize);
 const Account = require('./account')(sequelize);
+// LTD-PATCH(T-402): register the planning metrics and transactional Undo models.
+const LtdGoalMetric = require('./ltd_goal_metric')(sequelize);
+const LtdMetricCheckin = require('./ltd_metric_checkin')(sequelize);
+const LtdJournal = require('./ltd_journal')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
@@ -127,6 +131,39 @@ PushSubscription.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
 
+// LTD-PATCH(T-401): nullable parent links preserve existing goals and support six horizons.
+Goal.belongsTo(Goal, {
+    foreignKey: 'parent_goal_id',
+    as: 'ParentGoal',
+    onDelete: 'SET NULL',
+});
+Goal.hasMany(Goal, {
+    foreignKey: 'parent_goal_id',
+    as: 'ChildGoals',
+    onDelete: 'SET NULL',
+});
+// LTD-PATCH(T-402): metrics and checkins belong to the owner's existing goal.
+Goal.hasMany(LtdGoalMetric, {
+    foreignKey: 'goal_id',
+    as: 'Metrics',
+    onDelete: 'CASCADE',
+});
+LtdGoalMetric.belongsTo(Goal, { foreignKey: 'goal_id', as: 'Goal' });
+LtdGoalMetric.hasMany(LtdMetricCheckin, {
+    foreignKey: 'metric_id',
+    as: 'checkins',
+    onDelete: 'CASCADE',
+});
+LtdMetricCheckin.belongsTo(LtdGoalMetric, {
+    foreignKey: 'metric_id',
+    as: 'Metric',
+});
+User.hasMany(LtdJournal, {
+    foreignKey: 'user_id',
+    as: 'Journal',
+    onDelete: 'CASCADE',
+});
+LtdJournal.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 User.hasMany(Goal, { foreignKey: 'user_id', as: 'Goals' });
 Goal.belongsTo(User, { foreignKey: 'user_id' });
 Area.hasMany(Goal, { foreignKey: 'area_id', as: 'Goals' });
@@ -649,11 +686,27 @@ User.addHook('afterCreate', async (user, options) => {
     );
 });
 
+// LTD-PATCH(T-403): expire computed planning projections after domain changes.
+require('../modules/ltd-progress/model-hooks').install({
+    sequelize,
+    Task,
+    Project,
+    Goal,
+    DailyPlan,
+    DailyPlanItem,
+    RecurringCompletion,
+    User,
+});
+
 module.exports = {
     sequelize,
     User,
     Area,
     Goal,
+    // LTD-PATCH(T-402): expose planning models to domain services.
+    LtdGoalMetric,
+    LtdMetricCheckin,
+    LtdJournal,
     Project,
     Task,
     Tag,
