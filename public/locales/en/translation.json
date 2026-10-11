@@ -2397,28 +2397,7 @@
       "firstPlan": "Planned a first day",
       "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
       "threeDays": "Kept planning",
-      "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days",
-      "tasksCreated": "Tasks created",
-      "tasksCompleted": "Tasks completed",
-      "verified": "Verified email",
-      "verifiedHint": "{{n}} of {{total}} new users"
-    },
-    "visits": {
-      "title": "Visits, last 7 days",
-      "visitors": "visitors",
-      "chartLabel": "Visitors per day",
-      "barTitle": "{{date}}: {{n}} visitors ({{prev}} a week before)",
-      "views": "Page views",
-      "conversion": "Visit to signup",
-      "conversionHint": "{{n}} signups from {{total}} visitors",
-      "blog": "Blog readers",
-      "appOpens": "App opens",
-      "appUsers": "App users",
-      "appUsersHint": "{{day}} today · {{month}} in 30 days",
-      "topPages": "Top pages",
-      "noPages": "No page views yet",
-      "topReferrers": "Top referrers",
-      "noReferrers": "No referrers yet"
+      "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
     }
   },
   "billing": {
