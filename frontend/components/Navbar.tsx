@@ -196,9 +196,7 @@ const Navbar: React.FC<NavbarProps> = ({
     return (
         <nav
             className={`relative z-30 has-[[data-testid=universal-search][data-state=open]]:z-50 flex-shrink-0 text-gray-900 dark:text-white ${
-                transparent
-                    ? 'bg-transparent'
-                    : 'bg-gray-100 dark:bg-gray-800'
+                transparent ? 'bg-transparent' : 'bg-gray-100 dark:bg-gray-800'
             }`}
         >
             {/* Main bar row */}
@@ -254,7 +252,7 @@ const Navbar: React.FC<NavbarProps> = ({
                         aria-haspopup="dialog"
                         aria-expanded={captureOpen}
                         data-testid="capture-navbar-button"
-                        className="flex items-center bg-surface text-ink rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
+                        className="hidden lg:flex items-center bg-surface text-ink rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
                         aria-label={t('navigation.quickInboxCapture')}
                         title={t('navigation.quickInboxCapture')}
                     >

@@ -100,6 +100,9 @@ describe('QuickCaptureInput Task action', () => {
             expect(url).toBe(getApiPath('task'));
             expect(options.method).toBe('POST');
             expect(JSON.parse(options.body)).toEqual({
+                uid: expect.stringMatching(
+                    /^[0-9abcdefghijkmnpqrstuvwxyz]{15}$/
+                ),
                 name: 'My task name',
                 status: 'not_started',
                 priority: null,
@@ -107,6 +110,9 @@ describe('QuickCaptureInput Task action', () => {
                 ...(projectUid ? { project_uid: projectUid } : {}),
                 completed_at: null,
             });
+            expect(options.headers['Idempotency-Key']).toEqual(
+                expect.stringMatching(/^ltd-/)
+            );
             expect(screen.getByTestId('quick-capture-input')).toHaveValue('');
         }
     );
