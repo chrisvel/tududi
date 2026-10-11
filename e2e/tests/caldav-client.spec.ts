@@ -7,7 +7,8 @@ test.describe('CalDAV Client Compatibility', () => {
     const testUser = {
         email: process.env.E2E_EMAIL || 'test@tududi.com',
         password: process.env.E2E_PASSWORD || 'password123',
-        username: 'test'
+        // LTD-PATCH(T-103): calendar ownership is keyed by the user's email.
+        username: process.env.E2E_EMAIL || 'test@tududi.com'
     };
 
     let authHeader: string;
@@ -293,7 +294,7 @@ END:VCALENDAR`;
             expect([201, 204]).toContain(response.status());
         });
 
-        test('should expand recurring task instances in PROPFIND', async ({ request }) => {
+        test('should discover the recurring task in PROPFIND', async ({ request }) => {
             const propfindBody = `<?xml version="1.0" encoding="utf-8"?>
                 <D:propfind xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
                     <D:prop>
@@ -314,7 +315,8 @@ END:VCALENDAR`;
 
             expect(response.status()).toBe(207);
             const body = await response.text();
-            expect(body).toContain(recurringUID);
+            // LTD-PATCH(T-103): WebDAV hrefs escape the resource UID.
+            expect(body).toContain(`${encodeURIComponent(recurringUID)}.ics`);
         });
 
         test('should cleanup recurring task', async ({ request }) => {
@@ -406,7 +408,7 @@ END:VCALENDAR`;
             expect([400, 422]).toContain(response.status());
         });
 
-        test('should preserve timezone information', async ({ request }) => {
+        test('should export the task deadline as a calendar date', async ({ request }) => {
             const tzUID = `tz-${Date.now()}@tududi.local`;
             const vtodo = `BEGIN:VCALENDAR
 VERSION:2.0
@@ -436,7 +438,9 @@ END:VCALENDAR`;
                 }
             });
             const body = await getResponse.text();
-            expect(body).toContain('DUE:20260420T140000Z');
+            // LTD-PATCH(T-103): tududi exports task deadlines as VALUE=DATE.
+            expect(getResponse.ok()).toBeTruthy();
+            expect(body).toContain('DUE;VALUE=DATE:20260420');
 
             await request.delete(`${apiURL}/caldav/${testUser.username}/tasks/${tzUID}/`, {
                 headers: {

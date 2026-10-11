@@ -102,7 +102,7 @@ describe('MermaidDiagram', () => {
             expect.objectContaining({
                 startOnLoad: false,
                 securityLevel: 'strict',
-                theme: 'default',
+                theme: 'neutral',
             })
         );
     });
@@ -120,7 +120,7 @@ describe('MermaidDiagram', () => {
         });
         await waitFor(() =>
             expect(mockInitialize).toHaveBeenLastCalledWith(
-                expect.objectContaining({ theme: 'default' })
+                expect.objectContaining({ theme: 'neutral' })
             )
         );
     });
