@@ -64,8 +64,8 @@ function bodyOf(res) {
 async function main() {
     const { sequelize, User, Person, Project } = models;
     const report = {
-        modelTables: Object.values(models)
-            .filter((model) => model && model.getTableName)
+        // Include models registered by app modules, such as idempotency keys.
+        modelTables: Object.values(sequelize.models)
             .map((model) => String(model.getTableName()))
             .sort(),
         login: {},

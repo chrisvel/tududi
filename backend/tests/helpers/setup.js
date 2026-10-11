@@ -23,6 +23,9 @@ if (process.env.DATABASE_URL || process.env.DB_DIALECT) {
 }
 
 const { sequelize } = require('../../models');
+// Register the fork-only model before sync, including suites that never load
+// the app. Otherwise cleanup stops at its missing table and leaves old rows.
+require('../../modules/ltd-idempotency/repository');
 const { isSqlite, truncateTables } = require('../../utils/db-dialect');
 
 // Children before parents: PostgreSQL deletes these with constraints on.

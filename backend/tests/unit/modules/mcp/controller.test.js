@@ -34,7 +34,7 @@ describe('MCP Controller', () => {
             expect(res.json).toHaveBeenCalledWith(
                 expect.objectContaining({
                     mcpServers: expect.objectContaining({
-                        tududi: expect.objectContaining({
+                        'life-to-day': expect.objectContaining({
                             command: 'npx',
                             args: expect.arrayContaining([
                                 'mcp-remote',
@@ -58,7 +58,7 @@ describe('MCP Controller', () => {
             expect(res.json).toHaveBeenCalledWith(
                 expect.objectContaining({
                     mcpServers: expect.objectContaining({
-                        tududi: expect.objectContaining({
+                        'life-to-day': expect.objectContaining({
                             args: expect.arrayContaining([
                                 'http://localhost:3002/api/mcp',
                             ]),
@@ -78,7 +78,7 @@ describe('MCP Controller', () => {
             await controller.getMcpConfig(req, res);
 
             const config = res.json.mock.calls[0][0];
-            const args = config.mcpServers.tududi.args;
+            const args = config.mcpServers['life-to-day'].args;
             expect(args).toContain('--header');
             expect(args.some((a) => a.includes('Authorization:Bearer'))).toBe(
                 true
@@ -95,7 +95,7 @@ describe('MCP Controller', () => {
             await controller.getMcpConfig(req, res);
 
             const config = res.json.mock.calls[0][0];
-            expect(config.mcpServers.tududi.env.TUDUDI_API_TOKEN).toBe(
+            expect(config.mcpServers['life-to-day'].env.TUDUDI_API_TOKEN).toBe(
                 'YOUR_API_TOKEN_HERE'
             );
         });
