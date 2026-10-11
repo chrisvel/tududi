@@ -1276,6 +1276,30 @@ describe('MCP Tools Integration', () => {
                 ]);
             });
 
+            it('should accept tags sent as a JSON-encoded array string', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'JSON Tags Task',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        tags: '["需求", "json-tag"]',
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.tags.map((t) => t.name).sort()).toEqual([
+                    'json-tag',
+                    '需求',
+                ]);
+            });
+
             it('should clear tags when given an empty array', async () => {
                 const task = await Task.create({
                     user_id: user.id,
