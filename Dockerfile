@@ -4,7 +4,9 @@
 # Runs on the build host's own architecture: only the compiled frontend and
 # static assets leave this stage, and they do not depend on the target CPU.
 # Building them under QEMU for arm64 made the full npm install time out.
-FROM --platform=$BUILDPLATFORM node:22-alpine AS builder
+# LTD-PATCH(T-201): the fallback keeps builders without BuildKit (which leave
+# BUILDPLATFORM empty and fail to parse the platform) able to build the image.
+FROM --platform=${BUILDPLATFORM:-linux/amd64} node:22-alpine AS builder
 
 RUN apk add --no-cache \
     python3 \

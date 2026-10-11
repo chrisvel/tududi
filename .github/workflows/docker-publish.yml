@@ -1,16 +1,13 @@
 name: Publish Docker image
 
-# Builds the release image from the tagged commit and pushes it to Docker Hub
-# as chrisvel/tududi:<version> and :latest. Until now the image was built and
-# pushed by hand, so a tag and an image could disagree.
-#
-# The same tags go to ghcr.io/chrisvel/tududi, which the hosted deploy pulls
-# from (Kamal, with the registry token shared by the other hosted apps).
-#
-# Requires the DOCKERHUB_USERNAME and DOCKERHUB_TOKEN repository secrets.
-# ghcr.io uses the workflow's own GITHUB_TOKEN.
+# LTD-PATCH(T-201): publish only this fork's GHCR image. No Docker Hub
+# credentials, upstream namespace or external announcements are used.
+# Both platforms use native runners; local ARM64 build was verified.
 
 on:
+  pull_request:
+    branches: [main]
+    paths: ['Dockerfile', 'package*.json', '.github/workflows/docker-publish.yml']
   push:
     tags:
       - 'v*'
@@ -39,8 +36,42 @@ on:
 permissions:
   contents: read
 
+env:
+  GH_REPO: DanialMasghati/life-to-day
+
 jobs:
+  # Validate the exact publishing architectures before authorizing a tag push.
+  # PRs build/scan locally on native runners and never push an image.
+  publication-check:
+    if: github.event_name == 'pull_request' && github.repository == 'DanialMasghati/life-to-day'
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Build native release image without publishing
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: docker build --platform "$PLATFORM" -t ltd:publication-check .
+      - name: Smoke test release dependencies and migration CLI
+        run: |
+          docker run --rm --entrypoint sh ltd:publication-check -c \
+            'cd /app/backend && node -e "require(\"sequelize\"); require(\"sqlite3\"); require(\"express\"); require(\"@modelcontextprotocol/sdk/server/mcp.js\")" && npx --no-install sequelize-cli --version && command -v wget'
+      - name: Scan release image
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: ltd:publication-check
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+
   version:
+    if: github.event_name != 'pull_request' && github.repository == 'DanialMasghati/life-to-day'
     runs-on: ubuntu-latest
 
     outputs:
@@ -104,6 +135,9 @@ jobs:
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       # Always the tag: a manual run or a call starts on main, and building
@@ -122,11 +156,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Log in to Docker Hub
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
 
       - name: Build and push by digest
         id: build
@@ -134,7 +169,8 @@ jobs:
         with:
           context: .
           platforms: ${{ matrix.platform }}
-          outputs: type=image,name=chrisvel/tududi,push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=ghcr.io/danialmasghati/life-to-day,push-by-digest=true,name-canonical=true,push=true
+          labels: org.opencontainers.image.source=https://github.com/DanialMasghati/life-to-day
           cache-from: type=gha,scope=${{ steps.platform.outputs.slug }}
           cache-to: type=gha,scope=${{ steps.platform.outputs.slug }},mode=max
 
@@ -142,7 +178,7 @@ jobs:
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          docker run --rm --entrypoint sh "chrisvel/tududi@$DIGEST" -c \
+          docker run --rm --entrypoint sh "ghcr.io/danialmasghati/life-to-day@$DIGEST" -c \
             "cd /app/backend && node -e \"require('sequelize'); require('sqlite3'); require('express')\""
 
       - name: Export digest
@@ -187,12 +223,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v4
         with:
@@ -206,14 +236,13 @@ jobs:
           VERSION: ${{ needs.version.outputs.version }}
           LATEST: ${{ needs.version.outputs.latest }}
         run: |
-          # The images were pushed by digest to Docker Hub only; imagetools
-          # copies them to ghcr.io while it tags both.
-          set -- -t "chrisvel/tududi:$VERSION" -t "ghcr.io/chrisvel/tududi:$VERSION"
+          # Assemble native build digests within this fork's GHCR namespace.
+          set -- -t "ghcr.io/danialmasghati/life-to-day:$VERSION"
           if [ "$LATEST" = "true" ]; then
-            set -- "$@" -t chrisvel/tududi:latest -t ghcr.io/chrisvel/tududi:latest
+            set -- "$@" -t ghcr.io/danialmasghati/life-to-day:latest
           fi
           for digest in *; do
-            set -- "$@" "chrisvel/tududi@sha256:$digest"
+            set -- "$@" "ghcr.io/danialmasghati/life-to-day@sha256:$digest"
           done
           docker buildx imagetools create "$@"
 
@@ -221,15 +250,15 @@ jobs:
         env:
           VERSION: ${{ needs.version.outputs.version }}
         run: |
-          docker buildx imagetools inspect "chrisvel/tududi:$VERSION" | tee -a "$GITHUB_STEP_SUMMARY"
+          docker buildx imagetools inspect "ghcr.io/danialmasghati/life-to-day:$VERSION" | tee -a "$GITHUB_STEP_SUMMARY"
 
   # The GitHub Release is cut from a tag push or a release.yml call, and only
-  # after the image it describes is on Docker Hub, so a release never points
+  # after the image it describes is on GHCR, so a release never points
   # at something nobody can pull. A manual run republishes an image for a tag
   # that already has its release, so it is skipped here.
   release:
     needs: publish
-    if: needs.publish.outputs.release == 'true'
+    if: needs.publish.outputs.release == 'true' && needs.publish.outputs.version != '0.0.0-phase2'
     runs-on: ubuntu-latest
 
     permissions:
@@ -274,29 +303,3 @@ jobs:
           gh release "$ACTION" "$@"
           gh release view "$TAG" --json tagName,isPrerelease,url \
             | tee -a "$GITHUB_STEP_SUMMARY"
-
-  # Posts each new GitHub Release to the Discord channel. Runs after the
-  # release is in place, so a failed release never announces. Needs the
-  # DISCORD_WEBHOOK_URL repository secret.
-  announce:
-    needs: [publish, release]
-    if: needs.publish.outputs.release == 'true'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Post the release to Discord
-        env:
-          GH_TOKEN: ${{ github.token }}
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          TAG: v${{ needs.publish.outputs.version }}
-          REPO: ${{ github.repository }}
-        run: |
-          # Discord caps an embed description at 4096 characters
-          NOTES=$(gh release view "$TAG" --json body --jq .body | head -c 3500)
-          BODY="**tududi $TAG was just released!**"$'\n\n'"$NOTES"
-          jq -n \
-            --arg title "tududi $TAG" \
-            --arg url "https://github.com/$REPO/releases/tag/$TAG" \
-            --arg body "$BODY" \
-            '{embeds: [{title: $title, url: $url, description: $body, color: 5793266}]}' \
-            | curl -fsS -H "Content-Type: application/json" -d @- "$WEBHOOK"

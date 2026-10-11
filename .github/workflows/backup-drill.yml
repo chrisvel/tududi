@@ -1,0 +1,99 @@
+name: Backup restore drill
+
+# LTD-PATCH(T-202): synthetic SQLite only; no repository secrets or real data.
+on:
+  schedule:
+    - cron: '45 3 * * 0'
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'deploy/**'
+      - 'Dockerfile'
+      - 'package*.json'
+      - '.github/workflows/backup-drill.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/**'
+      - 'Dockerfile'
+      - 'package*.json'
+      - '.github/workflows/backup-drill.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  restore-drill:
+    if: github.repository == 'DanialMasghati/life-to-day'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Confirm Docker access
+        run: docker info >/dev/null
+      - name: Build one local app with disposable credentials
+        working-directory: deploy
+        run: |
+          cp .env.example .env
+          chmod 600 .env
+          # Runner owns the parent before Docker creates/chowns bind mounts.
+          mkdir -p data/db data/uploads data/backups
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          p = Path('.env')
+          text = p.read_text().replace('you@example.com', 'ci@example.invalid')
+          text = text.replace('<replace-with-a-long-random-password>', subprocess.check_output(['openssl', 'rand', '-hex', '32'], text=True).strip())
+          text = text.replace('<replace-with-output-of-openssl-rand-hex-64>', subprocess.check_output(['openssl', 'rand', '-hex', '64'], text=True).strip())
+          p.write_text(text)
+          PY
+          docker compose --profile local up -d --build
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3002/api/health/ready; then break; fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:3002/api/health/ready
+      - name: Add one synthetic task through the real API
+        working-directory: deploy
+        run: |
+          python3 - <<'PY'
+          import http.cookiejar, json, urllib.request
+          from pathlib import Path
+          env = dict(line.split('=', 1) for line in Path('.env').read_text().splitlines() if line and not line.startswith('#') and '=' in line)
+          client = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+          def call(path, body=None, headers=None):
+              request = urllib.request.Request('http://127.0.0.1:3002' + path, data=None if body is None else json.dumps(body).encode(), headers={'Content-Type': 'application/json', **(headers or {})})
+              with client.open(request, timeout=10) as response:
+                  return json.loads(response.read())
+          call('/api/login', {'email': env['TUDUDI_USER_EMAIL'], 'password': env['TUDUDI_USER_PASSWORD']})
+          csrf = call('/api/csrf-token')['csrfToken']
+          call('/api/task', {'name': 'Weekly restore fixture', 'status': 0}, {'X-CSRF-Token': csrf})
+          PY
+      - name: Backup and recover into an empty folder
+        working-directory: deploy
+        run: |
+          ./backup.sh | tee backup.log
+          mkdir data/drill
+          date -u '+START %Y-%m-%dT%H:%M:%SZ %s' | tee drill.log
+          ./restore-drill.sh "$(ls -1 data/backups/ltd-*.sqlite3 | tail -n 1)" "$(pwd)/data/drill" | tee -a drill.log
+          date -u '+END %Y-%m-%dT%H:%M:%SZ %s' | tee -a drill.log
+          cat drill.log >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload proof logs only
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: restore-drill-proof
+          path: |
+            deploy/backup.log
+            deploy/drill.log
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Stop disposable runner containers
+        if: always()
+        working-directory: deploy
+        run: docker compose --profile local down

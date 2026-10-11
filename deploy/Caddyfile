@@ -1,0 +1,14 @@
+# The domain comes from LTD_DOMAIN in deploy/.env, so this file never needs
+# a local edit on the server. Caddy gets and renews the certificate itself;
+# ports 80 and 443 must be reachable and the A record must point here.
+{$LTD_DOMAIN:plan.example.com} {
+	encode zstd gzip
+
+	# Deferred (">") so it replaces the app's own HSTS header instead of
+	# adding a second one.
+	header >Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+	# Caddy sets X-Forwarded-For/-Proto; the app trusts one hop
+	# (TUDUDI_TRUST_PROXY=1), so session cookies get the Secure flag.
+	reverse_proxy app:3002
+}

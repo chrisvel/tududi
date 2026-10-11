@@ -109,7 +109,9 @@ jobs:
     needs: [cut, publish]
     # Stable and rc when ticked, dev never. Decided on the version itself, so
     # an exact version is judged the same way.
+    # LTD-PATCH(T-201): this fork never dispatches a hosted tududi deployment.
     if: >-
+      github.repository == 'chrisvel/tududi' &&
       inputs.deploy &&
       (!contains(needs.cut.outputs.version, '-') ||
       contains(needs.cut.outputs.version, '-rc.'))
