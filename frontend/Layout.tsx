@@ -449,7 +449,7 @@ const Layout: React.FC<LayoutProps> = ({
                 <div
                     className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col sm:p-2 sm:pl-0`}
                 >
-                    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 sm:rounded-2xl sm:shadow-sm">
+                    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 pt-[env(safe-area-inset-top)] sm:rounded-2xl sm:shadow-sm sm:pt-0">
                         {background}
                         <Navbar
                             transparent={!!background}
