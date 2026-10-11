@@ -1,7 +1,8 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 // v2: manifest.json gained a share_target member, and the static cache is
 // cache-first — existing installs need the stale copy evicted to pick it up
 // v3: push notifications
-const CACHE_VERSION = 'tududi-v3';
+const CACHE_VERSION = 'life-to-day-v1';
 const API_CACHE = 'tududi-api-v1';
 const SYNC_QUEUE = 'tududi-sync-queue';
 
@@ -25,7 +26,7 @@ let sessionUserId = null;
 const STATIC_ASSETS = [
     '/',
     '/manifest.json',
-    '/favicon.ico',
+    '/favicon-32.png',
     '/apple-touch-icon.png',
     '/icon-logo.png',
 ];
@@ -345,12 +346,12 @@ self.addEventListener('push', (event) => {
 
     // Always show something: iOS revokes the subscription of a site that
     // receives a push without displaying a notification.
-    const title = payload.title || 'tududi';
+    const title = payload.title || 'Life-to-Day';
     event.waitUntil(
         self.registration.showNotification(title, {
             body: payload.body || '',
             icon: '/icon-logo.png',
-            badge: '/favicon-48.png',
+            badge: '/favicon-32.png',
             tag: payload.tag || undefined,
             data: { url: payload.url || '/' },
         })

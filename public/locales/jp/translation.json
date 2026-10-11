@@ -360,17 +360,17 @@
     "personalInfo": "個人情報",
     "errorMessage": "プロフィールの更新に失敗しました",
     "telegramIntegration": "Telegramの統合",
-    "telegramDescription": "あなたのtududiアカウントをTelegramボットに接続して、Telegramメッセージを通じてあなたの受信箱にアイテムを追加します。",
+    "telegramDescription": "あなたのLife-to-DayアカウントをTelegramボットに接続して、Telegramメッセージを通じてあなたの受信箱にアイテムを追加します。",
     "telegramBotToken": "Telegramボットトークン",
     "telegramTokenDescription": "Telegramの@BotFatherでボットを作成し、ここにトークンを貼り付けます。",
-    "telegramConnected": "あなたのTelegramアカウントは接続されています！ボットにメッセージを送って、あなたのtududiの受信箱にアイテムを追加します。",
+    "telegramConnected": "あなたのTelegramアカウントは接続されています！ボットにメッセージを送って、あなたのLife-to-Dayの受信箱にアイテムを追加します。",
     "setupTelegram": "Telegramの設定",
     "setupTelegramLower": "telegramの設定",
     "settingUp": "設定中...",
     "telegramSetupSuccess": "Telegramボット\"{{botName}}\"の設定が成功しました！",
     "telegramSetupFailed": "Telegramボットの設定に失敗しました。",
     "invalidTelegramToken": "無効なTelegramボットトークン形式。",
-    "telegramInstructions": "https://t.me/{{botUsername}}にアクセスし、あなたのボットとチャットを開始して、それをあなたのtududiアカウントに接続します。",
+    "telegramInstructions": "https://t.me/{{botUsername}}にアクセスし、あなたのボットとチャットを開始して、それをあなたのLife-to-Dayアカウントに接続します。",
     "botConfigured": "ボットの設定が成功しました！",
     "botUsername": "ボットのユーザー名：",
     "pollingStatus": "ポーリングステータス：",
@@ -538,8 +538,8 @@
       "testRequired": "続行する前に接続をテストする必要があります",
       "syncDirection": "同期方向",
       "bidirectional": "双方向（両方の方向で同期）",
-      "pullOnly": "プルのみ（サーバーからTududiへ）",
-      "pushOnly": "プッシュのみ（Tududiからサーバーへ）",
+      "pullOnly": "プルのみ（サーバーからLife-to-Dayへ）",
+      "pushOnly": "プッシュのみ（Life-to-Dayからサーバーへ）",
       "syncInterval": "同期間隔（分）",
       "syncIntervalHelp": "自動的に同期する頻度（5-1440分）",
       "conflictPolicy": "競合解決",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "同期の競合を解決する",
       "chooseVersion": "各フィールドの保持するバージョンを選択してください：",
-      "local": "ローカル (Tududi)",
+      "local": "ローカル (Life-to-Day)",
       "remote": "リモート (CalDAV)",
       "useThis": "これを使用",
       "useAllLocal": "すべてローカルを使用",
@@ -597,7 +597,7 @@
       "addError": "このカレンダーを追加できませんでした",
       "deleteError": "このカレンダーを削除できませんでした",
       "title": "今日のページのカレンダー",
-      "description": "一日の計画の横に予定を表示します。tududi はこれらのカレンダーを読み取るだけで、変更することはありません。",
+      "description": "一日の計画の横に予定を表示します。Life-to-Day はこれらのカレンダーを読み取るだけで、変更することはありません。",
       "empty": "まだカレンダーが接続されていません。",
       "lastSync": "{{time}} に更新",
       "remove": "{{name}} を削除",
@@ -605,7 +605,7 @@
       "name": "名前",
       "namePlaceholder": "仕事、家族…",
       "url": "非公開 iCal アドレス",
-      "googleHelp": "Google カレンダーで: 設定 → 対象のカレンダー → カレンダーの統合 →「iCal 形式の非公開アドレス」。Apple カレンダーや Outlook にも同様のリンクがあります。このアドレスを知っている人は誰でもカレンダーを読めるため、tududi は暗号化して保存します。",
+      "googleHelp": "Google カレンダーで: 設定 → 対象のカレンダー → カレンダーの統合 →「iCal 形式の非公開アドレス」。Apple カレンダーや Outlook にも同様のリンクがあります。このアドレスを知っている人は誰でもカレンダーを読めるため、Life-to-Day は暗号化して保存します。",
       "color": "色",
       "checking": "カレンダーを確認しています…",
       "add": "接続",
@@ -762,16 +762,16 @@
     "habitsDescription": "繰り返しの行動や連続記録を追跡する習慣セクションを有効にします。",
     "loading": "読み込み中...",
     "mcp": {
-      "description": "Model Context Protocol を使って、tududi を MCP 対応の任意のアプリと接続します。AIアシスタントがあなたのタスク、プロジェクト、ノートを扱えるようになります。ローカルとリモートどちらの tududi サーバーでも使えます。",
+      "description": "Model Context Protocol を使って、Life-to-Day を MCP 対応の任意のアプリと接続します。AIアシスタントがあなたのタスク、プロジェクト、ノートを扱えるようになります。ローカルとリモートどちらの Life-to-Day サーバーでも使えます。",
       "example1": "今日のタスクを見せて",
       "example2": "MCP連携を確認するタスクを作成して",
       "example3": "進行中のプロジェクトは何?",
       "example4": "メールを確認するリマインダーを受信箱に追加して",
       "example5": "ドキュメントに関するタスクを検索して",
       "remote": {
-        "cloud": "リモートの tududi にアクセス(クラウドサーバー)",
+        "cloud": "リモートの Life-to-Day にアクセス(クラウドサーバー)",
         "docker": "Docker 環境から利用",
-        "local": "ローカルの tududi にアクセス(localhost)",
+        "local": "ローカルの Life-to-Day にアクセス(localhost)",
         "title": "リモートアクセス有効",
         "tokens": "APIトークンで安全に接続",
         "usesPrefix": "この設定は",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "コピー",
-        "description": "この設定をMCPクライアントに追加します。YOUR_API_TOKEN_HERE をステップ1で作成したトークンに置き換えてください。mcp-remote を使ってHTTP経由で tududi サーバーに接続します。Claude Desktop の例:",
+        "description": "この設定をMCPクライアントに追加します。YOUR_API_TOKEN_HERE をステップ1で作成したトークンに置き換えてください。mcp-remote を使ってHTTP経由で Life-to-Day サーバーに接続します。Claude Desktop の例:",
         "loading": "読み込み中...",
         "locationTitle": "Claude Desktop の設定ファイルの場所:",
         "otherClients": "ほかのMCPクライアントでは設定方法が異なる場合があります。各クライアントのドキュメントを確認してください。",
@@ -795,7 +795,7 @@
         "title": "3. 利用できる操作"
       },
       "step4": {
-        "description": "設定を追加したらMCPクライアントを再起動してください。その後は自然な言葉で tududi を操作できます:",
+        "description": "設定を追加したらMCPクライアントを再起動してください。その後は自然な言葉で Life-to-Day を操作できます:",
         "examplesTitle": "プロンプトの例:",
         "title": "4. 使ってみる"
       },
@@ -804,7 +804,7 @@
         "firewall": "リモートサーバーの場合はファイアウォール設定を確認する",
         "intro": "MCPクライアントが接続できない場合は、次を確認してください:",
         "restart": "MCPクライアントを完全に再起動した",
-        "server": "tududi サーバーが起動していてアクセスできる",
+        "server": "Life-to-Day サーバーが起動していてアクセスできる",
         "title": "トラブルシューティング",
         "token": "APIトークンが有効で期限切れでない"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "クイックインボックスキャプチャ",
     "userMenu": "ユーザーメニュー",
     "collapseSidebar": "サイドバーを折りたたむ",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 tududi へようこそ！\n\nあなたの個人的なタスク管理ボットが接続され、助ける準備ができました！\n\n📝 どんなメッセージでも送信してください。tududi の受信トレイにアイテムとして追加します。\n\n✨ コマンド:\n• /help - ヘルプ情報を表示\n• /start - ウェルカムメッセージを表示\n• ただテキストを入力 - 受信トレイアイテムとして追加\n\n整理を始めましょう！🚀",
-    "helpMessage": "📋 tududi ボット ヘルプ\n\nどんなテキストメッセージでも送信してください。tududi の受信トレイにアイテムとして追加します。\n\nコマンド:\n/start - ウェルカムメッセージ\n/help - このヘルプメッセージを表示\n\nアイテムを入力するだけで、残りは私が処理します！",
+    "welcomeMessage": "🎉 Life-to-Day へようこそ！\n\nあなたの個人的なタスク管理ボットが接続され、助ける準備ができました！\n\n📝 どんなメッセージでも送信してください。Life-to-Day の受信トレイにアイテムとして追加します。\n\n✨ コマンド:\n• /help - ヘルプ情報を表示\n• /start - ウェルカムメッセージを表示\n• ただテキストを入力 - 受信トレイアイテムとして追加\n\n整理を始めましょう！🚀",
+    "helpMessage": "📋 Life-to-Day ボット ヘルプ\n\nどんなテキストメッセージでも送信してください。Life-to-Day の受信トレイにアイテムとして追加します。\n\nコマンド:\n/start - ウェルカムメッセージ\n/help - このヘルプメッセージを表示\n\nアイテムを入力するだけで、残りは私が処理します！",
     "commandProcessed": "コマンドが正常に処理されました",
     "messageProcessed": "メッセージが正常に処理されました",
     "failedToAddToInbox": "❌ 受信トレイに追加できませんでした: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "バージョン",
     "description": "階層的な組織、マルチランゲージサポート、Telegram統合を備えたセルフホステッドのタスク管理。生産性愛好者のために愛を込めて作られました。",
     "madeWithLove": "愛を込めて作られました",
-    "appreciation": "tududiをご利用いただきありがとうございます！あなたのサポートがこのプロジェクトを生かし、成長させる手助けになります。役立つと思ったら、開発を支援することを検討してください。",
+    "appreciation": "Life-to-Dayをご利用いただきありがとうございます！あなたのサポートがこのプロジェクトを生かし、成長させる手助けになります。役立つと思ったら、開発を支援することを検討してください。",
     "supportDevelopment": "開発を支援する",
     "community": "コミュニティ",
     "viewOnGitHub": "GitHubで見る",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "管理者",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "ユーザー",
       "usersHint": "{{verified}} 確認済み · {{admins}} 管理者 · {{new}} 今日",
       "paying": "支払い中",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "ブログ",
       "description": "メモをひとつ選んでトップページにします。そのメモが [[タイトル]] でリンクしている公開メモが記事になります。表示するには、トップページと各記事を公開共有してください。",
-      "placeholder": "メモのリンクまたは ID(例: https://app.tududi.com/notes/abc123)",
+      "placeholder": "メモのリンクまたは ID(例: /notes/abc123)",
       "inputLabel": "トップページのメモ",
       "turnOff": "オフにする",
       "shared": "公開",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "サブスクリプション",
-    "chooseForCloud": "tududi Cloudのプランを選択してください",
+    "chooseForCloud": "Life-to-Day Cloudのプランを選択してください",
     "noActive": "アクティブなサブスクリプションはありません",
-    "chooseToContinue": "tududi Cloudを引き続き使用するためのプランを選択してください。",
+    "chooseToContinue": "Life-to-Day Cloudを引き続き使用するためのプランを選択してください。",
     "monthly": "月額",
     "yearly": "年額",
     "priceMonthly": "{{price}} / 月",
@@ -2552,15 +2552,15 @@
     "notConfigured": "このインスタンスではまだサブスクリプションは利用できません。サポートにお問い合わせください。",
     "exportData": "データをエクスポート",
     "subscribe": "購読する",
-    "readOnlyBanner": "試用期間が終了したため、データは読み取り専用です。tududi を引き続き使うには購読するか、データをエクスポートしてください。アカウントは {{date}} に削除されます。",
+    "readOnlyBanner": "試用期間が終了したため、データは読み取り専用です。Life-to-Day を引き続き使うには購読するか、データをエクスポートしてください。アカウントは {{date}} に削除されます。",
     "lockedAi": "AI アシスタントは有料プランに含まれます。",
     "lockedPublicNotes": "ノートの公開リンクは有料プランに含まれます。",
     "lockedMembers": "メンバーの追加は有料プランに含まれます。",
     "trialEnded": "試用期間が終了しました",
     "onTrial": "無料試用中です",
-    "readOnlyUntil": "データは {{date}} まで読み取り専用で、その後アカウントは削除されます。tududi Cloud を引き続き使うには購読してください。",
+    "readOnlyUntil": "データは {{date}} まで読み取り専用で、その後アカウントは削除されます。Life-to-Day Cloud を引き続き使うには購読してください。",
     "trialIncludes": "試用期間は {{date}} に終了します。AI アシスタント、公開ノート、メンバーの追加は購読すると使えるようになります。",
-    "backToApp": "tududi に戻る",
+    "backToApp": "Life-to-Day に戻る",
     "trialBanner": "無料試用中、残り日数：{{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "メンバーを更新できませんでした",
     "addEmailHint": "メールアドレスを追加すると、パスワード設定の招待が送られます。後から変更することはできません。",
     "remove": "メンバーを削除",
-    "removeConfirm": "{{name}} を削除しますか？アカウントとそのすべての内容が削除され、元に戻せません。tududi Cloud では、その席がサブスクリプションから外れます。",
+    "removeConfirm": "{{name}} を削除しますか？アカウントとそのすべての内容が削除され、元に戻せません。Life-to-Day Cloud では、その席がサブスクリプションから外れます。",
     "removed": "メンバーを削除しました",
     "updated": "メンバーを更新しました",
     "invitationSent": "招待を送信しました",
@@ -2959,10 +2959,10 @@
   "blog": {
     "nav": "ブログ",
     "navCta": "今すぐ始める",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "利用規約",
     "footerPrivacy": "プライバシー",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "小さなことを頭の中から出そう。",
     "ctaBody": "タスク、プロジェクト、メモ、習慣をひとつの落ち着いた場所に。一緒に暮らし、働く人たちと共有できます。サーバー不要、インストール不要。",
     "ctaPrice": "月額 {{monthly}} または年額 {{annual}}",
@@ -2978,5 +2978,9 @@
     "missingBody": "移動または削除された可能性があります。ほかの記事はすぐそこです。",
     "allPosts": "すべての記事",
     "morePosts": "ブログのほかの記事"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

@@ -326,17 +326,17 @@
     "personalInfo": "Henkilökohtaiset tiedot",
     "errorMessage": "Profiilin päivittäminen epäonnistui",
     "telegramIntegration": "Telegram-integraatio",
-    "telegramDescription": "Yhdistä tududi-tilisi Telegram-botiin lisätäksesi kohteita saapuneet-viesteihisi Telegram-viestien kautta.",
+    "telegramDescription": "Yhdistä Life-to-Day-tilisi Telegram-botiin lisätäksesi kohteita saapuneet-viesteihisi Telegram-viestien kautta.",
     "telegramBotToken": "Telegram-botin tunnus",
     "telegramTokenDescription": "Luo botti @BotFatherin avulla Telegramissa ja liitä tunnus tänne.",
-    "telegramConnected": "Telegram-tilisi on yhdistetty! Lähetä viestejä bottillesi lisätäksesi kohteita tududi-sisäänkirjautumiseesi.",
+    "telegramConnected": "Telegram-tilisi on yhdistetty! Lähetä viestejä bottillesi lisätäksesi kohteita Life-to-Day-sisäänkirjautumiseesi.",
     "setupTelegram": "Aseta Telegram",
     "setupTelegramLower": "aseta telegram",
     "settingUp": "Asetetaan...",
     "telegramSetupSuccess": "Telegram-botti \"{{botName}}\" on konfiguroitu onnistuneesti!",
     "telegramSetupFailed": "Telegram-botin asetuksessa tapahtui virhe.",
     "invalidTelegramToken": "Virheellinen Telegram-botin tunnusmuoto.",
-    "telegramInstructions": "Siirry osoitteeseen https://t.me/{{botUsername}} ja aloita keskustelu bottisi kanssa yhdistääksesi sen tududi-tiliisi.",
+    "telegramInstructions": "Siirry osoitteeseen https://t.me/{{botUsername}} ja aloita keskustelu bottisi kanssa yhdistääksesi sen Life-to-Day-tiliisi.",
     "botConfigured": "Botti on konfiguroitu onnistuneesti!",
     "botUsername": "Bottin käyttäjänimi:",
     "pollingStatus": "Polling-tila:",
@@ -538,8 +538,8 @@
       "testRequired": "Sinun on testattava yhteys ennen jatkamista",
       "syncDirection": "Synkronointisuunta",
       "bidirectional": "Kaksisuuntainen (synkronoi molempiin suuntiin)",
-      "pullOnly": "Vain vetäminen (palvelimelta Tududiin)",
-      "pushOnly": "Vain työntäminen (Tududista palvelimelle)",
+      "pullOnly": "Vain vetäminen (palvelimelta Life-to-Dayin)",
+      "pushOnly": "Vain työntäminen (Life-to-Daysta palvelimelle)",
       "syncInterval": "Synkronointiväli (minuutit)",
       "syncIntervalHelp": "Kuinka usein synkronoida automaattisesti (5-1440 minuuttia)",
       "conflictPolicy": "Konfliktin ratkaisu",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Ratkaise synkronointikonfliktit",
       "chooseVersion": "Valitse, mikä versio säilytetään jokaiselle kentälle:",
-      "local": "Paikallinen (Tududi)",
+      "local": "Paikallinen (Life-to-Day)",
       "remote": "Etäyhteys (CalDAV)",
       "useThis": "Käytä tätä",
       "useAllLocal": "Käytä kaikkia paikallisia",
@@ -597,7 +597,7 @@
       "addError": "Kalenteria ei voitu lisätä",
       "deleteError": "Kalenteria ei voitu poistaa",
       "title": "Kalenterit Tänään-näkymässä",
-      "description": "Näytä tapaamisesi päivän suunnitelman vieressä. Tududi vain lukee näitä kalentereita eikä koskaan muuta niitä.",
+      "description": "Näytä tapaamisesi päivän suunnitelman vieressä. Life-to-Day vain lukee näitä kalentereita eikä koskaan muuta niitä.",
       "empty": "Kalentereita ei ole vielä yhdistetty.",
       "lastSync": "päivitetty {{time}}",
       "remove": "Poista {{name}}",
@@ -605,7 +605,7 @@
       "name": "Nimi",
       "namePlaceholder": "Työ, Perhe…",
       "url": "Salainen iCal-osoite",
-      "googleHelp": "Google Kalenterissa: Asetukset → kalenterisi → Kalenterin integrointi → ”Salainen osoite iCal-muodossa”. Apple Kalenterissa ja Outlookissa on vastaavat linkit. Kuka tahansa, jolla on osoite, voi lukea kalenterin, joten tududi tallentaa sen salattuna.",
+      "googleHelp": "Google Kalenterissa: Asetukset → kalenterisi → Kalenterin integrointi → ”Salainen osoite iCal-muodossa”. Apple Kalenterissa ja Outlookissa on vastaavat linkit. Kuka tahansa, jolla on osoite, voi lukea kalenterin, joten Life-to-Day tallentaa sen salattuna.",
       "color": "Väri",
       "checking": "Tarkistetaan kalenteria…",
       "add": "Yhdistä",
@@ -762,16 +762,16 @@
     "habitsDescription": "Ota käyttöön Tavat-osio toistuvien tekojen ja putkien seuraamiseen.",
     "loading": "Ladataan...",
     "mcp": {
-      "description": "Yhdistä tududi mihin tahansa MCP-yhteensopivaan sovellukseen Model Context Protocolin avulla. Näin AI-avustajat voivat käsitellä tehtäviäsi, projektejasi ja muistiinpanojasi, niin paikallisella kuin etäpalvelimellakin.",
+      "description": "Yhdistä Life-to-Day mihin tahansa MCP-yhteensopivaan sovellukseen Model Context Protocolin avulla. Näin AI-avustajat voivat käsitellä tehtäviäsi, projektejasi ja muistiinpanojasi, niin paikallisella kuin etäpalvelimellakin.",
       "example1": "Näytä tämän päivän tehtäväni",
       "example2": "Luo tehtävä MCP-integraation tarkistamisesta",
       "example3": "Mitkä projektini ovat käynnissä?",
       "example4": "Lisää saapuneisiin muistutus tarkistaa sähköpostit",
       "example5": "Etsi dokumentaatioon liittyviä tehtäviä",
       "remote": {
-        "cloud": "Käytä etä-tududia (pilvipalvelimet)",
+        "cloud": "Käytä etä-Life-to-Daya (pilvipalvelimet)",
         "docker": "Käytä Docker-asennuksista",
-        "local": "Käytä paikallista tududia (localhost)",
+        "local": "Käytä paikallista Life-to-Daya (localhost)",
         "title": "Etäkäyttö käytössä",
         "tokens": "Yhdistä turvallisesti API-tunnuksilla",
         "usesPrefix": "Tämä määritys käyttää",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "Kopioi",
-        "description": "Lisää tämä määritys MCP-asiakasohjelmaasi. Korvaa YOUR_API_TOKEN_HERE vaiheessa 1 luomallasi tunnuksella. Yhteys tududi-palvelimeen muodostetaan HTTP:n kautta mcp-remoten avulla. Esimerkki on Claude Desktopille:",
+        "description": "Lisää tämä määritys MCP-asiakasohjelmaasi. Korvaa YOUR_API_TOKEN_HERE vaiheessa 1 luomallasi tunnuksella. Yhteys Life-to-Day-palvelimeen muodostetaan HTTP:n kautta mcp-remoten avulla. Esimerkki on Claude Desktopille:",
         "loading": "Ladataan...",
         "locationTitle": "Claude Desktopin asetustiedoston sijainti:",
         "otherClients": "Muut MCP-asiakasohjelmat voivat käyttää eri määritystapoja, katso ohjelmasi dokumentaatio.",
@@ -795,7 +795,7 @@
         "title": "3. Käytettävissä olevat toiminnot"
       },
       "step4": {
-        "description": "Käynnistä MCP-asiakasohjelma uudelleen määrityksen lisäämisen jälkeen. Sen jälkeen voit käyttää tududia luonnollisella kielellä:",
+        "description": "Käynnistä MCP-asiakasohjelma uudelleen määrityksen lisäämisen jälkeen. Sen jälkeen voit käyttää Life-to-Daya luonnollisella kielellä:",
         "examplesTitle": "Esimerkkikehotteita:",
         "title": "4. Aloita käyttö"
       },
@@ -804,7 +804,7 @@
         "firewall": "Tarkista etäpalvelinten palomuuriasetukset",
         "intro": "Jos MCP-asiakasohjelma ei saa yhteyttä, tarkista että:",
         "restart": "MCP-asiakasohjelma on käynnistetty kokonaan uudelleen",
-        "server": "tududi-palvelin on käynnissä ja tavoitettavissa",
+        "server": "Life-to-Day-palvelin on käynnissä ja tavoitettavissa",
         "title": "Vianmääritys",
         "token": "API-tunnus on voimassa eikä vanhentunut"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Nopea saapuvan postin tallennus",
     "userMenu": "Käyttäjävalikko",
     "collapseSidebar": "Pienennä sivupalkkia",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 Tervetuloa tududiin!\n\nHenkilökohtainen tehtävienhallintabotisi on nyt yhdistetty ja valmis auttamaan!\n\n📝 Lähetä minulle vain viesti, niin lisään sen tududi-postilaatikkoosi kohteena.\n\n✨ Komennot:\n• /help - Näytä ohjeet\n• /start - Näytä tervetuloviesti\n• Kirjoita vain mitä tahansa tekstiä - Lisää se postilaatikkokohteeksi\n\nAletaan järjestää! 🚀",
-    "helpMessage": "📋 tududi Bot Ohjeet\n\nLähetä minulle mikä tahansa tekstiviesti, niin lisään sen tududi-postilaatikkoosi kohteena.\n\nKomennot:\n/start - Tervetuloviesti\n/help - Näytä tämä ohjeviesti\n\nKirjoita vain kohteesi, niin huolehdin lopusta!",
+    "welcomeMessage": "🎉 Tervetuloa Life-to-Dayin!\n\nHenkilökohtainen tehtävienhallintabotisi on nyt yhdistetty ja valmis auttamaan!\n\n📝 Lähetä minulle vain viesti, niin lisään sen Life-to-Day-postilaatikkoosi kohteena.\n\n✨ Komennot:\n• /help - Näytä ohjeet\n• /start - Näytä tervetuloviesti\n• Kirjoita vain mitä tahansa tekstiä - Lisää se postilaatikkokohteeksi\n\nAletaan järjestää! 🚀",
+    "helpMessage": "📋 Life-to-Day Bot Ohjeet\n\nLähetä minulle mikä tahansa tekstiviesti, niin lisään sen Life-to-Day-postilaatikkoosi kohteena.\n\nKomennot:\n/start - Tervetuloviesti\n/help - Näytä tämä ohjeviesti\n\nKirjoita vain kohteesi, niin huolehdin lopusta!",
     "commandProcessed": "Komento käsitelty onnistuneesti",
     "messageProcessed": "Viesti käsitelty onnistuneesti",
     "failedToAddToInbox": "❌ Lisääminen postilaatikkoon epäonnistui: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "Versio",
     "description": "Itse isännöity tehtävienhallinta hierarkkisella organisaatiolla, monikielisellä tuella ja Telegram-integraatiolla. Rakennettu rakkaudella tuottavuuden ystäville.",
     "madeWithLove": "Rakennettu rakkaudella",
-    "appreciation": "Kiitos, että käytät tududia! Tuki auttaa pitämään tämän projektin elävänä ja kasvavana. Jos löydät sen hyödylliseksi, harkitse kehityksen tukemista.",
+    "appreciation": "Kiitos, että käytät Life-to-Daya! Tuki auttaa pitämään tämän projektin elävänä ja kasvavana. Jos löydät sen hyödylliseksi, harkitse kehityksen tukemista.",
     "supportDevelopment": "Tukee kehitystä",
     "community": "Yhteisö",
     "viewOnGitHub": "Näytä GitHubissa",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "Ylläpito",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Käyttäjät",
       "usersHint": "{{verified}} vahvistettua · {{admins}} ylläpitäjää · {{new}} tänään",
       "paying": "Maksava",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "Blogi",
       "description": "Valitse yksi muistiinpanoistasi etusivuksi. Julkiset muistiinpanot, joihin se linkittää [[Otsikko]]-linkeillä, ovat kirjoitukset. Jaa etusivu ja jokainen kirjoitus julkisesti, jotta ne näkyvät.",
-      "placeholder": "Muistiinpanon linkki tai ID, esim. https://app.tududi.com/notes/abc123",
+      "placeholder": "Muistiinpanon linkki tai ID, esim. /notes/abc123",
       "inputLabel": "Etusivun muistiinpano",
       "turnOff": "Poista käytöstä",
       "shared": "Julkinen",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "Tilauksen",
-    "chooseForCloud": "Valitse suunnitelma tududi Cloudille",
+    "chooseForCloud": "Valitse suunnitelma Life-to-Day Cloudille",
     "noActive": "Ei aktiivista tilausta",
-    "chooseToContinue": "Valitse suunnitelma jatkaaksesi tududi Cloudin käyttöä.",
+    "chooseToContinue": "Valitse suunnitelma jatkaaksesi Life-to-Day Cloudin käyttöä.",
     "monthly": "Kuukausittain",
     "yearly": "Vuosittain",
     "priceMonthly": "{{price}} kuukaudessa",
@@ -2552,15 +2552,15 @@
     "notConfigured": "Tilausta ei ole vielä saatavilla tässä instanssissa. Ota yhteyttä tukeen.",
     "exportData": "Vie tietosi",
     "subscribe": "Tilaa",
-    "readOnlyBanner": "Kokeilujaksosi on päättynyt, joten tietosi ovat vain luku -tilassa. Tilaa jatkaaksesi tududin käyttöä tai vie tietosi. Tili poistetaan {{date}}.",
+    "readOnlyBanner": "Kokeilujaksosi on päättynyt, joten tietosi ovat vain luku -tilassa. Tilaa jatkaaksesi Life-to-Dayn käyttöä tai vie tietosi. Tili poistetaan {{date}}.",
     "lockedAi": "AI-avustaja kuuluu maksulliseen tilaukseen.",
     "lockedPublicNotes": "Julkiset muistiinpanolinkit kuuluvat maksulliseen tilaukseen.",
     "lockedMembers": "Jäsenten lisääminen kuuluu maksulliseen tilaukseen.",
     "trialEnded": "Kokeilujaksosi on päättynyt",
     "onTrial": "Käytät ilmaista kokeilujaksoa",
-    "readOnlyUntil": "Tietosi ovat vain luku -tilassa {{date}} asti, minkä jälkeen tili poistetaan. Tilaa jatkaaksesi tududi Cloudin käyttöä.",
+    "readOnlyUntil": "Tietosi ovat vain luku -tilassa {{date}} asti, minkä jälkeen tili poistetaan. Tilaa jatkaaksesi Life-to-Day Cloudin käyttöä.",
     "trialIncludes": "Kokeilujaksosi päättyy {{date}}. AI-avustaja, julkiset muistiinpanot ja jäsenten lisääminen avautuvat, kun tilaat.",
-    "backToApp": "Takaisin tududiin",
+    "backToApp": "Takaisin Life-to-Dayin",
     "trialBanner": "Ilmainen kokeilu, päiviä jäljellä: {{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "Jäsenen päivittäminen epäonnistui",
     "addEmailHint": "Kun lisäät sähköpostiosoitteen, hän saa kutsun salasanan asettamiseen. Osoitetta ei voi muuttaa jälkikäteen.",
     "remove": "Poista jäsen",
-    "removeConfirm": "Poistetaanko {{name}}? Tili ja kaikki sen sisältö poistetaan, eikä tätä voi perua. tududi Cloudissa paikka poistetaan tilauksestasi.",
+    "removeConfirm": "Poistetaanko {{name}}? Tili ja kaikki sen sisältö poistetaan, eikä tätä voi perua. Life-to-Day Cloudissa paikka poistetaan tilauksestasi.",
     "removed": "Jäsen poistettu",
     "updated": "Jäsen päivitetty",
     "invitationSent": "Kutsu lähetetty",
@@ -2960,10 +2960,10 @@
   "blog": {
     "nav": "Blogi",
     "navCta": "Aloita nyt",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Ehdot",
     "footerPrivacy": "Tietosuoja",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Saa pienet asiat pois päästäsi.",
     "ctaBody": "Tehtävät, projektit, muistiinpanot ja tavat yhdessä rauhallisessa paikassa, jaettuna niiden kanssa, joiden kanssa asut ja teet töitä. Ei palvelinta, ei mitään asennettavaa.",
     "ctaPrice": "{{monthly}} kuukaudessa tai {{annual}} vuodessa",
@@ -2979,5 +2979,9 @@
     "missingBody": "Se on ehkä siirretty tai poistettu. Muut kirjoitukset ovat yhden klikkauksen päässä.",
     "allPosts": "Kaikki kirjoitukset",
     "morePosts": "Lisää blogista"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

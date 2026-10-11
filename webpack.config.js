@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 const path = require('path');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -60,7 +61,7 @@ module.exports = {
             {
                 // HPM v3: use pathFilter + router so WDS calls createProxyMiddleware(options)
                 // instead of the v2 two-argument form createProxyMiddleware(context, options)
-                pathFilter: ['/api', '/locales'],
+                pathFilter: ['/api'],
                 router: () => backendUrl,
                 changeOrigin: true,
                 secure: false,
@@ -104,7 +105,7 @@ module.exports = {
             )
         ),
         new HtmlWebpackPlugin({
-            title: 'tududi',
+            title: 'Life-to-Day',
             filename: 'index.html',
             template: 'public/index.html',
             templateParameters: {
@@ -127,8 +128,8 @@ module.exports = {
                         return content
                             .toString()
                             .replace(
-                                "const CACHE_VERSION = 'tududi-v1';",
-                                `const CACHE_VERSION = 'tududi-${buildId}';`
+                                "const CACHE_VERSION = 'life-to-day-v1';",
+                                `const CACHE_VERSION = 'life-to-day-v1-${buildId}';`
                             );
                     },
                 },

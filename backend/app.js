@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Brand the visible Swagger document without changing API behavior.
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
@@ -425,7 +426,7 @@ if (config.swagger.enabled) {
     const swaggerSpec = require('./config/swagger');
 
     const swaggerUiOptions = {
-        customSiteTitle: 'Tududi API Documentation',
+        customSiteTitle: 'Life-to-Day API Documentation',
         customfavIcon: '/favicon.ico',
         customCss: '.swagger-ui .topbar { display: none }',
         swaggerOptions: {

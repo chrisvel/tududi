@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 'use strict';
 
 const { User } = require('../../models');
@@ -12,7 +13,7 @@ const {
 
 async function sendWelcomeMessage(token, chatId) {
     return new Promise((resolve) => {
-        const welcomeText = `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`;
+        const welcomeText = `🎉 Welcome to Life-to-Day!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your Life-to-Day inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`;
 
         const postData = JSON.stringify({
             chat_id: chatId,

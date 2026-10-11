@@ -318,17 +318,17 @@
     "personalInfo": "Thông tin cá nhân",
     "errorMessage": "Cập nhật hồ sơ không thành công",
     "telegramIntegration": "Tích hợp Telegram",
-    "telegramDescription": "Kết nối tài khoản tududi của bạn với một bot Telegram để thêm mục vào hộp thư đến của bạn qua tin nhắn Telegram.",
+    "telegramDescription": "Kết nối tài khoản Life-to-Day của bạn với một bot Telegram để thêm mục vào hộp thư đến của bạn qua tin nhắn Telegram.",
     "telegramBotToken": "Mã thông báo Bot Telegram",
     "telegramTokenDescription": "Tạo một bot với @BotFather trên Telegram và dán mã thông báo ở đây.",
-    "telegramConnected": "Tài khoản Telegram của bạn đã được kết nối! Gửi tin nhắn đến bot của bạn để thêm mục vào hộp thư đến tududi của bạn.",
+    "telegramConnected": "Tài khoản Telegram của bạn đã được kết nối! Gửi tin nhắn đến bot của bạn để thêm mục vào hộp thư đến Life-to-Day của bạn.",
     "setupTelegram": "Cài đặt Telegram",
     "setupTelegramLower": "cài đặt telegram",
     "settingUp": "Đang thiết lập...",
     "telegramSetupSuccess": "Bot Telegram \"{{botName}}\" đã được cấu hình thành công!",
     "telegramSetupFailed": "Thiết lập bot Telegram không thành công.",
     "invalidTelegramToken": "Định dạng token bot Telegram không hợp lệ.",
-    "telegramInstructions": "Truy cập https://t.me/{{botUsername}} và bắt đầu trò chuyện với bot của bạn để kết nối nó với tài khoản tududi của bạn.",
+    "telegramInstructions": "Truy cập https://t.me/{{botUsername}} và bắt đầu trò chuyện với bot của bạn để kết nối nó với tài khoản Life-to-Day của bạn.",
     "botConfigured": "Bot đã được cấu hình thành công!",
     "botUsername": "Tên người dùng Bot:",
     "pollingStatus": "Trạng thái Polling:",
@@ -538,8 +538,8 @@
       "testRequired": "Bạn phải kiểm tra kết nối trước khi tiếp tục",
       "syncDirection": "Hướng đồng bộ",
       "bidirectional": "Hai chiều (đồng bộ cả hai hướng)",
-      "pullOnly": "Chỉ kéo (từ máy chủ đến Tududi)",
-      "pushOnly": "Chỉ đẩy (từ Tududi đến máy chủ)",
+      "pullOnly": "Chỉ kéo (từ máy chủ đến Life-to-Day)",
+      "pushOnly": "Chỉ đẩy (từ Life-to-Day đến máy chủ)",
       "syncInterval": "Khoảng thời gian đồng bộ (phút)",
       "syncIntervalHelp": "Tần suất tự động đồng bộ (5-1440 phút)",
       "conflictPolicy": "Giải quyết xung đột",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Giải quyết Xung đột Đồng bộ",
       "chooseVersion": "Chọn phiên bản nào để giữ cho mỗi trường:",
-      "local": "Cục bộ (Tududi)",
+      "local": "Cục bộ (Life-to-Day)",
       "remote": "Từ xa (CalDAV)",
       "useThis": "Sử dụng cái này",
       "useAllLocal": "Sử dụng tất cả cục bộ",
@@ -597,7 +597,7 @@
       "addError": "Không thể thêm lịch này",
       "deleteError": "Không thể xóa lịch này",
       "title": "Lịch trong Hôm nay",
-      "description": "Hiển thị các cuộc họp bên cạnh kế hoạch trong ngày. Tududi chỉ đọc các lịch này, không bao giờ thay đổi chúng.",
+      "description": "Hiển thị các cuộc họp bên cạnh kế hoạch trong ngày. Life-to-Day chỉ đọc các lịch này, không bao giờ thay đổi chúng.",
       "empty": "Chưa kết nối lịch nào.",
       "lastSync": "cập nhật {{time}}",
       "remove": "Xóa {{name}}",
@@ -605,7 +605,7 @@
       "name": "Tên",
       "namePlaceholder": "Công việc, Gia đình…",
       "url": "Địa chỉ iCal bí mật",
-      "googleHelp": "Trong Google Lịch: Cài đặt → lịch của bạn → Tích hợp lịch → \"Địa chỉ bí mật ở định dạng iCal\". Apple Lịch và Outlook cũng có liên kết tương tự. Ai có địa chỉ này đều đọc được lịch, vì vậy tududi lưu nó ở dạng mã hóa.",
+      "googleHelp": "Trong Google Lịch: Cài đặt → lịch của bạn → Tích hợp lịch → \"Địa chỉ bí mật ở định dạng iCal\". Apple Lịch và Outlook cũng có liên kết tương tự. Ai có địa chỉ này đều đọc được lịch, vì vậy Life-to-Day lưu nó ở dạng mã hóa.",
       "color": "Màu",
       "checking": "Đang kiểm tra lịch…",
       "add": "Kết nối",
@@ -762,16 +762,16 @@
     "habitsDescription": "Bật mục Thói quen để theo dõi hành vi lặp lại và chuỗi ngày.",
     "loading": "Đang tải...",
     "mcp": {
-      "description": "Kết nối tududi với bất kỳ ứng dụng nào tương thích MCP qua Model Context Protocol. Nhờ đó trợ lý AI có thể làm việc với công việc, dự án và ghi chú của bạn, trên cả máy chủ tududi cục bộ lẫn từ xa.",
+      "description": "Kết nối Life-to-Day với bất kỳ ứng dụng nào tương thích MCP qua Model Context Protocol. Nhờ đó trợ lý AI có thể làm việc với công việc, dự án và ghi chú của bạn, trên cả máy chủ Life-to-Day cục bộ lẫn từ xa.",
       "example1": "Cho tôi xem công việc hôm nay",
       "example2": "Tạo một công việc để rà soát tích hợp MCP",
       "example3": "Tôi có những dự án nào đang tiến hành?",
       "example4": "Thêm vào hộp thư đến lời nhắc kiểm tra email",
       "example5": "Tìm các công việc liên quan đến tài liệu",
       "remote": {
-        "cloud": "Truy cập tududi từ xa (máy chủ đám mây)",
+        "cloud": "Truy cập Life-to-Day từ xa (máy chủ đám mây)",
         "docker": "Dùng từ các bản cài Docker",
-        "local": "Truy cập tududi cục bộ (localhost)",
+        "local": "Truy cập Life-to-Day cục bộ (localhost)",
         "title": "Đã bật truy cập từ xa",
         "tokens": "Kết nối an toàn bằng token API",
         "usesPrefix": "Cấu hình này dùng",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "Sao chép",
-        "description": "Thêm cấu hình này vào ứng dụng MCP của bạn. Thay YOUR_API_TOKEN_HERE bằng token bạn tạo ở bước 1. Cấu hình dùng mcp-remote để kết nối tới máy chủ tududi qua HTTP. Ví dụ cho Claude Desktop:",
+        "description": "Thêm cấu hình này vào ứng dụng MCP của bạn. Thay YOUR_API_TOKEN_HERE bằng token bạn tạo ở bước 1. Cấu hình dùng mcp-remote để kết nối tới máy chủ Life-to-Day qua HTTP. Ví dụ cho Claude Desktop:",
         "loading": "Đang tải...",
         "locationTitle": "Vị trí tệp cấu hình Claude Desktop:",
         "otherClients": "Các ứng dụng MCP khác có thể cấu hình khác, hãy xem tài liệu của ứng dụng bạn dùng.",
@@ -795,7 +795,7 @@
         "title": "3. Các thao tác có sẵn"
       },
       "step4": {
-        "description": "Sau khi thêm cấu hình, hãy khởi động lại ứng dụng MCP. Sau đó bạn có thể dùng ngôn ngữ tự nhiên để làm việc với tududi:",
+        "description": "Sau khi thêm cấu hình, hãy khởi động lại ứng dụng MCP. Sau đó bạn có thể dùng ngôn ngữ tự nhiên để làm việc với Life-to-Day:",
         "examplesTitle": "Câu lệnh mẫu:",
         "title": "4. Bắt đầu sử dụng"
       },
@@ -804,7 +804,7 @@
         "firewall": "Với máy chủ từ xa, hãy kiểm tra thiết lập tường lửa",
         "intro": "Nếu ứng dụng MCP không kết nối được, hãy kiểm tra rằng:",
         "restart": "Bạn đã khởi động lại hoàn toàn ứng dụng MCP",
-        "server": "Máy chủ tududi đang chạy và truy cập được",
+        "server": "Máy chủ Life-to-Day đang chạy và truy cập được",
         "title": "Khắc phục sự cố",
         "token": "Token API của bạn hợp lệ và chưa hết hạn"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Chụp nhanh Hộp thư đến",
     "userMenu": "Menu Người dùng",
     "collapseSidebar": "Thu gọn Thanh bên",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 Chào mừng bạn đến với tududi!\n\nBot quản lý tác vụ cá nhân của bạn hiện đã được kết nối và sẵn sàng giúp đỡ!\n\n📝 Chỉ cần gửi cho tôi bất kỳ tin nhắn nào và tôi sẽ thêm nó vào hộp thư tududi của bạn như một mục.\n\n✨ Lệnh:\n• /help - Hiển thị thông tin trợ giúp\n• /start - Hiển thị tin nhắn chào mừng\n• Chỉ cần gõ bất kỳ văn bản nào - Thêm nó như một mục trong hộp thư\n\nHãy cùng tổ chức nào! 🚀",
-    "helpMessage": "📋 Trợ giúp Bot tududi\n\nGửi cho tôi bất kỳ tin nhắn văn bản nào và tôi sẽ thêm nó vào hộp thư tududi của bạn như một mục trong hộp thư.\n\nCác lệnh:\n/start - Tin nhắn chào mừng\n/help - Hiển thị tin nhắn trợ giúp này\n\nChỉ cần gõ mục của bạn và tôi sẽ lo phần còn lại!",
+    "welcomeMessage": "🎉 Chào mừng bạn đến với Life-to-Day!\n\nBot quản lý tác vụ cá nhân của bạn hiện đã được kết nối và sẵn sàng giúp đỡ!\n\n📝 Chỉ cần gửi cho tôi bất kỳ tin nhắn nào và tôi sẽ thêm nó vào hộp thư Life-to-Day của bạn như một mục.\n\n✨ Lệnh:\n• /help - Hiển thị thông tin trợ giúp\n• /start - Hiển thị tin nhắn chào mừng\n• Chỉ cần gõ bất kỳ văn bản nào - Thêm nó như một mục trong hộp thư\n\nHãy cùng tổ chức nào! 🚀",
+    "helpMessage": "📋 Trợ giúp Bot Life-to-Day\n\nGửi cho tôi bất kỳ tin nhắn văn bản nào và tôi sẽ thêm nó vào hộp thư Life-to-Day của bạn như một mục trong hộp thư.\n\nCác lệnh:\n/start - Tin nhắn chào mừng\n/help - Hiển thị tin nhắn trợ giúp này\n\nChỉ cần gõ mục của bạn và tôi sẽ lo phần còn lại!",
     "commandProcessed": "Lệnh đã được xử lý thành công",
     "messageProcessed": "Tin nhắn đã được xử lý thành công",
     "failedToAddToInbox": "❌ Không thể thêm vào hộp thư: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "Phiên bản",
     "description": "Quản lý tác vụ tự lưu trữ với tổ chức phân cấp, hỗ trợ đa ngôn ngữ và tích hợp Telegram. Được xây dựng với tình yêu dành cho những người đam mê năng suất.",
     "madeWithLove": "Được làm với tình yêu",
-    "appreciation": "Cảm ơn bạn đã sử dụng tududi! Sự hỗ trợ của bạn giúp giữ cho dự án này sống động và phát triển. Nếu bạn thấy nó hữu ích, hãy xem xét hỗ trợ phát triển.",
+    "appreciation": "Cảm ơn bạn đã sử dụng Life-to-Day! Sự hỗ trợ của bạn giúp giữ cho dự án này sống động và phát triển. Nếu bạn thấy nó hữu ích, hãy xem xét hỗ trợ phát triển.",
     "supportDevelopment": "Hỗ trợ phát triển",
     "community": "Cộng đồng",
     "viewOnGitHub": "Xem trên GitHub",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "Quản trị viên",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Người dùng",
       "usersHint": "{{verified}} đã xác minh · {{admins}} quản trị viên · {{new}} hôm nay",
       "paying": "Đang thanh toán",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "Blog",
       "description": "Chọn một ghi chú của bạn làm trang chủ. Các ghi chú công khai mà nó liên kết bằng [[Tiêu đề]] sẽ trở thành bài viết. Chia sẻ công khai trang chủ và từng bài viết để chúng hiển thị.",
-      "placeholder": "Liên kết hoặc ID ghi chú, ví dụ https://app.tududi.com/notes/abc123",
+      "placeholder": "Liên kết hoặc ID ghi chú, ví dụ /notes/abc123",
       "inputLabel": "Ghi chú trang chủ",
       "turnOff": "Tắt",
       "shared": "Công khai",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "Đăng ký",
-    "chooseForCloud": "Chọn một gói cho tududi Cloud",
+    "chooseForCloud": "Chọn một gói cho Life-to-Day Cloud",
     "noActive": "Không có đăng ký hoạt động",
-    "chooseToContinue": "Chọn một gói để tiếp tục sử dụng tududi Cloud.",
+    "chooseToContinue": "Chọn một gói để tiếp tục sử dụng Life-to-Day Cloud.",
     "monthly": "Hàng tháng",
     "yearly": "Hàng năm",
     "priceMonthly": "{{price}} mỗi tháng",
@@ -2552,15 +2552,15 @@
     "notConfigured": "Đăng ký chưa có sẵn trên phiên bản này. Vui lòng liên hệ với hỗ trợ.",
     "exportData": "Xuất dữ liệu của bạn",
     "subscribe": "Đăng ký",
-    "readOnlyBanner": "Thời gian dùng thử đã kết thúc nên dữ liệu của bạn chỉ có thể xem. Hãy đăng ký để tiếp tục dùng tududi hoặc xuất dữ liệu của bạn. Tài khoản sẽ bị xóa vào {{date}}.",
+    "readOnlyBanner": "Thời gian dùng thử đã kết thúc nên dữ liệu của bạn chỉ có thể xem. Hãy đăng ký để tiếp tục dùng Life-to-Day hoặc xuất dữ liệu của bạn. Tài khoản sẽ bị xóa vào {{date}}.",
     "lockedAi": "Trợ lý AI thuộc gói trả phí.",
     "lockedPublicNotes": "Liên kết ghi chú công khai thuộc gói trả phí.",
     "lockedMembers": "Thêm thành viên thuộc gói trả phí.",
     "trialEnded": "Thời gian dùng thử đã kết thúc",
     "onTrial": "Bạn đang dùng thử miễn phí",
-    "readOnlyUntil": "Dữ liệu của bạn chỉ có thể xem đến {{date}}, sau đó tài khoản sẽ bị xóa. Hãy đăng ký để tiếp tục dùng tududi Cloud.",
+    "readOnlyUntil": "Dữ liệu của bạn chỉ có thể xem đến {{date}}, sau đó tài khoản sẽ bị xóa. Hãy đăng ký để tiếp tục dùng Life-to-Day Cloud.",
     "trialIncludes": "Thời gian dùng thử kết thúc vào {{date}}. Trợ lý AI, ghi chú công khai và thêm thành viên sẽ mở khi bạn đăng ký.",
-    "backToApp": "Quay lại tududi",
+    "backToApp": "Quay lại Life-to-Day",
     "trialBanner": "Dùng thử miễn phí, số ngày còn lại: {{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "Không cập nhật được thành viên",
     "addEmailHint": "Thêm email sẽ gửi lời mời để họ đặt mật khẩu. Không thể thay đổi sau đó.",
     "remove": "Xóa thành viên",
-    "removeConfirm": "Xóa {{name}}? Tài khoản và mọi nội dung trong đó sẽ bị xóa, không thể hoàn tác. Trên tududi Cloud, chỗ của họ được bỏ khỏi gói đăng ký của bạn.",
+    "removeConfirm": "Xóa {{name}}? Tài khoản và mọi nội dung trong đó sẽ bị xóa, không thể hoàn tác. Trên Life-to-Day Cloud, chỗ của họ được bỏ khỏi gói đăng ký của bạn.",
     "removed": "Đã xóa thành viên",
     "updated": "Đã cập nhật thành viên",
     "invitationSent": "Đã gửi lời mời",
@@ -2959,10 +2959,10 @@
   "blog": {
     "nav": "Blog",
     "navCta": "Bắt đầu ngay",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Điều khoản",
     "footerPrivacy": "Quyền riêng tư",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Gỡ những việc nhỏ ra khỏi đầu bạn.",
     "ctaBody": "Công việc, dự án, ghi chú và thói quen ở một nơi yên tĩnh, chia sẻ với những người bạn sống và làm việc cùng. Không cần máy chủ, không cần cài đặt.",
     "ctaPrice": "{{monthly}} mỗi tháng hoặc {{annual}} mỗi năm",
@@ -2978,5 +2978,9 @@
     "missingBody": "Có thể bài đã được chuyển hoặc gỡ xuống. Các bài khác chỉ cách một cú nhấp.",
     "allPosts": "Tất cả bài viết",
     "morePosts": "Thêm từ blog"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

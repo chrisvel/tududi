@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 const crypto = require('crypto');
 const { User, Setting } = require('../../models');
 const { getConfig } = require('../../config/config');
@@ -260,13 +261,13 @@ const sendVerificationEmail = async (
     const tokenExpiryHours = config.registrationConfig.tokenExpiryHours;
 
     const subject = reminder
-        ? 'Reminder: verify your email to start using Tududi'
-        : 'Welcome to Tududi - Verify your email';
+        ? 'Reminder: verify your email to start using Life-to-Day'
+        : 'Welcome to Life-to-Day - Verify your email';
     const opening = reminder
-        ? 'You signed up for Tududi a day or so ago, but your email address is not verified yet. Your account (and your free trial) starts as soon as you verify it.'
-        : 'Thank you for registering. To complete your registration and start using Tududi, please verify your email address by clicking the link below:';
+        ? 'You signed up for Life-to-Day a day or so ago, but your email address is not verified yet. Your account (and your free trial) starts as soon as you verify it.'
+        : 'Thank you for registering. To complete your registration and start using Life-to-Day, please verify your email address by clicking the link below:';
 
-    const text = `${reminder ? 'Hi,' : 'Welcome to Tududi!'}
+    const text = `${reminder ? 'Hi,' : 'Welcome to Life-to-Day!'}
 
 ${opening}
 
@@ -280,13 +281,13 @@ After verification, you'll be able to:
 - Set up recurring tasks
 - Track your productivity
 
-If you didn't create an account with Tududi, you can safely ignore this email.
+If you didn't create an account with Life-to-Day, you can safely ignore this email.
 
 Best regards,
-The Tududi Team`;
+The Life-to-Day Team`;
 
     const html = `
-<p>${reminder ? 'Hi,' : 'Welcome to Tududi!'}</p>
+<p>${reminder ? 'Hi,' : 'Welcome to Life-to-Day!'}</p>
 
 <p>${opening}</p>
 
@@ -307,9 +308,9 @@ The Tududi Team`;
     <li>Track your productivity</li>
 </ul>
 
-<p>If you didn't create an account with Tududi, you can safely ignore this email.</p>
+<p>If you didn't create an account with Life-to-Day, you can safely ignore this email.</p>
 
-<p>Best regards,<br>The Tududi Team</p>
+<p>Best regards,<br>The Life-to-Day Team</p>
 `;
 
     const result = await sendEmail({

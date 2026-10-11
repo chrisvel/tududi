@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 const path = require('path');
 
 if (
@@ -87,7 +88,7 @@ const emailConfig = {
     },
     from: {
         address: process.env.EMAIL_FROM_ADDRESS,
-        name: process.env.EMAIL_FROM_NAME || 'Tududi',
+        name: process.env.EMAIL_FROM_NAME || 'Life-to-Day',
     },
 };
 

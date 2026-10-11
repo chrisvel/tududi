@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 const swaggerJsdoc = require('swagger-jsdoc');
 const path = require('path');
 
@@ -8,12 +9,12 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Tududi API',
+            title: 'Life-to-Day API',
             version: '1.0.0',
-            description: 'REST API for Tududi task management application',
+            description: 'REST API for Life-to-Day task management application',
             contact: {
-                name: 'Tududi',
-                url: 'https://github.com/chrisvel/tududi',
+                name: 'Life-to-Day',
+                url: 'https://github.com/DanialMasghati/life-to-day',
             },
             license: {
                 name: 'MIT',

@@ -1,9 +1,10 @@
+// LTD-PATCH(T-301): Brand user-visible integration labels; preserve protocol identifiers.
 // Per-project CalDAV calendars (opt-in via CALDAV_PROJECTS_AS_CALENDARS=true).
 //
 // Exposes one CalDAV calendar collection per project (plus a "(No Project)"
 // calendar for tasks with no project) under calendar-home /caldav/<email>/projects/,
 // so clients like Apple Reminders show one list per project instead of the single
-// combined "Tududi Tasks" list. Reuses the existing VTODO serializer / etag / ctag
+// combined "Life-to-Day Tasks" list. Reuses the existing VTODO serializer / etag / ctag
 // so each collection is byte-compatible with the built-in /tasks/ collection.
 //
 // When the flag is off (default) these handlers 404 and nothing changes — the
@@ -156,7 +157,7 @@ async function handleCalendarHomePropfind(req, res) {
                 homeHref(username),
                 buildPropstat({
                     'D:resourcetype': { 'D:collection': '' },
-                    'D:displayname': 'Tududi Projects',
+                    'D:displayname': 'Life-to-Day Projects',
                     'D:current-user-principal': {
                         'D:href': `/caldav/${enc(username)}/`,
                     },

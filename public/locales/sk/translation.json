@@ -357,17 +357,17 @@
         "personalInfo": "Osobné údaje",
         "errorMessage": "Profil sa nepodarilo aktualizovať",
         "telegramIntegration": "Integrácia s Telegramom",
-        "telegramDescription": "Prepojte svoj účet tududi s botom v Telegrame a pridávajte položky do schránky prostredníctvom správ v Telegrame.",
+        "telegramDescription": "Prepojte svoj účet Life-to-Day s botom v Telegrame a pridávajte položky do schránky prostredníctvom správ v Telegrame.",
         "telegramBotToken": "Token bota Telegram",
         "telegramTokenDescription": "Vytvorte bota pomocou @BotFather v Telegrame a vložte sem token.",
-        "telegramConnected": "Váš účet Telegram je pripojený! Posielajte správy svojmu botovi a pridávajte tak položky do schránky tududi.",
+        "telegramConnected": "Váš účet Telegram je pripojený! Posielajte správy svojmu botovi a pridávajte tak položky do schránky Life-to-Day.",
         "setupTelegram": "Nastaviť Telegram",
         "setupTelegramLower": "nastaviť telegram",
         "settingUp": "Nastavuje sa...",
         "telegramSetupSuccess": "Bot Telegram „{{botName}}“ bol úspešne nakonfigurovaný!",
         "telegramSetupFailed": "Bota Telegram sa nepodarilo nastaviť.",
         "invalidTelegramToken": "Neplatný formát tokenu bota Telegram.",
-        "telegramInstructions": "Prejdite na https://t.me/{{botUsername}} a začnite konverzáciu so svojím botom, aby ste ho prepojili so svojím účtom tududi.",
+        "telegramInstructions": "Prejdite na https://t.me/{{botUsername}} a začnite konverzáciu so svojím botom, aby ste ho prepojili so svojím účtom Life-to-Day.",
         "botConfigured": "Bot bol úspešne nakonfigurovaný!",
         "botUsername": "Používateľské meno bota:",
         "pollingStatus": "Stav dotazovania:",
@@ -518,8 +518,8 @@
             "testRequired": "Pred pokračovaním musíte otestovať pripojenie",
             "syncDirection": "Smer synchronizácie",
             "bidirectional": "Obojsmerne (synchronizácia oboma smermi)",
-            "pullOnly": "Iba sťahovať (zo servera do Tududi)",
-            "pushOnly": "Iba odosielať (z Tududi na server)",
+            "pullOnly": "Iba sťahovať (zo servera do Life-to-Day)",
+            "pushOnly": "Iba odosielať (z Life-to-Day na server)",
             "syncInterval": "Interval synchronizácie (minúty)",
             "syncIntervalHelp": "Ako často automaticky synchronizovať (5 – 1440 minút)",
             "conflictPolicy": "Riešenie konfliktov",
@@ -538,7 +538,7 @@
         "conflictResolver": {
             "title": "Vyriešiť konflikty synchronizácie",
             "chooseVersion": "Pre každé pole vyberte, ktorú verziu ponechať:",
-            "local": "Lokálna (Tududi)",
+            "local": "Lokálna (Life-to-Day)",
             "remote": "Vzdialená (CalDAV)",
             "useThis": "Použiť túto",
             "useAllLocal": "Použiť všetky lokálne",
@@ -621,7 +621,7 @@
             "addError": "Tento kalendár sa nepodarilo pridať",
             "deleteError": "Tento kalendár sa nepodarilo odstrániť",
             "title": "Kalendáre",
-            "description": "Zobrazte svoje stretnutia vedľa denného plánu a na stránke Kalendár. Tududi tieto kalendáre iba číta, nikdy ich nemení.",
+            "description": "Zobrazte svoje stretnutia vedľa denného plánu a na stránke Kalendár. Life-to-Day tieto kalendáre iba číta, nikdy ich nemení.",
             "showOnCalendar": "Zobraziť {{name}} na stránke Kalendár",
             "showOnCalendarShort": "Zobraziť na stránke Kalendár",
             "toggleError": "Tento kalendár sa nepodarilo aktualizovať",
@@ -632,7 +632,7 @@
             "name": "Názov",
             "namePlaceholder": "Práca, Rodina…",
             "url": "Tajná adresa iCal",
-            "googleHelp": "V Kalendári Google: Nastavenia → váš kalendár → Integrovať kalendár → „Tajná adresa vo formáte iCal“. Apple Calendar a Outlook majú podobné odkazy. Ktokoľvek s touto adresou môže kalendár čítať, preto ju tududi ukladá šifrovanú.",
+            "googleHelp": "V Kalendári Google: Nastavenia → váš kalendár → Integrovať kalendár → „Tajná adresa vo formáte iCal“. Apple Calendar a Outlook majú podobné odkazy. Ktokoľvek s touto adresou môže kalendár čítať, preto ju Life-to-Day ukladá šifrovanú.",
             "color": "Farba",
             "checking": "Kontroluje sa kalendár…",
             "add": "Pripojiť",
@@ -792,7 +792,7 @@
         "templatesDescription": "Povoľte šablóny projektov na ukladanie a opätovné použitie štruktúr projektov.",
         "mcp": {
             "title": "Integrácia MCP",
-            "description": "Prepojte tududi s ľubovoľnou aplikáciou kompatibilnou s MCP pomocou protokolu Model Context Protocol. AI asistenti tak môžu pracovať s vašimi úlohami, projektmi a poznámkami – funguje s lokálnymi aj vzdialenými servermi tududi.",
+            "description": "Prepojte Life-to-Day s ľubovoľnou aplikáciou kompatibilnou s MCP pomocou protokolu Model Context Protocol. AI asistenti tak môžu pracovať s vašimi úlohami, projektmi a poznámkami – funguje s lokálnymi aj vzdialenými servermi Life-to-Day.",
             "step1": {
                 "title": "1. Vygenerujte API token",
                 "description": "Na overenie servera MCP potrebujete API token. Vygenerujete ho na karte API kľúče.",
@@ -800,7 +800,7 @@
             },
             "step2": {
                 "title": "2. Nakonfigurujte svojho klienta MCP",
-                "description": "Pridajte túto konfiguráciu do svojho klienta MCP. YOUR_API_TOKEN_HERE nahraďte tokenom, ktorý ste vygenerovali v kroku 1. Na pripojenie k serveru tududi cez HTTP sa používa mcp-remote. Príklad pre Claude Desktop:",
+                "description": "Pridajte túto konfiguráciu do svojho klienta MCP. YOUR_API_TOKEN_HERE nahraďte tokenom, ktorý ste vygenerovali v kroku 1. Na pripojenie k serveru Life-to-Day cez HTTP sa používa mcp-remote. Príklad pre Claude Desktop:",
                 "copy": "Kopírovať",
                 "loading": "Načítava sa...",
                 "locationTitle": "Umiestnenie konfiguračného súboru Claude Desktop:",
@@ -810,8 +810,8 @@
                 "title": "Vzdialený prístup povolený",
                 "usesPrefix": "Táto konfigurácia používa",
                 "usesSuffix": "na pripojenie cez HTTP. Vďaka tomu môžete:",
-                "local": "Pristupovať k lokálnemu tududi (localhost)",
-                "cloud": "Pristupovať k vzdialenému tududi (cloudové servery)",
+                "local": "Pristupovať k lokálnemu Life-to-Day (localhost)",
+                "cloud": "Pristupovať k vzdialenému Life-to-Day (cloudové servery)",
                 "docker": "Používať z nasadení v Dockeri",
                 "tokens": "Bezpečne sa pripájať pomocou API tokenov"
             },
@@ -821,7 +821,7 @@
             },
             "step4": {
                 "title": "4. Začnite používať",
-                "description": "Po pridaní konfigurácie reštartujte svojho klienta MCP. Potom môžete s tududi komunikovať prirodzeným jazykom:",
+                "description": "Po pridaní konfigurácie reštartujte svojho klienta MCP. Potom môžete s Life-to-Day komunikovať prirodzeným jazykom:",
                 "examplesTitle": "Príklady výziev:"
             },
             "example1": "Ukáž mi moje úlohy na dnes",
@@ -833,7 +833,7 @@
                 "title": "Riešenie problémov",
                 "intro": "Ak sa váš klient MCP nedokáže pripojiť, skontrolujte, či:",
                 "token": "Váš API token je platný a nevypršal",
-                "server": "Server tududi beží a je dostupný",
+                "server": "Server Life-to-Day beží a je dostupný",
                 "restart": "Ste úplne reštartovali svojho klienta MCP",
                 "firewall": "Pri vzdialených serveroch skontrolujte nastavenia firewallu"
             }
@@ -1867,7 +1867,7 @@
         "time": "Čas",
         "allDay": "Celý deň",
         "manageCalendars": "Kalendáre",
-        "manageDescription": "Pripojte kalendáre iba na čítanie a vyberte, ktoré sa tu majú zobrazovať. Tududi ich nikdy nemení.",
+        "manageDescription": "Pripojte kalendáre iba na čítanie a vyberte, ktoré sa tu majú zobrazovať. Life-to-Day ich nikdy nemení.",
         "hideCalendar": "Skryť {{name}}",
         "showCalendar": "Zobraziť {{name}}",
         "feedError": "Nepodarilo sa načítať: {{names}}"
@@ -1879,7 +1879,7 @@
         }
     },
     "navbar": {
-        "appName": "tududi",
+        "appName": "Life-to-Day",
         "quickInboxCapture": "Rýchly záznam do Schránky",
         "userMenu": "Ponuka používateľa",
         "collapseSidebar": "Zbaliť bočný panel",
@@ -1972,8 +1972,8 @@
         }
     },
     "telegram": {
-        "welcomeMessage": "🎉 Vitajte v tududi!\n\nVáš osobný bot na správu úloh je pripojený a pripravený pomáhať!\n\n📝 Stačí mi poslať akúkoľvek správu a pridám ju ako položku do vašej Schránky v tududi.\n\n✨ Príkazy:\n• /help - Zobraziť pomocníka\n• /start - Zobraziť uvítaciu správu\n• Napíšte ľubovoľný text - Pridá sa ako položka Schránky\n\nPoďme sa zorganizovať! 🚀",
-        "helpMessage": "📋 Pomocník tududi bota\n\nPošlite mi akúkoľvek textovú správu a pridám ju ako položku do vašej Schránky v tududi.\n\nPríkazy:\n/start - Uvítacia správa\n/help - Zobraziť tohto pomocníka\n\nStačí napísať položku a o zvyšok sa postarám!",
+        "welcomeMessage": "🎉 Vitajte v Life-to-Day!\n\nVáš osobný bot na správu úloh je pripojený a pripravený pomáhať!\n\n📝 Stačí mi poslať akúkoľvek správu a pridám ju ako položku do vašej Schránky v Life-to-Day.\n\n✨ Príkazy:\n• /help - Zobraziť pomocníka\n• /start - Zobraziť uvítaciu správu\n• Napíšte ľubovoľný text - Pridá sa ako položka Schránky\n\nPoďme sa zorganizovať! 🚀",
+        "helpMessage": "📋 Pomocník Life-to-Day bota\n\nPošlite mi akúkoľvek textovú správu a pridám ju ako položku do vašej Schránky v Life-to-Day.\n\nPríkazy:\n/start - Uvítacia správa\n/help - Zobraziť tohto pomocníka\n\nStačí napísať položku a o zvyšok sa postarám!",
         "commandProcessed": "Príkaz bol úspešne spracovaný",
         "messageProcessed": "Správa bola úspešne spracovaná",
         "failedToAddToInbox": "❌ Pridanie do Schránky zlyhalo: {{error}}"
@@ -1983,7 +1983,7 @@
         "version": "Verzia",
         "description": "Správa úloh na vlastnom serveri s hierarchickou organizáciou, podporou viacerých jazykov a integráciou s Telegramom. Vytvorené s láskou pre nadšencov produktivity.",
         "madeWithLove": "Vytvorené s láskou",
-        "appreciation": "Ďakujeme, že používate tududi! Vaša podpora pomáha udržať tento projekt nažive a rozvíjať ho. Ak vám je užitočný, zvážte podporu jeho vývoja.",
+        "appreciation": "Ďakujeme, že používate Life-to-Day! Vaša podpora pomáha udržať tento projekt nažive a rozvíjať ho. Ak vám je užitočný, zvážte podporu jeho vývoja.",
         "supportDevelopment": "Podporiť vývoj",
         "community": "Komunita",
         "viewOnGitHub": "Zobraziť na GitHube",
@@ -2049,7 +2049,7 @@
         "confirmDeleteUser": "Naozaj chcete odstrániť {{email}}? Túto akciu nie je možné vrátiť späť.",
         "dashboard": {
             "title": "Administrácia",
-            "subtitle": "tududi {{version}} · {{env}}",
+            "subtitle": "Life-to-Day {{version}} · {{env}}",
             "users": "Používatelia",
             "usersHint": "{{verified}} overených · {{admins}} admin · {{new}} dnes",
             "paying": "Platiaci",
@@ -2546,9 +2546,9 @@
     },
     "subscription": {
         "title": "Predplatné",
-        "chooseForCloud": "Vyberte si plán pre tududi Cloud",
+        "chooseForCloud": "Vyberte si plán pre Life-to-Day Cloud",
         "noActive": "Žiadne aktívne predplatné",
-        "chooseToContinue": "Vyberte si plán, aby ste mohli ďalej používať tududi Cloud.",
+        "chooseToContinue": "Vyberte si plán, aby ste mohli ďalej používať Life-to-Day Cloud.",
         "monthly": "Mesačne",
         "yearly": "Ročne",
         "priceMonthly": "{{price}} mesačne",
@@ -2654,7 +2654,7 @@
     },
     "publicNote": {
         "toggleTheme": "Prepnúť tmavý režim",
-        "openApp": "Otvoriť tududi",
+        "openApp": "Otvoriť Life-to-Day",
         "updated": "Naposledy aktualizované {{date}}",
         "unavailableTitle": "Táto poznámka nie je dostupná",
         "unavailableBody": "Odkaz môže byť nesprávny alebo vlastník prestal túto poznámku zdieľať. Požiadajte ho o nový odkaz.",
@@ -2991,11 +2991,15 @@
     "feedback": {
         "title": "Odoslať spätnú väzbu",
         "subtitle": "Našli ste chybu alebo máte nápad? Dajte nám vedieť.",
-        "placeholder": "Čo sa stalo alebo čo by tududi zlepšilo?",
+        "placeholder": "Čo sa stalo alebo čo by Life-to-Day zlepšilo?",
         "contextNote": "Spolu so správou sa odošle stránka, na ktorej ste, a verzia aplikácie.",
         "send": "Odoslať",
         "sending": "Odosiela sa...",
         "sent": "Ďakujeme! Vaša spätná väzba bola odoslaná.",
         "failed": "Spätnú väzbu sa nepodarilo odoslať"
+    },
+    "app": {
+        "tagline": "From long-term vision to today.",
+        "sourceCode": "Source code"
     }
 }

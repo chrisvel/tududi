@@ -318,17 +318,17 @@
     "personalInfo": "개인 정보",
     "errorMessage": "프로필 업데이트에 실패했습니다",
     "telegramIntegration": "텔레그램 통합",
-    "telegramDescription": "당신의 tududi 계정을 텔레그램 봇에 연결하여 텔레그램 메시지를 통해 받은 편지함에 항목을 추가하세요.",
+    "telegramDescription": "당신의 Life-to-Day 계정을 텔레그램 봇에 연결하여 텔레그램 메시지를 통해 받은 편지함에 항목을 추가하세요.",
     "telegramBotToken": "텔레그램 봇 토큰",
     "telegramTokenDescription": "@BotFather와 함께 텔레그램에서 봇을 생성하고 여기에 토큰을 붙여넣으세요.",
-    "telegramConnected": "당신의 텔레그램 계정이 연결되었습니다! 봇에게 메시지를 보내어 tududi 받은 편지함에 항목을 추가하세요.",
+    "telegramConnected": "당신의 텔레그램 계정이 연결되었습니다! 봇에게 메시지를 보내어 Life-to-Day 받은 편지함에 항목을 추가하세요.",
     "setupTelegram": "텔레그램 설정",
     "setupTelegramLower": "텔레그램 설정",
     "settingUp": "설정 중...",
     "telegramSetupSuccess": "텔레그램 봇 \"{{botName}}\"가 성공적으로 구성되었습니다!",
     "telegramSetupFailed": "텔레그램 봇 설정에 실패했습니다.",
     "invalidTelegramToken": "유효하지 않은 텔레그램 봇 토큰 형식입니다.",
-    "telegramInstructions": "https://t.me/{{botUsername}}로 가서 봇과 채팅을 시작하여 tududi 계정에 연결하세요.",
+    "telegramInstructions": "https://t.me/{{botUsername}}로 가서 봇과 채팅을 시작하여 Life-to-Day 계정에 연결하세요.",
     "botConfigured": "봇이 성공적으로 구성되었습니다!",
     "botUsername": "봇 사용자 이름:",
     "pollingStatus": "폴링 상태:",
@@ -538,8 +538,8 @@
       "testRequired": "진행하기 전에 연결을 테스트해야 합니다",
       "syncDirection": "동기화 방향",
       "bidirectional": "양방향 (양쪽 모두 동기화)",
-      "pullOnly": "풀 전용 (서버에서 Tududi로)",
-      "pushOnly": "푸시 전용 (Tududi에서 서버로)",
+      "pullOnly": "풀 전용 (서버에서 Life-to-Day로)",
+      "pushOnly": "푸시 전용 (Life-to-Day에서 서버로)",
       "syncInterval": "동기화 간격 (분)",
       "syncIntervalHelp": "자동으로 동기화하는 빈도 (5-1440 분)",
       "conflictPolicy": "충돌 해결",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "동기화 충돌 해결",
       "chooseVersion": "각 필드에 대해 유지할 버전을 선택하세요:",
-      "local": "로컬 (Tududi)",
+      "local": "로컬 (Life-to-Day)",
       "remote": "원격 (CalDAV)",
       "useThis": "이것 사용",
       "useAllLocal": "모든 로컬 사용",
@@ -597,7 +597,7 @@
       "addError": "이 캘린더를 추가할 수 없습니다",
       "deleteError": "이 캘린더를 삭제할 수 없습니다",
       "title": "오늘 페이지의 캘린더",
-      "description": "하루 계획 옆에 일정을 표시합니다. tududi는 이 캘린더를 읽기만 하고 절대 변경하지 않습니다.",
+      "description": "하루 계획 옆에 일정을 표시합니다. Life-to-Day는 이 캘린더를 읽기만 하고 절대 변경하지 않습니다.",
       "empty": "아직 연결된 캘린더가 없습니다.",
       "lastSync": "{{time}} 업데이트됨",
       "remove": "{{name}} 삭제",
@@ -605,7 +605,7 @@
       "name": "이름",
       "namePlaceholder": "업무, 가족…",
       "url": "비공개 iCal 주소",
-      "googleHelp": "Google 캘린더에서: 설정 → 내 캘린더 → 캘린더 통합 → 'iCal 형식의 비공개 주소'. Apple 캘린더와 Outlook에도 비슷한 링크가 있습니다. 이 주소가 있으면 누구나 캘린더를 볼 수 있으므로 tududi는 암호화하여 저장합니다.",
+      "googleHelp": "Google 캘린더에서: 설정 → 내 캘린더 → 캘린더 통합 → 'iCal 형식의 비공개 주소'. Apple 캘린더와 Outlook에도 비슷한 링크가 있습니다. 이 주소가 있으면 누구나 캘린더를 볼 수 있으므로 Life-to-Day는 암호화하여 저장합니다.",
       "color": "색상",
       "checking": "캘린더 확인 중…",
       "add": "연결",
@@ -762,16 +762,16 @@
     "habitsDescription": "반복 행동과 연속 기록을 추적하는 습관 섹션을 사용합니다.",
     "loading": "불러오는 중...",
     "mcp": {
-      "description": "Model Context Protocol을 사용해 tududi를 MCP 호환 앱과 연결합니다. AI 어시스턴트가 작업, 프로젝트, 노트를 다룰 수 있으며, 로컬과 원격 tududi 서버 모두에서 동작합니다.",
+      "description": "Model Context Protocol을 사용해 Life-to-Day를 MCP 호환 앱과 연결합니다. AI 어시스턴트가 작업, 프로젝트, 노트를 다룰 수 있으며, 로컬과 원격 Life-to-Day 서버 모두에서 동작합니다.",
       "example1": "오늘 할 작업을 보여줘",
       "example2": "MCP 연동을 검토하는 작업을 만들어줘",
       "example3": "진행 중인 프로젝트가 뭐야?",
       "example4": "받은 편지함에 이메일 확인 알림을 추가해줘",
       "example5": "문서 관련 작업을 찾아줘",
       "remote": {
-        "cloud": "원격 tududi 접속 (클라우드 서버)",
+        "cloud": "원격 Life-to-Day 접속 (클라우드 서버)",
         "docker": "Docker 배포에서 사용",
-        "local": "로컬 tududi 접속 (localhost)",
+        "local": "로컬 Life-to-Day 접속 (localhost)",
         "title": "원격 접속 사용 중",
         "tokens": "API 토큰으로 안전하게 연결",
         "usesPrefix": "이 설정은",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "복사",
-        "description": "이 설정을 MCP 클라이언트에 추가하세요. YOUR_API_TOKEN_HERE를 1단계에서 만든 토큰으로 바꾸세요. mcp-remote를 사용해 HTTP로 tududi 서버에 연결합니다. Claude Desktop 예시:",
+        "description": "이 설정을 MCP 클라이언트에 추가하세요. YOUR_API_TOKEN_HERE를 1단계에서 만든 토큰으로 바꾸세요. mcp-remote를 사용해 HTTP로 Life-to-Day 서버에 연결합니다. Claude Desktop 예시:",
         "loading": "불러오는 중...",
         "locationTitle": "Claude Desktop 설정 파일 위치:",
         "otherClients": "다른 MCP 클라이언트는 설정 방법이 다를 수 있으니 해당 클라이언트 문서를 확인하세요.",
@@ -795,7 +795,7 @@
         "title": "3. 사용 가능한 작업"
       },
       "step4": {
-        "description": "설정을 추가한 뒤 MCP 클라이언트를 다시 시작하세요. 그러면 자연어로 tududi를 다룰 수 있습니다:",
+        "description": "설정을 추가한 뒤 MCP 클라이언트를 다시 시작하세요. 그러면 자연어로 Life-to-Day를 다룰 수 있습니다:",
         "examplesTitle": "프롬프트 예시:",
         "title": "4. 사용 시작"
       },
@@ -804,7 +804,7 @@
         "firewall": "원격 서버라면 방화벽 설정을 확인하세요",
         "intro": "MCP 클라이언트가 연결되지 않으면 다음을 확인하세요:",
         "restart": "MCP 클라이언트를 완전히 다시 시작했는지",
-        "server": "tududi 서버가 실행 중이며 접속 가능한지",
+        "server": "Life-to-Day 서버가 실행 중이며 접속 가능한지",
         "title": "문제 해결",
         "token": "API 토큰이 유효하고 만료되지 않았는지"
       }
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 tududi에 오신 것을 환영합니다!\n\n당신의 개인 작업 관리 봇이 이제 연결되어 도와줄 준비가 되었습니다!\n\n📝 저에게 아무 메시지나 보내주시면, 그것을 tududi 수신함에 항목으로 추가하겠습니다.\n\n✨ 명령어:\n• /help - 도움말 정보 표시\n• /start - 환영 메시지 표시\n• 아무 텍스트를 입력하세요 - 수신함 항목으로 추가\n\n정리해봅시다! 🚀",
-    "helpMessage": "📋 tududi 봇 도움말\n\n저에게 아무 텍스트 메시지를 보내주시면, 그것을 tududi 수신함에 항목으로 추가하겠습니다.\n\n명령어:\n/start - 환영 메시지\n/help - 이 도움말 메시지 표시\n\n당신의 항목을 입력하면 나머지는 제가 처리하겠습니다!",
+    "welcomeMessage": "🎉 Life-to-Day에 오신 것을 환영합니다!\n\n당신의 개인 작업 관리 봇이 이제 연결되어 도와줄 준비가 되었습니다!\n\n📝 저에게 아무 메시지나 보내주시면, 그것을 Life-to-Day 수신함에 항목으로 추가하겠습니다.\n\n✨ 명령어:\n• /help - 도움말 정보 표시\n• /start - 환영 메시지 표시\n• 아무 텍스트를 입력하세요 - 수신함 항목으로 추가\n\n정리해봅시다! 🚀",
+    "helpMessage": "📋 Life-to-Day 봇 도움말\n\n저에게 아무 텍스트 메시지를 보내주시면, 그것을 Life-to-Day 수신함에 항목으로 추가하겠습니다.\n\n명령어:\n/start - 환영 메시지\n/help - 이 도움말 메시지 표시\n\n당신의 항목을 입력하면 나머지는 제가 처리하겠습니다!",
     "commandProcessed": "명령이 성공적으로 처리되었습니다",
     "messageProcessed": "메시지가 성공적으로 처리되었습니다",
     "failedToAddToInbox": "❌ 수신함에 추가하는 데 실패했습니다: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "버전",
     "description": "계층적 조직, 다국어 지원 및 텔레그램 통합이 포함된 자체 호스팅 작업 관리. 생산성 애호가를 위해 사랑으로 만들어졌습니다.",
     "madeWithLove": "사랑으로 만들어짐",
-    "appreciation": "tududi를 사용해 주셔서 감사합니다! 여러분의 지원은 이 프로젝트를 지속 가능하게 하고 성장시키는 데 도움이 됩니다. 유용하다고 생각되면 개발 지원을 고려해 주세요.",
+    "appreciation": "Life-to-Day를 사용해 주셔서 감사합니다! 여러분의 지원은 이 프로젝트를 지속 가능하게 하고 성장시키는 데 도움이 됩니다. 유용하다고 생각되면 개발 지원을 고려해 주세요.",
     "supportDevelopment": "개발 지원",
     "community": "커뮤니티",
     "viewOnGitHub": "GitHub에서 보기",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "관리자",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "사용자",
       "usersHint": "{{verified}} 확인됨 · {{admins}} 관리자 · {{new}} 오늘",
       "paying": "결제 중",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "블로그",
       "description": "노트 하나를 첫 페이지로 고르세요. 그 노트가 [[제목]]으로 연결한 공개 노트가 글이 됩니다. 표시되려면 첫 페이지와 각 글을 공개로 공유하세요.",
-      "placeholder": "노트 링크 또는 ID, 예: https://app.tududi.com/notes/abc123",
+      "placeholder": "노트 링크 또는 ID, 예: /notes/abc123",
       "inputLabel": "첫 페이지 노트",
       "turnOff": "끄기",
       "shared": "공개",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "구독",
-    "chooseForCloud": "tududi Cloud를 위한 요금제를 선택하세요",
+    "chooseForCloud": "Life-to-Day Cloud를 위한 요금제를 선택하세요",
     "noActive": "활성 구독이 없습니다",
-    "chooseToContinue": "tududi Cloud를 계속 사용하려면 요금제를 선택하세요.",
+    "chooseToContinue": "Life-to-Day Cloud를 계속 사용하려면 요금제를 선택하세요.",
     "monthly": "월간",
     "yearly": "연간",
     "priceMonthly": "{{price}} 매월",
@@ -2552,15 +2552,15 @@
     "notConfigured": "이 인스턴스에서는 구독을 사용할 수 없습니다. 지원팀에 문의하세요.",
     "exportData": "데이터 내보내기",
     "subscribe": "구독하기",
-    "readOnlyBanner": "체험 기간이 끝나 데이터가 읽기 전용이 되었습니다. tududi를 계속 사용하려면 구독하거나 데이터를 내보내세요. 계정은 {{date}}에 삭제됩니다.",
+    "readOnlyBanner": "체험 기간이 끝나 데이터가 읽기 전용이 되었습니다. Life-to-Day를 계속 사용하려면 구독하거나 데이터를 내보내세요. 계정은 {{date}}에 삭제됩니다.",
     "lockedAi": "AI 어시스턴트는 유료 플랜에 포함됩니다.",
     "lockedPublicNotes": "공개 노트 링크는 유료 플랜에 포함됩니다.",
     "lockedMembers": "멤버 추가는 유료 플랜에 포함됩니다.",
     "trialEnded": "체험 기간이 끝났습니다",
     "onTrial": "무료 체험 중입니다",
-    "readOnlyUntil": "데이터는 {{date}}까지 읽기 전용이며, 그 후 계정이 삭제됩니다. tududi Cloud를 계속 사용하려면 구독하세요.",
+    "readOnlyUntil": "데이터는 {{date}}까지 읽기 전용이며, 그 후 계정이 삭제됩니다. Life-to-Day Cloud를 계속 사용하려면 구독하세요.",
     "trialIncludes": "체험 기간은 {{date}}에 끝납니다. AI 어시스턴트, 공개 노트, 멤버 추가는 구독하면 사용할 수 있습니다.",
-    "backToApp": "tududi로 돌아가기",
+    "backToApp": "Life-to-Day로 돌아가기",
     "trialBanner": "무료 체험 중, 남은 일수: {{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "멤버를 업데이트하지 못했습니다",
     "addEmailHint": "이메일을 추가하면 비밀번호 설정 초대가 전송됩니다. 이후에는 변경할 수 없습니다.",
     "remove": "멤버 삭제",
-    "removeConfirm": "{{name}} 님을 삭제할까요? 계정과 모든 내용이 삭제되며 되돌릴 수 없습니다. tududi Cloud에서는 해당 좌석이 구독에서 빠집니다.",
+    "removeConfirm": "{{name}} 님을 삭제할까요? 계정과 모든 내용이 삭제되며 되돌릴 수 없습니다. Life-to-Day Cloud에서는 해당 좌석이 구독에서 빠집니다.",
     "removed": "멤버를 삭제했습니다",
     "updated": "멤버를 업데이트했습니다",
     "invitationSent": "초대를 보냈습니다",
@@ -2959,10 +2959,10 @@
   "blog": {
     "nav": "블로그",
     "navCta": "지금 시작하기",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "약관",
     "footerPrivacy": "개인정보",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "사소한 일은 머릿속에서 꺼내 두세요.",
     "ctaBody": "할 일, 프로젝트, 노트, 습관을 하나의 차분한 공간에. 함께 살고 일하는 사람들과 공유하세요. 서버도, 설치도 필요 없습니다.",
     "ctaPrice": "월 {{monthly}} 또는 연 {{annual}}",
@@ -2978,5 +2978,9 @@
     "missingBody": "옮겨졌거나 내려갔을 수 있습니다. 다른 글은 바로 볼 수 있습니다.",
     "allPosts": "모든 글",
     "morePosts": "블로그의 다른 글"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

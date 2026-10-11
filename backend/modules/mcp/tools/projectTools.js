@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Brand user-visible integration labels; preserve protocol identifiers.
 'use strict';
 
 const entitlements = require('../../../services/entitlementsService');
@@ -73,7 +74,7 @@ function registerProjectTools(server, context, tools) {
     // 1. list_projects - List projects
     tools.push({
         name: 'list_projects',
-        description: 'List projects from tududi with optional filtering',
+        description: 'List projects from Life-to-Day with optional filtering',
         inputSchema: {
             type: 'object',
             properties: {
@@ -227,7 +228,7 @@ function registerProjectTools(server, context, tools) {
     // 3. create_project - Create new project
     tools.push({
         name: 'create_project',
-        description: 'Create a new project in tududi',
+        description: 'Create a new project in Life-to-Day',
         inputSchema: {
             type: 'object',
             properties: {

@@ -318,17 +318,17 @@
     "personalInfo": "Informasi Pribadi",
     "errorMessage": "Gagal memperbarui profil",
     "telegramIntegration": "Integrasi Telegram",
-    "telegramDescription": "Hubungkan akun tududi Anda ke bot Telegram untuk menambahkan item ke kotak masuk Anda melalui pesan Telegram.",
+    "telegramDescription": "Hubungkan akun Life-to-Day Anda ke bot Telegram untuk menambahkan item ke kotak masuk Anda melalui pesan Telegram.",
     "telegramBotToken": "Token Bot Telegram",
     "telegramTokenDescription": "Buat bot dengan @BotFather di Telegram dan tempel token di sini.",
-    "telegramConnected": "Akun Telegram Anda terhubung! Kirim pesan ke bot Anda untuk menambahkan item ke kotak masuk tududi Anda.",
+    "telegramConnected": "Akun Telegram Anda terhubung! Kirim pesan ke bot Anda untuk menambahkan item ke kotak masuk Life-to-Day Anda.",
     "setupTelegram": "Siapkan Telegram",
     "setupTelegramLower": "siapkan telegram",
     "settingUp": "Sedang menyiapkan...",
     "telegramSetupSuccess": "Bot Telegram \"{{botName}}\" berhasil dikonfigurasi!",
     "telegramSetupFailed": "Gagal mengatur bot Telegram.",
     "invalidTelegramToken": "Format token bot Telegram tidak valid.",
-    "telegramInstructions": "Kunjungi https://t.me/{{botUsername}} dan mulai chat dengan bot Anda untuk menghubungkannya ke akun tududi Anda.",
+    "telegramInstructions": "Kunjungi https://t.me/{{botUsername}} dan mulai chat dengan bot Anda untuk menghubungkannya ke akun Life-to-Day Anda.",
     "botConfigured": "Bot berhasil dikonfigurasi!",
     "botUsername": "Nama Pengguna Bot:",
     "pollingStatus": "Status Polling:",
@@ -538,8 +538,8 @@
       "testRequired": "Anda harus menguji koneksi sebelum melanjutkan",
       "syncDirection": "Arah sinkronisasi",
       "bidirectional": "Dua arah (sinkronisasi kedua arah)",
-      "pullOnly": "Tarik saja (dari server ke Tududi)",
-      "pushOnly": "Dorong saja (dari Tududi ke server)",
+      "pullOnly": "Tarik saja (dari server ke Life-to-Day)",
+      "pushOnly": "Dorong saja (dari Life-to-Day ke server)",
       "syncInterval": "Interval sinkronisasi (menit)",
       "syncIntervalHelp": "Seberapa sering untuk sinkronisasi otomatis (5-1440 menit)",
       "conflictPolicy": "Resolusi konflik",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Selesaikan Konflik Sinkronisasi",
       "chooseVersion": "Pilih versi mana yang akan disimpan untuk setiap bidang:",
-      "local": "Lokal (Tududi)",
+      "local": "Lokal (Life-to-Day)",
       "remote": "Jarak jauh (CalDAV)",
       "useThis": "Gunakan Ini",
       "useAllLocal": "Gunakan semua lokal",
@@ -597,7 +597,7 @@
       "addError": "Tidak dapat menambahkan kalender itu",
       "deleteError": "Tidak dapat menghapus kalender itu",
       "title": "Kalender di Hari Ini",
-      "description": "Tampilkan rapat di samping rencana harimu. Tududi hanya membaca kalender ini, tidak pernah mengubahnya.",
+      "description": "Tampilkan rapat di samping rencana harimu. Life-to-Day hanya membaca kalender ini, tidak pernah mengubahnya.",
       "empty": "Belum ada kalender yang terhubung.",
       "lastSync": "diperbarui {{time}}",
       "remove": "Hapus {{name}}",
@@ -605,7 +605,7 @@
       "name": "Nama",
       "namePlaceholder": "Kerja, Keluarga…",
       "url": "Alamat iCal rahasia",
-      "googleHelp": "Di Google Kalender: Setelan → kalendermu → Integrasikan kalender → \"Alamat rahasia dalam format iCal\". Apple Kalender dan Outlook punya tautan serupa. Siapa pun yang punya alamat ini bisa membaca kalender, jadi tududi menyimpannya terenkripsi.",
+      "googleHelp": "Di Google Kalender: Setelan → kalendermu → Integrasikan kalender → \"Alamat rahasia dalam format iCal\". Apple Kalender dan Outlook punya tautan serupa. Siapa pun yang punya alamat ini bisa membaca kalender, jadi Life-to-Day menyimpannya terenkripsi.",
       "color": "Warna",
       "checking": "Memeriksa kalender…",
       "add": "Hubungkan",
@@ -762,16 +762,16 @@
     "habitsDescription": "Aktifkan bagian Kebiasaan untuk melacak perilaku berulang dan rangkaian.",
     "loading": "Memuat...",
     "mcp": {
-      "description": "Hubungkan tududi dengan aplikasi apa pun yang kompatibel dengan MCP melalui Model Context Protocol. Dengan begitu asisten AI bisa bekerja dengan tugas, proyek, dan catatanmu, baik di server tududi lokal maupun jarak jauh.",
+      "description": "Hubungkan Life-to-Day dengan aplikasi apa pun yang kompatibel dengan MCP melalui Model Context Protocol. Dengan begitu asisten AI bisa bekerja dengan tugas, proyek, dan catatanmu, baik di server Life-to-Day lokal maupun jarak jauh.",
       "example1": "Tampilkan tugasku untuk hari ini",
       "example2": "Buat tugas untuk meninjau integrasi MCP",
       "example3": "Proyek apa saja yang sedang berjalan?",
       "example4": "Tambahkan pengingat ke kotak masuk untuk cek email",
       "example5": "Cari tugas yang berkaitan dengan dokumentasi",
       "remote": {
-        "cloud": "Akses tududi jarak jauh (server cloud)",
+        "cloud": "Akses Life-to-Day jarak jauh (server cloud)",
         "docker": "Gunakan dari instalasi Docker",
-        "local": "Akses tududi lokal (localhost)",
+        "local": "Akses Life-to-Day lokal (localhost)",
         "title": "Akses jarak jauh aktif",
         "tokens": "Terhubung dengan aman memakai token API",
         "usesPrefix": "Konfigurasi ini memakai",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "Salin",
-        "description": "Tambahkan konfigurasi ini ke klien MCP-mu. Ganti YOUR_API_TOKEN_HERE dengan token yang kamu buat di langkah 1. Konfigurasi ini memakai mcp-remote untuk terhubung ke server tududi lewat HTTP. Contoh untuk Claude Desktop:",
+        "description": "Tambahkan konfigurasi ini ke klien MCP-mu. Ganti YOUR_API_TOKEN_HERE dengan token yang kamu buat di langkah 1. Konfigurasi ini memakai mcp-remote untuk terhubung ke server Life-to-Day lewat HTTP. Contoh untuk Claude Desktop:",
         "loading": "Memuat...",
         "locationTitle": "Lokasi file konfigurasi Claude Desktop:",
         "otherClients": "Klien MCP lain mungkin memakai cara konfigurasi berbeda, lihat dokumentasi klienmu.",
@@ -795,7 +795,7 @@
         "title": "3. Operasi yang tersedia"
       },
       "step4": {
-        "description": "Setelah menambahkan konfigurasi, mulai ulang klien MCP-mu. Lalu kamu bisa memakai bahasa sehari-hari untuk bekerja dengan tududi:",
+        "description": "Setelah menambahkan konfigurasi, mulai ulang klien MCP-mu. Lalu kamu bisa memakai bahasa sehari-hari untuk bekerja dengan Life-to-Day:",
         "examplesTitle": "Contoh perintah:",
         "title": "4. Mulai gunakan"
       },
@@ -804,7 +804,7 @@
         "firewall": "Untuk server jarak jauh, periksa pengaturan firewall",
         "intro": "Jika klien MCP tidak bisa terhubung, pastikan:",
         "restart": "Kamu sudah memulai ulang klien MCP sepenuhnya",
-        "server": "Server tududi berjalan dan bisa diakses",
+        "server": "Server Life-to-Day berjalan dan bisa diakses",
         "title": "Pemecahan masalah",
         "token": "Token API-mu valid dan belum kedaluwarsa"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Tangkap Kotak Masuk Cepat",
     "userMenu": "Menu Pengguna",
     "collapseSidebar": "Sembunyikan Sidebar",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 Selamat datang di tududi!\n\nBot manajemen tugas pribadi Anda sekarang terhubung dan siap membantu!\n\n📝 Cukup kirimkan saya pesan apa pun dan saya akan menambahkannya ke kotak masuk tududi Anda sebagai item.\n\n✨ Perintah:\n• /help - Tampilkan informasi bantuan\n• /start - Tampilkan pesan sambutan\n• Cukup ketik teks apa pun - Tambahkan sebagai item kotak masuk\n\nMari kita terorganisir! 🚀",
-    "helpMessage": "📋 Bantuan Bot tududi\n\nKirimkan saya pesan teks apa pun dan saya akan menambahkannya ke kotak masuk tududi Anda sebagai item kotak masuk.\n\nPerintah:\n/start - Pesan sambutan\n/help - Tampilkan pesan bantuan ini\n\nCukup ketik item Anda dan saya akan mengurus sisanya!",
+    "welcomeMessage": "🎉 Selamat datang di Life-to-Day!\n\nBot manajemen tugas pribadi Anda sekarang terhubung dan siap membantu!\n\n📝 Cukup kirimkan saya pesan apa pun dan saya akan menambahkannya ke kotak masuk Life-to-Day Anda sebagai item.\n\n✨ Perintah:\n• /help - Tampilkan informasi bantuan\n• /start - Tampilkan pesan sambutan\n• Cukup ketik teks apa pun - Tambahkan sebagai item kotak masuk\n\nMari kita terorganisir! 🚀",
+    "helpMessage": "📋 Bantuan Bot Life-to-Day\n\nKirimkan saya pesan teks apa pun dan saya akan menambahkannya ke kotak masuk Life-to-Day Anda sebagai item kotak masuk.\n\nPerintah:\n/start - Pesan sambutan\n/help - Tampilkan pesan bantuan ini\n\nCukup ketik item Anda dan saya akan mengurus sisanya!",
     "commandProcessed": "Perintah diproses dengan sukses",
     "messageProcessed": "Pesan diproses dengan sukses",
     "failedToAddToInbox": "❌ Gagal menambah ke kotak masuk: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "Versi",
     "description": "Manajemen tugas yang dihosting sendiri dengan organisasi hierarkis, dukungan multi-bahasa, dan integrasi Telegram. Dibangun dengan cinta untuk para penggemar produktivitas.",
     "madeWithLove": "Dibuat dengan cinta",
-    "appreciation": "Terima kasih telah menggunakan tududi! Dukungan Anda membantu menjaga proyek ini tetap hidup dan berkembang. Jika Anda merasa ini berguna, pertimbangkan untuk mendukung pengembangannya.",
+    "appreciation": "Terima kasih telah menggunakan Life-to-Day! Dukungan Anda membantu menjaga proyek ini tetap hidup dan berkembang. Jika Anda merasa ini berguna, pertimbangkan untuk mendukung pengembangannya.",
     "supportDevelopment": "Dukung Pengembangan",
     "community": "Komunitas",
     "viewOnGitHub": "Lihat di GitHub",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "Admin",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Pengguna",
       "usersHint": "{{verified}} terverifikasi · {{admins}} admin · {{new}} hari ini",
       "paying": "Membayar",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "Blog",
       "description": "Pilih salah satu catatanmu sebagai halaman depan. Catatan publik yang ditautkannya dengan [[Judul]] menjadi tulisan. Bagikan halaman depan dan setiap tulisan secara publik agar tampil.",
-      "placeholder": "Tautan atau ID catatan, mis. https://app.tududi.com/notes/abc123",
+      "placeholder": "Tautan atau ID catatan, mis. /notes/abc123",
       "inputLabel": "Catatan halaman depan",
       "turnOff": "Matikan",
       "shared": "Publik",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "Langganan",
-    "chooseForCloud": "Pilih rencana untuk tududi Cloud",
+    "chooseForCloud": "Pilih rencana untuk Life-to-Day Cloud",
     "noActive": "Tidak ada langganan aktif",
-    "chooseToContinue": "Pilih rencana untuk melanjutkan penggunaan tududi Cloud.",
+    "chooseToContinue": "Pilih rencana untuk melanjutkan penggunaan Life-to-Day Cloud.",
     "monthly": "Bulanan",
     "yearly": "Tahunan",
     "priceMonthly": "{{price}} per bulan",
@@ -2552,15 +2552,15 @@
     "notConfigured": "Langganan belum tersedia di instance ini. Silakan hubungi dukungan.",
     "exportData": "Ekspor data Anda",
     "subscribe": "Berlangganan",
-    "readOnlyBanner": "Masa uji coba Anda telah berakhir, jadi data Anda hanya bisa dibaca. Berlanggananlah untuk terus menggunakan tududi, atau ekspor data Anda. Akun akan dihapus pada {{date}}.",
+    "readOnlyBanner": "Masa uji coba Anda telah berakhir, jadi data Anda hanya bisa dibaca. Berlanggananlah untuk terus menggunakan Life-to-Day, atau ekspor data Anda. Akun akan dihapus pada {{date}}.",
     "lockedAi": "Asisten AI termasuk dalam paket berbayar.",
     "lockedPublicNotes": "Tautan catatan publik termasuk dalam paket berbayar.",
     "lockedMembers": "Menambahkan anggota termasuk dalam paket berbayar.",
     "trialEnded": "Masa uji coba Anda telah berakhir",
     "onTrial": "Anda sedang dalam masa uji coba gratis",
-    "readOnlyUntil": "Data Anda hanya bisa dibaca hingga {{date}}, lalu akun akan dihapus. Berlanggananlah untuk terus menggunakan tududi Cloud.",
+    "readOnlyUntil": "Data Anda hanya bisa dibaca hingga {{date}}, lalu akun akan dihapus. Berlanggananlah untuk terus menggunakan Life-to-Day Cloud.",
     "trialIncludes": "Masa uji coba Anda berakhir pada {{date}}. Asisten AI, catatan publik, dan menambahkan anggota terbuka saat Anda berlangganan.",
-    "backToApp": "Kembali ke tududi",
+    "backToApp": "Kembali ke Life-to-Day",
     "trialBanner": "Uji coba gratis, sisa hari: {{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "Gagal memperbarui anggota",
     "addEmailHint": "Menambahkan email akan mengirim undangan untuk membuat kata sandi. Email tidak dapat diubah setelahnya.",
     "remove": "Hapus anggota",
-    "removeConfirm": "Hapus {{name}}? Akun dan semua isinya akan dihapus, dan ini tidak dapat dibatalkan. Di tududi Cloud, kursinya dilepas dari langganan Anda.",
+    "removeConfirm": "Hapus {{name}}? Akun dan semua isinya akan dihapus, dan ini tidak dapat dibatalkan. Di Life-to-Day Cloud, kursinya dilepas dari langganan Anda.",
     "removed": "Anggota dihapus",
     "updated": "Anggota diperbarui",
     "invitationSent": "Undangan terkirim",
@@ -2959,10 +2959,10 @@
   "blog": {
     "nav": "Blog",
     "navCta": "Mulai sekarang",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Ketentuan",
     "footerPrivacy": "Privasi",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Keluarkan hal-hal kecil dari kepalamu.",
     "ctaBody": "Tugas, proyek, catatan, dan kebiasaan di satu tempat yang tenang, dibagikan dengan orang-orang yang tinggal dan bekerja bersamamu. Tanpa server, tidak ada yang perlu dipasang.",
     "ctaPrice": "{{monthly}} per bulan atau {{annual}} per tahun",
@@ -2978,5 +2978,9 @@
     "missingBody": "Mungkin sudah dipindahkan atau dihapus. Tulisan lain hanya sekali klik.",
     "allPosts": "Semua tulisan",
     "morePosts": "Lainnya dari blog"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

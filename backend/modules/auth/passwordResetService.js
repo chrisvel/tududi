@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 'use strict';
 
 const crypto = require('crypto');
@@ -35,8 +36,8 @@ async function issueResetToken(user, expiresAt = tokenExpiry()) {
 }
 
 const buildInviteEmail = (setPasswordUrl, expiryHours) => {
-    const subject = 'You have been added to a Tududi workspace';
-    const text = `You have been added to a Tududi workspace.
+    const subject = 'You have been added to a Life-to-Day workspace';
+    const text = `You have been added to a Life-to-Day workspace.
 
 Choose a password to activate your account and sign in:
 
@@ -45,10 +46,10 @@ ${setPasswordUrl}
 The link expires in ${expiryHours} hours. If you were not expecting this, you can ignore this email.
 
 Best regards,
-The Tududi Team`;
+The Life-to-Day Team`;
 
     const html = `
-<p>You have been added to a Tududi workspace.</p>
+<p>You have been added to a Life-to-Day workspace.</p>
 
 <p>Choose a password to activate your account and sign in:</p>
 
@@ -61,7 +62,7 @@ The Tududi Team`;
 
 <p><strong>The link expires in ${expiryHours} hours.</strong> If you were not expecting this, you can ignore this email.</p>
 
-<p>Best regards,<br>The Tududi Team</p>
+<p>Best regards,<br>The Life-to-Day Team</p>
 `;
     return { subject, text, html };
 };
@@ -100,8 +101,8 @@ async function sendMemberInviteEmail(user) {
 }
 
 const buildResetEmail = (resetUrl, minutes) => {
-    const subject = 'Reset your Tududi password';
-    const text = `Someone asked to reset the password for your Tududi account.
+    const subject = 'Reset your Life-to-Day password';
+    const text = `Someone asked to reset the password for your Life-to-Day account.
 
 Open this link to choose a new password:
 
@@ -110,10 +111,10 @@ ${resetUrl}
 The link expires in ${minutes} minutes. If you did not ask for a reset, ignore this email; your password stays as it is.
 
 Best regards,
-The Tududi Team`;
+The Life-to-Day Team`;
 
     const html = `
-<p>Someone asked to reset the password for your Tududi account.</p>
+<p>Someone asked to reset the password for your Life-to-Day account.</p>
 
 <p style="text-align: center; margin: 30px 0;">
     <a href="${resetUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Choose a new password</a>
@@ -124,7 +125,7 @@ The Tududi Team`;
 
 <p><strong>The link expires in ${minutes} minutes.</strong> If you did not ask for a reset, ignore this email; your password stays as it is.</p>
 
-<p>Best regards,<br>The Tududi Team</p>
+<p>Best regards,<br>The Life-to-Day Team</p>
 `;
     return { subject, text, html };
 };

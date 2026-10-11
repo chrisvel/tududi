@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "tududi",
-  "short_name": "tududi",
-  "description": "A simple and effective task management application",
+  "name": "Life-to-Day",
+  "short_name": "Life",
+  "description": "From long-term vision to today.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -22,13 +22,13 @@
   "icons": [
     {
       "src": "/icon-logo.png",
-      "sizes": "512x512",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "/icon-logo.png",
-      "sizes": "512x512",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
     },

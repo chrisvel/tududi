@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Brand the MCP display name; retain transport and auth behavior.
 'use strict';
 
 const { Server } = require('@modelcontextprotocol/sdk/server/index.js');
@@ -25,7 +26,7 @@ async function handleMcpHttpRequest(req, res, user) {
         // Initialize MCP server
         const server = new Server(
             {
-                name: process.env.MCP_SERVER_NAME || 'tududi',
+                name: process.env.MCP_SERVER_NAME || 'Life-to-Day',
                 version: process.env.MCP_SERVER_VERSION || '1.0.0',
             },
             {

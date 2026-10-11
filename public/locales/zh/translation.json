@@ -318,17 +318,17 @@
     "personalInfo": "个人信息",
     "errorMessage": "更新个人资料失败",
     "telegramIntegration": "Telegram 集成",
-    "telegramDescription": "将您的 tududi 账户连接到 Telegram 机器人，通过 Telegram 消息将项目添加到您的收件箱。",
+    "telegramDescription": "将您的 Life-to-Day 账户连接到 Telegram 机器人，通过 Telegram 消息将项目添加到您的收件箱。",
     "telegramBotToken": "Telegram 机器人令牌",
     "telegramTokenDescription": "在 Telegram 上使用 @BotFather 创建一个机器人并在此粘贴令牌。",
-    "telegramConnected": "您的 Telegram 账户已连接！向您的机器人发送消息以将项目添加到您的 tududi 收件箱。",
+    "telegramConnected": "您的 Telegram 账户已连接！向您的机器人发送消息以将项目添加到您的 Life-to-Day 收件箱。",
     "setupTelegram": "设置 Telegram",
     "setupTelegramLower": "设置 telegram",
     "settingUp": "正在设置...",
     "telegramSetupSuccess": "Telegram 机器人 \"{{botName}}\" 配置成功！",
     "telegramSetupFailed": "设置 Telegram 机器人失败。",
     "invalidTelegramToken": "无效的 Telegram 机器人令牌格式。",
-    "telegramInstructions": "访问 https://t.me/{{botUsername}} 并开始与您的机器人聊天，以将其连接到您的 tududi 账户。",
+    "telegramInstructions": "访问 https://t.me/{{botUsername}} 并开始与您的机器人聊天，以将其连接到您的 Life-to-Day 账户。",
     "botConfigured": "机器人配置成功！",
     "botUsername": "机器人用户名：",
     "pollingStatus": "轮询状态：",
@@ -538,8 +538,8 @@
       "testRequired": "您必须在继续之前测试连接",
       "syncDirection": "同步方向",
       "bidirectional": "双向（双向同步）",
-      "pullOnly": "仅拉取（从服务器到 Tududi）",
-      "pushOnly": "仅推送（从 Tududi 到服务器）",
+      "pullOnly": "仅拉取（从服务器到 Life-to-Day）",
+      "pushOnly": "仅推送（从 Life-to-Day 到服务器）",
       "syncInterval": "同步间隔（分钟）",
       "syncIntervalHelp": "自动同步的频率（5-1440分钟）",
       "conflictPolicy": "冲突解决",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "解决同步冲突",
       "chooseVersion": "选择要保留的每个字段的版本：",
-      "local": "本地 (Tududi)",
+      "local": "本地 (Life-to-Day)",
       "remote": "远程 (CalDAV)",
       "useThis": "使用此版本",
       "useAllLocal": "使用所有本地版本",
@@ -597,7 +597,7 @@
       "addError": "无法添加该日历",
       "deleteError": "无法移除该日历",
       "title": "今日页面中的日历",
-      "description": "在当天计划旁显示你的会议。tududi 只读取这些日历,从不修改它们。",
+      "description": "在当天计划旁显示你的会议。Life-to-Day 只读取这些日历,从不修改它们。",
       "empty": "尚未连接日历。",
       "lastSync": "更新于 {{time}}",
       "remove": "移除 {{name}}",
@@ -605,7 +605,7 @@
       "name": "名称",
       "namePlaceholder": "工作、家庭…",
       "url": "私密 iCal 地址",
-      "googleHelp": "在 Google 日历中:设置 → 你的日历 → 集成日历 →「iCal 格式的私密地址」。Apple 日历和 Outlook 也有类似链接。任何拥有此地址的人都能读取日历,所以 tududi 会加密保存。",
+      "googleHelp": "在 Google 日历中:设置 → 你的日历 → 集成日历 →「iCal 格式的私密地址」。Apple 日历和 Outlook 也有类似链接。任何拥有此地址的人都能读取日历,所以 Life-to-Day 会加密保存。",
       "color": "颜色",
       "checking": "正在检查日历…",
       "add": "连接",
@@ -762,16 +762,16 @@
     "habitsDescription": "启用习惯板块,追踪重复行为和连续记录。",
     "loading": "加载中...",
     "mcp": {
-      "description": "通过 Model Context Protocol 将 tududi 连接到任意兼容 MCP 的应用。这样 AI 助手就能处理你的任务、项目和笔记,本地和远程 tududi 服务器均可使用。",
+      "description": "通过 Model Context Protocol 将 Life-to-Day 连接到任意兼容 MCP 的应用。这样 AI 助手就能处理你的任务、项目和笔记,本地和远程 Life-to-Day 服务器均可使用。",
       "example1": "显示我今天的任务",
       "example2": "创建一个检查 MCP 集成的任务",
       "example3": "我有哪些进行中的项目?",
       "example4": "在收件箱中添加一个查看邮件的提醒",
       "example5": "搜索与文档相关的任务",
       "remote": {
-        "cloud": "访问远程 tududi(云服务器)",
+        "cloud": "访问远程 Life-to-Day(云服务器)",
         "docker": "从 Docker 部署中使用",
-        "local": "访问本地 tududi(localhost)",
+        "local": "访问本地 Life-to-Day(localhost)",
         "title": "已启用远程访问",
         "tokens": "通过 API 令牌安全连接",
         "usesPrefix": "此配置使用",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "复制",
-        "description": "将此配置添加到你的 MCP 客户端。将 YOUR_API_TOKEN_HERE 替换为第 1 步生成的令牌。它通过 mcp-remote 以 HTTP 连接到你的 tududi 服务器。以下为 Claude Desktop 示例:",
+        "description": "将此配置添加到你的 MCP 客户端。将 YOUR_API_TOKEN_HERE 替换为第 1 步生成的令牌。它通过 mcp-remote 以 HTTP 连接到你的 Life-to-Day 服务器。以下为 Claude Desktop 示例:",
         "loading": "加载中...",
         "locationTitle": "Claude Desktop 配置文件位置:",
         "otherClients": "其他 MCP 客户端的配置方式可能不同,请查阅对应客户端的文档。",
@@ -795,7 +795,7 @@
         "title": "3. 可用操作"
       },
       "step4": {
-        "description": "添加配置后,重启 MCP 客户端。之后即可用自然语言操作 tududi:",
+        "description": "添加配置后,重启 MCP 客户端。之后即可用自然语言操作 Life-to-Day:",
         "examplesTitle": "示例提示:",
         "title": "4. 开始使用"
       },
@@ -804,7 +804,7 @@
         "firewall": "对于远程服务器,请检查防火墙设置",
         "intro": "如果 MCP 客户端无法连接,请检查:",
         "restart": "已完全重启 MCP 客户端",
-        "server": "tududi 服务器正在运行且可访问",
+        "server": "Life-to-Day 服务器正在运行且可访问",
         "title": "故障排查",
         "token": "API 令牌有效且未过期"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "快速收件箱捕获",
     "userMenu": "用户菜单",
     "collapseSidebar": "折叠侧边栏",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 欢迎来到 tududi！\n\n您的个人任务管理机器人现在已连接并准备好帮助您！\n\n📝 只需发送我任何消息，我会将其添加到您的 tududi 收件箱作为一项。\n\n✨ 命令：\n• /help - 显示帮助信息\n• /start - 显示欢迎消息\n• 只需输入任何文本 - 将其添加为收件箱项目\n\n让我们开始整理吧！🚀",
-    "helpMessage": "📋 tududi 机器人帮助\n\n发送我任何文本消息，我会将其添加到您的 tududi 收件箱作为一项。\n\n命令：\n/start - 欢迎消息\n/help - 显示此帮助消息\n\n只需输入您的项目，我会处理其余的！",
+    "welcomeMessage": "🎉 欢迎来到 Life-to-Day！\n\n您的个人任务管理机器人现在已连接并准备好帮助您！\n\n📝 只需发送我任何消息，我会将其添加到您的 Life-to-Day 收件箱作为一项。\n\n✨ 命令：\n• /help - 显示帮助信息\n• /start - 显示欢迎消息\n• 只需输入任何文本 - 将其添加为收件箱项目\n\n让我们开始整理吧！🚀",
+    "helpMessage": "📋 Life-to-Day 机器人帮助\n\n发送我任何文本消息，我会将其添加到您的 Life-to-Day 收件箱作为一项。\n\n命令：\n/start - 欢迎消息\n/help - 显示此帮助消息\n\n只需输入您的项目，我会处理其余的！",
     "commandProcessed": "命令处理成功",
     "messageProcessed": "消息处理成功",
     "failedToAddToInbox": "❌ 添加到收件箱失败：{{error}}"
@@ -1812,7 +1812,7 @@
     "version": "版本",
     "description": "自托管的任务管理，具有层级组织、多语言支持和Telegram集成。为生产力爱好者倾注热情而构建。",
     "madeWithLove": "用爱构建",
-    "appreciation": "感谢您使用tududi！您的支持帮助这个项目持续发展。如果您觉得它有用，请考虑支持开发。",
+    "appreciation": "感谢您使用Life-to-Day！您的支持帮助这个项目持续发展。如果您觉得它有用，请考虑支持开发。",
     "supportDevelopment": "支持开发",
     "community": "社区",
     "viewOnGitHub": "在GitHub上查看",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "管理员",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "用户",
       "usersHint": "{{verified}} 已验证 · {{admins}} 管理员 · {{new}} 今天",
       "paying": "付费",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "博客",
       "description": "选择你的一篇笔记作为首页。它用 [[标题]] 链接的公开笔记会成为文章。首页和每篇文章都需要公开分享才会显示。",
-      "placeholder": "笔记链接或 ID,例如 https://app.tududi.com/notes/abc123",
+      "placeholder": "笔记链接或 ID,例如 /notes/abc123",
       "inputLabel": "首页笔记",
       "turnOff": "关闭",
       "shared": "公开",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "订阅",
-    "chooseForCloud": "为 tududi Cloud 选择一个计划",
+    "chooseForCloud": "为 Life-to-Day Cloud 选择一个计划",
     "noActive": "没有有效的订阅",
-    "chooseToContinue": "选择一个计划以继续使用 tududi Cloud。",
+    "chooseToContinue": "选择一个计划以继续使用 Life-to-Day Cloud。",
     "monthly": "按月",
     "yearly": "按年",
     "priceMonthly": "{{price}} 每月",
@@ -2552,15 +2552,15 @@
     "notConfigured": "此实例尚未提供订阅服务。请联系支持。",
     "exportData": "导出您的数据",
     "subscribe": "订阅",
-    "readOnlyBanner": "您的试用已结束，数据现在为只读。订阅即可继续使用 tududi，或导出您的数据。账户将于 {{date}} 删除。",
+    "readOnlyBanner": "您的试用已结束，数据现在为只读。订阅即可继续使用 Life-to-Day，或导出您的数据。账户将于 {{date}} 删除。",
     "lockedAi": "AI 助手属于付费方案。",
     "lockedPublicNotes": "公开笔记链接属于付费方案。",
     "lockedMembers": "添加成员属于付费方案。",
     "trialEnded": "您的试用已结束",
     "onTrial": "您正在免费试用",
-    "readOnlyUntil": "您的数据在 {{date}} 之前为只读，之后账户将被删除。订阅即可继续使用 tududi Cloud。",
+    "readOnlyUntil": "您的数据在 {{date}} 之前为只读，之后账户将被删除。订阅即可继续使用 Life-to-Day Cloud。",
     "trialIncludes": "您的试用将于 {{date}} 结束。订阅后即可使用 AI 助手、公开笔记和添加成员。",
-    "backToApp": "返回 tududi",
+    "backToApp": "返回 Life-to-Day",
     "trialBanner": "免费试用，剩余天数：{{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "更新成员失败",
     "addEmailHint": "添加邮箱后，对方会收到设置密码的邀请。之后无法更改。",
     "remove": "移除成员",
-    "removeConfirm": "移除 {{name}}？其账户及全部内容将被删除，且无法撤销。在 tududi Cloud 上，该席位会从你的订阅中移除。",
+    "removeConfirm": "移除 {{name}}？其账户及全部内容将被删除，且无法撤销。在 Life-to-Day Cloud 上，该席位会从你的订阅中移除。",
     "removed": "成员已移除",
     "updated": "成员已更新",
     "invitationSent": "邀请已发送",
@@ -2959,10 +2959,10 @@
   "blog": {
     "nav": "博客",
     "navCta": "立即开始",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "条款",
     "footerPrivacy": "隐私",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "把琐事从脑子里拿出来。",
     "ctaBody": "任务、项目、笔记和习惯集中在一个安静的地方,与你一起生活和工作的人共享。无需服务器,无需安装。",
     "ctaPrice": "每月 {{monthly}} 或每年 {{annual}}",
@@ -2978,5 +2978,9 @@
     "missingBody": "它可能已被移动或撤下。其他文章只需一次点击。",
     "allPosts": "所有文章",
     "morePosts": "更多博客文章"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

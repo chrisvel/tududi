@@ -318,17 +318,17 @@
     "personalInfo": "Persoonlijke informatie",
     "errorMessage": "Het is niet gelukt om het profiel bij te werken",
     "telegramIntegration": "Telegram-integratie",
-    "telegramDescription": "Verbind uw tududi-account met een Telegram-bot om items aan uw inbox toe te voegen via Telegram-berichten.",
+    "telegramDescription": "Verbind uw Life-to-Day-account met een Telegram-bot om items aan uw inbox toe te voegen via Telegram-berichten.",
     "telegramBotToken": "Telegram-bottoken",
     "telegramTokenDescription": "Maak een bot met @BotFather op Telegram en plak de token hier.",
-    "telegramConnected": "Uw Telegram-account is verbonden! Stuur berichten naar uw bot om items aan uw tududi-inbox toe te voegen.",
+    "telegramConnected": "Uw Telegram-account is verbonden! Stuur berichten naar uw bot om items aan uw Life-to-Day-inbox toe te voegen.",
     "setupTelegram": "Telegram instellen",
     "setupTelegramLower": "telegram instellen",
     "settingUp": "Aan het instellen...",
     "telegramSetupSuccess": "Telegram-bot \"{{botName}}\" succesvol geconfigureerd!",
     "telegramSetupFailed": "Instellen van Telegram-bot mislukt.",
     "invalidTelegramToken": "Ongeldig Telegram-bot tokenformaat.",
-    "telegramInstructions": "Ga naar https://t.me/{{botUsername}} en begin te chatten met je bot om deze te verbinden met je tududi-account.",
+    "telegramInstructions": "Ga naar https://t.me/{{botUsername}} en begin te chatten met je bot om deze te verbinden met je Life-to-Day-account.",
     "botConfigured": "Bot succesvol geconfigureerd!",
     "botUsername": "Bot Gebruikersnaam:",
     "pollingStatus": "Pollingstatus:",
@@ -538,8 +538,8 @@
       "testRequired": "U moet de verbinding testen voordat u verdergaat",
       "syncDirection": "Synchronisatierichting",
       "bidirectional": "Bidirectioneel (synchronisatie in beide richtingen)",
-      "pullOnly": "Alleen ophalen (van server naar Tududi)",
-      "pushOnly": "Alleen duwen (van Tududi naar server)",
+      "pullOnly": "Alleen ophalen (van server naar Life-to-Day)",
+      "pushOnly": "Alleen duwen (van Life-to-Day naar server)",
       "syncInterval": "Synchronisatie-interval (minuten)",
       "syncIntervalHelp": "Hoe vaak automatisch synchroniseren (5-1440 minuten)",
       "conflictPolicy": "Conflictbeheersing",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Synchronisatieconflicten oplossen",
       "chooseVersion": "Kies welke versie u voor elk veld wilt behouden:",
-      "local": "Lokaal (Tududi)",
+      "local": "Lokaal (Life-to-Day)",
       "remote": "Afstandsbediening (CalDAV)",
       "useThis": "Gebruik deze",
       "useAllLocal": "Gebruik alles lokaal",
@@ -597,7 +597,7 @@
       "addError": "Deze agenda kon niet worden toegevoegd",
       "deleteError": "Deze agenda kon niet worden verwijderd",
       "title": "Agenda's in Vandaag",
-      "description": "Toon je afspraken naast je dagplanning. Tududi leest deze agenda's alleen en wijzigt ze nooit.",
+      "description": "Toon je afspraken naast je dagplanning. Life-to-Day leest deze agenda's alleen en wijzigt ze nooit.",
       "empty": "Nog geen agenda's gekoppeld.",
       "lastSync": "bijgewerkt {{time}}",
       "remove": "{{name}} verwijderen",
@@ -605,7 +605,7 @@
       "name": "Naam",
       "namePlaceholder": "Werk, Gezin…",
       "url": "Geheim iCal-adres",
-      "googleHelp": "In Google Agenda: Instellingen → je agenda → Agenda integreren → 'Geheim adres in iCal-indeling'. Apple Agenda en Outlook hebben vergelijkbare links. Iedereen met dit adres kan de agenda lezen, daarom slaat tududi het versleuteld op.",
+      "googleHelp": "In Google Agenda: Instellingen → je agenda → Agenda integreren → 'Geheim adres in iCal-indeling'. Apple Agenda en Outlook hebben vergelijkbare links. Iedereen met dit adres kan de agenda lezen, daarom slaat Life-to-Day het versleuteld op.",
       "color": "Kleur",
       "checking": "Agenda controleren…",
       "add": "Koppelen",
@@ -762,16 +762,16 @@
     "habitsDescription": "Schakel de sectie Gewoonten in om terugkerend gedrag en reeksen bij te houden.",
     "loading": "Laden...",
     "mcp": {
-      "description": "Verbind tududi met elke MCP-compatibele app via het Model Context Protocol. Zo kunnen AI-assistenten werken met je taken, projecten en notities, op zowel lokale als externe tududi-servers.",
+      "description": "Verbind Life-to-Day met elke MCP-compatibele app via het Model Context Protocol. Zo kunnen AI-assistenten werken met je taken, projecten en notities, op zowel lokale als externe Life-to-Day-servers.",
       "example1": "Laat mijn taken voor vandaag zien",
       "example2": "Maak een taak om de MCP-integratie te controleren",
       "example3": "Welke projecten heb ik lopen?",
       "example4": "Zet een herinnering in mijn inbox om mijn e-mail te checken",
       "example5": "Zoek taken over documentatie",
       "remote": {
-        "cloud": "Toegang tot externe tududi (cloudservers)",
+        "cloud": "Toegang tot externe Life-to-Day (cloudservers)",
         "docker": "Gebruik vanuit Docker-installaties",
-        "local": "Toegang tot lokale tududi (localhost)",
+        "local": "Toegang tot lokale Life-to-Day (localhost)",
         "title": "Externe toegang ingeschakeld",
         "tokens": "Veilig verbinden met API-tokens",
         "usesPrefix": "Deze configuratie gebruikt",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "Kopiëren",
-        "description": "Voeg deze configuratie toe aan je MCP-client. Vervang YOUR_API_TOKEN_HERE door het token uit stap 1. Er wordt mcp-remote gebruikt om via HTTP met je tududi-server te verbinden. Voorbeeld voor Claude Desktop:",
+        "description": "Voeg deze configuratie toe aan je MCP-client. Vervang YOUR_API_TOKEN_HERE door het token uit stap 1. Er wordt mcp-remote gebruikt om via HTTP met je Life-to-Day-server te verbinden. Voorbeeld voor Claude Desktop:",
         "loading": "Laden...",
         "locationTitle": "Locatie van het configuratiebestand van Claude Desktop:",
         "otherClients": "Andere MCP-clients worden mogelijk anders ingesteld, bekijk de documentatie van je client.",
@@ -795,7 +795,7 @@
         "title": "3. Beschikbare bewerkingen"
       },
       "step4": {
-        "description": "Start je MCP-client opnieuw nadat je de configuratie hebt toegevoegd. Daarna kun je in gewone taal met tududi werken:",
+        "description": "Start je MCP-client opnieuw nadat je de configuratie hebt toegevoegd. Daarna kun je in gewone taal met Life-to-Day werken:",
         "examplesTitle": "Voorbeeldvragen:",
         "title": "4. Aan de slag"
       },
@@ -804,7 +804,7 @@
         "firewall": "Controleer bij externe servers je firewallinstellingen",
         "intro": "Als je MCP-client geen verbinding kan maken, controleer dan of:",
         "restart": "Je MCP-client volledig opnieuw is gestart",
-        "server": "De tududi-server draait en bereikbaar is",
+        "server": "De Life-to-Day-server draait en bereikbaar is",
         "title": "Problemen oplossen",
         "token": "Je API-token geldig is en niet verlopen"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Snelle Inbox Vastlegging",
     "userMenu": "Gebruikersmenu",
     "collapseSidebar": "Vouw Zijbalk In",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 Welkom bij tududi!\n\nJe persoonlijke taakbeheerbot is nu verbonden en klaar om te helpen!\n\n📝 Stuur me gewoon een bericht en ik voeg het toe aan je tududi-inbox als een item.\n\n✨ Commando's:\n• /help - Toon hulpinformatie\n• /start - Toon welkomstbericht\n• Typ gewoon enige tekst - Voeg het toe als een inboxitem\n\nLaten we ons organiseren! 🚀",
-    "helpMessage": "📋 tududi Bot Hulp\n\nStuur me een tekstbericht en ik voeg het toe aan je tududi-inbox als een inboxitem.\n\nCommando's:\n/start - Welkomstbericht\n/help - Toon dit hulpbericht\n\nTyp gewoon je item en ik zorg voor de rest!",
+    "welcomeMessage": "🎉 Welkom bij Life-to-Day!\n\nJe persoonlijke taakbeheerbot is nu verbonden en klaar om te helpen!\n\n📝 Stuur me gewoon een bericht en ik voeg het toe aan je Life-to-Day-inbox als een item.\n\n✨ Commando's:\n• /help - Toon hulpinformatie\n• /start - Toon welkomstbericht\n• Typ gewoon enige tekst - Voeg het toe als een inboxitem\n\nLaten we ons organiseren! 🚀",
+    "helpMessage": "📋 Life-to-Day Bot Hulp\n\nStuur me een tekstbericht en ik voeg het toe aan je Life-to-Day-inbox als een inboxitem.\n\nCommando's:\n/start - Welkomstbericht\n/help - Toon dit hulpbericht\n\nTyp gewoon je item en ik zorg voor de rest!",
     "commandProcessed": "Commando succesvol verwerkt",
     "messageProcessed": "Bericht succesvol verwerkt",
     "failedToAddToInbox": "❌ Mislukt om toe te voegen aan inbox: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "Versie",
     "description": "Zelf-gehoste taakbeheer met hiërarchische organisatie, meertalige ondersteuning en Telegram-integratie. Gebouwd met liefde voor productiviteitsliefhebbers.",
     "madeWithLove": "Gemaakt met liefde",
-    "appreciation": "Bedankt voor het gebruik van tududi! Jouw steun helpt dit project levend en groeiend te houden. Als je het nuttig vindt, overweeg dan om de ontwikkeling te steunen.",
+    "appreciation": "Bedankt voor het gebruik van Life-to-Day! Jouw steun helpt dit project levend en groeiend te houden. Als je het nuttig vindt, overweeg dan om de ontwikkeling te steunen.",
     "supportDevelopment": "Steun de ontwikkeling",
     "community": "Gemeenschap",
     "viewOnGitHub": "Bekijk op GitHub",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "Beheerder",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Gebruikers",
       "usersHint": "{{verified}} geverifieerd · {{admins}} beheerder · {{new}} vandaag",
       "paying": "Betaald",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "Blog",
       "description": "Kies een van je notities als voorpagina. De openbare notities die ze met [[Titel]] linkt, worden de berichten. Deel de voorpagina en elk bericht openbaar zodat ze verschijnen.",
-      "placeholder": "Notitielink of ID, bijv. https://app.tududi.com/notes/abc123",
+      "placeholder": "Notitielink of ID, bijv. /notes/abc123",
       "inputLabel": "Notitie voor de voorpagina",
       "turnOff": "Uitzetten",
       "shared": "Openbaar",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "Abonnement",
-    "chooseForCloud": "Kies een plan voor tududi Cloud",
+    "chooseForCloud": "Kies een plan voor Life-to-Day Cloud",
     "noActive": "Geen actieve abonnement",
-    "chooseToContinue": "Kies een plan om tududi Cloud te blijven gebruiken.",
+    "chooseToContinue": "Kies een plan om Life-to-Day Cloud te blijven gebruiken.",
     "monthly": "Maandelijks",
     "yearly": "Jaarlijks",
     "priceMonthly": "{{price}} per maand",
@@ -2552,15 +2552,15 @@
     "notConfigured": "Abonnementen zijn nog niet beschikbaar op deze instantie. Neem contact op met de ondersteuning.",
     "exportData": "Exporteer uw gegevens",
     "subscribe": "Abonneren",
-    "readOnlyBanner": "Je proefperiode is afgelopen, dus je gegevens zijn alleen-lezen. Neem een abonnement om tududi te blijven gebruiken, of exporteer je gegevens. Het account wordt op {{date}} verwijderd.",
+    "readOnlyBanner": "Je proefperiode is afgelopen, dus je gegevens zijn alleen-lezen. Neem een abonnement om Life-to-Day te blijven gebruiken, of exporteer je gegevens. Het account wordt op {{date}} verwijderd.",
     "lockedAi": "De AI-assistent hoort bij het betaalde abonnement.",
     "lockedPublicNotes": "Openbare notitielinks horen bij het betaalde abonnement.",
     "lockedMembers": "Leden toevoegen hoort bij het betaalde abonnement.",
     "trialEnded": "Je proefperiode is afgelopen",
     "onTrial": "Je gebruikt de gratis proefperiode",
-    "readOnlyUntil": "Je gegevens zijn alleen-lezen tot {{date}}, daarna wordt het account verwijderd. Neem een abonnement om tududi Cloud te blijven gebruiken.",
+    "readOnlyUntil": "Je gegevens zijn alleen-lezen tot {{date}}, daarna wordt het account verwijderd. Neem een abonnement om Life-to-Day Cloud te blijven gebruiken.",
     "trialIncludes": "Je proefperiode eindigt op {{date}}. De AI-assistent, openbare notities en leden toevoegen worden ontgrendeld met een abonnement.",
-    "backToApp": "Terug naar tududi",
+    "backToApp": "Terug naar Life-to-Day",
     "trialBanner": "Gratis proefperiode, resterende dagen: {{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "Lid bijwerken mislukt",
     "addEmailHint": "Met een e-mailadres krijgt deze persoon een uitnodiging om een wachtwoord in te stellen. Het kan daarna niet meer worden gewijzigd.",
     "remove": "Lid verwijderen",
-    "removeConfirm": "{{name}} verwijderen? Het account en alles erin wordt verwijderd, en dit kan niet ongedaan worden gemaakt. Bij tududi Cloud gaat de plek van je abonnement af.",
+    "removeConfirm": "{{name}} verwijderen? Het account en alles erin wordt verwijderd, en dit kan niet ongedaan worden gemaakt. Bij Life-to-Day Cloud gaat de plek van je abonnement af.",
     "removed": "Lid verwijderd",
     "updated": "Lid bijgewerkt",
     "invitationSent": "Uitnodiging verstuurd",
@@ -2960,10 +2960,10 @@
   "blog": {
     "nav": "Blog",
     "navCta": "Begin nu",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Voorwaarden",
     "footerPrivacy": "Privacy",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Haal de kleine dingen uit je hoofd.",
     "ctaBody": "Taken, projecten, notities en gewoonten op één rustige plek, gedeeld met de mensen met wie je woont en werkt. Geen server, niets te installeren.",
     "ctaPrice": "{{monthly}} per maand of {{annual}} per jaar",
@@ -2979,5 +2979,9 @@
     "missingBody": "Het is misschien verplaatst of verwijderd. De andere berichten zijn één klik verwijderd.",
     "allPosts": "Alle berichten",
     "morePosts": "Meer van de blog"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

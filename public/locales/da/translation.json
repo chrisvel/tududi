@@ -326,17 +326,17 @@
     "personalInfo": "Personlige oplysninger",
     "errorMessage": "Kunne ikke opdatere profil",
     "telegramIntegration": "Telegram-integration",
-    "telegramDescription": "Forbind din tududi-konto til en Telegram-bot for at tilføje elementer til din indbakke via Telegram-beskeder.",
+    "telegramDescription": "Forbind din Life-to-Day-konto til en Telegram-bot for at tilføje elementer til din indbakke via Telegram-beskeder.",
     "telegramBotToken": "Telegram-bottoken",
     "telegramTokenDescription": "Opret en bot med @BotFather på Telegram og indsæt token her.",
-    "telegramConnected": "Din Telegram-konto er tilsluttet! Send beskeder til din bot for at tilføje elementer til din tududi indbakke.",
+    "telegramConnected": "Din Telegram-konto er tilsluttet! Send beskeder til din bot for at tilføje elementer til din Life-to-Day indbakke.",
     "setupTelegram": "Opsæt Telegram",
     "setupTelegramLower": "opsæt telegram",
     "settingUp": "Opsætter...",
     "telegramSetupSuccess": "Telegram bot \"{{botName}}\" konfigureret med succes!",
     "telegramSetupFailed": "Fejl ved opsætning af Telegram bot.",
     "invalidTelegramToken": "Ugyldigt format for Telegram bot token.",
-    "telegramInstructions": "Gå til https://t.me/{{botUsername}} og begynd at chatte med din bot for at forbinde den til din tududi-konto.",
+    "telegramInstructions": "Gå til https://t.me/{{botUsername}} og begynd at chatte med din bot for at forbinde den til din Life-to-Day-konto.",
     "botConfigured": "Bot konfigureret med succes!",
     "botUsername": "Bot Brugername:",
     "pollingStatus": "Polling-status:",
@@ -538,8 +538,8 @@
       "testRequired": "Du skal teste forbindelsen, før du fortsætter",
       "syncDirection": "Synkroniseringsretning",
       "bidirectional": "Tovejs (synkroniser begge veje)",
-      "pullOnly": "Kun træk (fra server til Tududi)",
-      "pushOnly": "Kun skub (fra Tududi til server)",
+      "pullOnly": "Kun træk (fra server til Life-to-Day)",
+      "pushOnly": "Kun skub (fra Life-to-Day til server)",
       "syncInterval": "Synkroniseringsinterval (minutter)",
       "syncIntervalHelp": "Hvor ofte der automatisk skal synkroniseres (5-1440 minutter)",
       "conflictPolicy": "Konfliktløsning",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Løs synkroniseringskonflikter",
       "chooseVersion": "Vælg hvilken version der skal beholdes for hvert felt:",
-      "local": "Lokal (Tududi)",
+      "local": "Lokal (Life-to-Day)",
       "remote": "Fjern (CalDAV)",
       "useThis": "Brug dette",
       "useAllLocal": "Brug alle lokale",
@@ -597,7 +597,7 @@
       "addError": "Kalenderen kunne ikke tilføjes",
       "deleteError": "Kalenderen kunne ikke fjernes",
       "title": "Kalendere i I dag",
-      "description": "Vis dine møder ved siden af dagens plan. Tududi læser kun disse kalendere og ændrer dem aldrig.",
+      "description": "Vis dine møder ved siden af dagens plan. Life-to-Day læser kun disse kalendere og ændrer dem aldrig.",
       "empty": "Ingen kalendere forbundet endnu.",
       "lastSync": "opdateret {{time}}",
       "remove": "Fjern {{name}}",
@@ -605,7 +605,7 @@
       "name": "Navn",
       "namePlaceholder": "Arbejde, Familie…",
       "url": "Hemmelig iCal-adresse",
-      "googleHelp": "I Google Kalender: Indstillinger → din kalender → Integrer kalender → \"Hemmelig adresse i iCal-format\". Apple Kalender og Outlook har lignende links. Alle med adressen kan læse kalenderen, så tududi gemmer den krypteret.",
+      "googleHelp": "I Google Kalender: Indstillinger → din kalender → Integrer kalender → \"Hemmelig adresse i iCal-format\". Apple Kalender og Outlook har lignende links. Alle med adressen kan læse kalenderen, så Life-to-Day gemmer den krypteret.",
       "color": "Farve",
       "checking": "Tjekker kalenderen…",
       "add": "Forbind",
@@ -762,16 +762,16 @@
     "habitsDescription": "Aktivér sektionen Vaner til at følge tilbagevendende adfærd og stimer.",
     "loading": "Indlæser...",
     "mcp": {
-      "description": "Forbind tududi med enhver MCP-kompatibel app via Model Context Protocol. Så kan AI-assistenter arbejde med dine opgaver, projekter og noter, både på lokale og eksterne tududi-servere.",
+      "description": "Forbind Life-to-Day med enhver MCP-kompatibel app via Model Context Protocol. Så kan AI-assistenter arbejde med dine opgaver, projekter og noter, både på lokale og eksterne Life-to-Day-servere.",
       "example1": "Vis mig mine opgaver for i dag",
       "example2": "Opret en opgave om at gennemgå MCP-integrationen",
       "example3": "Hvilke projekter har jeg i gang?",
       "example4": "Tilføj en påmindelse i indbakken om at tjekke e-mails",
       "example5": "Søg efter opgaver om dokumentation",
       "remote": {
-        "cloud": "Adgang til ekstern tududi (cloud-servere)",
+        "cloud": "Adgang til ekstern Life-to-Day (cloud-servere)",
         "docker": "Brug fra Docker-installationer",
-        "local": "Adgang til lokal tududi (localhost)",
+        "local": "Adgang til lokal Life-to-Day (localhost)",
         "title": "Fjernadgang aktiveret",
         "tokens": "Forbind sikkert med API-tokens",
         "usesPrefix": "Denne konfiguration bruger",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "Kopiér",
-        "description": "Tilføj denne konfiguration i din MCP-klient. Erstat YOUR_API_TOKEN_HERE med det token, du oprettede i trin 1. Den bruger mcp-remote til at forbinde til din tududi-server via HTTP. Eksemplet er til Claude Desktop:",
+        "description": "Tilføj denne konfiguration i din MCP-klient. Erstat YOUR_API_TOKEN_HERE med det token, du oprettede i trin 1. Den bruger mcp-remote til at forbinde til din Life-to-Day-server via HTTP. Eksemplet er til Claude Desktop:",
         "loading": "Indlæser...",
         "locationTitle": "Placering af Claude Desktops konfigurationsfil:",
         "otherClients": "Andre MCP-klienter konfigureres måske anderledes, se din klients dokumentation.",
@@ -795,7 +795,7 @@
         "title": "3. Tilgængelige handlinger"
       },
       "step4": {
-        "description": "Genstart din MCP-klient, når du har tilføjet konfigurationen. Derefter kan du bruge almindeligt sprog til at arbejde med tududi:",
+        "description": "Genstart din MCP-klient, når du har tilføjet konfigurationen. Derefter kan du bruge almindeligt sprog til at arbejde med Life-to-Day:",
         "examplesTitle": "Eksempler på forespørgsler:",
         "title": "4. Kom i gang"
       },
@@ -804,7 +804,7 @@
         "firewall": "Tjek firewall-indstillingerne for eksterne servere",
         "intro": "Hvis din MCP-klient ikke kan forbinde, så tjek at:",
         "restart": "Du har genstartet din MCP-klient helt",
-        "server": "tududi-serveren kører og kan nås",
+        "server": "Life-to-Day-serveren kører og kan nås",
         "title": "Fejlfinding",
         "token": "Dit API-token er gyldigt og ikke udløbet"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Hurtig indbakkeoptagelse",
     "userMenu": "Bruger-menu",
     "collapseSidebar": "Skjul sidepanel",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 Velkommen til tududi!\n\nDin personlige opgavestyringsbot er nu tilsluttet og klar til at hjælpe!\n\n📝 Send mig blot en hvilken som helst besked, og jeg tilføjer den til din tududi indbakke som et punkt.\n\n✨ Kommandoer:\n• /help - Vis hjælpeinformation\n• /start - Vis velkomstbesked\n• Skriv blot en hvilken som helst tekst - Tilføj den som et indbakkeelement\n\nLad os blive organiseret! 🚀",
-    "helpMessage": "📋 tududi Bot Hjælp\n\nSend mig enhver tekstbesked, og jeg tilføjer den til din tududi indbakke som et indbakkeelement.\n\nKommandoer:\n/start - Velkomstbesked\n/help - Vis denne hjælpebesked\n\nSkriv blot dit punkt, så tager jeg mig af resten!",
+    "welcomeMessage": "🎉 Velkommen til Life-to-Day!\n\nDin personlige opgavestyringsbot er nu tilsluttet og klar til at hjælpe!\n\n📝 Send mig blot en hvilken som helst besked, og jeg tilføjer den til din Life-to-Day indbakke som et punkt.\n\n✨ Kommandoer:\n• /help - Vis hjælpeinformation\n• /start - Vis velkomstbesked\n• Skriv blot en hvilken som helst tekst - Tilføj den som et indbakkeelement\n\nLad os blive organiseret! 🚀",
+    "helpMessage": "📋 Life-to-Day Bot Hjælp\n\nSend mig enhver tekstbesked, og jeg tilføjer den til din Life-to-Day indbakke som et indbakkeelement.\n\nKommandoer:\n/start - Velkomstbesked\n/help - Vis denne hjælpebesked\n\nSkriv blot dit punkt, så tager jeg mig af resten!",
     "commandProcessed": "Kommando behandlet med succes",
     "messageProcessed": "Besked behandlet med succes",
     "failedToAddToInbox": "❌ Kunne ikke tilføje til indbakke: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "Version",
     "description": "Selvhostet opgavestyring med hierarkisk organisering, flersproget support og Telegram-integration. Bygget med kærlighed til produktivitetsentusiaster.",
     "madeWithLove": "Bygget med kærlighed",
-    "appreciation": "Tak fordi du bruger tududi! Din støtte hjælper med at holde dette projekt i live og voksende. Hvis du finder det nyttigt, overvej at støtte udviklingen.",
+    "appreciation": "Tak fordi du bruger Life-to-Day! Din støtte hjælper med at holde dette projekt i live og voksende. Hvis du finder det nyttigt, overvej at støtte udviklingen.",
     "supportDevelopment": "Støt udviklingen",
     "community": "Fællesskab",
     "viewOnGitHub": "Se på GitHub",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "Admin",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Brugere",
       "usersHint": "{{verified}} verificerede · {{admins}} administratorer · {{new}} i dag",
       "paying": "Betalende",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "Blog",
       "description": "Vælg en af dine noter som forside. De offentlige noter, den linker til med [[Titel]], bliver til indlæggene. Del forsiden og hvert indlæg offentligt, så de vises.",
-      "placeholder": "Notelink eller ID, f.eks. https://app.tududi.com/notes/abc123",
+      "placeholder": "Notelink eller ID, f.eks. /notes/abc123",
       "inputLabel": "Note til forsiden",
       "turnOff": "Slå fra",
       "shared": "Offentlig",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "Abonnement",
-    "chooseForCloud": "Vælg en plan for tududi Cloud",
+    "chooseForCloud": "Vælg en plan for Life-to-Day Cloud",
     "noActive": "Ingen aktiv abonnement",
-    "chooseToContinue": "Vælg en plan for at fortsætte med at bruge tududi Cloud.",
+    "chooseToContinue": "Vælg en plan for at fortsætte med at bruge Life-to-Day Cloud.",
     "monthly": "Månedligt",
     "yearly": "Årligt",
     "priceMonthly": "{{price}} pr. måned",
@@ -2552,15 +2552,15 @@
     "notConfigured": "Abonnementer er endnu ikke tilgængelige på denne instans. Kontakt venligst support.",
     "exportData": "Eksporter dine data",
     "subscribe": "Abonnér",
-    "readOnlyBanner": "Din prøveperiode er slut, så dine data er skrivebeskyttede. Abonnér for at fortsætte med tududi, eller eksportér dine data. Kontoen slettes den {{date}}.",
+    "readOnlyBanner": "Din prøveperiode er slut, så dine data er skrivebeskyttede. Abonnér for at fortsætte med Life-to-Day, eller eksportér dine data. Kontoen slettes den {{date}}.",
     "lockedAi": "AI-assistenten er en del af den betalte plan.",
     "lockedPublicNotes": "Offentlige notelinks er en del af den betalte plan.",
     "lockedMembers": "Tilføjelse af medlemmer er en del af den betalte plan.",
     "trialEnded": "Din prøveperiode er slut",
     "onTrial": "Du er på den gratis prøveperiode",
-    "readOnlyUntil": "Dine data er skrivebeskyttede indtil {{date}}, derefter slettes kontoen. Abonnér for at fortsætte med tududi Cloud.",
+    "readOnlyUntil": "Dine data er skrivebeskyttede indtil {{date}}, derefter slettes kontoen. Abonnér for at fortsætte med Life-to-Day Cloud.",
     "trialIncludes": "Din prøveperiode slutter den {{date}}. AI-assistenten, offentlige noter og tilføjelse af medlemmer låses op, når du abonnerer.",
-    "backToApp": "Tilbage til tududi",
+    "backToApp": "Tilbage til Life-to-Day",
     "trialBanner": "Gratis prøveperiode, dage tilbage: {{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "Kunne ikke opdatere medlemmet",
     "addEmailHint": "Når du tilføjer en e-mail, får personen en invitation til at vælge en adgangskode. Den kan ikke ændres bagefter.",
     "remove": "Fjern medlem",
-    "removeConfirm": "Fjern {{name}}? Kontoen og alt i den slettes, og det kan ikke fortrydes. På tududi Cloud fjernes pladsen fra dit abonnement.",
+    "removeConfirm": "Fjern {{name}}? Kontoen og alt i den slettes, og det kan ikke fortrydes. På Life-to-Day Cloud fjernes pladsen fra dit abonnement.",
     "removed": "Medlemmet blev fjernet",
     "updated": "Medlemmet blev opdateret",
     "invitationSent": "Invitation sendt",
@@ -2960,10 +2960,10 @@
   "blog": {
     "nav": "Blog",
     "navCta": "Kom i gang nu",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Vilkår",
     "footerPrivacy": "Privatliv",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Få de små ting ud af hovedet.",
     "ctaBody": "Opgaver, projekter, noter og vaner ét roligt sted, delt med dem, du bor og arbejder med. Ingen server, intet at installere.",
     "ctaPrice": "{{monthly}} om måneden eller {{annual}} om året",
@@ -2979,5 +2979,9 @@
     "missingBody": "Det er måske flyttet eller fjernet. De andre indlæg er ét klik væk.",
     "allPosts": "Alle indlæg",
     "morePosts": "Mere fra bloggen"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

@@ -318,17 +318,17 @@
     "personalInfo": "Informações Pessoais",
     "errorMessage": "Falha ao atualizar o perfil",
     "telegramIntegration": "Integração com Telegram",
-    "telegramDescription": "Conecte sua conta tududi a um bot do Telegram para adicionar itens à sua caixa de entrada via mensagens do Telegram.",
+    "telegramDescription": "Conecte sua conta Life-to-Day a um bot do Telegram para adicionar itens à sua caixa de entrada via mensagens do Telegram.",
     "telegramBotToken": "Token do Bot do Telegram",
     "telegramTokenDescription": "Crie um bot com @BotFather no Telegram e cole o token aqui.",
-    "telegramConnected": "Sua conta do Telegram está conectada! Envie mensagens para o seu bot para adicionar itens à sua caixa de entrada tududi.",
+    "telegramConnected": "Sua conta do Telegram está conectada! Envie mensagens para o seu bot para adicionar itens à sua caixa de entrada Life-to-Day.",
     "setupTelegram": "Configurar Telegram",
     "setupTelegramLower": "configurar telegram",
     "settingUp": "Configurando...",
     "telegramSetupSuccess": "Bot do Telegram \"{{botName}}\" configurado com sucesso!",
     "telegramSetupFailed": "Falha ao configurar o bot do Telegram.",
     "invalidTelegramToken": "Formato de token do bot do Telegram inválido.",
-    "telegramInstructions": "Vá para https://t.me/{{botUsername}} e comece a conversar com seu bot para conectá-lo à sua conta tududi.",
+    "telegramInstructions": "Vá para https://t.me/{{botUsername}} e comece a conversar com seu bot para conectá-lo à sua conta Life-to-Day.",
     "botConfigured": "Bot configurado com sucesso!",
     "botUsername": "Nome de usuário do Bot:",
     "pollingStatus": "Status da Polling:",
@@ -538,8 +538,8 @@
       "testRequired": "Você deve testar a conexão antes de prosseguir",
       "syncDirection": "Direção da sincronização",
       "bidirectional": "Bidirecional (sincronizar em ambas as direções)",
-      "pullOnly": "Apenas puxar (do servidor para o Tududi)",
-      "pushOnly": "Apenas empurrar (do Tududi para o servidor)",
+      "pullOnly": "Apenas puxar (do servidor para o Life-to-Day)",
+      "pushOnly": "Apenas empurrar (do Life-to-Day para o servidor)",
       "syncInterval": "Intervalo de sincronização (minutos)",
       "syncIntervalHelp": "Com que frequência sincronizar automaticamente (5-1440 minutos)",
       "conflictPolicy": "Resolução de conflitos",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Resolver Conflitos de Sincronização",
       "chooseVersion": "Escolha qual versão manter para cada campo:",
-      "local": "Local (Tududi)",
+      "local": "Local (Life-to-Day)",
       "remote": "Remoto (CalDAV)",
       "useThis": "Usar Este",
       "useAllLocal": "Usar todos locais",
@@ -597,7 +597,7 @@
       "addError": "Não foi possível adicionar esse calendário",
       "deleteError": "Não foi possível remover esse calendário",
       "title": "Calendários em Hoje",
-      "description": "Mostre as suas reuniões ao lado do plano do dia. O tududi apenas lê estes calendários; nunca os altera.",
+      "description": "Mostre as suas reuniões ao lado do plano do dia. O Life-to-Day apenas lê estes calendários; nunca os altera.",
       "empty": "Ainda não há calendários ligados.",
       "lastSync": "atualizado {{time}}",
       "remove": "Remover {{name}}",
@@ -605,7 +605,7 @@
       "name": "Nome",
       "namePlaceholder": "Trabalho, Família…",
       "url": "Endereço iCal secreto",
-      "googleHelp": "No Google Calendar: Definições → o seu calendário → Integrar calendário → «Endereço secreto no formato iCal». O Apple Calendar e o Outlook têm links semelhantes. Qualquer pessoa com este endereço pode ler o calendário, por isso o tududi guarda-o encriptado.",
+      "googleHelp": "No Google Calendar: Definições → o seu calendário → Integrar calendário → «Endereço secreto no formato iCal». O Apple Calendar e o Outlook têm links semelhantes. Qualquer pessoa com este endereço pode ler o calendário, por isso o Life-to-Day guarda-o encriptado.",
       "color": "Cor",
       "checking": "A verificar o calendário…",
       "add": "Ligar",
@@ -762,16 +762,16 @@
     "habitsDescription": "Ativar a secção Hábitos para acompanhar comportamentos recorrentes e sequências.",
     "loading": "A carregar...",
     "mcp": {
-      "description": "Ligue o tududi a qualquer aplicação compatível com MCP através do Model Context Protocol. Assim, os assistentes de IA podem trabalhar com as suas tarefas, projetos e notas, em servidores tududi locais ou remotos.",
+      "description": "Ligue o Life-to-Day a qualquer aplicação compatível com MCP através do Model Context Protocol. Assim, os assistentes de IA podem trabalhar com as suas tarefas, projetos e notas, em servidores Life-to-Day locais ou remotos.",
       "example1": "Mostra-me as minhas tarefas de hoje",
       "example2": "Cria uma tarefa para rever a integração MCP",
       "example3": "Que projetos tenho em curso?",
       "example4": "Adiciona à caixa de entrada um lembrete para ver os emails",
       "example5": "Procura tarefas relacionadas com documentação",
       "remote": {
-        "cloud": "Aceder a um tududi remoto (servidores na cloud)",
+        "cloud": "Aceder a um Life-to-Day remoto (servidores na cloud)",
         "docker": "Usar a partir de instalações Docker",
-        "local": "Aceder a um tududi local (localhost)",
+        "local": "Aceder a um Life-to-Day local (localhost)",
         "title": "Acesso remoto ativo",
         "tokens": "Ligar com segurança através de tokens de API",
         "usesPrefix": "Esta configuração usa",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "Copiar",
-        "description": "Adicione esta configuração ao seu cliente MCP. Substitua YOUR_API_TOKEN_HERE pelo token gerado no passo 1. É usado o mcp-remote para ligar ao servidor tududi por HTTP. Exemplo para o Claude Desktop:",
+        "description": "Adicione esta configuração ao seu cliente MCP. Substitua YOUR_API_TOKEN_HERE pelo token gerado no passo 1. É usado o mcp-remote para ligar ao servidor Life-to-Day por HTTP. Exemplo para o Claude Desktop:",
         "loading": "A carregar...",
         "locationTitle": "Localização do ficheiro de configuração do Claude Desktop:",
         "otherClients": "Outros clientes MCP podem ser configurados de outra forma, consulte a documentação do seu cliente.",
@@ -795,7 +795,7 @@
         "title": "3. Operações disponíveis"
       },
       "step4": {
-        "description": "Depois de adicionar a configuração, reinicie o cliente MCP. Depois pode usar linguagem natural para trabalhar com o tududi:",
+        "description": "Depois de adicionar a configuração, reinicie o cliente MCP. Depois pode usar linguagem natural para trabalhar com o Life-to-Day:",
         "examplesTitle": "Exemplos de pedidos:",
         "title": "4. Começar a usar"
       },
@@ -804,7 +804,7 @@
         "firewall": "Em servidores remotos, verifique as definições da firewall",
         "intro": "Se o cliente MCP não conseguir ligar, verifique se:",
         "restart": "Reiniciou completamente o cliente MCP",
-        "server": "O servidor tududi está a funcionar e acessível",
+        "server": "O servidor Life-to-Day está a funcionar e acessível",
         "title": "Resolução de problemas",
         "token": "O token de API é válido e não expirou"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Captura Rápida de Caixa de Entrada",
     "userMenu": "Menu do Usuário",
     "collapseSidebar": "Colapsar Barra Lateral",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 Bem-vindo ao tududi!\n\nSeu bot pessoal de gerenciamento de tarefas está agora conectado e pronto para ajudar!\n\n📝 Basta me enviar qualquer mensagem e eu a adicionarei à sua caixa de entrada do tududi como um item.\n\n✨ Comandos:\n• /help - Mostrar informações de ajuda\n• /start - Mostrar mensagem de boas-vindas\n• Basta digitar qualquer texto - Adicioná-lo como um item na caixa de entrada\n\nVamos nos organizar! 🚀",
-    "helpMessage": "📋 Ajuda do Bot tududi\n\nEnvie-me qualquer mensagem de texto e eu a adicionarei à sua caixa de entrada do tududi como um item.\n\nComandos:\n/start - Mensagem de boas-vindas\n/help - Mostrar esta mensagem de ajuda\n\nBasta digitar seu item e eu cuidarei do resto!",
+    "welcomeMessage": "🎉 Bem-vindo ao Life-to-Day!\n\nSeu bot pessoal de gerenciamento de tarefas está agora conectado e pronto para ajudar!\n\n📝 Basta me enviar qualquer mensagem e eu a adicionarei à sua caixa de entrada do Life-to-Day como um item.\n\n✨ Comandos:\n• /help - Mostrar informações de ajuda\n• /start - Mostrar mensagem de boas-vindas\n• Basta digitar qualquer texto - Adicioná-lo como um item na caixa de entrada\n\nVamos nos organizar! 🚀",
+    "helpMessage": "📋 Ajuda do Bot Life-to-Day\n\nEnvie-me qualquer mensagem de texto e eu a adicionarei à sua caixa de entrada do Life-to-Day como um item.\n\nComandos:\n/start - Mensagem de boas-vindas\n/help - Mostrar esta mensagem de ajuda\n\nBasta digitar seu item e eu cuidarei do resto!",
     "commandProcessed": "Comando processado com sucesso",
     "messageProcessed": "Mensagem processada com sucesso",
     "failedToAddToInbox": "❌ Falha ao adicionar à caixa de entrada: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "Versão",
     "description": "Gerenciamento de tarefas auto-hospedado com organização hierárquica, suporte a múltiplos idiomas e integração com Telegram. Construído com amor para entusiastas da produtividade.",
     "madeWithLove": "Feito com amor",
-    "appreciation": "Obrigado por usar o tududi! Seu apoio ajuda a manter este projeto vivo e em crescimento. Se você achar útil, considere apoiar o desenvolvimento.",
+    "appreciation": "Obrigado por usar o Life-to-Day! Seu apoio ajuda a manter este projeto vivo e em crescimento. Se você achar útil, considere apoiar o desenvolvimento.",
     "supportDevelopment": "Apoiar o Desenvolvimento",
     "community": "Comunidade",
     "viewOnGitHub": "Ver no GitHub",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "Admin",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Usuários",
       "usersHint": "{{verified}} verificados · {{admins}} admin · {{new}} hoje",
       "paying": "Pagando",
@@ -2030,7 +2030,7 @@
     "blog": {
       "title": "Blog",
       "description": "Escolha uma das suas notas como página inicial. As notas públicas que ela liga com [[Título]] tornam-se os artigos. Partilhe publicamente a página inicial e cada artigo para que apareçam.",
-      "placeholder": "Link ou ID da nota, ex. https://app.tududi.com/notes/abc123",
+      "placeholder": "Link ou ID da nota, ex. /notes/abc123",
       "inputLabel": "Nota da página inicial",
       "turnOff": "Desativar",
       "shared": "Pública",
@@ -2535,9 +2535,9 @@
   },
   "subscription": {
     "title": "Assinatura",
-    "chooseForCloud": "Escolha um plano para o tududi Cloud",
+    "chooseForCloud": "Escolha um plano para o Life-to-Day Cloud",
     "noActive": "Nenhuma assinatura ativa",
-    "chooseToContinue": "Escolha um plano para continuar usando o tududi Cloud.",
+    "chooseToContinue": "Escolha um plano para continuar usando o Life-to-Day Cloud.",
     "monthly": "Mensal",
     "yearly": "Anual",
     "priceMonthly": "{{price}} por mês",
@@ -2553,15 +2553,15 @@
     "notConfigured": "Assinaturas ainda não estão disponíveis nesta instância. Por favor, entre em contato com o suporte.",
     "exportData": "Exporte seus dados",
     "subscribe": "Assinar",
-    "readOnlyBanner": "Seu teste terminou, então seus dados estão somente leitura. Assine para continuar usando o tududi ou exporte seus dados. A conta será excluída em {{date}}.",
+    "readOnlyBanner": "Seu teste terminou, então seus dados estão somente leitura. Assine para continuar usando o Life-to-Day ou exporte seus dados. A conta será excluída em {{date}}.",
     "lockedAi": "O assistente de IA faz parte do plano pago.",
     "lockedPublicNotes": "Links públicos de notas fazem parte do plano pago.",
     "lockedMembers": "Adicionar membros faz parte do plano pago.",
     "trialEnded": "Seu teste terminou",
     "onTrial": "Você está no teste gratuito",
-    "readOnlyUntil": "Seus dados ficam somente leitura até {{date}}; depois a conta será excluída. Assine para continuar usando o tududi Cloud.",
+    "readOnlyUntil": "Seus dados ficam somente leitura até {{date}}; depois a conta será excluída. Assine para continuar usando o Life-to-Day Cloud.",
     "trialIncludes": "Seu teste termina em {{date}}. O assistente de IA, as notas públicas e adicionar membros são liberados quando você assina.",
-    "backToApp": "Voltar ao tududi",
+    "backToApp": "Voltar ao Life-to-Day",
     "trialBanner": "Teste gratuito, dias restantes: {{count}}"
   },
   "demo": {
@@ -2634,7 +2634,7 @@
     "failedToUpdate": "Não foi possível atualizar o membro",
     "addEmailHint": "Adicionar um email envia-lhe um convite para definir uma palavra-passe. Não pode ser alterado depois.",
     "remove": "Remover membro",
-    "removeConfirm": "Remover {{name}}? A conta e tudo o que contém são eliminados, e isto não pode ser desfeito. No tududi Cloud o lugar é retirado da sua assinatura.",
+    "removeConfirm": "Remover {{name}}? A conta e tudo o que contém são eliminados, e isto não pode ser desfeito. No Life-to-Day Cloud o lugar é retirado da sua assinatura.",
     "removed": "Membro removido",
     "updated": "Membro atualizado",
     "invitationSent": "Convite enviado",
@@ -2961,10 +2961,10 @@
   "blog": {
     "nav": "Blog",
     "navCta": "Comece agora",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Termos",
     "footerPrivacy": "Privacidade",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Tire as pequenas coisas da cabeça.",
     "ctaBody": "Tarefas, projetos, notas e hábitos num lugar tranquilo, partilhados com as pessoas com quem vive e trabalha. Sem servidor, nada para instalar.",
     "ctaPrice": "{{monthly}} por mês ou {{annual}} por ano",
@@ -2980,5 +2980,9 @@
     "missingBody": "Pode ter sido movido ou removido. Os outros artigos estão a um clique.",
     "allPosts": "Todos os artigos",
     "morePosts": "Mais do blog"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

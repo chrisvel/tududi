@@ -326,17 +326,17 @@
     "personalInfo": "Osebni podatki",
     "errorMessage": "Posodobitev profila ni uspela",
     "telegramIntegration": "Telegram integracija",
-    "telegramDescription": "Povežite svoj tududi račun z Telegram botom, da dodate elemente v svoj nabiralnik preko Telegram sporočil.",
+    "telegramDescription": "Povežite svoj Life-to-Day račun z Telegram botom, da dodate elemente v svoj nabiralnik preko Telegram sporočil.",
     "telegramBotToken": "Žeton Telegram bota",
     "telegramTokenDescription": "Ustvarite bota z @BotFather na Telegramu in prilepite token tukaj.",
-    "telegramConnected": "Vaš Telegram račun je povezan! Pošljite sporočila svojemu botu, da dodate elemente v svoj tududi nabiralnik.",
+    "telegramConnected": "Vaš Telegram račun je povezan! Pošljite sporočila svojemu botu, da dodate elemente v svoj Life-to-Day nabiralnik.",
     "setupTelegram": "Nastavi Telegram",
     "setupTelegramLower": "nastavi telegram",
     "settingUp": "Nastavljanje...",
     "telegramSetupSuccess": "Telegram bot \"{{botName}}\" je bil uspešno konfiguriran!",
     "telegramSetupFailed": "Nastavitev Telegram bota je spodletela.",
     "invalidTelegramToken": "Neveljavna oblika Telegram bot žetona.",
-    "telegramInstructions": "Pojdite na https://t.me/{{botUsername}} in začnite klepetati s svojim botom, da ga povežete s svojim tududi računom.",
+    "telegramInstructions": "Pojdite na https://t.me/{{botUsername}} in začnite klepetati s svojim botom, da ga povežete s svojim Life-to-Day računom.",
     "botConfigured": "Bot je bil uspešno konfiguriran!",
     "botUsername": "Uporabniško ime bota:",
     "pollingStatus": "Status anketiranja:",
@@ -538,8 +538,8 @@
       "testRequired": "Pred nadaljevanjem morate preizkusiti povezavo",
       "syncDirection": "Usmeritev sinhronizacije",
       "bidirectional": "Dvosmerna (sinhronizacija v obe smeri)",
-      "pullOnly": "Samo prenos (iz strežnika v Tududi)",
-      "pushOnly": "Samo potisni prenos (iz Tududi v strežnik)",
+      "pullOnly": "Samo prenos (iz strežnika v Life-to-Day)",
+      "pushOnly": "Samo potisni prenos (iz Life-to-Day v strežnik)",
       "syncInterval": "Interval sinhronizacije (minute)",
       "syncIntervalHelp": "Kako pogosto naj se samodejno sinhronizira (5-1440 minut)",
       "conflictPolicy": "Reševanje konfliktov",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Reševanje konfliktov sinhronizacije",
       "chooseVersion": "Izberite, katero različico obdržati za vsako polje:",
-      "local": "Lokalno (Tududi)",
+      "local": "Lokalno (Life-to-Day)",
       "remote": "Oddaljeno (CalDAV)",
       "useThis": "Uporabi to",
       "useAllLocal": "Uporabi vse lokalne",
@@ -597,7 +597,7 @@
       "addError": "Koledarja ni bilo mogoče dodati",
       "deleteError": "Koledarja ni bilo mogoče odstraniti",
       "title": "Koledarji v pogledu Danes",
-      "description": "Prikaži sestanke ob načrtu dneva. Tududi te koledarje le bere in jih nikoli ne spreminja.",
+      "description": "Prikaži sestanke ob načrtu dneva. Life-to-Day te koledarje le bere in jih nikoli ne spreminja.",
       "empty": "Noben koledar še ni povezan.",
       "lastSync": "posodobljeno {{time}}",
       "remove": "Odstrani {{name}}",
@@ -605,7 +605,7 @@
       "name": "Ime",
       "namePlaceholder": "Služba, Družina…",
       "url": "Skrivni naslov iCal",
-      "googleHelp": "V Google Koledarju: Nastavitve → tvoj koledar → Integracija koledarja → »Skrivni naslov v formatu iCal«. Apple Koledar in Outlook imata podobne povezave. Kdor ima ta naslov, lahko bere koledar, zato ga tududi hrani šifriranega.",
+      "googleHelp": "V Google Koledarju: Nastavitve → tvoj koledar → Integracija koledarja → »Skrivni naslov v formatu iCal«. Apple Koledar in Outlook imata podobne povezave. Kdor ima ta naslov, lahko bere koledar, zato ga Life-to-Day hrani šifriranega.",
       "color": "Barva",
       "checking": "Preverjanje koledarja…",
       "add": "Poveži",
@@ -762,16 +762,16 @@
     "habitsDescription": "Omogoči razdelek Navade za sledenje ponavljajočim se dejanjem in nizom.",
     "loading": "Nalaganje...",
     "mcp": {
-      "description": "Poveži tududi s katero koli aplikacijo, ki podpira Model Context Protocol (MCP). Tako lahko AI pomočniki delajo s tvojimi opravili, projekti in zapiski, na lokalnem ali oddaljenem strežniku tududi.",
+      "description": "Poveži Life-to-Day s katero koli aplikacijo, ki podpira Model Context Protocol (MCP). Tako lahko AI pomočniki delajo s tvojimi opravili, projekti in zapiski, na lokalnem ali oddaljenem strežniku Life-to-Day.",
       "example1": "Pokaži moja opravila za danes",
       "example2": "Ustvari opravilo za pregled integracije MCP",
       "example3": "Katere projekte imam v teku?",
       "example4": "V nabiralnik dodaj opomnik, da preverim e-pošto",
       "example5": "Poišči opravila, povezana z dokumentacijo",
       "remote": {
-        "cloud": "Dostop do oddaljenega tududi (strežniki v oblaku)",
+        "cloud": "Dostop do oddaljenega Life-to-Day (strežniki v oblaku)",
         "docker": "Uporaba iz namestitev Docker",
-        "local": "Dostop do lokalnega tududi (localhost)",
+        "local": "Dostop do lokalnega Life-to-Day (localhost)",
         "title": "Oddaljeni dostop je omogočen",
         "tokens": "Varna povezava z API žetoni",
         "usesPrefix": "Ta nastavitev uporablja",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "Kopiraj",
-        "description": "To nastavitev dodaj v svojega odjemalca MCP. YOUR_API_TOKEN_HERE zamenjaj z žetonom iz 1. koraka. Za povezavo s strežnikom tududi prek HTTP se uporablja mcp-remote. Primer za Claude Desktop:",
+        "description": "To nastavitev dodaj v svojega odjemalca MCP. YOUR_API_TOKEN_HERE zamenjaj z žetonom iz 1. koraka. Za povezavo s strežnikom Life-to-Day prek HTTP se uporablja mcp-remote. Primer za Claude Desktop:",
         "loading": "Nalaganje...",
         "locationTitle": "Mesto nastavitvene datoteke Claude Desktop:",
         "otherClients": "Drugi odjemalci MCP se morda nastavljajo drugače, preveri dokumentacijo svojega odjemalca.",
@@ -795,7 +795,7 @@
         "title": "3. Razpoložljive operacije"
       },
       "step4": {
-        "description": "Ko dodaš nastavitev, znova zaženi odjemalca MCP. Nato lahko s tududi govoriš v naravnem jeziku:",
+        "description": "Ko dodaš nastavitev, znova zaženi odjemalca MCP. Nato lahko s Life-to-Day govoriš v naravnem jeziku:",
         "examplesTitle": "Primeri pozivov:",
         "title": "4. Začni uporabljati"
       },
@@ -804,7 +804,7 @@
         "firewall": "Pri oddaljenih strežnikih preveri nastavitve požarnega zidu",
         "intro": "Če se odjemalec MCP ne more povezati, preveri, da:",
         "restart": "je odjemalec MCP popolnoma znova zagnan",
-        "server": "strežnik tududi deluje in je dosegljiv",
+        "server": "strežnik Life-to-Day deluje in je dosegljiv",
         "title": "Odpravljanje težav",
         "token": "je API žeton veljaven in ni potekel"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Hiter zajem v nabiralnik",
     "userMenu": "Uporabniški meni",
     "collapseSidebar": "Zmanjšaj stransko vrstico",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 Dobrodošli v tududi!\n\nVaš osebni bot za upravljanje nalog je zdaj povezan in pripravljen pomagati!\n\n📝 Preprosto mi pošljite katero koli sporočilo in ga bom dodal v vaš tududi predal kot element.\n\n✨ Ukazi:\n• /help - Prikaži informacije o pomoči\n• /start - Prikaži dobrodošlo sporočilo\n• Preprosto vpišite katero koli besedilo - Dodajte ga kot element v predalu\n\nOrganizirajmo se! 🚀",
-    "helpMessage": "📋 tududi Bot Pomoč\n\nPošlji mi katero koli besedilno sporočilo in ga bom dodal v tvojo tududi vhodno mapo kot element vhodne mape.\n\nUkazi:\n/start - Pozdravno sporočilo\n/help - Prikaži to pomoč\n\nSamo vpiši svoj element in poskrbel bom za ostalo!",
+    "welcomeMessage": "🎉 Dobrodošli v Life-to-Day!\n\nVaš osebni bot za upravljanje nalog je zdaj povezan in pripravljen pomagati!\n\n📝 Preprosto mi pošljite katero koli sporočilo in ga bom dodal v vaš Life-to-Day predal kot element.\n\n✨ Ukazi:\n• /help - Prikaži informacije o pomoči\n• /start - Prikaži dobrodošlo sporočilo\n• Preprosto vpišite katero koli besedilo - Dodajte ga kot element v predalu\n\nOrganizirajmo se! 🚀",
+    "helpMessage": "📋 Life-to-Day Bot Pomoč\n\nPošlji mi katero koli besedilno sporočilo in ga bom dodal v tvojo Life-to-Day vhodno mapo kot element vhodne mape.\n\nUkazi:\n/start - Pozdravno sporočilo\n/help - Prikaži to pomoč\n\nSamo vpiši svoj element in poskrbel bom za ostalo!",
     "commandProcessed": "Ukaz je bil uspešno obdelan",
     "messageProcessed": "Sporočilo je bilo uspešno obdelano",
     "failedToAddToInbox": "❌ Dodajanje v vhodno mapo ni uspelo: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "Različica",
     "description": "Samostojno upravljanje nalog z hierarhično organizacijo, podporo za več jezikov in integracijo s Telegramom. Zgrajeno z ljubeznijo do navdušencev nad produktivnostjo.",
     "madeWithLove": "Zgrajeno z ljubeznijo",
-    "appreciation": "Hvala, da uporabljate tududi! Vaša podpora pomaga ohranjati ta projekt živ in rastoč. Če ga najdete koristnega, razmislite o podpori razvoju.",
+    "appreciation": "Hvala, da uporabljate Life-to-Day! Vaša podpora pomaga ohranjati ta projekt živ in rastoč. Če ga najdete koristnega, razmislite o podpori razvoju.",
     "supportDevelopment": "Podprite razvoj",
     "community": "Skupnost",
     "viewOnGitHub": "Poglej na GitHubu",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "Administrator",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Uporabniki",
       "usersHint": "{{verified}} potrjenih · {{admins}} administrator · {{new}} danes",
       "paying": "Plačano",
@@ -2031,7 +2031,7 @@
     "blog": {
       "title": "Blog",
       "description": "Izberi enega svojih zapiskov za naslovnico. Javni zapiski, na katere se povezuje z [[Naslov]], postanejo objave. Naslovnico in vsako objavo deli javno, da se prikažejo.",
-      "placeholder": "Povezava ali ID zapiska, npr. https://app.tududi.com/notes/abc123",
+      "placeholder": "Povezava ali ID zapiska, npr. /notes/abc123",
       "inputLabel": "Zapisek za naslovnico",
       "turnOff": "Izklopi",
       "shared": "Javen",
@@ -2538,9 +2538,9 @@
   },
   "subscription": {
     "title": "Naročnina",
-    "chooseForCloud": "Izberite načrt za tududi Cloud",
+    "chooseForCloud": "Izberite načrt za Life-to-Day Cloud",
     "noActive": "Brez aktivne naročnine",
-    "chooseToContinue": "Izberite načrt za nadaljevanje uporabe tududi Cloud.",
+    "chooseToContinue": "Izberite načrt za nadaljevanje uporabe Life-to-Day Cloud.",
     "monthly": "Mesečno",
     "yearly": "Letno",
     "priceMonthly": "{{price}} na mesec",
@@ -2556,15 +2556,15 @@
     "notConfigured": "Naročnine na tej instanci še niso na voljo. Prosimo, kontaktirajte podporo.",
     "exportData": "Izvozite svoje podatke",
     "subscribe": "Naroči se",
-    "readOnlyBanner": "Preizkusno obdobje se je izteklo, zato so vaši podatki samo za branje. Naročite se, da boste tududi lahko še naprej uporabljali, ali izvozite podatke. Račun bo izbrisan {{date}}.",
+    "readOnlyBanner": "Preizkusno obdobje se je izteklo, zato so vaši podatki samo za branje. Naročite se, da boste Life-to-Day lahko še naprej uporabljali, ali izvozite podatke. Račun bo izbrisan {{date}}.",
     "lockedAi": "Pomočnik AI je del plačljivega paketa.",
     "lockedPublicNotes": "Javne povezave do zapiskov so del plačljivega paketa.",
     "lockedMembers": "Dodajanje članov je del plačljivega paketa.",
     "trialEnded": "Preizkusno obdobje se je izteklo",
     "onTrial": "Uporabljate brezplačno preizkusno obdobje",
-    "readOnlyUntil": "Vaši podatki so samo za branje do {{date}}, nato bo račun izbrisan. Naročite se, da boste tududi Cloud lahko še naprej uporabljali.",
+    "readOnlyUntil": "Vaši podatki so samo za branje do {{date}}, nato bo račun izbrisan. Naročite se, da boste Life-to-Day Cloud lahko še naprej uporabljali.",
     "trialIncludes": "Preizkusno obdobje se izteče {{date}}. Pomočnik AI, javni zapiski in dodajanje članov se odklenejo z naročnino.",
-    "backToApp": "Nazaj v tududi",
+    "backToApp": "Nazaj v Life-to-Day",
     "trialBanner": "Brezplačni preizkus, preostali dnevi: {{count}}"
   },
   "demo": {
@@ -2637,7 +2637,7 @@
     "failedToUpdate": "Člana ni bilo mogoče posodobiti",
     "addEmailHint": "Ko dodate e-pošto, prejme vabilo za nastavitev gesla. Pozneje je ni mogoče spremeniti.",
     "remove": "Odstrani člana",
-    "removeConfirm": "Odstranim {{name}}? Račun in vsa njegova vsebina bodo izbrisani, tega ni mogoče razveljaviti. V tududi Cloud se mesto odstrani iz vaše naročnine.",
+    "removeConfirm": "Odstranim {{name}}? Račun in vsa njegova vsebina bodo izbrisani, tega ni mogoče razveljaviti. V Life-to-Day Cloud se mesto odstrani iz vaše naročnine.",
     "removed": "Član odstranjen",
     "updated": "Član posodobljen",
     "invitationSent": "Vabilo poslano",
@@ -2966,10 +2966,10 @@
   "blog": {
     "nav": "Blog",
     "navCta": "Začni zdaj",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Pogoji",
     "footerPrivacy": "Zasebnost",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Spravi drobne stvari iz glave.",
     "ctaBody": "Opravila, projekti, zapiski in navade na enem mirnem mestu, deljeni z ljudmi, s katerimi živiš in delaš. Brez strežnika, nič za namestiti.",
     "ctaPrice": "{{monthly}} na mesec ali {{annual}} na leto",
@@ -2985,5 +2985,9 @@
     "missingBody": "Morda je bila premaknjena ali odstranjena. Druge objave so le en klik stran.",
     "allPosts": "Vse objave",
     "morePosts": "Več z bloga"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

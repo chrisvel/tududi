@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Brand user-visible integration labels; preserve protocol identifiers.
 const {
     buildMultistatus,
     buildResponse,
@@ -115,8 +116,8 @@ async function handlePrincipalPropfind(req, res) {
                     'D:collection': '',
                     'C:calendar': '',
                 },
-                'D:displayname': 'Tududi Tasks',
-                'C:calendar-description': 'Tasks from Tududi',
+                'D:displayname': 'Life-to-Day Tasks',
+                'C:calendar-description': 'Tasks from Life-to-Day',
                 'C:supported-calendar-component-set': {
                     'C:comp': { $: { name: 'VTODO' } },
                 },

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Brand MCP display names; retain environment and authentication identifiers.
 'use strict';
 
 const { handleMcpHttpRequest } = require('./httpTransport');
@@ -16,7 +17,7 @@ async function getMcpConfig(req, res) {
         // Generate HTTP-based config for remote access
         const claudeConfig = {
             mcpServers: {
-                tududi: {
+                'life-to-day': {
                     command: 'npx',
                     args: [
                         '-y',

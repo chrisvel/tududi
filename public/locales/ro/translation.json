@@ -318,17 +318,17 @@
     "personalInfo": "Informații Personale",
     "errorMessage": "Actualizarea profilului a eșuat",
     "telegramIntegration": "Integrare Telegram",
-    "telegramDescription": "Conectează-ți contul tududi la un bot Telegram pentru a adăuga elemente în căsuța ta de primire prin mesaje Telegram.",
+    "telegramDescription": "Conectează-ți contul Life-to-Day la un bot Telegram pentru a adăuga elemente în căsuța ta de primire prin mesaje Telegram.",
     "telegramBotToken": "Token Bot Telegram",
     "telegramTokenDescription": "Creează un bot cu @BotFather pe Telegram și lipește token-ul aici.",
-    "telegramConnected": "Contul tău Telegram este conectat! Trimite mesaje botului tău pentru a adăuga elemente în căsuța ta de primire tududi.",
+    "telegramConnected": "Contul tău Telegram este conectat! Trimite mesaje botului tău pentru a adăuga elemente în căsuța ta de primire Life-to-Day.",
     "setupTelegram": "Configurare Telegram",
     "setupTelegramLower": "configurare telegram",
     "settingUp": "Se configurează...",
     "telegramSetupSuccess": "Botul Telegram \"{{botName}}\" a fost configurat cu succes!",
     "telegramSetupFailed": "Configurarea botului Telegram a eșuat.",
     "invalidTelegramToken": "Format invalid pentru tokenul botului Telegram.",
-    "telegramInstructions": "Accesați https://t.me/{{botUsername}} și începeți să discutați cu botul dvs. pentru a-l conecta la contul dvs. tududi.",
+    "telegramInstructions": "Accesați https://t.me/{{botUsername}} și începeți să discutați cu botul dvs. pentru a-l conecta la contul dvs. Life-to-Day.",
     "botConfigured": "Bot configurat cu succes!",
     "botUsername": "Numele de utilizator al botului:",
     "pollingStatus": "Starea polling-ului:",
@@ -538,8 +538,8 @@
       "testRequired": "Trebuie să testați conexiunea înainte de a continua",
       "syncDirection": "Direcția sincronizării",
       "bidirectional": "Bidirecțional (sincronizare în ambele direcții)",
-      "pullOnly": "Numai pull (de la server la Tududi)",
-      "pushOnly": "Numai push (de la Tududi la server)",
+      "pullOnly": "Numai pull (de la server la Life-to-Day)",
+      "pushOnly": "Numai push (de la Life-to-Day la server)",
       "syncInterval": "Interval de sincronizare (minute)",
       "syncIntervalHelp": "Cât de des să sincronizați automat (5-1440 minute)",
       "conflictPolicy": "Rezolvarea conflictelor",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Rezolvă Conflictele de Sincronizare",
       "chooseVersion": "Alege ce versiune să păstrezi pentru fiecare câmp:",
-      "local": "Local (Tududi)",
+      "local": "Local (Life-to-Day)",
       "remote": "La distanță (CalDAV)",
       "useThis": "Folosește Aceasta",
       "useAllLocal": "Folosește toate locale",
@@ -597,7 +597,7 @@
       "addError": "Calendarul nu a putut fi adăugat",
       "deleteError": "Calendarul nu a putut fi eliminat",
       "title": "Calendare în Astăzi",
-      "description": "Afișează întâlnirile lângă planul zilei. Tududi doar citește aceste calendare și nu le modifică niciodată.",
+      "description": "Afișează întâlnirile lângă planul zilei. Life-to-Day doar citește aceste calendare și nu le modifică niciodată.",
       "empty": "Niciun calendar conectat încă.",
       "lastSync": "actualizat {{time}}",
       "remove": "Elimină {{name}}",
@@ -605,7 +605,7 @@
       "name": "Nume",
       "namePlaceholder": "Serviciu, Familie…",
       "url": "Adresă iCal secretă",
-      "googleHelp": "În Google Calendar: Setări → calendarul tău → Integrează calendarul → „Adresă secretă în format iCal”. Apple Calendar și Outlook au linkuri asemănătoare. Oricine are această adresă poate citi calendarul, așa că tududi o păstrează criptată.",
+      "googleHelp": "În Google Calendar: Setări → calendarul tău → Integrează calendarul → „Adresă secretă în format iCal”. Apple Calendar și Outlook au linkuri asemănătoare. Oricine are această adresă poate citi calendarul, așa că Life-to-Day o păstrează criptată.",
       "color": "Culoare",
       "checking": "Se verifică calendarul…",
       "add": "Conectează",
@@ -764,16 +764,16 @@
     "habitsDescription": "Activează secțiunea Obiceiuri pentru a urmări comportamente recurente și serii.",
     "loading": "Se încarcă...",
     "mcp": {
-      "description": "Conectează tududi la orice aplicație compatibilă MCP prin Model Context Protocol. Astfel, asistenții AI pot lucra cu sarcinile, proiectele și notițele tale, pe servere tududi locale sau la distanță.",
+      "description": "Conectează Life-to-Day la orice aplicație compatibilă MCP prin Model Context Protocol. Astfel, asistenții AI pot lucra cu sarcinile, proiectele și notițele tale, pe servere Life-to-Day locale sau la distanță.",
       "example1": "Arată-mi sarcinile de azi",
       "example2": "Creează o sarcină pentru revizuirea integrării MCP",
       "example3": "Ce proiecte am în desfășurare?",
       "example4": "Adaugă în Inbox un memento să-mi verific e-mailurile",
       "example5": "Caută sarcini legate de documentație",
       "remote": {
-        "cloud": "Acces la tududi la distanță (servere cloud)",
+        "cloud": "Acces la Life-to-Day la distanță (servere cloud)",
         "docker": "Folosire din instalări Docker",
-        "local": "Acces la tududi local (localhost)",
+        "local": "Acces la Life-to-Day local (localhost)",
         "title": "Acces la distanță activat",
         "tokens": "Conectare sigură cu tokenuri API",
         "usesPrefix": "Această configurație folosește",
@@ -786,7 +786,7 @@
       },
       "step2": {
         "copy": "Copiază",
-        "description": "Adaugă această configurație în clientul tău MCP. Înlocuiește YOUR_API_TOKEN_HERE cu tokenul generat la pasul 1. Se folosește mcp-remote pentru conectarea la serverul tududi prin HTTP. Exemplu pentru Claude Desktop:",
+        "description": "Adaugă această configurație în clientul tău MCP. Înlocuiește YOUR_API_TOKEN_HERE cu tokenul generat la pasul 1. Se folosește mcp-remote pentru conectarea la serverul Life-to-Day prin HTTP. Exemplu pentru Claude Desktop:",
         "loading": "Se încarcă...",
         "locationTitle": "Locația fișierului de configurare Claude Desktop:",
         "otherClients": "Alți clienți MCP pot avea alte metode de configurare, verifică documentația clientului tău.",
@@ -797,7 +797,7 @@
         "title": "3. Operații disponibile"
       },
       "step4": {
-        "description": "După ce adaugi configurația, repornește clientul MCP. Apoi poți folosi limbaj natural pentru a lucra cu tududi:",
+        "description": "După ce adaugi configurația, repornește clientul MCP. Apoi poți folosi limbaj natural pentru a lucra cu Life-to-Day:",
         "examplesTitle": "Exemple de cereri:",
         "title": "4. Începe să folosești"
       },
@@ -806,7 +806,7 @@
         "firewall": "Pentru servere la distanță, verifică setările firewall-ului",
         "intro": "Dacă clientul MCP nu se poate conecta, verifică dacă:",
         "restart": "Ai repornit complet clientul MCP",
-        "server": "Serverul tududi rulează și este accesibil",
+        "server": "Serverul Life-to-Day rulează și este accesibil",
         "title": "Depanare",
         "token": "Tokenul API este valid și nu a expirat"
       }
@@ -1710,7 +1710,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Captură Rapidă a Inbox-ului",
     "userMenu": "Meniu Utilizator",
     "collapseSidebar": "Colapsează Bara Laterală",
@@ -1803,8 +1803,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 Bun venit la tududi!\n\nBotul tău personal de gestionare a sarcinilor este acum conectat și gata să ajute!\n\n📝 Pur și simplu trimite-mi orice mesaj și îl voi adăuga în inbox-ul tău tududi ca un element.\n\n✨ Comenzi:\n• /help - Afișează informații de ajutor\n• /start - Afișează mesajul de bun venit\n• Scrie orice text - Adaugă-l ca un element în inbox\n\nSă ne organizăm! 🚀",
-    "helpMessage": "📋 Ajutor Bot tududi\n\nTrimite-mi orice mesaj text și îl voi adăuga în inbox-ul tău tududi ca un element în inbox.\n\nComenzi:\n/start - Mesaj de bun venit\n/help - Afișează acest mesaj de ajutor\n\nScrie doar elementul tău și mă voi ocupa de rest!",
+    "welcomeMessage": "🎉 Bun venit la Life-to-Day!\n\nBotul tău personal de gestionare a sarcinilor este acum conectat și gata să ajute!\n\n📝 Pur și simplu trimite-mi orice mesaj și îl voi adăuga în inbox-ul tău Life-to-Day ca un element.\n\n✨ Comenzi:\n• /help - Afișează informații de ajutor\n• /start - Afișează mesajul de bun venit\n• Scrie orice text - Adaugă-l ca un element în inbox\n\nSă ne organizăm! 🚀",
+    "helpMessage": "📋 Ajutor Bot Life-to-Day\n\nTrimite-mi orice mesaj text și îl voi adăuga în inbox-ul tău Life-to-Day ca un element în inbox.\n\nComenzi:\n/start - Mesaj de bun venit\n/help - Afișează acest mesaj de ajutor\n\nScrie doar elementul tău și mă voi ocupa de rest!",
     "commandProcessed": "Comanda procesată cu succes",
     "messageProcessed": "Mesaj procesat cu succes",
     "failedToAddToInbox": "❌ Nu s-a reușit adăugarea în inbox: {{error}}"
@@ -1814,7 +1814,7 @@
     "version": "Versiune",
     "description": "Gestionare a sarcinilor auto-găzduită cu organizare ierarhică, suport multi-limbă și integrare Telegram. Construit cu dragoste pentru entuziaștii productivității.",
     "madeWithLove": "Creat cu dragoste",
-    "appreciation": "Îți mulțumim că folosești tududi! Sprijinul tău ajută la menținerea acestui proiect în viață și în creștere. Dacă îl găsești util, ia în considerare sprijinirea dezvoltării.",
+    "appreciation": "Îți mulțumim că folosești Life-to-Day! Sprijinul tău ajută la menținerea acestui proiect în viață și în creștere. Dacă îl găsești util, ia în considerare sprijinirea dezvoltării.",
     "supportDevelopment": "Sprijină Dezvoltarea",
     "community": "Comunitate",
     "viewOnGitHub": "Vezi pe GitHub",
@@ -1889,7 +1889,7 @@
     },
     "dashboard": {
       "title": "Admin",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Utilizatori",
       "usersHint": "{{verified}} verificați · {{admins}} admin · {{new}} astăzi",
       "paying": "Plătitor",
@@ -2032,7 +2032,7 @@
     "blog": {
       "title": "Blog",
       "description": "Alege una dintre notițele tale ca pagină principală. Notițele publice pe care le leagă cu [[Titlu]] devin articolele. Partajează public pagina principală și fiecare articol ca să apară.",
-      "placeholder": "Link sau ID notiță, de ex. https://app.tududi.com/notes/abc123",
+      "placeholder": "Link sau ID notiță, de ex. /notes/abc123",
       "inputLabel": "Notița paginii principale",
       "turnOff": "Dezactivează",
       "shared": "Publică",
@@ -2538,9 +2538,9 @@
   },
   "subscription": {
     "title": "Abonament",
-    "chooseForCloud": "Alegeți un plan pentru tududi Cloud",
+    "chooseForCloud": "Alegeți un plan pentru Life-to-Day Cloud",
     "noActive": "Nicio subscriere activă",
-    "chooseToContinue": "Alege un plan pentru a continua să folosești tududi Cloud.",
+    "chooseToContinue": "Alege un plan pentru a continua să folosești Life-to-Day Cloud.",
     "monthly": "Lunar",
     "yearly": "Anual",
     "priceMonthly": "{{price}} pe lună",
@@ -2556,15 +2556,15 @@
     "notConfigured": "Subscrierile nu sunt disponibile încă pe această instanță. Te rugăm să contactezi suportul.",
     "exportData": "Exportă datele tale",
     "subscribe": "Abonează-te",
-    "readOnlyBanner": "Perioada de probă s-a încheiat, așa că datele tale sunt doar pentru citire. Abonează-te pentru a folosi în continuare tududi sau exportă-ți datele. Contul va fi șters pe {{date}}.",
+    "readOnlyBanner": "Perioada de probă s-a încheiat, așa că datele tale sunt doar pentru citire. Abonează-te pentru a folosi în continuare Life-to-Day sau exportă-ți datele. Contul va fi șters pe {{date}}.",
     "lockedAi": "Asistentul AI face parte din planul plătit.",
     "lockedPublicNotes": "Linkurile publice către notițe fac parte din planul plătit.",
     "lockedMembers": "Adăugarea de membri face parte din planul plătit.",
     "trialEnded": "Perioada de probă s-a încheiat",
     "onTrial": "Folosești perioada de probă gratuită",
-    "readOnlyUntil": "Datele tale sunt doar pentru citire până pe {{date}}, apoi contul este șters. Abonează-te pentru a folosi în continuare tududi Cloud.",
+    "readOnlyUntil": "Datele tale sunt doar pentru citire până pe {{date}}, apoi contul este șters. Abonează-te pentru a folosi în continuare Life-to-Day Cloud.",
     "trialIncludes": "Perioada de probă se încheie pe {{date}}. Asistentul AI, notițele publice și adăugarea de membri se deblochează când te abonezi.",
-    "backToApp": "Înapoi la tududi",
+    "backToApp": "Înapoi la Life-to-Day",
     "trialBanner": "Perioadă de probă gratuită, zile rămase: {{count}}"
   },
   "demo": {
@@ -2637,7 +2637,7 @@
     "failedToUpdate": "Membrul nu a putut fi actualizat",
     "addEmailHint": "Adăugarea unui e-mail îi trimite o invitație să își seteze o parolă. Nu mai poate fi schimbat ulterior.",
     "remove": "Elimină membrul",
-    "removeConfirm": "Elimini pe {{name}}? Contul și tot conținutul său sunt șterse, iar acțiunea nu poate fi anulată. În tududi Cloud locul este scos din abonamentul tău.",
+    "removeConfirm": "Elimini pe {{name}}? Contul și tot conținutul său sunt șterse, iar acțiunea nu poate fi anulată. În Life-to-Day Cloud locul este scos din abonamentul tău.",
     "removed": "Membru eliminat",
     "updated": "Membru actualizat",
     "invitationSent": "Invitație trimisă",
@@ -2965,10 +2965,10 @@
   "blog": {
     "nav": "Blog",
     "navCta": "Începe acum",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Termeni",
     "footerPrivacy": "Confidențialitate",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Scoate lucrurile mărunte din cap.",
     "ctaBody": "Sarcini, proiecte, notițe și obiceiuri într-un loc liniștit, împărtășite cu oamenii cu care locuiești și lucrezi. Fără server, nimic de instalat.",
     "ctaPrice": "{{monthly}} pe lună sau {{annual}} pe an",
@@ -2984,5 +2984,9 @@
     "missingBody": "Poate a fost mutat sau retras. Celelalte articole sunt la un clic distanță.",
     "allPosts": "Toate articolele",
     "morePosts": "Mai multe de pe blog"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

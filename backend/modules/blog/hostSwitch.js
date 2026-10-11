@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Life-to-Day titles and metadata; retain host configuration keys.
 'use strict';
 
 const fs = require('fs');
@@ -41,7 +42,7 @@ function allowStats(csp) {
 // even though the page itself renders in the browser.
 async function headFor(req, origin) {
     const tags = ['<meta name="tududi-site" content="blog">', STATS_TAG];
-    let title = `${BLOG_NAME} | tududi`;
+    let title = `${BLOG_NAME} | Life-to-Day`;
     let description = '';
     let image = null;
     let type = 'website';
@@ -50,7 +51,7 @@ async function headFor(req, origin) {
         const match = req.path.match(SLUG);
         if (match) {
             const post = await blogService.getPost(match[1]);
-            title = `${post.title} | tududi`;
+            title = `${post.title} | Life-to-Day`;
             description = post.excerpt;
             const cover = post.content.match(/!\[[^\]]*\]\(([^)\s]+)/);
             image = cover ? cover[1] : null;
@@ -68,8 +69,8 @@ async function headFor(req, origin) {
     tags.push(
         `<link rel="canonical" href="${escapeHtml(pageUrl)}">`,
         `<meta property="og:type" content="${type}">`,
-        `<meta property="og:site_name" content="tududi">`,
-        `<meta property="og:title" content="${escapeHtml(title.replace(/ \| tududi$/, ''))}">`,
+        `<meta property="og:site_name" content="Life-to-Day">`,
+        `<meta property="og:title" content="${escapeHtml(title.replace(/ \| Life-to-Day$/, ''))}">`,
         `<meta property="og:url" content="${escapeHtml(pageUrl)}">`,
         `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">`
     );
@@ -85,7 +86,7 @@ async function headFor(req, origin) {
         );
     }
     tags.push(
-        `<link rel="alternate" type="application/rss+xml" title="tududi blog" href="${escapeHtml(origin)}/rss.xml">`
+        `<link rel="alternate" type="application/rss+xml" title="Life-to-Day blog" href="${escapeHtml(origin)}/rss.xml">`
     );
     return { title, tags };
 }

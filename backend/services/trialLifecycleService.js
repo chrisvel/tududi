@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 'use strict';
 
 const { Op } = require('sequelize');
@@ -65,7 +66,7 @@ async function sendDeletionWarning(user, deleteOn) {
 
     const text = `Hi,
 
-Your tududi Cloud trial has ended, and your account has been read-only since then. On ${date} the account and everything in it will be deleted.
+Your Life-to-Day Cloud trial has ended, and your account has been read-only since then. On ${date} the account and everything in it will be deleted.
 
 To keep it, subscribe here:
 ${subscribeUrl}
@@ -75,12 +76,12 @@ ${exportUrl}
 
 If you do nothing, the account is deleted on ${date} and this is the last email you will get from us about it.
 
-The Tududi Team`;
+The Life-to-Day Team`;
 
     const html = `
 <p>Hi,</p>
 
-<p>Your tududi Cloud trial has ended, and your account has been read-only since then. <strong>On ${date} the account and everything in it will be deleted.</strong></p>
+<p>Your Life-to-Day Cloud trial has ended, and your account has been read-only since then. <strong>On ${date} the account and everything in it will be deleted.</strong></p>
 
 <p style="text-align: center; margin: 30px 0;">
     <a href="${subscribeUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Keep my account</a>
@@ -90,12 +91,12 @@ The Tududi Team`;
 
 <p>If you do nothing, the account is deleted on ${date} and this is the last email you will get from us about it.</p>
 
-<p>The Tududi Team</p>
+<p>The Life-to-Day Team</p>
 `;
 
     return sendEmail({
         to: user.email,
-        subject: `Your tududi account will be deleted on ${date}`,
+        subject: `Your Life-to-Day account will be deleted on ${date}`,
         text,
         html,
     });

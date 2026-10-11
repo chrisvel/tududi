@@ -318,17 +318,17 @@
     "personalInfo": "Kişisel Bilgiler",
     "errorMessage": "Profil güncellenemedi",
     "telegramIntegration": "Telegram Entegrasyonu",
-    "telegramDescription": "Tududi hesabınızı bir Telegram botuna bağlayarak Telegram mesajları aracılığıyla gelen kutunuza öğeler ekleyin.",
+    "telegramDescription": "Life-to-Day hesabınızı bir Telegram botuna bağlayarak Telegram mesajları aracılığıyla gelen kutunuza öğeler ekleyin.",
     "telegramBotToken": "Telegram bot belirteci",
     "telegramTokenDescription": "@BotFather ile Telegram'da bir bot oluşturun ve token'ı buraya yapıştırın.",
-    "telegramConnected": "Telegram hesabınız bağlandı! Tududi gelen kutunuza öğeler eklemek için botunuza mesaj gönderin.",
+    "telegramConnected": "Telegram hesabınız bağlandı! Life-to-Day gelen kutunuza öğeler eklemek için botunuza mesaj gönderin.",
     "setupTelegram": "Telegram'ı Kur",
     "setupTelegramLower": "telegram'ı kur",
     "settingUp": "Kuruluyor...",
     "telegramSetupSuccess": "Telegram botu \"{{botName}}\" başarıyla yapılandırıldı!",
     "telegramSetupFailed": "Telegram botu kurulumu başarısız oldu.",
     "invalidTelegramToken": "Geçersiz Telegram botu token formatı.",
-    "telegramInstructions": "https://t.me/{{botUsername}} adresine gidin ve botunuzla sohbet etmeye başlayarak onu tududi hesabınıza bağlayın.",
+    "telegramInstructions": "https://t.me/{{botUsername}} adresine gidin ve botunuzla sohbet etmeye başlayarak onu Life-to-Day hesabınıza bağlayın.",
     "botConfigured": "Bot başarıyla yapılandırıldı!",
     "botUsername": "Bot Kullanıcı Adı:",
     "pollingStatus": "Anket Durumu:",
@@ -538,8 +538,8 @@
       "testRequired": "Devam etmeden önce bağlantıyı test etmelisiniz",
       "syncDirection": "Senkran yönü",
       "bidirectional": "İki yönlü (her iki yönde senkronizasyon)",
-      "pullOnly": "Sadece çek (sunucudan Tududi'ye)",
-      "pushOnly": "Sadece it (Tududi'den sunucuya)",
+      "pullOnly": "Sadece çek (sunucudan Life-to-Day'ye)",
+      "pushOnly": "Sadece it (Life-to-Day'den sunucuya)",
       "syncInterval": "Senkronizasyon aralığı (dakika)",
       "syncIntervalHelp": "Otomatik olarak ne sıklıkla senkronize edileceği (5-1440 dakika)",
       "conflictPolicy": "Çatışma çözümü",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Senkronizasyon Çatışmalarını Çöz",
       "chooseVersion": "Her alan için hangi sürümü koruyacağınızı seçin:",
-      "local": "Yerel (Tududi)",
+      "local": "Yerel (Life-to-Day)",
       "remote": "Uzaktan (CalDAV)",
       "useThis": "Bunu Kullan",
       "useAllLocal": "Tüm yereli kullan",
@@ -597,7 +597,7 @@
       "addError": "Bu takvim eklenemedi",
       "deleteError": "Bu takvim kaldırılamadı",
       "title": "Bugün sayfasındaki takvimler",
-      "description": "Toplantılarını gün planının yanında göster. Tududi bu takvimleri yalnızca okur, asla değiştirmez.",
+      "description": "Toplantılarını gün planının yanında göster. Life-to-Day bu takvimleri yalnızca okur, asla değiştirmez.",
       "empty": "Henüz bağlı takvim yok.",
       "lastSync": "{{time}} güncellendi",
       "remove": "{{name}} kaldır",
@@ -605,7 +605,7 @@
       "name": "Ad",
       "namePlaceholder": "İş, Aile…",
       "url": "Gizli iCal adresi",
-      "googleHelp": "Google Takvim'de: Ayarlar → takvimin → Takvimi entegre et → \"iCal biçimindeki gizli adres\". Apple Takvim ve Outlook'ta da benzer bağlantılar var. Bu adrese sahip olan herkes takvimi okuyabilir, bu yüzden tududi adresi şifreli saklar.",
+      "googleHelp": "Google Takvim'de: Ayarlar → takvimin → Takvimi entegre et → \"iCal biçimindeki gizli adres\". Apple Takvim ve Outlook'ta da benzer bağlantılar var. Bu adrese sahip olan herkes takvimi okuyabilir, bu yüzden Life-to-Day adresi şifreli saklar.",
       "color": "Renk",
       "checking": "Takvim kontrol ediliyor…",
       "add": "Bağla",
@@ -762,16 +762,16 @@
     "habitsDescription": "Tekrarlayan davranışları ve serileri takip etmek için Alışkanlıklar bölümünü etkinleştir.",
     "loading": "Yükleniyor...",
     "mcp": {
-      "description": "Model Context Protocol ile tududi'yi MCP uyumlu herhangi bir uygulamaya bağla. Böylece yapay zeka asistanları görevlerin, projelerin ve notlarınla çalışabilir; yerel ve uzak tududi sunucularında çalışır.",
+      "description": "Model Context Protocol ile Life-to-Day'yi MCP uyumlu herhangi bir uygulamaya bağla. Böylece yapay zeka asistanları görevlerin, projelerin ve notlarınla çalışabilir; yerel ve uzak Life-to-Day sunucularında çalışır.",
       "example1": "Bugünkü görevlerimi göster",
       "example2": "MCP entegrasyonunu gözden geçirmek için bir görev oluştur",
       "example3": "Hangi projelerim devam ediyor?",
       "example4": "Gelen kutuma e-postaları kontrol etmek için bir hatırlatma ekle",
       "example5": "Belgelerle ilgili görevleri ara",
       "remote": {
-        "cloud": "Uzak tududi'ye erişim (bulut sunucuları)",
+        "cloud": "Uzak Life-to-Day'ye erişim (bulut sunucuları)",
         "docker": "Docker kurulumlarından kullanım",
-        "local": "Yerel tududi'ye erişim (localhost)",
+        "local": "Yerel Life-to-Day'ye erişim (localhost)",
         "title": "Uzaktan erişim etkin",
         "tokens": "API belirteçleriyle güvenli bağlantı",
         "usesPrefix": "Bu yapılandırma HTTP üzerinden bağlanmak için",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "Kopyala",
-        "description": "Bu yapılandırmayı MCP istemcine ekle. YOUR_API_TOKEN_HERE yerine 1. adımda oluşturduğun belirteci yaz. tududi sunucuna HTTP üzerinden bağlanmak için mcp-remote kullanılır. Örnek Claude Desktop içindir:",
+        "description": "Bu yapılandırmayı MCP istemcine ekle. YOUR_API_TOKEN_HERE yerine 1. adımda oluşturduğun belirteci yaz. Life-to-Day sunucuna HTTP üzerinden bağlanmak için mcp-remote kullanılır. Örnek Claude Desktop içindir:",
         "loading": "Yükleniyor...",
         "locationTitle": "Claude Desktop yapılandırma dosyasının konumu:",
         "otherClients": "Diğer MCP istemcileri farklı yapılandırma yöntemleri kullanabilir, istemcinin belgelerine bak.",
@@ -795,7 +795,7 @@
         "title": "3. Kullanılabilir işlemler"
       },
       "step4": {
-        "description": "Yapılandırmayı ekledikten sonra MCP istemcini yeniden başlat. Ardından tududi ile doğal dilde çalışabilirsin:",
+        "description": "Yapılandırmayı ekledikten sonra MCP istemcini yeniden başlat. Ardından Life-to-Day ile doğal dilde çalışabilirsin:",
         "examplesTitle": "Örnek istemler:",
         "title": "4. Kullanmaya başla"
       },
@@ -804,7 +804,7 @@
         "firewall": "Uzak sunucular için güvenlik duvarı ayarlarını kontrol et",
         "intro": "MCP istemcin bağlanamıyorsa şunları kontrol et:",
         "restart": "MCP istemcini tamamen yeniden başlattın mı",
-        "server": "tududi sunucusu çalışıyor ve erişilebilir mi",
+        "server": "Life-to-Day sunucusu çalışıyor ve erişilebilir mi",
         "title": "Sorun giderme",
         "token": "API belirtecin geçerli ve süresi dolmamış mı"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Hızlı Gelen Kutusu Yakalama",
     "userMenu": "Kullanıcı Menüsü",
     "collapseSidebar": "Yan Paneli Kapat",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 tududi'ye hoş geldiniz!\n\nKişisel görev yönetim botunuz artık bağlı ve yardımcı olmaya hazır!\n\n📝 Bana herhangi bir mesaj gönderin, ben de bunu tududi gelen kutunuza bir öğe olarak ekleyeceğim.\n\n✨ Komutlar:\n• /help - Yardım bilgilerini göster\n• /start - Hoş geldin mesajını göster\n• Sadece herhangi bir metin yazın - Bunu gelen kutusu öğesi olarak ekle\n\nHaydi organize olalım! 🚀",
-    "helpMessage": "📋 tududi Bot Yardımı\n\nBana herhangi bir metin mesajı gönderin, ben de bunu tududi gelen kutunuza bir öğe olarak ekleyeceğim.\n\nKomutlar:\n/start - Hoş geldin mesajı\n/help - Bu yardım mesajını göster\n\nSadece öğenizi yazın, geri kalanını ben hallederim!",
+    "welcomeMessage": "🎉 Life-to-Day'ye hoş geldiniz!\n\nKişisel görev yönetim botunuz artık bağlı ve yardımcı olmaya hazır!\n\n📝 Bana herhangi bir mesaj gönderin, ben de bunu Life-to-Day gelen kutunuza bir öğe olarak ekleyeceğim.\n\n✨ Komutlar:\n• /help - Yardım bilgilerini göster\n• /start - Hoş geldin mesajını göster\n• Sadece herhangi bir metin yazın - Bunu gelen kutusu öğesi olarak ekle\n\nHaydi organize olalım! 🚀",
+    "helpMessage": "📋 Life-to-Day Bot Yardımı\n\nBana herhangi bir metin mesajı gönderin, ben de bunu Life-to-Day gelen kutunuza bir öğe olarak ekleyeceğim.\n\nKomutlar:\n/start - Hoş geldin mesajı\n/help - Bu yardım mesajını göster\n\nSadece öğenizi yazın, geri kalanını ben hallederim!",
     "commandProcessed": "Komut başarıyla işlendi",
     "messageProcessed": "Mesaj başarıyla işlendi",
     "failedToAddToInbox": "❌ Gelen kutusuna eklenemedi: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "Sürüm",
     "description": "Hiyerarşik organizasyon, çok dilli destek ve Telegram entegrasyonu ile kendi sunucunuzda barındırılan görev yönetimi. Üretkenlik tutkunları için sevgiyle inşa edildi.",
     "madeWithLove": "Sevgiyle yapıldı",
-    "appreciation": "tududi'yi kullandığınız için teşekkür ederiz! Desteğiniz bu projenin yaşamasına ve büyümesine yardımcı oluyor. Eğer faydalı buluyorsanız, geliştirmeyi desteklemeyi düşünün.",
+    "appreciation": "Life-to-Day'yi kullandığınız için teşekkür ederiz! Desteğiniz bu projenin yaşamasına ve büyümesine yardımcı oluyor. Eğer faydalı buluyorsanız, geliştirmeyi desteklemeyi düşünün.",
     "supportDevelopment": "Geliştirmeyi Destekle",
     "community": "Topluluk",
     "viewOnGitHub": "GitHub'da Görüntüle",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "Yönetici",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Kullanıcılar",
       "usersHint": "{{verified}} onaylı · {{admins}} yönetici · {{new}} bugün",
       "paying": "Ödeyen",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "Blog",
       "description": "Notlarından birini ana sayfa olarak seç. [[Başlık]] ile bağladığı herkese açık notlar yazılar olur. Görünmeleri için ana sayfayı ve her yazıyı herkese açık paylaş.",
-      "placeholder": "Not bağlantısı veya kimliği, örn. https://app.tududi.com/notes/abc123",
+      "placeholder": "Not bağlantısı veya kimliği, örn. /notes/abc123",
       "inputLabel": "Ana sayfa notu",
       "turnOff": "Kapat",
       "shared": "Herkese açık",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "Abonelik",
-    "chooseForCloud": "Tududi Cloud için bir plan seçin",
+    "chooseForCloud": "Life-to-Day Cloud için bir plan seçin",
     "noActive": "Aktif abonelik yok",
-    "chooseToContinue": "tududi Cloud'u kullanmaya devam etmek için bir plan seçin.",
+    "chooseToContinue": "Life-to-Day Cloud'u kullanmaya devam etmek için bir plan seçin.",
     "monthly": "Aylık",
     "yearly": "Yıllık",
     "priceMonthly": "{{price}} ayda",
@@ -2552,15 +2552,15 @@
     "notConfigured": "Bu örnekte abonelikler henüz mevcut değil. Lütfen destekle iletişime geçin.",
     "exportData": "Verilerinizi dışa aktarın",
     "subscribe": "Abone ol",
-    "readOnlyBanner": "Deneme süreniz sona erdi, bu yüzden verileriniz salt okunur. tududi'yi kullanmaya devam etmek için abone olun veya verilerinizi dışa aktarın. Hesap {{date}} tarihinde silinecek.",
+    "readOnlyBanner": "Deneme süreniz sona erdi, bu yüzden verileriniz salt okunur. Life-to-Day'yi kullanmaya devam etmek için abone olun veya verilerinizi dışa aktarın. Hesap {{date}} tarihinde silinecek.",
     "lockedAi": "Yapay zeka asistanı ücretli planın bir parçasıdır.",
     "lockedPublicNotes": "Herkese açık not bağlantıları ücretli planın bir parçasıdır.",
     "lockedMembers": "Üye eklemek ücretli planın bir parçasıdır.",
     "trialEnded": "Deneme süreniz sona erdi",
     "onTrial": "Ücretsiz deneme sürecindesiniz",
-    "readOnlyUntil": "Verileriniz {{date}} tarihine kadar salt okunur, ardından hesap silinir. tududi Cloud'u kullanmaya devam etmek için abone olun.",
+    "readOnlyUntil": "Verileriniz {{date}} tarihine kadar salt okunur, ardından hesap silinir. Life-to-Day Cloud'u kullanmaya devam etmek için abone olun.",
     "trialIncludes": "Deneme süreniz {{date}} tarihinde bitiyor. Yapay zeka asistanı, herkese açık notlar ve üye ekleme abone olduğunuzda açılır.",
-    "backToApp": "tududi'ye dön",
+    "backToApp": "Life-to-Day'ye dön",
     "trialBanner": "Ücretsiz deneme, kalan gün: {{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "Üye güncellenemedi",
     "addEmailHint": "E-posta eklemek, parola belirlemesi için bir davet gönderir. Daha sonra değiştirilemez.",
     "remove": "Üyeyi çıkar",
-    "removeConfirm": "{{name}} çıkarılsın mı? Hesabı ve içindeki her şey silinir, bu işlem geri alınamaz. tududi Cloud'da koltuğu aboneliğinizden düşülür.",
+    "removeConfirm": "{{name}} çıkarılsın mı? Hesabı ve içindeki her şey silinir, bu işlem geri alınamaz. Life-to-Day Cloud'da koltuğu aboneliğinizden düşülür.",
     "removed": "Üye çıkarıldı",
     "updated": "Üye güncellendi",
     "invitationSent": "Davet gönderildi",
@@ -2960,10 +2960,10 @@
   "blog": {
     "nav": "Blog",
     "navCta": "Hemen başla",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Koşullar",
     "footerPrivacy": "Gizlilik",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Küçük şeyleri kafandan çıkar.",
     "ctaBody": "Görevler, projeler, notlar ve alışkanlıklar tek ve sakin bir yerde, birlikte yaşadığın ve çalıştığın insanlarla paylaşılmış. Sunucu yok, kurulacak bir şey yok.",
     "ctaPrice": "Ayda {{monthly}} veya yılda {{annual}}",
@@ -2979,5 +2979,9 @@
     "missingBody": "Taşınmış ya da kaldırılmış olabilir. Diğer yazılar bir tık uzakta.",
     "allPosts": "Tüm yazılar",
     "morePosts": "Blogdan daha fazlası"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }

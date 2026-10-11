@@ -1,7 +1,7 @@
 {
-  "name": "tududi",
+  "name": "life-to-day",
   "version": "v1.8.2",
-  "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
+  "description": "Life-to-Day: From long-term vision to today.",
   "directories": {
     "test": "test"
   },

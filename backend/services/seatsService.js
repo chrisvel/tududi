@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 'use strict';
 
 const entitlements = require('./entitlementsService');
@@ -51,7 +52,7 @@ async function assertCanAddSeat(ownerId) {
     }
     if (!ADD_REASONS.includes(ent.reason)) {
         throw new SubscriptionRequiredError(
-            'Subscribe to tududi Cloud to add members'
+            'Subscribe to Life-to-Day Cloud to add members'
         );
     }
     const limit = ent.limits.max_members;

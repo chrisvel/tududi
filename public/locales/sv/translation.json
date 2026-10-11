@@ -326,17 +326,17 @@
     "personalInfo": "Personlig information",
     "errorMessage": "Kunde inte uppdatera profilen",
     "telegramIntegration": "Telegramintegration",
-    "telegramDescription": "Anslut ditt tududi-konto till en Telegram-bot för att lägga till objekt i inkorgen via Telegram-meddelanden.",
+    "telegramDescription": "Anslut ditt Life-to-Day-konto till en Telegram-bot för att lägga till objekt i inkorgen via Telegram-meddelanden.",
     "telegramBotToken": "Telegram bot-token",
     "telegramTokenDescription": "Skapa en bot med @BotFather på Telegram och klistra in token här.",
-    "telegramConnected": "Ditt Telegram-konto är anslutet! Skicka meddelanden till din bot för att lägga till objekt i din tududi-inkorg.",
+    "telegramConnected": "Ditt Telegram-konto är anslutet! Skicka meddelanden till din bot för att lägga till objekt i din Life-to-Day-inkorg.",
     "setupTelegram": "Ställ in Telegram",
     "setupTelegramLower": "ställ in telegram",
     "settingUp": "Ställer in...",
     "telegramSetupSuccess": "Telegram-bot \"{{botName}}\" konfigurerad!",
     "telegramSetupFailed": "Kunde inte ställa in Telegram-bot.",
     "invalidTelegramToken": "Ogiltigt format för Telegram-bot-token.",
-    "telegramInstructions": "Gå till https://t.me/{{botUsername}} och börja chatta med din bot för att koppla den till ditt tududi-konto.",
+    "telegramInstructions": "Gå till https://t.me/{{botUsername}} och börja chatta med din bot för att koppla den till ditt Life-to-Day-konto.",
     "botConfigured": "Bot konfigurerad!",
     "botUsername": "Bot-användarnamn:",
     "pollingStatus": "Pollingstatus:",
@@ -538,8 +538,8 @@
       "testRequired": "Du måste testa anslutningen innan du fortsätter",
       "syncDirection": "Synkroniseringsriktning",
       "bidirectional": "Bidirektionell (synkronisera åt båda håll)",
-      "pullOnly": "Endast hämta (från server till Tududi)",
-      "pushOnly": "Endast skicka (från Tududi till server)",
+      "pullOnly": "Endast hämta (från server till Life-to-Day)",
+      "pushOnly": "Endast skicka (från Life-to-Day till server)",
       "syncInterval": "Synkroniseringsintervall (minuter)",
       "syncIntervalHelp": "Hur ofta som ska synkroniseras automatiskt (5-1440 minuter)",
       "conflictPolicy": "Konfliktlösning",
@@ -558,7 +558,7 @@
     "conflictResolver": {
       "title": "Lös synkroniseringskonflikter",
       "chooseVersion": "Välj vilken version som ska behållas för varje fält:",
-      "local": "Lokal (Tududi)",
+      "local": "Lokal (Life-to-Day)",
       "remote": "Fjärr (CalDAV)",
       "useThis": "Använd detta",
       "useAllLocal": "Använd alla lokala",
@@ -597,7 +597,7 @@
       "addError": "Det gick inte att lägga till kalendern",
       "deleteError": "Det gick inte att ta bort kalendern",
       "title": "Kalendrar i Idag",
-      "description": "Visa dina möten bredvid dagsplanen. Tududi läser bara dessa kalendrar och ändrar dem aldrig.",
+      "description": "Visa dina möten bredvid dagsplanen. Life-to-Day läser bara dessa kalendrar och ändrar dem aldrig.",
       "empty": "Inga kalendrar anslutna än.",
       "lastSync": "uppdaterad {{time}}",
       "remove": "Ta bort {{name}}",
@@ -605,7 +605,7 @@
       "name": "Namn",
       "namePlaceholder": "Jobb, Familj…",
       "url": "Hemlig iCal-adress",
-      "googleHelp": "I Google Kalender: Inställningar → din kalender → Integrera kalender → ”Hemlig adress i iCal-format”. Apple Kalender och Outlook har liknande länkar. Alla med adressen kan läsa kalendern, därför lagrar tududi den krypterad.",
+      "googleHelp": "I Google Kalender: Inställningar → din kalender → Integrera kalender → ”Hemlig adress i iCal-format”. Apple Kalender och Outlook har liknande länkar. Alla med adressen kan läsa kalendern, därför lagrar Life-to-Day den krypterad.",
       "color": "Färg",
       "checking": "Kontrollerar kalendern…",
       "add": "Anslut",
@@ -762,16 +762,16 @@
     "habitsDescription": "Aktivera sektionen Vanor för att följa återkommande beteenden och sviter.",
     "loading": "Läser in...",
     "mcp": {
-      "description": "Koppla tududi till valfri MCP-kompatibel app via Model Context Protocol. Då kan AI-assistenter arbeta med dina uppgifter, projekt och anteckningar, både på lokala och fjärranslutna tududi-servrar.",
+      "description": "Koppla Life-to-Day till valfri MCP-kompatibel app via Model Context Protocol. Då kan AI-assistenter arbeta med dina uppgifter, projekt och anteckningar, både på lokala och fjärranslutna Life-to-Day-servrar.",
       "example1": "Visa mina uppgifter för idag",
       "example2": "Skapa en uppgift att granska MCP-integrationen",
       "example3": "Vilka projekt har jag på gång?",
       "example4": "Lägg till en påminnelse i inkorgen om att kolla e-post",
       "example5": "Sök efter uppgifter som rör dokumentation",
       "remote": {
-        "cloud": "Åtkomst till fjärr-tududi (molnservrar)",
+        "cloud": "Åtkomst till fjärr-Life-to-Day (molnservrar)",
         "docker": "Användning från Docker-installationer",
-        "local": "Åtkomst till lokal tududi (localhost)",
+        "local": "Åtkomst till lokal Life-to-Day (localhost)",
         "title": "Fjärråtkomst aktiverad",
         "tokens": "Anslut säkert med API-tokens",
         "usesPrefix": "Den här konfigurationen använder",
@@ -784,7 +784,7 @@
       },
       "step2": {
         "copy": "Kopiera",
-        "description": "Lägg till den här konfigurationen i din MCP-klient. Ersätt YOUR_API_TOKEN_HERE med den token du skapade i steg 1. Den använder mcp-remote för att ansluta till din tududi-server via HTTP. Exemplet gäller Claude Desktop:",
+        "description": "Lägg till den här konfigurationen i din MCP-klient. Ersätt YOUR_API_TOKEN_HERE med den token du skapade i steg 1. Den använder mcp-remote för att ansluta till din Life-to-Day-server via HTTP. Exemplet gäller Claude Desktop:",
         "loading": "Läser in...",
         "locationTitle": "Plats för Claude Desktops konfigurationsfil:",
         "otherClients": "Andra MCP-klienter kan konfigureras på andra sätt, se dokumentationen för din klient.",
@@ -795,7 +795,7 @@
         "title": "3. Tillgängliga operationer"
       },
       "step4": {
-        "description": "Starta om din MCP-klient när du har lagt till konfigurationen. Sedan kan du använda vanligt språk för att arbeta med tududi:",
+        "description": "Starta om din MCP-klient när du har lagt till konfigurationen. Sedan kan du använda vanligt språk för att arbeta med Life-to-Day:",
         "examplesTitle": "Exempel på frågor:",
         "title": "4. Kom igång"
       },
@@ -804,7 +804,7 @@
         "firewall": "Kontrollera brandväggsinställningarna för fjärrservrar",
         "intro": "Om din MCP-klient inte kan ansluta, kontrollera att:",
         "restart": "Du har startat om din MCP-klient helt",
-        "server": "tududi-servern körs och går att nå",
+        "server": "Life-to-Day-servern körs och går att nå",
         "title": "Felsökning",
         "token": "Din API-token är giltig och inte utgången"
       }
@@ -1708,7 +1708,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "Life-to-Day",
     "quickInboxCapture": "Snabb inkapsling av inkorgen",
     "userMenu": "Användarmeny",
     "collapseSidebar": "Dölj sidopanel",
@@ -1801,8 +1801,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 Välkommen till tududi!\n\nDin personliga uppgiftshanteringsbot är nu ansluten och redo att hjälpa till!\n\n📝 Skicka mig helt enkelt ett meddelande så lägger jag till det i din tududi-inkorg som en uppgift.\n\n✨ Kommandon:\n• /help - Visa hjälpinformation\n• /start - Visa välkomstmeddelande\n• Skriv bara vilken text som helst - Lägg till det som en inkorgs-uppgift\n\nLåt oss bli organiserade! 🚀",
-    "helpMessage": "📋 tududi Bot Hjälp\n\nSkicka mig vilket textmeddelande som helst så lägger jag till det i din tududi inkorg som en inkorgsuppgift.\n\nKommandon:\n/start - Välkomstmeddelande\n/help - Visa detta hjälpmeddelande\n\nSkriv bara din uppgift så tar jag hand om resten!",
+    "welcomeMessage": "🎉 Välkommen till Life-to-Day!\n\nDin personliga uppgiftshanteringsbot är nu ansluten och redo att hjälpa till!\n\n📝 Skicka mig helt enkelt ett meddelande så lägger jag till det i din Life-to-Day-inkorg som en uppgift.\n\n✨ Kommandon:\n• /help - Visa hjälpinformation\n• /start - Visa välkomstmeddelande\n• Skriv bara vilken text som helst - Lägg till det som en inkorgs-uppgift\n\nLåt oss bli organiserade! 🚀",
+    "helpMessage": "📋 Life-to-Day Bot Hjälp\n\nSkicka mig vilket textmeddelande som helst så lägger jag till det i din Life-to-Day inkorg som en inkorgsuppgift.\n\nKommandon:\n/start - Välkomstmeddelande\n/help - Visa detta hjälpmeddelande\n\nSkriv bara din uppgift så tar jag hand om resten!",
     "commandProcessed": "Kommandot har behandlats",
     "messageProcessed": "Meddelandet har behandlats",
     "failedToAddToInbox": "❌ Kunde inte lägga till i inkorgen: {{error}}"
@@ -1812,7 +1812,7 @@
     "version": "Version",
     "description": "Självhostad uppgiftshantering med hierarkisk organisering, flerspråkigt stöd och Telegram-integration. Utvecklat med kärlek för produktivitetsentusiaster.",
     "madeWithLove": "Utvecklat med kärlek",
-    "appreciation": "Tack för att du använder tududi! Ditt stöd hjälper till att hålla projektet växande och vid liv. Om du tycker att det är användbart, överväg gärna att stödja utvecklingen.",
+    "appreciation": "Tack för att du använder Life-to-Day! Ditt stöd hjälper till att hålla projektet växande och vid liv. Om du tycker att det är användbart, överväg gärna att stödja utvecklingen.",
     "supportDevelopment": "Stöd utvecklingen",
     "community": "Community",
     "viewOnGitHub": "Visa på GitHub",
@@ -1887,7 +1887,7 @@
     },
     "dashboard": {
       "title": "Admin",
-      "subtitle": "tududi {{version}} · {{env}}",
+      "subtitle": "Life-to-Day {{version}} · {{env}}",
       "users": "Användare",
       "usersHint": "{{verified}} verifierade · {{admins}} admin · {{new}} idag",
       "paying": "Betalande",
@@ -2029,7 +2029,7 @@
     "blog": {
       "title": "Blogg",
       "description": "Välj en av dina anteckningar som förstasida. De offentliga anteckningar den länkar med [[Titel]] blir inläggen. Dela förstasidan och varje inlägg offentligt för att de ska visas.",
-      "placeholder": "Anteckningslänk eller ID, t.ex. https://app.tududi.com/notes/abc123",
+      "placeholder": "Anteckningslänk eller ID, t.ex. /notes/abc123",
       "inputLabel": "Anteckning för förstasidan",
       "turnOff": "Stäng av",
       "shared": "Offentlig",
@@ -2534,9 +2534,9 @@
   },
   "subscription": {
     "title": "Prenumeration",
-    "chooseForCloud": "Välj en plan för tududi Cloud",
+    "chooseForCloud": "Välj en plan för Life-to-Day Cloud",
     "noActive": "Ingen aktiv prenumeration",
-    "chooseToContinue": "Välj en plan för att fortsätta använda tududi Cloud.",
+    "chooseToContinue": "Välj en plan för att fortsätta använda Life-to-Day Cloud.",
     "monthly": "Månatlig",
     "yearly": "Årlig",
     "priceMonthly": "{{price}} per månad",
@@ -2552,15 +2552,15 @@
     "notConfigured": "Prenumerationer är inte tillgängliga på denna instans än. Vänligen kontakta support.",
     "exportData": "Exportera dina data",
     "subscribe": "Prenumerera",
-    "readOnlyBanner": "Din provperiod har tagit slut, så dina data är skrivskyddade. Prenumerera för att fortsätta använda tududi, eller exportera dina data. Kontot raderas den {{date}}.",
+    "readOnlyBanner": "Din provperiod har tagit slut, så dina data är skrivskyddade. Prenumerera för att fortsätta använda Life-to-Day, eller exportera dina data. Kontot raderas den {{date}}.",
     "lockedAi": "AI-assistenten ingår i den betalda planen.",
     "lockedPublicNotes": "Offentliga anteckningslänkar ingår i den betalda planen.",
     "lockedMembers": "Att lägga till medlemmar ingår i den betalda planen.",
     "trialEnded": "Din provperiod har tagit slut",
     "onTrial": "Du använder den kostnadsfria provperioden",
-    "readOnlyUntil": "Dina data är skrivskyddade till {{date}}, sedan raderas kontot. Prenumerera för att fortsätta använda tududi Cloud.",
+    "readOnlyUntil": "Dina data är skrivskyddade till {{date}}, sedan raderas kontot. Prenumerera för att fortsätta använda Life-to-Day Cloud.",
     "trialIncludes": "Din provperiod slutar den {{date}}. AI-assistenten, offentliga anteckningar och att lägga till medlemmar låses upp när du prenumererar.",
-    "backToApp": "Tillbaka till tududi",
+    "backToApp": "Tillbaka till Life-to-Day",
     "trialBanner": "Kostnadsfri provperiod, dagar kvar: {{count}}"
   },
   "demo": {
@@ -2633,7 +2633,7 @@
     "failedToUpdate": "Det gick inte att uppdatera medlemmen",
     "addEmailHint": "När du lägger till en e-postadress får personen en inbjudan att välja ett lösenord. Den kan inte ändras efteråt.",
     "remove": "Ta bort medlem",
-    "removeConfirm": "Ta bort {{name}}? Kontot och allt i det raderas, och det går inte att ångra. På tududi Cloud tas platsen bort från ditt abonnemang.",
+    "removeConfirm": "Ta bort {{name}}? Kontot och allt i det raderas, och det går inte att ångra. På Life-to-Day Cloud tas platsen bort från ditt abonnemang.",
     "removed": "Medlemmen togs bort",
     "updated": "Medlemmen uppdaterades",
     "invitationSent": "Inbjudan skickad",
@@ -2960,10 +2960,10 @@
   "blog": {
     "nav": "Blogg",
     "navCta": "Kom igång nu",
-    "footerCloud": "tududi Cloud",
+    "footerCloud": "Life-to-Day Cloud",
     "footerTerms": "Villkor",
     "footerPrivacy": "Integritet",
-    "ctaEyebrow": "tududi Cloud",
+    "ctaEyebrow": "Life-to-Day Cloud",
     "ctaTitle": "Få ut de små sakerna ur huvudet.",
     "ctaBody": "Uppgifter, projekt, anteckningar och vanor på ett lugnt ställe, delade med dem du bor och arbetar med. Ingen server, inget att installera.",
     "ctaPrice": "{{monthly}} i månaden eller {{annual}} om året",
@@ -2979,5 +2979,9 @@
     "missingBody": "Det kan ha flyttats eller tagits bort. De andra inläggen är ett klick bort.",
     "allPosts": "Alla inlägg",
     "morePosts": "Mer från bloggen"
+  },
+  "app": {
+    "tagline": "From long-term vision to today.",
+    "sourceCode": "Source code"
   }
 }
