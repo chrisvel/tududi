@@ -526,6 +526,9 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, require('./modules/ltd-progress/routes'));
     app.use(basePath, require('./modules/ltd-metrics/routes'));
     app.use(basePath, require('./modules/ltd-journal/routes'));
+    // LTD-PATCH(T-501): capacity, Recovery and Focus sessions (Phase 5).
+    app.use(basePath, require('./modules/ltd-planner/routes'));
+    app.use(basePath, require('./modules/ltd-focus/routes'));
     app.use(basePath, goalsModule.routes);
     app.use(basePath, dailyPlanModule.routes);
     app.use(basePath, onboardingModule.routes);

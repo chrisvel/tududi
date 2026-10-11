@@ -44,6 +44,8 @@ export interface Task {
     defer_until?: string;
     reminder_at?: string;
     estimated_minutes?: number | null;
+    // LTD-PATCH(T-503): optional five-minute first step for the Now card.
+    starter_step?: string | null;
     note?: string;
     tags?: Tag[];
     project_id?: number;

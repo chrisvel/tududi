@@ -11,6 +11,13 @@ const MAX_FAILURES = 5;
 const PUSH_TTL_SECONDS = 24 * 60 * 60;
 const MAX_BODY_LENGTH = 300;
 
+// LTD-PATCH(T-504): read lazily so push keeps no load-time link to ltd-planner.
+async function overwhelmed(userId) {
+    const dailyPlanRepository = require('../daily-plan/repository');
+    const { overwhelmedActive } = require('../ltd-planner/service');
+    return overwhelmedActive(await dailyPlanRepository.findUiSettings(userId));
+}
+
 const clip = (value, max) =>
     typeof value === 'string' && value.length > max
         ? `${value.slice(0, max - 1)}…`
@@ -134,6 +141,8 @@ class PushService {
     // number of devices the push service accepted.
     async sendToUser(userId, { title, body, url, tag }) {
         try {
+            // LTD-PATCH(T-504): Overwhelmed mode keeps every push quiet until it ends.
+            if (await overwhelmed(userId)) return 0;
             const subscriptions = await repository.listForUser(userId);
             if (subscriptions.length === 0) return 0;
 

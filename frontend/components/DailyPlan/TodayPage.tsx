@@ -1,4 +1,5 @@
 // LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
+// LTD-PATCH(T-501): capacity bar, Focus mode (T-502), Recovery and Overwhelmed (T-504), contribution (T-505).
 import React, {
     useCallback,
     useEffect,
@@ -49,6 +50,29 @@ import {
     intlLocale,
 } from './planUtils';
 import { useAiAllowed } from '../../hooks/useTrialStatus';
+import {
+    Capacity,
+    Contribution,
+    FocusSession,
+    fetchCapacity,
+    fetchContribution,
+    fetchCurrentFocus,
+    fetchOverwhelmed,
+    lightenDay,
+    resumeFocus,
+    saveOverwhelmed,
+    startFocus,
+} from '../../utils/todayService';
+import { revertJournal } from '../../utils/planningService';
+import FocusMode from '../FocusMode/FocusMode';
+import NowCard from './NowCard';
+import CapacityBar from '../Recovery/CapacityBar';
+import ContributionCard from '../Recovery/ContributionCard';
+import RecoveryControls from '../Recovery/RecoveryControls';
+
+// The degraded path (blueprint 3.5): from 14:00 with nothing done yet.
+const HEAVY_DAY_FROM = 14 * 60;
+const MAX_FOCUS_MINUTES = 240;
 
 const isRecurring = (task: Task): boolean =>
     !task.habit_mode &&
@@ -71,7 +95,7 @@ const TodayPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const focus = useFocus();
     const focusId = focusKey(focus);
-    const { showErrorToast, showUndoToast } = useToast();
+    const { showErrorToast, showUndoToast, showSuccessToast } = useToast();
     const setProgress = useDailyPlanProgress((s) => s.setProgress);
     const quote = useDailyQuote(i18n.language);
     const projects = useStore((state) => state.projectsStore.projects);
@@ -88,6 +112,13 @@ const TodayPage: React.FC = () => {
     const [candidates, setCandidates] = useState<PlanCandidates | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [busyUid, setBusyUid] = useState<string | null>(null);
+    const [reloadKey, setReloadKey] = useState(0);
+    const [capacity, setCapacity] = useState<Capacity | null>(null);
+    const [contribution, setContribution] = useState<Contribution | null>(null);
+    const [focusSession, setFocusSession] = useState<FocusSession | null>(null);
+    const [resumable, setResumable] = useState<FocusSession | null>(null);
+    const [overwhelmed, setOverwhelmed] = useState(false);
+    const [recoveryBusy, setRecoveryBusy] = useState(false);
     const [now, setNow] = useState(() =>
         minuteOfDay(new Date(), getUserTimezone())
     );
@@ -128,7 +159,21 @@ const TodayPage: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [t, focusId]);
+    }, [t, focusId, reloadKey]);
+
+    // A running session reopens Focus after a reload; an interrupted one is
+    // offered as "Continue" on the Now card.
+    const loadFocus = useCallback(async () => {
+        const session = await fetchCurrentFocus().catch(() => null);
+        setFocusSession(session && !session.ended_at ? session : null);
+        setResumable(session && session.ended_at ? session : null);
+    }, []);
+    useEffect(() => {
+        loadFocus();
+        fetchOverwhelmed()
+            .then((state) => setOverwhelmed(state.on))
+            .catch(() => undefined);
+    }, [loadFocus]);
 
     // Calendar feeds belong to the Calendar feature; with it off Today shows
     // no events and no prompt to connect a calendar.
@@ -160,6 +205,28 @@ const TodayPage: React.FC = () => {
     const plan = planResponse?.plan ?? null;
     const items = useMemo(() => plan?.items ?? [], [plan]);
     const started = !!plan?.started_at;
+
+    // Capacity and the contribution report are derived on the server from
+    // the saved plan, so they follow every save.
+    const itemsKey = items
+        .map(
+            (i) =>
+                `${i.task_uid}:${i.start_minute}:${i.duration_minutes}:${isItemDone(i)}`
+        )
+        .join('|');
+    useEffect(() => {
+        if (!planDate) return undefined;
+        let cancelled = false;
+        fetchCapacity(planDate)
+            .then((value) => !cancelled && setCapacity(value))
+            .catch(() => undefined);
+        fetchContribution()
+            .then((value) => !cancelled && setContribution(value))
+            .catch(() => undefined);
+        return () => {
+            cancelled = true;
+        };
+    }, [planDate, itemsKey, focusSession]);
     // A row can report an edit from an older render (a delayed refetch), so
     // edits are checked against the latest items.
     const itemsRef = useRef(items);
@@ -370,6 +437,99 @@ const TodayPage: React.FC = () => {
         [items, replaceItems]
     );
 
+    const handleFocus = useCallback(
+        async (item: DailyPlanItem) => {
+            try {
+                setFocusSession(
+                    await startFocus(
+                        item.task_uid,
+                        Math.min(
+                            MAX_FOCUS_MINUTES,
+                            item.duration_minutes || DEFAULT_DURATION
+                        )
+                    )
+                );
+                setResumable(null);
+            } catch (err) {
+                showErrorToast(
+                    err instanceof Error ? err.message : String(err)
+                );
+            }
+        },
+        [showErrorToast]
+    );
+
+    const handleResume = useCallback(
+        async (session: FocusSession) => {
+            try {
+                setFocusSession(await resumeFocus(session.uid));
+                setResumable(null);
+            } catch (err) {
+                showErrorToast(
+                    err instanceof Error ? err.message : String(err)
+                );
+            }
+        },
+        [showErrorToast]
+    );
+
+    // "Lighten my day": the server moves open work to tomorrow through the
+    // Journal; Undo is the existing toast reverting that entry.
+    const handleLighten = useCallback(async () => {
+        if (!planResponse) return;
+        setRecoveryBusy(true);
+        try {
+            const result = await lightenDay(planResponse.date);
+            if (!result.journal_uid) {
+                showSuccessToast(
+                    t(
+                        'recovery.nothingToMove',
+                        'Your day is already light. One small step at a time.'
+                    )
+                );
+                return;
+            }
+            const journalUid = result.journal_uid;
+            setReloadKey((key) => key + 1);
+            showUndoToast(
+                t(
+                    'recovery.done',
+                    'Lighter now: {{moved}} moved to tomorrow. Small steps count.',
+                    { moved: result.moved.length }
+                ),
+                async () => {
+                    try {
+                        await revertJournal(journalUid);
+                    } catch (err) {
+                        showErrorToast(
+                            err instanceof Error ? err.message : String(err)
+                        );
+                    }
+                    setReloadKey((key) => key + 1);
+                }
+            );
+        } catch (err) {
+            showErrorToast(err instanceof Error ? err.message : String(err));
+        } finally {
+            setRecoveryBusy(false);
+        }
+    }, [planResponse, showErrorToast, showSuccessToast, showUndoToast, t]);
+
+    const toggleOverwhelmed = useCallback(
+        async (on: boolean) => {
+            setOverwhelmed(on);
+            try {
+                setOverwhelmed((await saveOverwhelmed(on)).on);
+            } catch (err) {
+                setOverwhelmed(!on);
+                showErrorToast(
+                    err instanceof Error ? err.message : String(err)
+                );
+            }
+        },
+        [showErrorToast]
+    );
+
     const doneCount = items.filter(isItemDone).length;
     const minutesLeft = items
         .filter((item) => !isItemDone(item))
@@ -428,8 +588,65 @@ const TodayPage: React.FC = () => {
           }).format(new Date(`${planResponse.date}T12:00:00`))
         : '';
 
+    const focusOverlay = focusSession && (
+        <FocusMode
+            session={focusSession}
+            onClose={() => {
+                setFocusSession(null);
+                loadFocus();
+            }}
+        />
+    );
+
+    // Overwhelmed: only the Now card; everything else and notifications
+    // stay away until the person leaves the mode.
+    if (overwhelmed && planResponse && started) {
+        return (
+            <div
+                className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-10"
+                data-testid="overwhelmed-mode"
+            >
+                {focusOverlay}
+                <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+                    <p className="text-gray-700 dark:text-gray-300">
+                        {t(
+                            'recovery.overwhelmedHint',
+                            'Just this one thing. Everything else can wait.'
+                        )}
+                    </p>
+                    <NowCard
+                        items={items}
+                        events={events}
+                        now={now}
+                        onDone={handleToggleDone}
+                        onPushLater={handlePushLater}
+                        busyUid={busyUid}
+                        onFocus={handleFocus}
+                        resumable={resumable}
+                        onResume={handleResume}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => toggleOverwhelmed(false)}
+                        className="min-h-[44px] self-start rounded-lg px-3.5 text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                        data-testid="overwhelmed-off"
+                    >
+                        {t('recovery.showAll', 'Show my whole day again')}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    const heavyDay =
+        started &&
+        now >= HEAVY_DAY_FROM &&
+        doneCount === 0 &&
+        items.some((item) => !isItemDone(item));
+
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-10">
+            {focusOverlay}
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-7">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                     <div className="flex flex-1 items-baseline gap-2">
@@ -525,8 +742,30 @@ const TodayPage: React.FC = () => {
                     />
                 )}
 
+                {planResponse && started && capacity && (
+                    <CapacityBar
+                        capacity={capacity}
+                        nameOf={(uid) =>
+                            items.find((item) => item.task_uid === uid)?.task
+                                .name
+                        }
+                    />
+                )}
+
+                {planResponse && started && items.length > 0 && (
+                    <RecoveryControls
+                        heavyDay={heavyDay}
+                        busy={recoveryBusy}
+                        onLighten={handleLighten}
+                        onOverwhelmed={() => toggleOverwhelmed(true)}
+                    />
+                )}
+
                 {planResponse && started && (
                     <TodayPlanned
+                        onFocus={handleFocus}
+                        resumable={resumable}
+                        onResume={handleResume}
                         items={items}
                         events={events}
                         candidates={candidates}
@@ -569,6 +808,10 @@ const TodayPage: React.FC = () => {
                             onGenerated: setWrapUp,
                         }}
                     />
+                )}
+
+                {contribution && (
+                    <ContributionCard contribution={contribution} />
                 )}
             </div>
         </div>

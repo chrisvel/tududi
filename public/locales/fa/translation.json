@@ -1450,7 +1450,11 @@
         "noGoal": "اختصاص به یک هدف",
         "skipOccurrence": "رد کردن این وقوع",
         "occurrenceSkipped": "وقوع رد شد",
-        "skipOccurrenceError": "رد کردن وقوع ناموفق بود"
+        "skipOccurrenceError": "رد کردن وقوع ناموفق بود",
+        "starterStep": "قدم اول",
+        "starterStepPlaceholder": "کاری که در ۵ دقیقه شدنی است",
+        "starterStepHint": "اول در کارت «اکنون» نشان داده می‌شود تا شروع آسان شود.",
+        "starterStepError": "به‌روزرسانی قدم اول انجام نشد"
     },
     "subtasks": {
         "placeholder": "افزودن زیرکار..."
@@ -3061,7 +3065,9 @@
         },
         "durationMinutes": "{{minutes}}د",
         "durationHours": "{{hours}}س",
-        "durationHoursMinutes": "{{hours}}س {{minutes}}د"
+        "durationHoursMinutes": "{{hours}}س {{minutes}}د",
+        "starterStep": "قدم اول:",
+        "fiveMinuteStart": "فقط ۵ دقیقه شروع کن."
     },
     "relations": {
         "title": "روابط",
@@ -3321,6 +3327,31 @@
             "videoTitle": "تور یک‌دقیقه‌ای Life-to-Day",
             "letsStart": "تمام شد، شروع شود",
             "settingUp": "در حال راه‌اندازی..."
+        },
+        "steps": {
+            "progress": "قدم {{step}} از ۳",
+            "skipSetup": "رد شدن از راه‌اندازی",
+            "languageTitle": "زبان، تقویم و ارقام",
+            "language": "زبان",
+            "calendar": "تقویم",
+            "persianDigits": "ارقام فارسی (۱۲۳)",
+            "next": "بعدی",
+            "skip": "رد شدن",
+            "goalTitle": "یک هدف برای این فصل",
+            "goal": "هدف فصل",
+            "suggestedAreas": "برای کدام بخش زندگی است؟ (اختیاری)",
+            "area": "حوزه (اختیاری)",
+            "areas": {
+                "health": "سلامت",
+                "work": "کار",
+                "relationships": "روابط"
+            },
+            "vision": "چشم‌انداز، تصویر بزرگ‌تر (اختیاری)",
+            "dayTitle": "اولین روز",
+            "workStart": "شروع کار",
+            "workEnd": "پایان کار",
+            "task": "یک کار برای امروز",
+            "finish": "نشانم بده «اکنون»"
         }
     },
     "app": {
@@ -3394,5 +3425,45 @@
         "dragGoal": "کشیدن برای جابه‌جایی والد",
         "achievementQuestion": "به‌نظرت محقق شد؟",
         "markAchieved": "محقق شد"
+    },
+    "focusMode": {
+        "label": "تمرکز",
+        "whereWasI": "کجا بودم؟",
+        "startWith": "شروع با:",
+        "timeLeft": "زمان باقی‌مانده",
+        "timeUp": "زمان تمام شد. تمامش کن، یا اگر کمک می‌کند ادامه بده.",
+        "minutesIn": "{{count}} دقیقه گذشت",
+        "notePrompt": "کجا بودی؟ یک خط برای وقتی که برمی‌گردی.",
+        "keepGoing": "ادامه می‌دهم",
+        "saveAndPause": "ذخیره و توقف",
+        "interrupt": "باید دست نگه دارم",
+        "finish": "پایان جلسه",
+        "start": "تمرکز",
+        "resume": "ادامه",
+        "pausedEarlier": "قبلاً متوقف شد:"
+    },
+    "capacity": {
+        "label": "بار امروز",
+        "summary": "{{planned}} برنامه از {{capacity}} وقت آزاد",
+        "percent": "٪{{percent}}",
+        "unrealistic": "برنامه از ظرفیت بیشتر است.",
+        "moveHint": "شاید این‌ها را جابه‌جا کنی:",
+        "separator": "، ",
+        "eventOverlap": "بعضی بلوک‌ها با رویداد تقویم هم‌پوشانی دارند.",
+        "missingBuffer": "بین بلوک‌ها ۵ دقیقه فاصله بگذار تا نفس بکشی."
+    },
+    "contribution": {
+        "title": "امروز به این اهداف کمک کرد",
+        "goalLine": "{{time}} برای",
+        "unaligned": "{{time}} کار دیگر (عادی است)"
+    },
+    "recovery": {
+        "heavyDay": "روز سنگینی بوده؟ بیایید سبکش کنیم.",
+        "lighten": "سبک کن",
+        "overwhelmed": "الان زیادی است",
+        "done": "سبک‌تر شد: {{moved}} کار به فردا رفت. قدم‌های کوچک هم حساب‌اند.",
+        "overwhelmedHint": "فقط همین یک کار. بقیه می‌توانند صبر کنند.",
+        "showAll": "دوباره کل روزم را نشان بده",
+        "nothingToMove": "روزت همین حالا سبک است. یک قدم کوچک در هر زمان."
     }
 }

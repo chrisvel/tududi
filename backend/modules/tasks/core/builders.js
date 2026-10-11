@@ -4,6 +4,7 @@ const {
     parsePriority,
     parseStatus,
     parseEstimatedMinutes,
+    parseStarterStep,
 } = require('./parsers');
 const {
     processDueDateForStorage,
@@ -189,6 +190,11 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         attrs.estimated_minutes = parseEstimatedMinutes(body.estimated_minutes);
     }
 
+    // LTD-PATCH(T-503): starter step is optional on create and update.
+    if (body.starter_step !== undefined) {
+        attrs.starter_step = parseStarterStep(body.starter_step);
+    }
+
     if (body.assigned_to !== undefined) {
         attrs.assigned_to = body.assigned_to || null;
     }
@@ -293,6 +299,11 @@ function buildUpdateAttributes(body, task, timezone) {
 
     if (body.estimated_minutes !== undefined) {
         attrs.estimated_minutes = parseEstimatedMinutes(body.estimated_minutes);
+    }
+
+    // LTD-PATCH(T-503): starter step is optional on create and update.
+    if (body.starter_step !== undefined) {
+        attrs.starter_step = parseStarterStep(body.starter_step);
     }
 
     if (body.assigned_to !== undefined) {

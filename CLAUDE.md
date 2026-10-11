@@ -311,6 +311,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Timeline and list planning, task estimates, the Now card
     - Read-only iCal calendar feeds (Google secret address), encrypted and SSRF-guarded
     - Daily plan API and schema
+    - Phase 5: capacity and load (14.5), Focus sessions, starter step, Lighten my day and Overwhelmed, daily contribution
 
 30. **[Habits](docs/21-habits.md)**
     - Build and quit habits, counts or measured amounts, schedules and intervals
@@ -323,7 +324,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - One replica, block storage for SQLite, ingress and backup notes
 
 32. **[Onboarding](docs/24-onboarding.md)**
-    - The welcome page at `/welcome`: the welcome video and one button, seen once by every account
+    - The welcome page at `/welcome`: three skippable first-run steps ending at the Now card, seen once by every account
     - Empty-state starters on Areas and Habits
     - `users.onboarding_starter`, `POST /api/onboarding/starter`, admin onboarding numbers
 

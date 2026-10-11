@@ -1,4 +1,5 @@
 // LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
+// LTD-PATCH(T-502): pass Focus start and resume through to the Now card.
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Task } from '../../entities/Task';
@@ -12,6 +13,7 @@ import PlanTips from './PlanTips';
 import WrapUpCard from './WrapUpCard';
 import { PlanTip } from './tips';
 import { AiWrapUp } from '../../utils/dailyPlanService';
+import { FocusSession } from '../../utils/todayService';
 
 interface TodayPlannedProps {
     items: DailyPlanItem[];
@@ -32,6 +34,9 @@ interface TodayPlannedProps {
     tips: PlanTip[];
     onMoveMissed: () => void;
     onPlaceTip: (tip: Extract<PlanTip, { kind: 'gapFit' }>) => void;
+    onFocus?: (item: DailyPlanItem) => void;
+    resumable?: FocusSession | null;
+    onResume?: (session: FocusSession) => void;
     wrapUp: {
         show: boolean;
         date: string;
@@ -60,6 +65,9 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
     onMoveMissed,
     onPlaceTip,
     wrapUp,
+    onFocus,
+    resumable,
+    onResume,
 }) => {
     const { t } = useTranslation();
     const allDay = events.filter((e) => e.all_day);
@@ -80,6 +88,9 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
                 onDone={onToggleDone}
                 onPushLater={onPushLater}
                 busyUid={busyUid}
+                onFocus={onFocus}
+                resumable={resumable}
+                onResume={onResume}
             />
 
             {tips.length > 0 && (

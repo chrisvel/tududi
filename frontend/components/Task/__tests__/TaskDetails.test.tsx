@@ -125,6 +125,8 @@ jest.mock('../TaskDetails/', () => ({
     TaskDueDateCard: () => null,
     TaskDeferUntilCard: () => null,
     TaskEstimateCard: () => null,
+    // LTD-PATCH(T-503): the starter step card is part of the mocked set.
+    TaskStarterStepCard: () => null,
     TaskAttachmentsCard: () => null,
     TaskAreaCard: () => null,
     TaskAssignedToCard: () => null,

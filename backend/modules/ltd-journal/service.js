@@ -89,6 +89,16 @@ async function restore(entry, userId, transaction) {
         await goal.update(before, { transaction });
         return;
     }
+    if (entry.entity_type === 'daily_plan' && entry.op === 'recovery') {
+        // T-504: Recovery moved open plan items to tomorrow.
+        await require('../ltd-planner/repository').restoreDays(
+            userId,
+            before,
+            after,
+            transaction
+        );
+        return;
+    }
     if (entry.entity_type !== 'metric')
         throw new ConflictError('This operation cannot be undone');
     if (entry.op === 'metric_delete') {
