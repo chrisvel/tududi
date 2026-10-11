@@ -1,7 +1,7 @@
 version: 2
 updates:
   # npm: security updates only (limit 0 turns off routine version bumps).
-  # Routine dependency upgrades arrive through the monthly upstream sync (docs/ltd/UPSTREAM.md).
+  # LTD-PATCH(T-201): routine upgrades are reviewed independently; no upstream sync.
   - package-ecosystem: npm
     directory: /
     schedule:

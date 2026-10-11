@@ -93,6 +93,9 @@ cookies.txt
 Dockerfile*
 docker-compose*.yml
 .dockerignore
+# LTD-PATCH(T-201): deploy/ holds server config plus live data, uploads and
+# backups under deploy/data; none of it belongs in the build context.
+deploy/
 
 # Development scripts not needed in production
 backend-express/scripts/

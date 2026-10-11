@@ -1,0 +1,15 @@
+# Selected by COMPOSE_FILE in the example .env. Production uses only the base
+# file. This overrides the same app service: never a second SQLite writer.
+services:
+    app:
+        image: life-to-day:local
+        build:
+            context: ..
+            dockerfile: Dockerfile
+        ports:
+            - '127.0.0.1:3002:3002'
+        environment:
+            TUDUDI_ALLOWED_ORIGINS: http://127.0.0.1:3002
+            BASE_URL: http://127.0.0.1:3002
+            TUDUDI_TRUST_PROXY: 'false'
+            UPGRADE_INSECURE_REQUESTS: 'false'
