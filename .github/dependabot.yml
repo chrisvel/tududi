@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # npm: security updates only (limit 0 turns off routine version bumps).
+  # Routine dependency upgrades arrive through the monthly upstream sync (docs/ltd/UPSTREAM.md).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
