@@ -76,6 +76,12 @@ self.addEventListener('message', (event) => {
         event.waitUntil(clearUserData());
         return;
     }
+    // LTD-PATCH(T-305): page-driven replay for browsers without Background
+    // Sync (iOS) — sent on online, visibilitychange and app start.
+    if (type === 'REPLAY_QUEUE') {
+        event.waitUntil(replayQueuedRequests());
+        return;
+    }
 });
 
 async function clearUserData() {
@@ -208,10 +214,14 @@ async function handleApiNoQueue(request) {
 // ─── API Mutations: queue when offline, replay on sync ───────────────────────
 
 async function handleApiMutation(request) {
+    // LTD-PATCH(T-305): clone before fetch — fetch() consumes the request
+    // body, so queueing the original request stored an empty body and the
+    // replay posted nothing (G5 finding 1).
+    const requestForQueue = request.clone();
     try {
         return await fetch(request);
     } catch {
-        await queueRequest(request);
+        await queueRequest(requestForQueue);
         return new Response(
             JSON.stringify({ queued: true, offline: true }),
             {
@@ -257,8 +267,18 @@ async function queueRequest(request) {
     const tx = db.transaction(SYNC_QUEUE, 'readwrite');
     tx.objectStore(SYNC_QUEUE).add(entry);
 
+    // LTD-PATCH(T-305): a rejected sync.register (e.g. Chromium with
+    // Background Sync disabled, or iOS which has no Background Sync at all)
+    // must not reject queueRequest — the entry is already stored and the
+    // page deserves its 202 (G5 finding 4). Replay also runs from the
+    // REPLAY_QUEUE message (online / visibilitychange / app start), which
+    // is the only replay path on iOS (G5 finding 3).
     if ('sync' in self.registration) {
-        await self.registration.sync.register('tududi-sync');
+        try {
+            await self.registration.sync.register('tududi-sync');
+        } catch {
+            // Background Sync unavailable; REPLAY_QUEUE will drive replay.
+        }
     }
 }
 

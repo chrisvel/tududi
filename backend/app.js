@@ -418,6 +418,8 @@ const everyoneModule = require('./modules/everyone');
 const groupsModule = require('./modules/groups');
 const feedbackModule = require('./modules/feedback');
 const pushModule = require('./modules/push');
+// LTD-PATCH(T-305): fork-only module, no upstream equivalent
+const ltdIdempotencyModule = require('./modules/ltd-idempotency');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -511,6 +513,8 @@ const registerApiRoutes = (basePath) => {
     // account has a subscription; billing, the profile and data export stay
     // open. A no-op unless TUDUDI_REQUIRE_SUBSCRIPTION is set.
     app.use(basePath, requireSubscription);
+    // LTD-PATCH(T-305): Idempotency-Key replay for POST/PATCH (blueprint 13.5)
+    app.use(basePath, ltdIdempotencyModule.idempotencyMiddleware);
     app.use(basePath, tasksModule.routes);
     app.use(basePath, commentsModule.routes);
     app.use(basePath, habitsModule.routes);

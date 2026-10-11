@@ -67,6 +67,8 @@ const {
     handleParentChildOnStatusChange,
 } = require('./operations/parent-child');
 const { TASK_INCLUDES_WITH_SUBTASKS } = require('./utils/constants');
+// LTD-PATCH(T-305): client uid validation for offline creation
+const { isValidClientUid } = require('../ltd-idempotency');
 
 const {
     handleRecurringTasks,
@@ -450,6 +452,36 @@ router.post(
                 req.currentUser.id,
                 timezone
             );
+
+            // LTD-PATCH(T-305): accept a client-supplied uid (blueprint
+            // 13.5) so an offline create retried after reconnect returns
+            // the original record instead of inserting a duplicate.
+            if (req.body.uid !== undefined) {
+                if (!isValidClientUid(req.body.uid)) {
+                    return res
+                        .status(400)
+                        .json({ error: 'Invalid task uid.' });
+                }
+                const existing = await taskRepository.findByUid(req.body.uid, {
+                    include: TASK_INCLUDES_WITH_SUBTASKS,
+                });
+                if (existing) {
+                    if (existing.user_id !== req.currentUser.id) {
+                        // A uid owned by someone else is not a valid client
+                        // uid for this user.
+                        return res
+                            .status(400)
+                            .json({ error: 'Invalid task uid.' });
+                    }
+                    const serializedExisting = await serializeTask(
+                        existing,
+                        req.currentUser.timezone,
+                        { skipDisplayNameTransform: true }
+                    );
+                    return res.status(200).json(serializedExisting);
+                }
+                taskAttributes.uid = req.body.uid;
+            }
 
             try {
                 // Fetch parent end date if this is a recurring instance

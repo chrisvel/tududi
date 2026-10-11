@@ -44,7 +44,13 @@ if ('serviceWorker' in navigator && !isBlogSite) {
     window.addEventListener('load', () => {
         // Development gets the worker only for push notifications; caching
         // and the offline queue would fight hot reloading.
-        const swUrl = isDevelopment ? '/sw.js?push-only' : '/sw.js';
+        // LTD-PATCH(T-305): webpack dev registers a push-only worker so the
+        // offline queue does not fight HMR. The Playwright offline spec opts
+        // in with this flag; production never reads it.
+        const e2eFullSw =
+            isDevelopment && localStorage.getItem('ltd-e2e-full-sw') === '1';
+        const swUrl =
+            isDevelopment && !e2eFullSw ? '/sw.js?push-only' : '/sw.js';
         navigator.serviceWorker.register(swUrl).then((registration) => {
             registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
@@ -79,6 +85,13 @@ if (isDevelopment && 'serviceWorker' in navigator) {
                 registration.waiting ||
                 registration.installing;
             if (worker?.scriptURL.includes('push-only')) return;
+            // LTD-PATCH(T-305): keep the full worker when the offline spec asked for it
+            if (
+                localStorage.getItem('ltd-e2e-full-sw') === '1' &&
+                worker?.scriptURL.includes('/sw.js')
+            ) {
+                return;
+            }
             registration.unregister().catch(() => {
                 // Non-fatal during development cleanup
             });

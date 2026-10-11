@@ -26,7 +26,9 @@ const { sequelize } = require('../../models');
 const { isSqlite, truncateTables } = require('../../utils/db-dialect');
 
 // Children before parents: PostgreSQL deletes these with constraints on.
+// LTD-PATCH(T-305): fork-only table must be cleaned before users (FK).
 const CLEANUP_TABLES = [
+    'ltd_idempotency_keys',
     'tasks_tags',
     'notes_tags',
     'projects_tags',

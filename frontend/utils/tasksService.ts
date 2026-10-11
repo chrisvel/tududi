@@ -8,6 +8,8 @@ import {
 import { getApiPath } from '../config/paths';
 import { isTaskDone, TASK_STATUS } from '../constants/taskStatus';
 import { refreshTagCountsIfTagsChanged } from './tagsService';
+// LTD-PATCH(T-305): exactly-once identity for offline create/update
+import { newClientUid, newIdempotencyKey } from './offlineIdentity';
 
 export interface GroupedTasks {
     [groupName: string]: Task[];
@@ -78,11 +80,17 @@ export const fetchTasks = async (
 };
 
 export const createTask = async (taskData: Task): Promise<Task> => {
+    // LTD-PATCH(T-305): a stable uid lets the server dedupe a retried create;
+    // the key lets the Idempotency-Key middleware replay the first response.
+    const payload = { ...taskData, uid: taskData.uid || newClientUid() };
     const response = await fetch(getApiPath('task'), {
         method: 'POST',
         credentials: 'include',
-        headers: await getPostHeadersWithCsrf(),
-        body: JSON.stringify(taskData),
+        headers: {
+            ...(await getPostHeadersWithCsrf()),
+            'Idempotency-Key': newIdempotencyKey(),
+        },
+        body: JSON.stringify(payload),
     });
 
     await handleAuthResponse(response, 'Failed to create task.');
@@ -107,7 +115,11 @@ export const updateTask = async (
         {
             method: 'PATCH',
             credentials: 'include',
-            headers: await getPostHeadersWithCsrf(),
+            // LTD-PATCH(T-305)
+            headers: {
+                ...(await getPostHeadersWithCsrf()),
+                'Idempotency-Key': newIdempotencyKey(),
+            },
             body: JSON.stringify(payload),
         }
     );

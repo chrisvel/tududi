@@ -69,7 +69,12 @@ import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { sanitizeFocus } from './utils/focus';
 import { invalidateProfileCache } from './utils/profileService';
-import { notifySwSession, notifySwClearCache } from './utils/swUtils';
+import {
+    notifySwSession,
+    notifySwClearCache,
+    installSwReplayTriggers,
+    requestPersistentStorage,
+} from './utils/swUtils';
 import { resyncPush } from './utils/pushService';
 import { resetSessionState } from './utils/sessionReset';
 import {
@@ -124,7 +129,10 @@ const App: React.FC = () => {
             if (data.user) {
                 setCurrentUser(data.user);
                 setUserInStorage(data.user);
-                notifySwSession(data.user.id);
+                // LTD-PATCH(T-305): current_user has uid, not id — without
+                // this every queued entry got sessionId "undefined" and the
+                // cross-user replay guard in sw.js never engaged.
+                notifySwSession(data.user.uid);
                 resyncPush(data.user.uid);
                 useStore
                     .getState()
@@ -203,6 +211,17 @@ const App: React.FC = () => {
     useEffect(() => {
         // Fetch user on mount
         fetchCurrentUser();
+
+        // LTD-PATCH(T-305): iOS has no Background Sync — replay the offline
+        // write queue from page-side signals, and ask for durable storage
+        // once the app runs installed (standalone) or becomes installed.
+        installSwReplayTriggers();
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            void requestPersistentStorage();
+        }
+        window.addEventListener('appinstalled', () =>
+            void requestPersistentStorage()
+        );
     }, []);
 
     // Listen for login events to update user state
