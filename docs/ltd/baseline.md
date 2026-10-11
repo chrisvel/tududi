@@ -128,3 +128,40 @@ exit=2
 No restic repository/password or dead-man URL was supplied. No off-site/dead-man success is claimed. The server cron entry is documented for 03:15 UTC; no cron was installed on macOS. The weekly CI drill uses a disposable SQLite fixture with one user and task, and uploads only text logs.
 
 The owner explicitly deferred iCal testing. No secret feed URL was supplied, stored in Git or fetched; stage A remains **BLOCKED**. A later trial must enter it only in the existing Calendar feeds UI/local environment. No Google Calendar API integration was added.
+
+## Git and static validation
+
+`bash -n deploy/*.sh`, actionlint 1.7.12 for the changed workflows, and YAML/Python heredoc parsing passed. Actual local password/session-secret/token values were checked with `git grep --cached -F -f <private-pattern-file>`: zero matches. Full-length API token and real Google private-feed patterns also had zero matches. The inherited `example.com/private-abc123` ICS test fixture is synthetic and unchanged. Blank environment variable names/templates remain in the requested example and scripts; no credential value is present. Git tracks no live `.env`, `.env.version`, data folder or SQLite file. The separate CLAUDE.md edit is unstaged.
+
+## Synthetic runner drill — GREEN
+
+[Successful corrected run](https://github.com/DanialMasghati/life-to-day/actions/runs/38125312777), commit `fd8e6a06af60a7509d50982533936078cf5fc826`. The Ubuntu runner has Docker access; no branch protection or required-check setting was changed.
+
+```text
+Backup OK: .../ltd-20261011T083701Z.sqlite3 (992K)
+START 2026-10-11T08:37:01Z 1791707821
+integrity: ok
+rows in backup:   users=1 areas=0 projects=0 tasks=1 notes=0
+rows after start: users=1 areas=0 projects=0 tasks=1 notes=0
+== drill passed in 5s
+END 2026-10-11T08:37:06Z 1791707826
+```
+
+The first runner attempt failed before restoring because Docker owned the state parent directory. Creating the state folders before Docker fixed it; explicit Bash pipefail prevents log piping from hiding a failure. This result uses only a generated, disposable fixture, not the real local data above.
+
+## Inherited tag upgrade workflow — failure recorded
+
+The experimental tag also triggered the pre-existing [Docker upgrade test](https://github.com/DanialMasghati/life-to-day/actions/runs/38125532340). Its v1.4.2 fixture test failed **one check**: API task count changed `3 -> 4`. Existing-database detection, migrations, pre-migration backup, user counts/logins, marker task preservation, restart and the stray-DATABASE_URL safety checks passed. Later fixture steps did not run after this failure. This is an unresolved API-count baseline finding, not a GREEN result and not proof of unchanged persisted task counts. The inherited test/product code was left unchanged. It is separate from the seven requested Phase 1 PR CI jobs and the Phase 2 recovery proof. No additional release tag or publication dispatch was made.
+
+## Fork image publication — GREEN
+
+Single experimental tag `v0.0.0-phase2` points to `fd8e6a06af60a7509d50982533936078cf5fc826`. [Native architecture preflight](https://github.com/DanialMasghati/life-to-day/actions/runs/38125312747) and [actual GHCR publication](https://github.com/DanialMasghati/life-to-day/actions/runs/38125532345) passed. [GHCR package](https://github.com/users/DanialMasghati/packages/container/package/life-to-day): `ghcr.io/danialmasghati/life-to-day:0.0.0-phase2`. No Docker Hub/upstream namespace, latest movement, second tag, dispatch or external announcement.
+
+```text
+docker buildx imagetools inspect ghcr.io/danialmasghati/life-to-day:0.0.0-phase2
+Digest: sha256:871b28a0e9785d8c1e52e761223f8e2c7e949df1eb8eae8765602511ae697f4f
+Platform: linux/arm64
+Platform: linux/amd64
+```
+
+The additional unknown/unknown descriptors are OCI attestation manifests, not runnable architectures. The local app remains on the verified locally built image; no production deployment was triggered.

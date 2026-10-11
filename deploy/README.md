@@ -57,6 +57,7 @@ On the production host, set `COMPOSE_FILE=docker-compose.yml`, supply a real `LT
 
 ```bash
 cd deploy
+mkdir -p data/db data/uploads data/backups
 docker compose --profile production pull
 docker compose --profile production up -d --scale app=1
 curl -fsSI "https://${LTD_DOMAIN}/api/health/ready"
