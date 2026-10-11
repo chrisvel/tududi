@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -100,7 +101,7 @@ const AdminDashboardPage: React.FC = () => {
                 {t('admin.dashboard.title', 'Admin')}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                {t('admin.dashboard.subtitle', 'tududi {{version}} · {{env}}', {
+                {t('admin.dashboard.subtitle', 'Life-to-Day {{version}} · {{env}}', {
                     version: data.instance.version,
                     env: data.instance.environment,
                 })}

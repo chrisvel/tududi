@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
@@ -43,7 +44,7 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
             <p className="mb-6 text-sm text-gray-600 dark:text-gray-300">
                 {t(
                     'profile.calendars.description',
-                    'Show your meetings next to your day plan and on the Calendar page. Tududi only reads these calendars; it never changes them.'
+                    'Show your meetings next to your day plan and on the Calendar page. Life-to-Day only reads these calendars; it never changes them.'
                 )}
             </p>
 

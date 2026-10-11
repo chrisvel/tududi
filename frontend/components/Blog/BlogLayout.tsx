@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -39,10 +40,10 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({
                             <img
                                 src={getAssetPath(
                                     isDarkMode
-                                        ? 'wide-logo-light.png'
-                                        : 'wide-logo-dark.png'
+                                        ? 'life-wordmark-light.png'
+                                        : 'life-wordmark-dark.png'
                                 )}
-                                alt="tududi"
+                                alt="Life-to-Day"
                                 className="h-8 w-auto"
                             />
                         </a>
@@ -97,7 +98,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({
                     <p>
                         &copy; {new Date().getFullYear()}{' '}
                         <span className="font-semibold text-gray-700 dark:text-gray-200">
-                            tududi
+                            Life-to-Day
                         </span>
                     </p>
                     {links && (
@@ -106,13 +107,13 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({
                                 href={links.landing}
                                 className="hover:text-gray-900 dark:hover:text-white"
                             >
-                                tududi.com
+                                Life-to-Day
                             </a>
                             <a
                                 href={links.cloud}
                                 className="hover:text-gray-900 dark:hover:text-white"
                             >
-                                {t('blog.footerCloud', 'tududi Cloud')}
+                                {t('blog.footerCloud', 'Life-to-Day Cloud')}
                             </a>
                             <a
                                 href={`${links.landing}/terms`}

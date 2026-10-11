@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Task } from '../entities/Task';
@@ -594,7 +595,7 @@ const CalendarsModal: React.FC<CalendarsModalProps> = ({
                         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             {t(
                                 'calendar.manageDescription',
-                                'Connect read-only calendars and choose which ones appear here. Tududi never changes them.'
+                                'Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.'
                             )}
                         </p>
                     </div>

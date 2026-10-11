@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day user-facing identity.
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -100,7 +101,7 @@ const AdminBlogSettings: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         onChange={(e) => setValue(e.target.value)}
                         placeholder={t(
                             'admin.blog.placeholder',
-                            'Note link or ID, e.g. https://app.tududi.com/notes/abc123'
+                            'Note link or ID, e.g. /notes/abc123'
                         )}
                         aria-label={t(
                             'admin.blog.inputLabel',

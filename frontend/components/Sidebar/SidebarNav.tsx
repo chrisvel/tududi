@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
 import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -109,10 +110,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         linkOrder
     );
 
-    const activeClass =
-        'bg-blue-50 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(90%_0.01_250)] font-semibold hover:bg-blue-100 dark:hover:bg-[oklch(27%_0.02_250)]';
-    const inactiveClass =
-        'text-gray-700 dark:text-[oklch(75%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)]';
+    const activeClass = 'bg-surface text-ink font-medium';
+    const inactiveClass = 'text-ink hover:bg-surface';
 
     const isActiveLink = (path: string, query?: string): boolean => {
         if (path === '/today') {
@@ -152,15 +151,15 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                             title={link.title}
                             aria-label={link.title}
                             data-testid={`sidebar-rail-${link.id}`}
-                            className={`relative flex items-center justify-center h-9 w-9 rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
+                            className={`relative flex items-center justify-center h-11 w-11 rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
                         >
                             <span
-                                className={`[&>svg]:h-[18px] [&>svg]:w-[18px] ${isActiveLink(link.path, link.query) ? 'text-blue-600 dark:text-[oklch(68%_0.14_250)]' : 'text-gray-500 dark:text-[oklch(65%_0.006_95)]'}`}
+                                className={`[&>svg]:h-[18px] [&>svg]:w-[18px] ${isActiveLink(link.path, link.query) ? 'text-ink' : 'text-gray-500 dark:text-[oklch(65%_0.006_95)]'}`}
                             >
                                 {link.icon}
                             </span>
                             {link.path === '/inbox' && inboxItemsCount > 0 && (
-                                <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-blue-500" />
+                                <span className="absolute top-1 end-1 h-1.5 w-1.5 rounded-full bg-secondary" />
                             )}
                         </button>
                     </li>
@@ -170,7 +169,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     }
 
     return (
-        <ul className="flex flex-col gap-px">
+        <ul className="flex flex-col gap-1">
             {navLinks.map((link) => (
                 <li key={link.path}>
                     <button
@@ -178,14 +177,14 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                             handleNavClick(link.path, link.title, link.icon)
                         }
                         data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
-                        className={`w-full flex items-center gap-[5px] px-[10px] py-[4px] rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-150 ${isActive(link.path, link.query)}`}
                     >
                         <span
-                            className={`flex-shrink-0 ${isActiveLink(link.path, link.query) ? 'text-blue-600 dark:text-[oklch(68%_0.14_250)]' : 'text-gray-400 dark:text-[oklch(55%_0.006_95)]'}`}
+                            className={`flex-shrink-0 ${isActiveLink(link.path, link.query) ? 'text-ink' : 'text-gray-400 dark:text-[oklch(55%_0.006_95)]'}`}
                         >
                             {link.icon}
                         </span>
-                        <span className="flex-1 text-left text-[13.5px]">
+                        <span className="flex-1 text-start text-[15px]">
                             {link.title}
                         </span>
                         {link.path === '/today' && planProgress && (

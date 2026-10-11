@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getAssetPath } from '../config/paths';
@@ -55,7 +56,7 @@ interface SidebarProps {
 }
 
 // The sidebar sits on the app canvas; the page is a panel beside it.
-export const SIDEBAR_CANVAS = 'bg-gray-200 dark:bg-gray-900';
+export const SIDEBAR_CANVAS = 'ltd-canvas';
 
 const Sidebar: React.FC<SidebarProps> = ({
     isSidebarOpen,
@@ -201,7 +202,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     return (
         <div
-            className={`fixed top-0 left-0 ${isSidebarOpen ? 'w-full sm:w-sidebar' : 'w-0 invisible sm:w-rail sm:visible'} h-screen overflow-hidden ${SIDEBAR_CANVAS} text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-40`}
+            className={`ltd-sidebar fixed top-0 start-0 ${isSidebarOpen ? 'w-full sm:w-sidebar' : 'w-0 invisible sm:w-rail sm:visible'} h-screen overflow-hidden ${SIDEBAR_CANVAS} text-gray-900 dark:text-white transition-transform duration-150 ease-in-out z-40`}
         >
             {/* Collapsed on tablet and desktop: an icon rail */}
             {!isSidebarOpen && (
@@ -218,16 +219,16 @@ const Sidebar: React.FC<SidebarProps> = ({
             {isSidebarOpen && (
                 <div className="flex flex-col h-full">
                     <SidebarResizeHandle />
-                    <div className="h-14 mt-2 flex-shrink-0 flex items-center justify-between pl-5 pr-3">
+                    <div className="h-14 mt-2 flex-shrink-0 flex items-center justify-between ps-5 pe-3">
                         <Link to="/" className="flex items-center no-underline">
                             <img
                                 src={getAssetPath(
                                     isDarkMode
-                                        ? 'wide-logo-light.png'
-                                        : 'wide-logo-dark.png'
+                                        ? 'life-wordmark-light.png'
+                                        : 'life-wordmark-dark.png'
                                 )}
-                                alt="tududi"
-                                className="h-8 w-auto"
+                                alt="Life-to-Day"
+                                className="h-12 w-auto"
                             />
                         </Link>
                         <button

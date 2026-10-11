@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
@@ -50,7 +51,7 @@ const BlogIndexPage: React.FC<BlogPageProps> = (props) => {
 
     useEffect(() => {
         const previous = document.title;
-        document.title = `${BLOG_NAME} | tududi`;
+        document.title = `${BLOG_NAME} | Life-to-Day`;
         return () => {
             document.title = previous;
         };

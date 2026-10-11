@@ -1,3 +1,5 @@
+import BrandMark from '../Shared/BrandMark';
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React from 'react';
 import { Link, Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +13,6 @@ import {
     TagIcon,
     UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import { getAssetPath } from '../../config/paths';
 import { useStore } from '../../store/useStore';
 import type { SidebarVisibleSections } from '../Profile/types';
 import type { SidebarSectionId } from '../../utils/sidebarLayout';
@@ -127,14 +128,10 @@ const SidebarRail: React.FC<SidebarRailProps> = ({
         <div className="flex flex-col items-center h-full pt-4 pb-3">
             <Link
                 to="/"
-                className="flex items-center justify-center h-10 w-10 mb-1"
-                aria-label="tududi"
+                className="flex items-center justify-center h-11 w-11 mb-1"
+                aria-label="Life-to-Day"
             >
-                <img
-                    src={getAssetPath('icon-logo.png')}
-                    alt="tududi"
-                    className="h-7 w-7 rounded-md"
-                />
+                <BrandMark />
             </Link>
             <button
                 type="button"

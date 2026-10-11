@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
@@ -458,10 +459,10 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                             {t('profile.caldavWizard.bidirectional', 'Bidirectional (sync both ways)')}
                         </option>
                         <option value="pull_only">
-                            {t('profile.caldavWizard.pullOnly', 'Pull only (from server to Tududi)')}
+                            {t('profile.caldavWizard.pullOnly', 'Pull only (from server to Life-to-Day)')}
                         </option>
                         <option value="push_only">
-                            {t('profile.caldavWizard.pushOnly', 'Push only (from Tududi to server)')}
+                            {t('profile.caldavWizard.pushOnly', 'Push only (from Life-to-Day to server)')}
                         </option>
                     </select>
                 </div>

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +16,7 @@ interface PublicNotePageProps {
 type Stage = 'loading' | 'ready' | 'unavailable' | 'failed';
 
 // A shared note, read by anyone who has the link: no sidebar and no account
-// needed, just the tududi navbar and a way in. The page and the API answer the
+// needed, just the Life-to-Day navbar and a way in. The page and the API answer the
 // same for a link that never existed and one the owner switched off.
 const PublicNotePage: React.FC<PublicNotePageProps> = ({
     isSignedIn,
@@ -73,7 +74,7 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
     useEffect(() => {
         const previous = document.title;
         if (stage === 'ready' && note?.title) {
-            document.title = `${note.title} | tududi`;
+            document.title = `${note.title} | Life-to-Day`;
         }
         return () => {
             document.title = previous;
@@ -96,10 +97,10 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
                         <img
                             src={getAssetPath(
                                 isDarkMode
-                                    ? 'wide-logo-light.png'
-                                    : 'wide-logo-dark.png'
+                                    ? 'life-wordmark-light.png'
+                                    : 'life-wordmark-dark.png'
                             )}
-                            alt="tududi"
+                            alt="Life-to-Day"
                             className="h-9 w-auto"
                         />
                     </Link>
@@ -124,7 +125,7 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
                                 to="/today"
                                 className="px-4 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
                             >
-                                {t('publicNote.openApp', 'Open tududi')}
+                                {t('publicNote.openApp', 'Open Life-to-Day')}
                             </Link>
                         ) : (
                             <>

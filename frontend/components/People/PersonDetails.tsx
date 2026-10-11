@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -391,7 +392,7 @@ const PersonDetails: React.FC = () => {
                     title={t('members.remove', 'Remove member')}
                     message={t('members.removeConfirm', {
                         defaultValue:
-                            'Remove {{name}}? Their account and everything in it is deleted, and this cannot be undone. On tududi Cloud their seat is taken off your subscription.',
+                            'Remove {{name}}? Their account and everything in it is deleted, and this cannot be undone. On Life-to-Day Cloud their seat is taken off your subscription.',
                         name: person.name,
                     })}
                     onConfirm={handleRemoveMember}

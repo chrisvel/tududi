@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -23,10 +24,10 @@ const Stat: React.FC<{
     tone: 'red' | 'amber' | 'gray' | 'blue';
 }> = ({ value, label, tone }) => {
     const tones = {
-        red: 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300',
+        red: 'bg-surface text-secondary',
         amber: 'bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300',
         gray: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-        blue: 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300',
+        blue: 'bg-surface text-ink',
     };
     return (
         <div className={`rounded-lg p-3.5 flex flex-col gap-1 ${tones[tone]}`}>

@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Use readable body sizing for existing task titles.
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -279,7 +280,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                     onEscape?.();
                                 }
                             }}
-                            className="flex-1 min-w-0 bg-transparent text-[15px] font-normal tracking-tight text-gray-900 dark:text-gray-100 border-0 p-0 focus:outline-none focus:ring-0"
+                            className="flex-1 min-w-0 bg-transparent text-[17px] font-normal tracking-tight text-gray-900 dark:text-gray-100 border-0 p-0 focus:outline-none focus:ring-0"
                             placeholder={t(
                                 'forms.task.namePlaceholder',
                                 'Task name'
@@ -287,7 +288,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         />
                     ) : (
                         <span
-                            className={`text-[15px] font-normal tracking-tight ${
+                            className={`text-[17px] font-normal tracking-tight ${
                                 condenseStatusControl
                                     ? 'line-clamp-3 break-words leading-snug'
                                     : 'max-sm:line-clamp-2 max-sm:break-words sm:truncate'

@@ -1,3 +1,5 @@
+import BrandMark from './Shared/BrandMark';
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserIcon, BoltIcon, InboxIcon } from '@heroicons/react/24/solid';
@@ -16,7 +18,7 @@ import UniversalSearch from './UniversalSearch/UniversalSearch';
 import SidebarPanelIcon from './Sidebar/SidebarPanelIcon';
 import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import FocusChip from './Focus/FocusChip';
-import { getApiPath, getAssetPath } from '../config/paths';
+import { getApiPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import PlanBadge from './Billing/PlanBadge';
 import { setUserTimezone } from '../utils/dateUtils';
@@ -188,7 +190,7 @@ const Navbar: React.FC<NavbarProps> = ({
         <nav
             className={`relative z-30 has-[[data-testid=universal-search][data-state=open]]:z-50 flex-shrink-0 text-gray-900 dark:text-white ${
                 transparent
-                    ? 'bg-gray-100/40 dark:bg-gray-800/40 backdrop-blur-md'
+                    ? 'bg-transparent'
                     : 'bg-gray-100 dark:bg-gray-800'
             }`}
         >
@@ -197,7 +199,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 {/* On phones with the sidebar closed, the button that brings
                     it back and the logo (the sidebar's logo is off screen);
                     then the Focus chip that scopes the app */}
-                <div className="flex items-center gap-1 pl-3 sm:pl-4 flex-shrink-0 min-w-0">
+                <div className="flex items-center gap-1 ps-3 sm:ps-4 flex-shrink-0 min-w-0">
                     {!isSidebarOpen && (
                         <>
                             <button
@@ -210,15 +212,11 @@ const Navbar: React.FC<NavbarProps> = ({
                             </button>
                             <Link
                                 to="/"
-                                className="sm:hidden flex items-center justify-center h-9 w-9"
-                                aria-label="tududi"
+                                className="sm:hidden flex items-center justify-center h-11 w-11"
+                                aria-label="Life-to-Day"
                                 data-testid="navbar-logo"
                             >
-                                <img
-                                    src={getAssetPath('icon-logo.png')}
-                                    alt="tududi"
-                                    className="h-7 w-7 rounded-md"
-                                />
+                                <BrandMark />
                             </Link>
                         </>
                     )}
@@ -249,12 +247,12 @@ const Navbar: React.FC<NavbarProps> = ({
                         aria-haspopup="dialog"
                         aria-expanded={captureOpen}
                         data-testid="capture-navbar-button"
-                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
+                        className="flex items-center bg-surface text-ink rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
                         aria-label={t('navigation.quickInboxCapture')}
                         title={t('navigation.quickInboxCapture')}
                     >
-                        <BoltIcon className="h-4 w-4 text-white" />
-                        <InboxIcon className="hidden md:inline-block ml-1.5 h-4 w-4 text-blue-200" />
+                        <BoltIcon className="h-4 w-4 text-ink" />
+                        <InboxIcon className="hidden md:inline-block ms-1.5 h-4 w-4 text-secondary" />
                     </button>
                     {pomodoroEnabled && <PomodoroTimer />}
 
@@ -270,10 +268,10 @@ const Navbar: React.FC<NavbarProps> = ({
                                 <img
                                     src={getApiPath(currentUser.avatar_image)}
                                     alt="User Avatar"
-                                    className="h-8 w-8 rounded-full object-cover border-2 border-green-500"
+                                    className="h-8 w-8 rounded-full object-cover border-2 border-separator"
                                 />
                             ) : (
-                                <div className="h-8 w-8 rounded-full border-2 border-green-500 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                <div className="h-8 w-8 rounded-full border-2 border-separator bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                                     <UserIcon className="h-6 w-6 text-gray-500 dark:text-gray-300" />
                                 </div>
                             )}

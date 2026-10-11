@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Use quiet secondary ink for time markers.
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -89,12 +90,12 @@ const AgendaList: React.FC<AgendaListProps> = ({
             })}
             data-testid="now-marker"
         >
-            <span className="w-12 shrink-0 text-xs font-medium text-red-500/80 sm:w-32 dark:text-red-400/70">
+            <span className="w-12 shrink-0 text-xs font-medium text-secondary sm:w-32 dark:text-secondary">
                 {formatMinute(now)}
             </span>
             <div className="relative flex-1">
-                <span className="absolute -left-1 -top-[3px] h-1.5 w-1.5 rounded-full bg-red-500/70 dark:bg-red-400/60" />
-                <div className="border-t border-red-500/40 dark:border-red-400/30" />
+                <span className="absolute -start-1 -top-[3px] h-1.5 w-1.5 rounded-full bg-secondary dark:bg-secondary" />
+                <div className="border-t border-secondary dark:border-secondary" />
             </div>
         </div>
     );

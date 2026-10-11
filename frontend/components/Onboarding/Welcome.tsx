@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { applyStarter, StarterResult } from '../../utils/onboardingService';
@@ -37,7 +38,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onDone }) => {
         >
             <section className="flex w-full max-w-4xl flex-col items-center text-center">
                 <p className="mb-1 text-sm font-medium text-blue-600 dark:text-blue-400">
-                    {t('onboarding.starter.kicker', 'Welcome to tududi')}
+                    {t('onboarding.starter.kicker', 'Welcome to Life-to-Day')}
                 </p>
                 <h1
                     id="welcome-title"
@@ -45,7 +46,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onDone }) => {
                 >
                     {t(
                         'onboarding.starter.welcomeTitle',
-                        'Take a look at what you can do with tududi in a minute'
+                        'Take a look at what you can do with Life-to-Day in a minute'
                     )}
                 </h1>
                 <div className="mt-6 w-full overflow-hidden rounded-2xl bg-gray-900 shadow-sm aspect-video">
@@ -54,7 +55,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onDone }) => {
                         src={`https://www.youtube-nocookie.com/embed/${WELCOME_VIDEO_ID}?rel=0&modestbranding=1`}
                         title={t(
                             'onboarding.starter.videoTitle',
-                            'A one minute tour of tududi'
+                            'A one minute tour of Life-to-Day'
                         )}
                         loading="lazy"
                         // The app sends Referrer-Policy: no-referrer, and YouTube

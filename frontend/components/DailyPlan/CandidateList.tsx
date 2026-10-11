@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
@@ -149,7 +150,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
                     <span className="flex items-center gap-1.5 truncate text-xs text-gray-500 dark:text-gray-400">
                         {group === 'overdue' && (
                             <span
-                                className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-400/80"
+                                className="h-1.5 w-1.5 shrink-0 rounded-full bg-secondary"
                                 aria-hidden="true"
                             />
                         )}

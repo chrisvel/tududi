@@ -193,7 +193,7 @@ describe('Blog post', () => {
             'href',
             '/blog/why-cloud'
         );
-        expect(document.title).toBe('How to organize a family | tududi');
+        expect(document.title).toBe('How to organize a family | Life-to-Day');
     });
 
     it('says so when the post is not on the blog', async () => {

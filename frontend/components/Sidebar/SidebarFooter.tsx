@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Keep the appearance control in quiet secondary ink.
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -316,7 +317,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                         aria-label={t('sidebar.toggleDarkMode')}
                     >
                         {isDarkMode ? (
-                            <SunIcon className="h-4 w-4 text-yellow-500" />
+                            <SunIcon className="h-4 w-4 text-secondary" />
                         ) : (
                             <MoonIcon className="h-4 w-4" />
                         )}

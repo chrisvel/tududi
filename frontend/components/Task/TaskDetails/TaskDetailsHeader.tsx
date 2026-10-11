@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Overdue uses secondary ink; status and task behavior are unchanged.
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -496,9 +497,9 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
 
                                         {/* Past Due Badge - Right of priority button */}
                                         {showPastDueBadge && (
-                                            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex-shrink-0">
-                                                <ExclamationTriangleIcon className="h-3 w-3 text-red-600 dark:text-red-400" />
-                                                <span className="text-xs font-medium text-red-700 dark:text-red-300 hidden sm:inline">
+                                            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-surface dark:bg-surface border border-separator dark:border-separator flex-shrink-0">
+                                                <ExclamationTriangleIcon className="h-3 w-3 text-secondary dark:text-secondary" />
+                                                <span className="text-xs font-medium text-secondary dark:text-secondary hidden sm:inline">
                                                     {t(
                                                         'task.pastDue',
                                                         'Past Due'
@@ -745,8 +746,8 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                             }}
                                             className={`flex items-center justify-center w-8 h-8 rounded-full border text-xs transition-colors ${
                                                 isOverdueAlertVisible
-                                                    ? 'border-amber-500 bg-amber-50 text-amber-700 dark:border-amber-400 dark:bg-amber-900/30 dark:text-amber-300'
-                                                    : 'border-amber-200 text-amber-600 hover:bg-amber-50 dark:border-amber-500/40 dark:text-amber-300 dark:hover:bg-amber-900/40'
+                                                    ? 'border-separator bg-surface text-secondary dark:border-separator dark:bg-surface dark:text-secondary'
+                                                    : 'border-separator text-secondary hover:bg-surface dark:border-separator dark:text-secondary dark:hover:bg-surface'
                                             }`}
                                             title={t(
                                                 'task.showOverdueWarning',
@@ -762,16 +763,16 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         {isOverdueAlertVisible && (
                                             <div
                                                 data-overdue-toggle
-                                                className="absolute right-0 top-full translate-y-2 w-[30rem] max-w-lg z-30"
+                                                className="absolute end-0 top-full translate-y-2 w-[30rem] max-w-lg z-30"
                                             >
-                                                <div className="relative rounded-lg shadow-2xl bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-600 px-4 py-3 text-xs text-amber-800 dark:text-amber-100">
+                                                <div className="relative rounded-lg shadow-2xl bg-surface dark:bg-surface border border-separator dark:border-separator px-4 py-3 text-xs text-secondary dark:text-secondary">
                                                     <button
                                                         onClick={(e) => {
                                                             e.preventDefault();
                                                             e.stopPropagation();
                                                             onDismissOverdueAlert?.();
                                                         }}
-                                                        className="absolute top-2 right-2 text-amber-600 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-100 transition-colors"
+                                                        className="absolute top-2 end-2 text-secondary dark:text-secondary hover:text-secondary dark:hover:text-secondary transition-colors"
                                                         aria-label={t(
                                                             'common.close',
                                                             'Close'
@@ -780,7 +781,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                         <XMarkIcon className="h-3.5 w-3.5" />
                                                     </button>
                                                     <div className="flex items-start space-x-2 pr-4">
-                                                        <ExclamationTriangleIcon className="h-4 w-4 text-amber-600 dark:text-amber-300 mt-0.5 flex-shrink-0" />
+                                                        <ExclamationTriangleIcon className="h-4 w-4 text-secondary dark:text-secondary mt-0.5 flex-shrink-0" />
                                                         <div>
                                                             <p className="font-medium">
                                                                 {t(
@@ -788,7 +789,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                                     "This task was in your plan yesterday and wasn't completed."
                                                                 )}
                                                             </p>
-                                                            <p className="mt-1 text-[11px] text-amber-700 dark:text-amber-200">
+                                                            <p className="mt-1 text-[11px] text-secondary dark:text-secondary">
                                                                 {t(
                                                                     'task.overdueYesterday',
                                                                     'Consider prioritizing this task or breaking it into smaller steps.'

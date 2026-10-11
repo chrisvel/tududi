@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
 import React, {
     useCallback,
     useEffect,
@@ -429,13 +430,13 @@ const TodayPage: React.FC = () => {
 
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-10">
-            <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
+            <div className="mx-auto flex w-full max-w-5xl flex-col gap-7">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                     <div className="flex flex-1 items-baseline gap-2">
-                        <h2 className="text-2xl font-light">
+                        <h2 className="text-[28px] font-semibold">
                             {t('tasks.today', 'Today')},
                         </h2>
-                        <span className="text-lg font-light text-gray-500 dark:text-gray-400">
+                        <span className="text-[17px] font-normal text-gray-500 dark:text-gray-400">
                             {dateLabel}
                         </span>
                         <span
@@ -471,7 +472,7 @@ const TodayPage: React.FC = () => {
                             </span>
                             <Link
                                 to="/today/plan"
-                                className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
+                                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
                             >
                                 <ArrowPathIcon className="h-4 w-4" />
                                 {t('dailyPlan.replan', 'Replan')}
@@ -490,13 +491,13 @@ const TodayPage: React.FC = () => {
                             aria-valuemax={100}
                         >
                             <div
-                                className="h-1 rounded-full bg-blue-600 transition-all"
+                                className="h-1 rounded-full bg-secondary"
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
                     )}
                     {quote && (
-                        <p className="text-gray-400 font-light dark:text-gray-500">
+                        <p className="text-secondary font-normal dark:text-gray-500">
                             {quote}
                         </p>
                     )}

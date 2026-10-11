@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import UpgradeModal from './components/Billing/UpgradeModal';
 import TrialBanner from './components/Billing/TrialBanner';
@@ -60,6 +61,8 @@ const Layout: React.FC<LayoutProps> = ({
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
+    const pageFrame = useRef<HTMLDivElement>(null);
+    const skipPageEnter = useRef(true);
     const isUpcomingView = location.pathname === '/upcoming';
     // Notes fill the content area edge to edge.
     const isNotesView = /^\/notes?(\/|$)/.test(location.pathname);
@@ -80,6 +83,18 @@ const Layout: React.FC<LayoutProps> = ({
         useState<KeyboardShortcutsConfig | null>(null);
 
     // Fetch keyboard shortcuts from profile
+    useEffect(() => {
+        if (skipPageEnter.current) {
+            skipPageEnter.current = false;
+            return;
+        }
+        const frame = pageFrame.current;
+        if (!frame) return;
+        frame.classList.remove('ltd-page');
+        void frame.offsetWidth;
+        frame.classList.add('ltd-page');
+    }, [location.pathname]);
+
     useEffect(() => {
         const fetchKeyboardShortcuts = async () => {
             try {
@@ -447,9 +462,9 @@ const Layout: React.FC<LayoutProps> = ({
                     keyboardShortcuts={keyboardShortcuts}
                 />
                 <div
-                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col sm:p-2 sm:pl-0`}
+                    className={`transition-transform duration-150 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col `}
                 >
-                    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 sm:rounded-2xl sm:shadow-sm">
+                    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden ltd-canvas text-gray-900 dark:text-gray-100 ">
                         {background}
                         <Navbar
                             transparent={!!background}
@@ -494,7 +509,7 @@ const Layout: React.FC<LayoutProps> = ({
             {renderShell(
                 <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden">
                     <div
-                        className={`relative flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
+                        className={`relative flex-1 flex flex-col py-0 px-0 transition-transform duration-150 ${
                             isNotesView ? 'pt-0' : 'pt-4'
                         } ${
                             isUpcomingView
@@ -505,7 +520,8 @@ const Layout: React.FC<LayoutProps> = ({
                         } overflow-hidden`}
                     >
                         <div
-                            className={`w-full h-full ${
+                            ref={pageFrame}
+                            className={`ltd-page w-full h-full ${
                                 isNotesView
                                     ? 'flex flex-col overflow-hidden'
                                     : 'overflow-auto'

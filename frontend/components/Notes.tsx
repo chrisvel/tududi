@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, {
     useState,
     useEffect,
@@ -685,7 +686,7 @@ const Notes: React.FC = () => {
                                       },
                                       {
                                           id: 2,
-                                          name: 'tududi',
+                                          name: 'Life-to-Day',
                                           active: true,
                                           priority: 'high',
                                       },

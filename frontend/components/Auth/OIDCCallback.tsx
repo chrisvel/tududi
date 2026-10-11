@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -34,10 +35,10 @@ const OIDCCallback: React.FC = () => {
                     <img
                         src={getAssetPath(
                             isDarkMode
-                                ? 'wide-logo-light.png'
-                                : 'wide-logo-dark.png'
+                                ? 'life-wordmark-light.png'
+                                : 'life-wordmark-dark.png'
                         )}
-                        alt="tududi"
+                        alt="Life-to-Day"
                         className="h-9 w-auto"
                     />
                 </div>

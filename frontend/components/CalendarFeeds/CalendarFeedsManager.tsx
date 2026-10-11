@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TrashIcon } from '@heroicons/react/24/outline';
@@ -265,7 +266,7 @@ const CalendarFeedsManager: React.FC<CalendarFeedsManagerProps> = ({
                     >
                         {t(
                             'profile.calendars.googleHelp',
-                            'In Google Calendar: Settings → your calendar → Integrate calendar → "Secret address in iCal format". Apple Calendar and Outlook have similar links. Anyone with this address can read the calendar, so tududi stores it encrypted.'
+                            'In Google Calendar: Settings → your calendar → Integrate calendar → "Secret address in iCal format". Apple Calendar and Outlook have similar links. Anyone with this address can read the calendar, so Life-to-Day stores it encrypted.'
                         )}
                     </p>
                 </div>

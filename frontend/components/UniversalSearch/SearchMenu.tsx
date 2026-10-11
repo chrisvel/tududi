@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -478,7 +479,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                             <p
                                 className="text-xl text-black/40 dark:text-white/40 flex-1"
                                 style={{
-                                    fontFamily: "'Lora', Georgia, serif",
+                                    fontFamily: "var(--ltd-font)",
                                     fontStyle: 'italic',
                                 }}
                             >

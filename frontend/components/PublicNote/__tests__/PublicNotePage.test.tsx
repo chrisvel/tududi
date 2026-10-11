@@ -116,7 +116,7 @@ describe('PublicNotePage', () => {
 
         const navbar = screen.getByTestId('public-note-navbar');
         expect(navbar).toHaveTextContent('Sign In');
-        expect(screen.getByAltText('tududi')).toBeInTheDocument();
+        expect(screen.getByAltText('Life-to-Day')).toBeInTheDocument();
         expect(screen.queryByTestId('sidebar')).not.toBeInTheDocument();
         expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
     });
@@ -154,7 +154,7 @@ describe('PublicNotePage', () => {
         await screen.findByTestId('public-note');
 
         expect(
-            screen.getByRole('link', { name: 'Open tududi' })
+            screen.getByRole('link', { name: 'Open Life-to-Day' })
         ).toHaveAttribute('href', '/today');
         expect(screen.queryByTestId('public-note-cta')).not.toBeInTheDocument();
         expect(global.fetch).not.toHaveBeenCalled();

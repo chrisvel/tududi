@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -226,13 +227,13 @@ const EditCalendarModal: React.FC<EditCalendarModalProps> = ({
                             <option value="pull_only">
                                 {t(
                                     'profile.caldavWizard.pullOnly',
-                                    'Pull only (from server to Tududi)'
+                                    'Pull only (from server to Life-to-Day)'
                                 )}
                             </option>
                             <option value="push_only">
                                 {t(
                                     'profile.caldavWizard.pushOnly',
-                                    'Push only (from Tududi to server)'
+                                    'Push only (from Life-to-Day to server)'
                                 )}
                             </option>
                         </select>

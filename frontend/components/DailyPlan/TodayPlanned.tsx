@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Task } from '../../entities/Task';
@@ -72,14 +73,6 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
                 </p>
             )}
 
-            {wrapUp.show && (
-                <WrapUpCard
-                    date={wrapUp.date}
-                    wrapUp={wrapUp.value}
-                    onGenerated={wrapUp.onGenerated}
-                />
-            )}
-
             <NowCard
                 items={items}
                 events={events}
@@ -108,6 +101,14 @@ const TodayPlanned: React.FC<TodayPlannedProps> = ({
                 onTaskDelete={onPlannedTaskDelete}
                 onReorderUntimed={onReorderUntimed}
             />
+
+            {wrapUp.show && (
+                <WrapUpCard
+                    date={wrapUp.date}
+                    wrapUp={wrapUp.value}
+                    onGenerated={wrapUp.onGenerated}
+                />
+            )}
 
             <NotPlannedDrawer
                 candidates={candidates}

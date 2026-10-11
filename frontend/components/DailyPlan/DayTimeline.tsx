@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Use quiet secondary ink for time markers.
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
@@ -156,7 +157,7 @@ const TimelineBlock: React.FC<BlockProps> = ({
             </button>
             <div
                 onPointerDown={startResize}
-                className="absolute bottom-0 left-0 right-0 flex h-2 cursor-ns-resize justify-center"
+                className="absolute bottom-0 start-0 end-0 flex h-2 cursor-ns-resize justify-center"
                 aria-hidden="true"
             >
                 <span className="mt-0.5 h-1 w-8 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100" />
@@ -219,13 +220,13 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                         return (
                             <React.Fragment key={minute}>
                                 <div
-                                    className="absolute -left-14 text-xs text-gray-400 dark:text-gray-500"
+                                    className="absolute -start-14 text-xs text-gray-400 dark:text-gray-500"
                                     style={{ top: top - 8 }}
                                 >
                                     {formatMinute(minute)}
                                 </div>
                                 <div
-                                    className="absolute left-0 right-0 border-t border-gray-100 dark:border-gray-800/70"
+                                    className="absolute start-0 end-0 border-t border-gray-100 dark:border-gray-800/70"
                                     style={{ top }}
                                 />
                             </React.Fragment>
@@ -297,11 +298,11 @@ const DayTimeline: React.FC<DayTimelineProps> = ({
                     {now !== null && now >= range.start && now <= range.end && (
                         <div
                             ref={nowRef}
-                            className="pointer-events-none absolute left-0 right-0 z-30 border-t-2 border-red-500"
+                            className="pointer-events-none absolute start-0 end-0 z-30 border-t-2 border-secondary"
                             style={{ top: (now - range.start) * PX_PER_MINUTE }}
                             aria-hidden="true"
                         >
-                            <span className="absolute -left-1.5 -top-[5px] h-2 w-2 rounded-full bg-red-500" />
+                            <span className="absolute -start-1.5 -top-[5px] h-2 w-2 rounded-full bg-secondary" />
                         </div>
                     )}
 

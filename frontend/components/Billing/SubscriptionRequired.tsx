@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -143,7 +144,7 @@ const SubscriptionRequired: React.FC = () => {
     const intro = readOnly
         ? t('subscription.readOnlyUntil', {
               defaultValue:
-                  'Your data is read-only until {{date}}, then the account is deleted. Subscribe to keep using tududi Cloud.',
+                  'Your data is read-only until {{date}}, then the account is deleted. Subscribe to keep using Life-to-Day Cloud.',
               date: formatDate(status?.read_only_until),
           })
         : onTrial
@@ -154,7 +155,7 @@ const SubscriptionRequired: React.FC = () => {
             })
           : t(
                 'subscription.chooseToContinue',
-                'Choose a plan to continue using tududi Cloud.'
+                'Choose a plan to continue using Life-to-Day Cloud.'
             );
     const perks = [
         t('subscription.perkUnlimited', 'Unlimited tasks, projects and notes'),
@@ -176,7 +177,7 @@ const SubscriptionRequired: React.FC = () => {
                 <p className="text-gray-600 dark:text-gray-400 mb-8">
                     {t(
                         'subscription.chooseForCloud',
-                        'Choose a plan for tududi Cloud'
+                        'Choose a plan for Life-to-Day Cloud'
                     )}
                 </p>
 
@@ -323,7 +324,7 @@ const SubscriptionRequired: React.FC = () => {
                             className="text-blue-500 hover:text-blue-600"
                             data-testid="subscription-back"
                         >
-                            {t('subscription.backToApp', 'Back to tududi')}
+                            {t('subscription.backToApp', 'Back to Life-to-Day')}
                         </button>
                     )}
                     <button

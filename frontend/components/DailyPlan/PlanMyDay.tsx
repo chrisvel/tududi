@@ -1,3 +1,4 @@
+// LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
 import React, {
     useCallback,
     useEffect,
@@ -919,7 +920,7 @@ const PlanMyDay: React.FC = () => {
         >
             <div className="flex h-full w-full flex-col gap-4 px-4 pb-4 pt-4 sm:px-6 lg:px-8">
                 <header className="flex shrink-0 flex-wrap items-center gap-x-6 gap-y-3">
-                    <h2 className="min-w-[16rem] flex-1 text-2xl font-light">
+                    <h2 className="min-w-[16rem] flex-1 text-[28px] font-semibold">
                         {t('dailyPlan.planTitle', 'Plan {{date}}', {
                             date: dateLabel,
                         })}
@@ -933,7 +934,7 @@ const PlanMyDay: React.FC = () => {
                             <span
                                 className={
                                     overBooked
-                                        ? 'font-medium text-red-700 dark:text-red-400'
+                                        ? 'font-medium ltd-risk'
                                         : 'text-gray-600 dark:text-gray-400'
                                 }
                             >
@@ -947,8 +948,8 @@ const PlanMyDay: React.FC = () => {
                                 </span>
                             </span>
                             {overBooked && (
-                                <div className="h-1 w-40 rounded-full bg-red-100 dark:bg-red-900/40">
-                                    <div className="h-1 w-full rounded-full bg-red-500" />
+                                <div className="h-1 w-40 rounded-full bg-separator">
+                                    <div className="h-1 w-full rounded-full bg-risk" />
                                 </div>
                             )}
                         </div>

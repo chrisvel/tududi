@@ -1,8 +1,9 @@
+// LTD-PATCH(T-301): Apply Life-to-Day identity and quiet shared presentation; preserve behavior.
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BlogLinks } from '../../utils/blogService';
 
-// The offer every post ends on: tududi Cloud, its price and a way in.
+// The offer every post ends on: Life-to-Day Cloud, its price and a way in.
 const BlogCta: React.FC<{ links: BlogLinks }> = ({ links }) => {
     const { t, i18n } = useTranslation();
     const money = (amount: number) =>
@@ -18,7 +19,7 @@ const BlogCta: React.FC<{ links: BlogLinks }> = ({ links }) => {
             data-testid="blog-cta"
         >
             <p className="text-sm font-semibold uppercase tracking-wider text-blue-100">
-                {t('blog.ctaEyebrow', 'tududi Cloud')}
+                {t('blog.ctaEyebrow', 'Life-to-Day Cloud')}
             </p>
             <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight">
                 {t('blog.ctaTitle', 'Get the small things out of your head.')}
