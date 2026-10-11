@@ -30,6 +30,9 @@ test.describe('T-304 six-destination nav', () => {
     test('mobile More opens Settings', async ({ page, baseURL }) => {
         await login(page, baseURL);
         await page.setViewportSize({ width: 390, height: 844 });
+        // Layout swaps in its loader during the first store loads, which
+        // remounts the nav and closes an open menu; wait for Today first.
+        await expect(page.getByTestId('today-beta-badge')).toBeVisible();
         await page.getByTestId('ltd-nav-more').click();
         await page.getByTestId('ltd-nav-more-settings').click();
         await expect(page).toHaveURL(/\/profile/);

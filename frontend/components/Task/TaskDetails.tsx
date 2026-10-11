@@ -36,6 +36,8 @@ import {
     TaskDueDateCard,
     TaskDeferUntilCard,
     TaskEstimateCard,
+    // LTD-PATCH(T-503): starter step field in task editing.
+    TaskStarterStepCard,
     TaskAttachmentsCard,
     TaskAssignedToCard,
     TaskGoalCard,
@@ -1381,6 +1383,24 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    // LTD-PATCH(T-503): save the starter step like the estimate.
+    const handleStarterStepChange = async (step: string | null) => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { starter_step: step });
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+        } catch (error) {
+            console.error('Error updating starter step:', error);
+            showErrorToast(
+                t('task.starterStepError', 'Failed to update the first step')
+            );
+        }
+    };
+
     const handleAssignPerson = async (personUid: string | null) => {
         if (!task?.uid) return;
         try {
@@ -1667,6 +1687,11 @@ const TaskDetails: React.FC = () => {
                                 <TaskEstimateCard
                                     task={task}
                                     onChange={handleEstimateChange}
+                                />
+
+                                <TaskStarterStepCard
+                                    task={task}
+                                    onChange={handleStarterStepChange}
                                 />
                             </div>
                         </div>

@@ -166,6 +166,47 @@ describe.each(fixtures)('upgrade from $name', (fixture) => {
         );
     });
 
+    // LTD-PATCH(T-502): the Phase 5 migration must upgrade actual legacy fixtures.
+    it('adds Focus sessions and a nullable starter step without touching tasks', async () => {
+        const columns = await inspect.query(
+            temp.file,
+            'PRAGMA table_info(tasks)'
+        );
+        const starter = columns.find((c) => c.name === 'starter_step');
+        expect(starter).toBeDefined();
+        expect(starter.notnull).toBe(0);
+        const [{ n: before }] = await inspect.query(
+            fixture.file,
+            'SELECT COUNT(*) AS n FROM tasks'
+        );
+        const [{ n: after }] = await inspect.query(
+            temp.file,
+            'SELECT COUNT(*) AS n, COUNT(starter_step) AS filled FROM tasks'
+        );
+        expect(Number(after)).toBe(Number(before));
+        expect(await inspect.tableNames(temp.file)).toEqual(
+            expect.arrayContaining(['ltd_focus_sessions'])
+        );
+        const foreignKeys = await inspect.query(
+            temp.file,
+            'PRAGMA foreign_key_list(ltd_focus_sessions)'
+        );
+        expect(foreignKeys).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    from: 'task_id',
+                    table: 'tasks',
+                    on_delete: 'SET NULL',
+                }),
+                expect.objectContaining({
+                    from: 'user_id',
+                    table: 'users',
+                    on_delete: 'CASCADE',
+                }),
+            ])
+        );
+    });
+
     it('records every migration file in SequelizeMeta', async () => {
         expect(await inspect.metaNames(temp.file)).toEqual(migrationFiles());
     });

@@ -13,3 +13,5 @@ export { default as TaskAreaCard } from './TaskAreaCard';
 export { default as TaskAssignedToCard } from './TaskAssignedToCard';
 export { default as TaskGoalCard } from './TaskGoalCard';
 export { default as TaskEstimateCard } from './TaskEstimateCard';
+// LTD-PATCH(T-503): starter step card for task editing.
+export { default as TaskStarterStepCard } from './TaskStarterStepCard';

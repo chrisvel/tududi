@@ -1,9 +1,11 @@
 // LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
+// LTD-PATCH(T-503): show the starter step (or a five-minute start) first; Focus and resume (T-502).
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
+import { FocusSession } from '../../utils/todayService';
 import { formatMinute, itemEnd, pickCurrentItem } from './planUtils';
 
 interface NowCardProps {
@@ -13,6 +15,9 @@ interface NowCardProps {
     onDone: (item: DailyPlanItem) => void;
     onPushLater: (item: DailyPlanItem) => void;
     busyUid: string | null;
+    onFocus?: (item: DailyPlanItem) => void;
+    resumable?: FocusSession | null;
+    onResume?: (session: FocusSession) => void;
 }
 
 const NowCard: React.FC<NowCardProps> = ({
@@ -22,6 +27,9 @@ const NowCard: React.FC<NowCardProps> = ({
     onDone,
     onPushLater,
     busyUid,
+    onFocus,
+    resumable = null,
+    onResume,
 }) => {
     const { t } = useTranslation();
     const current = pickCurrentItem(items, now);
@@ -82,6 +90,9 @@ const NowCard: React.FC<NowCardProps> = ({
     }
 
     const isBusy = busyUid === item.task_uid;
+    const starterStep = item.task.starter_step?.trim();
+    const resume = resumable;
+    const resumeHere = !!resume && resume.task_uid === item.task_uid;
 
     return (
         <section
@@ -94,15 +105,79 @@ const NowCard: React.FC<NowCardProps> = ({
                     {when ? ` · ${when}` : ''}
                 </span>
                 <span className="ltd-now-title break-words">
-                    {item.task.name}
+                    <bdi>{item.task.name}</bdi>
                 </span>
+                {resume && !resumeHere && (
+                    <span
+                        className="text-sm text-gray-700 dark:text-gray-300"
+                        data-testid="now-card-paused"
+                    >
+                        {t('focusMode.pausedEarlier', 'Paused earlier:')}{' '}
+                        <bdi>{resume.task_name}</bdi>
+                        {resume.resume_note && (
+                            <>
+                                {' · '}
+                                <bdi>{resume.resume_note}</bdi>
+                            </>
+                        )}
+                    </span>
+                )}
+                {resumeHere && resume?.resume_note ? (
+                    <span
+                        className="text-sm text-gray-700 dark:text-gray-300"
+                        data-testid="now-card-resume-note"
+                    >
+                        {t('focusMode.whereWasI', 'Where was I?')}{' '}
+                        <bdi>{resume.resume_note}</bdi>
+                    </span>
+                ) : starterStep ? (
+                    <span
+                        className="text-sm text-gray-700 dark:text-gray-300"
+                        data-testid="now-card-starter-step"
+                    >
+                        {t('dailyPlan.starterStep', 'First step:')}{' '}
+                        <bdi>{starterStep}</bdi>
+                    </span>
+                ) : (
+                    <span
+                        className="text-sm text-gray-700 dark:text-gray-300"
+                        data-testid="now-card-five-minutes"
+                    >
+                        {t(
+                            'dailyPlan.fiveMinuteStart',
+                            'Just start for 5 minutes.'
+                        )}
+                    </span>
+                )}
                 {details.length > 0 && (
                     <span className="text-sm text-gray-600 dark:text-gray-400">
                         {details.join(' · ')}
                     </span>
                 )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+                {resume && onResume && (
+                    <button
+                        type="button"
+                        onClick={() => onResume(resume)}
+                        disabled={isBusy}
+                        className="min-h-[44px] rounded-lg px-3.5 text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                        data-testid="now-card-resume"
+                    >
+                        {t('focusMode.resume', 'Continue')}
+                    </button>
+                )}
+                {!resumeHere && onFocus && (
+                    <button
+                        type="button"
+                        onClick={() => onFocus(item)}
+                        disabled={isBusy}
+                        className="min-h-[44px] rounded-lg px-3.5 text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                        data-testid="now-card-focus"
+                    >
+                        {t('focusMode.start', 'Focus')}
+                    </button>
+                )}
                 <button
                     type="button"
                     onClick={() => onPushLater(item)}

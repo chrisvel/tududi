@@ -1,4 +1,5 @@
 // LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
+// LTD-PATCH(T-501): server capacity bar (window, busy, buffers, f) under the planner header.
 import React, {
     useCallback,
     useEffect,
@@ -58,6 +59,8 @@ import {
     SparklesIcon,
 } from '@heroicons/react/24/outline';
 import PlanTips from './PlanTips';
+import CapacityBar from '../Recovery/CapacityBar';
+import { Capacity, fetchCapacity } from '../../utils/todayService';
 import { buildTips, rescheduleMissed } from './tips';
 import CandidateList, { CandidateFilter } from './CandidateList';
 import DayTimeline, { PX_PER_MINUTE } from './DayTimeline';
@@ -893,6 +896,19 @@ const PlanMyDay: React.FC = () => {
         }
     };
 
+    // Recomputed by the server after each save settles.
+    const [capacity, setCapacity] = useState<Capacity | null>(null);
+    useEffect(() => {
+        if (!date || saveState !== 'idle') return undefined;
+        let cancelled = false;
+        fetchCapacity(date)
+            .then((value) => !cancelled && setCapacity(value))
+            .catch(() => undefined);
+        return () => {
+            cancelled = true;
+        };
+    }, [date, saveState, items]);
+
     const dateLabel = date
         ? new Intl.DateTimeFormat(intlLocale(i18n.language), {
               weekday: 'long',
@@ -1152,6 +1168,16 @@ const PlanMyDay: React.FC = () => {
                         </button>
                     </div>
                 </header>
+
+                {capacity && items.length > 0 && (
+                    <CapacityBar
+                        capacity={capacity}
+                        nameOf={(uid) =>
+                            items.find((item) => item.task_uid === uid)?.task
+                                .name
+                        }
+                    />
+                )}
 
                 {!candidates ? (
                     <p className="p-8 text-gray-500 dark:text-gray-400">

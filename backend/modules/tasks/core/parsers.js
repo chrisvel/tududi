@@ -25,7 +25,23 @@ function parseEstimatedMinutes(value) {
     return minutes;
 }
 
+// LTD-PATCH(T-503): a short first step; empty clears it.
+function parseStarterStep(value) {
+    if (value === null || value === undefined) return null;
+    if (typeof value !== 'string') {
+        throw new ValidationError('starter_step must be text');
+    }
+    const step = value.trim();
+    if (step.length > 500) {
+        throw new ValidationError(
+            'starter_step must be at most 500 characters'
+        );
+    }
+    return step || null;
+}
+
 module.exports = {
+    parseStarterStep,
     parsePriority,
     parseStatus,
     parseEstimatedMinutes,

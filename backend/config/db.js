@@ -39,6 +39,12 @@ function buildSequelizeOptions({ logging } = {}) {
                 acquire: 60000,
             },
             define: DEFINE_OPTIONS,
+            // LTD-PATCH(T-504): SQLite ignores row locks, so a deferred
+            // transaction that reads before it writes can deadlock with another
+            // writer and fail at once with SQLITE_BUSY (busy_timeout does not
+            // apply to lock upgrades). IMMEDIATE takes the write lock up front
+            // and waits on busy_timeout instead.
+            transactionType: 'IMMEDIATE',
         };
     }
 

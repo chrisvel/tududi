@@ -43,7 +43,7 @@ export interface JournalEntry {
     created_at: string;
     reverted_at?: string | null;
 }
-const request = async <T>(
+export const request = async <T>(
     path: string,
     method = 'GET',
     body?: unknown

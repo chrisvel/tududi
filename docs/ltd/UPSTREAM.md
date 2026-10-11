@@ -438,3 +438,32 @@ JSON translation files cannot contain JavaScript comments; their patch markers a
 | T-406 | `frontend/components/Nav/__tests__/LtdNav.test.tsx` | Assert desktop and mobile active Plan state on the weekly route | No |
 | T-405 | `frontend/i18n.ts` | Resolve translation reloads from the app base rather than nested goal/week URLs | No |
 | T-405 | `frontend/App.tsx` | Avoid fetching an undefined locale during nested-route bootstrap | No |
+
+## Phase 5 daily execution
+
+Capacity (T-501), Focus (T-502), starter step (T-503), Recovery and Overwhelmed (T-504), Capture and contribution (T-505), first run (T-506). New code lives in `backend/modules/ltd-planner`, `backend/modules/ltd-focus`, `frontend/components/FocusMode` and `frontend/components/Recovery`; the rows below are the core touch points. `backend/modules/daily-plan` is unchanged. No upstream pull request was created.
+
+| Task | File | Why | Upstream PR |
+| --- | --- | --- | --- |
+| T-501 | `backend/app.js` | Mount the ltd-planner (capacity, Recovery, contribution) and ltd-focus routes | No |
+| T-501 | `frontend/components/DailyPlan/PlanMyDay.tsx` | Show the server capacity bar (window, busy, buffers, f) under the planner header | No |
+| T-501 | `frontend/components/DailyPlan/TodayPage.tsx` | Capacity bar, Focus mode, Lighten/Overwhelmed and the contribution card on Today | No |
+| T-502 | `backend/models/index.js` | Register `LtdFocusSession` and its user/task associations | No |
+| T-502 | `frontend/components/Shared/PomodoroTimer.tsx` | Derive time left from the start timestamp via the shared Pomodoro clock instead of a counting interval | No |
+| T-502 | `frontend/components/DailyPlan/TodayPlanned.tsx` | Pass Focus start and resume through to the Now card | No |
+| T-502 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert the Phase 5 migration on real legacy fixtures | No |
+| T-503 | `backend/models/task.js` | Nullable `starter_step` attribute | No |
+| T-503 | `backend/modules/tasks/core/parsers.js` | Validate `starter_step` (text, at most 500 characters, empty clears) | No |
+| T-503 | `backend/modules/tasks/core/builders.js` | Accept `starter_step` on task create and update | No |
+| T-503 | `frontend/entities/Task.ts` | `starter_step` field | No |
+| T-503 | `frontend/components/DailyPlan/NowCard.tsx` | Starter step or five-minute start first; Focus and Continue buttons | No |
+| T-503 | `frontend/components/Task/TaskDetails.tsx` | Starter step field in task editing | No |
+| T-503 | `frontend/components/Task/TaskDetails/index.ts` | Export the starter step card | No |
+| T-504 | `backend/modules/push/service.js` | Send no push while Overwhelmed mode is active (ends at the end of the local day) | No |
+| T-504 | `backend/config/db.js` | SQLite transactions start IMMEDIATE so concurrent read-then-write transactions wait instead of failing with SQLITE_BUSY | No |
+| T-505 | `frontend/components/Nav/LtdNav.tsx` | `C` opens the shared capture box on the Inbox, outside inputs, textareas and contenteditable | No |
+| T-505 | `frontend/components/Nav/__tests__/LtdNav.test.tsx` | Capture shortcut and typing-target guard tests | No |
+| T-506 | `frontend/components/Onboarding/Welcome.tsx` | The existing /welcome page becomes three skippable first-run steps ending at the Now card | No |
+| T-506 | `frontend/components/Onboarding/__tests__/Welcome.test.tsx` | Tests for the three steps, skipping and defaults | No |
+| T-506 | `public/locales/*/translation.json` | Phase 5 strings: Persian and English copy, English fallback in other locales | No |
+| T-503 | `frontend/components/Task/__tests__/TaskDetails.test.tsx` | Include the starter step card in the mocked card set | No |

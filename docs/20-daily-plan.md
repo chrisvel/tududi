@@ -127,6 +127,36 @@ Plans and feeds are not included in backups: plans are short-lived, and feed add
 
 ---
 
+## Capacity, Focus and Recovery (Life-to-Day Phase 5)
+
+Deterministic rules from blueprint 14.5 (ADR-006); nothing derived is stored. Code: `backend/modules/ltd-planner`, `backend/modules/ltd-focus`, `frontend/components/FocusMode`, `frontend/components/Recovery`.
+
+- **Capacity.** `capacity = window − busy − buffers`. The window is the work hours (`ui_settings.planning.workHours`, default 09:00–17:00, 15-minute steps; separate from the planner's display day hours). Busy time is the timed, busy events of the existing iCal feeds inside the window, counted once where they overlap; all-day and free events never count, and without a feed there is no busy time and no event warning. Buffers are 5 minutes per open plan item.
+- **Load.** `Σ planned minutes × f / capacity`. Above 0.85 Today and the planner show "This plan is bigger than the time you have" with the lowest-priority items to move (lowest priority first, then the latest in the list, until the rest fits). No capacity with work left is over capacity. Timed blocks closer than 5 minutes, or overlapping a busy event, get a gentle note.
+- **f.** 1.3 until 30 finished, uninterrupted Focus sessions exist; then the median of `actual / planned` over the latest 30, clamped to [1.0, 2.0].
+- **Focus.** Full screen, one task. The clock is the Pomodoro clock (`Shared/pomodoroClock.ts`): time left comes from `started_at` and the system clock, so a tab frozen in the background is right the moment it is visible. "I need to stop" ends the session with `interrupted = true` and a "Where was I?" note; the Now card then offers **Continue**, which opens a new session on the same task with the same note. Starting a session ends any open one.
+- **Starter step.** `tasks.starter_step` (optional, up to 500 characters, edited on the task page). The Now card shows it first; when empty it suggests "Just start for 5 minutes".
+- **Lighten my day.** Keeps at most three short open tasks that fit `0.6 × the rest of the working day` (at least the shortest one) and moves the other open tasks to tomorrow's plan, untimed. One Journal entry (`op: recovery`, `entity_type: daily_plan`); Undo is the usual toast, reverting that entry, and is refused if either day changed since. From 14:00 with nothing done, Today shows "Heavy day? Let's make it lighter."
+- **Overwhelmed.** Today shows only the Now card. Push notifications are not sent until it is switched off or the local day ends (`ui_settings.overwhelmed.until`).
+- **Contribution.** "Today helped these goals": minutes per direct goal of each task's whyChain. Focus minutes count first; a task finished without Focus counts its estimate. Work without a goal shows as "other work (that is normal)".
+- **Capture.** `C` opens the shared capture box on the Inbox from anywhere outside inputs, textareas and contenteditable; offline queueing and Undo are the capture box's own.
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| GET | `/api/planner/capacity?date=` | `{ date, window, window_minutes, busy_minutes, buffer_minutes, capacity_minutes, planned_minutes, factor, load, unrealistic, move_suggestions, event_overlaps, missing_buffer }`; `load` is null when there is no capacity left |
+| GET/PUT | `/api/planner/work-hours` | `{ start, end }` minutes after local midnight, 15-minute steps, start before end |
+| POST | `/api/planner/recovery` | Body `{ date? }`. `{ journal_uid, date, moved_to, moved, kept, capacity_rest_minutes }`; undo with `POST /api/journal/:uid/revert` |
+| GET/PUT | `/api/planner/overwhelmed` | Body `{ on: boolean }`; returns `{ on, until }` |
+| GET | `/api/planner/contribution?date=` | `{ date, goals: [{ goal_uid, title, horizon, chain, minutes, tasks }], unaligned_minutes }` |
+| GET | `/api/focus-sessions/current` | `{ session }`: the latest session if it is running or was interrupted and its task is open, else null |
+| POST | `/api/focus-sessions` | Body `{ task_uid, planned_minutes? }` (1–240, default 25); 201 |
+| POST | `/api/focus-sessions/:uid/end` | Body `{ interrupted?, resume_note? }`; `actual_minutes` comes from the server clock |
+| POST | `/api/focus-sessions/:uid/resume` | New session on the same task carrying the note; 201 |
+
+`ltd_focus_sessions`: `uid, user_id, task_id (SET NULL), started_at, ended_at, planned_minutes, actual_minutes, interrupted, resume_note`. SQLite connections start transactions IMMEDIATE, so concurrent read-then-write transactions wait on `busy_timeout` instead of failing with `SQLITE_BUSY`.
+
+---
+
 ## AI help
 
 Everything in this section appears only while the **AI assistant** is switched on for the user (Profile → Features), the same switch as the Daily Brief. With it off the planner and Today look exactly as described above, and the AI endpoints return `403`.

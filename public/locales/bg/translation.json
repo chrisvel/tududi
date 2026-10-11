@@ -1471,7 +1471,11 @@
     "comments": "Comments",
     "skipOccurrence": "Skip this occurrence",
     "occurrenceSkipped": "Occurrence skipped",
-    "skipOccurrenceError": "Failed to skip occurrence"
+    "skipOccurrenceError": "Failed to skip occurrence",
+    "starterStep": "First step",
+    "starterStepPlaceholder": "Something you can do in 5 minutes",
+    "starterStepHint": "Shown first on the Now card, to make starting easy.",
+    "starterStepError": "Failed to update the first step"
   },
   "projects": {
     "loading": "Зареждане на проекти...",
@@ -3057,7 +3061,9 @@
     "movedOffPlan": "'{{name}}' is no longer due today, so it left today's plan.",
     "refreshCalendar": "Refresh calendar",
     "refreshCalendarError": "Could not refresh the calendar.",
-    "refreshingCalendar": "Refreshing calendar…"
+    "refreshingCalendar": "Refreshing calendar…",
+    "starterStep": "First step:",
+    "fiveMinuteStart": "Just start for 5 minutes."
   },
   "capture": {
     "add": "Добави",
@@ -3362,6 +3368,31 @@
       "videoTitle": "A one minute tour of Life-to-Day",
       "letsStart": "I'm done, let's start",
       "settingUp": "Setting up..."
+    },
+    "steps": {
+      "progress": "Step {{step}} of 3",
+      "skipSetup": "Skip setup",
+      "languageTitle": "Language, calendar and digits",
+      "language": "Language",
+      "calendar": "Calendar",
+      "persianDigits": "Persian digits (۱۲۳)",
+      "next": "Next",
+      "skip": "Skip",
+      "goalTitle": "One goal for this season",
+      "goal": "Season goal",
+      "suggestedAreas": "Which part of life is it for? (optional)",
+      "area": "Area (optional)",
+      "areas": {
+        "health": "Health",
+        "work": "Work",
+        "relationships": "Relationships"
+      },
+      "vision": "Vision, the bigger picture (optional)",
+      "dayTitle": "Your first day",
+      "workStart": "Work starts",
+      "workEnd": "Work ends",
+      "task": "One thing to do today",
+      "finish": "Show me Now"
     }
   },
   "ltdPlanning": {
@@ -3431,5 +3462,45 @@
     "dragGoal": "Drag to change parent",
     "achievementQuestion": "Do you feel this goal has been achieved?",
     "markAchieved": "Mark achieved"
+  },
+  "focusMode": {
+    "label": "Focus",
+    "whereWasI": "Where was I?",
+    "startWith": "Start with:",
+    "timeLeft": "Time left",
+    "timeUp": "Time is up. Finish, or keep going if it helps.",
+    "minutesIn": "{{count}} minutes in",
+    "notePrompt": "Where were you? One line for when you come back.",
+    "keepGoing": "Keep going",
+    "saveAndPause": "Save and pause",
+    "interrupt": "I need to stop",
+    "finish": "Finish session",
+    "start": "Focus",
+    "resume": "Continue",
+    "pausedEarlier": "Paused earlier:"
+  },
+  "capacity": {
+    "label": "Today’s load",
+    "summary": "{{planned}} planned of {{capacity}} free",
+    "percent": "{{percent}}%",
+    "unrealistic": "This plan is bigger than the time you have.",
+    "moveHint": "Maybe move:",
+    "separator": ", ",
+    "eventOverlap": "Some blocks overlap a calendar event.",
+    "missingBuffer": "Leave 5 minutes between blocks to breathe."
+  },
+  "contribution": {
+    "title": "Today helped these goals",
+    "goalLine": "{{time}} for",
+    "unaligned": "{{time}} of other work (that is normal)"
+  },
+  "recovery": {
+    "heavyDay": "Heavy day? Let’s make it lighter.",
+    "lighten": "Lighten my day",
+    "overwhelmed": "Too much right now",
+    "done": "Lighter now: {{moved}} moved to tomorrow. Small steps count.",
+    "overwhelmedHint": "Just this one thing. Everything else can wait.",
+    "showAll": "Show my whole day again",
+    "nothingToMove": "Your day is already light. One small step at a time."
   }
 }

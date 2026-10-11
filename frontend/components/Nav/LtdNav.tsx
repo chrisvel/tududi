@@ -30,6 +30,8 @@ export const PRIMARY_DESTINATIONS = [
     { id: 'review', path: '/review', shortcut: 'r', icon: BookOpenIcon },
 ] as const;
 
+export const CAPTURE_SHORTCUT = 'c';
+
 const MORE_LINKS = [
     { id: 'settings', path: '/profile' },
     { id: 'habits', path: '/habits' },
@@ -66,6 +68,13 @@ const LtdNav: React.FC = () => {
             if (event.altKey || event.ctrlKey || event.metaKey) return;
             if (isTypingTarget(event.target)) return;
             const key = event.key.toLowerCase();
+            // T-505: C captures to the Inbox from anywhere (offline queue and
+            // Undo come with the shared capture box).
+            if (key === CAPTURE_SHORTCUT) {
+                event.preventDefault();
+                openCapture('inbox');
+                return;
+            }
             const dest = PRIMARY_DESTINATIONS.find((d) => d.shortcut === key);
             if (!dest) return;
             event.preventDefault();

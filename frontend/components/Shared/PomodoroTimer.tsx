@@ -1,5 +1,6 @@
 // LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
-import React, { useState, useEffect, useRef } from 'react';
+// LTD-PATCH(T-502): time left comes from startTime and the system clock (pomodoroClock), not a counting interval.
+import React, { useState, useEffect } from 'react';
 import {
     PlayIcon,
     PauseIcon,
@@ -7,6 +8,7 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
+import { formatClock, remainingSeconds, useClockNow } from './pomodoroClock';
 
 interface PomodoroTimerProps {
     className?: string;
@@ -29,7 +31,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
     const [isRunning, setIsRunning] = useState(false);
     const [showCompletionMessage, setShowCompletionMessage] = useState(false);
     const [startTime, setStartTime] = useState<number | null>(null);
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const now = useClockNow(isRunning);
 
     // Load state from localStorage on mount
     useEffect(() => {
@@ -79,36 +81,16 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
     }, [isActive, timeLeft, isRunning, startTime]);
 
     useEffect(() => {
-        if (isRunning && timeLeft > 0) {
-            intervalRef.current = setInterval(() => {
-                setTimeLeft((prev) => {
-                    if (prev <= 1) {
-                        setIsRunning(false);
-                        setShowCompletionMessage(true);
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-        } else {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-                intervalRef.current = null;
-            }
+        if (!isRunning || !startTime) return;
+        const left = remainingSeconds(startTime, DEFAULT_TIME, now);
+        setTimeLeft(left);
+        if (left === 0) {
+            setIsRunning(false);
+            setShowCompletionMessage(true);
         }
+    }, [now, isRunning, startTime]);
 
-        return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-            }
-        };
-    }, [isRunning, timeLeft]);
-
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
+    const formatTime = formatClock;
 
     const handleTomatoClick = () => {
         setIsActive(true);
@@ -189,7 +171,9 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
     }
 
     return (
-        <div className={`relative flex items-center space-x-2 ${className} rtl:space-x-reverse`}>
+        <div
+            className={`relative flex items-center space-x-2 ${className} rtl:space-x-reverse`}
+        >
             <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-1 rtl:space-x-reverse">
                 <span className="text-sm font-mono font-semibold text-gray-900 dark:text-white">
                     {formatTime(timeLeft)}

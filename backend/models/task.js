@@ -38,6 +38,11 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // LTD-PATCH(T-503): optional five-minute first step shown on the Now card.
+            starter_step: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            },
             estimated_minutes: {
                 type: DataTypes.INTEGER,
                 allowNull: true,

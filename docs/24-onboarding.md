@@ -6,7 +6,13 @@ How an account's first visit works. For technical details see `/backend/modules/
 
 ## The welcome page
 
-Until an account has been through it, every signed-in page redirects to `/welcome`, a page inside the normal layout (navbar and sidebar stay). Existing accounts see it once too: the column that records the visit starts null for everyone. The page is the welcome video (YouTube, `youtube-nocookie.com`, id in `WELCOME_VIDEO_ID` in `Welcome.tsx`; the CSP's `frame-src` allows that host) centred on the page with one button, **I'm done, let's start**. The button records the visit as the `empty` starter and opens Today. Once recorded, `/welcome` redirects to Today. The demo account never sees it.
+Until an account has been through it, every signed-in page redirects to `/welcome`, a page inside the normal layout (navbar and sidebar stay). Existing accounts see it once too: the column that records the visit starts null for everyone. Life-to-Day (T-506, blueprint 21.5) turned this page into three steps, each with **Skip**, and **Skip setup** at the top records the visit at once:
+
+1. **Language, calendar and digits.** Defaults: Persian, Jalali and Persian digits. Saved to the profile language and `ui_settings.locale`.
+2. **One goal for this season.** A `season` goal, optionally under a `vision` goal typed in the same step. With no Areas yet, three suggested Areas (Health, Work, Relationships) are offered; picking one creates it.
+3. **Your first day.** Work hours (default 09:00–17:00, saved as the planner's capacity window) and one task, which is put on today's plan and the day is started, so Today opens on the Now card.
+
+The finish (or any skip that ends the flow) records the visit as the `empty` starter. PWA install and notification permission are not part of these steps. Once recorded, `/welcome` redirects to Today. The demo account never sees it. The E2E `ltd-today.spec.ts` walks the three steps to the Now card and asserts under three minutes.
 
 ## Empty states
 
