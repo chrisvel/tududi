@@ -117,7 +117,24 @@
     "search": "검색",
     "admin": "관리자",
     "adminBadge": "관리자",
-    "templates": "템플릿"
+    "templates": "템플릿",
+    "ltd": {
+      "today": "Today",
+      "plan": "Plan",
+      "goals": "Goals",
+      "life": "Life",
+      "inbox": "Inbox",
+      "review": "Review",
+      "more": "More",
+      "settings": "Settings",
+      "habits": "Habits",
+      "notes": "Notes",
+      "areas": "Areas",
+      "projects": "Projects",
+      "primary": "Primary",
+      "lifeStub": "The life timeline will appear here later.",
+      "reviewStub": "Guided review will appear here later."
+    }
   },
   "settings": {
     "todayPageSettings": "오늘 페이지 설정",
@@ -234,7 +251,8 @@
     "habit": "습관",
     "assignedTo": "할당됨",
     "subtasks": "하위 작업",
-    "openFullPage": "전체 보기 열기"
+    "openFullPage": "전체 보기 열기",
+    "reorderError": "Failed to save task order"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",
@@ -426,6 +444,7 @@
     "danish": "덴마크어",
     "finnish": "핀란드어",
     "norwegian": "노르웨이어",
+    "persian": "Persian",
     "polish": "폴란드어",
     "slovenian": "슬로베니아어",
     "slovak": "슬로바키아어",
@@ -685,7 +704,9 @@
       "hoursLoadError": "하루 시간대를 불러올 수 없습니다",
       "hoursSaveError": "하루 시간대를 저장할 수 없습니다",
       "hoursTitle": "나의 하루",
-      "hoursTo": "종료"
+      "hoursTo": "종료",
+      "taggedToday": "Tagged #today",
+      "taggedTodayDetail": "Open tasks you tagged #today, whatever their dates."
     },
     "aiApiKey": "API 키",
     "aiApiKeyClear": "지우기",
@@ -850,7 +871,18 @@
     "telegramAllowedUsersDescription": "봇에 메시지를 보낼 수 있는 사람을 정합니다. 비워 두면 모든 사용자를 허용합니다.",
     "telegramRequiredForSummaries": "작업 요약을 사용하려면 Telegram 연동을 설정해야 합니다.",
     "templatesDescription": "프로젝트 구조를 저장하고 재사용할 수 있는 프로젝트 템플릿을 사용합니다.",
-    "aiApiKeyPlaceholder": "sk-..."
+    "aiApiKeyPlaceholder": "sk-...",
+    "calendarSystem": "Calendar",
+    "calendarSystemAuto": "Match language",
+    "calendarGregorian": "Gregorian",
+    "calendarPersian": "Persian (Jalali)",
+    "latinDigits": "Digits",
+    "latinDigitsDescription": "Show Latin digits (0-9) instead of Persian digits",
+    "contentBackground": "Background",
+    "contentBackgroundDescription": "Show a photo behind the main content area. Photos come from Unsplash and are credited to their photographers.",
+    "contentBackgroundNone": "None",
+    "photoBy": "Photo by",
+    "photoOn": "on"
   },
   "productivity": {
     "stalledProjects": "정체된 프로젝트",
@@ -1092,7 +1124,62 @@
     "editBanner": "프로젝트 배너 편집",
     "currentBanner": "현재 배너",
     "choosePreset": "프리셋 배너 선택:",
-    "orUploadOwn": "또는 직접 업로드:"
+    "orUploadOwn": "또는 직접 업로드:",
+    "attachments": "Attachments",
+    "overview": "Overview",
+    "people": "People",
+    "info": "Project info",
+    "clickToEdit": "Click to edit",
+    "addDescription": "Add a description",
+    "changeArea": "Change area",
+    "setArea": "Set area",
+    "changeGoal": "Change goal",
+    "setGoal": "Set goal",
+    "changePriority": "Change priority",
+    "setPriority": "Set priority",
+    "changeDue": "Change due date",
+    "changeTags": "Change tags",
+    "addTags": "Add tags",
+    "changeColor": "Change color",
+    "setColor": "Set color",
+    "moreOptions": "More options",
+    "pin": "Pin",
+    "pinned": "Pinned",
+    "started": "Started",
+    "startedOn": "Started {{date}}",
+    "daysToDue_one": "{{count}} day to due date",
+    "daysToDue_other": "{{count}} days to due date",
+    "daysOverdue_one": "{{count}} day overdue",
+    "daysOverdue_other": "{{count}} days overdue",
+    "progressSummary": "Project progress · {{done}} of {{total}} tasks done",
+    "timeUsed": "{{percent}}% of time used",
+    "progressHint": "Bar: tasks done. Line: time passed between start and due date.",
+    "openTasks": "Open tasks",
+    "overdueTasks": "Overdue",
+    "doneThisWeek": "Done this week",
+    "untilDate": "Until {{date}}",
+    "pastDate": "Past {{date}}",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "noteCount_one": "{{count}} note",
+    "noteCount_other": "{{count}} notes",
+    "roleOwner": "Owner",
+    "rolePending": "Invited",
+    "roleEdit": "Can edit",
+    "roleView": "Can view",
+    "notShared": "Only you can see this project.",
+    "addNote": "Add note",
+    "noNotesYet": "No notes yet.",
+    "allNotes": "All notes",
+    "fewerNotes": "Show fewer",
+    "fileCount_one": "{{count}} file",
+    "fileCount_other": "{{count}} files",
+    "addFile": "Add file",
+    "uploading": "Uploading...",
+    "noFilesYet": "No files yet. Drop files here or use +.",
+    "allFiles": "All files",
+    "dropToUpload": "Drop to upload",
+    "fewerFiles": "Show fewer"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -1380,7 +1467,11 @@
     "estimateHint": "대략 얼마나 걸리나요? 하루를 계획할 때 사용됩니다.",
     "estimateClearHint": "다시 클릭하면 지워집니다",
     "estimateError": "예상 시간을 업데이트할 수 없습니다",
-    "noGoal": "목표에 할당"
+    "noGoal": "목표에 할당",
+    "comments": "Comments",
+    "skipOccurrence": "Skip this occurrence",
+    "occurrenceSkipped": "Occurrence skipped",
+    "skipOccurrenceError": "Failed to skip occurrence"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",
@@ -1404,7 +1495,8 @@
       "systemTagCannotBeDeleted": "시스템 태그는 삭제할 수 없습니다",
       "systemTagCannotBeRenamed": "시스템 태그는 이름을 변경할 수 없습니다",
       "somedayHide": "숨기기",
-      "somedayShow": "표시"
+      "somedayShow": "표시",
+      "shared": "Shared"
     },
     "selectState": "상태 선택",
     "state": "프로젝트 상태",
@@ -1457,7 +1549,23 @@
     "blankSlateTemplate": "템플릿으로 시작",
     "blankSlateAreas": "영역 설정",
     "blankSlateShowAll": "모든 프로젝트 보기",
-    "viewAs": "보기"
+    "viewAs": "보기",
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "summary": "Summary",
+      "members": "Members",
+      "due": "Due",
+      "progress": "Progress"
+    },
+    "listSettings": {
+      "title": "Projects settings",
+      "showSomeday": "Show someday projects",
+      "showSomedayHint": "Projects tagged #someday.",
+      "showCompleted": "Show completed projects",
+      "saveError": "Failed to save projects settings"
+    },
+    "reorderError": "Failed to save project order"
   },
   "projectItem": {
     "edit": "편집",
@@ -1504,7 +1612,12 @@
     "noAreasYet": "아직 영역이 없습니다.",
     "blankSlateHint": "영역은 업무, 건강, 집처럼 꾸준히 돌보는 삶의 부분입니다. 프로젝트와 목표를 영역에 넣으면 각 부분을 한곳에서 볼 수 있습니다.",
     "blankSlateNew": "첫 영역 만들기",
-    "blankSlateProjects": "프로젝트로 이동"
+    "blankSlateProjects": "프로젝트로 이동",
+    "presetsLabel": "Most people start with",
+    "presetHome": "Home",
+    "presetWork": "Work",
+    "presetHealth": "Health",
+    "presetFamily": "Family"
   },
   "notes": {
     "loading": "노트 로딩 중...",
@@ -1565,7 +1678,8 @@
     "linkedNoteCreate": "노트 만들기",
     "linkedNoteCreateFailed": "노트를 만들 수 없습니다.",
     "backgroundImage": "배경",
-    "noBackground": "배경 없음"
+    "noBackground": "배경 없음",
+    "openInNotes": "Open in Notes"
   },
   "tags": {
     "loading": "태그 로딩 중...",
@@ -1699,7 +1813,12 @@
     "medium": "보통",
     "low": "낮음",
     "time": "시간",
-    "allDay": "종일"
+    "allDay": "종일",
+    "manageCalendars": "Calendars",
+    "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
+    "hideCalendar": "Hide {{name}}",
+    "showCalendar": "Show {{name}}",
+    "feedError": "Could not load: {{names}}"
   },
   "pages": {
     "notFound": {
@@ -1883,7 +2002,14 @@
       "reason": "사유 (선택)",
       "overrideSaved": "예외가 저장되었습니다",
       "overrideCleared": "예외가 제거되었습니다",
-      "synced": "결제 제공업체에서 동기화되었습니다"
+      "synced": "결제 제공업체에서 동기화되었습니다",
+      "onTrial": "On trial",
+      "trialsOnly": "Trials only",
+      "trial": "Trial",
+      "trialDaysLeft_one": "{{count}} day left",
+      "trialDaysLeft_other": "{{count}} days left",
+      "trialEnded": "Trial ended",
+      "readOnlyUntil": "Read-only, deleted on {{date}}"
     },
     "dashboard": {
       "title": "관리자",
@@ -2037,6 +2163,105 @@
       "postCount": "글: {{count}}",
       "open": "블로그 열기",
       "preview": "앱에서 미리보기"
+    },
+    "verified": "Verified",
+    "verifiedYes": "Verified",
+    "verifiedNo": "Not verified",
+    "feedback": {
+      "title": "Feedback",
+      "open": "Open ({{count}})",
+      "resolved": "Resolved",
+      "all": "All",
+      "emptyOpen": "Nothing open. Nice.",
+      "empty": "No feedback yet.",
+      "markResolved": "Mark resolved",
+      "reopen": "Reopen",
+      "updateFailed": "Failed to update",
+      "deleted": "Feedback deleted",
+      "deleteFailed": "Failed to delete",
+      "deleteTitle": "Delete Feedback",
+      "confirmDelete": "Delete this feedback? This cannot be undone.",
+      "statusOpen": "Open",
+      "statusResolved": "Resolved"
+    },
+    "userStatus": {
+      "title": "Users",
+      "user": "User",
+      "signedUp": "Signed up",
+      "verified": "Verified",
+      "status": "Status",
+      "daysLeft": "Trial days left",
+      "paid": "Paid",
+      "trial": "Trial",
+      "subscribed": "Subscribed",
+      "pastDue": "Past due",
+      "comped": "Comped",
+      "admin": "Admin",
+      "member": "Member",
+      "trialEnded": "Trial ended",
+      "free": "No plan",
+      "addedBy": "Added by {{email}}",
+      "selfSignUp": "Signed up",
+      "deletedOn": "Deleted on {{date}}",
+      "paidByOwner": "Yes, by owner",
+      "paidYes": "Yes",
+      "paidBefore": "Not now, paid before",
+      "paidNo": "No",
+      "items": "Items",
+      "itemsCreated_one": "{{count}} item",
+      "itemsCreated_other": "{{count}} items",
+      "lastCreated": "Last on {{date}}",
+      "nothingCreated": "Nothing yet",
+      "kinds": {
+        "tasks": "Tasks",
+        "habits": "Habits",
+        "projects": "Projects",
+        "notes": "Notes",
+        "areas": "Areas",
+        "goals": "Goals",
+        "tags": "Tags",
+        "people": "People",
+        "views": "Views",
+        "inbox": "Inbox"
+      }
+    },
+    "userFilter": {
+      "filter": "Filter",
+      "clear": "Clear filters",
+      "showing": "{{shown}} of {{total}}",
+      "empty": "No users match these filters.",
+      "source": "How they joined",
+      "signedUp": "Signed up",
+      "member": "Added as member",
+      "invited": "Invitation pending",
+      "verification": "Email",
+      "verified": "Verified",
+      "unverified": "Not verified",
+      "plan": "Plan",
+      "trial": "On trial",
+      "trialEnded": "Trial ended",
+      "paid": "Paying",
+      "paidBefore": "Paid before",
+      "neverPaid": "Never paid"
+    },
+    "trends": {
+      "title": "Last 7 days",
+      "signups": "signups",
+      "vsLastWeek": "{{diff}} vs last week",
+      "chartLabel": "Signups per day",
+      "barTitle": "{{date}}: {{n}} signups ({{prev}} a week before)",
+      "activation": "Activated",
+      "activationHint": "{{n}} of {{total}} new users created something",
+      "active": "Active users",
+      "activeHint": "created something this week",
+      "waitlist": "Waitlist joins",
+      "trialsStarted": "Trials started",
+      "trialsEnding": "Trials ending in 7 days",
+      "churn": "Canceled · failed payments",
+      "firstPlan": "Planned a first day",
+      "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
+      "threeDays": "Kept planning",
+      "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
     }
   },
   "shares": {
@@ -2077,7 +2302,13 @@
     "groupAlreadyShared": "이미 공유됨",
     "groupHint": "모든 멤버가 초대를 받고, 나중에 그룹에 추가되는 사람도 초대됩니다.",
     "sharedWithGroups": "그룹과 공유됨",
-    "groupCounts": "수락 {{accepted}}개, 대기 {{pending}}개"
+    "groupCounts": "수락 {{accepted}}개, 대기 {{pending}}개",
+    "shareWith": "Share with",
+    "selectPerson": "Select a person",
+    "selectPersonError": "Choose a person",
+    "alreadyHasAccess": "already has access",
+    "someoneElseByEmail": "Someone else, by email",
+    "you": "you"
   },
   "views": {
     "title": "스마트 뷰",
@@ -2237,7 +2468,8 @@
       "dueProjects": "기한이 있는 프로젝트",
       "overdueProjects": "연체된 프로젝트",
       "taskAssigned": "작업 할당됨",
-      "habitReminders": "습관 알림"
+      "habitReminders": "습관 알림",
+      "comments": "Comments & Mentions"
     },
     "descriptions": {
       "dueTasks": "24시간 이내에 기한이 도래하는 작업",
@@ -2246,7 +2478,8 @@
       "dueProjects": "24시간 이내에 기한이 도래하는 프로젝트",
       "overdueProjects": "기한이 지난 프로젝트",
       "taskAssigned": "다른 사람이 당신에게 작업을 할당했습니다",
-      "habitReminders": "습관에 설정한 알림 시간에, 아직 완료되지 않았을 때"
+      "habitReminders": "습관에 설정한 알림 시간에, 아직 완료되지 않았을 때",
+      "comments": "Replies, comments on your tasks, and @mentions"
     },
     "telegram": {
       "notConfigured": {
@@ -2258,11 +2491,27 @@
       "title": "테스트 알림",
       "description": "테스트 알림을 보내어 앱 내에서 및 활성화된 채널(텔레그램 등)에서 어떻게 표시되는지 확인하세요.",
       "send": "테스트 보내기",
-      "sending": "전송 중..."
+      "sending": "전송 중...",
+      "rowLabel": "Send a test notification",
+      "button": "Test",
+      "sendVia": "Send a test via {{channel}}",
+      "sent": "Test sent via {{channel}}.",
+      "failed": "Could not send the test."
     },
     "info": {
       "title": "참고:",
       "message": "이메일 및 푸시 알림이 곧 제공됩니다. 현재 앱 내 및 텔레그램 알림이 가능합니다."
+    },
+    "push": {
+      "title": "Push notifications on this device",
+      "prompt": "Get notifications on this device even when Life-to-Day is closed.",
+      "subscribed": "This device receives push notifications. Choose which ones in the Push column below.",
+      "needsInstall": "To get notifications on iPhone or iPad, add Life-to-Day to your Home Screen first: tap Share, then Add to Home Screen, and open it from there.",
+      "unsupported": "This browser does not support push notifications.",
+      "denied": "Notifications are blocked for Life-to-Day. Allow them in your browser or system settings, then come back here.",
+      "enable": "Turn on",
+      "disable": "Turn off",
+      "failed": "Something went wrong. Please try again."
     }
   },
   "projectStatus": {
@@ -2409,7 +2658,11 @@
     "perDay": "하루에",
     "weekdays": "평일",
     "weekends": "주말",
-    "quitTarget": "피하기"
+    "quitTarget": "피하기",
+    "presetsLabel": "Or start with",
+    "presetWalk": "Morning walk",
+    "presetRead": "Read 20 minutes",
+    "presetReview": "Weekly review"
   },
   "aiAssistant": {
     "title": "AI 어시스턴트",
@@ -2478,7 +2731,8 @@
     "bestWeek": "최고 ({{week}})",
     "areaBalance30": "영역 균형, 최근 30일",
     "completionRateLegend": "% = 완료율",
-    "itemsToProcess_one": "처리할 항목 {{count}}개"
+    "itemsToProcess_one": "처리할 항목 {{count}}개",
+    "overview": "Overview"
   },
   "billing": {
     "title": "요금제 및 결제",
@@ -2561,7 +2815,14 @@
     "readOnlyUntil": "데이터는 {{date}}까지 읽기 전용이며, 그 후 계정이 삭제됩니다. Life-to-Day Cloud를 계속 사용하려면 구독하세요.",
     "trialIncludes": "체험 기간은 {{date}}에 끝납니다. AI 어시스턴트, 공개 노트, 멤버 추가는 구독하면 사용할 수 있습니다.",
     "backToApp": "Life-to-Day로 돌아가기",
-    "trialBanner": "무료 체험 중, 남은 일수: {{count}}"
+    "trialBanner": "무료 체험 중, 남은 일수: {{count}}",
+    "trialBanner_one": "You're on the free trial, {{count}} day left",
+    "trialBanner_other": "You're on the free trial, {{count}} days left",
+    "trialLock": {
+      "ai": "The AI assistant is not part of the free trial. Subscribe to turn it on.",
+      "publicNotes": "Public note links are not part of the free trial. Subscribe to share notes with anyone.",
+      "members": "Adding members is not part of the free trial. Subscribe to add family members or teammates."
+    }
   },
   "demo": {
     "opening": "데모를 여는 중...",
@@ -2767,7 +3028,9 @@
       "gapFit": "{{time}}의 여유 {{gap}}에 {{name}} ({{duration}}) 가능",
       "place": "넣기",
       "noBreak": "{{start}}부터 {{end}}까지 쉬는 시간이 없습니다",
-      "next": "다음 팁"
+      "next": "다음 팁",
+      "missed_one": "{{count}} planned block already passed",
+      "missed_other": "{{count}} planned blocks already passed"
     },
     "more": "더 보기",
     "switchToList": "목록으로 전환",
@@ -2781,11 +3044,20 @@
       "overdue": "기한 지남 {{count}}",
       "due_today": "오늘 마감 {{count}}",
       "in_progress": "진행 중 {{count}}",
-      "suggested": "추천 {{count}}"
+      "suggested": "추천 {{count}}",
+      "tagged_today": "{{count}} tagged #today"
     },
     "durationMinutes": "{{minutes}}분",
     "durationHours": "{{hours}}시간",
-    "durationHoursMinutes": "{{hours}}시간 {{minutes}}분"
+    "durationHoursMinutes": "{{hours}}시간 {{minutes}}분",
+    "addTask": "Add task",
+    "taggedToday": "Tagged #today",
+    "doneForToday": "Done for today",
+    "nextOccurrence": "Next on {{date}}",
+    "movedOffPlan": "'{{name}}' is no longer due today, so it left today's plan.",
+    "refreshCalendar": "Refresh calendar",
+    "refreshCalendarError": "Could not refresh the calendar.",
+    "refreshingCalendar": "Refreshing calendar…"
   },
   "capture": {
     "add": "추가",
@@ -2850,7 +3122,10 @@
       "oneItemPerLineHelp": "끔: 입력한 내용 전체가 하나의 항목이 되며, 첫 줄은 제목, 나머지 줄은 메모가 됩니다. 켬: 각 줄이 별도의 항목이 됩니다.",
       "save": "저장",
       "title": "항목 추가"
-    }
+    },
+    "addTitle": "Add to Inbox, Task, Note or Project",
+    "close": "Close",
+    "filesAttached_one": "1 file attached."
   },
   "area": {
     "loadError": "영역을 불러오지 못했습니다"
@@ -2954,7 +3229,17 @@
     "confirmDeleteMessage": "\"{{name}}\"을(를) 삭제할까요? 이 템플릿으로 만든 프로젝트는 영향을 받지 않습니다."
   },
   "publicNote": {
-    "linkedNoteNotShared": "이 노트는 공개적으로 공유되지 않았습니다."
+    "linkedNoteNotShared": "이 노트는 공개적으로 공유되지 않았습니다.",
+    "toggleTheme": "Toggle dark mode",
+    "openApp": "Open Life-to-Day",
+    "updated": "Last updated {{date}}",
+    "unavailableTitle": "This note is not available",
+    "unavailableBody": "The link may be wrong, or the owner stopped sharing this note. Ask them for a new link.",
+    "failedTitle": "Could not load this note",
+    "failedBody": "Something went wrong on our side. Try again in a moment.",
+    "ctaTitle": "Do you want to share your notes?",
+    "ctaBody": "Write notes, keep them organized with your tasks and projects, and share any of them with a link.",
+    "ctaButton": "Sign up now"
   },
   "blog": {
     "nav": "블로그",
@@ -2982,5 +3267,97 @@
   "app": {
     "tagline": "From long-term vision to today.",
     "sourceCode": "Source code"
+  },
+  "comments": {
+    "count": "{{count}} comments",
+    "loading": "Loading comments...",
+    "failedToLoad": "Failed to load comments",
+    "empty": "No comments yet",
+    "placeholder": "Write a comment... use @ to mention someone",
+    "replyPlaceholder": "Write a reply...",
+    "submit": "Comment",
+    "reply": "Reply",
+    "unknownAuthor": "Unknown",
+    "delete": "Delete comment",
+    "deleteConfirmTitle": "Delete Comment",
+    "deleteConfirmMessage": "Are you sure you want to delete this comment? This action cannot be undone.",
+    "deletedPlaceholder": "Comment deleted",
+    "failedToPost": "Failed to post comment",
+    "failedToDelete": "Failed to delete comment",
+    "like": "Like",
+    "dislike": "Dislike",
+    "failedToReact": "Failed to update reaction"
+  },
+  "sortable": {
+    "move": "Move",
+    "project": "sortable project",
+    "task": "sortable task"
+  },
+  "relations": {
+    "title": "Relations",
+    "add": "Add relation",
+    "remove": "Remove relation",
+    "searchPlaceholder": "Search for a task...",
+    "addFailed": "Failed to add relation.",
+    "removeFailed": "Failed to remove relation.",
+    "blocked": "Blocked",
+    "blockedTooltip": "Blocked by {{count}} open task(s)",
+    "completeBlockedTitle": "Task is blocked",
+    "completeBlockedMessage": "This task is blocked by {{count}} open task(s). Complete it anyway?",
+    "completeAnyway": "Complete anyway",
+    "types": {
+      "blocks": "Blocks",
+      "blocked_by": "Blocked by",
+      "related_to": "Related to",
+      "duplicates": "Duplicates",
+      "duplicated_by": "Duplicated by"
+    }
+  },
+  "attachments": {
+    "limitReached": "Maximum 20 attachments allowed",
+    "addTitle": "Add a title",
+    "title": "Title",
+    "download": "Download",
+    "noPreview": "No preview for this file type.",
+    "previous": "Previous file",
+    "next": "Next file",
+    "renameError": "Could not save the title",
+    "confirmDelete": "Delete file?"
+  },
+  "feedback": {
+    "title": "Send feedback",
+    "subtitle": "Found a bug or have an idea? Let us know.",
+    "placeholder": "What happened, or what would make Life-to-Day better?",
+    "contextNote": "The page you are on and the app version are sent along with your message.",
+    "send": "Send",
+    "sending": "Sending...",
+    "sent": "Thanks! Your feedback was sent.",
+    "failed": "Could not send your feedback"
+  },
+  "focus": {
+    "chip": "Focus",
+    "title": "Focus on",
+    "activeTitle": "Focus: {{label}}",
+    "area": "Area",
+    "anyArea": "Any area",
+    "project": "Project",
+    "anyProject": "Any project",
+    "tags": "Tags",
+    "hint": "Today, Upcoming, Tasks, Projects, Notes and search show only this. New tasks get the project and tags.",
+    "apply": "Apply",
+    "clear": "Clear",
+    "clearFocus": "Clear focus",
+    "locked": "Set by your Focus. Clear it from the chip in the top bar.",
+    "emptyHint": "Showing {{label}} only",
+    "saveError": "Could not save the focus."
+  },
+  "onboarding": {
+    "starter": {
+      "kicker": "Welcome to Life-to-Day",
+      "welcomeTitle": "Take a look at what you can do with Life-to-Day in a minute",
+      "videoTitle": "A one minute tour of Life-to-Day",
+      "letsStart": "I'm done, let's start",
+      "settingUp": "Setting up..."
+    }
   }
 }

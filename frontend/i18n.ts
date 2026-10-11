@@ -3,6 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { getLocalesPath } from './config/paths';
+// LTD-PATCH(T-301): fa locale + document direction without reload
+import { applyDocumentDirection } from './utils/direction';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -70,6 +72,7 @@ i18nInstance
             'bg',
             'sl',
             'sk',
+            'fa', // LTD-PATCH(T-301)
         ],
         nonExplicitSupportedLngs: true,
         resources: devResources,
@@ -96,6 +99,9 @@ i18nInstance
         },
     })
     .then(() => {
+        // LTD-PATCH(T-301): init can emit languageChanged before the listener
+        // below is attached, which left <html> without lang/dir after reload.
+        applyDocumentDirection(i18n.language);
         const loadPath = getLocalesPath(`${i18n.language}/translation.json`);
 
         fetch(loadPath)
@@ -151,7 +157,10 @@ i18nInstance
             });
     });
 
-i18n.on('initialized', () => {});
+// LTD-PATCH(T-301): set dir/lang for the initially detected language too
+i18n.on('initialized', () => {
+    applyDocumentDirection(i18n.language);
+});
 i18n.on('loaded', () => {});
 i18n.on('failedLoading', () => {});
 i18n.on('missingKey', () => {});
@@ -163,9 +172,14 @@ const dispatchLanguageChangeEvent = (lng: string) => {
     window.dispatchEvent(event);
 };
 
+if (i18n.isInitialized) {
+    applyDocumentDirection(i18n.language);
+}
+
 i18n.on('languageChanged', (lng) => {
     localStorage.setItem('i18nextLng', lng);
-    document.documentElement.lang = lng;
+    // LTD-PATCH(T-301): switch dir (fa/ar = rtl) together with lang
+    applyDocumentDirection(lng);
 
     const handleTranslationsLoaded = () => {
         dispatchLanguageChangeEvent(lng);

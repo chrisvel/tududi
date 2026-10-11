@@ -117,7 +117,24 @@
     "search": "Cari",
     "admin": "Admin",
     "adminBadge": "Admin",
-    "templates": "Templat"
+    "templates": "Templat",
+    "ltd": {
+      "today": "Today",
+      "plan": "Plan",
+      "goals": "Goals",
+      "life": "Life",
+      "inbox": "Inbox",
+      "review": "Review",
+      "more": "More",
+      "settings": "Settings",
+      "habits": "Habits",
+      "notes": "Notes",
+      "areas": "Areas",
+      "projects": "Projects",
+      "primary": "Primary",
+      "lifeStub": "The life timeline will appear here later.",
+      "reviewStub": "Guided review will appear here later."
+    }
   },
   "settings": {
     "todayPageSettings": "Pengaturan Halaman Hari Ini",
@@ -234,7 +251,8 @@
     "habit": "Kebiasaan",
     "assignedTo": "Ditetapkan untuk",
     "subtasks": "Subtugas",
-    "openFullPage": "Buka tampilan penuh"
+    "openFullPage": "Buka tampilan penuh",
+    "reorderError": "Failed to save task order"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -426,6 +444,7 @@
     "danish": "Denmark",
     "finnish": "Finlandia",
     "norwegian": "Norwegia",
+    "persian": "Persian",
     "polish": "Polandia",
     "slovenian": "Slovenia",
     "slovak": "Slowakia",
@@ -685,7 +704,9 @@
       "hoursLoadError": "Tidak dapat memuat jam harianmu",
       "hoursSaveError": "Tidak dapat menyimpan jam harianmu",
       "hoursTitle": "Harimu",
-      "hoursTo": "sampai"
+      "hoursTo": "sampai",
+      "taggedToday": "Tagged #today",
+      "taggedTodayDetail": "Open tasks you tagged #today, whatever their dates."
     },
     "aiApiKey": "Kunci API",
     "aiApiKeyClear": "Hapus",
@@ -850,7 +871,18 @@
     "telegramAllowedUsersDescription": "Atur siapa yang bisa mengirim pesan ke bot-mu. Kosongkan untuk mengizinkan semua pengguna.",
     "telegramRequiredForSummaries": "Integrasi Telegram harus diatur untuk memakai ringkasan tugas.",
     "templatesDescription": "Aktifkan Templat Proyek untuk menyimpan dan memakai ulang struktur proyek.",
-    "aiApiKeyPlaceholder": "sk-..."
+    "aiApiKeyPlaceholder": "sk-...",
+    "calendarSystem": "Calendar",
+    "calendarSystemAuto": "Match language",
+    "calendarGregorian": "Gregorian",
+    "calendarPersian": "Persian (Jalali)",
+    "latinDigits": "Digits",
+    "latinDigitsDescription": "Show Latin digits (0-9) instead of Persian digits",
+    "contentBackground": "Background",
+    "contentBackgroundDescription": "Show a photo behind the main content area. Photos come from Unsplash and are credited to their photographers.",
+    "contentBackgroundNone": "None",
+    "photoBy": "Photo by",
+    "photoOn": "on"
   },
   "productivity": {
     "stalledProjects": "Proyek Terhenti",
@@ -1092,7 +1124,62 @@
     "editBanner": "Edit spanduk proyek",
     "currentBanner": "Spanduk saat ini",
     "choosePreset": "Pilih spanduk preset:",
-    "orUploadOwn": "Atau unggah milik Anda sendiri:"
+    "orUploadOwn": "Atau unggah milik Anda sendiri:",
+    "attachments": "Attachments",
+    "overview": "Overview",
+    "people": "People",
+    "info": "Project info",
+    "clickToEdit": "Click to edit",
+    "addDescription": "Add a description",
+    "changeArea": "Change area",
+    "setArea": "Set area",
+    "changeGoal": "Change goal",
+    "setGoal": "Set goal",
+    "changePriority": "Change priority",
+    "setPriority": "Set priority",
+    "changeDue": "Change due date",
+    "changeTags": "Change tags",
+    "addTags": "Add tags",
+    "changeColor": "Change color",
+    "setColor": "Set color",
+    "moreOptions": "More options",
+    "pin": "Pin",
+    "pinned": "Pinned",
+    "started": "Started",
+    "startedOn": "Started {{date}}",
+    "daysToDue_one": "{{count}} day to due date",
+    "daysToDue_other": "{{count}} days to due date",
+    "daysOverdue_one": "{{count}} day overdue",
+    "daysOverdue_other": "{{count}} days overdue",
+    "progressSummary": "Project progress · {{done}} of {{total}} tasks done",
+    "timeUsed": "{{percent}}% of time used",
+    "progressHint": "Bar: tasks done. Line: time passed between start and due date.",
+    "openTasks": "Open tasks",
+    "overdueTasks": "Overdue",
+    "doneThisWeek": "Done this week",
+    "untilDate": "Until {{date}}",
+    "pastDate": "Past {{date}}",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "noteCount_one": "{{count}} note",
+    "noteCount_other": "{{count}} notes",
+    "roleOwner": "Owner",
+    "rolePending": "Invited",
+    "roleEdit": "Can edit",
+    "roleView": "Can view",
+    "notShared": "Only you can see this project.",
+    "addNote": "Add note",
+    "noNotesYet": "No notes yet.",
+    "allNotes": "All notes",
+    "fewerNotes": "Show fewer",
+    "fileCount_one": "{{count}} file",
+    "fileCount_other": "{{count}} files",
+    "addFile": "Add file",
+    "uploading": "Uploading...",
+    "noFilesYet": "No files yet. Drop files here or use +.",
+    "allFiles": "All files",
+    "dropToUpload": "Drop to upload",
+    "fewerFiles": "Show fewer"
   },
   "errors": {
     "required": "Kolom ini diperlukan",
@@ -1380,7 +1467,11 @@
     "estimateHint": "Kira-kira berapa lama? Dipakai saat merencanakan hari.",
     "estimateClearHint": "Klik lagi untuk menghapus",
     "estimateError": "Gagal memperbarui perkiraan",
-    "noGoal": "Tetapkan ke tujuan"
+    "noGoal": "Tetapkan ke tujuan",
+    "comments": "Comments",
+    "skipOccurrence": "Skip this occurrence",
+    "occurrenceSkipped": "Occurrence skipped",
+    "skipOccurrenceError": "Failed to skip occurrence"
   },
   "projects": {
     "loading": "Memuat proyek...",
@@ -1404,7 +1495,8 @@
       "systemTagCannotBeDeleted": "Tag sistem tidak dapat dihapus",
       "systemTagCannotBeRenamed": "Tag sistem tidak dapat diubah namanya",
       "somedayHide": "Sembunyikan",
-      "somedayShow": "Tampilkan"
+      "somedayShow": "Tampilkan",
+      "shared": "Shared"
     },
     "selectState": "Pilih Status",
     "state": "Status Proyek",
@@ -1457,7 +1549,23 @@
     "blankSlateTemplate": "Mulai dari templat",
     "blankSlateAreas": "Siapkan area",
     "blankSlateShowAll": "Tampilkan semua proyek",
-    "viewAs": "Tampilan"
+    "viewAs": "Tampilan",
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "summary": "Summary",
+      "members": "Members",
+      "due": "Due",
+      "progress": "Progress"
+    },
+    "listSettings": {
+      "title": "Projects settings",
+      "showSomeday": "Show someday projects",
+      "showSomedayHint": "Projects tagged #someday.",
+      "showCompleted": "Show completed projects",
+      "saveError": "Failed to save projects settings"
+    },
+    "reorderError": "Failed to save project order"
   },
   "projectItem": {
     "edit": "Sunting",
@@ -1504,7 +1612,12 @@
     "noAreasYet": "Belum ada area.",
     "blankSlateHint": "Area adalah bagian hidup yang Anda rawat dari waktu ke waktu, seperti Kerja, Kesehatan, atau Rumah. Masukkan proyek dan tujuan Anda ke dalamnya untuk melihat setiap bagian di satu tempat.",
     "blankSlateNew": "Buat area pertama Anda",
-    "blankSlateProjects": "Buka proyek"
+    "blankSlateProjects": "Buka proyek",
+    "presetsLabel": "Most people start with",
+    "presetHome": "Home",
+    "presetWork": "Work",
+    "presetHealth": "Health",
+    "presetFamily": "Family"
   },
   "notes": {
     "loading": "Memuat catatan...",
@@ -1565,7 +1678,8 @@
     "linkedNoteCreate": "Buat catatan",
     "linkedNoteCreateFailed": "Catatan tidak dapat dibuat.",
     "backgroundImage": "Latar",
-    "noBackground": "Tanpa latar"
+    "noBackground": "Tanpa latar",
+    "openInNotes": "Open in Notes"
   },
   "tags": {
     "loading": "Memuat tag...",
@@ -1699,7 +1813,12 @@
     "medium": "Sedang",
     "low": "Rendah",
     "time": "Waktu",
-    "allDay": "Sepanjang hari"
+    "allDay": "Sepanjang hari",
+    "manageCalendars": "Calendars",
+    "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
+    "hideCalendar": "Hide {{name}}",
+    "showCalendar": "Show {{name}}",
+    "feedError": "Could not load: {{names}}"
   },
   "pages": {
     "notFound": {
@@ -1883,7 +2002,14 @@
       "reason": "Alasan (opsional)",
       "overrideSaved": "Pengecualian disimpan",
       "overrideCleared": "Pengecualian dihapus",
-      "synced": "Disinkronkan dari penyedia pembayaran"
+      "synced": "Disinkronkan dari penyedia pembayaran",
+      "onTrial": "On trial",
+      "trialsOnly": "Trials only",
+      "trial": "Trial",
+      "trialDaysLeft_one": "{{count}} day left",
+      "trialDaysLeft_other": "{{count}} days left",
+      "trialEnded": "Trial ended",
+      "readOnlyUntil": "Read-only, deleted on {{date}}"
     },
     "dashboard": {
       "title": "Admin",
@@ -2037,6 +2163,105 @@
       "postCount": "Tulisan: {{count}}",
       "open": "Buka blog",
       "preview": "Pratinjau di aplikasi"
+    },
+    "verified": "Verified",
+    "verifiedYes": "Verified",
+    "verifiedNo": "Not verified",
+    "feedback": {
+      "title": "Feedback",
+      "open": "Open ({{count}})",
+      "resolved": "Resolved",
+      "all": "All",
+      "emptyOpen": "Nothing open. Nice.",
+      "empty": "No feedback yet.",
+      "markResolved": "Mark resolved",
+      "reopen": "Reopen",
+      "updateFailed": "Failed to update",
+      "deleted": "Feedback deleted",
+      "deleteFailed": "Failed to delete",
+      "deleteTitle": "Delete Feedback",
+      "confirmDelete": "Delete this feedback? This cannot be undone.",
+      "statusOpen": "Open",
+      "statusResolved": "Resolved"
+    },
+    "userStatus": {
+      "title": "Users",
+      "user": "User",
+      "signedUp": "Signed up",
+      "verified": "Verified",
+      "status": "Status",
+      "daysLeft": "Trial days left",
+      "paid": "Paid",
+      "trial": "Trial",
+      "subscribed": "Subscribed",
+      "pastDue": "Past due",
+      "comped": "Comped",
+      "admin": "Admin",
+      "member": "Member",
+      "trialEnded": "Trial ended",
+      "free": "No plan",
+      "addedBy": "Added by {{email}}",
+      "selfSignUp": "Signed up",
+      "deletedOn": "Deleted on {{date}}",
+      "paidByOwner": "Yes, by owner",
+      "paidYes": "Yes",
+      "paidBefore": "Not now, paid before",
+      "paidNo": "No",
+      "items": "Items",
+      "itemsCreated_one": "{{count}} item",
+      "itemsCreated_other": "{{count}} items",
+      "lastCreated": "Last on {{date}}",
+      "nothingCreated": "Nothing yet",
+      "kinds": {
+        "tasks": "Tasks",
+        "habits": "Habits",
+        "projects": "Projects",
+        "notes": "Notes",
+        "areas": "Areas",
+        "goals": "Goals",
+        "tags": "Tags",
+        "people": "People",
+        "views": "Views",
+        "inbox": "Inbox"
+      }
+    },
+    "userFilter": {
+      "filter": "Filter",
+      "clear": "Clear filters",
+      "showing": "{{shown}} of {{total}}",
+      "empty": "No users match these filters.",
+      "source": "How they joined",
+      "signedUp": "Signed up",
+      "member": "Added as member",
+      "invited": "Invitation pending",
+      "verification": "Email",
+      "verified": "Verified",
+      "unverified": "Not verified",
+      "plan": "Plan",
+      "trial": "On trial",
+      "trialEnded": "Trial ended",
+      "paid": "Paying",
+      "paidBefore": "Paid before",
+      "neverPaid": "Never paid"
+    },
+    "trends": {
+      "title": "Last 7 days",
+      "signups": "signups",
+      "vsLastWeek": "{{diff}} vs last week",
+      "chartLabel": "Signups per day",
+      "barTitle": "{{date}}: {{n}} signups ({{prev}} a week before)",
+      "activation": "Activated",
+      "activationHint": "{{n}} of {{total}} new users created something",
+      "active": "Active users",
+      "activeHint": "created something this week",
+      "waitlist": "Waitlist joins",
+      "trialsStarted": "Trials started",
+      "trialsEnding": "Trials ending in 7 days",
+      "churn": "Canceled · failed payments",
+      "firstPlan": "Planned a first day",
+      "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
+      "threeDays": "Kept planning",
+      "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
     }
   },
   "shares": {
@@ -2077,7 +2302,13 @@
     "groupAlreadyShared": "sudah dibagikan",
     "groupHint": "Setiap anggota mendapat undangan, dan orang yang ditambahkan ke grup nanti juga diundang.",
     "sharedWithGroups": "Dibagikan dengan grup",
-    "groupCounts": "{{accepted}} diterima, {{pending}} tertunda"
+    "groupCounts": "{{accepted}} diterima, {{pending}} tertunda",
+    "shareWith": "Share with",
+    "selectPerson": "Select a person",
+    "selectPersonError": "Choose a person",
+    "alreadyHasAccess": "already has access",
+    "someoneElseByEmail": "Someone else, by email",
+    "you": "you"
   },
   "views": {
     "title": "Tampilan Cerdas",
@@ -2237,7 +2468,8 @@
       "dueProjects": "Proyek Jatuh Tempo",
       "overdueProjects": "Proyek Terlambat",
       "taskAssigned": "Tugas Diberikan",
-      "habitReminders": "Pengingat kebiasaan"
+      "habitReminders": "Pengingat kebiasaan",
+      "comments": "Comments & Mentions"
     },
     "descriptions": {
       "dueTasks": "Tugas yang jatuh tempo dalam 24 jam",
@@ -2246,7 +2478,8 @@
       "dueProjects": "Proyek yang jatuh tempo dalam 24 jam",
       "overdueProjects": "Proyek yang telah melewati tanggal jatuh tempo",
       "taskAssigned": "Sebuah tugas telah diberikan kepada Anda oleh orang lain",
-      "habitReminders": "Pada waktu pengingat yang diatur di kebiasaan, selama kebiasaan itu masih terbuka"
+      "habitReminders": "Pada waktu pengingat yang diatur di kebiasaan, selama kebiasaan itu masih terbuka",
+      "comments": "Replies, comments on your tasks, and @mentions"
     },
     "telegram": {
       "notConfigured": {
@@ -2258,11 +2491,27 @@
       "title": "Notifikasi Uji",
       "description": "Kirim notifikasi percobaan untuk melihat bagaimana tampilannya di dalam aplikasi dan di saluran yang diaktifkan (Telegram, dll.)",
       "send": "Kirim Percobaan",
-      "sending": "Mengirim..."
+      "sending": "Mengirim...",
+      "rowLabel": "Send a test notification",
+      "button": "Test",
+      "sendVia": "Send a test via {{channel}}",
+      "sent": "Test sent via {{channel}}.",
+      "failed": "Could not send the test."
     },
     "info": {
       "title": "Catatan:",
       "message": "Notifikasi Email dan Push akan segera hadir. Notifikasi di dalam aplikasi dan Telegram saat ini tersedia."
+    },
+    "push": {
+      "title": "Push notifications on this device",
+      "prompt": "Get notifications on this device even when Life-to-Day is closed.",
+      "subscribed": "This device receives push notifications. Choose which ones in the Push column below.",
+      "needsInstall": "To get notifications on iPhone or iPad, add Life-to-Day to your Home Screen first: tap Share, then Add to Home Screen, and open it from there.",
+      "unsupported": "This browser does not support push notifications.",
+      "denied": "Notifications are blocked for Life-to-Day. Allow them in your browser or system settings, then come back here.",
+      "enable": "Turn on",
+      "disable": "Turn off",
+      "failed": "Something went wrong. Please try again."
     }
   },
   "projectStatus": {
@@ -2409,7 +2658,11 @@
     "perDay": "per hari",
     "weekdays": "Hari kerja",
     "weekends": "Akhir pekan",
-    "quitTarget": "Hindari"
+    "quitTarget": "Hindari",
+    "presetsLabel": "Or start with",
+    "presetWalk": "Morning walk",
+    "presetRead": "Read 20 minutes",
+    "presetReview": "Weekly review"
   },
   "aiAssistant": {
     "title": "Asisten AI",
@@ -2478,7 +2731,8 @@
     "bestWeek": "terbaik ({{week}})",
     "areaBalance30": "Keseimbangan area, 30 hari terakhir",
     "completionRateLegend": "% = tingkat penyelesaian",
-    "itemsToProcess_one": "{{count}} item untuk diproses"
+    "itemsToProcess_one": "{{count}} item untuk diproses",
+    "overview": "Overview"
   },
   "billing": {
     "title": "Paket & Penagihan",
@@ -2561,7 +2815,14 @@
     "readOnlyUntil": "Data Anda hanya bisa dibaca hingga {{date}}, lalu akun akan dihapus. Berlanggananlah untuk terus menggunakan Life-to-Day Cloud.",
     "trialIncludes": "Masa uji coba Anda berakhir pada {{date}}. Asisten AI, catatan publik, dan menambahkan anggota terbuka saat Anda berlangganan.",
     "backToApp": "Kembali ke Life-to-Day",
-    "trialBanner": "Uji coba gratis, sisa hari: {{count}}"
+    "trialBanner": "Uji coba gratis, sisa hari: {{count}}",
+    "trialBanner_one": "You're on the free trial, {{count}} day left",
+    "trialBanner_other": "You're on the free trial, {{count}} days left",
+    "trialLock": {
+      "ai": "The AI assistant is not part of the free trial. Subscribe to turn it on.",
+      "publicNotes": "Public note links are not part of the free trial. Subscribe to share notes with anyone.",
+      "members": "Adding members is not part of the free trial. Subscribe to add family members or teammates."
+    }
   },
   "demo": {
     "opening": "Membuka demo...",
@@ -2767,7 +3028,9 @@
       "gapFit": "{{gap}} luang pukul {{time}} cukup untuk {{name}} ({{duration}})",
       "place": "Tempatkan",
       "noBreak": "Tidak ada jeda antara {{start}} dan {{end}}",
-      "next": "Tips berikutnya"
+      "next": "Tips berikutnya",
+      "missed_one": "{{count}} planned block already passed",
+      "missed_other": "{{count}} planned blocks already passed"
     },
     "more": "Opsi lainnya",
     "switchToList": "Beralih ke daftar",
@@ -2781,11 +3044,20 @@
       "overdue": "{{count}} terlambat",
       "due_today": "{{count}} jatuh tempo hari ini",
       "in_progress": "{{count}} sedang dikerjakan",
-      "suggested": "{{count}} disarankan"
+      "suggested": "{{count}} disarankan",
+      "tagged_today": "{{count}} tagged #today"
     },
     "durationMinutes": "{{minutes}} mnt",
     "durationHours": "{{hours}} j",
-    "durationHoursMinutes": "{{hours}} j {{minutes}} mnt"
+    "durationHoursMinutes": "{{hours}} j {{minutes}} mnt",
+    "addTask": "Add task",
+    "taggedToday": "Tagged #today",
+    "doneForToday": "Done for today",
+    "nextOccurrence": "Next on {{date}}",
+    "movedOffPlan": "'{{name}}' is no longer due today, so it left today's plan.",
+    "refreshCalendar": "Refresh calendar",
+    "refreshCalendarError": "Could not refresh the calendar.",
+    "refreshingCalendar": "Refreshing calendar…"
   },
   "capture": {
     "add": "Tambah",
@@ -2850,7 +3122,10 @@
       "oneItemPerLineHelp": "Mati: semua yang kamu ketik menjadi satu item, dengan baris pertama sebagai judul dan baris lain sebagai catatan. Nyala: setiap baris menjadi item tersendiri.",
       "save": "Menyimpan",
       "title": "Menambahkan item"
-    }
+    },
+    "addTitle": "Add to Inbox, Task, Note or Project",
+    "close": "Close",
+    "filesAttached_one": "1 file attached."
   },
   "area": {
     "loadError": "Gagal memuat area"
@@ -2954,7 +3229,17 @@
     "confirmDeleteMessage": "Hapus \"{{name}}\"? Proyek yang dibuat darinya tidak akan terpengaruh."
   },
   "publicNote": {
-    "linkedNoteNotShared": "Catatan ini tidak dibagikan secara publik."
+    "linkedNoteNotShared": "Catatan ini tidak dibagikan secara publik.",
+    "toggleTheme": "Toggle dark mode",
+    "openApp": "Open Life-to-Day",
+    "updated": "Last updated {{date}}",
+    "unavailableTitle": "This note is not available",
+    "unavailableBody": "The link may be wrong, or the owner stopped sharing this note. Ask them for a new link.",
+    "failedTitle": "Could not load this note",
+    "failedBody": "Something went wrong on our side. Try again in a moment.",
+    "ctaTitle": "Do you want to share your notes?",
+    "ctaBody": "Write notes, keep them organized with your tasks and projects, and share any of them with a link.",
+    "ctaButton": "Sign up now"
   },
   "blog": {
     "nav": "Blog",
@@ -2982,5 +3267,97 @@
   "app": {
     "tagline": "From long-term vision to today.",
     "sourceCode": "Source code"
+  },
+  "comments": {
+    "count": "{{count}} comments",
+    "loading": "Loading comments...",
+    "failedToLoad": "Failed to load comments",
+    "empty": "No comments yet",
+    "placeholder": "Write a comment... use @ to mention someone",
+    "replyPlaceholder": "Write a reply...",
+    "submit": "Comment",
+    "reply": "Reply",
+    "unknownAuthor": "Unknown",
+    "delete": "Delete comment",
+    "deleteConfirmTitle": "Delete Comment",
+    "deleteConfirmMessage": "Are you sure you want to delete this comment? This action cannot be undone.",
+    "deletedPlaceholder": "Comment deleted",
+    "failedToPost": "Failed to post comment",
+    "failedToDelete": "Failed to delete comment",
+    "like": "Like",
+    "dislike": "Dislike",
+    "failedToReact": "Failed to update reaction"
+  },
+  "sortable": {
+    "move": "Move",
+    "project": "sortable project",
+    "task": "sortable task"
+  },
+  "relations": {
+    "title": "Relations",
+    "add": "Add relation",
+    "remove": "Remove relation",
+    "searchPlaceholder": "Search for a task...",
+    "addFailed": "Failed to add relation.",
+    "removeFailed": "Failed to remove relation.",
+    "blocked": "Blocked",
+    "blockedTooltip": "Blocked by {{count}} open task(s)",
+    "completeBlockedTitle": "Task is blocked",
+    "completeBlockedMessage": "This task is blocked by {{count}} open task(s). Complete it anyway?",
+    "completeAnyway": "Complete anyway",
+    "types": {
+      "blocks": "Blocks",
+      "blocked_by": "Blocked by",
+      "related_to": "Related to",
+      "duplicates": "Duplicates",
+      "duplicated_by": "Duplicated by"
+    }
+  },
+  "attachments": {
+    "limitReached": "Maximum 20 attachments allowed",
+    "addTitle": "Add a title",
+    "title": "Title",
+    "download": "Download",
+    "noPreview": "No preview for this file type.",
+    "previous": "Previous file",
+    "next": "Next file",
+    "renameError": "Could not save the title",
+    "confirmDelete": "Delete file?"
+  },
+  "feedback": {
+    "title": "Send feedback",
+    "subtitle": "Found a bug or have an idea? Let us know.",
+    "placeholder": "What happened, or what would make Life-to-Day better?",
+    "contextNote": "The page you are on and the app version are sent along with your message.",
+    "send": "Send",
+    "sending": "Sending...",
+    "sent": "Thanks! Your feedback was sent.",
+    "failed": "Could not send your feedback"
+  },
+  "focus": {
+    "chip": "Focus",
+    "title": "Focus on",
+    "activeTitle": "Focus: {{label}}",
+    "area": "Area",
+    "anyArea": "Any area",
+    "project": "Project",
+    "anyProject": "Any project",
+    "tags": "Tags",
+    "hint": "Today, Upcoming, Tasks, Projects, Notes and search show only this. New tasks get the project and tags.",
+    "apply": "Apply",
+    "clear": "Clear",
+    "clearFocus": "Clear focus",
+    "locked": "Set by your Focus. Clear it from the chip in the top bar.",
+    "emptyHint": "Showing {{label}} only",
+    "saveError": "Could not save the focus."
+  },
+  "onboarding": {
+    "starter": {
+      "kicker": "Welcome to Life-to-Day",
+      "welcomeTitle": "Take a look at what you can do with Life-to-Day in a minute",
+      "videoTitle": "A one minute tour of Life-to-Day",
+      "letsStart": "I'm done, let's start",
+      "settingUp": "Setting up..."
+    }
   }
 }

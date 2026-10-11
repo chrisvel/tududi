@@ -117,7 +117,24 @@
     "search": "検索",
     "admin": "管理者",
     "adminBadge": "管理者",
-    "templates": "テンプレート"
+    "templates": "テンプレート",
+    "ltd": {
+      "today": "Today",
+      "plan": "Plan",
+      "goals": "Goals",
+      "life": "Life",
+      "inbox": "Inbox",
+      "review": "Review",
+      "more": "More",
+      "settings": "Settings",
+      "habits": "Habits",
+      "notes": "Notes",
+      "areas": "Areas",
+      "projects": "Projects",
+      "primary": "Primary",
+      "lifeStub": "The life timeline will appear here later.",
+      "reviewStub": "Guided review will appear here later."
+    }
   },
   "settings": {
     "todayPageSettings": "今日のページ設定",
@@ -234,7 +251,8 @@
     "habit": "習慣",
     "assignedTo": "割り当て先",
     "subtasks": "サブタスク",
-    "openFullPage": "全画面表示を開く"
+    "openFullPage": "全画面表示を開く",
+    "reorderError": "Failed to save task order"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -426,6 +444,7 @@
     "danish": "デンマーク語",
     "finnish": "フィンランド語",
     "norwegian": "ノルウェー語",
+    "persian": "Persian",
     "polish": "ポーランド語",
     "slovenian": "スロベニア語",
     "slovak": "スロバキア語",
@@ -685,7 +704,9 @@
       "hoursLoadError": "1日の時間帯を読み込めませんでした",
       "hoursSaveError": "1日の時間帯を保存できませんでした",
       "hoursTitle": "あなたの1日",
-      "hoursTo": "終了"
+      "hoursTo": "終了",
+      "taggedToday": "Tagged #today",
+      "taggedTodayDetail": "Open tasks you tagged #today, whatever their dates."
     },
     "aiApiKey": "APIキー",
     "aiApiKeyClear": "クリア",
@@ -850,7 +871,18 @@
     "telegramAllowedUsersDescription": "ボットにメッセージを送れる人を指定します。空欄にするとすべてのユーザーを許可します。",
     "telegramRequiredForSummaries": "タスクのサマリーを使うにはTelegram連携の設定が必要です。",
     "templatesDescription": "プロジェクト構成を保存して再利用できるプロジェクトテンプレートを有効にします。",
-    "aiApiKeyPlaceholder": "sk-..."
+    "aiApiKeyPlaceholder": "sk-...",
+    "calendarSystem": "Calendar",
+    "calendarSystemAuto": "Match language",
+    "calendarGregorian": "Gregorian",
+    "calendarPersian": "Persian (Jalali)",
+    "latinDigits": "Digits",
+    "latinDigitsDescription": "Show Latin digits (0-9) instead of Persian digits",
+    "contentBackground": "Background",
+    "contentBackgroundDescription": "Show a photo behind the main content area. Photos come from Unsplash and are credited to their photographers.",
+    "contentBackgroundNone": "None",
+    "photoBy": "Photo by",
+    "photoOn": "on"
   },
   "modals": {
     "confirmDelete": "本当に削除してよろしいですか？",
@@ -1135,7 +1167,8 @@
       "systemTagCannotBeDeleted": "システムタグは削除できません",
       "systemTagCannotBeRenamed": "システムタグは名前を変更できません",
       "somedayHide": "非表示",
-      "somedayShow": "表示"
+      "somedayShow": "表示",
+      "shared": "Shared"
     },
     "active": "アクティブ",
     "inactive": "非アクティブ",
@@ -1191,7 +1224,23 @@
     "blankSlateTemplate": "テンプレートから始める",
     "blankSlateAreas": "エリアを設定",
     "blankSlateShowAll": "すべてのプロジェクトを表示",
-    "viewAs": "表示形式"
+    "viewAs": "表示形式",
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "summary": "Summary",
+      "members": "Members",
+      "due": "Due",
+      "progress": "Progress"
+    },
+    "listSettings": {
+      "title": "Projects settings",
+      "showSomeday": "Show someday projects",
+      "showSomedayHint": "Projects tagged #someday.",
+      "showCompleted": "Show completed projects",
+      "saveError": "Failed to save projects settings"
+    },
+    "reorderError": "Failed to save project order"
   },
   "projectItem": {
     "edit": "編集",
@@ -1238,7 +1287,12 @@
     "noAreasYet": "まだエリアはありません。",
     "blankSlateHint": "エリアは、仕事・健康・家など、長く向き合っていく生活の領域です。プロジェクトや目標をエリアに入れると、それぞれの領域をひとつの場所で見渡せます。",
     "blankSlateNew": "最初のエリアを作成",
-    "blankSlateProjects": "プロジェクトへ"
+    "blankSlateProjects": "プロジェクトへ",
+    "presetsLabel": "Most people start with",
+    "presetHome": "Home",
+    "presetWork": "Work",
+    "presetHealth": "Health",
+    "presetFamily": "Family"
   },
   "notes": {
     "loading": "ノートを読み込み中...",
@@ -1299,7 +1353,8 @@
     "linkedNoteCreate": "ノートを作成",
     "linkedNoteCreateFailed": "ノートを作成できませんでした。",
     "backgroundImage": "背景",
-    "noBackground": "背景なし"
+    "noBackground": "背景なし",
+    "openInNotes": "Open in Notes"
   },
   "tags": {
     "loading": "タグを読み込み中...",
@@ -1459,7 +1514,62 @@
     "editBanner": "プロジェクトバナーを編集",
     "currentBanner": "現在のバナー",
     "choosePreset": "プリセットバナーを選択:",
-    "orUploadOwn": "または自分のバナーをアップロード:"
+    "orUploadOwn": "または自分のバナーをアップロード:",
+    "attachments": "Attachments",
+    "overview": "Overview",
+    "people": "People",
+    "info": "Project info",
+    "clickToEdit": "Click to edit",
+    "addDescription": "Add a description",
+    "changeArea": "Change area",
+    "setArea": "Set area",
+    "changeGoal": "Change goal",
+    "setGoal": "Set goal",
+    "changePriority": "Change priority",
+    "setPriority": "Set priority",
+    "changeDue": "Change due date",
+    "changeTags": "Change tags",
+    "addTags": "Add tags",
+    "changeColor": "Change color",
+    "setColor": "Set color",
+    "moreOptions": "More options",
+    "pin": "Pin",
+    "pinned": "Pinned",
+    "started": "Started",
+    "startedOn": "Started {{date}}",
+    "daysToDue_one": "{{count}} day to due date",
+    "daysToDue_other": "{{count}} days to due date",
+    "daysOverdue_one": "{{count}} day overdue",
+    "daysOverdue_other": "{{count}} days overdue",
+    "progressSummary": "Project progress · {{done}} of {{total}} tasks done",
+    "timeUsed": "{{percent}}% of time used",
+    "progressHint": "Bar: tasks done. Line: time passed between start and due date.",
+    "openTasks": "Open tasks",
+    "overdueTasks": "Overdue",
+    "doneThisWeek": "Done this week",
+    "untilDate": "Until {{date}}",
+    "pastDate": "Past {{date}}",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "noteCount_one": "{{count}} note",
+    "noteCount_other": "{{count}} notes",
+    "roleOwner": "Owner",
+    "rolePending": "Invited",
+    "roleEdit": "Can edit",
+    "roleView": "Can view",
+    "notShared": "Only you can see this project.",
+    "addNote": "Add note",
+    "noNotesYet": "No notes yet.",
+    "allNotes": "All notes",
+    "fewerNotes": "Show fewer",
+    "fileCount_one": "{{count}} file",
+    "fileCount_other": "{{count}} files",
+    "addFile": "Add file",
+    "uploading": "Uploading...",
+    "noFilesYet": "No files yet. Drop files here or use +.",
+    "allFiles": "All files",
+    "dropToUpload": "Drop to upload",
+    "fewerFiles": "Show fewer"
   },
   "task": {
     "suggestions": {
@@ -1588,7 +1698,11 @@
     "estimateHint": "だいたいどれくらいかかりますか?一日の計画に使われます。",
     "estimateClearHint": "もう一度クリックすると解除",
     "estimateError": "見積もりを更新できませんでした",
-    "noGoal": "目標に割り当てる"
+    "noGoal": "目標に割り当てる",
+    "comments": "Comments",
+    "skipOccurrence": "Skip this occurrence",
+    "occurrenceSkipped": "Occurrence skipped",
+    "skipOccurrenceError": "Failed to skip occurrence"
   },
   "calendar": {
     "month": "月",
@@ -1631,7 +1745,12 @@
     "medium": "中",
     "low": "低",
     "time": "時刻",
-    "allDay": "終日"
+    "allDay": "終日",
+    "manageCalendars": "Calendars",
+    "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
+    "hideCalendar": "Hide {{name}}",
+    "showCalendar": "Show {{name}}",
+    "feedError": "Could not load: {{names}}"
   },
   "productivity": {
     "stalledProjects": "停滞しているプロジェクト",
@@ -1883,7 +2002,14 @@
       "reason": "理由（任意）",
       "overrideSaved": "特例を保存しました",
       "overrideCleared": "特例を解除しました",
-      "synced": "決済プロバイダーから同期しました"
+      "synced": "決済プロバイダーから同期しました",
+      "onTrial": "On trial",
+      "trialsOnly": "Trials only",
+      "trial": "Trial",
+      "trialDaysLeft_one": "{{count}} day left",
+      "trialDaysLeft_other": "{{count}} days left",
+      "trialEnded": "Trial ended",
+      "readOnlyUntil": "Read-only, deleted on {{date}}"
     },
     "dashboard": {
       "title": "管理者",
@@ -2037,6 +2163,105 @@
       "postCount": "記事: {{count}}",
       "open": "ブログを開く",
       "preview": "アプリでプレビュー"
+    },
+    "verified": "Verified",
+    "verifiedYes": "Verified",
+    "verifiedNo": "Not verified",
+    "feedback": {
+      "title": "Feedback",
+      "open": "Open ({{count}})",
+      "resolved": "Resolved",
+      "all": "All",
+      "emptyOpen": "Nothing open. Nice.",
+      "empty": "No feedback yet.",
+      "markResolved": "Mark resolved",
+      "reopen": "Reopen",
+      "updateFailed": "Failed to update",
+      "deleted": "Feedback deleted",
+      "deleteFailed": "Failed to delete",
+      "deleteTitle": "Delete Feedback",
+      "confirmDelete": "Delete this feedback? This cannot be undone.",
+      "statusOpen": "Open",
+      "statusResolved": "Resolved"
+    },
+    "userStatus": {
+      "title": "Users",
+      "user": "User",
+      "signedUp": "Signed up",
+      "verified": "Verified",
+      "status": "Status",
+      "daysLeft": "Trial days left",
+      "paid": "Paid",
+      "trial": "Trial",
+      "subscribed": "Subscribed",
+      "pastDue": "Past due",
+      "comped": "Comped",
+      "admin": "Admin",
+      "member": "Member",
+      "trialEnded": "Trial ended",
+      "free": "No plan",
+      "addedBy": "Added by {{email}}",
+      "selfSignUp": "Signed up",
+      "deletedOn": "Deleted on {{date}}",
+      "paidByOwner": "Yes, by owner",
+      "paidYes": "Yes",
+      "paidBefore": "Not now, paid before",
+      "paidNo": "No",
+      "items": "Items",
+      "itemsCreated_one": "{{count}} item",
+      "itemsCreated_other": "{{count}} items",
+      "lastCreated": "Last on {{date}}",
+      "nothingCreated": "Nothing yet",
+      "kinds": {
+        "tasks": "Tasks",
+        "habits": "Habits",
+        "projects": "Projects",
+        "notes": "Notes",
+        "areas": "Areas",
+        "goals": "Goals",
+        "tags": "Tags",
+        "people": "People",
+        "views": "Views",
+        "inbox": "Inbox"
+      }
+    },
+    "userFilter": {
+      "filter": "Filter",
+      "clear": "Clear filters",
+      "showing": "{{shown}} of {{total}}",
+      "empty": "No users match these filters.",
+      "source": "How they joined",
+      "signedUp": "Signed up",
+      "member": "Added as member",
+      "invited": "Invitation pending",
+      "verification": "Email",
+      "verified": "Verified",
+      "unverified": "Not verified",
+      "plan": "Plan",
+      "trial": "On trial",
+      "trialEnded": "Trial ended",
+      "paid": "Paying",
+      "paidBefore": "Paid before",
+      "neverPaid": "Never paid"
+    },
+    "trends": {
+      "title": "Last 7 days",
+      "signups": "signups",
+      "vsLastWeek": "{{diff}} vs last week",
+      "chartLabel": "Signups per day",
+      "barTitle": "{{date}}: {{n}} signups ({{prev}} a week before)",
+      "activation": "Activated",
+      "activationHint": "{{n}} of {{total}} new users created something",
+      "active": "Active users",
+      "activeHint": "created something this week",
+      "waitlist": "Waitlist joins",
+      "trialsStarted": "Trials started",
+      "trialsEnding": "Trials ending in 7 days",
+      "churn": "Canceled · failed payments",
+      "firstPlan": "Planned a first day",
+      "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
+      "threeDays": "Kept planning",
+      "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
     }
   },
   "shares": {
@@ -2077,7 +2302,13 @@
     "groupAlreadyShared": "共有済み",
     "groupHint": "各メンバーに招待が届き、後からグループに追加された人も招待されます。",
     "sharedWithGroups": "グループと共有",
-    "groupCounts": "承諾 {{accepted}} 件、保留 {{pending}} 件"
+    "groupCounts": "承諾 {{accepted}} 件、保留 {{pending}} 件",
+    "shareWith": "Share with",
+    "selectPerson": "Select a person",
+    "selectPersonError": "Choose a person",
+    "alreadyHasAccess": "already has access",
+    "someoneElseByEmail": "Someone else, by email",
+    "you": "you"
   },
   "views": {
     "title": "スマートビュー",
@@ -2237,7 +2468,8 @@
       "dueProjects": "期限内のプロジェクト",
       "overdueProjects": "期限切れのプロジェクト",
       "taskAssigned": "タスクが割り当てられました",
-      "habitReminders": "習慣のリマインダー"
+      "habitReminders": "習慣のリマインダー",
+      "comments": "Comments & Mentions"
     },
     "descriptions": {
       "dueTasks": "24時間以内に期限が来るタスク",
@@ -2246,7 +2478,8 @@
       "dueProjects": "24時間以内に期限が来るプロジェクト",
       "overdueProjects": "期限を過ぎたプロジェクト",
       "taskAssigned": "他の誰かからあなたにタスクが割り当てられました",
-      "habitReminders": "習慣に設定したリマインダー時刻に、まだ未完了の場合"
+      "habitReminders": "習慣に設定したリマインダー時刻に、まだ未完了の場合",
+      "comments": "Replies, comments on your tasks, and @mentions"
     },
     "telegram": {
       "notConfigured": {
@@ -2258,11 +2491,27 @@
       "title": "通知テスト",
       "description": "テスト通知を送信して、アプリ内および有効なチャネル（Telegramなど）での表示を確認します。",
       "send": "テストを送信",
-      "sending": "送信中..."
+      "sending": "送信中...",
+      "rowLabel": "Send a test notification",
+      "button": "Test",
+      "sendVia": "Send a test via {{channel}}",
+      "sent": "Test sent via {{channel}}.",
+      "failed": "Could not send the test."
     },
     "info": {
       "title": "注意:",
       "message": "メールおよびプッシュ通知は近日中に提供予定です。アプリ内およびTelegram通知は現在利用可能です。"
+    },
+    "push": {
+      "title": "Push notifications on this device",
+      "prompt": "Get notifications on this device even when Life-to-Day is closed.",
+      "subscribed": "This device receives push notifications. Choose which ones in the Push column below.",
+      "needsInstall": "To get notifications on iPhone or iPad, add Life-to-Day to your Home Screen first: tap Share, then Add to Home Screen, and open it from there.",
+      "unsupported": "This browser does not support push notifications.",
+      "denied": "Notifications are blocked for Life-to-Day. Allow them in your browser or system settings, then come back here.",
+      "enable": "Turn on",
+      "disable": "Turn off",
+      "failed": "Something went wrong. Please try again."
     }
   },
   "projectStatus": {
@@ -2409,7 +2658,11 @@
     "perDay": "1日に",
     "weekdays": "平日",
     "weekends": "週末",
-    "quitTarget": "避ける"
+    "quitTarget": "避ける",
+    "presetsLabel": "Or start with",
+    "presetWalk": "Morning walk",
+    "presetRead": "Read 20 minutes",
+    "presetReview": "Weekly review"
   },
   "aiAssistant": {
     "title": "AIアシスタント",
@@ -2478,7 +2731,8 @@
     "bestWeek": "最高（{{week}}）",
     "areaBalance30": "エリアのバランス、直近30日",
     "completionRateLegend": "% = 完了率",
-    "itemsToProcess_one": "処理待ち {{count}} 件"
+    "itemsToProcess_one": "処理待ち {{count}} 件",
+    "overview": "Overview"
   },
   "billing": {
     "title": "プランと請求",
@@ -2561,7 +2815,14 @@
     "readOnlyUntil": "データは {{date}} まで読み取り専用で、その後アカウントは削除されます。Life-to-Day Cloud を引き続き使うには購読してください。",
     "trialIncludes": "試用期間は {{date}} に終了します。AI アシスタント、公開ノート、メンバーの追加は購読すると使えるようになります。",
     "backToApp": "Life-to-Day に戻る",
-    "trialBanner": "無料試用中、残り日数：{{count}}"
+    "trialBanner": "無料試用中、残り日数：{{count}}",
+    "trialBanner_one": "You're on the free trial, {{count}} day left",
+    "trialBanner_other": "You're on the free trial, {{count}} days left",
+    "trialLock": {
+      "ai": "The AI assistant is not part of the free trial. Subscribe to turn it on.",
+      "publicNotes": "Public note links are not part of the free trial. Subscribe to share notes with anyone.",
+      "members": "Adding members is not part of the free trial. Subscribe to add family members or teammates."
+    }
   },
   "demo": {
     "opening": "デモを開いています...",
@@ -2767,7 +3028,9 @@
       "gapFit": "{{time}} の空き {{gap}} に {{name}} ({{duration}}) が入ります",
       "place": "入れる",
       "noBreak": "{{start}} から {{end}} まで休憩がありません",
-      "next": "次のヒント"
+      "next": "次のヒント",
+      "missed_one": "{{count}} planned block already passed",
+      "missed_other": "{{count}} planned blocks already passed"
     },
     "more": "その他のオプション",
     "switchToList": "リスト表示に切り替え",
@@ -2781,11 +3044,20 @@
       "overdue": "期限切れ {{count}}",
       "due_today": "今日が期限 {{count}}",
       "in_progress": "進行中 {{count}}",
-      "suggested": "おすすめ {{count}}"
+      "suggested": "おすすめ {{count}}",
+      "tagged_today": "{{count}} tagged #today"
     },
     "durationMinutes": "{{minutes}}分",
     "durationHours": "{{hours}}時間",
-    "durationHoursMinutes": "{{hours}}時間{{minutes}}分"
+    "durationHoursMinutes": "{{hours}}時間{{minutes}}分",
+    "addTask": "Add task",
+    "taggedToday": "Tagged #today",
+    "doneForToday": "Done for today",
+    "nextOccurrence": "Next on {{date}}",
+    "movedOffPlan": "'{{name}}' is no longer due today, so it left today's plan.",
+    "refreshCalendar": "Refresh calendar",
+    "refreshCalendarError": "Could not refresh the calendar.",
+    "refreshingCalendar": "Refreshing calendar…"
   },
   "capture": {
     "add": "追加",
@@ -2850,7 +3122,10 @@
       "oneItemPerLineHelp": "オフ: 入力した内容全体が1つの項目になり、1行目がタイトル、残りの行がメモになります。オン: 各行がそれぞれ別の項目になります。",
       "save": "保存する",
       "title": "項目の追加"
-    }
+    },
+    "addTitle": "Add to Inbox, Task, Note or Project",
+    "close": "Close",
+    "filesAttached_one": "1 file attached."
   },
   "area": {
     "loadError": "エリアを読み込めませんでした"
@@ -2954,7 +3229,17 @@
     "confirmDeleteMessage": "「{{name}}」を削除しますか？ このテンプレートから作成したプロジェクトは影響を受けません。"
   },
   "publicNote": {
-    "linkedNoteNotShared": "このノートは公開されていません。"
+    "linkedNoteNotShared": "このノートは公開されていません。",
+    "toggleTheme": "Toggle dark mode",
+    "openApp": "Open Life-to-Day",
+    "updated": "Last updated {{date}}",
+    "unavailableTitle": "This note is not available",
+    "unavailableBody": "The link may be wrong, or the owner stopped sharing this note. Ask them for a new link.",
+    "failedTitle": "Could not load this note",
+    "failedBody": "Something went wrong on our side. Try again in a moment.",
+    "ctaTitle": "Do you want to share your notes?",
+    "ctaBody": "Write notes, keep them organized with your tasks and projects, and share any of them with a link.",
+    "ctaButton": "Sign up now"
   },
   "blog": {
     "nav": "ブログ",
@@ -2982,5 +3267,97 @@
   "app": {
     "tagline": "From long-term vision to today.",
     "sourceCode": "Source code"
+  },
+  "comments": {
+    "count": "{{count}} comments",
+    "loading": "Loading comments...",
+    "failedToLoad": "Failed to load comments",
+    "empty": "No comments yet",
+    "placeholder": "Write a comment... use @ to mention someone",
+    "replyPlaceholder": "Write a reply...",
+    "submit": "Comment",
+    "reply": "Reply",
+    "unknownAuthor": "Unknown",
+    "delete": "Delete comment",
+    "deleteConfirmTitle": "Delete Comment",
+    "deleteConfirmMessage": "Are you sure you want to delete this comment? This action cannot be undone.",
+    "deletedPlaceholder": "Comment deleted",
+    "failedToPost": "Failed to post comment",
+    "failedToDelete": "Failed to delete comment",
+    "like": "Like",
+    "dislike": "Dislike",
+    "failedToReact": "Failed to update reaction"
+  },
+  "sortable": {
+    "move": "Move",
+    "project": "sortable project",
+    "task": "sortable task"
+  },
+  "relations": {
+    "title": "Relations",
+    "add": "Add relation",
+    "remove": "Remove relation",
+    "searchPlaceholder": "Search for a task...",
+    "addFailed": "Failed to add relation.",
+    "removeFailed": "Failed to remove relation.",
+    "blocked": "Blocked",
+    "blockedTooltip": "Blocked by {{count}} open task(s)",
+    "completeBlockedTitle": "Task is blocked",
+    "completeBlockedMessage": "This task is blocked by {{count}} open task(s). Complete it anyway?",
+    "completeAnyway": "Complete anyway",
+    "types": {
+      "blocks": "Blocks",
+      "blocked_by": "Blocked by",
+      "related_to": "Related to",
+      "duplicates": "Duplicates",
+      "duplicated_by": "Duplicated by"
+    }
+  },
+  "attachments": {
+    "limitReached": "Maximum 20 attachments allowed",
+    "addTitle": "Add a title",
+    "title": "Title",
+    "download": "Download",
+    "noPreview": "No preview for this file type.",
+    "previous": "Previous file",
+    "next": "Next file",
+    "renameError": "Could not save the title",
+    "confirmDelete": "Delete file?"
+  },
+  "feedback": {
+    "title": "Send feedback",
+    "subtitle": "Found a bug or have an idea? Let us know.",
+    "placeholder": "What happened, or what would make Life-to-Day better?",
+    "contextNote": "The page you are on and the app version are sent along with your message.",
+    "send": "Send",
+    "sending": "Sending...",
+    "sent": "Thanks! Your feedback was sent.",
+    "failed": "Could not send your feedback"
+  },
+  "focus": {
+    "chip": "Focus",
+    "title": "Focus on",
+    "activeTitle": "Focus: {{label}}",
+    "area": "Area",
+    "anyArea": "Any area",
+    "project": "Project",
+    "anyProject": "Any project",
+    "tags": "Tags",
+    "hint": "Today, Upcoming, Tasks, Projects, Notes and search show only this. New tasks get the project and tags.",
+    "apply": "Apply",
+    "clear": "Clear",
+    "clearFocus": "Clear focus",
+    "locked": "Set by your Focus. Clear it from the chip in the top bar.",
+    "emptyHint": "Showing {{label}} only",
+    "saveError": "Could not save the focus."
+  },
+  "onboarding": {
+    "starter": {
+      "kicker": "Welcome to Life-to-Day",
+      "welcomeTitle": "Take a look at what you can do with Life-to-Day in a minute",
+      "videoTitle": "A one minute tour of Life-to-Day",
+      "letsStart": "I'm done, let's start",
+      "settingUp": "Setting up..."
+    }
   }
 }

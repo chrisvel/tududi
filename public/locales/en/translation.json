@@ -116,7 +116,24 @@
     "search": "Search",
     "admin": "Admin",
     "adminBadge": "Admin",
-    "templates": "Templates"
+    "templates": "Templates",
+    "ltd": {
+      "today": "Today",
+      "plan": "Plan",
+      "goals": "Goals",
+      "life": "Life",
+      "inbox": "Inbox",
+      "review": "Review",
+      "more": "More",
+      "settings": "Settings",
+      "habits": "Habits",
+      "notes": "Notes",
+      "areas": "Areas",
+      "projects": "Projects",
+      "primary": "Primary",
+      "lifeStub": "The life timeline will appear here later.",
+      "reviewStub": "Guided review will appear here later."
+    }
   },
   "settings": {
     "todayPageSettings": "Today Page Settings",
@@ -338,6 +355,7 @@
     "danish": "Danish",
     "finnish": "Finnish",
     "norwegian": "Norwegian",
+    "persian": "Persian",
     "polish": "Polish",
     "slovenian": "Slovenian",
     "slovak": "Slovak",
@@ -875,7 +893,13 @@
       "botName": "Bot Name:"
     },
     "telegramRequiredForSummaries": "Telegram integration must be set up to use task summaries.",
-    "sendSummaryFailed": "Failed to send the summary."
+    "sendSummaryFailed": "Failed to send the summary.",
+    "calendarSystem": "Calendar",
+    "calendarSystemAuto": "Match language",
+    "calendarGregorian": "Gregorian",
+    "calendarPersian": "Persian (Jalali)",
+    "latinDigits": "Digits",
+    "latinDigitsDescription": "Show Latin digits (0-9) instead of Persian digits"
   },
   "productivity": {
     "nothingYet": "Nothing to review yet.",

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<!-- LTD-PATCH(T-301): default dir/lang; i18n updates them without a reload -->
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
@@ -45,6 +46,8 @@
     
     <!-- Web app manifest for PWA support -->
     <link rel="manifest" href="manifest.json">
+    <!-- LTD-PATCH(T-301): static Vazirmatn; webpack must not resolve the font urls -->
+    <link rel="stylesheet" href="fonts/vazirmatn/vazirmatn.css">
   </head>
   <body>
     <div id="root"></div>

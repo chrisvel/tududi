@@ -39,6 +39,8 @@ const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
         { code: 'jp', name: t('profile.japanese'), flag: '🇯🇵' },
         { code: 'ko', name: t('profile.korean'), flag: '🇰🇷' },
         { code: 'no', name: t('profile.norwegian'), flag: '🇳🇴' },
+        // LTD-PATCH(T-301): Persian language option
+        { code: 'fa', name: t('profile.persian'), flag: '🇮🇷' },
         { code: 'pl', name: t('profile.polish'), flag: '🇵🇱' },
         { code: 'pt', name: t('profile.portuguese'), flag: '🇵🇹' },
         { code: 'ro', name: t('profile.romanian'), flag: '🇷🇴' },
@@ -88,9 +90,9 @@ const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
                 }}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
-                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-left flex items-center justify-between text-sm font-medium"
+                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-start flex items-center justify-between text-sm font-medium"
             >
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 rtl:space-x-reverse">
                     <span className="text-sm">{selectedLanguage.flag}</span>
                     <span>{selectedLanguage.name}</span>
                 </div>
@@ -113,7 +115,7 @@ const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
                             onClick={() => handleSelect(language.code)}
                             role="option"
                             aria-selected={value === language.code}
-                            className={`w-full px-3 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150 ${
+                            className={`w-full px-3 py-2 text-start flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150 ${
                                 value === language.code
                                     ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                     : 'text-gray-900 dark:text-gray-100'
