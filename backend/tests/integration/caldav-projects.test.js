@@ -86,7 +86,7 @@ describe('CalDAV Per-Project Calendars', () => {
                     .expect(207);
 
                 expect(response.text).toContain(projectsUrl());
-                expect(response.text).toContain('Tududi Projects');
+                expect(response.text).toContain('Life-to-Day Projects');
             });
 
             test('depth-1 lists one calendar per project plus (No Project)', async () => {

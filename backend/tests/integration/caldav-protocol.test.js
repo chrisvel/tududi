@@ -219,7 +219,7 @@ describe('CalDAV Protocol - Phase 3', () => {
                 .send(propfindXml)
                 .expect(207);
 
-            expect(response.text).toContain('Tududi Tasks');
+            expect(response.text).toContain('Life-to-Day Tasks');
             expect(response.text).toContain('getctag');
             expect(response.text).toContain('resourcetype');
         });

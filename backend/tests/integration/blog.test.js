@@ -293,7 +293,7 @@ describe('Blog', () => {
                 '<meta name="tududi-site" content="blog">'
             );
             expect(res.text).toContain(
-                '<title>How to organize a family | tududi</title>'
+                '<title>How to organize a family | Life-to-Day</title>'
             );
             expect(res.text).toContain(
                 '<meta property="og:description" content="A family is not a team.">'
