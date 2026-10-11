@@ -23,6 +23,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   restore-drill:
     if: github.repository == 'DanialMasghati/life-to-day'
@@ -37,6 +41,8 @@ jobs:
         run: |
           cp .env.example .env
           chmod 600 .env
+          # Runner owns the parent before Docker creates/chowns bind mounts.
+          mkdir -p data/db data/uploads data/backups
           python3 - <<'PY'
           from pathlib import Path
           import subprocess
