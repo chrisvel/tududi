@@ -1595,6 +1595,7 @@
     "system": "Sistem",
     "customize": "Kustomisasi",
     "addTag": "Tambahkan Tag",
+    "new": "Tag Baru",
     "loadingTags": "Memuat tag...",
     "errorLoadingTags": "Gagal memuat tag.",
     "toggleDropdownMenu": "Buka atau tutup menu",

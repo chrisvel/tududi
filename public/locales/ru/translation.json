@@ -1595,6 +1595,7 @@
     "system": "Система",
     "customize": "Настроить",
     "addTag": "Добавить тег",
+    "new": "Новый тег",
     "loadingTags": "Загрузка тегов...",
     "errorLoadingTags": "Ошибка при загрузке тегов.",
     "toggleDropdownMenu": "Открыть или закрыть меню",

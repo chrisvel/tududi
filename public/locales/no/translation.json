@@ -1596,6 +1596,7 @@
     "system": "System",
     "customize": "Tilpass",
     "addTag": "Legg til tag",
+    "new": "Ny tag",
     "loadingTags": "Laster inn merkelapper...",
     "errorLoadingTags": "Feil ved innlasting av merkelapper.",
     "toggleDropdownMenu": "Åpne eller lukk menyen",

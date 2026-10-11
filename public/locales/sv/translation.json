@@ -1595,6 +1595,7 @@
     "system": "System",
     "customize": "Anpassa",
     "addTag": "Lägg till Tagg",
+    "new": "Ny tagg",
     "loadingTags": "Läser in taggar...",
     "errorLoadingTags": "Det gick inte att läsa in taggarna.",
     "toggleDropdownMenu": "Öppna eller stäng menyn",

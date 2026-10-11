@@ -1528,6 +1528,7 @@
     "system": "Sistema",
     "customize": "Personalizar",
     "addTag": "Agregar Etiqueta",
+    "new": "Nueva etiqueta",
     "loadingTags": "Cargando etiquetas...",
     "errorLoadingTags": "Error al cargar las etiquetas.",
     "toggleDropdownMenu": "Abrir o cerrar el menú",

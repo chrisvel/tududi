@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import ConfirmDialog from './Shared/ConfirmDialog';
+import NewItemButton from './Shared/NewItemButton';
 import TagModal from './Tag/TagModal';
 import TagRow from './Tag/TagRow';
 import { TASK_SHEET_CLASS } from './Task/taskSheet';
@@ -47,6 +48,11 @@ const Tags: React.FC = () => {
 
     const handleEditTag = (tag: Tag) => {
         setSelectedTag(tag);
+        setIsTagModalOpen(true);
+    };
+
+    const handleNewTag = () => {
+        setSelectedTag(null);
         setIsTagModalOpen(true);
     };
 
@@ -126,30 +132,42 @@ const Tags: React.FC = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
             <div className="w-full max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between gap-2 mb-8">
                     <h2 className="text-2xl font-light">
                         {t('tags.title', 'Tags')}
                     </h2>
-                    <button
-                        type="button"
-                        onClick={() => setIsSearchExpanded(!isSearchExpanded)}
-                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
-                            isSearchExpanded
-                                ? 'bg-blue-50/70 dark:bg-blue-900/20'
-                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
-                        }`}
-                        aria-expanded={isSearchExpanded}
-                        aria-label={
-                            isSearchExpanded
-                                ? t(
-                                      'common.hideSearch',
-                                      'Collapse search panel'
-                                  )
-                                : t('common.showSearch', 'Show search input')
-                        }
-                    >
-                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setIsSearchExpanded(!isSearchExpanded)
+                            }
+                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
+                                isSearchExpanded
+                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                            }`}
+                            aria-expanded={isSearchExpanded}
+                            aria-label={
+                                isSearchExpanded
+                                    ? t(
+                                          'common.hideSearch',
+                                          'Collapse search panel'
+                                      )
+                                    : t(
+                                          'common.showSearch',
+                                          'Show search input'
+                                      )
+                            }
+                        >
+                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
+                        </button>
+                        <NewItemButton
+                            label={t('tags.new', 'New Tag')}
+                            onClick={handleNewTag}
+                            testId="new-tag-button"
+                        />
+                    </div>
                 </div>
 
                 {/* Collapsible search */}

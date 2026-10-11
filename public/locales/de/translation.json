@@ -1680,6 +1680,7 @@
     "system": "System",
     "customize": "Anpassen",
     "addTag": "Tag hinzufügen",
+    "new": "Neuer Tag",
     "loadingTags": "Tags werden geladen...",
     "errorLoadingTags": "Fehler beim Laden der Tags.",
     "toggleDropdownMenu": "Menü öffnen oder schließen",

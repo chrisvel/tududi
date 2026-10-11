@@ -1595,6 +1595,7 @@
     "system": "系统",
     "customize": "自定义",
     "addTag": "添加标签",
+    "new": "新建标签",
     "loadingTags": "正在加载标签...",
     "errorLoadingTags": "加载标签时出错。",
     "toggleDropdownMenu": "打开或关闭菜单",

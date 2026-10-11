@@ -1595,6 +1595,7 @@
     "system": "Järjestelmä",
     "customize": "Mukauta",
     "addTag": "Lisää tunniste",
+    "new": "Uusi tunniste",
     "loadingTags": "Ladataan tunnisteita...",
     "errorLoadingTags": "Tunnisteiden lataaminen epäonnistui.",
     "toggleDropdownMenu": "Avaa tai sulje valikko",

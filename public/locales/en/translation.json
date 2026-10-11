@@ -1679,6 +1679,7 @@
   },
   "tags": {
     "addTag": "Add Tag",
+    "new": "New Tag",
     "loading": "Loading tags...",
     "searchPlaceholder": "Search tags...",
     "title": "Tags",

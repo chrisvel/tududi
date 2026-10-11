@@ -1329,6 +1329,7 @@
     "system": "システム",
     "customize": "カスタマイズ",
     "addTag": "タグを追加",
+    "new": "新しいタグ",
     "loadingTags": "タグを読み込み中...",
     "errorLoadingTags": "タグの読み込み中にエラーが発生しました。",
     "toggleDropdownMenu": "メニューを開閉",

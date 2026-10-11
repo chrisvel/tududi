@@ -1595,6 +1595,7 @@
     "system": "Sistem",
     "customize": "Özelleştir",
     "addTag": "Etiket Ekle",
+    "new": "Yeni Etiket",
     "loadingTags": "Etiketler yükleniyor...",
     "errorLoadingTags": "Etiketler yüklenirken hata oluştu.",
     "toggleDropdownMenu": "Menüyü aç veya kapat",
