@@ -439,6 +439,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 ## Life-to-Day
 
 - This repository is a fork of `chrisvel/tududi`. Product source of truth: [docs/ltd/PRODUCT_BLUEPRINT.md](docs/ltd/PRODUCT_BLUEPRINT.md). Phase reports live in `docs/ltd/phases/`, Phase 0 spikes in `docs/ltd/spikes/`.
+- Phase 11 (not started): task effect and life lessons. Spec is blueprint §14.7, ADR-014, and Phase 11 in §24. Tasks T-1101–T-1104.
 - New code: backend in `backend/modules/ltd-*` (CommonJS, same pattern as tududi modules), frontend in `frontend/components/<Feature>/` (TSX).
 - LTD-PATCH rule: any change to tududi core gets a `// LTD-PATCH(T-xxx): why` comment and a row in [docs/ltd/UPSTREAM.md](docs/ltd/UPSTREAM.md). `bash scripts/ltd-patches.sh` lists them. Upstream sync policy is in the same file.
 - Journal rule: every non-human write (AI, MCP, rules) goes through the Journal/Proposal layer with preview and Undo, and never hard-deletes. The Journal is built in Phase 4.

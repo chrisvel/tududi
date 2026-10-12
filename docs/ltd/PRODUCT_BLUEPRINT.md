@@ -273,6 +273,8 @@ Life-to-Day ابزار درمانی یا پزشکی نیست و ادعای در�
 | F42 | تحلیل الگوهای برنامه‌ریزی (دقت تخمین، ساعات پربازده) | Insight | 🆕 | C |
 | F43 | Telegram capture | Capture | ✅ | C (موجود) |
 | F44 | OIDC SSO | Auth | ✅ | C (موجود) |
+| F45 | اثر تسک روی مسیر پنج‌ساله و Vision | Meaning | 🆕 روی whyChain و Metric | M |
+| F46 | درس زندگی با اگر/آنگاه، وصل به هدف و تسک | Meaning | 🆕 | L |
 
 ---
 
@@ -815,6 +817,9 @@ erDiagram
   USERS ||--o{ LTD_REVIEWS : writes
   USERS ||--o{ LTD_MILESTONES : timeline
   GOALS |o--o{ LTD_MILESTONES : marks
+  USERS ||--o{ LTD_LESSONS : learns
+  LTD_LESSONS ||--o{ LTD_LESSON_LINKS : applies
+  LTD_LESSONS ||--o{ LTD_LESSON_CHECKS : reviews
   USERS ||--o{ LTD_PROPOSALS : receives
   LTD_PROPOSALS |o--o{ LTD_JOURNAL : applied_as
   USERS ||--o{ LTD_JOURNAL : audited
@@ -841,6 +846,9 @@ erDiagram
 | `ltd_focus_sessions` | `id, uid, user_id, task_id NULL, started_at, ended_at NULL, planned_minutes, actual_minutes, interrupted BOOL, resume_note TEXT` |
 | `ltd_reviews` | `id, uid, user_id, period_type(day\|week\|month\|season\|year), period_start, answers JSON, summary TEXT, author(user\|ai), created_at` |
 | `ltd_milestones` | `id, uid, user_id, title, date, date_precision(day\|month\|year), kind(life_event\|goal_milestone), goal_id NULL, note, color, created_at, updated_at` |
+| `ltd_lessons` | `id, uid, user_id, title, expected NULL, happened NULL, if_text NULL, then_text NULL, learned_on DATE, source_type NULL(free\|milestone\|task\|goal), source_uid NULL, status(active\|parked\|retired), review_on DATE NULL, created_at, updated_at` |
+| `ltd_lesson_links` | `id, lesson_id, target_type(goal\|project\|area\|tag), target_id`. یکتا روی `(lesson_id, target_type, target_id)`. هر ردیف دقیقاً یک هدف دارد (قاعدهٔ service) |
+| `ltd_lesson_checks` | `id, uid, lesson_id, checked_on DATE, verdict(holds\|not_yet\|park), note NULL, created_at` |
 | `ltd_proposals` | `id, uid, user_id, origin(in_app_ai\|mcp\|rule), client_id NULL, title, rationale, ops JSON, risk_tier, status(pending\|applied\|partially_applied\|rejected\|expired\|reverted), expires_at, created_at, decided_at` |
 | `ltd_journal` | `id, uid, user_id, actor_type(user\|ai\|mcp\|system\|sync), actor_id, op, entity_type, entity_uid, before JSON, after JSON, proposal_id NULL, created_at, reverted_at NULL` |
 | `ltd_idempotency_keys` | `key PK, user_id, method, path, status, response JSON, created_at` (TTL ۷ روز) |
@@ -855,7 +863,7 @@ erDiagram
 | داده | نوع | مالک | یادداشت |
 |---|---|---|---|
 | همهٔ رکوردهای domain (Goal، Task، Plan، Metric، …) | **Authoritative** | SQLite سرور | فقط از Domain Services نوشته می‌شوند |
-| پیشرفت Goal (A و O)، زنجیرهٔ چرا، ظرفیت | **Projection / Read model** | محاسبه هنگام خواندن (کش حافظه‌ای کوتاه) | هیچ‌وقت در DB به‌عنوان حقیقت ذخیره نمی‌شوند. فقط `current_value` Metric کش می‌شود و قابل بازسازی است. |
+| پیشرفت Goal (A و O)، زنجیرهٔ چرا، ظرفیت، اثر تسک (۱۴.۷) | **Projection / Read model** | محاسبه هنگام خواندن (کش حافظه‌ای کوتاه) | هیچ‌وقت در DB به‌عنوان حقیقت ذخیره نمی‌شوند. فقط `current_value` Metric کش می‌شود و قابل بازسازی است. |
 | داده در PWA (SWR cache، Cache Storage) | **Cache** | کلاینت | دورریختنی |
 | صف آفلاین (IndexedDB) | **Replica موقت نوشتن** | کلاینت تا replay | با Idempotency-Key |
 | رویدادهای Google Calendar | **External read model** | Google | فقط در `ltd_external_event_links` نگاشت می‌شوند و سرور هرگز رویداد شخصی را بازنویسی نمی‌کند |
@@ -937,7 +945,7 @@ stalled   : هیچ Task پیوندی در ۷ روز اخیر کامل نشده �
 
 `whyChain(task) = [task.project?.goal ?? task.goal, …ancestors(goal)]`. در کارت Task و Focus نمایش داده می‌شود: «این کار ← آمادگی آزمون (پاییز) ← اسپانیایی B1 (۱۴۰۵) ← زندگی دوزبانه». AI و MCP همین تابع را در `get_goal_progress` و `explain_contribution` برمی‌گردانند.
 
-**گزارش مشارکت روزانه:** «امروز: ۲ ساعت و ۱۰ دقیقه برای "اسپانیایی B1"، ۳۰ دقیقه برای "سلامت"، ۴۵ دقیقه کار بدون هدف (عادی است).»
+**گزارش مشارکت روزانه:** «امروز: ۲ ساعت و ۱۰ دقیقه برای "اسپانیایی B1"، ۳۰ دقیقه برای "سلامت"، ۴۵ دقیقه کار بدون هدف (عادی است).» اثر هر تسک در ۱۴.۷ است.
 
 ### ۱۴.۵ مدل ظرفیت و برنامهٔ واقع‌بینانه (قطعی)
 
@@ -957,11 +965,68 @@ Recovery Mode    : capacity_rest = 0.6 × باقی‌ماندهٔ روز
 | آیین | زمان | ورودی | خروجی | مدت هدف |
 |---|---|---|---|---|
 | برنامهٔ روز | صبح یا شب قبل | ۳ اولویت هفته، تقویم، Inbox | Daily plan + Focus اول | ≤ ۳ دقیقه |
-| مرور روز | عصر | انجام‌شده‌ها، Focusها | مشارکت روز، انتقال ناتمام‌ها | ≤ ۲ دقیقه |
+| مرور روز | عصر | انجام‌شده‌ها، Focusها | مشارکت روز، انتقال ناتمام‌ها، یک درس اختیاری (۱۴.۷) | ≤ ۲ دقیقه |
 | برنامه و مرور هفته | جمعه یا شنبه | اهداف فصل، Metricها | ≤ ۳ اولویت هفته | ≤ ۱۵ دقیقه |
 | مرور ماه | پایان ماه | Metricها | تنظیم Milestoneها | ≤ ۲۰ دقیقه |
 | برنامهٔ فصل | ابتدای فصل | اهداف سال | ۳ تا ۵ هدف فصل + KR | ≤ ۴۵ دقیقه |
 | مرور سال و Vision | نوروز (پیش‌فرض برای تقویم جلالی) | همه | به‌روزرسانی Vision و ۵ ساله | آزاد |
+
+### ۱۴.۷ اثر تسک و درس زندگی (فاز ۱۱)
+
+اثر، مسیر ۱۴.۴ را به پیامد ۱۴.۲ و به یک درس وصل می‌کند. عدد تازه‌ای ساخته نمی‌شود. `goals.why` همان جملهٔ انسانی هر گره است و ستون تازه نمی‌گیرد.
+
+**`taskEffect(task, snapshot)`** تابع خالص در `backend/modules/ltd-progress/effect.js`. مسیر را از `chain()` در `projection.js` می‌گیرد. خروجی ذخیره نمی‌شود.
+
+| فیلد | قاعده |
+|---|---|
+| `chain` | همان whyChain، با `uid` و `title` و `horizon` و `why` |
+| `fiveYear` | اولین گره `horizon = five_year`، وگرنه `null` |
+| `vision` | اولین گره `horizon = vision`، وگرنه `null` |
+| `meaning` | `why` پنج‌ساله، وگرنه `why` ویژن، وگرنه `why` نزدیک‌ترین هدف. اگر هیچ‌کدام متن نداشت، `null` |
+| `outcome` | نزدیک‌ترین هدف از سمت تسک به بالا که `O` غیر `null` دارد: `{ goal_uid, title, horizon, value }`. `value` همان `O` موجود است |
+| `activity` | `true` اگر تسک داخل `W` همان هدف `outcome` باشد. اگر `outcome` نباشد، نسبت به نزدیک‌ترین هدف زنجیره سنجیده می‌شود |
+| `lesson` | حداکثر یک درس، با قاعدهٔ پایین. وگرنه `null` |
+| `kind` | `linked` وقتی زنجیره ناتهی است، وگرنه `unlinked` |
+
+انجام تسک `A` را، وقتی تسک داخل `W` است، عوض می‌کند. `O` فقط با check-in سنجه عوض می‌شود. کارت این دو را در دو جمله می‌گوید. درصدی مثل «این تسک ۰٫۴٪ ویژن را جلو برد» تولید نمی‌شود (ADR-014).
+
+جمله‌های رابط از کلید ترجمه می‌آیند:
+
+- `linked` و پنج‌ساله موجود: «این کار روی مسیر «{title}» است.»
+- `linked` بدون پنج‌ساله و با ویژن: «این کار به «{vision}» وصل است.»
+- `unlinked`: «این کار هنوز به هدفی وصل نیست.»
+- `outcome` موجود: «پیامد «{title}» اکنون {percent} است. انجام کار، فعالیت است. پیامد با ثبت سنجه عوض می‌شود.» درصد = `round(value × 100)`.
+- `outcome` خالی: «برای این مسیر سنجه‌ای ثبت نشده.»
+- `meaning`: متن `goals.why` با برچسب «چرا این هدف».
+
+**درس** ردیف `ltd_lessons` است. Note و Milestone و Journal جایگزین آن نیستند. Milestone می‌تواند `source_uid` باشد، یعنی رویداد مبدأ، نه خود درس.
+
+فرم ثبت چهار خانه دارد. فقط `title` برای ذخیره لازم است. `expected` و `happened` هر دو روی فرم هستند تا هم تجربهٔ موفق و هم تجربهٔ ناموفق نوشته شود. `if_text` و `then_text` یا هر دو پرند یا هر دو خالی. یکی پر و دیگری خالی `400` است. `learned_on` روز ISO میلادی است و سال پیش از ۱۶۰۰ رد می‌شود، همان قاعدهٔ milestone. نمایش جلالی است. `review_on` اگر فرستاده نشود `learned_on + ۱۴ روز` است و کاربر می‌تواند آن را خالی ذخیره کند.
+
+انتخاب همان یک درس برای یک تسک:
+
+1. `status = active` و مال همان کاربر.
+2. امتیاز لینک: هدف مستقیم تسک (هدف خود تسک، وگرنه هدف پروژه‌اش) = ۴. هر هدف دیگر زنجیره = ۳. پروژه = ۲. Area = ۱. برچسب مشترک = ۱. بیشترین امتیاز می‌ماند.
+3. بین هم‌امتیازها، درسی که `review_on` آن امروز یا گذشته است اول است. بعد `updated_at` جدیدتر.
+4. درس بدون لینک روی تسک نمی‌آید. فقط در فهرست زندگی دیده می‌شود.
+
+چهارمین درس `active` که به همان هدف لینک شود ذخیره می‌شود و پاسخ فیلد `warning: "three_is_enough"` دارد. متن همان الگوی «سه تا کافی است؟» در اولویت هفته است و جلوی ذخیره را نمی‌گیرد.
+
+بازبینی روی Today حداکثر یک پرسش است: درس `active` با قدیمی‌ترین `review_on <= امروز`.
+
+| پاسخ | اثر |
+|---|---|
+| `holds` | یک check. `review_on = امروز + ۱۴` |
+| `not_yet` | یک check. `review_on = امروز + ۷` |
+| `park` | `status = parked` و `review_on = null` |
+
+حذف درس فقط از نشست انسان است. توکن API و MCP حذف نمی‌کنند. هر نوشتن، از جمله check، یک ردیف Journal با Undo است. هدف یا پروژه یا Area یا برچسب مال کاربر دیگری `404` است و چیزی ذخیره نمی‌شود.
+
+کارت Now و Focus یک خط مسیر و، اگر باشد، یک خط اگر/آنگاه نشان می‌دهند. اگر اگر/آنگاه خالی باشد همان `title` درس می‌آید. درصد پیامد و «چرا» در صفحهٔ تسک و در گسترش کارت هستند. صفحهٔ هدف درس‌های لینک‌شده به همان هدف را فهرست می‌کند. تب زندگی فهرست درس‌ها را زیر Vision نشان می‌دهد. لایهٔ درس روی محور زمان پیش‌فرض خاموش است و در `ui_settings.appearance.lifeLessonsOnAxis` ذخیره می‌شود، همان کیسهٔ تنظیمات محور زمان، بدون patch سرویس کاربر.
+
+قابلیت ۶ در ۱۶.۴، وقتی فاز ۸ ساخته شد، فقط JSON همین تابع را به مدل می‌دهد. عددی که در آن JSON نیست در خروجی مدل رد می‌شود و هیچ فیلدی نوشته نمی‌شود. تا آن فاز، دکمهٔ جملهٔ انسانی در رابط نیست و تعریف انجام فاز ۱۱ به آن وابسته نیست.
+
+تا وجود Proposal (T-704)، ابزار MCP درس فقط خواندنی است. بعد از آن، ساخت و ویرایش درس عملیات R2 است. حذف در allowlist نیست.
 
 ---
 
@@ -1061,7 +1126,7 @@ flowchart LR
 | 3 | شکستن هدف یا Task به قدم‌ها | — | بله (structured: `steps[{title, est_min, starter_step}]`) | ۸ |
 | 4 | برنامهٔ فردا | جای‌گذاری در slotها | رتبه‌بندی و توضیح | ۸ |
 | 5 | پیشنهاد ۳ اولویت هفته | فیلتر اهداف عقب‌مانده | انتخاب و استدلال | ۸ |
-| 6 | توضیح مشارکت (چرا این کار مهم است) | whyChain | جملهٔ انسانی | ۸ |
+| 6 | توضیح مشارکت (چرا این کار مهم است) | JSON تابع `taskEffect` در ۱۴.۷. عددی خارج از آن JSON رد می‌شود | جملهٔ انسانی، بدون نوشتن | ۸ |
 | 7 | مرور روزانه و هفتگی | آمار | خلاصه و سؤال بازتابی | ۸ |
 | 8 | تنظیم پیشنهادی بر اساس پیشرفت واقعی | A در برابر O | پیشنهاد تغییر Metric یا افق | ۸+ |
 
@@ -1139,6 +1204,9 @@ flowchart LR
 | — | `capture(text)` = `add_to_inbox` ✅ | R1 | write | ✅ |
 | — | `checkin_metric(metric_id, value)` | R1 | write | 🆕 |
 | — | `explain_contribution(task_id)` | R0 | read | 🆕 |
+| — | `get_task_effect(task_id)` | R0 | read | 🆕 فاز ۱۱. همان ۱۴.۷ |
+| — | `list_lessons` / `get_lesson` | R0 | read | 🆕 فاز ۱۱ |
+| — | `create_lesson` / `update_lesson` | R2 | propose | 🆕 بعد از T-704. تا آن وقت ابزار نوشتن وجود ندارد |
 | — | `apply_proposal(proposal_id, op_ids?)` | R2 | write + اجازهٔ per-client | 🆕 (پیش‌فرض خاموش) |
 | — | `undo_change(journal_uid)` | R1 | write | 🆕 |
 
@@ -1358,7 +1426,7 @@ Life-to-Day
 ├─ امروز (Today)          → Now card · Agenda · Focus · Recovery/Overwhelmed · Wrap-up
 ├─ برنامه (Plan)           → Day (timeline + frames) · Week (۳ اولویت + grid) · Inbox drawer
 ├─ اهداف (Goals)           → Tree (Vision→Week) · Goal detail (A/O/health, metrics, projects, why) · Areas
-├─ زندگی (Life)            → Life Timeline (milestones, chapters) · Vision editor
+├─ زندگی (Life)            → Life Timeline (milestones, chapters) · Vision editor · Lessons (۱۴.۷)
 ├─ صندوق (Inbox)           → Capture · Process (به Task/Goal/Someday)
 ├─ مرور (Review)           → Daily · Weekly · Season · Insights (plan vs actual)
 └─ تنظیمات                 → Language/Calendar/Digits · Planning prefs · AI & Privacy · MCP clients · Integrations · Backup/Export
@@ -1386,7 +1454,8 @@ Life-to-Day
 │  الان (۱۰:۰۰–۱۰:۴۵) ⏳ ۲۸′   │
 │  «پیش‌نویس فصل ۲ گزارش»       │
 │  قدم شروع: فایل را باز کن    │
-│  ↳ گزارش پژوهش ← هدف پاییز   │
+│  ↳ روی مسیر «اسپانیایی B1»   │
+│  ↳ اگر خسته‌ام، ۱۰ دقیقه    │
 │  [ ▶ تمرکز ]  [ بعداً ]  [✓] │
 ├──────────────────────────────┤
 │ ۱۱:۰۰ جلسهٔ تیم (تقویم)      │
@@ -1428,7 +1497,7 @@ Life-to-Day
 
 **داخل MVP (Must):** F01 تا F21 (بخش ۴)، یعنی Areas؛ درخت افق‌ها؛ Metric و check-in؛ سه سیگنال پیشرفت؛ زنجیرهٔ چرا؛ Projects، Tasks و Habits پیوندشده؛ Inbox و Capture؛ Daily Plan و Time-blocking؛ Weekly Plan (۳ اولویت)؛ بافر و سقف بار و هشدار غیرواقعی؛ Focus تک‌تسکی؛ Recovery و Overwhelmed؛ قدم شروع؛ فارسی RTL و جلالی؛ PWA با شناسهٔ آفلاین؛ Docker، Caddy و بکاپ restic؛ فید iCal گوگل؛ MCP با Bearer برای Claude Code؛ Journal و Undo.
 
-**بیرون از MVP (Won't for v0.1):** قابلیت‌های LLM داخل اپ (فاز ۸)، OAuth برای claude.ai و ChatGPT (فاز ۷)، Google Calendar API (فاز ۹)، Life Timeline (فاز ۶)، Frames و انرژی (Should، اگر زمان بماند)، مرور هفتگی هدایت‌شده (Should)، گیمیفیکیشن، صوت، چندکاربره، replica محلی، اپ native و آزمون CalDAV.
+**بیرون از MVP (Won't for v0.1):** قابلیت‌های LLM داخل اپ (فاز ۸)، OAuth برای claude.ai و ChatGPT (فاز ۷)، Google Calendar API (فاز ۹)، Life Timeline (فاز ۶)، Frames و انرژی (Should، اگر زمان بماند)، مرور هفتگی هدایت‌شده (Should)، اثر تسک و درس زندگی (فاز ۱۱، پس از v1)، گیمیفیکیشن، صوت، چندکاربره، replica محلی، اپ native و آزمون CalDAV.
 
 ### ۲۲.۲ معیار موفقیت
 
@@ -1488,13 +1557,15 @@ Life-to-Day
 | F35 | Importer GLANCE | مهاجرت داده | F02، F25 | ❌ | M | C |
 | F36 | گیمیفیکیشن | انگیزه | — | ❌ | M | C |
 | F42 | تحلیل الگوها | — | F24 | ❌ | M | C |
+| F45 | اثر تسک روی مسیر پنج‌ساله | دیدن اثر کار امروز | F02، F04 | ❌ | M | S |
+| F46 | درس زندگی و اگر/آنگاه روی تسک | تجربه به کار بعدی برسد | F45 | ❌ | L | S |
 | F37، F38، F40، F41 | صوت، contributions، replica، body-doubling | — | — | ❌ | — | F |
 
 ---
 
 ## 24. Complete Phased Development Roadmap
 
-> **ترتیب نهایی فازها بر اساس وابستگی‌های واقعی تغییر کرده است:** MCP راه‌دور (فاز ۷) پیش از AI داخلی (فاز ۸) می‌آید. دلیل: tududi از قبل MCP دارد، و از این مسیر ChatGPT و Claude زودتر و ارزان‌تر به داده‌ها دسترسی پیدا می‌کنند. Capability Registry و Proposalها در فاز ۷ ساخته می‌شوند و فاز ۸ از آن‌ها استفاده می‌کند. Journal در فاز ۴ ساخته می‌شود چون پیش‌نیاز هر نوشتن غیرانسانی است. **MVP = پایان فاز ۵ + چک‌لیست Production-lite از فاز ۱۰.**
+> **ترتیب نهایی فازها بر اساس وابستگی‌های واقعی تغییر کرده است:** MCP راه‌دور (فاز ۷) پیش از AI داخلی (فاز ۸) می‌آید. دلیل: tududi از قبل MCP دارد، و از این مسیر ChatGPT و Claude زودتر و ارزان‌تر به داده‌ها دسترسی پیدا می‌کنند. Capability Registry و Proposalها در فاز ۷ ساخته می‌شوند و فاز ۸ از آن‌ها استفاده می‌کند. Journal در فاز ۴ ساخته می‌شود چون پیش‌نیاز هر نوشتن غیرانسانی است. **MVP = پایان فاز ۵ + چک‌لیست Production-lite از فاز ۱۰.** فاز ۱۱ پس از v1 است و به فازهای ۷ تا ۱۰ وابسته نیست.
 
 ```mermaid
 flowchart LR
@@ -1504,6 +1575,7 @@ flowchart LR
   P4 --> P7[7 Remote MCP + OAuth + Proposals/Registry]
   P7 --> P8[8 In-app AI]
   P5 --> P9[9 Google Calendar API]
+  P4 --> P11[11 Task effect and life lessons]
   P10[10 Production readiness — continuous gates] -.-> MVP
 ```
 
@@ -1683,7 +1755,24 @@ flowchart LR
 | DoD | همهٔ چک‌لیست‌های بخش ۲۶ سبز؛ ۳۰ روز uptime ≥ ۹۹٪ (🟡)؛ دو drill بازیابی موفق |
 | وابستگی | همه |
 
-**تخمین زمانی (🟡 A-12؛ برای یک توسعه‌دهنده با Agent، حدود ۱۵ ساعت در هفته):** فاز ۰: ۱ هفته · ۱: ۲ روز · ۲: ۱ هفته · ۳: ۲ تا ۳ هفته · ۴: ۳ هفته · ۵: ۳ هفته ← **MVP حدود ۱۰ تا ۱۲ هفته** · ۶: ۲ هفته · ۷: ۳ هفته · ۸: ۳ هفته · ۹: ۲ هفته · ۱۰ (نهایی): ۲ هفته.
+### فاز ۱۱: اثر تسک روی مسیر بلند و درس‌های زندگی
+
+| فیلد | محتوا |
+|---|---|
+| هدف | هر تسک بگوید روی کدام هدف پنج‌ساله و Vision نشسته، پیامد آن مسیر کجاست، و کدام درس زندگی باید همین کار را شکل بدهد |
+| پیش‌نیاز | فاز ۴ (whyChain، Metric، Journal). فاز ۶ فقط برای وصل کردن درس به یک milestone موجود. فازهای ۷، ۸ و ۱۰ لازم نیستند |
+| کارها | تابع خالص `taskEffect` طبق ۱۴.۷. ماژول `ltd-lessons` (routes → repository → service) با جدول‌های ۱۳.۳. فرم چهارخانه در مرور روز و در تب زندگی. کارت اثر روی صفحهٔ تسک، Now و Focus. فهرست درس زیر Vision. لایهٔ اختیاری روی محور زمان، پیش‌فرض خاموش. ابزارهای خواندنی MCP. رشته‌های fa و en |
+| فایل‌ها | `backend/modules/ltd-progress/effect.js`، `backend/modules/ltd-lessons/*`، `backend/models/ltd_lesson.js` و دو مدل لینک و check، migration با `safeCreateTable`، `frontend/components/Lessons/*`، `frontend/utils/lessonsService.ts`. درج کارت در Task، Now و Focus و تب Life با `LTD-PATCH(T-11xx)` و ردیف در `docs/ltd/UPSTREAM.md` |
+| تصمیم‌ها | ADR-014. جملهٔ انسانی هدف همان `goals.why` است. تب تازه در ناوبری ساخته نمی‌شود |
+| API | `GET /api/lessons/effect?task_uid=` · `GET /api/lessons?status=&goal_uid=` · `POST /api/lessons` · `PATCH /api/lessons/:uid` · `DELETE /api/lessons/:uid` · `POST /api/lessons/:uid/checks` · `GET /api/lessons/due?date=`. ایجاد، `uid` کلاینت و `Idempotency-Key` را مثل بقیهٔ ایجادهای آفلاین می‌پذیرد |
+| ابزار | Jest. Playwright روی Today، تسک، و تب زندگی. بدون مدل زبانی |
+| تست | واحد `taskEffect`: زنجیره تا `five_year` و `vision`، تسک بی‌هدف با `kind=unlinked` و بدون درصد، تکمیل تسک `O` را عوض نمی‌کند، انتخاب درس با امتیاز ۴>۳>۲، حداکثر یک درس، درس بدون لینک روی تسک نمی‌آید. integration روی SQLite و PostgreSQL: کاربر A درس B را نمی‌بیند و به هدف B لینک نمی‌کند، تاریخ جلالی و سال پیش از ۱۶۰۰ رد می‌شود، اگر بدون آنگاه `400`، چهارمین درس active همان هدف ذخیره می‌شود و `warning=three_is_enough` دارد، حذف با توکن `403`، حذف انسان + Undo، check از نوع `holds` تاریخ بازبینی را ۱۴ روز جلو می‌برد. upgrade: جدول‌ها روی fixture قدیمی اضافه می‌شوند و down رد می‌شود. E2E: کارت Now خط مسیر را نشان می‌دهد، ثبت درس از مرور روز همان خط را روی تسک مرتبط می‌آورد، پرسش بازبینی روز فقط یکی است |
+| ریسک | کاربر خط مسیر را با جلو رفتن Vision یکی بگیرد. کاهش: دو جملهٔ جدا برای فعالیت و پیامد، و نبودن هر درصد اثر تسک |
+| خروجی | روی هر تسک وصل‌شده، مسیر پنج‌ساله یا Vision، وضعیت پیامد، و حداکثر یک درس |
+| DoD | معیار F45 و F46. یک تسک زیر هدف پنج‌ساله با سنجه، روی Now و صفحهٔ تسک مسیر و درصد پیامد را نشان می‌دهد و با تکمیل تسک آن درصد ثابت می‌ماند. یک درس با اگر/آنگاه که به همان هدف لینک شده، همان یک خط را روی آن تسک نشان می‌دهد و روی تسک بی‌ارتباط نشان نمی‌دهد. فاز ۸ و OAuth برای این DoD لازم نیستند |
+| وابستگی | ۴ |
+
+**تخمین زمانی (🟡 A-12؛ برای یک توسعه‌دهنده با Agent، حدود ۱۵ ساعت در هفته):** فاز ۰: ۱ هفته · ۱: ۲ روز · ۲: ۱ هفته · ۳: ۲ تا ۳ هفته · ۴: ۳ هفته · ۵: ۳ هفته ← **MVP حدود ۱۰ تا ۱۲ هفته** · ۶: ۲ هفته · ۷: ۳ هفته · ۸: ۳ هفته · ۹: ۲ هفته · ۱۰ (نهایی): ۲ هفته · ۱۱: ۲ هفته. فاز ۱۱ می‌تواند بعد از فاز ۴ شروع شود و منتظر ۷ تا ۱۰ نماند.
 
 ---
 
@@ -1949,6 +2038,13 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 - *Decision:* merge ماهانه (نه rebase)؛ `LTD-PATCH`؛ `UPSTREAM.md`؛ PRهای عمومی به upstream.
 - *Consequences:* اگر هزینهٔ merge بیش از ۱ روز در ماه برای ۳ ماه متوالی باشد، ADR-001 بازنگری می‌شود.
 
+**ADR-014: اثر تسک projection است و درس موجودیت خودش است**
+- *Status:* Accepted (2026-10-12) — تصمیم برنامه‌ریزی فاز ۱۱. شواهد در ۳۱.۲ و ۳۱.۳.
+- *Context:* کاربر می‌خواهد اثر هر تسک امروز را روی Vision و هدف پنج‌ساله ببیند، و درس‌های زندگی روی همان تسک‌ها برگردند. زنجیرهٔ چرا و `goals.why` و Metric از فاز ۴ هستند. Note و Milestone و Journal هر کدام کار دیگری دارند.
+- *Decision:* `taskEffect` هنگام خواندن از whyChain و `O` ساخته می‌شود و ذخیره نمی‌شود. انجام تسک درصد پیامد را عوض نمی‌کند. درس در `ltd_lessons` است، با لینک به هدف یا پروژه یا Area یا برچسب، و با اگر/آنگاه که حداکثر یکی از آن‌ها روی تسک مرتبط دیده می‌شود. تب ناوبری تازه ساخته نمی‌شود.
+- *Alternatives:* درصد اثر هر تسک روی Vision (فعالیت را به‌جای پیامد جا می‌زند و ADR-006 را می‌شکند). ذخیرهٔ درس به‌صورت Note یا Milestone (رویداد و یادداشت به تسک بعدی وصل نمی‌شوند). جملهٔ مدل به‌عنوان منبع اثر (فاز ۸ فقط اجازه دارد همان JSON را به زبان انسان بگوید).
+- *Consequences:* یک ماژول و سه جدول. کارت Now یک خط مسیر و حداکثر یک خط درس می‌گیرد.
+
 ---
 
 ## 29. Open Questions and Assumptions
@@ -1971,6 +2067,8 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 | A-12 | ظرفیت توسعه حدود ۱۵ ساعت در هفته است | — | پرسش ۲ | باز (پرسش ۲) |
 | A-13 | `oidc-provider` بدون CIMD برای Claude و ChatGPT کافی است | الزام CIMD توسط یکی از clientها | G4 | 🟡 تأیید مستند، نه عملی (G4): Claude بدون اعلام CIMD به DCR برمی‌گردد؛ OpenAI: «DCR is still supported» |
 | A-14 | روی image tududi ابزار `wget` یا `sqlite3` برای healthcheck و بکاپ موجود است | نبود ← استفاده از `node -e` یا sidecar | فاز ۲ | ✅ تأیید شد (G1): `wget` و `sqlite3` در image هستند، `curl` نیست؛ DB در `/app/db/production.sqlite3` |
+| A-15 | سقف نرم ۳ درس active برای هر هدف، بدون مانع ذخیره، کافی است | کاربر درس چهارم را مدام لازم دارد و هشدار نادیده گرفته می‌شود | فاز ۱۱ | باز |
+| A-16 | یک درس روی Now و Focus کافی است | کاربر برای یک تسک همزمان به دو درس نیاز دارد | فاز ۱۱ | باز |
 
 ### ۲۹.۲ پرسش‌های باز (مالک: شما)
 
@@ -2215,7 +2313,23 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 **T-1003: Runbookها و راهنمای فارسی کاربر** · M · Should · Architecture
 **T-1004: خودکارسازی release و rollback** · M · Should · DevOps
 
-> برای تسک‌های فشرده‌شدهٔ فازهای ۶ تا ۱۰، فیلدهای Purpose، Acceptance و Tests از جدول فاز مربوط در بخش ۲۴ و معیارهای بخش ۲۳ گرفته می‌شوند. Agent اجراکننده موظف است پیش از شروع، این فیلدها را در PR description بنویسد.
+#### فاز ۱۱
+
+**T-1101: `taskEffect`** · Phase 11 · M · Should · Backend
+- *Scope:* `backend/modules/ltd-progress/effect.js` خالص، طبق ۱۴.۷. بدون نوشتن DB. *Acceptance:* F45. *Tests:* زنجیره، تسک بی‌هدف، ثبات `O` بعد از تکمیل، انتخاب یک درس.
+
+**T-1102: `ltd-lessons`** · Phase 11 · L · Should · Backend
+- *Scope:* سه جدول ۱۳.۳ با `safeCreateTable`، ماژول `routes → repository → service`، Journal و Undo، حذف فقط برای نشست انسان، `Idempotency-Key`. *Acceptance:* F46. *Tests:* integration دو کاربر، تاریخ نامعتبر، اگر بدون آنگاه، سقف نرم، upgrade.
+
+**T-1103: کارت اثر و فرم درس** · Phase 11 · L · Should · Frontend
+- *Scope:* یک خط روی Now و Focus، جزئیات در صفحهٔ تسک، فرم چهارخانه در مرور روز و تب زندگی، پرسش بازبینی حداکثر یکی در Today، لایهٔ محور پیش‌فرض خاموش. fa و en. لمس هسته با `LTD-PATCH(T-1103)`. *Acceptance:* DoD فاز ۱۱. *Tests:* کامپوننت و E2E همان فاز.
+
+**T-1104: ابزارهای خواندنی MCP** · Phase 11 · S · Should · AI/MCP
+- *Scope:* `get_task_effect`، `list_lessons`، `get_lesson`. نوشتن تا T-704 ساخته نمی‌شود. *Tests:* جداسازی کاربر و schema.
+
+> فاز ۱۱ در جمع امتیاز v1 (۲۰۵) نیست. Must همان ۱۰۱ می‌ماند.
+
+> برای تسک‌های فشرده‌شدهٔ فازهای ۶ تا ۱۱، فیلدهای Purpose، Acceptance و Tests از جدول فاز مربوط در بخش ۲۴ و معیارهای بخش ۲۳ گرفته می‌شوند. Agent اجراکننده موظف است پیش از شروع، این فیلدها را در PR description بنویسد.
 
 **جمع امتیاز:** Must = ۱۰۱، Should و Could = ۱۰۴، کل v1 = ۲۰۵ ← **سهم Must ≈ ۴۹٪** (≤ ۶۰٪ ✅).
 
@@ -2259,6 +2373,7 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 - Tailwind: [v3.3 — Simplified RTL support with logical properties](https://tailwindcss.com/blog/tailwindcss-v3-3)
 - PWA و iOS: [MagicBell — PWA iOS limitations](https://www.magicbell.com/blog/pwa-ios-limitations-safari-support-complete-guide) · [Monterail — PWA for iOS](https://monterail.com/blog/pwa-for-apple-ios)
 - ADHD و دسترس‌پذیری: [Zheng et al. meta-analysis (CADDRA)](https://www.caddra.ca/time-perception-deficits-in-children-and-adolescents-with-adhd-a-meta-analysis/) · [Gawrilow & Gollwitzer 2008](https://www.socmot.uni-konstanz.de/publications/implementation-intentions-facilitate-response-inhibition-adhd-children) · [NICE NG87](https://www.nice.org.uk/guidance/ng87) · [BLMK ICB Adult ADHD SCG (quoting NG87)](https://medicines.bedfordshirelutonandmiltonkeynes.icb.nhs.uk/wp-content/uploads/2020/04/Adult-ADHD-SCG-Luton-Bedfordshire-2022_Final.pdf) · [W3C COGA — Making Content Usable](https://www.w3.org/TR/coga-usable/) · [Habi — time blindness (non-academic)](https://habi.app/insights/time-blindness-adhd/)
+- اثر تسک و درس (بازیابی ۲۰۲۶-۱۰-۱۲): [Gollwitzer & Sheeran 2006](https://doi.org/10.1016/S0065-2601(06)38002-1) · [متاآنالیز اگر/آنگاه ۲۰۲۴، doi:10.1080/10463283.2024.2334563](https://doi.org/10.1080/10463283.2024.2334563) · [Harkin et al. 2016](https://doi.org/10.1037/bul0000025) · [Ellis & Davidi 2005](https://cebma.org/assets/Uploads/Ellis-2005.pdf) · [Sheldon & Elliot 1999](https://doi.org/10.1037/0022-3514.76.3.482) · [Koestner et al. 2002](https://selfdeterminationtheory.org/SDT/documents/2002_KoestnerLekesPowersChicoine_JPSP.pdf)
 - نسخه‌های npm (registry.npmjs.org، 2026-10-10): `@modelcontextprotocol/sdk` 1.32.1 (MIT) · `@modelcontextprotocol/server` 2.3.1 (Apache-2.0) · `ai` 7.0.137 · `@ai-sdk/openai` 4.0.91 · `@ai-sdk/anthropic` 4.0.78 (Apache-2.0) · `oidc-provider` 9.12.2 (MIT) · `better-auth` 1.7.7 (MIT) · `date-fns-jalali` dist-tag 4.4.0-0 (MIT) · `tailwindcss` 4.3.3 (tududi از 3.4 استفاده می‌کند) · `vite-plugin-pwa` 2.0.0
 
 ### ۳۱.۳ Research log
@@ -2294,6 +2409,10 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 | 2026-10-10 | 1 | ADHD شواهد | WebSearch | CADDRA، Uni Konstanz، NICE، W3C | زمان، if-then، دوره‌های کوتاه، COGA | §3 |
 | 2026-10-10 | 2 | نسخه‌های stack | npm registry | npm | جدول ۳۱.۲ | §7, §16 |
 | 2026-10-10 | 1 | روش fork پوشه | تست git محلی | scratchpad | `git init` + `checkout --track` کار می‌کند | §25.2 |
+| 2026-10-12 | 11 | اگر/آنگاه | WebSearch | Gollwitzer & Sheeran 2006، doi:10.1016/S0065-2601(06)38002-1 | ۹۴ آزمون، d = .65. قالب contingent در متاآنالیز ۲۰۲۴ (۶۴۲ آزمون، doi:10.1080/10463283.2024.2334563) اثر بزرگ‌تر دارد | ۱۴.۷، ADR-014 |
+| 2026-10-12 | 11 | پایش پیشرفت | WebSearch | Harkin et al. 2016، doi:10.1037/bul0000025 | ۱۳۸ مطالعه، d+ = 0.40 برای رسیدن به هدف. ثبت فیزیکی اثر را بیشتر می‌کند | ۱۴.۷ |
+| 2026-10-12 | 11 | درس از موفقیت و شکست | WebSearch | Ellis & Davidi 2005، PDF CEBMa | مرور هر دو، بهتر از مرور فقط شکست، عملکرد بعدی را بالا برد | ۱۴.۷ فرم `expected` و `happened` |
+| 2026-10-12 | 11 | هدف خودهماهنگ | WebSearch | Sheldon & Elliot 1999، doi:10.1037/0022-3514.76.3.482؛ Koestner et al. 2002 | پیوند هدف با ارزش شخصی تلاش را نگه می‌دارد. اگر/آنگاه و خودهماهنگی با هم به رسیدن کمک می‌کنند | `goals.why` + اگر/آنگاه درس |
 
 ---
 
@@ -2303,3 +2422,4 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 |---|---|---|
 | 2026-10-10 | 1.0 | نسخهٔ اول: پژوهش، تصمیم پایه (fork tududi)، معماری، MVP، نقشهٔ راه، backlog |
 | 2026-10-11 | 1.1 | نتایج فاز ۰: G1 GREEN، G2 GREEN، G3 GREEN (7.5 روز در برابر 8)، G4 YELLOW، G5 GREEN-ثبت‌شده (دستگاه‌ها BLOCKED)، G6 DRAFT. هر ۱۳ ADR Accepted. A-03 رد شد؛ A-08 و A-14 تأیید شدند؛ A-06 BLOCKED؛ A-13 فقط از مستند. تصمیم: ادامه با fork tududi؛ فاز ۳ فقط پس از فاز ۱ و ۲. شاهد: `docs/ltd/spikes/` |
+| 2026-10-12 | 1.2 | فاز ۱۱ تعریف شد و شروع نشده است: اثر تسک (F45) و درس زندگی (F46). قرارداد در ۱۴.۷، ADR-014، و جدول فاز ۱۱ در بخش ۲۴. در امتیاز Mustِ v1 نیست |
