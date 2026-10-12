@@ -18,6 +18,7 @@ import {
     deleteInboxItemWithStore,
     analyzeInboxText,
     applyAnalysisToTask,
+    ensureAnalysisArea,
     InboxAnalysis,
     uploadInboxAttachment,
 } from '../../utils/inboxService';
@@ -80,6 +81,7 @@ import SuggestionsDropdown from './SuggestionsDropdown';
 import SlashItemRow from './SlashItemRow';
 import {
     applySlashItem,
+    removeSlashRange,
     slashItems,
     slashQuery,
     slashTriggerAt,
@@ -191,6 +193,14 @@ const extractFirstUrlFromText = (text: string): string | null => {
 
 // The slash menu's six rows at their height, plus a little room.
 const SUGGESTIONS_HEIGHT = 280;
+
+// Tags, projects and areas the user picked from a list, kept as badges
+interface PickedTokens {
+    tags: string[];
+    project: string | null;
+    area: { uid: string; name: string } | null;
+}
+const NO_PICKS: PickedTokens = { tags: [], project: null, area: null };
 
 const QuickCaptureInput = React.forwardRef<
     QuickCaptureInputHandle,
@@ -308,6 +318,61 @@ const QuickCaptureInput = React.forwardRef<
         const [slashPeople, setSlashPeople] = useState<string[]>([]);
         const { areasStore } = useStore();
         const areas = areasStore?.areas ?? [];
+        // Tags, projects and areas chosen from a list are kept as badges
+        // (not as text) and added to the text when it is saved.
+        const [picked, setPicked] = useState<PickedTokens>(NO_PICKS);
+        const addPicked = (kind: 'tag' | 'project' | 'area', name: string) => {
+            if (kind === 'tag') {
+                setPicked((p) =>
+                    p.tags.some((x) => x.toLowerCase() === name.toLowerCase())
+                        ? p
+                        : { ...p, tags: [...p.tags, name] }
+                );
+            } else if (kind === 'project') {
+                setPicked((p) => ({ ...p, project: name }));
+            } else {
+                const area = areas.find(
+                    (entry) => entry.name.toLowerCase() === name.toLowerCase()
+                );
+                if (area) {
+                    setPicked((p) => ({
+                        ...p,
+                        area: { uid: area.uid, name: area.name },
+                    }));
+                }
+            }
+        };
+        // Text with the picked tokens added to its first line, where the
+        // box reads dates, people and areas
+        const withPicked = (text: string, destination: CaptureTarget) => {
+            const name = (value: string) =>
+                /\s/.test(value) ? `"${value}"` : value;
+            const tokens = [
+                ...picked.tags.map((tag) => `#${tag}`),
+                ...(picked.project && destination !== 'project'
+                    ? [`+${name(picked.project)}`]
+                    : []),
+                ...(picked.area && destination !== 'note'
+                    ? [`~${name(picked.area.name)}`]
+                    : []),
+            ];
+            if (tokens.length === 0) return text;
+            const add = ` ${tokens.join(' ')}`;
+            const newline = text.indexOf('\n');
+            return newline < 0
+                ? text + add
+                : text.slice(0, newline) + add + text.slice(newline);
+        };
+        // Takes the "#abc" or "+abc" being typed out of the text
+        const dropTrigger = (
+            before: string,
+            after: string,
+            pattern: RegExp
+        ) => {
+            let head = before.replace(pattern, '');
+            if (/\s$/.test(head) && /^\s/.test(after)) head = head.slice(0, -1);
+            return { text: head + after, cursor: head.length };
+        };
         // A date phrase the user chose to keep as plain text
         const [dismissedDateText, setDismissedDateText] = useState<
             string | null
@@ -379,6 +444,7 @@ const QuickCaptureInput = React.forwardRef<
 
         const clearComposerText = useCallback(() => {
             setInputText('');
+            setPicked(NO_PICKS);
             setAnalysisResult(null);
             setUrlPreview(null);
             dismissedPreviewUrlRef.current = null;
@@ -1250,6 +1316,25 @@ const QuickCaptureInput = React.forwardRef<
             const afterCursor = inputText.substring(cursorPosition);
             const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
 
+            if (hashtagMatch && unified) {
+                addPicked('tag', tagName);
+                const dropped = dropTrigger(
+                    beforeCursor,
+                    afterCursor,
+                    /#([a-zA-Z0-9_]*)$/
+                );
+                setInputText(dropped.text);
+                closeSuggestions();
+                setTimeout(() => {
+                    inputRef.current?.focus();
+                    inputRef.current?.setSelectionRange(
+                        dropped.cursor,
+                        dropped.cursor
+                    );
+                }, 0);
+                return;
+            }
+
             if (hashtagMatch) {
                 const newText =
                     beforeCursor.replace(/#([a-zA-Z0-9_]*)$/, `#${tagName} `) +
@@ -1281,6 +1366,25 @@ const QuickCaptureInput = React.forwardRef<
             const projectMatch = beforeCursor.match(
                 /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/
             );
+
+            if (projectMatch && unified) {
+                addPicked('project', projectName);
+                const dropped = dropTrigger(
+                    beforeCursor,
+                    afterCursor,
+                    /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/
+                );
+                setInputText(dropped.text);
+                closeSuggestions();
+                setTimeout(() => {
+                    inputRef.current?.focus();
+                    inputRef.current?.setSelectionRange(
+                        dropped.cursor,
+                        dropped.cursor
+                    );
+                }, 0);
+                return;
+            }
 
             if (projectMatch) {
                 const formattedProjectName = projectName.includes(' ')
@@ -1743,6 +1847,7 @@ const QuickCaptureInput = React.forwardRef<
                 } catch (error) {
                     console.error('Error analyzing text:', error);
                 }
+                analysis = await ensureAnalysisArea(analysis);
             }
 
             const title = cleanFirstLine(first, analysis);
@@ -2064,6 +2169,7 @@ const QuickCaptureInput = React.forwardRef<
                 attached = 0
             ) => {
                 setInputText(remaining.join('\n'));
+                if (remaining.length === 0) setPicked(NO_PICKS);
                 setAnalysisResult(null);
                 setUrlPreview(null);
                 dismissedPreviewUrlRef.current = null;
@@ -2089,7 +2195,12 @@ const QuickCaptureInput = React.forwardRef<
             setStatus(null);
             try {
                 for (const itemText of texts) {
-                    captured.push(await captureOne(destination, itemText));
+                    captured.push(
+                        await captureOne(
+                            destination,
+                            withPicked(itemText, destination)
+                        )
+                    );
                 }
                 // With several items, the files go on the first one.
                 let attached = 0;
@@ -2215,6 +2326,28 @@ const QuickCaptureInput = React.forwardRef<
 
         const pickSlashItem = (item: SlashItem) => {
             if (!slash) return;
+            // In the unified box a tag, project or area becomes a badge
+            // and the "/query" typed for it leaves the text.
+            if (unified && item.pick) {
+                const removed = removeSlashRange(
+                    inputText,
+                    slash,
+                    cursorPosition
+                );
+                addPicked(item.pick.kind, item.pick.name);
+                setInputText(removed.text);
+                setCursorPosition(removed.cursor);
+                setSlash(null);
+                setSelectedSuggestionIndex(-1);
+                setTimeout(() => {
+                    inputRef.current?.focus();
+                    inputRef.current?.setSelectionRange(
+                        removed.cursor,
+                        removed.cursor
+                    );
+                }, 0);
+                return;
+            }
             const applied = applySlashItem(
                 inputText,
                 slash,
@@ -2409,9 +2542,14 @@ const QuickCaptureInput = React.forwardRef<
                       )?.color,
               }
             : null;
-        const areaChip = currentAnalysis?.parsed_area
-            ? { name: currentAnalysis.parsed_area.name }
-            : null;
+        const areaChip = picked.area
+            ? { name: picked.area.name }
+            : currentAnalysis?.parsed_area
+              ? {
+                    name: currentAnalysis.parsed_area.name,
+                    isNew: !currentAnalysis.parsed_area.uid,
+                }
+              : null;
 
         const composerFooterContext = useMemo<InboxComposerFooterContext>(
             () => ({
@@ -2447,7 +2585,7 @@ const QuickCaptureInput = React.forwardRef<
                             {openTaskModal && (
                                 <button
                                     type="button"
-                                    onClick={() => {
+                                    onClick={async () => {
                                         const taskTags = buildTagObjects(
                                             composerFooterContext.hashtags
                                         );
@@ -2460,6 +2598,10 @@ const QuickCaptureInput = React.forwardRef<
                                         if (!cleaned) {
                                             return;
                                         }
+                                        const analysis =
+                                            await ensureAnalysisArea(
+                                                composerFooterContext.analysis
+                                            );
                                         const newTask: Task =
                                             applyAnalysisToTask(
                                                 {
@@ -2470,7 +2612,7 @@ const QuickCaptureInput = React.forwardRef<
                                                     project_uid: projectUid,
                                                     completed_at: null,
                                                 },
-                                                composerFooterContext.analysis
+                                                analysis
                                             );
                                         void openTaskModal(newTask);
                                         composerFooterContext.clearText();
@@ -2783,35 +2925,72 @@ const QuickCaptureInput = React.forwardRef<
         const shouldShowPrimaryButton =
             !hidePrimaryButton && !isEditMode && !unified;
 
-        const selectedMetadata = (variant: 'chips' | 'line') => (
-            <InboxSelectedChips
-                variant={variant}
-                selectedTags={getAllTags(inputText)}
-                selectedProjects={getAllProjects(inputText)}
-                tags={tags}
-                projects={projects}
-                onRemoveTag={removeTagFromText}
-                onRemoveProject={removeProjectFromText}
-                dueDate={dateChip}
-                assignee={assigneeChip}
-                onDismissDate={() =>
-                    setDismissedDateText(
-                        currentAnalysis?.parsed_date_text ?? null
-                    )
-                }
-                onRemovePerson={() => {
-                    if (currentAnalysis?.parsed_person) {
-                        removePersonFromText(currentAnalysis.parsed_person);
+        const selectedMetadata = (variant: 'chips' | 'line') => {
+            // Tags, projects and areas picked from a list live in `picked`
+            // and show next to the ones typed in the text.
+            const textTags = getAllTags(inputText);
+            const textProjects = getAllProjects(inputText);
+            const allTags = [
+                ...textTags,
+                ...picked.tags.filter(
+                    (name) =>
+                        !textTags.some(
+                            (x) => x.toLowerCase() === name.toLowerCase()
+                        )
+                ),
+            ];
+            const allProjects =
+                picked.project &&
+                !textProjects.some(
+                    (x) => x.toLowerCase() === picked.project?.toLowerCase()
+                )
+                    ? [...textProjects, picked.project]
+                    : textProjects;
+            return (
+                <InboxSelectedChips
+                    variant={variant}
+                    selectedTags={allTags}
+                    selectedProjects={allProjects}
+                    tags={tags}
+                    projects={projects}
+                    onRemoveTag={(name) => {
+                        setPicked((p) => ({
+                            ...p,
+                            tags: p.tags.filter(
+                                (x) => x.toLowerCase() !== name.toLowerCase()
+                            ),
+                        }));
+                        removeTagFromText(name);
+                    }}
+                    onRemoveProject={(name) => {
+                        setPicked((p) => ({ ...p, project: null }));
+                        removeProjectFromText(name);
+                    }}
+                    dueDate={dateChip}
+                    assignee={assigneeChip}
+                    onDismissDate={() =>
+                        setDismissedDateText(
+                            currentAnalysis?.parsed_date_text ?? null
+                        )
                     }
-                }}
-                area={areaChip}
-                onRemoveArea={() => {
-                    if (currentAnalysis?.parsed_area) {
-                        removeAreaFromText(currentAnalysis.parsed_area.name);
-                    }
-                }}
-            />
-        );
+                    onRemovePerson={() => {
+                        if (currentAnalysis?.parsed_person) {
+                            removePersonFromText(currentAnalysis.parsed_person);
+                        }
+                    }}
+                    area={areaChip}
+                    onRemoveArea={() => {
+                        if (picked.area) {
+                            setPicked((p) => ({ ...p, area: null }));
+                        } else if (currentAnalysis?.parsed_area) {
+                            removeAreaFromText(
+                                currentAnalysis.parsed_area.name
+                            );
+                        }
+                    }}
+                />
+            );
+        };
 
         const cardClasses = cardClassName ?? 'mb-6';
 
