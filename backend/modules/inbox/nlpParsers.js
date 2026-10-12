@@ -279,9 +279,13 @@ const parseAreaRefs = (text) => {
     const refs = [];
     let match;
     while ((match = pattern.exec(text)) !== null) {
-        const name = (match[2] || match[3] || '')
-            .replace(/[.,;:!?)]+$/, '')
-            .trim();
+        let name = (match[2] || match[3] || '').trim();
+        // Trailing sentence punctuation is not part of an unquoted name
+        if (!match[2]) {
+            let end = name.length;
+            while (end > 0 && '.,;:!?)'.includes(name.charAt(end - 1))) end--;
+            name = name.slice(0, end);
+        }
         if (!name) continue;
         const raw = match[2] ? match[0].slice(match[1].length) : `~${name}`;
         refs.push({
