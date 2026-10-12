@@ -467,3 +467,15 @@ Capacity (T-501), Focus (T-502), starter step (T-503), Recovery and Overwhelmed 
 | T-506 | `frontend/components/Onboarding/__tests__/Welcome.test.tsx` | Tests for the three steps, skipping and defaults | No |
 | T-506 | `public/locales/*/translation.json` | Phase 5 strings: Persian and English copy, English fallback in other locales | No |
 | T-503 | `frontend/components/Task/__tests__/TaskDetails.test.tsx` | Include the starter step card in the mocked card set | No |
+
+## Phase 6 Life timeline
+
+Milestones (T-601) and the Life timeline with the Vision editor (T-602). New code lives in `backend/modules/ltd-milestones`, `backend/models/ltd_milestone.js`, `frontend/components/LifeTimeline`, `frontend/utils/timeline.ts` (PORT from lifeGLANCE, see THIRD_PARTY_NOTICES.md) and `frontend/utils/milestonesService.ts`; `frontend/components/Life/LifePage.tsx` and `backend/modules/ltd-journal` are Life-to-Day files. The rows below are the core touch points. No upstream pull request was created.
+
+| Task | File | Why | Upstream PR |
+| --- | --- | --- | --- |
+| T-601 | `backend/app.js` | Mount the ltd-milestones routes | No |
+| T-601 | `backend/models/index.js` | Register `LtdMilestone` and its user/goal associations | No |
+| T-601 | `backend/tests/helpers/setup.js` | Clean `ltd_milestones` before goals and users between tests | No |
+| T-601 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert the Phase 6 table and foreign keys on real legacy fixtures | No |
+| T-602 | `public/locales/*/translation.json` | Phase 6 strings (`ltdLife`): Persian and English copy, English fallback in other locales | No |

@@ -8,6 +8,7 @@ const {
     LtdMetricCheckin,
     Task,
     Project,
+    LtdMilestone,
 } = require('../../models');
 const { NotFoundError } = require('../../shared/errors');
 const metrics = require('../ltd-metrics/repository');
@@ -68,6 +69,14 @@ module.exports = {
             where: { uid, metric_id: metricId },
             transaction,
         }),
+    milestone: (userId, uid, transaction) =>
+        LtdMilestone.findOne({
+            where: { uid, user_id: userId },
+            transaction,
+            lock: transaction.LOCK.UPDATE,
+        }),
+    createMilestone: (data, transaction) =>
+        LtdMilestone.create(data, { transaction }),
     ownedGoalId: (userId, id, transaction) =>
         Goal.findOne({ where: { user_id: userId, id }, transaction }),
 };

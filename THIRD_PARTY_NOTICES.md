@@ -15,9 +15,40 @@ Sync history and core patches: [docs/ltd/UPSTREAM.md](docs/ltd/UPSTREAM.md).
 
 ## Ported code (PORT)
 
-None yet. No code from dayGLANCE or lifeGLANCE is in `main`.
+Each PORT has an attribution header in the ported file and an entry here (source project, URL, commit SHA, license, files). No dayGLANCE code is in the tree.
 
-Each future PORT adds an attribution header to the ported file and an entry here (source project, URL, commit SHA, license, files).
+### lifeGLANCE: timeline scale (T-602)
+
+- Project: lifeGLANCE, https://github.com/krelltunez/lifeGLANCE
+- License: MIT, "Copyright (c) 2026 krelltunez" (full text below)
+- Commit: `cbc01c1acd818236bfbb9a952092978fa7261def`
+- Source paths: `src/utils/timeline.js` (`dateToX`, `getTickMarks`, `assignLanes`, `computePinchZoom` and the private helpers they call), `src/utils/locale.js` (`safeLocale`, `sanitizeLanguageTag`, used by `getTickMarks`), `src/utils/timeline.test.js` (the `computePinchZoom` suite)
+- Files in this tree: `frontend/utils/timeline.ts`, `frontend/utils/__tests__/timeline.test.ts`
+- Changes: TypeScript types; `Date` subtraction written with `getTime()`; vitest imports replaced by Jest globals. Behavior is unchanged. `Timeline.jsx` and `TimelineView.jsx` were not copied; `frontend/components/LifeTimeline/` is new code.
+
+```text
+MIT License
+
+Copyright (c) 2026 krelltunez
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
 ## npm dependencies
 
