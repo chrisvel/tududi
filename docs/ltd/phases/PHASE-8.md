@@ -36,7 +36,7 @@ T-804: `ltd_ai_runs` stores only the blueprint metadata fields. No prompt text/d
 - SQLite legacy upgrade/schema parity: 116 passed, 3 skipped. Phase 4 coverage gate passed (128 tests; Journal service branches 96.42%, progress branches 95.43%).
 - Browser: isolated FakeProvider, temporary SQLite database and outbound fetch disabled. Manifest/unchecked consent, generation, pending Proposal, human Apply and consent reset verified. An approved weekly priority appears in the existing Weekly Plan. The tomorrow Proposal flow also passed. Existing `/api/billing` returns 404 in this non-hosted fixture; no AI-route error occurred.
 - Lint passed (12 pre-existing warnings); production build/typecheck passed. Graphify AST update completed without model calls.
-- Base main CI was green: https://github.com/DanialMasghati/life-to-day/actions/runs/38241141675. PR CI is the remaining remote gate.
+- Base main CI was green: https://github.com/DanialMasghati/life-to-day/actions/runs/38241141675. Implementation commit `dc1a6e70` passed PR CI, including SQLite, PostgreSQL, frontend, E2E, audit, license and image scan: https://github.com/DanialMasghati/life-to-day/actions/runs/38246988583. Restore drill and both architecture publication checks also passed. PR: https://github.com/DanialMasghati/life-to-day/pull/9 (left open, not merged).
 
 ## Explicit exclusions and remaining gates
 
