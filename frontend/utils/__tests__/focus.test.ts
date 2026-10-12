@@ -1,5 +1,6 @@
 import {
     describeFocus,
+    focusAreaIdForTask,
     focusKey,
     focusScopeParams,
     appendFocusParams,
@@ -140,6 +141,30 @@ describe('mergeFocusTags', () => {
             mergeFocusTags(['Urgent'], { tags: ['urgent', 'deep'] })
         ).toEqual(['Urgent', 'deep']);
         expect(mergeFocusTags(['a'], null)).toEqual(['a']);
+    });
+});
+
+describe('focusAreaIdForTask', () => {
+    it('gives a task without a project the Focus area', () => {
+        expect(focusAreaIdForTask({ area_uid: 'home' }, undefined, areas)).toBe(
+            2
+        );
+    });
+
+    it('leaves the area to the project when the task has one', () => {
+        expect(
+            focusAreaIdForTask({ area_uid: 'home' }, 'proj-1', areas)
+        ).toBeUndefined();
+    });
+
+    it('gives nothing without an area in the Focus or when it is unknown', () => {
+        expect(focusAreaIdForTask({ tags: ['a'] }, undefined, areas)).toBe(
+            undefined
+        );
+        expect(focusAreaIdForTask(null, undefined, areas)).toBeUndefined();
+        expect(
+            focusAreaIdForTask({ area_uid: 'gone' }, undefined, areas)
+        ).toBeUndefined();
     });
 });
 

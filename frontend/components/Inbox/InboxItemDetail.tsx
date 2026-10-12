@@ -10,7 +10,7 @@ import { Note } from '../../entities/Note';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import InboxItemAttachments from './InboxItemAttachments';
 import { useStore } from '../../store/useStore';
-import { getFocus, mergeFocusTags } from '../../utils/focus';
+import { focusAreaIdForTask, getFocus, mergeFocusTags } from '../../utils/focus';
 import QuickCaptureInput, {
     InboxComposerFooterContext,
     QuickCaptureInputHandle,
@@ -351,6 +351,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         } catch (error) {
             console.error('Failed to analyze inbox item:', error);
         }
+        // A ~area in the text means the task is not for the Focus, so the
+        // Focus project is dropped unless the text named a project itself.
+        const projectUid =
+            analysis?.parsed_area && payload.projectRefsList.length === 0
+                ? undefined
+                : payload.projectUid;
         const newTask: Task = applyAnalysisToTask(
             {
                 name: analysis?.cleaned_content || payload.cleanedContent || displayText,
@@ -366,7 +372,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             (tag) => tag.name.toLowerCase() === name.toLowerCase()
                         ) ?? { name }
                 ),
-                project_uid: payload.projectUid,
+                project_uid: projectUid,
+                area_id: focusAreaIdForTask(
+                    getFocus(),
+                    projectUid,
+                    useStore.getState().areasStore?.areas ?? []
+                ),
                 completed_at: null,
             },
             analysis

@@ -47,11 +47,13 @@ One box is used everywhere you add something. It is the input at the top of the 
 | Add to | First line | Other lines | Also read from the first line |
 |--------|-----------|-------------|-------------------------------|
 | Inbox | kept exactly as typed | kept exactly as typed | applied later, when the item is converted |
-| Task | title | notes | due date, recurrence, `@person`, `#tags`, `+Project` |
+| Task | title | notes | due date, recurrence, `@person`, `~Area`, `#tags`, `+Project` |
 | Note | title | body | `#tags`, `+Project` (a note has no due date, so date words stay in the title) |
-| Project | name | description | due date, `#tags` |
+| Project | name | description | due date, `#tags`, `~Area` |
 
-Dates and `@person` are read from the first line only, so a date mentioned further down a long note never becomes its due date. `#tags` are read anywhere in the text. An unknown `#tag` or `+Project` is created when you add.
+Dates, `@person` and `~area` are read from the first line only, so a date mentioned further down a long note never becomes its due date. `#tags` are read anywhere in the text. An unknown `#tag` or `+Project` is created when you add; an unknown `~area` is not, and stays in the text.
+
+**Slash menu.** Type `/` at the start of a word (not inside a URL or `and/or`) to list the tokens, each with an icon and its syntax: Tag, Project, Person, Area, Due date and Repeat. Pick one with the mouse, Up/Down and Enter, or Tab, and a list of values opens (your tags, projects, assignable people, areas, or ready-made dates and repeats). Keep typing to narrow the list; Enter inserts the token, quoting names with spaces, and an unknown tag or project can be created from the list. Escape closes the menu and keeps what you typed. The list follows what you are adding: Task shows everything, Note only Tag and Project, Project Tag, Area and Due date, and Inbox everything, since it reads the tokens when converted. Values are sorted alphabetically. Typing `~` at the start of a word opens the area list directly, and typing the tokens by hand still works.
 
 **Several lines.** By default everything you type becomes one item. When the text has more than one line, the box says so in one sentence ("This will be 1 task. The first line is the title and the other 2 lines are its notes.") with a link to switch to **One item per line**, which makes one item per non-empty line and strips list markers such as `-`, `*` and `1.`. If one line fails to save, the lines that were not saved stay in the box.
 
@@ -203,7 +205,17 @@ Write a date in plain English and it becomes the task's due date:
 - A full name matches first. A first name matches only when one person has it.
 - A matched person is removed from the name and the task is assigned to them (members are notified as usual). An `@word` that matches nobody stays in the text, so email addresses and handles are safe.
 
-### 7. Cleaned Content
+### 7. Areas (~area)
+
+**Syntax:** `~name` or `~"Area Name"`
+
+- Names are matched, ignoring case, against the areas you own or that are shared with you read-write. The first `~word` that names one is used.
+- A matched area is removed from the title and the task goes into that area. A `~word` that matches no area stays in the title, so `walk ~5 km` is safe.
+- A chip under the input shows the area. Its × keeps the words as plain text.
+- It works on Task and Project (the new project starts in that area), and when an inbox item is converted to a task. A Note has no area, so the words stay in the note.
+- The area is set on the task itself, even when the task also has a `+project`. With no `+project`, a `~area` also means the Focus project is not used (see [Focus](25-focus.md)).
+
+### 8. Cleaned Content
 
 After parsing, the system creates "cleaned content":
 - Original: `Review contract tomorrow @Maria +ClientWork #urgent`
@@ -837,7 +849,7 @@ To create the task, send `parsed_due_date` as `due_date`, the `parsed_recurrence
 
 **Technical Implementation Files:**
 - Inbox processing service: `/backend/modules/inbox/inboxProcessingService.js`
-- Date, recurrence and @person parsing: `/backend/modules/inbox/nlpParsers.js`
+- Date, recurrence, @person and ~area parsing: `/backend/modules/inbox/nlpParsers.js`
 - Inbox model: `/backend/models/inbox_item.js`
 - Inbox API routes: `/backend/modules/inbox/routes.js`
 - Inbox controller: `/backend/modules/inbox/controller.js`

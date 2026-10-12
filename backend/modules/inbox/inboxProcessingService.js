@@ -8,6 +8,7 @@ const {
     parseDueDate,
     parseRecurrence,
     parsePersonRef,
+    parseAreaRefs,
     removeSpans,
 } = require('./nlpParsers');
 
@@ -357,12 +358,15 @@ const generateSuggestion = (
 // - parseDates: false skips date and recurrence parsing
 // - personResolved: true when the @person matched someone, so it is cut
 //   from the title and counts as a task signal
+// - areaName: the name of the ~area the caller matched to a real area, so
+//   that reference is cut from the title. Other ~words stay in the text.
 const processInboxItem = (content, options = {}) => {
     const {
         referenceDate = new Date(),
         timezone = 'UTC',
         parseDates = true,
         personResolved = false,
+        areaName = null,
     } = options;
 
     const tags = parseHashtags(content);
@@ -376,11 +380,17 @@ const processInboxItem = (content, options = {}) => {
             ? parseDueDate(content, { referenceDate, timezone })
             : null;
     const person = parsePersonRef(content);
+    const area = areaName
+        ? parseAreaRefs(content).find(
+              (ref) => ref.name.toLowerCase() === areaName.toLowerCase()
+          ) || null
+        : null;
 
     const withoutParsedPhrases = removeSpans(content, [
         recurrence,
         dueDate && dueDate.removable ? dueDate : null,
         person && personResolved ? person : null,
+        area,
     ]);
     const cleanedContent = cleanTextFromTagsAndProjects(withoutParsedPhrases);
 
@@ -421,6 +431,7 @@ module.exports = {
     // Parsing functions
     parseHashtags,
     parseProjectRefs,
+    parseAreaRefs,
     cleanTextFromTagsAndProjects,
     tokenizeText,
 

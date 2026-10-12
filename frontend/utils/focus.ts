@@ -174,6 +174,18 @@ export const mergeFocusTags = (
     ];
 };
 
+// The area a new task gets from the Focus. A task with a project is in the
+// project's area, so only a task without one carries the area itself;
+// otherwise it would fall outside the Focus it was created in.
+export const focusAreaIdForTask = (
+    focus: Focus | null,
+    projectUid: string | null | undefined,
+    areas: Area[]
+): number | undefined => {
+    if (projectUid || !focus?.area_uid) return undefined;
+    return areas.find((area) => area.uid === focus.area_uid)?.id;
+};
+
 // "Work › Launch · #urgent #deep", built from the loaded areas and projects
 // so a renamed area shows its current name.
 export const describeFocus = (
