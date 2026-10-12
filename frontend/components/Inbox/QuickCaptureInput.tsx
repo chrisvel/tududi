@@ -2211,7 +2211,6 @@ const QuickCaptureInput = React.forwardRef<
             return () => {
                 cancelled = true;
             };
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [slash?.stage]);
 
         const pickSlashItem = (item: SlashItem) => {
