@@ -211,7 +211,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const renderInlineSegments = (text: string): React.ReactNode => {
         // Only render the first line for the preview
         const firstLine = text.split('\n')[0];
-        const re = /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))/gu;
+        const re = /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))|(?<!\S)~(?:"([^"]+)"|([\w.'-]*\w))/gu;
         const nodes: React.ReactNode[] = [];
         let last = 0;
         let m: RegExpExecArray | null;
@@ -263,6 +263,28 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             }}
                             className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
                             aria-label={`Remove person ${personName}`}
+                        >
+                            ×
+                        </button>
+                    </span>
+                );
+            } else if (m[6] || m[7]) {
+                // ~area
+                const areaName = m[6] || m[7];
+                nodes.push(
+                    <span
+                        key={`area-${idx}`}
+                        className="inline-flex items-center gap-0.5 mx-0.5 align-middle text-[11px] font-semibold leading-none text-purple-700 dark:text-purple-300 bg-purple-100/70 dark:bg-purple-400/10 rounded-full px-2 py-[3px]"
+                    >
+                        ~{areaName}
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                void removeTokenFromText(raw);
+                            }}
+                            className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
+                            aria-label={`Remove area ${areaName}`}
                         >
                             ×
                         </button>
