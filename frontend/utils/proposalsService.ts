@@ -17,7 +17,8 @@ interface OpBase {
 export type ProposalOp = OpBase &
     (
         | {
-              type: 'schedule_block';
+              type: 'schedule_block' | 'move_block';
+              from_date?: string;
               date: string;
               task_uid: string;
               task_name: string;
@@ -25,9 +26,16 @@ export type ProposalOp = OpBase &
               duration_minutes: number;
           }
         | {
+              type: 'create_task';
+              title: string;
+              est_min: number;
+              starter_step: string;
+          }
+        | {
               type: 'create_goal';
               title: string;
               horizon: string;
+              why?: string;
               parent_title?: string | null;
           }
         | {

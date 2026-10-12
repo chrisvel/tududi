@@ -1,0 +1,9 @@
+{
+  "overload": {"request":{"feature":"overload"},"response":{"task_uids":["task-long"],"explanation":"Leave room to breathe; move the longer task to tomorrow."},"op":"move_block"},
+  "small_steps": {"request":{"feature":"small_steps"},"response":{"task_uids":["task-small"],"explanation":"Keep the short start and give the longer task a fresh day."},"op":"move_block"},
+  "decompose": {"request":{"feature":"decompose","target_type":"task","target_uid":"task-long"},"response":{"steps":[{"title":"Open the outline","est_min":15,"starter_step":"Open the document"}],"explanation":"Start with something small."},"op":"create_task"},
+  "tomorrow": {"request":{"feature":"tomorrow"},"response":{"task_uids":["task-small","task-long"],"explanation":"Begin with a small win, then make progress on the outline."},"op":"schedule_block"},
+  "weekly_priorities": {"request":{"feature":"weekly_priorities"},"response":{"goals":[{"uid":"goal-one","reason":"This active goal needs attention."}],"explanation":"Focus on the goal that has stalled."},"op":"create_goal"},
+  "why": {"request":{"feature":"why","target_uid":"task-long"},"response":{"sentence":"This step supports the goal you chose."}},
+  "review": {"request":{"feature":"review","period":"week"},"response":{"summary":"You made space to reflect on your priorities.","question":"What would make your next step feel easier?"}}
+}

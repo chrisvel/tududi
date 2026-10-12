@@ -1,0 +1,723 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`golden decompose: recorded fake response, no domain write before approval: decompose output 1`] = `
+[
+  {
+    "est_min": 15,
+    "parent_task_uid": "task-long",
+    "starter_step": "Open the document",
+    "title": "Open the outline",
+    "type": "create_task",
+  },
+]
+`;
+
+exports[`golden decompose: recorded fake response, no domain write before approval: decompose planning snapshot 1`] = `
+{
+  "busy": [
+    {
+      "all_day": false,
+      "end": "2030-01-02T16:15:00Z",
+      "end_minute": 975,
+      "start": "2030-01-02T16:00:00Z",
+      "start_minute": 960,
+    },
+  ],
+  "capacity": {
+    "buffer_minutes": 10,
+    "busy_minutes": 15,
+    "capacity_minutes": 455,
+    "date": "2030-01-02",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0.87,
+    "missing_buffer": [],
+    "move_suggestions": [
+      "task-small",
+    ],
+    "planned_minutes": 305,
+    "unrealistic": true,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "date": "2030-01-02",
+  "destination_capacity": {
+    "buffer_minutes": 0,
+    "busy_minutes": 15,
+    "capacity_minutes": 465,
+    "date": "2030-01-03",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0,
+    "missing_buffer": [],
+    "move_suggestions": [],
+    "planned_minutes": 0,
+    "unrealistic": false,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "goals": [
+    {
+      "A": 0,
+      "O": null,
+      "health": "stalled",
+      "horizon": "year",
+      "title": "Write clearly",
+      "uid": "goal-one",
+    },
+  ],
+  "planned_tasks": [
+    {
+      "est_min": 290,
+      "uid": "task-long",
+    },
+    {
+      "est_min": 15,
+      "uid": "task-small",
+    },
+  ],
+  "target": {
+    "due": null,
+    "est_min": 290,
+    "title": "Draft outline",
+    "uid": "task-long",
+  },
+  "tasks": [
+    {
+      "due": null,
+      "est_min": 290,
+      "title": "Draft outline",
+      "uid": "task-long",
+    },
+    {
+      "due": null,
+      "est_min": 15,
+      "title": "Open notes",
+      "uid": "task-small",
+    },
+  ],
+  "weekly_priorities": [],
+}
+`;
+
+exports[`golden overload: recorded fake response, no domain write before approval: overload output 1`] = `
+[
+  {
+    "before": {
+      "duration_minutes": 290,
+      "start_minute": 540,
+      "task_id": 1,
+    },
+    "date": "2030-01-03",
+    "duration_minutes": 290,
+    "from_date": "2030-01-02",
+    "start_minute": 540,
+    "task_name": "Draft outline",
+    "task_uid": "task-long",
+    "type": "move_block",
+  },
+]
+`;
+
+exports[`golden overload: recorded fake response, no domain write before approval: overload planning snapshot 1`] = `
+{
+  "busy": [
+    {
+      "all_day": false,
+      "end": "2030-01-02T16:15:00Z",
+      "end_minute": 975,
+      "start": "2030-01-02T16:00:00Z",
+      "start_minute": 960,
+    },
+  ],
+  "capacity": {
+    "buffer_minutes": 10,
+    "busy_minutes": 15,
+    "capacity_minutes": 455,
+    "date": "2030-01-02",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0.87,
+    "missing_buffer": [],
+    "move_suggestions": [
+      "task-small",
+    ],
+    "planned_minutes": 305,
+    "unrealistic": true,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "date": "2030-01-02",
+  "destination_capacity": {
+    "buffer_minutes": 0,
+    "busy_minutes": 15,
+    "capacity_minutes": 465,
+    "date": "2030-01-03",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0,
+    "missing_buffer": [],
+    "move_suggestions": [],
+    "planned_minutes": 0,
+    "unrealistic": false,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "goals": [
+    {
+      "A": 0,
+      "O": null,
+      "health": "stalled",
+      "horizon": "year",
+      "title": "Write clearly",
+      "uid": "goal-one",
+    },
+  ],
+  "planned_tasks": [
+    {
+      "est_min": 290,
+      "uid": "task-long",
+    },
+    {
+      "est_min": 15,
+      "uid": "task-small",
+    },
+  ],
+  "tasks": [
+    {
+      "due": null,
+      "est_min": 290,
+      "title": "Draft outline",
+      "uid": "task-long",
+    },
+    {
+      "due": null,
+      "est_min": 15,
+      "title": "Open notes",
+      "uid": "task-small",
+    },
+  ],
+  "weekly_priorities": [],
+}
+`;
+
+exports[`golden review: recorded fake response, no domain write before approval: review output 1`] = `
+{
+  "question": "What would make your next step feel easier?",
+  "summary": "You made space to reflect on your priorities.",
+}
+`;
+
+exports[`golden review: recorded fake response, no domain write before approval: review planning snapshot 1`] = `
+{
+  "busy": [
+    {
+      "all_day": false,
+      "end": "2030-01-02T16:15:00Z",
+      "end_minute": 975,
+      "start": "2030-01-02T16:00:00Z",
+      "start_minute": 960,
+    },
+  ],
+  "capacity": {
+    "buffer_minutes": 10,
+    "busy_minutes": 15,
+    "capacity_minutes": 455,
+    "date": "2030-01-02",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0.87,
+    "missing_buffer": [],
+    "move_suggestions": [
+      "task-small",
+    ],
+    "planned_minutes": 305,
+    "unrealistic": true,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "date": "2030-01-02",
+  "destination_capacity": {
+    "buffer_minutes": 0,
+    "busy_minutes": 15,
+    "capacity_minutes": 465,
+    "date": "2030-01-03",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0,
+    "missing_buffer": [],
+    "move_suggestions": [],
+    "planned_minutes": 0,
+    "unrealistic": false,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "goals": [
+    {
+      "A": 0,
+      "O": null,
+      "health": "stalled",
+      "horizon": "year",
+      "title": "Write clearly",
+      "uid": "goal-one",
+    },
+  ],
+  "planned_tasks": [
+    {
+      "est_min": 290,
+      "uid": "task-long",
+    },
+    {
+      "est_min": 15,
+      "uid": "task-small",
+    },
+  ],
+  "statistics": {
+    "completed_tasks": 0,
+    "focus_minutes": 0,
+    "from": "2029-12-27",
+    "to": "2030-01-02",
+  },
+  "tasks": [
+    {
+      "due": null,
+      "est_min": 290,
+      "title": "Draft outline",
+      "uid": "task-long",
+    },
+    {
+      "due": null,
+      "est_min": 15,
+      "title": "Open notes",
+      "uid": "task-small",
+    },
+  ],
+  "weekly_priorities": [],
+}
+`;
+
+exports[`golden small_steps: recorded fake response, no domain write before approval: small_steps output 1`] = `
+[
+  {
+    "before": {
+      "duration_minutes": 290,
+      "start_minute": 540,
+      "task_id": 3,
+    },
+    "date": "2030-01-03",
+    "duration_minutes": 290,
+    "from_date": "2030-01-02",
+    "start_minute": 540,
+    "task_name": "Draft outline",
+    "task_uid": "task-long",
+    "type": "move_block",
+  },
+]
+`;
+
+exports[`golden small_steps: recorded fake response, no domain write before approval: small_steps planning snapshot 1`] = `
+{
+  "busy": [
+    {
+      "all_day": false,
+      "end": "2030-01-02T16:15:00Z",
+      "end_minute": 975,
+      "start": "2030-01-02T16:00:00Z",
+      "start_minute": 960,
+    },
+  ],
+  "capacity": {
+    "buffer_minutes": 10,
+    "busy_minutes": 15,
+    "capacity_minutes": 455,
+    "date": "2030-01-02",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0.87,
+    "missing_buffer": [],
+    "move_suggestions": [
+      "task-small",
+    ],
+    "planned_minutes": 305,
+    "unrealistic": true,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "date": "2030-01-02",
+  "destination_capacity": {
+    "buffer_minutes": 0,
+    "busy_minutes": 15,
+    "capacity_minutes": 465,
+    "date": "2030-01-03",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0,
+    "missing_buffer": [],
+    "move_suggestions": [],
+    "planned_minutes": 0,
+    "unrealistic": false,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "goals": [
+    {
+      "A": 0,
+      "O": null,
+      "health": "stalled",
+      "horizon": "year",
+      "title": "Write clearly",
+      "uid": "goal-one",
+    },
+  ],
+  "planned_tasks": [
+    {
+      "est_min": 290,
+      "uid": "task-long",
+    },
+    {
+      "est_min": 15,
+      "uid": "task-small",
+    },
+  ],
+  "tasks": [
+    {
+      "due": null,
+      "est_min": 290,
+      "title": "Draft outline",
+      "uid": "task-long",
+    },
+    {
+      "due": null,
+      "est_min": 15,
+      "title": "Open notes",
+      "uid": "task-small",
+    },
+  ],
+  "weekly_priorities": [],
+}
+`;
+
+exports[`golden tomorrow: recorded fake response, no domain write before approval: tomorrow output 1`] = `
+[
+  {
+    "date": "2030-01-03",
+    "duration_minutes": 15,
+    "start_minute": 540,
+    "task_name": "Open notes",
+    "task_uid": "task-small",
+    "type": "schedule_block",
+  },
+]
+`;
+
+exports[`golden tomorrow: recorded fake response, no domain write before approval: tomorrow planning snapshot 1`] = `
+{
+  "busy": [
+    {
+      "all_day": false,
+      "end": "2030-01-02T16:15:00Z",
+      "end_minute": 975,
+      "start": "2030-01-02T16:00:00Z",
+      "start_minute": 960,
+    },
+  ],
+  "capacity": {
+    "buffer_minutes": 0,
+    "busy_minutes": 15,
+    "capacity_minutes": 465,
+    "date": "2030-01-03",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0,
+    "missing_buffer": [],
+    "move_suggestions": [],
+    "planned_minutes": 0,
+    "unrealistic": false,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "date": "2030-01-03",
+  "destination_capacity": {
+    "buffer_minutes": 0,
+    "busy_minutes": 15,
+    "capacity_minutes": 465,
+    "date": "2030-01-04",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0,
+    "missing_buffer": [],
+    "move_suggestions": [],
+    "planned_minutes": 0,
+    "unrealistic": false,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "goals": [
+    {
+      "A": 0,
+      "O": null,
+      "health": "stalled",
+      "horizon": "year",
+      "title": "Write clearly",
+      "uid": "goal-one",
+    },
+  ],
+  "planned_tasks": [],
+  "tasks": [
+    {
+      "due": null,
+      "est_min": 290,
+      "title": "Draft outline",
+      "uid": "task-long",
+    },
+    {
+      "due": null,
+      "est_min": 15,
+      "title": "Open notes",
+      "uid": "task-small",
+    },
+  ],
+  "weekly_priorities": [],
+}
+`;
+
+exports[`golden weekly_priorities: recorded fake response, no domain write before approval: weekly_priorities output 1`] = `
+[
+  {
+    "horizon": "week",
+    "parent_goal_uid": "goal-one",
+    "period_end": "2030-01-06",
+    "period_start": "2029-12-31",
+    "title": "Write clearly",
+    "type": "create_goal",
+    "why": "This active goal needs attention.",
+  },
+]
+`;
+
+exports[`golden weekly_priorities: recorded fake response, no domain write before approval: weekly_priorities planning snapshot 1`] = `
+{
+  "busy": [
+    {
+      "all_day": false,
+      "end": "2030-01-02T16:15:00Z",
+      "end_minute": 975,
+      "start": "2030-01-02T16:00:00Z",
+      "start_minute": 960,
+    },
+  ],
+  "capacity": {
+    "buffer_minutes": 10,
+    "busy_minutes": 15,
+    "capacity_minutes": 455,
+    "date": "2030-01-02",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0.87,
+    "missing_buffer": [],
+    "move_suggestions": [
+      "task-small",
+    ],
+    "planned_minutes": 305,
+    "unrealistic": true,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "date": "2030-01-02",
+  "destination_capacity": {
+    "buffer_minutes": 0,
+    "busy_minutes": 15,
+    "capacity_minutes": 465,
+    "date": "2030-01-03",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0,
+    "missing_buffer": [],
+    "move_suggestions": [],
+    "planned_minutes": 0,
+    "unrealistic": false,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "eligible_goals": [
+    "goal-one",
+  ],
+  "goals": [
+    {
+      "A": 0,
+      "O": null,
+      "health": "stalled",
+      "horizon": "year",
+      "title": "Write clearly",
+      "uid": "goal-one",
+    },
+  ],
+  "planned_tasks": [
+    {
+      "est_min": 290,
+      "uid": "task-long",
+    },
+    {
+      "est_min": 15,
+      "uid": "task-small",
+    },
+  ],
+  "tasks": [
+    {
+      "due": null,
+      "est_min": 290,
+      "title": "Draft outline",
+      "uid": "task-long",
+    },
+    {
+      "due": null,
+      "est_min": 15,
+      "title": "Open notes",
+      "uid": "task-small",
+    },
+  ],
+  "week": {
+    "period_end": "2030-01-06",
+    "period_start": "2029-12-31",
+  },
+  "weekly_priorities": [],
+}
+`;
+
+exports[`golden why: recorded fake response, no domain write before approval: why output 1`] = `
+{
+  "sentence": "This step supports the goal you chose.",
+}
+`;
+
+exports[`golden why: recorded fake response, no domain write before approval: why planning snapshot 1`] = `
+{
+  "busy": [
+    {
+      "all_day": false,
+      "end": "2030-01-02T16:15:00Z",
+      "end_minute": 975,
+      "start": "2030-01-02T16:00:00Z",
+      "start_minute": 960,
+    },
+  ],
+  "capacity": {
+    "buffer_minutes": 10,
+    "busy_minutes": 15,
+    "capacity_minutes": 455,
+    "date": "2030-01-02",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0.87,
+    "missing_buffer": [],
+    "move_suggestions": [
+      "task-small",
+    ],
+    "planned_minutes": 305,
+    "unrealistic": true,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "date": "2030-01-02",
+  "destination_capacity": {
+    "buffer_minutes": 0,
+    "busy_minutes": 15,
+    "capacity_minutes": 465,
+    "date": "2030-01-03",
+    "event_overlaps": [],
+    "factor": 1.3,
+    "load": 0,
+    "missing_buffer": [],
+    "move_suggestions": [],
+    "planned_minutes": 0,
+    "unrealistic": false,
+    "window": {
+      "end": 1020,
+      "start": 540,
+    },
+    "window_minutes": 480,
+  },
+  "goals": [
+    {
+      "A": 0,
+      "O": null,
+      "health": "stalled",
+      "horizon": "year",
+      "title": "Write clearly",
+      "uid": "goal-one",
+    },
+  ],
+  "planned_tasks": [
+    {
+      "est_min": 290,
+      "uid": "task-long",
+    },
+    {
+      "est_min": 15,
+      "uid": "task-small",
+    },
+  ],
+  "tasks": [
+    {
+      "due": null,
+      "est_min": 290,
+      "title": "Draft outline",
+      "uid": "task-long",
+    },
+    {
+      "due": null,
+      "est_min": 15,
+      "title": "Open notes",
+      "uid": "task-small",
+    },
+  ],
+  "weekly_priorities": [],
+  "whyChain": [
+    {
+      "horizon": "year",
+      "title": "Write clearly",
+      "uid": "goal-one",
+      "why": null,
+    },
+  ],
+}
+`;

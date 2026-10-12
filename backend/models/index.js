@@ -119,6 +119,8 @@ const LtdFocusSession = require('./ltd_focus_session')(sequelize);
 // LTD-PATCH(T-601): register Life timeline milestones.
 const LtdMilestone = require('./ltd_milestone')(sequelize);
 // LTD-PATCH(T-701): register Proposals, OAuth server storage and MCP controls.
+// LTD-PATCH(T-804): metadata-only AI run ledger.
+const LtdAiRun = require('./ltd_ai_run')(sequelize);
 const LtdProposal = require('./ltd_proposal')(sequelize);
 const LtdOauthModel = require('./ltd_oauth_model')(sequelize);
 const LtdMcpSetting = require('./ltd_mcp_setting')(sequelize);
@@ -744,6 +746,7 @@ module.exports = {
     LtdFocusSession,
     LtdMilestone,
     LtdProposal,
+    LtdAiRun,
     LtdOauthModel,
     LtdMcpSetting,
     Project,

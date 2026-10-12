@@ -116,7 +116,16 @@ class UsersRepository extends BaseRepository {
      */
     async findAiSettings(userId) {
         return this.model.findByPk(userId, {
-            attributes: ['id', 'ai_api_key', 'ai_base_url', 'ai_model'],
+            // LTD-PATCH(T-801): keep provider fields in the existing settings path.
+            attributes: [
+                'id',
+                'ai_api_key',
+                'ai_base_url',
+                'ai_model',
+                'provider_type',
+                'model_fast',
+                'model_smart',
+            ],
         });
     }
 }

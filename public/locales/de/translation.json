@@ -3868,5 +3868,43 @@
       "killYes": "End all access",
       "cancel": "Cancel"
     }
+  },
+  "ltdAi": {
+    "title": "Planning assistant",
+    "intro": "AI suggests; you decide. Review the data before each request. Changes wait for your approval in Proposals.",
+    "feature": "Help with",
+    "features": {
+      "overload": "Make an overloaded day realistic",
+      "small_steps": "Choose up to three small tasks",
+      "decompose": "Break a goal or task into steps",
+      "tomorrow": "Plan tomorrow",
+      "weekly_priorities": "Suggest three weekly priorities",
+      "why": "Why does this task matter?",
+      "review": "Draft a daily or weekly reflection"
+    },
+    "date": "Date (optional)",
+    "targetType": "Break down a",
+    "target": "Choose the goal or task",
+    "task": "Task",
+    "goal": "Goal",
+    "period": "Period",
+    "day": "Day",
+    "week": "Week",
+    "allowNotes": "Allow sending my note text for this request",
+    "allowTitles": "Allow sending calendar event titles for this request",
+    "budget": "Context budget",
+    "preview": "Preview data",
+    "manifest": "Context manifest",
+    "tokenCount": "Conservative token upper bound: {{count}}",
+    "sentData": "View the exact planning data to be sent",
+    "consent": "I consent to sending this data to this provider and model for this feature.",
+    "generate": "Generate suggestion",
+    "working": "Preparing suggestion…",
+    "saveReview": "Confirm and save reflection to Inbox",
+    "saved": "Saved to Inbox",
+    "provider": "Provider",
+    "model_fast": "Fast model (optional)",
+    "model_smart": "Smart model (optional)",
+    "minutes": "minutes"
   }
 }

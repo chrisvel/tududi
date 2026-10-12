@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const { LtdProposal } = require('../../models');
 
 module.exports = {
-    create: (data) => LtdProposal.create(data),
+    create: (data, options) => LtdProposal.create(data, options),
     find: (userId, uid) =>
         LtdProposal.findOne({ where: { uid, user_id: userId } }),
     list: (userId, status) =>

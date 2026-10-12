@@ -272,6 +272,10 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: null,
             },
+            // LTD-PATCH(T-801): extend existing encrypted AI provider settings.
+            provider_type: { type: DataTypes.STRING, allowNull: true },
+            model_fast: { type: DataTypes.STRING, allowNull: true },
+            model_smart: { type: DataTypes.STRING, allowNull: true },
             ai_model: {
                 type: DataTypes.STRING,
                 allowNull: true,

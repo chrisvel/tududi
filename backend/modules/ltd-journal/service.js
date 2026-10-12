@@ -65,6 +65,17 @@ function assertUnchanged(entity, fields) {
 async function restore(entry, userId, transaction) {
     const before = decode(entry.before);
     const after = decode(entry.after);
+    // T-803: undo AI additions without hard deleting a task.
+    if (entry.op === 'ai_task_create' && entry.entity_type === 'task') {
+        const task = await repository.task(
+            userId,
+            entry.entity_uid,
+            transaction
+        );
+        assertUnchanged(task, after);
+        await task.update({ status: 3 }, { transaction });
+        return;
+    }
     if (entry.entity_type === 'goal') {
         const goal = await repository.goal(
             userId,
@@ -77,7 +88,10 @@ async function restore(entry, userId, transaction) {
                 throw new ConflictError(
                     'Undo the goal’s child goals, metrics and links first'
                 );
-            await goal.destroy({ transaction });
+            // T-803: AI goal additions are retired by Undo, never hard deleted.
+            if (entry.actor_type === 'ai')
+                await goal.update({ status: 'paused' }, { transaction });
+            else await goal.destroy({ transaction });
             return;
         }
         if (!before || !after)

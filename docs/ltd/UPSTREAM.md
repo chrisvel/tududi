@@ -511,3 +511,16 @@ The embedded OAuth server (T-701, T-702), the Capability Registry (T-703), Propo
 | T-704 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert the Phase 7 tables and foreign keys on real legacy fixtures | No |
 | T-704 | `public/locales/*/translation.json` | Phase 7 strings (`ltdProposals`, three Journal operations, the nav label): Persian and English copy, English in other locales | No |
 | T-701 | `backend/.env.example` | Document `LTD_OAUTH_ENABLED` and `LTD_OAUTH_JWKS_FILE` | No |
+
+### T-801–T-804 in-app AI patches
+
+| Task | Files | Reason | Upstream candidate |
+|---|---|---|---|
+| T-801 | `package.json`, `package-lock.json` | Pin the three blueprint AI SDK packages exactly | No |
+| T-801 | `backend/models/user.js`, `backend/modules/users/repository.js`, `backend/modules/users/service.js` | Extend existing encrypted AI settings with provider and fast/smart models | No |
+| T-801 | `frontend/components/Profile/ProfileSettings.tsx`, `frontend/components/Profile/tabs/AIAssistantTab.tsx`, `frontend/components/Profile/types.ts`, `frontend/utils/aiAssistantService.ts` | Keep existing provider form and service, add provider/model tier controls | No |
+| T-802 | `backend/app.js` | Mount human-session-only manifest and generation endpoints | No |
+| T-804 | `backend/models/index.js`, `backend/tests/helpers/setup.js` | Register/clean metadata-only AI run model | No |
+| T-801 | `backend/tests/integration/profile-ai-settings.test.js` | Verify additive settings and preserved encrypted key | No |
+| T-803 | `public/locales/*/translation.json` | Assistant and consent labels; English and Persian, English placeholders elsewhere | No |
+| T-803 | `backend/modules/goals/service.js` | Recheck the three-weekly-priority ceiling under the existing owner lock when an AI Proposal is approved | No |

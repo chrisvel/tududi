@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Agent operating constraints
 
+- Start new work from the latest fetched `origin/main`, without requiring a previously recorded SHA. Honor a checkout or base explicitly selected by the user; preserve existing work when updating the base.
+
 - Commit only when the current user message explicitly asks to commit.
 - Push, force-push, and opening or merging a PR only when the current message asks for that exact action. `git push` is denied in `.claude/settings.json`; ask the user to push.
 - Full rule set (secrets, history rewrite, commit/PR text, language): [.cursor/rules/agent-safety.mdc](.cursor/rules/agent-safety.mdc). Backend, frontend, and UI-verification rules sit beside it.
