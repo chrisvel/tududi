@@ -516,7 +516,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             ) : (
                 /* ── Flat row (no card, no shadow) ─────────────────────────── */
                 <div
-                    className={`group flex items-start gap-2.5 px-4 py-2.5 rounded-lg cursor-pointer hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors${isNew ? ' animate-inbox-row-in' : ''}`}
+                    className={`group flex items-start gap-2.5 px-4 py-3 cursor-pointer${isNew ? ' animate-inbox-row-in' : ''}`}
                     onClick={startEditing}
                     role="button"
                     tabIndex={0}
@@ -524,7 +524,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 >
                     {/* Text content */}
                     <div className="flex-1 min-w-0">
-                        <p className="text-[13.5px] font-normal text-gray-700 dark:text-gray-300 leading-relaxed break-words">
+                        <p className="text-[15px] font-normal tracking-tight text-gray-900 dark:text-gray-100 leading-snug break-words">
                             {isBlank ? (
                                 <span className="italic text-gray-400 dark:text-gray-500">
                                     {t('inbox.emptyItem', '(Empty item)')}
