@@ -298,8 +298,12 @@ if (serveFromDist) {
             maxAge: '1y',
             immutable: true,
             setHeaders: (res, filePath) => {
-                const rel = filePath.slice(path.join(__dirname, 'dist').length);
-                if (NEVER_CACHE.has(rel.replace(/\\/g, '/'))) {
+                const rel = filePath
+                    .slice(path.join(__dirname, 'dist').length)
+                    .replace(/\\/g, '/');
+                // LTD-PATCH(T-405): locale JSON is not content-hashed; a year-long
+                // immutable copy hid newly added keys, which rendered as raw keys.
+                if (NEVER_CACHE.has(rel) || rel.startsWith('/locales/')) {
                     res.setHeader('Cache-Control', 'no-cache');
                 }
             },

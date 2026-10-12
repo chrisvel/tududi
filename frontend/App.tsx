@@ -307,8 +307,10 @@ const App: React.FC = () => {
                     return response.json();
                 })
                 .then((data) => {
+                    // LTD-PATCH(T-405): store under the code that was fetched; storing
+                    // the fallback (en) under the active language (fa) replaced it.
                     i18n.addResourceBundle(
-                        i18n.language,
+                        language,
                         'translation',
                         data,
                         true,

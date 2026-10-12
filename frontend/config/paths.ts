@@ -94,14 +94,18 @@ export function getApiPath(path: string): string {
  * @param path - The locales path (e.g., '/locales/en/translation.json')
  * @returns The full locales path
  */
+// LTD-PATCH(T-405): production once served locale JSON as immutable for a
+// year, so browsers kept files without newer keys. A new query skips those
+// copies; the server now revalidates locale files, so this rarely changes.
+const LOCALES_VERSION = '2';
+
 export function getLocalesPath(path: string): string {
     const cleanPath = stripLeadingSlash(path);
+    const file = cleanPath.startsWith('locales/')
+        ? cleanPath
+        : `locales/${cleanPath}`;
 
-    if (cleanPath.startsWith('locales/')) {
-        return withBasePath(cleanPath);
-    }
-
-    return withBasePath(`locales/${cleanPath}`);
+    return `${withBasePath(file)}?v=${LOCALES_VERSION}`;
 }
 
 /**

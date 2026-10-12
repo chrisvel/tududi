@@ -82,6 +82,10 @@ i18nInstance
             lookupCookie: 'i18next',
             lookupLocalStorage: 'i18nextLng',
             caches: ['localStorage', 'cookie'],
+            // LTD-PATCH(T-405): locale folders use base codes (en, fa). A detected
+            // "en-US" fetched a file that does not exist and stored bundles
+            // under a code no lookup reads, so every key rendered raw.
+            convertDetectedLanguage: (lng: string) => lng.split('-')[0],
         },
         interpolation: {
             escapeValue: false,
@@ -90,8 +94,8 @@ i18nInstance
         ns: ['translation'],
         backend: {
             // LTD-PATCH(T-405): Resolve locale reloads from the app base on nested goal/week routes.
+            // LTD-PATCH(T-405): the version query now comes from getLocalesPath.
             loadPath: getLocalesPath('{{lng}}/{{ns}}.json'),
-            queryStringParams: { v: '1' },
             requestOptions: {
                 cache: 'default',
                 credentials: 'same-origin',
