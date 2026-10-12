@@ -36,6 +36,10 @@ import {
 } from '../../utils/captureText';
 import type { CaptureProject } from '../../utils/captureUi';
 import {
+    InboxTokenKind,
+    splitInboxTokens,
+} from '../../utils/inboxTokens';
+import {
     isTouchDevice,
     updateCaptureSettings,
     useCaptureSettings,
@@ -191,6 +195,14 @@ const extractFirstUrlFromText = (text: string): string | null => {
 
 // The slash menu's six rows at their height, plus a little room.
 const SUGGESTIONS_HEIGHT = 280;
+
+// Text colours for the tokens in the edit box, matching their chips.
+const TOKEN_TEXT_CLASS: Record<InboxTokenKind, string> = {
+    tag: 'text-blue-600 dark:text-blue-400',
+    project: 'text-green-700 dark:text-green-400',
+    person: 'text-indigo-600 dark:text-indigo-400',
+    area: 'text-purple-600 dark:text-purple-400',
+};
 
 const QuickCaptureInput = React.forwardRef<
     QuickCaptureInputHandle,
@@ -2871,6 +2883,32 @@ const QuickCaptureInput = React.forwardRef<
                                 )}
                                 <div className="relative z-10 flex items-start">
                                     {multiline ? (
+                                        <>
+                                        {/* Edit mode colours the tokens behind a transparent
+                                            textarea, so the text is still typed and selected
+                                            in the textarea itself. */}
+                                        {isEditMode && (
+                                            <div
+                                                aria-hidden="true"
+                                                className={`pointer-events-none absolute inset-0 w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal whitespace-pre-wrap break-words overflow-hidden text-gray-900 dark:text-gray-100 px-0 py-1.5`}
+                                            >
+                                                {splitInboxTokens(inputText).map(
+                                                    (segment, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className={
+                                                                segment.kind
+                                                                    ? TOKEN_TEXT_CLASS[segment.kind]
+                                                                    : undefined
+                                                            }
+                                                        >
+                                                            {segment.text}
+                                                        </span>
+                                                    )
+                                                )}
+                                                {inputText.endsWith('\n') ? ' ' : null}
+                                            </div>
+                                        )}
                                         <textarea
                                             ref={(el) => {
                                                 inputRef.current = el;
@@ -2882,7 +2920,7 @@ const QuickCaptureInput = React.forwardRef<
                                             onSelect={handleCaretEvent}
                                             onKeyUp={handleCaretEvent}
                                             onClick={handleCaretEvent}
-                                            className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
+                                            className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent ${isEditMode ? 'relative text-transparent caret-gray-900 dark:caret-gray-100' : 'text-gray-900 dark:text-gray-100'} border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
                                             placeholder=""
                                             onKeyDown={handleKeyDown}
                                             onPaste={
@@ -2891,6 +2929,7 @@ const QuickCaptureInput = React.forwardRef<
                                                     : undefined
                                             }
                                         ></textarea>
+                                        </>
                                     ) : (
                                         <input
                                             ref={(el) => {
