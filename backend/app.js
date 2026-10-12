@@ -243,6 +243,13 @@ const sessionMiddleware = session({
 });
 app.use(sessionMiddleware);
 
+// LTD-PATCH(T-701): embedded OAuth server for remote MCP, before CSRF (its
+// consent form has its own token) and only when enabled (G4 finding 4).
+const ltdOauthModule = require('./modules/ltd-oauth');
+if (ltdOauthModule.enabled()) {
+    app.use(ltdOauthModule.router);
+}
+
 // CalDAV routes (registered after session middleware to support session-based auth for API routes)
 const caldavRoutes = require('./modules/caldav/routes');
 app.use(caldavRoutes);
@@ -562,6 +569,10 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, groupsModule.routes);
     app.use(basePath, feedbackModule.routes);
     app.use(basePath, pushModule.routes);
+    // LTD-PATCH(T-704, T-706): Proposals and MCP access controls. Last, so
+    // earlier routes do not pass through two more routers (G4 finding 4).
+    app.use(basePath, require('./modules/ltd-proposals/routes'));
+    app.use(basePath, require('./modules/ltd-mcp-control/routes'));
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

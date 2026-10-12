@@ -9,6 +9,7 @@ const {
     Task,
     Project,
     LtdMilestone,
+    InboxItem,
 } = require('../../models');
 const { NotFoundError } = require('../../shared/errors');
 const metrics = require('../ltd-metrics/repository');
@@ -77,6 +78,33 @@ module.exports = {
         }),
     createMilestone: (data, transaction) =>
         LtdMilestone.create(data, { transaction }),
+    async task(userId, uid, transaction) {
+        const task = await Task.findOne({
+            where: { uid, user_id: userId },
+            transaction,
+            lock: transaction.LOCK.UPDATE,
+        });
+        if (!task) throw new NotFoundError('Task not found');
+        return task;
+    },
+    async inboxItem(userId, uid, transaction) {
+        const item = await InboxItem.findOne({
+            where: { uid, user_id: userId },
+            transaction,
+            lock: transaction.LOCK.UPDATE,
+        });
+        if (!item) throw new NotFoundError('Inbox item not found');
+        return item;
+    },
+    byProposal: (userId, proposalId) =>
+        LtdJournal.findAll({
+            where: {
+                user_id: userId,
+                proposal_id: proposalId,
+                reverted_at: null,
+            },
+            order: [['id', 'DESC']],
+        }),
     ownedGoalId: (userId, id, transaction) =>
         Goal.findOne({ where: { user_id: userId, id }, transaction }),
 };

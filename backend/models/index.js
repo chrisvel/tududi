@@ -118,6 +118,10 @@ const LtdJournal = require('./ltd_journal')(sequelize);
 const LtdFocusSession = require('./ltd_focus_session')(sequelize);
 // LTD-PATCH(T-601): register Life timeline milestones.
 const LtdMilestone = require('./ltd_milestone')(sequelize);
+// LTD-PATCH(T-701): register Proposals, OAuth server storage and MCP controls.
+const LtdProposal = require('./ltd_proposal')(sequelize);
+const LtdOauthModel = require('./ltd_oauth_model')(sequelize);
+const LtdMcpSetting = require('./ltd_mcp_setting')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
@@ -182,6 +186,18 @@ User.hasMany(LtdMilestone, {
 });
 LtdMilestone.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 LtdMilestone.belongsTo(Goal, { foreignKey: 'goal_id', as: 'Goal' });
+User.hasMany(LtdProposal, {
+    foreignKey: 'user_id',
+    as: 'LtdProposals',
+    onDelete: 'CASCADE',
+});
+LtdProposal.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+User.hasOne(LtdMcpSetting, {
+    foreignKey: 'user_id',
+    as: 'LtdMcpSetting',
+    onDelete: 'CASCADE',
+});
+LtdMcpSetting.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 User.hasMany(Goal, { foreignKey: 'user_id', as: 'Goals' });
 Goal.belongsTo(User, { foreignKey: 'user_id' });
 Area.hasMany(Goal, { foreignKey: 'area_id', as: 'Goals' });
@@ -727,6 +743,9 @@ module.exports = {
     LtdJournal,
     LtdFocusSession,
     LtdMilestone,
+    LtdProposal,
+    LtdOauthModel,
+    LtdMcpSetting,
     Project,
     Task,
     Tag,

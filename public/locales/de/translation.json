@@ -148,7 +148,8 @@
       "projects": "Projects",
       "primary": "Primary",
       "lifeStub": "The life timeline will appear here later.",
-      "reviewStub": "Guided review will appear here later."
+      "reviewStub": "Guided review will appear here later.",
+      "proposals": "Proposals"
     },
     "inbox": "Inbox",
     "notes": "Notes",
@@ -3662,7 +3663,10 @@
       "checkin": "Metric check-in",
       "metric_create": "Metric created",
       "metric_update": "Metric updated",
-      "metric_delete": "Metric deleted"
+      "metric_delete": "Metric deleted",
+      "plan_blocks": "Plan blocks added",
+      "task_update": "Due date changed",
+      "inbox_create": "Added to Inbox"
     },
     "metrics": "Outcome metrics",
     "metricName": "Metric name",
@@ -3811,5 +3815,58 @@
   },
   "tag": {
     "viewTag": "Go to tag"
+  },
+  "ltdProposals": {
+    "title": "Proposals",
+    "intro": "Changes suggested by connected assistants wait here. Nothing changes until you apply them, and you can undo what you applied.",
+    "empty": "No proposals are waiting.",
+    "history": "Decided",
+    "nothingChanged": "Nothing has changed yet.",
+    "changes": "Changes",
+    "include": "Include this change",
+    "applyAll": "Apply",
+    "applySelected": "Apply selected",
+    "reject": "Reject",
+    "undo": "Undo",
+    "from": "from",
+    "status": {
+      "pending": "Waiting for you",
+      "applied": "Applied",
+      "partially_applied": "Partly applied",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "reverted": "Undone"
+    },
+    "origin": {
+      "mcp": "MCP client",
+      "in_app_ai": "Assistant",
+      "rule": "Rule"
+    },
+    "ops": {
+      "createGoal": "New goal",
+      "under": "under",
+      "due": "due",
+      "noDue": "no date"
+    },
+    "clients": {
+      "title": "Connected clients",
+      "review": "Review proposals",
+      "none": "No client has connected yet.",
+      "kind": {
+        "oauth": "OAuth client",
+        "token": "API token",
+        "session": "This browser"
+      },
+      "lastUsed": "Last used {{when}}",
+      "writesDisabled": "Writes are off after repeated rate-limit violations.",
+      "enableWrites": "Turn writes back on",
+      "revoke": "Revoke access",
+      "readOnly": "Read-only: MCP clients can read but not change anything",
+      "revokedAt": "All MCP access was ended {{when}}.",
+      "kill": "End all MCP access",
+      "killConfirm": "End access for every MCP client and token?",
+      "killYes": "End all access",
+      "cancel": "Cancel"
+    }
   }
 }

@@ -34,6 +34,10 @@ const { isSqlite, truncateTables } = require('../../utils/db-dialect');
 const CLEANUP_TABLES = [
     // LTD-PATCH(T-601): milestones reference goals and users.
     'ltd_milestones',
+    // LTD-PATCH(T-704): Proposals, OAuth storage and MCP controls reference users.
+    'ltd_proposals',
+    'ltd_oauth_models',
+    'ltd_mcp_settings',
     'ltd_metric_checkins',
     'ltd_goal_metrics',
     'ltd_journal',

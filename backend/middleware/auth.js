@@ -14,10 +14,15 @@ const getBearerToken = (req) => {
     return null;
 };
 
+// LTD-PATCH(T-702): /api/mcp is protected by the embedded AS when enabled.
+const ltdOauth = require('../modules/ltd-oauth');
+
 // Sends a 401 and, when OIDC is enabled, sets WWW-Authenticate so OAuth2 clients
 // can discover the authorization server (RFC 9728).
-const unauthorized = (res, message) => {
-    if ((process.env.OIDC_ENABLED || '').toLowerCase() === 'true') {
+const unauthorized = (req, res, message) => {
+    if (ltdOauth.enabled() && ltdOauth.isMcpPath(req)) {
+        res.set('WWW-Authenticate', ltdOauth.challenge());
+    } else if ((process.env.OIDC_ENABLED || '').toLowerCase() === 'true') {
         const baseUrl = process.env.BASE_URL?.replace(/\/$/, ''); // trim trailing slash
         if (baseUrl) {
             res.set(
@@ -49,19 +54,19 @@ const requireAuth = async (req, res, next) => {
 
         const bearerToken = getBearerToken(req);
         if (!bearerToken) {
-            return unauthorized(res, 'Authentication required');
+            return unauthorized(req, res, 'Authentication required');
         }
 
         if (bearerToken.startsWith('tt_')) {
             // Tududi API key - validate via bcrypt
             const apiToken = await findValidTokenByValue(bearerToken);
             if (!apiToken) {
-                return unauthorized(res, 'Invalid or expired API token');
+                return unauthorized(req, res, 'Invalid or expired API token');
             }
 
             const user = await User.findByPk(apiToken.user_id);
             if (!user) {
-                return unauthorized(res, 'User not found');
+                return unauthorized(req, res, 'User not found');
             }
 
             req.currentUser = user;
@@ -83,6 +88,28 @@ const requireAuth = async (req, res, next) => {
             return next();
         }
 
+        // LTD-PATCH(T-702): tokens of the embedded AS, valid on /api/mcp only.
+        if (ltdOauth.enabled() && ltdOauth.isMcpPath(req)) {
+            const verified = await ltdOauth.verifyAccessToken(bearerToken);
+            if (verified?.error) {
+                res.set(
+                    'WWW-Authenticate',
+                    ltdOauth.challenge('insufficient_scope')
+                );
+                return res.status(403).json({ error: 'insufficient_scope' });
+            }
+            if (!verified) {
+                return unauthorized(
+                    req,
+                    res,
+                    'Invalid or expired access token'
+                );
+            }
+            req.currentUser = verified.user;
+            req.ltdOauth = verified.claims;
+            return next();
+        }
+
         // OAuth2 JWT - validate via OIDC provider JWKS
         if ((process.env.OIDC_ENABLED || '').toLowerCase() === 'true') {
             let payload;
@@ -90,7 +117,11 @@ const requireAuth = async (req, res, next) => {
                 payload = await validateAccessToken(bearerToken);
             } catch (err) {
                 console.error('JWT validation failed:', err);
-                return unauthorized(res, 'Invalid or expired access token');
+                return unauthorized(
+                    req,
+                    res,
+                    'Invalid or expired access token'
+                );
             }
 
             // A subject is only unique within one provider, so the identity is
@@ -108,6 +139,7 @@ const requireAuth = async (req, res, next) => {
                         `[OIDC] Bearer token issuer ${payload.iss} does not match any configured provider`
                     );
                     return unauthorized(
+                        req,
                         res,
                         'No account found for this identity. Please log in via OIDC first.'
                     );
@@ -122,6 +154,7 @@ const requireAuth = async (req, res, next) => {
 
             if (!identity?.User) {
                 return unauthorized(
+                    req,
                     res,
                     'No account found for this identity. Please log in via OIDC first.'
                 );
@@ -131,7 +164,7 @@ const requireAuth = async (req, res, next) => {
             return next();
         }
 
-        return unauthorized(res, 'Invalid or expired API token');
+        return unauthorized(req, res, 'Invalid or expired API token');
     } catch (error) {
         console.error('Authentication error:', error);
         res.status(500).json({ error: 'Authentication error' });
@@ -140,4 +173,5 @@ const requireAuth = async (req, res, next) => {
 
 module.exports = {
     requireAuth,
+    unauthorized,
 };

@@ -21,6 +21,8 @@ async function handleMcpHttpRequest(req, res, user) {
         const context = {
             userId: user.id,
             user: user,
+            // LTD-PATCH(T-703): scopes and MCP controls of this client.
+            client: req.mcpClient,
         };
 
         // Initialize MCP server

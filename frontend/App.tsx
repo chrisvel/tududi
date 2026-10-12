@@ -52,6 +52,8 @@ import InboxItems from './components/Inbox/InboxItems';
 // LTD-PATCH(T-304): stub destinations for Life and Review
 import LifePage from './components/Life/LifePage';
 import ReviewPage from './components/Reviews/ReviewPage';
+// LTD-PATCH(T-704): Proposal Review for changes from MCP clients.
+import ProposalsPage from './components/Proposals/ProposalsPage';
 import Habits from './components/Habits/Habits';
 import HabitDetails from './components/Habits/HabitDetails';
 import EisenhowerMatrix from './components/Eisenhower/EisenhowerMatrix';
@@ -576,6 +578,10 @@ const App: React.FC = () => {
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/life" element={<LifePage />} />
                             <Route path="/review" element={<ReviewPage />} />
+                            <Route
+                                path="/proposals"
+                                element={<ProposalsPage />}
+                            />
                             <Route path="/habits" element={<Habits />} />
                             <Route
                                 path="/habit/new"

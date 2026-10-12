@@ -61,6 +61,18 @@ async function restoreDays(userId, before, after, transaction) {
         }
     }
     for (const day of before.days) {
+        // T-705: a day that had no plan before a Proposal gets none back.
+        if (day.existed === false) {
+            const { plan } = await planRows(userId, day.date, transaction);
+            if (plan) {
+                await DailyPlanItem.destroy({
+                    where: { daily_plan_id: plan.id },
+                    transaction,
+                });
+                await plan.destroy({ transaction });
+            }
+            continue;
+        }
         await writeRows(userId, day.date, day.rows, transaction);
     }
 }

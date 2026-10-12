@@ -18,9 +18,11 @@ router.get('/mcp/tools', requireFeature('mcp'), controller.listMcpTools);
 
 // MCP protocol endpoint - uses Bearer token auth, not session auth
 // This endpoint handles actual MCP protocol messages from remote clients
+// LTD-PATCH(T-706): resolve the client's scopes and MCP controls first.
 router.post(
     '/mcp',
     authenticateMcpRequest,
+    require('../ltd-mcp-control/middleware').resolveMcpClient,
     requireFeature('mcp'),
     controller.handleMcpMessage
 );

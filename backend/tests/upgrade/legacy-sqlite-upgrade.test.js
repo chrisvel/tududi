@@ -250,6 +250,52 @@ describe.each(fixtures)('upgrade from $name', (fixture) => {
         );
     });
 
+    // LTD-PATCH(T-704): the Phase 7 Proposals, OAuth storage and MCP controls.
+    it('adds the Phase 7 tables with user foreign keys', async () => {
+        expect(await inspect.tableNames(temp.file)).toEqual(
+            expect.arrayContaining([
+                'ltd_proposals',
+                'ltd_oauth_models',
+                'ltd_mcp_settings',
+            ])
+        );
+        const columns = (
+            await inspect.query(temp.file, 'PRAGMA table_info(ltd_proposals)')
+        ).map((c) => c.name);
+        expect(columns).toEqual(
+            expect.arrayContaining([
+                'uid',
+                'user_id',
+                'origin',
+                'client_id',
+                'title',
+                'rationale',
+                'ops',
+                'risk_tier',
+                'status',
+                'expires_at',
+                'created_at',
+                'decided_at',
+            ])
+        );
+        for (const table of ['ltd_proposals', 'ltd_mcp_settings']) {
+            expect(
+                await inspect.query(
+                    temp.file,
+                    `PRAGMA foreign_key_list(${table})`
+                )
+            ).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        from: 'user_id',
+                        table: 'users',
+                        on_delete: 'CASCADE',
+                    }),
+                ])
+            );
+        }
+    });
+
     it('records every migration file in SequelizeMeta', async () => {
         expect(await inspect.metaNames(temp.file)).toEqual(migrationFiles());
     });
