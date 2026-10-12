@@ -63,14 +63,14 @@ describe('InboxItemDetail - attachments', () => {
         );
     });
 
-    it('keeps showing the files once the item is opened', () => {
+    it('keeps showing the files once the item is opened', async () => {
         renderItem();
 
         fireEvent.click(screen.getByText('Receipt from the plumber'));
 
+        expect(await screen.findByText('Save as')).toBeInTheDocument();
         expect(screen.getByTestId('inbox-item-attachments')).toHaveTextContent(
             'receipt.png'
         );
-        expect(screen.getByText('Save as')).toBeInTheDocument();
     });
 });
