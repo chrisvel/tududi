@@ -51,31 +51,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    // The edit box opens with the cleaned title (tokens like #tag, ~area,
-    // dates and @person removed). Null until the analysis returns.
-    const [cleanedEditText, setCleanedEditText] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const composerRef = useRef<QuickCaptureInputHandle>(null);
 
     useEffect(() => {
         onEditingChange?.(isEditing);
-    }, [isEditing]);
-
-    useEffect(() => {
-        if (!isEditing) {
-            setCleanedEditText(null);
-            return;
-        }
-        let cancelled = false;
-        analyzeInboxText(fullContent)
-            .then((result) => {
-                const cleaned = result?.cleaned_content?.trim();
-                if (!cancelled && cleaned) setCleanedEditText(cleaned);
-            })
-            .catch(() => {});
-        return () => {
-            cancelled = true;
-        };
     }, [isEditing]);
 
     // Tell the list in the same render that this item is opening, so its
@@ -452,15 +432,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
     const handleSubmitEdit = async (text: string) => {
         if (!onUpdate || item.uid === undefined) return;
-        // An untouched box (raw or cleaned) saves nothing, so the stored text
-        // keeps its tokens.
-        if (
-            baseContent.trim() === text.trim() ||
-            cleanedEditText === text.trim()
-        ) {
-            setIsEditing(false);
-            return;
-        }
+        if (baseContent.trim() === text.trim()) { setIsEditing(false); return; }
         await onUpdate(item.uid, text);
     };
 
@@ -529,7 +501,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 <QuickCaptureInput
                     ref={composerRef}
                     mode="edit"
-                    initialValue={cleanedEditText ?? fullContent}
+                    initialValue={fullContent}
                     hidePrimaryButton
                     projects={projects}
                     onSubmitOverride={handleSubmitEdit}
