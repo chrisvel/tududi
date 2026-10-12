@@ -61,24 +61,26 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         onEditingChange?.(isEditing);
     }, [isEditing]);
 
-    const [opening, setOpening] = useState(false);
-
-    // Open the editor only once the cleaned title is known, so the box never
-    // shows the raw text first and then jumps to the cleaned one. The list is
-    // told in the same render, so its corners and background change with the card.
-    const startEditing = async () => {
-        if (isEditing || opening) return;
-        setOpening(true);
-        let cleaned: string | null = null;
-        try {
-            cleaned =
-                (await analyzeInboxText(fullContent)).cleaned_content?.trim() ||
-                null;
-        } catch {
-            cleaned = null;
+    useEffect(() => {
+        if (!isEditing) {
+            setCleanedEditText(null);
+            return;
         }
-        setCleanedEditText(cleaned);
-        setOpening(false);
+        let cancelled = false;
+        analyzeInboxText(fullContent)
+            .then((result) => {
+                const cleaned = result?.cleaned_content?.trim();
+                if (!cancelled && cleaned) setCleanedEditText(cleaned);
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+    }, [isEditing]);
+
+    // Tell the list in the same render that this item is opening, so its
+    // rounded corners and background change together with the card.
+    const startEditing = () => {
         setIsEditing(true);
         onEditingChange?.(true);
     };
