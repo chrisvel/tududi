@@ -155,6 +155,24 @@ class GoalsService {
                 values.achieved_at = new Date();
             }
             hierarchy.validatePeriod(values);
+            // LTD-PATCH(T-803): recheck the AI weekly-priority ceiling under the owner lock.
+            if (actor.actor_type === 'ai' && values.horizon === 'week') {
+                const { Op } = require('sequelize');
+                const existing = await Goal.count({
+                    where: {
+                        user_id: userId,
+                        status: 'active',
+                        horizon: 'week',
+                        period_start: { [Op.lte]: values.period_end },
+                        period_end: { [Op.gte]: values.period_start },
+                    },
+                    transaction,
+                });
+                if (existing >= 3)
+                    throw new ValidationError(
+                        'At most three weekly priorities'
+                    );
+            }
             await hierarchy.validateHierarchy(
                 userId,
                 null,

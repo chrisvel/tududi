@@ -65,6 +65,22 @@ const planRows = async (userId, date) => {
 };
 
 const EXPECTED = {
+    ...Object.fromEntries(
+        [
+            'overload',
+            'small_steps',
+            'decompose',
+            'tomorrow',
+            'weekly_priorities',
+            'why',
+            'review',
+        ].map((f) => [
+            `ai_${f}`,
+            ['why', 'review'].includes(f)
+                ? ['ltd.read', 'R0']
+                : ['ltd.propose', 'R2'],
+        ])
+    ),
     list_goals: ['ltd.read', 'R0'],
     get_goal: ['ltd.read', 'R0'],
     get_goal_progress: ['ltd.read', 'R0'],

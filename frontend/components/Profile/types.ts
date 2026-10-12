@@ -143,6 +143,10 @@ export interface Profile {
     ai_profile?: string | null;
     ai_base_url?: string | null;
     ai_model?: string | null;
+    // LTD-PATCH(T-801): additional AI provider settings.
+    provider_type?: string;
+    model_fast?: string | null;
+    model_smart?: string | null;
     ai_api_key_set?: boolean;
     ai_api_key_last4?: string | null;
 }

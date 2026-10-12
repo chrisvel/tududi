@@ -572,6 +572,8 @@ const registerApiRoutes = (basePath) => {
     // LTD-PATCH(T-704, T-706): Proposals and MCP access controls. Last, so
     // earlier routes do not pass through two more routers (G4 finding 4).
     app.use(basePath, require('./modules/ltd-proposals/routes'));
+    // LTD-PATCH(T-802): consent-gated in-app AI, same auth middleware.
+    app.use(basePath, require('./modules/ltd-ai/routes'));
     app.use(basePath, require('./modules/ltd-mcp-control/routes'));
 };
 

@@ -21,6 +21,10 @@ export const fetchAIConfig = async (): Promise<AIConfig | null> => {
 export interface AiProviderSettings {
     ai_base_url: string | null;
     ai_model: string | null;
+    // LTD-PATCH(T-801): additive provider port settings.
+    provider_type?: string;
+    model_fast?: string | null;
+    model_smart?: string | null;
     ai_api_key_set: boolean;
     ai_api_key_last4: string | null;
 }
@@ -30,6 +34,9 @@ export interface AiProviderSettingsUpdate {
     ai_api_key?: string | null;
     ai_base_url?: string | null;
     ai_model?: string | null;
+    provider_type?: string;
+    model_fast?: string | null;
+    model_smart?: string | null;
 }
 
 export const fetchAiProviderSettings =

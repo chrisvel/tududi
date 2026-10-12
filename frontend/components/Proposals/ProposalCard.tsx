@@ -18,9 +18,19 @@ const day = (value: string) =>
 
 function OpPreview({ op }: { op: ProposalOp }) {
     const { t } = useTranslation();
-    if (op.type === 'schedule_block') {
+    if (op.type === 'create_task')
         return (
             <span>
+                <bdi>{op.title}</bdi> · {op.est_min} {t('ltdAi.minutes')} ·{' '}
+                <bdi>{op.starter_step}</bdi>
+            </span>
+        );
+    if (op.type === 'schedule_block' || op.type === 'move_block') {
+        return (
+            <span>
+                {op.type === 'move_block' && op.from_date && (
+                    <span>{day(op.from_date)} → </span>
+                )}
                 <span className="font-mono" dir="ltr">
                     {formatMinute(op.start_minute)}–
                     {formatMinute(op.start_minute + op.duration_minutes)}
@@ -37,6 +47,7 @@ function OpPreview({ op }: { op: ProposalOp }) {
                 <span className="text-gray-500">
                     ({t(`goals.horizon.${op.horizon}`, op.horizon)})
                 </span>
+                {op.why && <bdi className="block">{op.why}</bdi>}
                 {op.parent_title && (
                     <>
                         {' '}
@@ -47,6 +58,7 @@ function OpPreview({ op }: { op: ProposalOp }) {
             </span>
         );
     }
+    if (op.type !== 'update_task') return null;
     return (
         <span>
             <bdi>{op.task_name}</bdi> · {t('ltdProposals.ops.due')}{' '}

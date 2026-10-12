@@ -36,6 +36,10 @@ function maskAiSettings(user) {
     return {
         ai_base_url: user.ai_base_url || null,
         ai_model: user.ai_model || null,
+        // LTD-PATCH(T-801): no key exposure; additive provider choices.
+        provider_type: user.provider_type || 'openai',
+        model_fast: user.model_fast || null,
+        model_smart: user.model_smart || null,
         ai_api_key_set: encrypted.length > 0,
         ai_api_key_last4: plaintext.length >= 4 ? plaintext.slice(-4) : null,
     };
@@ -859,6 +863,18 @@ class UsersService {
 
         const { ai_api_key, ai_base_url, ai_model } = data;
         await validateAiSettings({ ai_base_url, ai_model });
+        // LTD-PATCH(T-801): validate additive fields before any write.
+        if (
+            data.provider_type !== undefined &&
+            !['openai', 'anthropic', 'ollama'].includes(data.provider_type)
+        )
+            throw new ValidationError('Invalid provider_type');
+        for (const field of ['model_fast', 'model_smart'])
+            if (
+                data[field] != null &&
+                (typeof data[field] !== 'string' || data[field].length > 200)
+            )
+                throw new ValidationError('Invalid model');
 
         const updates = {};
         if (ai_api_key !== undefined) {
@@ -877,6 +893,8 @@ class UsersService {
         if (ai_base_url !== undefined)
             updates.ai_base_url = ai_base_url || null;
         if (ai_model !== undefined) updates.ai_model = ai_model || null;
+        for (const field of ['provider_type', 'model_fast', 'model_smart'])
+            if (data[field] !== undefined) updates[field] = data[field] || null;
 
         await usersRepository.update(user, updates);
         const updated = await usersRepository.findAiSettings(userId);

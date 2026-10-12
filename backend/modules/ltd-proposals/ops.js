@@ -17,7 +17,14 @@ const {
     ValidationError,
 } = require('../../shared/errors');
 
-const TYPES = ['create_goal', 'schedule_block', 'update_task'];
+const aiOps = require('./ai-ops');
+const TYPES = [
+    'create_goal',
+    'schedule_block',
+    'update_task',
+    'create_task',
+    'move_block',
+];
 
 async function createGoal(user, op, actor) {
     let areaId = null;
@@ -33,6 +40,8 @@ async function createGoal(user, op, actor) {
         {
             title: op.title,
             horizon: op.horizon,
+            period_start: op.period_start,
+            period_end: op.period_end,
             why: op.why || null,
             target_date: op.target_date || null,
             parent_goal_uid: op.parent_goal_uid || undefined,
@@ -139,9 +148,20 @@ async function updateTask(user, op, actor) {
 // Applies the selected ops; returns { [opId]: { error? } }.
 async function applyOps(user, ops, actor) {
     const results = {};
+    const aiPlanOps = ops.filter((o) =>
+        ['move_block', 'schedule_block'].includes(o.type)
+    );
+    if (actor.actor_type === 'ai' && aiPlanOps.length) {
+        try {
+            Object.assign(results, await aiOps.plan(user, aiPlanOps, actor));
+        } catch (error) {
+            for (const op of aiPlanOps)
+                results[op.id] = { error: error.message };
+        }
+    }
     const byDate = new Map();
     for (const op of ops) {
-        if (op.type !== 'schedule_block') continue;
+        if (op.type !== 'schedule_block' || actor.actor_type === 'ai') continue;
         byDate.set(op.date, [...(byDate.get(op.date) || []), op]);
     }
     for (const [date, blocks] of byDate) {
@@ -155,12 +175,14 @@ async function applyOps(user, ops, actor) {
         }
     }
     for (const op of ops) {
-        if (op.type === 'schedule_block') continue;
+        if (['schedule_block', 'move_block'].includes(op.type)) continue;
         try {
             results[op.id] =
-                op.type === 'create_goal'
-                    ? await createGoal(user, op, actor)
-                    : await updateTask(user, op, actor);
+                op.type === 'create_task'
+                    ? await aiOps.createTask(user, op, actor)
+                    : op.type === 'create_goal'
+                      ? await createGoal(user, op, actor)
+                      : await updateTask(user, op, actor);
         } catch (error) {
             results[op.id] = { error: error.message };
         }

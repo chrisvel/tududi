@@ -32,6 +32,8 @@ const { isSqlite, truncateTables } = require('../../utils/db-dialect');
 // LTD-PATCH(T-305): fork-only table must be cleaned before users (FK).
 // LTD-PATCH(T-404): remove planning children before goals/users on both dialects.
 const CLEANUP_TABLES = [
+    // LTD-PATCH(T-804): AI runs reference users and proposals.
+    'ltd_ai_runs',
     // LTD-PATCH(T-601): milestones reference goals and users.
     'ltd_milestones',
     // LTD-PATCH(T-704): Proposals, OAuth storage and MCP controls reference users.

@@ -2,7 +2,7 @@
 
 // Life-to-Day (T-703, T-705): every capability, defined once. The Phase 4
 // read tools are registered here and call the same planning services.
-// Out of scope until Phase 8: decompose_goal, generate_weekly_review.
+// T-803: in-app AI definitions share this registry and require human consent.
 // Out of scope until Phase 9: propose_calendar_changes.
 const moment = require('moment-timezone');
 const { z, define } = require('./registry');
@@ -475,6 +475,7 @@ const CAPABILITIES = [
     ...planningReads,
     ...proposalTools,
     ...writes,
+    ...require('../ltd-ai/capabilities').AI_CAPABILITIES,
 ];
 
 module.exports = { CAPABILITIES, GOAL_READS: goalReads };

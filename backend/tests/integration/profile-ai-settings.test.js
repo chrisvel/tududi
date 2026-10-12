@@ -45,6 +45,9 @@ describe('Profile AI settings', () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toEqual({
+            provider_type: 'openai',
+            model_fast: null,
+            model_smart: null,
             ai_base_url: null,
             ai_model: null,
             ai_api_key_set: false,
@@ -61,6 +64,9 @@ describe('Profile AI settings', () => {
 
         expect(putResponse.status).toBe(200);
         expect(putResponse.body).toEqual({
+            provider_type: 'openai',
+            model_fast: null,
+            model_smart: null,
             ai_base_url: 'https://api.example.com/v1',
             ai_model: 'llama3.2',
             ai_api_key_set: true,
@@ -87,6 +93,44 @@ describe('Profile AI settings', () => {
         expect(response.body.ai_api_key_set).toBe(true);
         expect(response.body.ai_api_key_last4).toBe('0000');
         expect(response.body.ai_model).toBe('gpt-4o');
+    });
+
+    // LTD-PATCH(T-801): additional fields preserve the encrypted key and base URL.
+    it('saves provider and model tiers without replacing the original settings', async () => {
+        await agent.put('/api/profile/ai-settings').send({
+            ai_api_key: 'fixture-key-1234',
+            ai_model: 'original',
+            ai_base_url: 'https://api.example.com/v1',
+        });
+        const result = await agent.put('/api/profile/ai-settings').send({
+            provider_type: 'anthropic',
+            model_fast: 'fast-fixture',
+            model_smart: 'smart-fixture',
+        });
+        expect(result.status).toBe(200);
+        expect(result.body).toMatchObject({
+            provider_type: 'anthropic',
+            model_fast: 'fast-fixture',
+            model_smart: 'smart-fixture',
+            ai_api_key_set: true,
+            ai_api_key_last4: '1234',
+            ai_model: 'original',
+            ai_base_url: 'https://api.example.com/v1',
+        });
+        expect(
+            (
+                await agent
+                    .put('/api/profile/ai-settings')
+                    .send({ provider_type: 'fake' })
+            ).status
+        ).toBe(400);
+        expect(
+            (
+                await agent
+                    .put('/api/profile/ai-settings')
+                    .send({ model_fast: 42 })
+            ).status
+        ).toBe(400);
     });
 
     it('clears the API key on an explicit empty value', async () => {

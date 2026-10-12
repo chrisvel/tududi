@@ -39,7 +39,8 @@ const serialize = (proposal) => ({
 
 async function propose(
     userId,
-    { origin = 'mcp', client_id = null, title, rationale = null, ops }
+    { origin = 'mcp', client_id = null, title, rationale = null, ops },
+    options = {}
 ) {
     if (!Array.isArray(ops) || !ops.length || ops.length > MAX_OPS)
         throw new ValidationError(`A proposal holds 1 to ${MAX_OPS} changes`);
@@ -47,16 +48,19 @@ async function propose(
         throw new ValidationError('Unknown proposal operation');
     if (typeof title !== 'string' || !title.trim())
         throw new ValidationError('A proposal needs a title');
-    const proposal = await repository.create({
-        user_id: userId,
-        origin,
-        client_id,
-        title: title.trim().slice(0, 255),
-        rationale,
-        ops: ops.map((op, index) => ({ ...op, id: `op${index + 1}` })),
-        risk_tier: ops.length > BULK_OPS ? 'R3' : 'R2',
-        expires_at: new Date(Date.now() + TTL_DAYS * 24 * 60 * 60 * 1000),
-    });
+    const proposal = await repository.create(
+        {
+            user_id: userId,
+            origin,
+            client_id,
+            title: title.trim().slice(0, 255),
+            rationale,
+            ops: ops.map((op, index) => ({ ...op, id: `op${index + 1}` })),
+            risk_tier: ops.length > BULK_OPS ? 'R3' : 'R2',
+            expires_at: new Date(Date.now() + TTL_DAYS * 24 * 60 * 60 * 1000),
+        },
+        options
+    );
     return serialize(proposal);
 }
 

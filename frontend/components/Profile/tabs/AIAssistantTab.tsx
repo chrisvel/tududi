@@ -12,7 +12,14 @@ import TrialLockNotice from '../../Billing/TrialLockNotice';
 import { useTrialLock } from '../../../hooks/useTrialStatus';
 import type { ProfileFormData, Features } from '../types';
 
-type AiProviderField = 'ai_api_key' | 'ai_base_url' | 'ai_model';
+// LTD-PATCH(T-801): extend the existing settings form.
+type AiProviderField =
+    | 'ai_api_key'
+    | 'ai_base_url'
+    | 'ai_model'
+    | 'provider_type'
+    | 'model_fast'
+    | 'model_smart';
 
 interface AIAssistantTabProps {
     isActive: boolean;
@@ -228,6 +235,43 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
                                 className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-mono text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
+                    </div>
+                    <div className="space-y-3 mt-3">
+                        <label className="block">
+                            {t('ltdAi.provider')}
+                            <select
+                                className="ms-2 rounded border bg-transparent p-2"
+                                value={formData.provider_type || 'openai'}
+                                onChange={(e) =>
+                                    onAiProviderFieldChange(
+                                        'provider_type',
+                                        e.target.value
+                                    )
+                                }
+                            >
+                                <option value="openai">OpenAI</option>
+                                <option value="anthropic">Anthropic</option>
+                                <option value="ollama">Ollama</option>
+                            </select>
+                        </label>
+                        {(['model_fast', 'model_smart'] as const).map(
+                            (field) => (
+                                <label className="block" key={field}>
+                                    {t(`ltdAi.${field}`)}
+                                    <input
+                                        className="ms-2 rounded border bg-transparent p-2"
+                                        dir="auto"
+                                        value={formData[field] || ''}
+                                        onChange={(e) =>
+                                            onAiProviderFieldChange(
+                                                field,
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                </label>
+                            )
+                        )}
                     </div>
                     {loaded && !apiKeySet && !formData.ai_api_key && (
                         <p className="mt-2 text-xs text-amber-500 dark:text-amber-400">

@@ -4,6 +4,7 @@ import React from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import ProposalCard from './ProposalCard';
+import PlanningAssistant from '../AI/PlanningAssistant';
 import { fetchProposals, proposalKeys } from '../../utils/proposalsService';
 import { refreshPlanning } from '../../utils/planningService';
 
@@ -26,6 +27,7 @@ export default function ProposalsPage() {
                     {t('ltdProposals.intro')}
                 </p>
             </header>
+            <PlanningAssistant onChanged={changed} />
             {error && <p role="alert">{error.message}</p>}
             {data && !pending.length && (
                 <p className="text-sm text-gray-500">

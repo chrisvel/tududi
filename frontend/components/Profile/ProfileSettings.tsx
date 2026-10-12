@@ -1,3 +1,5 @@
+// LTD-PATCH(T-801): extend saved AI settings through the existing service.
+import { updateAiProviderSettings } from '../../utils/aiAssistantService';
 // LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
 import React, {
     useState,
@@ -925,7 +927,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.error || t('profile.sendSummaryFailed', 'Failed to send the summary.'));
+                throw new Error(
+                    data.error ||
+                        t(
+                            'profile.sendSummaryFailed',
+                            'Failed to send the summary.'
+                        )
+                );
             }
 
             const data = await response.json();
@@ -1144,13 +1152,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             let aiSettingsResult: {
                 ai_base_url: string | null;
                 ai_model: string | null;
+                provider_type?: string;
+                model_fast?: string | null;
+                model_smart?: string | null;
                 ai_api_key_set: boolean;
                 ai_api_key_last4: string | null;
             } | null = null;
             if (
                 formData.ai_api_key !== undefined ||
                 formData.ai_base_url !== undefined ||
-                formData.ai_model !== undefined
+                formData.ai_model !== undefined ||
+                formData.provider_type !== undefined ||
+                formData.model_fast !== undefined ||
+                formData.model_smart !== undefined
             ) {
                 const aiPayload: Record<string, string | null> = {};
                 if (formData.ai_api_key !== undefined)
@@ -1160,26 +1174,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 if (formData.ai_model !== undefined)
                     aiPayload.ai_model = formData.ai_model || null;
 
-                const aiResponse = await fetch(
-                    getApiPath('profile/ai-settings'),
-                    {
-                        method: 'PUT',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-csrf-token': await getCsrfToken(),
-                            Accept: 'application/json',
-                        },
-                        body: JSON.stringify(aiPayload),
-                    }
-                );
-                if (!aiResponse.ok) {
-                    const data = await aiResponse.json();
-                    throw new Error(
-                        data.error || 'Failed to update AI provider settings.'
-                    );
-                }
-                aiSettingsResult = await aiResponse.json();
+                for (const field of [
+                    'provider_type',
+                    'model_fast',
+                    'model_smart',
+                ] as const)
+                    if (formData[field] !== undefined)
+                        aiPayload[field] = formData[field] || null;
+                aiSettingsResult = await updateAiProviderSettings(aiPayload);
             }
 
             if (avatarFile) {
@@ -1251,6 +1253,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     ? {
                           ai_base_url: aiSettingsResult.ai_base_url,
                           ai_model: aiSettingsResult.ai_model,
+                          provider_type: aiSettingsResult.provider_type,
+                          model_fast: aiSettingsResult.model_fast,
+                          model_smart: aiSettingsResult.model_smart,
                           ai_api_key_set: aiSettingsResult.ai_api_key_set,
                           ai_api_key_last4: aiSettingsResult.ai_api_key_last4,
                           // Clear the write-only input now that it's saved.
@@ -1805,6 +1810,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             ...prev,
                                             ai_base_url: settings.ai_base_url,
                                             ai_model: settings.ai_model,
+                                            provider_type:
+                                                settings.provider_type,
+                                            model_fast: settings.model_fast,
+                                            model_smart: settings.model_smart,
                                             ai_api_key_set:
                                                 settings.ai_api_key_set,
                                             ai_api_key_last4:
