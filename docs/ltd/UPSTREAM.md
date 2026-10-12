@@ -438,6 +438,9 @@ JSON translation files cannot contain JavaScript comments; their patch markers a
 | T-406 | `frontend/components/Nav/__tests__/LtdNav.test.tsx` | Assert desktop and mobile active Plan state on the weekly route | No |
 | T-405 | `frontend/i18n.ts` | Resolve translation reloads from the app base rather than nested goal/week URLs | No |
 | T-405 | `frontend/App.tsx` | Avoid fetching an undefined locale during nested-route bootstrap | No |
+| T-405 | `public/locales/*/translation.json` | Add keys the UI used but no locale defined (English placeholders outside en/fa); `task.attachments` becomes an object with its old text under `title` | No |
+| T-405 | `frontend/components/Task/TaskDetails/TaskDetailsHeader.tsx` | Read the attachments label from `task.attachments.title` | No |
+| T-405 | `frontend/components/Project/ProjectModal.tsx`, `frontend/components/Task/TaskRow/index.tsx` | Pass interpolation values so the locale strings can show the limit and task name | No |
 
 ## Phase 5 daily execution
 

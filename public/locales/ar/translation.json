@@ -45,7 +45,22 @@
     "hideSearch": "طي البحث",
     "showSearch": "إظهار البحث",
     "beta": "تجريبي",
-    "comingSoon": "قريبًا"
+    "comingSoon": "قريبًا",
+    "actions": "Actions",
+    "breadcrumb": "Breadcrumb",
+    "createCalendar": "Create Calendar",
+    "creating": "Creating...",
+    "due": "Due",
+    "goToToday": "Go to Today",
+    "goal": "Goal",
+    "loadMore": "Load More",
+    "priority": "Priority",
+    "resolving": "Resolving...",
+    "showAll": "Show All",
+    "showLess": "Show less",
+    "tags": "Tags",
+    "undo": "Undo",
+    "untitled": "Untitled"
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -134,7 +149,11 @@
       "primary": "Primary",
       "lifeStub": "The life timeline will appear here later.",
       "reviewStub": "Guided review will appear here later."
-    }
+    },
+    "inbox": "Inbox",
+    "notes": "Notes",
+    "projects": "Projects",
+    "today": "Today"
   },
   "settings": {
     "todayPageSettings": "إعدادات صفحة اليوم",
@@ -245,14 +264,30 @@
       "inProgress": "قيد التقدم",
       "waiting": "انتظار",
       "done": "تم",
-      "dropHere": "اسحب هنا"
+      "dropHere": "اسحب هنا",
+      "archived": "Archived",
+      "cancelled": "Cancelled",
+      "columns": "Columns",
+      "customizeColumns": "Customize columns",
+      "planned": "Planned"
     },
     "chaseUp": "متابعة",
     "habit": "عادة",
     "assignedTo": "مخصص لـ",
     "subtasks": "المهام الفرعية",
     "openFullPage": "فتح العرض الكامل",
-    "reorderError": "Failed to save task order"
+    "reorderError": "Failed to save task order",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleteConfirmTitle": "Delete Task",
+    "dueInDays": "Due in {{days}}d",
+    "dueSoon": "due soon",
+    "noDue": "No due date",
+    "overdueBy": "Overdue by {{days}}d",
+    "priority": "Priority",
+    "progress": "Progress",
+    "startNow": "Start now",
+    "startedSuccessfully": "Task started successfully!",
+    "todayPlan": "Today plan"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",
@@ -572,7 +607,9 @@
       "setupSuccess": "تم تكوين التقويم بنجاح!",
       "setupFailed": "فشل في إنشاء التقويم",
       "serverUrlPlaceholder": "https://caldav.example.com",
-      "calendarPathPlaceholder": "/calendars/user/tasks"
+      "calendarPathPlaceholder": "/calendars/user/tasks",
+      "fillServerDetails": "Please fill in all server connection details first",
+      "validationError": "Please fill in all required fields and test the connection"
     },
     "conflictResolver": {
       "title": "حل تعارضات المزامنة",
@@ -599,7 +636,8 @@
       "resolveSuccess": "تم حل جميع النزاعات بنجاح",
       "resolveError": "فشل في حل النزاعات",
       "nextConflict": "التالي",
-      "prevConflict": "السابق"
+      "prevConflict": "السابق",
+      "mixedResolutionError": "Please choose \"Use all local\" or \"Use all remote\" for each conflict. Mixed field selections are not yet supported."
     },
     "editCalendar": {
       "title": "تعديل التقويم",
@@ -907,7 +945,8 @@
     "allClearHint": "لا توجد حاليًا مهام غامضة أو عمل متوقف أو مشاريع عالقة. وقت مناسب للتخطيط للخطوة التالية.",
     "goToTasks": "الانتقال إلى المهام",
     "goToProjects": "الانتقال إلى المشاريع",
-    "planDay": "خطط ليومك"
+    "planDay": "خطط ليومك",
+    "andMore": "... and {{count}} more"
   },
   "modals": {
     "confirmDelete": "هل أنت متأكد أنك تريد الحذف؟",
@@ -951,7 +990,12 @@
       "message": "هل أنت متأكد من حذف الهدف \"{{title}}\"؟"
     },
     "createGoal": "إنشاء الهدف",
-    "updateGoal": "تحديث الهدف"
+    "updateGoal": "تحديث الهدف",
+    "saveAsTemplate": {
+      "message": "Save \"{{name}}\" as a template? This will create a reusable template based on this project.",
+      "title": "Save as Template"
+    },
+    "updateTask": "Update Task"
   },
   "forms": {
     "title": "العنوان",
@@ -984,7 +1028,9 @@
         "weekOfMonth": "أسبوع من الشهر",
         "recurrenceEndDate": "تاريخ الانتهاء (اختياري)",
         "completionBased": "كرر بعد الانتهاء",
-        "repeatOn": "التكرار في"
+        "repeatOn": "التكرار في",
+        "attachments": "Attachments",
+        "recurrence": "Repeat"
       },
       "projectSearchPlaceholder": "ابحث أو أنشئ مشروعًا...",
       "noMatchingProjects": "لا توجد مشاريع مطابقة",
@@ -1032,7 +1078,12 @@
     "goalTargetDate": "التاريخ المستهدف",
     "color": "اللون",
     "goalArea": "المنطقة",
-    "noArea": "بلا منطقة"
+    "noArea": "بلا منطقة",
+    "goalTitle": "Outcome",
+    "name": "Name",
+    "noProject": "No project",
+    "project": "Project",
+    "taskName": "Name"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -1073,7 +1124,25 @@
     },
     "captcha_required": "يرجى إكمال التحقق والمحاولة مرة أخرى.",
     "registration_successful": "أكّد عنوان بريدك الإلكتروني",
-    "registration_email_sent": "أكّد عنوان بريدك الإلكتروني لتفعيل حسابك. أرسلنا لك رابطًا، تحقق من صندوق الوارد."
+    "registration_email_sent": "أكّد عنوان بريدك الإلكتروني لتفعيل حسابك. أرسلنا لك رابطًا، تحقق من صندوق الوارد.",
+    "already_have_account": "Already have an account?",
+    "already_verified": "Your email is already verified. You can log in.",
+    "back_to_login": "Back to Login",
+    "confirm_password": "Confirm Password",
+    "email_not_verified": "Please verify your email address before logging in.",
+    "email_verified": "Your email has been verified! You can now log in.",
+    "error_occurred": "An error occurred. Please try again.",
+    "no_account": "Don't have an account?",
+    "no_auth_methods": "No authentication methods available. Please contact your administrator.",
+    "password_registration_disabled": "Password Registration Disabled",
+    "password_registration_disabled_message": "Password-based registration is not available. Please use SSO to sign in.",
+    "passwords_not_match": "Passwords do not match",
+    "registration_closed_message": "New account registration is currently disabled. Contact your administrator for access.",
+    "registration_closed_title": "Registration Closed",
+    "registration_failed": "Registration failed. Please try again.",
+    "sign_up": "Sign Up",
+    "verification_expired": "Verification link has expired. Please register again.",
+    "verification_failed": "Email verification failed. Please try again."
   },
   "dropdown": {
     "createNew": "إنشاء جديد",
@@ -1090,7 +1159,8 @@
     "priority": "الأولوية",
     "status": "الحالة",
     "created_at": "تاريخ الإنشاء",
-    "custom": "مخصص"
+    "custom": "مخصص",
+    "completed_at": "Completed At"
   },
   "priority": {
     "low": "منخفض",
@@ -1179,7 +1249,9 @@
     "noFilesYet": "No files yet. Drop files here or use +.",
     "allFiles": "All files",
     "dropToUpload": "Drop to upload",
-    "fewerFiles": "Show fewer"
+    "fewerFiles": "Show fewer",
+    "noCompletedTasks": "No completed tasks.",
+    "noTasks": "No tasks."
   },
   "errors": {
     "required": "هذا الحقل مطلوب",
@@ -1217,7 +1289,15 @@
     "failedToSaveGoal": "تعذر حفظ الهدف.",
     "failedToDeleteGoal": "تعذر حذف الهدف.",
     "failedToDeleteNote": "تعذر حذف الملاحظة.",
-    "failedToDeleteTag": "تعذر حذف الوسم."
+    "failedToDeleteTag": "تعذر حذف الوسم.",
+    "failedToDeleteArea": "Failed to delete area.",
+    "failedToDeleteProject": "Failed to delete project.",
+    "failedToSaveProject": "Failed to save project.",
+    "failedToSaveTask": "Failed to save task.",
+    "failedToUpdateGoal": "Failed to update goal.",
+    "permissionDenied": "Permission denied",
+    "projectNameTooLong": "Project name must be {{max}} characters or less",
+    "projectStatusUpdateFailed": "Failed to update project status"
   },
   "inbox": {
     "title": "صندوق الوارد",
@@ -1329,7 +1409,8 @@
     "goalCreated": "تم إنشاء الهدف!",
     "goalUpdated": "تم تحديث الهدف!",
     "goalDeleted": "تم حذف الهدف!",
-    "tagDeleted": "تم حذف الوسم!"
+    "tagDeleted": "تم حذف الوسم!",
+    "areaDeleted": "Area deleted successfully!"
   },
   "note": {
     "title": "العنوان",
@@ -1396,7 +1477,8 @@
       "waiting": "في الانتظار",
       "setAsDone": "تعيين كمنجز",
       "planned": "مخطط",
-      "cancelled": "ملغى"
+      "cancelled": "ملغى",
+      "label": "Status"
     },
     "noSubtasksClickToAdd": "أضف مهام فرعية",
     "project": "المشروع",
@@ -1454,7 +1536,19 @@
     "dueDateInPastWarning": "تحذير: أنت تقوم بتعيين تاريخ استحقاق في الماضي",
     "overview": "نظرة عامة",
     "schedule": "جدول",
-    "attachments": "المرفقات",
+    "attachments": {
+      "title": "المرفقات",
+      "anyFormat": "Any file type",
+      "clickToUpload": "Click to upload",
+      "deleteConfirmMessage": "Are you sure you want to delete this attachment? This action cannot be undone.",
+      "deleteConfirmTitle": "Delete Attachment",
+      "deleteError": "Failed to delete attachment",
+      "deleteSuccess": "Attachment deleted successfully",
+      "maxSize": "Max {{size}}MB",
+      "uploadError": "Failed to upload file",
+      "uploadSuccess": "File uploaded successfully",
+      "uploading": "Uploading..."
+    },
     "attachmentsComingSoon": "ميزة المرفقات قادمة قريبًا",
     "activity": "نشاط",
     "lastUpdatedAt": "آخر تحديث في",
@@ -1475,7 +1569,31 @@
     "starterStep": "First step",
     "starterStepPlaceholder": "Something you can do in 5 minutes",
     "starterStepHint": "Shown first on the Now card, to make starting easy.",
-    "starterStepError": "Failed to update the first step"
+    "starterStepError": "Failed to update the first step",
+    "areaClearError": "Failed to clear area",
+    "areaCleared": "Area cleared successfully",
+    "areaUpdateError": "Failed to update area",
+    "areaUpdated": "Area updated successfully",
+    "deferAfterDueError": "Defer until date cannot be after the due date",
+    "dueDateBeforeDeferError": "Due date cannot be before the defer until date",
+    "editDetails": "Edit details",
+    "goalClearError": "Failed to clear goal",
+    "goalCleared": "Goal cleared",
+    "goalUpdateError": "Failed to update goal",
+    "goalUpdated": "Goal updated",
+    "hoursAgo": "{{count}} hours ago",
+    "inHours": "in {{count}} hours",
+    "inMinutes": "in {{count}} minutes",
+    "minutesAgo": "{{count}} minutes ago",
+    "nameRequired": "Task name is required",
+    "noArea": "Assign to an area",
+    "noUpcomingOccurrences": "No upcoming occurrences.",
+    "notFound": "Task Not Found",
+    "notFoundDescription": "The task you are looking for does not exist or has been deleted.",
+    "pastDue": "Past Due",
+    "title": "Task",
+    "titlePlaceholder": "Enter task title",
+    "untitled": "Untitled task"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",
@@ -1569,7 +1687,15 @@
       "showCompleted": "Show completed projects",
       "saveError": "Failed to save projects settings"
     },
-    "reorderError": "Failed to save project order"
+    "reorderError": "Failed to save project order",
+    "deleteError": "Failed to delete project",
+    "fromTemplate": "From Template",
+    "saveAsTemplateError": "Failed to save project as template.",
+    "savedAsTemplate": "\"{{name}}\" saved as template.",
+    "shared": "Shared",
+    "sortTasks": "Sort tasks",
+    "status": "Project Status",
+    "upcomingProjects": "Upcoming Projects"
   },
   "projectItem": {
     "edit": "تعديل",
@@ -1590,7 +1716,8 @@
     "moreSharedUsers": "+{{count}} مستخدمين آخرين",
     "saveAsTemplate": "حفظ كقالب",
     "pinToSidebar": "تثبيت في الشريط الجانبي",
-    "unpinFromSidebar": "إلغاء تثبيت من الشريط الجانبي"
+    "unpinFromSidebar": "إلغاء تثبيت من الشريط الجانبي",
+    "changeStatus": "Change status"
   },
   "areas": {
     "title": "المناطق",
@@ -1621,7 +1748,28 @@
     "presetHome": "Home",
     "presetWork": "Work",
     "presetHealth": "Health",
-    "presetFamily": "Family"
+    "presetFamily": "Family",
+    "delete": "Delete",
+    "edit": "Edit",
+    "goals": "goals",
+    "noProjects": "No projects in this area.",
+    "noTasks": "No tasks directly in this area",
+    "progressSummary": "Area progress · {{done}} of {{total}} tasks done",
+    "projects": "projects",
+    "reorderError": "Failed to save area order",
+    "singular": "Area",
+    "sort": {
+      "custom": "Custom order",
+      "goals": "Most goals",
+      "label": "Sort areas",
+      "nameAsc": "Name A to Z",
+      "nameDesc": "Name Z to A",
+      "projects": "Most projects",
+      "tasks": "Most tasks"
+    },
+    "tasks": "tasks",
+    "tasksInArea": "Tasks",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "notes": {
     "loading": "جارٍ تحميل الملاحظات...",
@@ -1683,7 +1831,14 @@
     "linkedNoteCreateFailed": "تعذّر إنشاء الملاحظة.",
     "backgroundImage": "الخلفية",
     "noBackground": "بلا خلفية",
-    "openInNotes": "Open in Notes"
+    "openInNotes": "Open in Notes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "fileUploadError": "Could not upload {{name}}",
+    "saveBeforeFiles": "Give the note a title or some text first, then add files.",
+    "slashFile": "Image or File",
+    "slashFileHint": "Upload and place it here",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "tags": {
     "loading": "جاري تحميل العلامات...",
@@ -1732,7 +1887,8 @@
     "pinnedTag": "وسم مثبّت",
     "frequentlyUsed": "الأكثر استخدامًا",
     "createTag": "+ إنشاء \"{{name}}\"",
-    "pinTag": "تثبيت للوصول السريع"
+    "pinTag": "تثبيت للوصول السريع",
+    "progressSummary": "Tag progress · {{done}} of {{total}} tasks done"
   },
   "recurrence": {
     "none": "لا شيء",
@@ -1756,7 +1912,16 @@
     "every": "كل",
     "weeks": "أسابيع",
     "months": "أشهر",
-    "advancedHint": "لأيام الأسبوع المحددة أو تاريخ انتهاء، افتح المهمة الكاملة."
+    "advancedHint": "لأيام الأسبوع المحددة أو تاريخ انتهاء، افتح المهمة الكاملة.",
+    "completionBased": "After completion",
+    "everyNDays": "Every {{count}} days",
+    "everyNMonths": "Every {{count}} months",
+    "everyNWeeks": "Every {{count}} weeks",
+    "instance": "Recurring instance",
+    "monthDayPlaceholder": "Select day of month",
+    "onDay": "On day",
+    "recurring": "Recurring",
+    "until": "Until"
   },
   "weekdays": {
     "sunday": "أحد",
@@ -1822,7 +1987,8 @@
     "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
     "hideCalendar": "Hide {{name}}",
     "showCalendar": "Show {{name}}",
-    "feedError": "Could not load: {{names}}"
+    "feedError": "Could not load: {{names}}",
+    "task": "Task"
   },
   "pages": {
     "notFound": {
@@ -2046,7 +2212,12 @@
       "joined": "انضم",
       "empty": "لم يسجل أحد بعد",
       "noMatches": "لا توجد عناوين تطابق هذا البحث",
-      "showing": "{{from}}-{{to}} من {{total}}"
+      "showing": "{{from}}-{{to}} من {{total}}",
+      "confirmRemove": "Remove {{email}} from the waitlist? This cannot be undone.",
+      "ipAddress": "IP Address",
+      "removeFailed": "Failed to remove entry",
+      "removeTitle": "Remove Address",
+      "removed": "Removed from the waitlist"
     },
     "passwordInviteHint": "اتركه فارغًا لإرسال بريد دعوة",
     "invitationSent": "تم إرسال بريد الدعوة إلى {{email}}",
@@ -2270,7 +2441,20 @@
       "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
       "threeDays": "Kept planning",
       "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
-    }
+    },
+    "aiUsage": {
+      "empty": "No users yet",
+      "limit": "Limit",
+      "plan": "Plan",
+      "remaining": "Remaining",
+      "searchPlaceholder": "Search by email",
+      "title": "AI Usage",
+      "totalCredits": "Credits used this month (all users)",
+      "used": "Used",
+      "user": "User",
+      "users": "Users"
+    },
+    "userDeletedSuccessfully": "User deleted successfully"
   },
   "shares": {
     "shareProject": "مشاركة المشروع",
@@ -2351,7 +2535,11 @@
     "blankSlateNew": "ابحث لإنشاء عرض",
     "noViewsMatch": "لم يتم العثور على عروض",
     "blankSlateFilteredHint": "جرّب بحثًا مختلفًا.",
-    "blankSlateClearSearch": "مسح البحث"
+    "blankSlateClearSearch": "مسح البحث",
+    "filters": "filters",
+    "progressSummary": "View progress · {{done}} of {{total}} tasks done",
+    "sortTasks": "Sort tasks",
+    "view": "View"
   },
   "search": {
     "placeholder": "ابحث عن المهام، المشاريع، الملاحظات...",
@@ -2406,7 +2594,8 @@
     }
   },
   "subtasks": {
-    "placeholder": "أضف مهمة فرعية..."
+    "placeholder": "أضف مهمة فرعية...",
+    "title": "Subtasks"
   },
   "backup": {
     "title": "النسخ الاحتياطي والاستعادة",
@@ -2457,7 +2646,8 @@
     "restoreButton": "استعادة",
     "adminInstanceNote": "بصفتك مسؤولًا، تتضمن نسختك الاحتياطية كل حساب على هذه النسخة، مع بياناته وتجزئات كلمات المرور. استعادتها على تثبيت جديد تعيد الجميع. احفظ الملف بعناية كما تحفظ قاعدة البيانات.",
     "accountsCount_one": "حسابات أخرى: {{count}}",
-    "accountsCount_other": "حسابات أخرى: {{count}}"
+    "accountsCount_other": "حسابات أخرى: {{count}}",
+    "delete": "Delete"
   },
   "notifications": {
     "table": {
@@ -2520,7 +2710,17 @@
       "enable": "Turn on",
       "disable": "Turn off",
       "failed": "Something went wrong. Please try again."
-    }
+    },
+    "daysAgo": "{{count}}d ago",
+    "delete": "Delete",
+    "hoursAgo": "{{count}}h ago",
+    "justNow": "Just now",
+    "loading": "Loading...",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "minutesAgo": "{{count}} min ago",
+    "noNotifications": "No notifications yet",
+    "title": "Notifications"
   },
   "projectStatus": {
     "not_started": "لم يبدأ بعد",
@@ -2670,7 +2870,8 @@
     "presetsLabel": "Or start with",
     "presetWalk": "Morning walk",
     "presetRead": "Read 20 minutes",
-    "presetReview": "Weekly review"
+    "presetReview": "Weekly review",
+    "newHabit": "New habit"
   },
   "aiAssistant": {
     "title": "مساعد الذكاء الاصطناعي",
@@ -2881,7 +3082,8 @@
     "linkedAccount": "مرتبط بحساب مستخدم",
     "archivedBadge": "مؤرشف",
     "deletePerson": "حذف الشخص",
-    "deleteConfirm": "هل أنت متأكد من حذف \"{{name}}\"؟ لا يمكن التراجع عن ذلك."
+    "deleteConfirm": "هل أنت متأكد من حذف \"{{name}}\"؟ لا يمكن التراجع عن ذلك.",
+    "contact": "Contact"
   },
   "members": {
     "addTitle": "إضافة عضو",
@@ -2910,7 +3112,8 @@
     "removed": "تمت إزالة العضو",
     "updated": "تم تحديث العضو",
     "invitationSent": "تم إرسال الدعوة",
-    "failedToRemove": "تعذّرت إزالة العضو"
+    "failedToRemove": "تعذّرت إزالة العضو",
+    "title": "Members"
   },
   "signInLink": {
     "action": "رابط تسجيل الدخول",
@@ -3146,7 +3349,12 @@
     "close": "Close"
   },
   "area": {
-    "loadError": "تعذر تحميل المناطق"
+    "loadError": "تعذر تحميل المناطق",
+    "clearArea": "Remove area",
+    "noAreasFound": "No areas found",
+    "searchAreas": "Search areas…",
+    "viaProject": "via project",
+    "viewArea": "Go to area"
   },
   "goals": {
     "newGoal": "هدف جديد",
@@ -3184,7 +3392,24 @@
     "clearGoal": "إزالة الهدف",
     "noGoalsFound": "لم يتم العثور على أهداف",
     "inactive": "غير نشط",
-    "viewGoal": "الانتقال إلى الهدف"
+    "viewGoal": "الانتقال إلى الهدف",
+    "maintenance": "Maintenance",
+    "noAvailableGoals": "No available goals",
+    "noGoalsInArea": "No goals linked to this area.",
+    "noGoalsSelected": "No goals selected",
+    "removeFromArea": "Remove from area",
+    "reorderError": "Failed to save goal order",
+    "sort": {
+      "area": "Area",
+      "custom": "Custom order",
+      "horizon": "Horizon",
+      "label": "Sort goals",
+      "projects": "Most projects",
+      "status": "Status",
+      "tasks": "Most tasks",
+      "titleAsc": "Title A to Z",
+      "titleDesc": "Title Z to A"
+    }
   },
   "templates": {
     "new": "قالب جديد",
@@ -3313,7 +3538,9 @@
   "sortable": {
     "move": "Move",
     "project": "sortable project",
-    "task": "sortable task"
+    "task": "sortable task",
+    "area": "sortable area",
+    "goal": "sortable goal"
   },
   "relations": {
     "title": "Relations",
@@ -3565,5 +3792,27 @@
     "overwhelmedHint": "Just this one thing. Everything else can wait.",
     "showAll": "Show my whole day again",
     "nothingToMove": "Your day is already light. One small step at a time."
+  },
+  "colors": {
+    "label": "Color",
+    "none": "None"
+  },
+  "loading": {
+    "subtasks": "Loading subtasks...",
+    "tasks": "Loading tasks…"
+  },
+  "notFound": {
+    "description": "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+    "goBack": "Go Back",
+    "goHome": "Go to Today",
+    "inboxDescription": "Check your inbox items",
+    "notesDescription": "Browse your notes",
+    "projectsDescription": "Browse your projects",
+    "quickActions": "Quick Actions",
+    "title": "Page Not Found",
+    "todayDescription": "View today's tasks"
+  },
+  "tag": {
+    "viewTag": "Go to tag"
   }
 }

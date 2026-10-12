@@ -45,7 +45,22 @@
     "hideSearch": "Zoeken inklappen",
     "showSearch": "Zoeken tonen",
     "beta": "bèta",
-    "comingSoon": "Binnenkort"
+    "comingSoon": "Binnenkort",
+    "actions": "Actions",
+    "breadcrumb": "Breadcrumb",
+    "createCalendar": "Create Calendar",
+    "creating": "Creating...",
+    "due": "Due",
+    "goToToday": "Go to Today",
+    "goal": "Goal",
+    "loadMore": "Load More",
+    "priority": "Priority",
+    "resolving": "Resolving...",
+    "showAll": "Show All",
+    "showLess": "Show less",
+    "tags": "Tags",
+    "undo": "Undo",
+    "untitled": "Untitled"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -134,7 +149,11 @@
       "primary": "Primary",
       "lifeStub": "The life timeline will appear here later.",
       "reviewStub": "Guided review will appear here later."
-    }
+    },
+    "inbox": "Inbox",
+    "notes": "Notes",
+    "projects": "Projects",
+    "today": "Today"
   },
   "settings": {
     "todayPageSettings": "Instellingen Vandaag Pagina",
@@ -245,14 +264,30 @@
       "inProgress": "Bezig",
       "waiting": "Wachten",
       "done": "Voltooid",
-      "dropHere": "Hier neerzetten"
+      "dropHere": "Hier neerzetten",
+      "archived": "Archived",
+      "cancelled": "Cancelled",
+      "columns": "Columns",
+      "customizeColumns": "Customize columns",
+      "planned": "Planned"
     },
     "chaseUp": "Opvolgen",
     "habit": "Gewoonte",
     "assignedTo": "Toegewezen aan",
     "subtasks": "Subtaken",
     "openFullPage": "Volledige weergave openen",
-    "reorderError": "Failed to save task order"
+    "reorderError": "Failed to save task order",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleteConfirmTitle": "Delete Task",
+    "dueInDays": "Due in {{days}}d",
+    "dueSoon": "due soon",
+    "noDue": "No due date",
+    "overdueBy": "Overdue by {{days}}d",
+    "priority": "Priority",
+    "progress": "Progress",
+    "startNow": "Start now",
+    "startedSuccessfully": "Task started successfully!",
+    "todayPlan": "Today plan"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -572,7 +607,9 @@
       "setupSuccess": "Kalender succesvol geconfigureerd!",
       "setupFailed": "Mislukt om kalender aan te maken",
       "serverUrlPlaceholder": "https://caldav.voorbeeld.com",
-      "calendarPathPlaceholder": "/calendars/gebruiker/taken"
+      "calendarPathPlaceholder": "/calendars/gebruiker/taken",
+      "fillServerDetails": "Please fill in all server connection details first",
+      "validationError": "Please fill in all required fields and test the connection"
     },
     "conflictResolver": {
       "title": "Synchronisatieconflicten oplossen",
@@ -599,7 +636,8 @@
       "resolveSuccess": "Alle conflicten zijn succesvol opgelost",
       "resolveError": "Kon conflicten niet oplossen",
       "nextConflict": "Volgende",
-      "prevConflict": "Vorige"
+      "prevConflict": "Vorige",
+      "mixedResolutionError": "Please choose \"Use all local\" or \"Use all remote\" for each conflict. Mixed field selections are not yet supported."
     },
     "editCalendar": {
       "title": "Kalender Bewerken",
@@ -907,7 +945,8 @@
     "allClearHint": "Op dit moment geen vage taken, blijven liggen werk of vastgelopen projecten. Een goed moment om de volgende stap te plannen.",
     "goToTasks": "Naar taken",
     "goToProjects": "Naar projecten",
-    "planDay": "Plan je dag"
+    "planDay": "Plan je dag",
+    "andMore": "... and {{count}} more"
   },
   "modals": {
     "confirmDelete": "Weet je zeker dat je wilt verwijderen?",
@@ -951,7 +990,12 @@
       "message": "Weet je zeker dat je het doel \"{{title}}\" wilt verwijderen?"
     },
     "createGoal": "Doel aanmaken",
-    "updateGoal": "Doel bijwerken"
+    "updateGoal": "Doel bijwerken",
+    "saveAsTemplate": {
+      "message": "Save \"{{name}}\" as a template? This will create a reusable template based on this project.",
+      "title": "Save as Template"
+    },
+    "updateTask": "Update Task"
   },
   "forms": {
     "title": "Titel",
@@ -984,7 +1028,9 @@
         "weekOfMonth": "Week van de maand",
         "recurrenceEndDate": "Einddatum (optioneel)",
         "completionBased": "Herhaal na voltooiing",
-        "repeatOn": "Herhaal op"
+        "repeatOn": "Herhaal op",
+        "attachments": "Attachments",
+        "recurrence": "Repeat"
       },
       "projectSearchPlaceholder": "Zoek of maak een project...",
       "noMatchingProjects": "Geen overeenkomende projecten",
@@ -1032,7 +1078,12 @@
     "goalTargetDate": "Streefdatum",
     "color": "Kleur",
     "goalArea": "Gebied",
-    "noArea": "Geen gebied"
+    "noArea": "Geen gebied",
+    "goalTitle": "Outcome",
+    "name": "Name",
+    "noProject": "No project",
+    "project": "Project",
+    "taskName": "Name"
   },
   "auth": {
     "login": "Inloggen",
@@ -1073,7 +1124,25 @@
     },
     "captcha_required": "Voltooi de verificatie en probeer het opnieuw.",
     "registration_successful": "Bevestig je e-mailadres",
-    "registration_email_sent": "Bevestig je e-mailadres om je account te activeren. We hebben je een link gestuurd, controleer je inbox."
+    "registration_email_sent": "Bevestig je e-mailadres om je account te activeren. We hebben je een link gestuurd, controleer je inbox.",
+    "already_have_account": "Already have an account?",
+    "already_verified": "Your email is already verified. You can log in.",
+    "back_to_login": "Back to Login",
+    "confirm_password": "Confirm Password",
+    "email_not_verified": "Please verify your email address before logging in.",
+    "email_verified": "Your email has been verified! You can now log in.",
+    "error_occurred": "An error occurred. Please try again.",
+    "no_account": "Don't have an account?",
+    "no_auth_methods": "No authentication methods available. Please contact your administrator.",
+    "password_registration_disabled": "Password Registration Disabled",
+    "password_registration_disabled_message": "Password-based registration is not available. Please use SSO to sign in.",
+    "passwords_not_match": "Passwords do not match",
+    "registration_closed_message": "New account registration is currently disabled. Contact your administrator for access.",
+    "registration_closed_title": "Registration Closed",
+    "registration_failed": "Registration failed. Please try again.",
+    "sign_up": "Sign Up",
+    "verification_expired": "Verification link has expired. Please register again.",
+    "verification_failed": "Email verification failed. Please try again."
   },
   "dropdown": {
     "createNew": "Nieuw Aanmaken",
@@ -1090,7 +1159,8 @@
     "priority": "Prioriteit",
     "status": "Status",
     "created_at": "Aangemaakt Op",
-    "custom": "Aangepast"
+    "custom": "Aangepast",
+    "completed_at": "Completed At"
   },
   "priority": {
     "low": "Laag",
@@ -1179,7 +1249,9 @@
     "noFilesYet": "No files yet. Drop files here or use +.",
     "allFiles": "All files",
     "dropToUpload": "Drop to upload",
-    "fewerFiles": "Show fewer"
+    "fewerFiles": "Show fewer",
+    "noCompletedTasks": "No completed tasks.",
+    "noTasks": "No tasks."
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -1217,7 +1289,15 @@
     "failedToSaveGoal": "Doel opslaan mislukt.",
     "failedToDeleteGoal": "Doel verwijderen mislukt.",
     "failedToDeleteNote": "Notitie verwijderen mislukt.",
-    "failedToDeleteTag": "Tag verwijderen mislukt."
+    "failedToDeleteTag": "Tag verwijderen mislukt.",
+    "failedToDeleteArea": "Failed to delete area.",
+    "failedToDeleteProject": "Failed to delete project.",
+    "failedToSaveProject": "Failed to save project.",
+    "failedToSaveTask": "Failed to save task.",
+    "failedToUpdateGoal": "Failed to update goal.",
+    "permissionDenied": "Permission denied",
+    "projectNameTooLong": "Project name must be {{max}} characters or less",
+    "projectStatusUpdateFailed": "Failed to update project status"
   },
   "inbox": {
     "title": "Inbox",
@@ -1329,7 +1409,8 @@
     "goalCreated": "Doel aangemaakt!",
     "goalUpdated": "Doel bijgewerkt!",
     "goalDeleted": "Doel verwijderd!",
-    "tagDeleted": "Tag verwijderd!"
+    "tagDeleted": "Tag verwijderd!",
+    "areaDeleted": "Area deleted successfully!"
   },
   "note": {
     "title": "Titel",
@@ -1416,7 +1497,8 @@
       "waiting": "Wachten",
       "setAsDone": "Markeer als voltooid",
       "planned": "Gepland",
-      "cancelled": "Geannuleerd"
+      "cancelled": "Geannuleerd",
+      "label": "Status"
     },
     "noSubtasksClickToAdd": "Nog geen subtaken, klik om toe te voegen",
     "project": "Project",
@@ -1454,7 +1536,19 @@
     "dueDateInPastWarning": "Waarschuwing: U stelt een vervaldatum in het verleden in",
     "overview": "Overzicht",
     "schedule": "Schema",
-    "attachments": "Bijlagen",
+    "attachments": {
+      "title": "Bijlagen",
+      "anyFormat": "Any file type",
+      "clickToUpload": "Click to upload",
+      "deleteConfirmMessage": "Are you sure you want to delete this attachment? This action cannot be undone.",
+      "deleteConfirmTitle": "Delete Attachment",
+      "deleteError": "Failed to delete attachment",
+      "deleteSuccess": "Attachment deleted successfully",
+      "maxSize": "Max {{size}}MB",
+      "uploadError": "Failed to upload file",
+      "uploadSuccess": "File uploaded successfully",
+      "uploading": "Uploading..."
+    },
     "attachmentsComingSoon": "Bijlagenfunctie komt binnenkort",
     "activity": "Activiteit",
     "lastUpdatedAt": "Laatst bijgewerkt op",
@@ -1475,7 +1569,31 @@
     "starterStep": "First step",
     "starterStepPlaceholder": "Something you can do in 5 minutes",
     "starterStepHint": "Shown first on the Now card, to make starting easy.",
-    "starterStepError": "Failed to update the first step"
+    "starterStepError": "Failed to update the first step",
+    "areaClearError": "Failed to clear area",
+    "areaCleared": "Area cleared successfully",
+    "areaUpdateError": "Failed to update area",
+    "areaUpdated": "Area updated successfully",
+    "deferAfterDueError": "Defer until date cannot be after the due date",
+    "dueDateBeforeDeferError": "Due date cannot be before the defer until date",
+    "editDetails": "Edit details",
+    "goalClearError": "Failed to clear goal",
+    "goalCleared": "Goal cleared",
+    "goalUpdateError": "Failed to update goal",
+    "goalUpdated": "Goal updated",
+    "hoursAgo": "{{count}} hours ago",
+    "inHours": "in {{count}} hours",
+    "inMinutes": "in {{count}} minutes",
+    "minutesAgo": "{{count}} minutes ago",
+    "nameRequired": "Task name is required",
+    "noArea": "Assign to an area",
+    "noUpcomingOccurrences": "No upcoming occurrences.",
+    "notFound": "Task Not Found",
+    "notFoundDescription": "The task you are looking for does not exist or has been deleted.",
+    "pastDue": "Past Due",
+    "title": "Task",
+    "titlePlaceholder": "Enter task title",
+    "untitled": "Untitled task"
   },
   "projects": {
     "loading": "Projecten laden...",
@@ -1569,7 +1687,15 @@
       "showCompleted": "Show completed projects",
       "saveError": "Failed to save projects settings"
     },
-    "reorderError": "Failed to save project order"
+    "reorderError": "Failed to save project order",
+    "deleteError": "Failed to delete project",
+    "fromTemplate": "From Template",
+    "saveAsTemplateError": "Failed to save project as template.",
+    "savedAsTemplate": "\"{{name}}\" saved as template.",
+    "shared": "Shared",
+    "sortTasks": "Sort tasks",
+    "status": "Project Status",
+    "upcomingProjects": "Upcoming Projects"
   },
   "projectItem": {
     "edit": "Bewerken",
@@ -1590,7 +1716,8 @@
     "moreSharedUsers": "+{{count}} meer gebruikers",
     "saveAsTemplate": "Opslaan als sjabloon",
     "pinToSidebar": "Vastpinnen aan zijbalk",
-    "unpinFromSidebar": "Losmaken van zijbalk"
+    "unpinFromSidebar": "Losmaken van zijbalk",
+    "changeStatus": "Change status"
   },
   "areas": {
     "title": "Gebieden",
@@ -1621,7 +1748,28 @@
     "presetHome": "Home",
     "presetWork": "Work",
     "presetHealth": "Health",
-    "presetFamily": "Family"
+    "presetFamily": "Family",
+    "delete": "Delete",
+    "edit": "Edit",
+    "goals": "goals",
+    "noProjects": "No projects in this area.",
+    "noTasks": "No tasks directly in this area",
+    "progressSummary": "Area progress · {{done}} of {{total}} tasks done",
+    "projects": "projects",
+    "reorderError": "Failed to save area order",
+    "singular": "Area",
+    "sort": {
+      "custom": "Custom order",
+      "goals": "Most goals",
+      "label": "Sort areas",
+      "nameAsc": "Name A to Z",
+      "nameDesc": "Name Z to A",
+      "projects": "Most projects",
+      "tasks": "Most tasks"
+    },
+    "tasks": "tasks",
+    "tasksInArea": "Tasks",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "notes": {
     "loading": "Bezig met het laden van notities...",
@@ -1683,7 +1831,14 @@
     "linkedNoteCreateFailed": "De notitie kon niet worden gemaakt.",
     "backgroundImage": "Achtergrond",
     "noBackground": "Geen achtergrond",
-    "openInNotes": "Open in Notes"
+    "openInNotes": "Open in Notes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "fileUploadError": "Could not upload {{name}}",
+    "saveBeforeFiles": "Give the note a title or some text first, then add files.",
+    "slashFile": "Image or File",
+    "slashFileHint": "Upload and place it here",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "tags": {
     "loading": "Tags laden...",
@@ -1732,7 +1887,8 @@
     "pinnedTag": "Vastgezette tag",
     "frequentlyUsed": "Vaak gebruikt",
     "createTag": "+ \"{{name}}\" aanmaken",
-    "pinTag": "Vastzetten voor snelle toegang"
+    "pinTag": "Vastzetten voor snelle toegang",
+    "progressSummary": "Tag progress · {{done}} of {{total}} tasks done"
   },
   "recurrence": {
     "none": "Geen",
@@ -1756,7 +1912,16 @@
     "every": "Elke",
     "weeks": "weken",
     "months": "maanden",
-    "advancedHint": "Voor specifieke weekdagen of een einddatum, open de volledige taak."
+    "advancedHint": "Voor specifieke weekdagen of een einddatum, open de volledige taak.",
+    "completionBased": "After completion",
+    "everyNDays": "Every {{count}} days",
+    "everyNMonths": "Every {{count}} months",
+    "everyNWeeks": "Every {{count}} weeks",
+    "instance": "Recurring instance",
+    "monthDayPlaceholder": "Select day of month",
+    "onDay": "On day",
+    "recurring": "Recurring",
+    "until": "Until"
   },
   "weekdays": {
     "sunday": "Zo",
@@ -1822,7 +1987,8 @@
     "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
     "hideCalendar": "Hide {{name}}",
     "showCalendar": "Show {{name}}",
-    "feedError": "Could not load: {{names}}"
+    "feedError": "Could not load: {{names}}",
+    "task": "Task"
   },
   "pages": {
     "notFound": {
@@ -2046,7 +2212,12 @@
       "joined": "Aangemeld",
       "empty": "Niemand heeft zich nog aangemeld",
       "noMatches": "Geen adressen die overeenkomen met die zoekopdracht",
-      "showing": "{{from}}-{{to}} van {{total}}"
+      "showing": "{{from}}-{{to}} van {{total}}",
+      "confirmRemove": "Remove {{email}} from the waitlist? This cannot be undone.",
+      "ipAddress": "IP Address",
+      "removeFailed": "Failed to remove entry",
+      "removeTitle": "Remove Address",
+      "removed": "Removed from the waitlist"
     },
     "passwordInviteHint": "Laat leeg om een uitnodigingsmail te sturen",
     "invitationSent": "Uitnodigingsmail verzonden naar {{email}}",
@@ -2266,7 +2437,20 @@
       "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
       "threeDays": "Kept planning",
       "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
-    }
+    },
+    "aiUsage": {
+      "empty": "No users yet",
+      "limit": "Limit",
+      "plan": "Plan",
+      "remaining": "Remaining",
+      "searchPlaceholder": "Search by email",
+      "title": "AI Usage",
+      "totalCredits": "Credits used this month (all users)",
+      "used": "Used",
+      "user": "User",
+      "users": "Users"
+    },
+    "userDeletedSuccessfully": "User deleted successfully"
   },
   "shares": {
     "shareProject": "Project delen",
@@ -2347,7 +2531,11 @@
     "blankSlateNew": "Zoek om een weergave te maken",
     "noViewsMatch": "Geen weergaven gevonden",
     "blankSlateFilteredHint": "Probeer een andere zoekopdracht.",
-    "blankSlateClearSearch": "Zoekopdracht wissen"
+    "blankSlateClearSearch": "Zoekopdracht wissen",
+    "filters": "filters",
+    "progressSummary": "View progress · {{done}} of {{total}} tasks done",
+    "sortTasks": "Sort tasks",
+    "view": "View"
   },
   "search": {
     "placeholder": "Zoek taken, projecten, notities...",
@@ -2402,7 +2590,8 @@
     }
   },
   "subtasks": {
-    "placeholder": "Voeg een subtaak toe..."
+    "placeholder": "Voeg een subtaak toe...",
+    "title": "Subtasks"
   },
   "backup": {
     "title": "Back-up & Herstellen",
@@ -2453,7 +2642,8 @@
     "restoreButton": "Herstellen",
     "adminInstanceNote": "Als beheerder bevat je back-up elk account op deze installatie, met hun gegevens en wachtwoordhashes. Terugzetten op een nieuwe installatie brengt iedereen terug. Bewaar het bestand net zo zorgvuldig als de database.",
     "accountsCount_one": "{{count}} ander account",
-    "accountsCount_other": "{{count}} andere accounts"
+    "accountsCount_other": "{{count}} andere accounts",
+    "delete": "Delete"
   },
   "notifications": {
     "table": {
@@ -2516,7 +2706,17 @@
       "enable": "Turn on",
       "disable": "Turn off",
       "failed": "Something went wrong. Please try again."
-    }
+    },
+    "daysAgo": "{{count}}d ago",
+    "delete": "Delete",
+    "hoursAgo": "{{count}}h ago",
+    "justNow": "Just now",
+    "loading": "Loading...",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "minutesAgo": "{{count}} min ago",
+    "noNotifications": "No notifications yet",
+    "title": "Notifications"
   },
   "projectStatus": {
     "not_started": "Niet Begonnen",
@@ -2666,7 +2866,8 @@
     "presetsLabel": "Or start with",
     "presetWalk": "Morning walk",
     "presetRead": "Read 20 minutes",
-    "presetReview": "Weekly review"
+    "presetReview": "Weekly review",
+    "newHabit": "New habit"
   },
   "aiAssistant": {
     "title": "AI Assistent",
@@ -2873,7 +3074,8 @@
     "linkedAccount": "Gekoppeld aan een gebruikersaccount",
     "archivedBadge": "gearchiveerd",
     "deletePerson": "Persoon verwijderen",
-    "deleteConfirm": "Weet je zeker dat je \"{{name}}\" wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+    "deleteConfirm": "Weet je zeker dat je \"{{name}}\" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "contact": "Contact"
   },
   "members": {
     "addTitle": "Lid toevoegen",
@@ -2902,7 +3104,8 @@
     "removed": "Lid verwijderd",
     "updated": "Lid bijgewerkt",
     "invitationSent": "Uitnodiging verstuurd",
-    "failedToRemove": "Lid verwijderen mislukt"
+    "failedToRemove": "Lid verwijderen mislukt",
+    "title": "Members"
   },
   "signInLink": {
     "action": "Inloglink",
@@ -3134,7 +3337,12 @@
     "close": "Close"
   },
   "area": {
-    "loadError": "Gebieden konden niet worden geladen"
+    "loadError": "Gebieden konden niet worden geladen",
+    "clearArea": "Remove area",
+    "noAreasFound": "No areas found",
+    "searchAreas": "Search areas…",
+    "viaProject": "via project",
+    "viewArea": "Go to area"
   },
   "goals": {
     "newGoal": "Nieuw doel",
@@ -3172,7 +3380,24 @@
     "clearGoal": "Doel verwijderen",
     "noGoalsFound": "Geen doelen gevonden",
     "inactive": "Inactief",
-    "viewGoal": "Naar doel"
+    "viewGoal": "Naar doel",
+    "maintenance": "Maintenance",
+    "noAvailableGoals": "No available goals",
+    "noGoalsInArea": "No goals linked to this area.",
+    "noGoalsSelected": "No goals selected",
+    "removeFromArea": "Remove from area",
+    "reorderError": "Failed to save goal order",
+    "sort": {
+      "area": "Area",
+      "custom": "Custom order",
+      "horizon": "Horizon",
+      "label": "Sort goals",
+      "projects": "Most projects",
+      "status": "Status",
+      "tasks": "Most tasks",
+      "titleAsc": "Title A to Z",
+      "titleDesc": "Title Z to A"
+    }
   },
   "templates": {
     "new": "Nieuw sjabloon",
@@ -3301,7 +3526,9 @@
   "sortable": {
     "move": "Move",
     "project": "sortable project",
-    "task": "sortable task"
+    "task": "sortable task",
+    "area": "sortable area",
+    "goal": "sortable goal"
   },
   "relations": {
     "title": "Relations",
@@ -3553,5 +3780,27 @@
     "overwhelmedHint": "Just this one thing. Everything else can wait.",
     "showAll": "Show my whole day again",
     "nothingToMove": "Your day is already light. One small step at a time."
+  },
+  "colors": {
+    "label": "Color",
+    "none": "None"
+  },
+  "loading": {
+    "subtasks": "Loading subtasks...",
+    "tasks": "Loading tasks…"
+  },
+  "notFound": {
+    "description": "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+    "goBack": "Go Back",
+    "goHome": "Go to Today",
+    "inboxDescription": "Check your inbox items",
+    "notesDescription": "Browse your notes",
+    "projectsDescription": "Browse your projects",
+    "quickActions": "Quick Actions",
+    "title": "Page Not Found",
+    "todayDescription": "View today's tasks"
+  },
+  "tag": {
+    "viewTag": "Go to tag"
   }
 }

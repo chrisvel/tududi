@@ -143,9 +143,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         }
         if (trimmedName.length > MAX_NAME_LENGTH) {
             setError(
+                // LTD-PATCH(T-405): pass the limit so the locale string can interpolate it
                 t(
                     'errors.projectNameTooLong',
-                    `Project name must be ${MAX_NAME_LENGTH} characters or less`
+                    `Project name must be ${MAX_NAME_LENGTH} characters or less`,
+                    { max: MAX_NAME_LENGTH }
                 )
             );
             return;

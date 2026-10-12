@@ -45,7 +45,22 @@
     "hideSearch": "Skjul søk",
     "showSearch": "Vis søk",
     "beta": "beta",
-    "comingSoon": "Kommer snart"
+    "comingSoon": "Kommer snart",
+    "actions": "Actions",
+    "breadcrumb": "Breadcrumb",
+    "createCalendar": "Create Calendar",
+    "creating": "Creating...",
+    "due": "Due",
+    "goToToday": "Go to Today",
+    "goal": "Goal",
+    "loadMore": "Load More",
+    "priority": "Priority",
+    "resolving": "Resolving...",
+    "showAll": "Show All",
+    "showLess": "Show less",
+    "tags": "Tags",
+    "undo": "Undo",
+    "untitled": "Untitled"
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -134,7 +149,11 @@
       "primary": "Primary",
       "lifeStub": "The life timeline will appear here later.",
       "reviewStub": "Guided review will appear here later."
-    }
+    },
+    "inbox": "Inbox",
+    "notes": "Notes",
+    "projects": "Projects",
+    "today": "Today"
   },
   "settings": {
     "todayPageSettings": "Innstillinger for Dagens Side",
@@ -246,14 +265,30 @@
       "inProgress": "I gang",
       "waiting": "Venter",
       "done": "Ferdig",
-      "dropHere": "Slipp her"
+      "dropHere": "Slipp her",
+      "archived": "Archived",
+      "cancelled": "Cancelled",
+      "columns": "Columns",
+      "customizeColumns": "Customize columns",
+      "planned": "Planned"
     },
     "chaseUp": "Følge opp",
     "habit": "Vane",
     "assignedTo": "Tildelt til",
     "subtasks": "Undertasker",
     "openFullPage": "Åpne full visning",
-    "reorderError": "Failed to save task order"
+    "reorderError": "Failed to save task order",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleteConfirmTitle": "Delete Task",
+    "dueInDays": "Due in {{days}}d",
+    "dueSoon": "due soon",
+    "noDue": "No due date",
+    "overdueBy": "Overdue by {{days}}d",
+    "priority": "Priority",
+    "progress": "Progress",
+    "startNow": "Start now",
+    "startedSuccessfully": "Task started successfully!",
+    "todayPlan": "Today plan"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -573,7 +608,9 @@
       "manual": "Spør meg (manuell løsning)",
       "lastWriteWins": "Sist endret vinner (automatisk)",
       "serverUrlPlaceholder": "https://caldav.example.com",
-      "calendarPathPlaceholder": "/kalendere/bruker/oppgaver"
+      "calendarPathPlaceholder": "/kalendere/bruker/oppgaver",
+      "fillServerDetails": "Please fill in all server connection details first",
+      "validationError": "Please fill in all required fields and test the connection"
     },
     "conflictResolver": {
       "title": "Løs synkroniseringskonflikter",
@@ -600,7 +637,8 @@
       "resolveSuccess": "Alle konflikter er løst",
       "resolveError": "Kunne ikke løse konflikter",
       "nextConflict": "Neste",
-      "prevConflict": "Forrige"
+      "prevConflict": "Forrige",
+      "mixedResolutionError": "Please choose \"Use all local\" or \"Use all remote\" for each conflict. Mixed field selections are not yet supported."
     },
     "editCalendar": {
       "title": "Rediger Kalender",
@@ -908,7 +946,8 @@
     "allClearHint": "Ingen vage oppgaver, arbeid som står stille eller prosjekter som har stoppet opp akkurat nå. Et godt tidspunkt å planlegge det neste.",
     "goToTasks": "Gå til oppgaver",
     "goToProjects": "Gå til prosjekter",
-    "planDay": "Planlegg dagen"
+    "planDay": "Planlegg dagen",
+    "andMore": "... and {{count}} more"
   },
   "modals": {
     "confirmDelete": "Er du sikker på at du vil slette?",
@@ -952,7 +991,12 @@
       "message": "Er du sikker på at du vil slette målet «{{title}}»?"
     },
     "createGoal": "Opprett mål",
-    "updateGoal": "Oppdater mål"
+    "updateGoal": "Oppdater mål",
+    "saveAsTemplate": {
+      "message": "Save \"{{name}}\" as a template? This will create a reusable template based on this project.",
+      "title": "Save as Template"
+    },
+    "updateTask": "Update Task"
   },
   "forms": {
     "title": "Tittel",
@@ -985,7 +1029,9 @@
         "weekOfMonth": "Uke i måneden",
         "recurrenceEndDate": "Sluttdato (valgfritt)",
         "completionBased": "Gjenta etter fullføring",
-        "repeatOn": "Gjenta på"
+        "repeatOn": "Gjenta på",
+        "attachments": "Attachments",
+        "recurrence": "Repeat"
       },
       "projectSearchPlaceholder": "Søk eller opprett et prosjekt...",
       "noMatchingProjects": "Ingen matchende prosjekter",
@@ -1033,7 +1079,12 @@
     "goalTargetDate": "Måldato",
     "color": "Farge",
     "goalArea": "Område",
-    "noArea": "Ikke noe område"
+    "noArea": "Ikke noe område",
+    "goalTitle": "Outcome",
+    "name": "Name",
+    "noProject": "No project",
+    "project": "Project",
+    "taskName": "Name"
   },
   "auth": {
     "login": "Logg inn",
@@ -1074,7 +1125,25 @@
     },
     "captcha_required": "Fullfør verifiseringen og prøv igjen.",
     "registration_successful": "Bekreft e-postadressen din",
-    "registration_email_sent": "Bekreft e-postadressen din for å aktivere kontoen. Vi har sendt deg en lenke, sjekk innboksen din."
+    "registration_email_sent": "Bekreft e-postadressen din for å aktivere kontoen. Vi har sendt deg en lenke, sjekk innboksen din.",
+    "already_have_account": "Already have an account?",
+    "already_verified": "Your email is already verified. You can log in.",
+    "back_to_login": "Back to Login",
+    "confirm_password": "Confirm Password",
+    "email_not_verified": "Please verify your email address before logging in.",
+    "email_verified": "Your email has been verified! You can now log in.",
+    "error_occurred": "An error occurred. Please try again.",
+    "no_account": "Don't have an account?",
+    "no_auth_methods": "No authentication methods available. Please contact your administrator.",
+    "password_registration_disabled": "Password Registration Disabled",
+    "password_registration_disabled_message": "Password-based registration is not available. Please use SSO to sign in.",
+    "passwords_not_match": "Passwords do not match",
+    "registration_closed_message": "New account registration is currently disabled. Contact your administrator for access.",
+    "registration_closed_title": "Registration Closed",
+    "registration_failed": "Registration failed. Please try again.",
+    "sign_up": "Sign Up",
+    "verification_expired": "Verification link has expired. Please register again.",
+    "verification_failed": "Email verification failed. Please try again."
   },
   "dropdown": {
     "createNew": "Opprett ny",
@@ -1091,7 +1160,8 @@
     "priority": "Prioritet",
     "status": "Status",
     "created_at": "Opprettet Den",
-    "custom": "Egendefinert"
+    "custom": "Egendefinert",
+    "completed_at": "Completed At"
   },
   "priority": {
     "low": "Lav",
@@ -1180,7 +1250,9 @@
     "noFilesYet": "No files yet. Drop files here or use +.",
     "allFiles": "All files",
     "dropToUpload": "Drop to upload",
-    "fewerFiles": "Show fewer"
+    "fewerFiles": "Show fewer",
+    "noCompletedTasks": "No completed tasks.",
+    "noTasks": "No tasks."
   },
   "errors": {
     "required": "Dette feltet er påkrevd",
@@ -1218,7 +1290,15 @@
     "failedToSaveGoal": "Kunne ikke lagre målet.",
     "failedToDeleteGoal": "Kunne ikke slette målet.",
     "failedToDeleteNote": "Kunne ikke slette notatet.",
-    "failedToDeleteTag": "Kunne ikke slette merkelappen."
+    "failedToDeleteTag": "Kunne ikke slette merkelappen.",
+    "failedToDeleteArea": "Failed to delete area.",
+    "failedToDeleteProject": "Failed to delete project.",
+    "failedToSaveProject": "Failed to save project.",
+    "failedToSaveTask": "Failed to save task.",
+    "failedToUpdateGoal": "Failed to update goal.",
+    "permissionDenied": "Permission denied",
+    "projectNameTooLong": "Project name must be {{max}} characters or less",
+    "projectStatusUpdateFailed": "Failed to update project status"
   },
   "inbox": {
     "title": "Innboks",
@@ -1330,7 +1410,8 @@
     "goalCreated": "Mål opprettet!",
     "goalUpdated": "Mål oppdatert!",
     "goalDeleted": "Mål slettet!",
-    "tagDeleted": "Merkelapp slettet!"
+    "tagDeleted": "Merkelapp slettet!",
+    "areaDeleted": "Area deleted successfully!"
   },
   "note": {
     "title": "Tittel",
@@ -1423,7 +1504,8 @@
       "waiting": "Venter",
       "setAsDone": "Sett som fullført",
       "planned": "Planlagt",
-      "cancelled": "Avlyst"
+      "cancelled": "Avlyst",
+      "label": "Status"
     },
     "noSubtasksClickToAdd": "Ingen deloppgaver ennå, klikk for å legge til",
     "noProject": "Ingen prosjekt - Klikk for å tildele",
@@ -1455,7 +1537,19 @@
     "dueDateInPastWarning": "Advarsel: Du setter en forfallsdato i fortiden",
     "overview": "Oversikt",
     "schedule": "Plan",
-    "attachments": "Vedlegg",
+    "attachments": {
+      "title": "Vedlegg",
+      "anyFormat": "Any file type",
+      "clickToUpload": "Click to upload",
+      "deleteConfirmMessage": "Are you sure you want to delete this attachment? This action cannot be undone.",
+      "deleteConfirmTitle": "Delete Attachment",
+      "deleteError": "Failed to delete attachment",
+      "deleteSuccess": "Attachment deleted successfully",
+      "maxSize": "Max {{size}}MB",
+      "uploadError": "Failed to upload file",
+      "uploadSuccess": "File uploaded successfully",
+      "uploading": "Uploading..."
+    },
     "attachmentsComingSoon": "Vedleggsfunksjonen kommer snart",
     "activity": "Aktivitet",
     "lastUpdatedAt": "Sist oppdatert kl",
@@ -1476,7 +1570,31 @@
     "starterStep": "First step",
     "starterStepPlaceholder": "Something you can do in 5 minutes",
     "starterStepHint": "Shown first on the Now card, to make starting easy.",
-    "starterStepError": "Failed to update the first step"
+    "starterStepError": "Failed to update the first step",
+    "areaClearError": "Failed to clear area",
+    "areaCleared": "Area cleared successfully",
+    "areaUpdateError": "Failed to update area",
+    "areaUpdated": "Area updated successfully",
+    "deferAfterDueError": "Defer until date cannot be after the due date",
+    "dueDateBeforeDeferError": "Due date cannot be before the defer until date",
+    "editDetails": "Edit details",
+    "goalClearError": "Failed to clear goal",
+    "goalCleared": "Goal cleared",
+    "goalUpdateError": "Failed to update goal",
+    "goalUpdated": "Goal updated",
+    "hoursAgo": "{{count}} hours ago",
+    "inHours": "in {{count}} hours",
+    "inMinutes": "in {{count}} minutes",
+    "minutesAgo": "{{count}} minutes ago",
+    "nameRequired": "Task name is required",
+    "noArea": "Assign to an area",
+    "noUpcomingOccurrences": "No upcoming occurrences.",
+    "notFound": "Task Not Found",
+    "notFoundDescription": "The task you are looking for does not exist or has been deleted.",
+    "pastDue": "Past Due",
+    "title": "Task",
+    "titlePlaceholder": "Enter task title",
+    "untitled": "Untitled task"
   },
   "projects": {
     "loading": "Laster prosjekter...",
@@ -1570,7 +1688,15 @@
       "showCompleted": "Show completed projects",
       "saveError": "Failed to save projects settings"
     },
-    "reorderError": "Failed to save project order"
+    "reorderError": "Failed to save project order",
+    "deleteError": "Failed to delete project",
+    "fromTemplate": "From Template",
+    "saveAsTemplateError": "Failed to save project as template.",
+    "savedAsTemplate": "\"{{name}}\" saved as template.",
+    "shared": "Shared",
+    "sortTasks": "Sort tasks",
+    "status": "Project Status",
+    "upcomingProjects": "Upcoming Projects"
   },
   "projectItem": {
     "edit": "Rediger",
@@ -1591,7 +1717,8 @@
     "moreSharedUsers": "+{{count}} flere brukere",
     "saveAsTemplate": "Lagre som mal",
     "pinToSidebar": "Fest til sidepanelet",
-    "unpinFromSidebar": "Fjern festing fra sidepanelet"
+    "unpinFromSidebar": "Fjern festing fra sidepanelet",
+    "changeStatus": "Change status"
   },
   "areas": {
     "title": "Områder",
@@ -1622,7 +1749,28 @@
     "presetHome": "Home",
     "presetWork": "Work",
     "presetHealth": "Health",
-    "presetFamily": "Family"
+    "presetFamily": "Family",
+    "delete": "Delete",
+    "edit": "Edit",
+    "goals": "goals",
+    "noProjects": "No projects in this area.",
+    "noTasks": "No tasks directly in this area",
+    "progressSummary": "Area progress · {{done}} of {{total}} tasks done",
+    "projects": "projects",
+    "reorderError": "Failed to save area order",
+    "singular": "Area",
+    "sort": {
+      "custom": "Custom order",
+      "goals": "Most goals",
+      "label": "Sort areas",
+      "nameAsc": "Name A to Z",
+      "nameDesc": "Name Z to A",
+      "projects": "Most projects",
+      "tasks": "Most tasks"
+    },
+    "tasks": "tasks",
+    "tasksInArea": "Tasks",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "notes": {
     "loading": "Laster notater...",
@@ -1684,7 +1832,14 @@
     "linkedNoteCreateFailed": "Kunne ikke opprette notatet.",
     "backgroundImage": "Bakgrunn",
     "noBackground": "Ingen bakgrunn",
-    "openInNotes": "Open in Notes"
+    "openInNotes": "Open in Notes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "fileUploadError": "Could not upload {{name}}",
+    "saveBeforeFiles": "Give the note a title or some text first, then add files.",
+    "slashFile": "Image or File",
+    "slashFileHint": "Upload and place it here",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "tags": {
     "loading": "Laster etiketter...",
@@ -1733,7 +1888,8 @@
     "pinnedTag": "Festet merkelapp",
     "frequentlyUsed": "Ofte brukt",
     "createTag": "+ Opprett «{{name}}»",
-    "pinTag": "Fest for rask tilgang"
+    "pinTag": "Fest for rask tilgang",
+    "progressSummary": "Tag progress · {{done}} of {{total}} tasks done"
   },
   "recurrence": {
     "none": "Ingen",
@@ -1757,7 +1913,16 @@
     "every": "Hver",
     "weeks": "uker",
     "months": "måneder",
-    "advancedHint": "For spesifikke ukedager eller en sluttdato, åpne den fullstendige oppgaven."
+    "advancedHint": "For spesifikke ukedager eller en sluttdato, åpne den fullstendige oppgaven.",
+    "completionBased": "After completion",
+    "everyNDays": "Every {{count}} days",
+    "everyNMonths": "Every {{count}} months",
+    "everyNWeeks": "Every {{count}} weeks",
+    "instance": "Recurring instance",
+    "monthDayPlaceholder": "Select day of month",
+    "onDay": "On day",
+    "recurring": "Recurring",
+    "until": "Until"
   },
   "weekdays": {
     "sunday": "Søn",
@@ -1823,7 +1988,8 @@
     "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
     "hideCalendar": "Hide {{name}}",
     "showCalendar": "Show {{name}}",
-    "feedError": "Could not load: {{names}}"
+    "feedError": "Could not load: {{names}}",
+    "task": "Task"
   },
   "pages": {
     "notFound": {
@@ -2047,7 +2213,12 @@
       "joined": "Bli med",
       "empty": "Ingen har registrert seg ennå",
       "noMatches": "Ingen adresser samsvarer med dette søket",
-      "showing": "{{from}}-{{to}} av {{total}}"
+      "showing": "{{from}}-{{to}} av {{total}}",
+      "confirmRemove": "Remove {{email}} from the waitlist? This cannot be undone.",
+      "ipAddress": "IP Address",
+      "removeFailed": "Failed to remove entry",
+      "removeTitle": "Remove Address",
+      "removed": "Removed from the waitlist"
     },
     "passwordInviteHint": "La stå tomt for å sende en invitasjons-e-post",
     "invitationSent": "Invitasjons-e-post sendt til {{email}}",
@@ -2267,7 +2438,20 @@
       "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
       "threeDays": "Kept planning",
       "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
-    }
+    },
+    "aiUsage": {
+      "empty": "No users yet",
+      "limit": "Limit",
+      "plan": "Plan",
+      "remaining": "Remaining",
+      "searchPlaceholder": "Search by email",
+      "title": "AI Usage",
+      "totalCredits": "Credits used this month (all users)",
+      "used": "Used",
+      "user": "User",
+      "users": "Users"
+    },
+    "userDeletedSuccessfully": "User deleted successfully"
   },
   "shares": {
     "shareProject": "Del prosjekt",
@@ -2348,7 +2532,11 @@
     "blankSlateNew": "Søk for å lage en visning",
     "noViewsMatch": "Fant ingen visninger",
     "blankSlateFilteredHint": "Prøv et annet søk.",
-    "blankSlateClearSearch": "Tøm søket"
+    "blankSlateClearSearch": "Tøm søket",
+    "filters": "filters",
+    "progressSummary": "View progress · {{done}} of {{total}} tasks done",
+    "sortTasks": "Sort tasks",
+    "view": "View"
   },
   "search": {
     "placeholder": "Søk etter oppgaver, prosjekter, notater...",
@@ -2403,7 +2591,8 @@
     }
   },
   "subtasks": {
-    "placeholder": "Legg til en underoppgave..."
+    "placeholder": "Legg til en underoppgave...",
+    "title": "Subtasks"
   },
   "backup": {
     "title": "Sikkerhetskopiering og gjenoppretting",
@@ -2454,7 +2643,8 @@
     "restoreButton": "Gjenopprett",
     "adminInstanceNote": "Som administrator inneholder sikkerhetskopien din alle kontoer på denne instansen, med data og passord-hasher. Gjenoppretter du den på en ny installasjon, kommer alle tilbake. Oppbevar filen like trygt som databasen.",
     "accountsCount_one": "{{count}} annen konto",
-    "accountsCount_other": "{{count}} andre kontoer"
+    "accountsCount_other": "{{count}} andre kontoer",
+    "delete": "Delete"
   },
   "notifications": {
     "table": {
@@ -2517,7 +2707,17 @@
       "enable": "Turn on",
       "disable": "Turn off",
       "failed": "Something went wrong. Please try again."
-    }
+    },
+    "daysAgo": "{{count}}d ago",
+    "delete": "Delete",
+    "hoursAgo": "{{count}}h ago",
+    "justNow": "Just now",
+    "loading": "Loading...",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "minutesAgo": "{{count}} min ago",
+    "noNotifications": "No notifications yet",
+    "title": "Notifications"
   },
   "projectStatus": {
     "not_started": "Ikke startet",
@@ -2702,7 +2902,8 @@
     "presetsLabel": "Or start with",
     "presetWalk": "Morning walk",
     "presetRead": "Read 20 minutes",
-    "presetReview": "Weekly review"
+    "presetReview": "Weekly review",
+    "newHabit": "New habit"
   },
   "reports": {
     "weeklyReview": "Ukentlig gjennomgang",
@@ -2878,7 +3079,8 @@
     "linkedAccount": "Knyttet til en brukerkonto",
     "archivedBadge": "arkivert",
     "deletePerson": "Slett person",
-    "deleteConfirm": "Er du sikker på at du vil slette «{{name}}»? Dette kan ikke angres."
+    "deleteConfirm": "Er du sikker på at du vil slette «{{name}}»? Dette kan ikke angres.",
+    "contact": "Contact"
   },
   "members": {
     "addTitle": "Legg til medlem",
@@ -2907,7 +3109,8 @@
     "removed": "Medlemmet ble fjernet",
     "updated": "Medlemmet ble oppdatert",
     "invitationSent": "Invitasjon sendt",
-    "failedToRemove": "Kunne ikke fjerne medlemmet"
+    "failedToRemove": "Kunne ikke fjerne medlemmet",
+    "title": "Members"
   },
   "signInLink": {
     "action": "Innloggingslenke",
@@ -3139,7 +3342,12 @@
     "close": "Close"
   },
   "area": {
-    "loadError": "Kunne ikke laste inn områder"
+    "loadError": "Kunne ikke laste inn områder",
+    "clearArea": "Remove area",
+    "noAreasFound": "No areas found",
+    "searchAreas": "Search areas…",
+    "viaProject": "via project",
+    "viewArea": "Go to area"
   },
   "goals": {
     "newGoal": "Nytt mål",
@@ -3177,7 +3385,24 @@
     "clearGoal": "Fjern mål",
     "noGoalsFound": "Fant ingen mål",
     "inactive": "Inaktiv",
-    "viewGoal": "Gå til mål"
+    "viewGoal": "Gå til mål",
+    "maintenance": "Maintenance",
+    "noAvailableGoals": "No available goals",
+    "noGoalsInArea": "No goals linked to this area.",
+    "noGoalsSelected": "No goals selected",
+    "removeFromArea": "Remove from area",
+    "reorderError": "Failed to save goal order",
+    "sort": {
+      "area": "Area",
+      "custom": "Custom order",
+      "horizon": "Horizon",
+      "label": "Sort goals",
+      "projects": "Most projects",
+      "status": "Status",
+      "tasks": "Most tasks",
+      "titleAsc": "Title A to Z",
+      "titleDesc": "Title Z to A"
+    }
   },
   "templates": {
     "new": "Ny mal",
@@ -3306,7 +3531,9 @@
   "sortable": {
     "move": "Move",
     "project": "sortable project",
-    "task": "sortable task"
+    "task": "sortable task",
+    "area": "sortable area",
+    "goal": "sortable goal"
   },
   "relations": {
     "title": "Relations",
@@ -3558,5 +3785,27 @@
     "overwhelmedHint": "Just this one thing. Everything else can wait.",
     "showAll": "Show my whole day again",
     "nothingToMove": "Your day is already light. One small step at a time."
+  },
+  "colors": {
+    "label": "Color",
+    "none": "None"
+  },
+  "loading": {
+    "subtasks": "Loading subtasks...",
+    "tasks": "Loading tasks…"
+  },
+  "notFound": {
+    "description": "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+    "goBack": "Go Back",
+    "goHome": "Go to Today",
+    "inboxDescription": "Check your inbox items",
+    "notesDescription": "Browse your notes",
+    "projectsDescription": "Browse your projects",
+    "quickActions": "Quick Actions",
+    "title": "Page Not Found",
+    "todayDescription": "View today's tasks"
+  },
+  "tag": {
+    "viewTag": "Go to tag"
   }
 }

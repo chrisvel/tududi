@@ -45,7 +45,22 @@
     "hideSearch": "收起搜索",
     "showSearch": "显示搜索",
     "beta": "测试版",
-    "comingSoon": "即将推出"
+    "comingSoon": "即将推出",
+    "actions": "Actions",
+    "breadcrumb": "Breadcrumb",
+    "createCalendar": "Create Calendar",
+    "creating": "Creating...",
+    "due": "Due",
+    "goToToday": "Go to Today",
+    "goal": "Goal",
+    "loadMore": "Load More",
+    "priority": "Priority",
+    "resolving": "Resolving...",
+    "showAll": "Show All",
+    "showLess": "Show less",
+    "tags": "Tags",
+    "undo": "Undo",
+    "untitled": "Untitled"
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -134,7 +149,11 @@
       "primary": "Primary",
       "lifeStub": "The life timeline will appear here later.",
       "reviewStub": "Guided review will appear here later."
-    }
+    },
+    "inbox": "Inbox",
+    "notes": "Notes",
+    "projects": "Projects",
+    "today": "Today"
   },
   "settings": {
     "todayPageSettings": "今日页面设置",
@@ -245,14 +264,30 @@
       "inProgress": "进行中",
       "waiting": "等待",
       "done": "完成",
-      "dropHere": "拖放到这里"
+      "dropHere": "拖放到这里",
+      "archived": "Archived",
+      "cancelled": "Cancelled",
+      "columns": "Columns",
+      "customizeColumns": "Customize columns",
+      "planned": "Planned"
     },
     "chaseUp": "催促",
     "habit": "习惯",
     "assignedTo": "分配给",
     "subtasks": "子任务",
     "openFullPage": "打开完整视图",
-    "reorderError": "Failed to save task order"
+    "reorderError": "Failed to save task order",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleteConfirmTitle": "Delete Task",
+    "dueInDays": "Due in {{days}}d",
+    "dueSoon": "due soon",
+    "noDue": "No due date",
+    "overdueBy": "Overdue by {{days}}d",
+    "priority": "Priority",
+    "progress": "Progress",
+    "startNow": "Start now",
+    "startedSuccessfully": "Task started successfully!",
+    "todayPlan": "Today plan"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -572,7 +607,9 @@
       "setupSuccess": "日历配置成功！",
       "setupFailed": "创建日历失败",
       "serverUrlPlaceholder": "https://caldav.example.com",
-      "calendarPathPlaceholder": "/calendars/user/tasks"
+      "calendarPathPlaceholder": "/calendars/user/tasks",
+      "fillServerDetails": "Please fill in all server connection details first",
+      "validationError": "Please fill in all required fields and test the connection"
     },
     "conflictResolver": {
       "title": "解决同步冲突",
@@ -599,7 +636,8 @@
       "resolveSuccess": "所有冲突已成功解决",
       "resolveError": "解决冲突失败",
       "nextConflict": "下一个",
-      "prevConflict": "上一个"
+      "prevConflict": "上一个",
+      "mixedResolutionError": "Please choose \"Use all local\" or \"Use all remote\" for each conflict. Mixed field selections are not yet supported."
     },
     "editCalendar": {
       "title": "编辑日历",
@@ -907,7 +945,8 @@
     "allClearHint": "目前没有含糊的任务、停滞的工作或卡住的项目。正是规划下一步的好时机。",
     "goToTasks": "前往任务",
     "goToProjects": "前往项目",
-    "planDay": "规划今天"
+    "planDay": "规划今天",
+    "andMore": "... and {{count}} more"
   },
   "modals": {
     "confirmDelete": "您确定要删除吗？",
@@ -951,7 +990,12 @@
       "message": "确定要删除目标“{{title}}”吗？"
     },
     "createGoal": "创建目标",
-    "updateGoal": "更新目标"
+    "updateGoal": "更新目标",
+    "saveAsTemplate": {
+      "message": "Save \"{{name}}\" as a template? This will create a reusable template based on this project.",
+      "title": "Save as Template"
+    },
+    "updateTask": "Update Task"
   },
   "forms": {
     "title": "标题",
@@ -984,7 +1028,9 @@
         "weekOfMonth": "每月的周",
         "recurrenceEndDate": "结束日期（可选）",
         "completionBased": "完成后重复",
-        "repeatOn": "重复于"
+        "repeatOn": "重复于",
+        "attachments": "Attachments",
+        "recurrence": "Repeat"
       },
       "projectSearchPlaceholder": "搜索或创建项目...",
       "noMatchingProjects": "没有匹配的项目",
@@ -1032,7 +1078,12 @@
     "goalTargetDate": "目标日期",
     "color": "颜色",
     "goalArea": "区域",
-    "noArea": "无区域"
+    "noArea": "无区域",
+    "goalTitle": "Outcome",
+    "name": "Name",
+    "noProject": "No project",
+    "project": "Project",
+    "taskName": "Name"
   },
   "auth": {
     "login": "登录",
@@ -1073,7 +1124,25 @@
     },
     "captcha_required": "请完成验证后重试。",
     "registration_successful": "请验证您的邮箱地址",
-    "registration_email_sent": "请验证您的邮箱地址以激活账户。我们已发送链接，请查看收件箱。"
+    "registration_email_sent": "请验证您的邮箱地址以激活账户。我们已发送链接，请查看收件箱。",
+    "already_have_account": "Already have an account?",
+    "already_verified": "Your email is already verified. You can log in.",
+    "back_to_login": "Back to Login",
+    "confirm_password": "Confirm Password",
+    "email_not_verified": "Please verify your email address before logging in.",
+    "email_verified": "Your email has been verified! You can now log in.",
+    "error_occurred": "An error occurred. Please try again.",
+    "no_account": "Don't have an account?",
+    "no_auth_methods": "No authentication methods available. Please contact your administrator.",
+    "password_registration_disabled": "Password Registration Disabled",
+    "password_registration_disabled_message": "Password-based registration is not available. Please use SSO to sign in.",
+    "passwords_not_match": "Passwords do not match",
+    "registration_closed_message": "New account registration is currently disabled. Contact your administrator for access.",
+    "registration_closed_title": "Registration Closed",
+    "registration_failed": "Registration failed. Please try again.",
+    "sign_up": "Sign Up",
+    "verification_expired": "Verification link has expired. Please register again.",
+    "verification_failed": "Email verification failed. Please try again."
   },
   "dropdown": {
     "createNew": "创建新项",
@@ -1090,7 +1159,8 @@
     "priority": "优先级",
     "status": "状态",
     "created_at": "创建时间",
-    "custom": "自定义"
+    "custom": "自定义",
+    "completed_at": "Completed At"
   },
   "priority": {
     "low": "低",
@@ -1179,7 +1249,9 @@
     "noFilesYet": "No files yet. Drop files here or use +.",
     "allFiles": "All files",
     "dropToUpload": "Drop to upload",
-    "fewerFiles": "Show fewer"
+    "fewerFiles": "Show fewer",
+    "noCompletedTasks": "No completed tasks.",
+    "noTasks": "No tasks."
   },
   "errors": {
     "required": "此字段为必填项",
@@ -1217,7 +1289,15 @@
     "failedToSaveGoal": "无法保存目标。",
     "failedToDeleteGoal": "无法删除目标。",
     "failedToDeleteNote": "无法删除笔记。",
-    "failedToDeleteTag": "无法删除标签。"
+    "failedToDeleteTag": "无法删除标签。",
+    "failedToDeleteArea": "Failed to delete area.",
+    "failedToDeleteProject": "Failed to delete project.",
+    "failedToSaveProject": "Failed to save project.",
+    "failedToSaveTask": "Failed to save task.",
+    "failedToUpdateGoal": "Failed to update goal.",
+    "permissionDenied": "Permission denied",
+    "projectNameTooLong": "Project name must be {{max}} characters or less",
+    "projectStatusUpdateFailed": "Failed to update project status"
   },
   "inbox": {
     "title": "收件箱",
@@ -1329,7 +1409,8 @@
     "goalCreated": "目标已创建！",
     "goalUpdated": "目标已更新！",
     "goalDeleted": "目标已删除！",
-    "tagDeleted": "标签已删除！"
+    "tagDeleted": "标签已删除！",
+    "areaDeleted": "Area deleted successfully!"
   },
   "note": {
     "title": "标题",
@@ -1439,7 +1520,8 @@
       "waiting": "等待中",
       "setAsDone": "标记为完成",
       "planned": "计划中",
-      "cancelled": "已取消"
+      "cancelled": "已取消",
+      "label": "Status"
     },
     "noDueDate": "没有截止日期",
     "instanceOf": "这是一个重复任务的实例",
@@ -1454,7 +1536,19 @@
     "dueDateInPastWarning": "警告：您正在设置一个过去的截止日期",
     "overview": "概览",
     "schedule": "日程",
-    "attachments": "附件",
+    "attachments": {
+      "title": "附件",
+      "anyFormat": "Any file type",
+      "clickToUpload": "Click to upload",
+      "deleteConfirmMessage": "Are you sure you want to delete this attachment? This action cannot be undone.",
+      "deleteConfirmTitle": "Delete Attachment",
+      "deleteError": "Failed to delete attachment",
+      "deleteSuccess": "Attachment deleted successfully",
+      "maxSize": "Max {{size}}MB",
+      "uploadError": "Failed to upload file",
+      "uploadSuccess": "File uploaded successfully",
+      "uploading": "Uploading..."
+    },
     "attachmentsComingSoon": "附件功能即将推出",
     "activity": "活动",
     "lastUpdatedAt": "最后更新于",
@@ -1475,7 +1569,31 @@
     "starterStep": "First step",
     "starterStepPlaceholder": "Something you can do in 5 minutes",
     "starterStepHint": "Shown first on the Now card, to make starting easy.",
-    "starterStepError": "Failed to update the first step"
+    "starterStepError": "Failed to update the first step",
+    "areaClearError": "Failed to clear area",
+    "areaCleared": "Area cleared successfully",
+    "areaUpdateError": "Failed to update area",
+    "areaUpdated": "Area updated successfully",
+    "deferAfterDueError": "Defer until date cannot be after the due date",
+    "dueDateBeforeDeferError": "Due date cannot be before the defer until date",
+    "editDetails": "Edit details",
+    "goalClearError": "Failed to clear goal",
+    "goalCleared": "Goal cleared",
+    "goalUpdateError": "Failed to update goal",
+    "goalUpdated": "Goal updated",
+    "hoursAgo": "{{count}} hours ago",
+    "inHours": "in {{count}} hours",
+    "inMinutes": "in {{count}} minutes",
+    "minutesAgo": "{{count}} minutes ago",
+    "nameRequired": "Task name is required",
+    "noArea": "Assign to an area",
+    "noUpcomingOccurrences": "No upcoming occurrences.",
+    "notFound": "Task Not Found",
+    "notFoundDescription": "The task you are looking for does not exist or has been deleted.",
+    "pastDue": "Past Due",
+    "title": "Task",
+    "titlePlaceholder": "Enter task title",
+    "untitled": "Untitled task"
   },
   "projects": {
     "loading": "加载项目中...",
@@ -1569,7 +1687,15 @@
       "showCompleted": "Show completed projects",
       "saveError": "Failed to save projects settings"
     },
-    "reorderError": "Failed to save project order"
+    "reorderError": "Failed to save project order",
+    "deleteError": "Failed to delete project",
+    "fromTemplate": "From Template",
+    "saveAsTemplateError": "Failed to save project as template.",
+    "savedAsTemplate": "\"{{name}}\" saved as template.",
+    "shared": "Shared",
+    "sortTasks": "Sort tasks",
+    "status": "Project Status",
+    "upcomingProjects": "Upcoming Projects"
   },
   "projectItem": {
     "edit": "编辑",
@@ -1590,7 +1716,8 @@
     "moreSharedUsers": "+{{count}}个用户",
     "saveAsTemplate": "另存为模板",
     "pinToSidebar": "固定到侧边栏",
-    "unpinFromSidebar": "从侧边栏取消固定"
+    "unpinFromSidebar": "从侧边栏取消固定",
+    "changeStatus": "Change status"
   },
   "areas": {
     "title": "区域",
@@ -1621,7 +1748,28 @@
     "presetHome": "Home",
     "presetWork": "Work",
     "presetHealth": "Health",
-    "presetFamily": "Family"
+    "presetFamily": "Family",
+    "delete": "Delete",
+    "edit": "Edit",
+    "goals": "goals",
+    "noProjects": "No projects in this area.",
+    "noTasks": "No tasks directly in this area",
+    "progressSummary": "Area progress · {{done}} of {{total}} tasks done",
+    "projects": "projects",
+    "reorderError": "Failed to save area order",
+    "singular": "Area",
+    "sort": {
+      "custom": "Custom order",
+      "goals": "Most goals",
+      "label": "Sort areas",
+      "nameAsc": "Name A to Z",
+      "nameDesc": "Name Z to A",
+      "projects": "Most projects",
+      "tasks": "Most tasks"
+    },
+    "tasks": "tasks",
+    "tasksInArea": "Tasks",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "notes": {
     "loading": "加载笔记...",
@@ -1683,7 +1831,14 @@
     "linkedNoteCreateFailed": "无法创建笔记。",
     "backgroundImage": "背景",
     "noBackground": "无背景",
-    "openInNotes": "Open in Notes"
+    "openInNotes": "Open in Notes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "fileUploadError": "Could not upload {{name}}",
+    "saveBeforeFiles": "Give the note a title or some text first, then add files.",
+    "slashFile": "Image or File",
+    "slashFileHint": "Upload and place it here",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "tags": {
     "loading": "加载标签...",
@@ -1732,7 +1887,8 @@
     "pinnedTag": "已置顶的标签",
     "frequentlyUsed": "常用",
     "createTag": "+ 创建“{{name}}”",
-    "pinTag": "置顶以便快速访问"
+    "pinTag": "置顶以便快速访问",
+    "progressSummary": "Tag progress · {{done}} of {{total}} tasks done"
   },
   "recurrence": {
     "none": "无",
@@ -1756,7 +1912,16 @@
     "every": "每",
     "weeks": "周",
     "months": "月",
-    "advancedHint": "要指定特定的工作日或结束日期，请打开完整任务。"
+    "advancedHint": "要指定特定的工作日或结束日期，请打开完整任务。",
+    "completionBased": "After completion",
+    "everyNDays": "Every {{count}} days",
+    "everyNMonths": "Every {{count}} months",
+    "everyNWeeks": "Every {{count}} weeks",
+    "instance": "Recurring instance",
+    "monthDayPlaceholder": "Select day of month",
+    "onDay": "On day",
+    "recurring": "Recurring",
+    "until": "Until"
   },
   "weekdays": {
     "sunday": "星期日",
@@ -1822,7 +1987,8 @@
     "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
     "hideCalendar": "Hide {{name}}",
     "showCalendar": "Show {{name}}",
-    "feedError": "Could not load: {{names}}"
+    "feedError": "Could not load: {{names}}",
+    "task": "Task"
   },
   "pages": {
     "notFound": {
@@ -2046,7 +2212,12 @@
       "joined": "已加入",
       "empty": "还没有人注册",
       "noMatches": "没有地址与该搜索匹配",
-      "showing": "{{from}}-{{to}} 共 {{total}}"
+      "showing": "{{from}}-{{to}} 共 {{total}}",
+      "confirmRemove": "Remove {{email}} from the waitlist? This cannot be undone.",
+      "ipAddress": "IP Address",
+      "removeFailed": "Failed to remove entry",
+      "removeTitle": "Remove Address",
+      "removed": "Removed from the waitlist"
     },
     "passwordInviteHint": "留空以发送邀请电子邮件",
     "invitationSent": "邀请电子邮件已发送至 {{email}}",
@@ -2266,7 +2437,20 @@
       "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
       "threeDays": "Kept planning",
       "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
-    }
+    },
+    "aiUsage": {
+      "empty": "No users yet",
+      "limit": "Limit",
+      "plan": "Plan",
+      "remaining": "Remaining",
+      "searchPlaceholder": "Search by email",
+      "title": "AI Usage",
+      "totalCredits": "Credits used this month (all users)",
+      "used": "Used",
+      "user": "User",
+      "users": "Users"
+    },
+    "userDeletedSuccessfully": "User deleted successfully"
   },
   "shares": {
     "shareProject": "分享项目",
@@ -2347,7 +2531,11 @@
     "blankSlateNew": "搜索以创建视图",
     "noViewsMatch": "未找到视图",
     "blankSlateFilteredHint": "换个搜索试试。",
-    "blankSlateClearSearch": "清除搜索"
+    "blankSlateClearSearch": "清除搜索",
+    "filters": "filters",
+    "progressSummary": "View progress · {{done}} of {{total}} tasks done",
+    "sortTasks": "Sort tasks",
+    "view": "View"
   },
   "search": {
     "placeholder": "搜索任务、项目、笔记...",
@@ -2402,7 +2590,8 @@
     }
   },
   "subtasks": {
-    "placeholder": "添加子任务..."
+    "placeholder": "添加子任务...",
+    "title": "Subtasks"
   },
   "backup": {
     "title": "备份与恢复",
@@ -2453,7 +2642,8 @@
     "restoreButton": "恢复",
     "adminInstanceNote": "作为管理员,你的备份包含此实例上的所有账户,以及它们的数据和密码哈希。在新安装上恢复即可让所有人回来。请像保管数据库一样妥善保管此文件。",
     "accountsCount_one": "另外 {{count}} 个账户",
-    "accountsCount_other": "另外 {{count}} 个账户"
+    "accountsCount_other": "另外 {{count}} 个账户",
+    "delete": "Delete"
   },
   "notifications": {
     "table": {
@@ -2516,7 +2706,17 @@
       "enable": "Turn on",
       "disable": "Turn off",
       "failed": "Something went wrong. Please try again."
-    }
+    },
+    "daysAgo": "{{count}}d ago",
+    "delete": "Delete",
+    "hoursAgo": "{{count}}h ago",
+    "justNow": "Just now",
+    "loading": "Loading...",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "minutesAgo": "{{count}} min ago",
+    "noNotifications": "No notifications yet",
+    "title": "Notifications"
   },
   "projectStatus": {
     "not_started": "未开始",
@@ -2666,7 +2866,8 @@
     "presetsLabel": "Or start with",
     "presetWalk": "Morning walk",
     "presetRead": "Read 20 minutes",
-    "presetReview": "Weekly review"
+    "presetReview": "Weekly review",
+    "newHabit": "New habit"
   },
   "aiAssistant": {
     "title": "AI 助手",
@@ -2873,7 +3074,8 @@
     "linkedAccount": "已关联用户账号",
     "archivedBadge": "已归档",
     "deletePerson": "删除人员",
-    "deleteConfirm": "确定要删除“{{name}}”吗？此操作无法撤销。"
+    "deleteConfirm": "确定要删除“{{name}}”吗？此操作无法撤销。",
+    "contact": "Contact"
   },
   "members": {
     "addTitle": "添加成员",
@@ -2902,7 +3104,8 @@
     "removed": "成员已移除",
     "updated": "成员已更新",
     "invitationSent": "邀请已发送",
-    "failedToRemove": "移除成员失败"
+    "failedToRemove": "移除成员失败",
+    "title": "Members"
   },
   "signInLink": {
     "action": "登录链接",
@@ -3134,7 +3337,12 @@
     "filesAttached_one": "1 file attached."
   },
   "area": {
-    "loadError": "无法加载区域"
+    "loadError": "无法加载区域",
+    "clearArea": "Remove area",
+    "noAreasFound": "No areas found",
+    "searchAreas": "Search areas…",
+    "viaProject": "via project",
+    "viewArea": "Go to area"
   },
   "goals": {
     "newGoal": "新建目标",
@@ -3172,7 +3380,24 @@
     "clearGoal": "移除目标",
     "noGoalsFound": "未找到目标",
     "inactive": "未启用",
-    "viewGoal": "前往目标"
+    "viewGoal": "前往目标",
+    "maintenance": "Maintenance",
+    "noAvailableGoals": "No available goals",
+    "noGoalsInArea": "No goals linked to this area.",
+    "noGoalsSelected": "No goals selected",
+    "removeFromArea": "Remove from area",
+    "reorderError": "Failed to save goal order",
+    "sort": {
+      "area": "Area",
+      "custom": "Custom order",
+      "horizon": "Horizon",
+      "label": "Sort goals",
+      "projects": "Most projects",
+      "status": "Status",
+      "tasks": "Most tasks",
+      "titleAsc": "Title A to Z",
+      "titleDesc": "Title Z to A"
+    }
   },
   "templates": {
     "new": "新建模板",
@@ -3301,7 +3526,9 @@
   "sortable": {
     "move": "Move",
     "project": "sortable project",
-    "task": "sortable task"
+    "task": "sortable task",
+    "area": "sortable area",
+    "goal": "sortable goal"
   },
   "relations": {
     "title": "Relations",
@@ -3553,5 +3780,27 @@
     "overwhelmedHint": "Just this one thing. Everything else can wait.",
     "showAll": "Show my whole day again",
     "nothingToMove": "Your day is already light. One small step at a time."
+  },
+  "colors": {
+    "label": "Color",
+    "none": "None"
+  },
+  "loading": {
+    "subtasks": "Loading subtasks...",
+    "tasks": "Loading tasks…"
+  },
+  "notFound": {
+    "description": "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+    "goBack": "Go Back",
+    "goHome": "Go to Today",
+    "inboxDescription": "Check your inbox items",
+    "notesDescription": "Browse your notes",
+    "projectsDescription": "Browse your projects",
+    "quickActions": "Quick Actions",
+    "title": "Page Not Found",
+    "todayDescription": "View today's tasks"
+  },
+  "tag": {
+    "viewTag": "Go to tag"
   }
 }

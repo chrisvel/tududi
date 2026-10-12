@@ -45,7 +45,22 @@
         "hideSearch": "جمع کردن پنل جستجو",
         "showSearch": "نمایش ورودی جستجو",
         "beta": "آزمایشی",
-        "comingSoon": "به‌زودی"
+        "comingSoon": "به‌زودی",
+        "actions": "کنش‌ها",
+        "breadcrumb": "مسیر صفحه",
+        "createCalendar": "ساخت تقویم",
+        "creating": "در حال ساخت...",
+        "due": "موعد",
+        "goToToday": "رفتن به امروز",
+        "goal": "هدف",
+        "loadMore": "نمایش بیشتر",
+        "priority": "اولویت",
+        "resolving": "در حال حل...",
+        "showAll": "نمایش همه",
+        "showLess": "نمایش کمتر",
+        "tags": "برچسب‌ها",
+        "undo": "بازگردانی",
+        "untitled": "بدون عنوان"
     },
     "sidebar": {
         "dashboard": "پیشخوان",
@@ -133,7 +148,11 @@
             "primary": "اصلی",
             "lifeStub": "خط زمانی زندگی بعداً اینجا ظاهر می‌شود.",
             "reviewStub": "مرور هدایت‌شده بعداً اینجا ظاهر می‌شود."
-        }
+        },
+        "inbox": "صندوق ورودی",
+        "notes": "یادداشت‌ها",
+        "projects": "پروژه‌ها",
+        "today": "امروز"
     },
     "settings": {
         "todayPageSettings": "تنظیمات صفحهٔ امروز",
@@ -233,7 +252,12 @@
             "inProgress": "در حال انجام",
             "waiting": "در انتظار",
             "done": "انجام‌شده",
-            "dropHere": "اینجا رها شود"
+            "dropHere": "اینجا رها شود",
+            "archived": "بایگانی‌شده",
+            "cancelled": "لغوشده",
+            "columns": "ستون‌ها",
+            "customizeColumns": "تنظیم ستون‌ها",
+            "planned": "برنامه‌ریزی‌شده"
         },
         "show": "نمایش",
         "open": "باز",
@@ -251,7 +275,18 @@
         "habit": "عادت",
         "assignedTo": "محول‌شده به",
         "subtasks": "زیرکارها",
-        "openFullPage": "باز کردن نمای کامل"
+        "openFullPage": "باز کردن نمای کامل",
+        "deleteConfirmMessage": "«{{name}}» حذف شود؟ این کار برگشت‌پذیر نیست.",
+        "deleteConfirmTitle": "حذف کار",
+        "dueInDays": "{{days}} روز تا موعد",
+        "dueSoon": "موعد نزدیک",
+        "noDue": "بدون موعد",
+        "overdueBy": "{{days}} روز گذشته از موعد",
+        "priority": "اولویت",
+        "progress": "پیشرفت",
+        "startNow": "همین حالا شروع کن",
+        "startedSuccessfully": "کار شروع شد!",
+        "todayPlan": "برنامهٔ امروز"
     },
     "comments": {
         "count": "{{count}} دیدگاه",
@@ -340,7 +375,8 @@
         "issuesFound_one": "۱ مورد بهره‌وری نیازمند توجه است",
         "issuesFound_other": "{{count}} مورد بهره‌وری نیازمند توجه است",
         "reviewItems": "برای مرور و بهبود جریان کار اینجا زده شود",
-        "suggestion": "روی هر مورد بالا زده شود تا باز شود و بهبود یابد."
+        "suggestion": "روی هر مورد بالا زده شود تا باز شود و بهبود یابد.",
+        "andMore": "... و {{count}} مورد دیگر"
     },
     "modals": {
         "confirmDelete": "آیا حذف شود؟",
@@ -384,7 +420,12 @@
             "message": "آیا هدف «{{title}}» حذف شود؟"
         },
         "createGoal": "ایجاد هدف",
-        "updateGoal": "به‌روزرسانی هدف"
+        "updateGoal": "به‌روزرسانی هدف",
+        "saveAsTemplate": {
+            "message": "«{{name}}» به‌عنوان الگو ذخیره شود؟ با این کار یک الگوی قابل‌استفادهٔ دوباره از این پروژه ساخته می‌شود.",
+            "title": "ذخیره به‌عنوان الگو"
+        },
+        "updateTask": "به‌روزرسانی کار"
     },
     "forms": {
         "title": "عنوان",
@@ -416,7 +457,9 @@
                 "weekOfMonth": "هفتهٔ ماه",
                 "recurrenceEndDate": "تاریخ پایان (اختیاری)",
                 "completionBased": "تکرار پس از تکمیل",
-                "repeatOn": "تکرار در"
+                "repeatOn": "تکرار در",
+                "attachments": "پیوست‌ها",
+                "recurrence": "تکرار"
             },
             "selectAtLeastOneDay": "دست‌کم یک روز انتخاب شود",
             "projectSearchPlaceholder": "جستجو یا ایجاد پروژه...",
@@ -464,7 +507,12 @@
         "goalTargetDate": "تاریخ هدف",
         "color": "رنگ",
         "goalArea": "حوزه",
-        "noArea": "بدون حوزه"
+        "noArea": "بدون حوزه",
+        "goalTitle": "پیامد",
+        "name": "نام",
+        "noProject": "بدون پروژه",
+        "project": "پروژه",
+        "taskName": "نام"
     },
     "profile": {
         "settings": "تنظیمات پروفایل",
@@ -701,7 +749,9 @@
             "setupSuccess": "تقویم با موفقیت پیکربندی شد!",
             "setupFailed": "ایجاد تقویم ناموفق بود",
             "serverUrlPlaceholder": "https://caldav.example.com",
-            "calendarPathPlaceholder": "/calendars/user/tasks"
+            "calendarPathPlaceholder": "/calendars/user/tasks",
+            "fillServerDetails": "لطفاً اول همهٔ مشخصات اتصال به سرور را وارد کنید",
+            "validationError": "لطفاً همهٔ فیلدهای لازم را پر کنید و اتصال را آزمایش کنید"
         },
         "conflictResolver": {
             "title": "حل تعارض‌های همگام‌سازی",
@@ -728,7 +778,8 @@
             "resolveSuccess": "همه تعارض‌ها با موفقیت حل شدند",
             "resolveError": "حل تعارض‌ها ناموفق بود",
             "nextConflict": "بعدی",
-            "prevConflict": "قبلی"
+            "prevConflict": "قبلی",
+            "mixedResolutionError": "برای هر تعارض «استفاده از همهٔ نسخهٔ محلی» یا «استفاده از همهٔ نسخهٔ راه دور» را انتخاب کنید. انتخاب ترکیبی فیلدها هنوز پشتیبانی نمی‌شود."
         },
         "security": "تنظیمات امنیت",
         "deleteAccount": "حذف حساب",
@@ -1089,7 +1140,25 @@
         },
         "captcha_required": "لطفاً تأیید را تکمیل کنید و دوباره تلاش کنید.",
         "registration_successful": "آدرس email خود را تأیید کنید",
-        "registration_email_sent": "برای فعال‌سازی حساب آدرس email را تأیید کنید. لینک برایتان فرستاده شده؛ صندوق ورودی را بررسی کنید."
+        "registration_email_sent": "برای فعال‌سازی حساب آدرس email را تأیید کنید. لینک برایتان فرستاده شده؛ صندوق ورودی را بررسی کنید.",
+        "already_have_account": "حساب کاربری دارید؟",
+        "already_verified": "ایمیل شما قبلاً تأیید شده است. می‌توانید وارد شوید.",
+        "back_to_login": "بازگشت به ورود",
+        "confirm_password": "تکرار رمز عبور",
+        "email_not_verified": "لطفاً پیش از ورود، ایمیل خود را تأیید کنید.",
+        "email_verified": "ایمیل شما تأیید شد! اکنون می‌توانید وارد شوید.",
+        "error_occurred": "خطایی رخ داد. لطفاً دوباره تلاش کنید.",
+        "no_account": "حساب کاربری ندارید؟",
+        "no_auth_methods": "هیچ روش ورودی در دسترس نیست. لطفاً با مدیر سیستم تماس بگیرید.",
+        "password_registration_disabled": "ثبت‌نام با رمز عبور غیرفعال است",
+        "password_registration_disabled_message": "ثبت‌نام با رمز عبور در دسترس نیست. لطفاً با SSO وارد شوید.",
+        "passwords_not_match": "رمزهای عبور یکسان نیستند",
+        "registration_closed_message": "ثبت‌نام حساب جدید فعلاً غیرفعال است. برای دسترسی با مدیر سیستم تماس بگیرید.",
+        "registration_closed_title": "ثبت‌نام بسته است",
+        "registration_failed": "ثبت‌نام انجام نشد. لطفاً دوباره تلاش کنید.",
+        "sign_up": "ثبت‌نام",
+        "verification_expired": "پیوند تأیید منقضی شده است. لطفاً دوباره ثبت‌نام کنید.",
+        "verification_failed": "تأیید ایمیل انجام نشد. لطفاً دوباره تلاش کنید."
     },
     "dropdown": {
         "createNew": "ایجاد جدید",
@@ -1106,12 +1175,15 @@
         "priority": "اولویت",
         "status": "وضعیت",
         "created_at": "تاریخ ایجاد",
-        "custom": "سفارشی"
+        "custom": "سفارشی",
+        "completed_at": "زمان انجام"
     },
     "sortable": {
         "move": "جابه‌جایی",
         "project": "پروژه قابل مرتب‌سازی",
-        "task": "کار قابل مرتب‌سازی"
+        "task": "کار قابل مرتب‌سازی",
+        "area": "حوزهٔ قابل جابه‌جایی",
+        "goal": "هدف قابل جابه‌جایی"
     },
     "priority": {
         "none": "ندارد",
@@ -1166,7 +1238,15 @@
         "failedToSaveGoal": "ذخیره هدف ناموفق بود.",
         "failedToDeleteGoal": "حذف هدف ناموفق بود.",
         "failedToDeleteNote": "حذف یادداشت ناموفق بود.",
-        "failedToDeleteTag": "حذف برچسب ناموفق بود."
+        "failedToDeleteTag": "حذف برچسب ناموفق بود.",
+        "failedToDeleteArea": "حذف حوزه انجام نشد.",
+        "failedToDeleteProject": "حذف پروژه انجام نشد.",
+        "failedToSaveProject": "ذخیرهٔ پروژه انجام نشد.",
+        "failedToSaveTask": "ذخیرهٔ کار انجام نشد.",
+        "failedToUpdateGoal": "به‌روزرسانی هدف انجام نشد.",
+        "permissionDenied": "اجازهٔ دسترسی ندارید",
+        "projectNameTooLong": "نام پروژه باید حداکثر {{max}} نویسه باشد",
+        "projectStatusUpdateFailed": "به‌روزرسانی وضعیت پروژه انجام نشد"
     },
     "success": {
         "noteUpdated": "یادداشت با موفقیت به‌روزرسانی شد!",
@@ -1186,7 +1266,8 @@
         "goalCreated": "هدف ایجاد شد!",
         "goalUpdated": "هدف به‌روزرسانی شد!",
         "goalDeleted": "هدف حذف شد!",
-        "tagDeleted": "برچسب با موفقیت حذف شد!"
+        "tagDeleted": "برچسب با موفقیت حذف شد!",
+        "areaDeleted": "حوزه حذف شد!"
     },
     "project": {
         "name": "نام پروژه",
@@ -1258,7 +1339,9 @@
         "noFilesYet": "هنوز فایلی نیست. فایل‌ها را اینجا رها کنید یا از + استفاده کنید.",
         "allFiles": "همهٔ فایل‌ها",
         "dropToUpload": "رها کردن برای بارگذاری",
-        "fewerFiles": "نمایش کمتر"
+        "fewerFiles": "نمایش کمتر",
+        "noCompletedTasks": "کار انجام‌شده‌ای نیست.",
+        "noTasks": "کاری نیست."
     },
     "inbox": {
         "title": "صندوق ورودی",
@@ -1419,7 +1502,19 @@
         "priorityUpdateError": "به‌روزرسانی اولویت ناموفق بود",
         "overview": "نمای کلی",
         "schedule": "زمان‌بندی",
-        "attachments": "پیوست‌ها",
+        "attachments": {
+            "title": "پیوست‌ها",
+            "anyFormat": "هر نوع فایل",
+            "clickToUpload": "برای بارگذاری کلیک کنید",
+            "deleteConfirmMessage": "این پیوست حذف شود؟ این کار برگشت‌پذیر نیست.",
+            "deleteConfirmTitle": "حذف پیوست",
+            "deleteError": "حذف پیوست انجام نشد",
+            "deleteSuccess": "پیوست حذف شد",
+            "maxSize": "حداکثر {{size}} مگابایت",
+            "uploadError": "بارگذاری فایل انجام نشد",
+            "uploadSuccess": "فایل بارگذاری شد",
+            "uploading": "در حال بارگذاری..."
+        },
         "attachmentsComingSoon": "قابلیت پیوست‌ها به‌زودی",
         "comments": "دیدگاه‌ها",
         "activity": "فعالیت",
@@ -1433,7 +1528,8 @@
             "archived": "بایگانی‌شده",
             "waiting": "در انتظار",
             "cancelled": "لغوشده",
-            "setAsDone": "تنظیم به‌عنوان انجام‌شده"
+            "setAsDone": "تنظیم به‌عنوان انجام‌شده",
+            "label": "وضعیت"
         },
         "statusUpdated": "وضعیت با موفقیت به‌روز شد",
         "statusUpdateError": "به‌روزرسانی وضعیت ناموفق بود",
@@ -1454,10 +1550,35 @@
         "starterStep": "قدم اول",
         "starterStepPlaceholder": "کاری که در ۵ دقیقه شدنی است",
         "starterStepHint": "اول در کارت «اکنون» نشان داده می‌شود تا شروع آسان شود.",
-        "starterStepError": "به‌روزرسانی قدم اول انجام نشد"
+        "starterStepError": "به‌روزرسانی قدم اول انجام نشد",
+        "areaClearError": "برداشتن حوزه انجام نشد",
+        "areaCleared": "حوزه برداشته شد",
+        "areaUpdateError": "به‌روزرسانی حوزه انجام نشد",
+        "areaUpdated": "حوزه به‌روزرسانی شد",
+        "deferAfterDueError": "تاریخ تعویق نمی‌تواند بعد از موعد باشد",
+        "dueDateBeforeDeferError": "موعد نمی‌تواند پیش از تاریخ تعویق باشد",
+        "editDetails": "ویرایش جزئیات",
+        "goalClearError": "برداشتن هدف انجام نشد",
+        "goalCleared": "هدف برداشته شد",
+        "goalUpdateError": "به‌روزرسانی هدف انجام نشد",
+        "goalUpdated": "هدف به‌روزرسانی شد",
+        "hoursAgo": "{{count}} ساعت پیش",
+        "inHours": "{{count}} ساعت دیگر",
+        "inMinutes": "{{count}} دقیقه دیگر",
+        "minutesAgo": "{{count}} دقیقه پیش",
+        "nameRequired": "نام کار لازم است",
+        "noArea": "افزودن به یک حوزه",
+        "noUpcomingOccurrences": "تکرار پیش رویی نیست.",
+        "notFound": "کار پیدا نشد",
+        "notFoundDescription": "کاری که دنبالش هستید وجود ندارد یا حذف شده است.",
+        "pastDue": "موعد گذشته",
+        "title": "کار",
+        "titlePlaceholder": "عنوان کار را بنویسید",
+        "untitled": "کار بدون عنوان"
     },
     "subtasks": {
-        "placeholder": "افزودن زیرکار..."
+        "placeholder": "افزودن زیرکار...",
+        "title": "زیرکارها"
     },
     "projects": {
         "table": {
@@ -1537,7 +1658,15 @@
         },
         "noResults": "پروژه‌ای نیست",
         "reorderError": "ذخیرهٔ ترتیب پروژه‌ها ناموفق بود",
-        "viewAs": "نما"
+        "viewAs": "نما",
+        "deleteError": "حذف پروژه انجام نشد",
+        "fromTemplate": "از الگو",
+        "saveAsTemplateError": "ذخیرهٔ پروژه به‌عنوان الگو انجام نشد.",
+        "savedAsTemplate": "«{{name}}» به‌عنوان الگو ذخیره شد.",
+        "shared": "اشتراکی",
+        "sortTasks": "مرتب‌سازی کارها",
+        "status": "وضعیت پروژه",
+        "upcomingProjects": "پروژه‌های پیش رو"
     },
     "projectStatus": {
         "not_started": "شروع‌نشده",
@@ -1572,7 +1701,8 @@
         "moreSharedUsers": "+{{count}} کاربر دیگر",
         "saveAsTemplate": "ذخیره به‌عنوان قالب",
         "pinToSidebar": "سنجاق به نوار کناری",
-        "unpinFromSidebar": "برداشتن سنجاق از نوار کناری"
+        "unpinFromSidebar": "برداشتن سنجاق از نوار کناری",
+        "changeStatus": "تغییر وضعیت"
     },
     "areas": {
         "title": "حوزه‌ها",
@@ -1603,10 +1733,36 @@
         "presetHome": "خانه",
         "presetWork": "کار",
         "presetHealth": "سلامت",
-        "presetFamily": "خانواده"
+        "presetFamily": "خانواده",
+        "delete": "حذف",
+        "edit": "ویرایش",
+        "goals": "هدف",
+        "noProjects": "این حوزه پروژه‌ای ندارد.",
+        "noTasks": "کاری مستقیماً در این حوزه نیست",
+        "progressSummary": "پیشرفت حوزه · {{done}} از {{total}} کار انجام شده",
+        "projects": "پروژه",
+        "reorderError": "ذخیرهٔ ترتیب حوزه‌ها انجام نشد",
+        "singular": "حوزه",
+        "sort": {
+            "custom": "ترتیب دلخواه",
+            "goals": "بیشترین هدف",
+            "label": "مرتب‌سازی حوزه‌ها",
+            "nameAsc": "نام: الف تا ی",
+            "nameDesc": "نام: ی تا الف",
+            "projects": "بیشترین پروژه",
+            "tasks": "بیشترین کار"
+        },
+        "tasks": "کار",
+        "tasksInArea": "کارها",
+        "toggleDropdownMenu": "باز و بسته کردن منوی کشویی"
     },
     "area": {
-        "loadError": "بارگذاری حوزه‌ها ناموفق بود"
+        "loadError": "بارگذاری حوزه‌ها ناموفق بود",
+        "clearArea": "برداشتن حوزه",
+        "noAreasFound": "حوزه‌ای پیدا نشد",
+        "searchAreas": "جست‌وجوی حوزه‌ها…",
+        "viaProject": "از طریق پروژه",
+        "viewArea": "رفتن به حوزه"
     },
     "dateFormats": {
         "long": "EEEE, MMMM d, yyyy",
@@ -1706,7 +1862,14 @@
         "deleteNote": "حذف یادداشت",
         "deleteNoteConfirm": "یادداشت «{{title}}» حذف شود؟",
         "untitled": "یادداشت بدون عنوان",
-        "openInNotes": "باز کردن در یادداشت‌ها"
+        "openInNotes": "باز کردن در یادداشت‌ها",
+        "delete": "حذف",
+        "edit": "ویرایش",
+        "fileUploadError": "بارگذاری {{name}} انجام نشد",
+        "saveBeforeFiles": "اول برای یادداشت عنوان یا متنی بنویسید، بعد فایل اضافه کنید.",
+        "slashFile": "تصویر یا فایل",
+        "slashFileHint": "بارگذاری و قرار دادن در همین‌جا",
+        "toggleDropdownMenu": "باز و بسته کردن منوی کشویی"
     },
     "tags": {
         "addTag": "افزودن برچسب",
@@ -1755,7 +1918,8 @@
         "pinnedTag": "برچسب سنجاق‌شده",
         "frequentlyUsed": "پراستفاده",
         "createTag": "+ ایجاد «{{name}}»",
-        "pinTag": "سنجاق برای دسترسی سریع"
+        "pinTag": "سنجاق برای دسترسی سریع",
+        "progressSummary": "پیشرفت برچسب · {{done}} از {{total}} کار انجام شده"
     },
     "habits": {
         "completeHabit": "تکمیل عادت",
@@ -1891,7 +2055,8 @@
         "presetsLabel": "یا شروع با",
         "presetWalk": "پیاده‌روی صبحگاهی",
         "presetRead": "۲۰ دقیقه مطالعه",
-        "presetReview": "مرور هفتگی"
+        "presetReview": "مرور هفتگی",
+        "newHabit": "عادت تازه"
     },
     "recurrence": {
         "none": "هیچ‌کدام",
@@ -1915,7 +2080,16 @@
         "every": "هر",
         "weeks": "هفته",
         "months": "ماه",
-        "advancedHint": "برای روزهای مشخص هفته یا تاریخ پایان، وظیفهٔ کامل باز شود."
+        "advancedHint": "برای روزهای مشخص هفته یا تاریخ پایان، وظیفهٔ کامل باز شود.",
+        "completionBased": "پس از انجام",
+        "everyNDays": "هر {{count}} روز",
+        "everyNMonths": "هر {{count}} ماه",
+        "everyNWeeks": "هر {{count}} هفته",
+        "instance": "نمونهٔ تکرارشونده",
+        "monthDayPlaceholder": "روز ماه را انتخاب کنید",
+        "onDay": "در روز",
+        "recurring": "تکرارشونده",
+        "until": "تا"
     },
     "weekdays": {
         "sunday": "یکشنبه",
@@ -1988,7 +2162,8 @@
         "manageDescription": "اتصال تقویم‌های فقط‌خواندنی و انتخاب آن‌هایی که اینجا دیده شوند. Life-to-Day هرگز آن‌ها را تغییر نمی‌دهد.",
         "hideCalendar": "پنهان کردن {{name}}",
         "showCalendar": "نمایش {{name}}",
-        "feedError": "بارگذاری ممکن نشد: {{names}}"
+        "feedError": "بارگذاری ممکن نشد: {{names}}",
+        "task": "کار"
     },
     "pages": {
         "notFound": {
@@ -2206,7 +2381,12 @@
             "joined": "پیوسته",
             "empty": "هنوز کسی ثبت‌نام نکرده است",
             "noMatches": "آدرسی با این جستجو مطابقت ندارد",
-            "showing": "{{from}}-{{to}} از {{total}}"
+            "showing": "{{from}}-{{to}} از {{total}}",
+            "confirmRemove": "{{email}} از فهرست انتظار حذف شود؟ این کار برگشت‌پذیر نیست.",
+            "ipAddress": "نشانی IP",
+            "removeFailed": "حذف این مورد انجام نشد",
+            "removeTitle": "حذف نشانی",
+            "removed": "از فهرست انتظار حذف شد"
         },
         "passwordInviteHint": "خالی بگذارید تا email دعوت ارسال شود",
         "invitationSent": "email دعوت به {{email}} ارسال شد",
@@ -2423,7 +2603,20 @@
             "firstPlanHint": "{{n}} از {{total}} کاربر جدید ۳+ کار برنامه‌ریزی کردند",
             "threeDays": "ادامه برنامه‌ریزی",
             "threeDaysHint": "{{n}} از {{total}} ثبت‌نام‌های هفته قبل ۳ روز برنامه‌ریزی کردند"
-        }
+        },
+        "aiUsage": {
+            "empty": "هنوز کاربری نیست",
+            "limit": "سقف",
+            "plan": "طرح",
+            "remaining": "باقی‌مانده",
+            "searchPlaceholder": "جست‌وجو با ایمیل",
+            "title": "مصرف هوش مصنوعی",
+            "totalCredits": "اعتبار مصرف‌شده در این ماه (همهٔ کاربران)",
+            "used": "مصرف‌شده",
+            "user": "کاربر",
+            "users": "کاربران"
+        },
+        "userDeletedSuccessfully": "کاربر حذف شد"
     },
     "billing": {
         "title": "طرح و صورتحساب",
@@ -2554,7 +2747,11 @@
         "viewWillSave": "این نما ذخیره می‌کند:",
         "saveView": "ذخیره نما",
         "filtersLabel": "فیلترها:",
-        "searchLabel": "جستجو:"
+        "searchLabel": "جستجو:",
+        "filters": "فیلتر",
+        "progressSummary": "پیشرفت نما · {{done}} از {{total}} کار انجام شده",
+        "sortTasks": "مرتب‌سازی کارها",
+        "view": "نما"
     },
     "search": {
         "placeholder": "جستجوی کار، پروژه، یادداشت...",
@@ -2651,7 +2848,8 @@
         "backupVersion": "نسخهٔ پشتیبان",
         "adminInstanceNote": "به‌عنوان مدیر، پشتیبان شامل همهٔ حساب‌های این نمونه، با داده‌ها و هش گذرواژه‌هاست. بازیابی آن روی نصب جدید همه را برمی‌گرداند. پرونده به اندازهٔ پایگاه داده امن نگه‌داشته شود.",
         "accountsCount_one": "{{count}} حساب دیگر",
-        "accountsCount_other": "{{count}} حساب دیگر"
+        "accountsCount_other": "{{count}} حساب دیگر",
+        "delete": "حذف"
     },
     "notifications": {
         "table": {
@@ -2711,7 +2909,17 @@
             "enable": "روشن کردن",
             "disable": "خاموش کردن",
             "failed": "مشکلی پیش آمد. دوباره تلاش شود."
-        }
+        },
+        "daysAgo": "{{count}} روز پیش",
+        "delete": "حذف",
+        "hoursAgo": "{{count}} ساعت پیش",
+        "justNow": "همین حالا",
+        "loading": "در حال بارگذاری...",
+        "markAllRead": "علامت‌گذاری همه به‌عنوان خوانده‌شده",
+        "markAsRead": "علامت‌گذاری به‌عنوان خوانده‌شده",
+        "minutesAgo": "{{count}} دقیقه پیش",
+        "noNotifications": "هنوز اعلانی نیست",
+        "title": "اعلان‌ها"
     },
     "aiAssistant": {
         "title": "خلاصهٔ روزانهٔ هوش مصنوعی",
@@ -2865,7 +3073,8 @@
         "linkedAccount": "پیوند به حساب کاربری",
         "archivedBadge": "بایگانی‌شده",
         "deletePerson": "حذف فرد",
-        "deleteConfirm": "«{{name}}» حذف شود؟ این کار برگشت‌پذیر نیست."
+        "deleteConfirm": "«{{name}}» حذف شود؟ این کار برگشت‌پذیر نیست.",
+        "contact": "مخاطب"
     },
     "members": {
         "addTitle": "افزودن عضو",
@@ -2894,7 +3103,8 @@
         "removed": "عضو حذف شد",
         "updated": "عضو به‌روز شد",
         "invitationSent": "دعوت فرستاده شد",
-        "failedToRemove": "حذف عضو ناموفق بود"
+        "failedToRemove": "حذف عضو ناموفق بود",
+        "title": "اعضا"
     },
     "signInLink": {
         "action": "پیوند ورود",
@@ -3204,7 +3414,24 @@
         "clearGoal": "حذف هدف",
         "noGoalsFound": "هدفی یافت نشد",
         "inactive": "غیرفعال",
-        "viewGoal": "رفتن به هدف"
+        "viewGoal": "رفتن به هدف",
+        "maintenance": "نگهداری",
+        "noAvailableGoals": "هدفی در دسترس نیست",
+        "noGoalsInArea": "هدفی به این حوزه پیوند نخورده است.",
+        "noGoalsSelected": "هدفی انتخاب نشده است",
+        "removeFromArea": "برداشتن از حوزه",
+        "reorderError": "ذخیرهٔ ترتیب هدف‌ها انجام نشد",
+        "sort": {
+            "area": "حوزه",
+            "custom": "ترتیب دلخواه",
+            "horizon": "افق",
+            "label": "مرتب‌سازی هدف‌ها",
+            "projects": "بیشترین پروژه",
+            "status": "وضعیت",
+            "tasks": "بیشترین کار",
+            "titleAsc": "عنوان: الف تا ی",
+            "titleDesc": "عنوان: ی تا الف"
+        }
     },
     "templates": {
         "new": "قالب جدید",
@@ -3516,5 +3743,27 @@
         "overwhelmedHint": "فقط همین یک کار. بقیه می‌توانند صبر کنند.",
         "showAll": "دوباره کل روزم را نشان بده",
         "nothingToMove": "روزت همین حالا سبک است. یک قدم کوچک در هر زمان."
+  },
+    "colors": {
+        "label": "رنگ",
+        "none": "بدون رنگ"
+    },
+    "loading": {
+        "subtasks": "در حال بارگذاری زیرکارها...",
+        "tasks": "در حال بارگذاری کارها…"
+    },
+    "notFound": {
+        "description": "صفحه‌ای که دنبالش هستید وجود ندارد. شاید جابه‌جا یا حذف شده باشد، یا نشانی را اشتباه وارد کرده‌اید.",
+        "goBack": "بازگشت",
+        "goHome": "رفتن به امروز",
+        "inboxDescription": "موارد صندوق ورودی را ببینید",
+        "notesDescription": "یادداشت‌هایتان را مرور کنید",
+        "projectsDescription": "پروژه‌هایتان را مرور کنید",
+        "quickActions": "دسترسی سریع",
+        "title": "صفحه پیدا نشد",
+        "todayDescription": "کارهای امروز را ببینید"
+    },
+    "tag": {
+        "viewTag": "رفتن به برچسب"
     }
 }

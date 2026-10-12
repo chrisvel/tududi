@@ -612,9 +612,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
             {isConfirmDialogOpen && (
                 <ConfirmDialog
                     title={t('tasks.deleteConfirmTitle', 'Delete Task')}
+                    // LTD-PATCH(T-405): pass the name so the locale string can interpolate it
                     message={t(
                         'tasks.deleteConfirmMessage',
-                        `Are you sure you want to delete "${task.name}"? This action cannot be undone.`
+                        `Are you sure you want to delete "${task.name}"? This action cannot be undone.`,
+                        { name: task.name }
                     )}
                     onConfirm={() => {
                         setIsConfirmDialogOpen(false);

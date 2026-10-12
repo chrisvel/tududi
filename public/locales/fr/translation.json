@@ -45,7 +45,22 @@
     "hideSearch": "Replier la recherche",
     "showSearch": "Afficher la recherche",
     "beta": "bêta",
-    "comingSoon": "Bientôt disponible"
+    "comingSoon": "Bientôt disponible",
+    "actions": "Actions",
+    "breadcrumb": "Breadcrumb",
+    "createCalendar": "Create Calendar",
+    "creating": "Creating...",
+    "due": "Due",
+    "goToToday": "Go to Today",
+    "goal": "Goal",
+    "loadMore": "Load More",
+    "priority": "Priority",
+    "resolving": "Resolving...",
+    "showAll": "Show All",
+    "showLess": "Show less",
+    "tags": "Tags",
+    "undo": "Undo",
+    "untitled": "Untitled"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -134,7 +149,11 @@
       "primary": "Primary",
       "lifeStub": "The life timeline will appear here later.",
       "reviewStub": "Guided review will appear here later."
-    }
+    },
+    "inbox": "Inbox",
+    "notes": "Notes",
+    "projects": "Projects",
+    "today": "Today"
   },
   "settings": {
     "todayPageSettings": "Paramètres de la page Aujourd'hui",
@@ -245,14 +264,30 @@
       "inProgress": "En cours",
       "waiting": "En attente",
       "done": "Terminé",
-      "dropHere": "Déposez ici"
+      "dropHere": "Déposez ici",
+      "archived": "Archived",
+      "cancelled": "Cancelled",
+      "columns": "Columns",
+      "customizeColumns": "Customize columns",
+      "planned": "Planned"
     },
     "chaseUp": "Relancer",
     "habit": "Habitude",
     "assignedTo": "Assigné à",
     "subtasks": "Sous-tâches",
     "openFullPage": "Ouvrir la vue complète",
-    "reorderError": "Failed to save task order"
+    "reorderError": "Failed to save task order",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleteConfirmTitle": "Delete Task",
+    "dueInDays": "Due in {{days}}d",
+    "dueSoon": "due soon",
+    "noDue": "No due date",
+    "overdueBy": "Overdue by {{days}}d",
+    "priority": "Priority",
+    "progress": "Progress",
+    "startNow": "Start now",
+    "startedSuccessfully": "Task started successfully!",
+    "todayPlan": "Today plan"
   },
   "timeline": {
     "activityTimeline": "Chronologie d'Activité",
@@ -572,7 +607,9 @@
       "setupSuccess": "Calendrier configuré avec succès !",
       "setupFailed": "Échec de la création du calendrier",
       "serverUrlPlaceholder": "https://caldav.example.com",
-      "calendarPathPlaceholder": "/calendars/utilisateur/tâches"
+      "calendarPathPlaceholder": "/calendars/utilisateur/tâches",
+      "fillServerDetails": "Please fill in all server connection details first",
+      "validationError": "Please fill in all required fields and test the connection"
     },
     "conflictResolver": {
       "title": "Résoudre les conflits de synchronisation",
@@ -599,7 +636,8 @@
       "resolveSuccess": "Tous les conflits ont été résolus avec succès",
       "resolveError": "Échec de la résolution des conflits",
       "nextConflict": "Suivant",
-      "prevConflict": "Précédent"
+      "prevConflict": "Précédent",
+      "mixedResolutionError": "Please choose \"Use all local\" or \"Use all remote\" for each conflict. Mixed field selections are not yet supported."
     },
     "editCalendar": {
       "title": "Modifier le calendrier",
@@ -907,7 +945,8 @@
     "allClearHint": "Aucune tâche vague, aucun travail en sommeil ni projet bloqué pour le moment. C'est le bon moment pour planifier la suite.",
     "goToTasks": "Aller aux tâches",
     "goToProjects": "Aller aux projets",
-    "planDay": "Planifier la journée"
+    "planDay": "Planifier la journée",
+    "andMore": "... and {{count}} more"
   },
   "modals": {
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ?",
@@ -951,7 +990,12 @@
       "message": "Voulez-vous vraiment supprimer l'objectif « {{title}} » ?"
     },
     "createGoal": "Créer l'objectif",
-    "updateGoal": "Mettre à jour l'objectif"
+    "updateGoal": "Mettre à jour l'objectif",
+    "saveAsTemplate": {
+      "message": "Save \"{{name}}\" as a template? This will create a reusable template based on this project.",
+      "title": "Save as Template"
+    },
+    "updateTask": "Update Task"
   },
   "forms": {
     "title": "Titre",
@@ -984,7 +1028,9 @@
         "weekOfMonth": "Semaine du mois",
         "recurrenceEndDate": "Date de fin (optionnel)",
         "completionBased": "Répéter après achèvement",
-        "repeatOn": "Répéter le"
+        "repeatOn": "Répéter le",
+        "attachments": "Attachments",
+        "recurrence": "Repeat"
       },
       "projectSearchPlaceholder": "Rechercher ou créer un projet...",
       "noMatchingProjects": "Aucun projet correspondant",
@@ -1032,7 +1078,12 @@
     "goalTargetDate": "Date cible",
     "color": "Couleur",
     "goalArea": "Zone",
-    "noArea": "Aucune zone"
+    "noArea": "Aucune zone",
+    "goalTitle": "Outcome",
+    "name": "Name",
+    "noProject": "No project",
+    "project": "Project",
+    "taskName": "Name"
   },
   "auth": {
     "login": "Connexion",
@@ -1073,7 +1124,25 @@
     },
     "captcha_required": "Veuillez compléter la vérification et réessayer.",
     "registration_successful": "Vérifiez votre adresse e-mail",
-    "registration_email_sent": "Vérifiez votre adresse e-mail pour activer votre compte. Nous vous avons envoyé un lien, vérifiez votre boîte de réception."
+    "registration_email_sent": "Vérifiez votre adresse e-mail pour activer votre compte. Nous vous avons envoyé un lien, vérifiez votre boîte de réception.",
+    "already_have_account": "Already have an account?",
+    "already_verified": "Your email is already verified. You can log in.",
+    "back_to_login": "Back to Login",
+    "confirm_password": "Confirm Password",
+    "email_not_verified": "Please verify your email address before logging in.",
+    "email_verified": "Your email has been verified! You can now log in.",
+    "error_occurred": "An error occurred. Please try again.",
+    "no_account": "Don't have an account?",
+    "no_auth_methods": "No authentication methods available. Please contact your administrator.",
+    "password_registration_disabled": "Password Registration Disabled",
+    "password_registration_disabled_message": "Password-based registration is not available. Please use SSO to sign in.",
+    "passwords_not_match": "Passwords do not match",
+    "registration_closed_message": "New account registration is currently disabled. Contact your administrator for access.",
+    "registration_closed_title": "Registration Closed",
+    "registration_failed": "Registration failed. Please try again.",
+    "sign_up": "Sign Up",
+    "verification_expired": "Verification link has expired. Please register again.",
+    "verification_failed": "Email verification failed. Please try again."
   },
   "dropdown": {
     "createNew": "Créer nouveau",
@@ -1090,7 +1159,8 @@
     "priority": "Priorité",
     "status": "Statut",
     "created_at": "Créé le",
-    "custom": "Personnalisé"
+    "custom": "Personnalisé",
+    "completed_at": "Completed At"
   },
   "priority": {
     "low": "Faible",
@@ -1179,7 +1249,9 @@
     "noFilesYet": "No files yet. Drop files here or use +.",
     "allFiles": "All files",
     "dropToUpload": "Drop to upload",
-    "fewerFiles": "Show fewer"
+    "fewerFiles": "Show fewer",
+    "noCompletedTasks": "No completed tasks.",
+    "noTasks": "No tasks."
   },
   "errors": {
     "required": "Ce champ est requis",
@@ -1217,7 +1289,15 @@
     "failedToSaveGoal": "Impossible d'enregistrer l'objectif.",
     "failedToDeleteGoal": "Impossible de supprimer l'objectif.",
     "failedToDeleteNote": "Impossible de supprimer la note.",
-    "failedToDeleteTag": "Impossible de supprimer l'étiquette."
+    "failedToDeleteTag": "Impossible de supprimer l'étiquette.",
+    "failedToDeleteArea": "Failed to delete area.",
+    "failedToDeleteProject": "Failed to delete project.",
+    "failedToSaveProject": "Failed to save project.",
+    "failedToSaveTask": "Failed to save task.",
+    "failedToUpdateGoal": "Failed to update goal.",
+    "permissionDenied": "Permission denied",
+    "projectNameTooLong": "Project name must be {{max}} characters or less",
+    "projectStatusUpdateFailed": "Failed to update project status"
   },
   "inbox": {
     "title": "Boîte de réception",
@@ -1329,7 +1409,8 @@
     "goalCreated": "Objectif créé !",
     "goalUpdated": "Objectif mis à jour !",
     "goalDeleted": "Objectif supprimé !",
-    "tagDeleted": "Étiquette supprimée !"
+    "tagDeleted": "Étiquette supprimée !",
+    "areaDeleted": "Area deleted successfully!"
   },
   "note": {
     "title": "Titre",
@@ -1416,7 +1497,8 @@
       "unknown": "en cours",
       "waiting": "En attente",
       "cancelled": "Annulé",
-      "setAsDone": "Marquer comme fait"
+      "setAsDone": "Marquer comme fait",
+      "label": "Status"
     },
     "noSubtasksClickToAdd": "Pas encore de sous-tâches, cliquez pour ajouter",
     "project": "Projet",
@@ -1454,7 +1536,19 @@
     "dueDateInPastWarning": "Avertissement : Vous définissez une date d'échéance dans le passé",
     "overview": "Aperçu",
     "schedule": "Calendrier",
-    "attachments": "Pièces jointes",
+    "attachments": {
+      "title": "Pièces jointes",
+      "anyFormat": "Any file type",
+      "clickToUpload": "Click to upload",
+      "deleteConfirmMessage": "Are you sure you want to delete this attachment? This action cannot be undone.",
+      "deleteConfirmTitle": "Delete Attachment",
+      "deleteError": "Failed to delete attachment",
+      "deleteSuccess": "Attachment deleted successfully",
+      "maxSize": "Max {{size}}MB",
+      "uploadError": "Failed to upload file",
+      "uploadSuccess": "File uploaded successfully",
+      "uploading": "Uploading..."
+    },
     "attachmentsComingSoon": "Fonctionnalité des pièces jointes à venir",
     "activity": "Activité",
     "lastUpdatedAt": "Dernière mise à jour à",
@@ -1475,7 +1569,31 @@
     "starterStep": "First step",
     "starterStepPlaceholder": "Something you can do in 5 minutes",
     "starterStepHint": "Shown first on the Now card, to make starting easy.",
-    "starterStepError": "Failed to update the first step"
+    "starterStepError": "Failed to update the first step",
+    "areaClearError": "Failed to clear area",
+    "areaCleared": "Area cleared successfully",
+    "areaUpdateError": "Failed to update area",
+    "areaUpdated": "Area updated successfully",
+    "deferAfterDueError": "Defer until date cannot be after the due date",
+    "dueDateBeforeDeferError": "Due date cannot be before the defer until date",
+    "editDetails": "Edit details",
+    "goalClearError": "Failed to clear goal",
+    "goalCleared": "Goal cleared",
+    "goalUpdateError": "Failed to update goal",
+    "goalUpdated": "Goal updated",
+    "hoursAgo": "{{count}} hours ago",
+    "inHours": "in {{count}} hours",
+    "inMinutes": "in {{count}} minutes",
+    "minutesAgo": "{{count}} minutes ago",
+    "nameRequired": "Task name is required",
+    "noArea": "Assign to an area",
+    "noUpcomingOccurrences": "No upcoming occurrences.",
+    "notFound": "Task Not Found",
+    "notFoundDescription": "The task you are looking for does not exist or has been deleted.",
+    "pastDue": "Past Due",
+    "title": "Task",
+    "titlePlaceholder": "Enter task title",
+    "untitled": "Untitled task"
   },
   "projects": {
     "loading": "Chargement des projets...",
@@ -1569,7 +1687,15 @@
       "showCompleted": "Show completed projects",
       "saveError": "Failed to save projects settings"
     },
-    "reorderError": "Failed to save project order"
+    "reorderError": "Failed to save project order",
+    "deleteError": "Failed to delete project",
+    "fromTemplate": "From Template",
+    "saveAsTemplateError": "Failed to save project as template.",
+    "savedAsTemplate": "\"{{name}}\" saved as template.",
+    "shared": "Shared",
+    "sortTasks": "Sort tasks",
+    "status": "Project Status",
+    "upcomingProjects": "Upcoming Projects"
   },
   "projectItem": {
     "edit": "Modifier",
@@ -1590,7 +1716,8 @@
     "moreSharedUsers": "+{{count}} utilisateurs de plus",
     "saveAsTemplate": "Enregistrer comme modèle",
     "pinToSidebar": "Épingler à la barre latérale",
-    "unpinFromSidebar": "Désépingler de la barre latérale"
+    "unpinFromSidebar": "Désépingler de la barre latérale",
+    "changeStatus": "Change status"
   },
   "areas": {
     "title": "Zones",
@@ -1621,7 +1748,28 @@
     "presetHome": "Home",
     "presetWork": "Work",
     "presetHealth": "Health",
-    "presetFamily": "Family"
+    "presetFamily": "Family",
+    "delete": "Delete",
+    "edit": "Edit",
+    "goals": "goals",
+    "noProjects": "No projects in this area.",
+    "noTasks": "No tasks directly in this area",
+    "progressSummary": "Area progress · {{done}} of {{total}} tasks done",
+    "projects": "projects",
+    "reorderError": "Failed to save area order",
+    "singular": "Area",
+    "sort": {
+      "custom": "Custom order",
+      "goals": "Most goals",
+      "label": "Sort areas",
+      "nameAsc": "Name A to Z",
+      "nameDesc": "Name Z to A",
+      "projects": "Most projects",
+      "tasks": "Most tasks"
+    },
+    "tasks": "tasks",
+    "tasksInArea": "Tasks",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "notes": {
     "loading": "Chargement des notes...",
@@ -1683,7 +1831,14 @@
     "linkedNoteCreateFailed": "Impossible de créer la note.",
     "backgroundImage": "Arrière-plan",
     "noBackground": "Aucun arrière-plan",
-    "openInNotes": "Open in Notes"
+    "openInNotes": "Open in Notes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "fileUploadError": "Could not upload {{name}}",
+    "saveBeforeFiles": "Give the note a title or some text first, then add files.",
+    "slashFile": "Image or File",
+    "slashFileHint": "Upload and place it here",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "tags": {
     "loading": "Chargement des étiquettes...",
@@ -1732,7 +1887,8 @@
     "pinnedTag": "Étiquette épinglée",
     "frequentlyUsed": "Souvent utilisées",
     "createTag": "+ Créer « {{name}} »",
-    "pinTag": "Épingler pour un accès rapide"
+    "pinTag": "Épingler pour un accès rapide",
+    "progressSummary": "Tag progress · {{done}} of {{total}} tasks done"
   },
   "recurrence": {
     "none": "Aucun",
@@ -1756,7 +1912,16 @@
     "every": "Chaque",
     "weeks": "semaines",
     "months": "mois",
-    "advancedHint": "Pour des jours spécifiques ou une date de fin, ouvrez la tâche complète."
+    "advancedHint": "Pour des jours spécifiques ou une date de fin, ouvrez la tâche complète.",
+    "completionBased": "After completion",
+    "everyNDays": "Every {{count}} days",
+    "everyNMonths": "Every {{count}} months",
+    "everyNWeeks": "Every {{count}} weeks",
+    "instance": "Recurring instance",
+    "monthDayPlaceholder": "Select day of month",
+    "onDay": "On day",
+    "recurring": "Recurring",
+    "until": "Until"
   },
   "weekdays": {
     "sunday": "Dim",
@@ -1822,7 +1987,8 @@
     "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
     "hideCalendar": "Hide {{name}}",
     "showCalendar": "Show {{name}}",
-    "feedError": "Could not load: {{names}}"
+    "feedError": "Could not load: {{names}}",
+    "task": "Task"
   },
   "pages": {
     "notFound": {
@@ -2046,7 +2212,12 @@
       "joined": "Rejoint",
       "empty": "Personne ne s'est encore inscrit",
       "noMatches": "Aucune adresse ne correspond à cette recherche",
-      "showing": "{{from}}-{{to}} sur {{total}}"
+      "showing": "{{from}}-{{to}} sur {{total}}",
+      "confirmRemove": "Remove {{email}} from the waitlist? This cannot be undone.",
+      "ipAddress": "IP Address",
+      "removeFailed": "Failed to remove entry",
+      "removeTitle": "Remove Address",
+      "removed": "Removed from the waitlist"
     },
     "passwordInviteHint": "Laissez vide pour envoyer un email d'invitation",
     "invitationSent": "Email d'invitation envoyé à {{email}}",
@@ -2267,7 +2438,20 @@
       "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
       "threeDays": "Kept planning",
       "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
-    }
+    },
+    "aiUsage": {
+      "empty": "No users yet",
+      "limit": "Limit",
+      "plan": "Plan",
+      "remaining": "Remaining",
+      "searchPlaceholder": "Search by email",
+      "title": "AI Usage",
+      "totalCredits": "Credits used this month (all users)",
+      "used": "Used",
+      "user": "User",
+      "users": "Users"
+    },
+    "userDeletedSuccessfully": "User deleted successfully"
   },
   "shares": {
     "shareProject": "Partager le projet",
@@ -2348,7 +2532,11 @@
     "blankSlateNew": "Rechercher pour créer une vue",
     "noViewsMatch": "Aucune vue trouvée",
     "blankSlateFilteredHint": "Essayez une autre recherche.",
-    "blankSlateClearSearch": "Effacer la recherche"
+    "blankSlateClearSearch": "Effacer la recherche",
+    "filters": "filters",
+    "progressSummary": "View progress · {{done}} of {{total}} tasks done",
+    "sortTasks": "Sort tasks",
+    "view": "View"
   },
   "search": {
     "placeholder": "Rechercher des tâches, des projets, des notes...",
@@ -2403,7 +2591,8 @@
     }
   },
   "subtasks": {
-    "placeholder": "Ajouter une sous-tâche..."
+    "placeholder": "Ajouter une sous-tâche...",
+    "title": "Subtasks"
   },
   "backup": {
     "title": "Sauvegarde & Restauration",
@@ -2454,7 +2643,8 @@
     "restoreButton": "Restaurer",
     "adminInstanceNote": "En tant qu'admin, votre sauvegarde inclut tous les comptes de cette instance, avec leurs données et les hachages de leurs mots de passe. La restaurer sur une nouvelle installation fait revenir tout le monde. Conservez le fichier aussi soigneusement que la base de données.",
     "accountsCount_one": "{{count}} autre compte",
-    "accountsCount_other": "{{count}} autres comptes"
+    "accountsCount_other": "{{count}} autres comptes",
+    "delete": "Delete"
   },
   "notifications": {
     "table": {
@@ -2517,7 +2707,17 @@
       "enable": "Turn on",
       "disable": "Turn off",
       "failed": "Something went wrong. Please try again."
-    }
+    },
+    "daysAgo": "{{count}}d ago",
+    "delete": "Delete",
+    "hoursAgo": "{{count}}h ago",
+    "justNow": "Just now",
+    "loading": "Loading...",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "minutesAgo": "{{count}} min ago",
+    "noNotifications": "No notifications yet",
+    "title": "Notifications"
   },
   "projectStatus": {
     "not_started": "Non commencé",
@@ -2667,7 +2867,8 @@
     "presetsLabel": "Or start with",
     "presetWalk": "Morning walk",
     "presetRead": "Read 20 minutes",
-    "presetReview": "Weekly review"
+    "presetReview": "Weekly review",
+    "newHabit": "New habit"
   },
   "aiAssistant": {
     "title": "Assistant IA",
@@ -2874,7 +3075,8 @@
     "linkedAccount": "Lié à un compte utilisateur",
     "archivedBadge": "archivée",
     "deletePerson": "Supprimer la personne",
-    "deleteConfirm": "Voulez-vous vraiment supprimer « {{name}} » ? Cette action est irréversible."
+    "deleteConfirm": "Voulez-vous vraiment supprimer « {{name}} » ? Cette action est irréversible.",
+    "contact": "Contact"
   },
   "members": {
     "addTitle": "Ajouter un membre",
@@ -2903,7 +3105,8 @@
     "removed": "Membre retiré",
     "updated": "Membre modifié",
     "invitationSent": "Invitation envoyée",
-    "failedToRemove": "Impossible de retirer le membre"
+    "failedToRemove": "Impossible de retirer le membre",
+    "title": "Members"
   },
   "signInLink": {
     "action": "Lien de connexion",
@@ -3135,7 +3338,12 @@
     "close": "Close"
   },
   "area": {
-    "loadError": "Impossible de charger les zones"
+    "loadError": "Impossible de charger les zones",
+    "clearArea": "Remove area",
+    "noAreasFound": "No areas found",
+    "searchAreas": "Search areas…",
+    "viaProject": "via project",
+    "viewArea": "Go to area"
   },
   "goals": {
     "newGoal": "Nouvel objectif",
@@ -3173,7 +3381,24 @@
     "clearGoal": "Retirer l'objectif",
     "noGoalsFound": "Aucun objectif trouvé",
     "inactive": "Inactif",
-    "viewGoal": "Voir l'objectif"
+    "viewGoal": "Voir l'objectif",
+    "maintenance": "Maintenance",
+    "noAvailableGoals": "No available goals",
+    "noGoalsInArea": "No goals linked to this area.",
+    "noGoalsSelected": "No goals selected",
+    "removeFromArea": "Remove from area",
+    "reorderError": "Failed to save goal order",
+    "sort": {
+      "area": "Area",
+      "custom": "Custom order",
+      "horizon": "Horizon",
+      "label": "Sort goals",
+      "projects": "Most projects",
+      "status": "Status",
+      "tasks": "Most tasks",
+      "titleAsc": "Title A to Z",
+      "titleDesc": "Title Z to A"
+    }
   },
   "templates": {
     "new": "Nouveau modèle",
@@ -3302,7 +3527,9 @@
   "sortable": {
     "move": "Move",
     "project": "sortable project",
-    "task": "sortable task"
+    "task": "sortable task",
+    "area": "sortable area",
+    "goal": "sortable goal"
   },
   "relations": {
     "title": "Relations",
@@ -3554,5 +3781,27 @@
     "overwhelmedHint": "Just this one thing. Everything else can wait.",
     "showAll": "Show my whole day again",
     "nothingToMove": "Your day is already light. One small step at a time."
+  },
+  "colors": {
+    "label": "Color",
+    "none": "None"
+  },
+  "loading": {
+    "subtasks": "Loading subtasks...",
+    "tasks": "Loading tasks…"
+  },
+  "notFound": {
+    "description": "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+    "goBack": "Go Back",
+    "goHome": "Go to Today",
+    "inboxDescription": "Check your inbox items",
+    "notesDescription": "Browse your notes",
+    "projectsDescription": "Browse your projects",
+    "quickActions": "Quick Actions",
+    "title": "Page Not Found",
+    "todayDescription": "View today's tasks"
+  },
+  "tag": {
+    "viewTag": "Go to tag"
   }
 }

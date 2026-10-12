@@ -45,7 +45,22 @@
     "hideSearch": "Strni iskanje",
     "showSearch": "Pokaži iskanje",
     "beta": "beta",
-    "comingSoon": "Kmalu"
+    "comingSoon": "Kmalu",
+    "actions": "Actions",
+    "breadcrumb": "Breadcrumb",
+    "createCalendar": "Create Calendar",
+    "creating": "Creating...",
+    "due": "Due",
+    "goToToday": "Go to Today",
+    "goal": "Goal",
+    "loadMore": "Load More",
+    "priority": "Priority",
+    "resolving": "Resolving...",
+    "showAll": "Show All",
+    "showLess": "Show less",
+    "tags": "Tags",
+    "undo": "Undo",
+    "untitled": "Untitled"
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -134,7 +149,11 @@
       "primary": "Primary",
       "lifeStub": "The life timeline will appear here later.",
       "reviewStub": "Guided review will appear here later."
-    }
+    },
+    "inbox": "Inbox",
+    "notes": "Notes",
+    "projects": "Projects",
+    "today": "Today"
   },
   "settings": {
     "todayPageSettings": "Nastavitve strani Danes",
@@ -245,14 +264,30 @@
       "inProgress": "V teku",
       "waiting": "Čakanje",
       "done": "Končano",
-      "dropHere": "Spusti tukaj"
+      "dropHere": "Spusti tukaj",
+      "archived": "Archived",
+      "cancelled": "Cancelled",
+      "columns": "Columns",
+      "customizeColumns": "Customize columns",
+      "planned": "Planned"
     },
     "chaseUp": "Sledi",
     "habit": "Navada",
     "assignedTo": "Dodeljeno",
     "subtasks": "Podnaloge",
     "openFullPage": "Odpri celoten pogled",
-    "reorderError": "Failed to save task order"
+    "reorderError": "Failed to save task order",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleteConfirmTitle": "Delete Task",
+    "dueInDays": "Due in {{days}}d",
+    "dueSoon": "due soon",
+    "noDue": "No due date",
+    "overdueBy": "Overdue by {{days}}d",
+    "priority": "Priority",
+    "progress": "Progress",
+    "startNow": "Start now",
+    "startedSuccessfully": "Task started successfully!",
+    "todayPlan": "Today plan"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",
@@ -572,7 +607,9 @@
       "setupSuccess": "Koledar je bil uspešno konfiguriran!",
       "setupFailed": "Ustvarjanje koledarja ni uspelo",
       "serverUrlPlaceholder": "https://caldav.example.com",
-      "calendarPathPlaceholder": "/koledarji/uporabnik/naloge"
+      "calendarPathPlaceholder": "/koledarji/uporabnik/naloge",
+      "fillServerDetails": "Please fill in all server connection details first",
+      "validationError": "Please fill in all required fields and test the connection"
     },
     "conflictResolver": {
       "title": "Reševanje konfliktov sinhronizacije",
@@ -599,7 +636,8 @@
       "resolveSuccess": "Vsi konflikti so bili uspešno rešeni",
       "resolveError": "Reševanje konfliktov ni uspelo",
       "nextConflict": "Naslednji",
-      "prevConflict": "Prejšnji"
+      "prevConflict": "Prejšnji",
+      "mixedResolutionError": "Please choose \"Use all local\" or \"Use all remote\" for each conflict. Mixed field selections are not yet supported."
     },
     "editCalendar": {
       "title": "Uredi koledar",
@@ -907,7 +945,8 @@
     "allClearHint": "Trenutno ni nejasnih nalog, zastalega dela ali obtičalih projektov. Dober trenutek, da načrtujete naslednji korak.",
     "goToTasks": "Pojdi na naloge",
     "goToProjects": "Pojdi na projekte",
-    "planDay": "Načrtujte svoj dan"
+    "planDay": "Načrtujte svoj dan",
+    "andMore": "... and {{count}} more"
   },
   "modals": {
     "confirmDelete": "Ali ste prepričani, da želite izbrisati?",
@@ -951,7 +990,12 @@
       "message": "Ali res želite izbrisati cilj »{{title}}«?"
     },
     "createGoal": "Ustvari cilj",
-    "updateGoal": "Posodobi cilj"
+    "updateGoal": "Posodobi cilj",
+    "saveAsTemplate": {
+      "message": "Save \"{{name}}\" as a template? This will create a reusable template based on this project.",
+      "title": "Save as Template"
+    },
+    "updateTask": "Update Task"
   },
   "forms": {
     "title": "Naslov",
@@ -984,7 +1028,9 @@
         "weekOfMonth": "Teden v mesecu",
         "recurrenceEndDate": "Datum konca (neobvezno)",
         "completionBased": "Ponovi po zaključku",
-        "repeatOn": "Ponovi na"
+        "repeatOn": "Ponovi na",
+        "attachments": "Attachments",
+        "recurrence": "Repeat"
       },
       "projectSearchPlaceholder": "Išči ali ustvari projekt...",
       "noMatchingProjects": "Brez ustreznih projektov",
@@ -1032,7 +1078,12 @@
     "goalTargetDate": "Ciljni datum",
     "color": "Barva",
     "goalArea": "Področje",
-    "noArea": "Brez področja"
+    "noArea": "Brez področja",
+    "goalTitle": "Outcome",
+    "name": "Name",
+    "noProject": "No project",
+    "project": "Project",
+    "taskName": "Name"
   },
   "auth": {
     "login": "Prijava",
@@ -1073,7 +1124,25 @@
     },
     "captcha_required": "Dokončajte preverjanje in poskusite znova.",
     "registration_successful": "Potrdite svoj e-poštni naslov",
-    "registration_email_sent": "Potrdite svoj e-poštni naslov, da aktivirate račun. Poslali smo vam povezavo, preverite nabiralnik."
+    "registration_email_sent": "Potrdite svoj e-poštni naslov, da aktivirate račun. Poslali smo vam povezavo, preverite nabiralnik.",
+    "already_have_account": "Already have an account?",
+    "already_verified": "Your email is already verified. You can log in.",
+    "back_to_login": "Back to Login",
+    "confirm_password": "Confirm Password",
+    "email_not_verified": "Please verify your email address before logging in.",
+    "email_verified": "Your email has been verified! You can now log in.",
+    "error_occurred": "An error occurred. Please try again.",
+    "no_account": "Don't have an account?",
+    "no_auth_methods": "No authentication methods available. Please contact your administrator.",
+    "password_registration_disabled": "Password Registration Disabled",
+    "password_registration_disabled_message": "Password-based registration is not available. Please use SSO to sign in.",
+    "passwords_not_match": "Passwords do not match",
+    "registration_closed_message": "New account registration is currently disabled. Contact your administrator for access.",
+    "registration_closed_title": "Registration Closed",
+    "registration_failed": "Registration failed. Please try again.",
+    "sign_up": "Sign Up",
+    "verification_expired": "Verification link has expired. Please register again.",
+    "verification_failed": "Email verification failed. Please try again."
   },
   "dropdown": {
     "createNew": "Ustvari novo",
@@ -1090,7 +1159,8 @@
     "priority": "Prioriteta",
     "status": "Status",
     "created_at": "Ustvarjeno",
-    "custom": "Po meri"
+    "custom": "Po meri",
+    "completed_at": "Completed At"
   },
   "priority": {
     "low": "Nizka",
@@ -1179,7 +1249,9 @@
     "noFilesYet": "No files yet. Drop files here or use +.",
     "allFiles": "All files",
     "dropToUpload": "Drop to upload",
-    "fewerFiles": "Show fewer"
+    "fewerFiles": "Show fewer",
+    "noCompletedTasks": "No completed tasks.",
+    "noTasks": "No tasks."
   },
   "errors": {
     "required": "To polje je obvezno",
@@ -1217,7 +1289,15 @@
     "failedToSaveGoal": "Cilja ni bilo mogoče shraniti.",
     "failedToDeleteGoal": "Cilja ni bilo mogoče izbrisati.",
     "failedToDeleteNote": "Opombe ni bilo mogoče izbrisati.",
-    "failedToDeleteTag": "Oznake ni bilo mogoče izbrisati."
+    "failedToDeleteTag": "Oznake ni bilo mogoče izbrisati.",
+    "failedToDeleteArea": "Failed to delete area.",
+    "failedToDeleteProject": "Failed to delete project.",
+    "failedToSaveProject": "Failed to save project.",
+    "failedToSaveTask": "Failed to save task.",
+    "failedToUpdateGoal": "Failed to update goal.",
+    "permissionDenied": "Permission denied",
+    "projectNameTooLong": "Project name must be {{max}} characters or less",
+    "projectStatusUpdateFailed": "Failed to update project status"
   },
   "inbox": {
     "title": "Prejeto",
@@ -1329,7 +1409,8 @@
     "goalCreated": "Cilj je ustvarjen!",
     "goalUpdated": "Cilj je posodobljen!",
     "goalDeleted": "Cilj je izbrisan!",
-    "tagDeleted": "Oznaka je izbrisana!"
+    "tagDeleted": "Oznaka je izbrisana!",
+    "areaDeleted": "Area deleted successfully!"
   },
   "note": {
     "title": "Naslov",
@@ -1439,7 +1520,8 @@
       "waiting": "Čaka",
       "setAsDone": "Označi kot opravljeno",
       "planned": "Načrtovano",
-      "cancelled": "Preklicano"
+      "cancelled": "Preklicano",
+      "label": "Status"
     },
     "noDueDate": "Brez roka",
     "instanceOf": "To je instanca ponavljajoče se naloge",
@@ -1454,7 +1536,19 @@
     "dueDateInPastWarning": "Opozorilo: Nastavljate datum zapadlosti v preteklosti",
     "overview": "Pregled",
     "schedule": "Razpored",
-    "attachments": "Priloge",
+    "attachments": {
+      "title": "Priloge",
+      "anyFormat": "Any file type",
+      "clickToUpload": "Click to upload",
+      "deleteConfirmMessage": "Are you sure you want to delete this attachment? This action cannot be undone.",
+      "deleteConfirmTitle": "Delete Attachment",
+      "deleteError": "Failed to delete attachment",
+      "deleteSuccess": "Attachment deleted successfully",
+      "maxSize": "Max {{size}}MB",
+      "uploadError": "Failed to upload file",
+      "uploadSuccess": "File uploaded successfully",
+      "uploading": "Uploading..."
+    },
     "attachmentsComingSoon": "Funkcija prilog kmalu na voljo",
     "activity": "Dejavnost",
     "lastUpdatedAt": "Zadnja posodobitev ob",
@@ -1475,7 +1569,31 @@
     "starterStep": "First step",
     "starterStepPlaceholder": "Something you can do in 5 minutes",
     "starterStepHint": "Shown first on the Now card, to make starting easy.",
-    "starterStepError": "Failed to update the first step"
+    "starterStepError": "Failed to update the first step",
+    "areaClearError": "Failed to clear area",
+    "areaCleared": "Area cleared successfully",
+    "areaUpdateError": "Failed to update area",
+    "areaUpdated": "Area updated successfully",
+    "deferAfterDueError": "Defer until date cannot be after the due date",
+    "dueDateBeforeDeferError": "Due date cannot be before the defer until date",
+    "editDetails": "Edit details",
+    "goalClearError": "Failed to clear goal",
+    "goalCleared": "Goal cleared",
+    "goalUpdateError": "Failed to update goal",
+    "goalUpdated": "Goal updated",
+    "hoursAgo": "{{count}} hours ago",
+    "inHours": "in {{count}} hours",
+    "inMinutes": "in {{count}} minutes",
+    "minutesAgo": "{{count}} minutes ago",
+    "nameRequired": "Task name is required",
+    "noArea": "Assign to an area",
+    "noUpcomingOccurrences": "No upcoming occurrences.",
+    "notFound": "Task Not Found",
+    "notFoundDescription": "The task you are looking for does not exist or has been deleted.",
+    "pastDue": "Past Due",
+    "title": "Task",
+    "titlePlaceholder": "Enter task title",
+    "untitled": "Untitled task"
   },
   "projects": {
     "loading": "Nalagam projekte...",
@@ -1569,7 +1687,15 @@
       "showCompleted": "Show completed projects",
       "saveError": "Failed to save projects settings"
     },
-    "reorderError": "Failed to save project order"
+    "reorderError": "Failed to save project order",
+    "deleteError": "Failed to delete project",
+    "fromTemplate": "From Template",
+    "saveAsTemplateError": "Failed to save project as template.",
+    "savedAsTemplate": "\"{{name}}\" saved as template.",
+    "shared": "Shared",
+    "sortTasks": "Sort tasks",
+    "status": "Project Status",
+    "upcomingProjects": "Upcoming Projects"
   },
   "projectItem": {
     "edit": "Uredi",
@@ -1590,7 +1716,8 @@
     "moreSharedUsers": "+{{count}} več uporabnikov",
     "saveAsTemplate": "Shrani kot predlogo",
     "pinToSidebar": "Pripni na stransko vrstico",
-    "unpinFromSidebar": "Odpripni s stranske vrstice"
+    "unpinFromSidebar": "Odpripni s stranske vrstice",
+    "changeStatus": "Change status"
   },
   "areas": {
     "title": "Območja",
@@ -1621,7 +1748,28 @@
     "presetHome": "Home",
     "presetWork": "Work",
     "presetHealth": "Health",
-    "presetFamily": "Family"
+    "presetFamily": "Family",
+    "delete": "Delete",
+    "edit": "Edit",
+    "goals": "goals",
+    "noProjects": "No projects in this area.",
+    "noTasks": "No tasks directly in this area",
+    "progressSummary": "Area progress · {{done}} of {{total}} tasks done",
+    "projects": "projects",
+    "reorderError": "Failed to save area order",
+    "singular": "Area",
+    "sort": {
+      "custom": "Custom order",
+      "goals": "Most goals",
+      "label": "Sort areas",
+      "nameAsc": "Name A to Z",
+      "nameDesc": "Name Z to A",
+      "projects": "Most projects",
+      "tasks": "Most tasks"
+    },
+    "tasks": "tasks",
+    "tasksInArea": "Tasks",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "notes": {
     "loading": "Nalaganje opomb...",
@@ -1683,7 +1831,14 @@
     "linkedNoteCreateFailed": "Zapiska ni bilo mogoče ustvariti.",
     "backgroundImage": "Ozadje",
     "noBackground": "Brez ozadja",
-    "openInNotes": "Open in Notes"
+    "openInNotes": "Open in Notes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "fileUploadError": "Could not upload {{name}}",
+    "saveBeforeFiles": "Give the note a title or some text first, then add files.",
+    "slashFile": "Image or File",
+    "slashFileHint": "Upload and place it here",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "tags": {
     "loading": "Nalagam oznake...",
@@ -1732,7 +1887,8 @@
     "pinnedTag": "Pripeta oznaka",
     "frequentlyUsed": "Pogosto uporabljene",
     "createTag": "+ Ustvari »{{name}}«",
-    "pinTag": "Pripni za hiter dostop"
+    "pinTag": "Pripni za hiter dostop",
+    "progressSummary": "Tag progress · {{done}} of {{total}} tasks done"
   },
   "recurrence": {
     "none": "Noben",
@@ -1756,7 +1912,16 @@
     "every": "Vsak",
     "weeks": "tedni",
     "months": "mesece",
-    "advancedHint": "Za določene dni v tednu ali končni datum odprite celotno nalogo."
+    "advancedHint": "Za določene dni v tednu ali končni datum odprite celotno nalogo.",
+    "completionBased": "After completion",
+    "everyNDays": "Every {{count}} days",
+    "everyNMonths": "Every {{count}} months",
+    "everyNWeeks": "Every {{count}} weeks",
+    "instance": "Recurring instance",
+    "monthDayPlaceholder": "Select day of month",
+    "onDay": "On day",
+    "recurring": "Recurring",
+    "until": "Until"
   },
   "weekdays": {
     "sunday": "Ned",
@@ -1822,7 +1987,8 @@
     "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
     "hideCalendar": "Hide {{name}}",
     "showCalendar": "Show {{name}}",
-    "feedError": "Could not load: {{names}}"
+    "feedError": "Could not load: {{names}}",
+    "task": "Task"
   },
   "pages": {
     "notFound": {
@@ -2046,7 +2212,12 @@
       "joined": "Pridružen",
       "empty": "Nihče se še ni prijavil",
       "noMatches": "Nobeni naslovi se ne ujemajo s to iskanje",
-      "showing": "{{from}}-{{to}} od {{total}}"
+      "showing": "{{from}}-{{to}} od {{total}}",
+      "confirmRemove": "Remove {{email}} from the waitlist? This cannot be undone.",
+      "ipAddress": "IP Address",
+      "removeFailed": "Failed to remove entry",
+      "removeTitle": "Remove Address",
+      "removed": "Removed from the waitlist"
     },
     "passwordInviteHint": "Pustite prazno, da pošljete vabilo po e-pošti",
     "invitationSent": "Vabilo po e-pošti poslano na {{email}}",
@@ -2268,7 +2439,20 @@
       "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
       "threeDays": "Kept planning",
       "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
-    }
+    },
+    "aiUsage": {
+      "empty": "No users yet",
+      "limit": "Limit",
+      "plan": "Plan",
+      "remaining": "Remaining",
+      "searchPlaceholder": "Search by email",
+      "title": "AI Usage",
+      "totalCredits": "Credits used this month (all users)",
+      "used": "Used",
+      "user": "User",
+      "users": "Users"
+    },
+    "userDeletedSuccessfully": "User deleted successfully"
   },
   "shares": {
     "shareProject": "Deli projekt",
@@ -2349,7 +2533,11 @@
     "blankSlateNew": "Poiščite, da ustvarite pogled",
     "noViewsMatch": "Ni najdenih pogledov",
     "blankSlateFilteredHint": "Poskusite z drugim iskanjem.",
-    "blankSlateClearSearch": "Počisti iskanje"
+    "blankSlateClearSearch": "Počisti iskanje",
+    "filters": "filters",
+    "progressSummary": "View progress · {{done}} of {{total}} tasks done",
+    "sortTasks": "Sort tasks",
+    "view": "View"
   },
   "search": {
     "placeholder": "Išči naloge, projekte, zapiske...",
@@ -2404,7 +2592,8 @@
     }
   },
   "subtasks": {
-    "placeholder": "Dodaj podnalogo..."
+    "placeholder": "Dodaj podnalogo...",
+    "title": "Subtasks"
   },
   "backup": {
     "title": "Varnostna kopija in obnova",
@@ -2455,7 +2644,8 @@
     "restoreButton": "Obnovi",
     "adminInstanceNote": "Kot skrbnik tvoja varnostna kopija vsebuje vse račune na tej namestitvi, z njihovimi podatki in zgoščenimi gesli. Obnova na novi namestitvi vrne vse. Datoteko hrani enako varno kot podatkovno bazo.",
     "accountsCount_one": "Drugi računi: {{count}}",
-    "accountsCount_other": "Drugi računi: {{count}}"
+    "accountsCount_other": "Drugi računi: {{count}}",
+    "delete": "Delete"
   },
   "notifications": {
     "table": {
@@ -2518,7 +2708,17 @@
       "enable": "Turn on",
       "disable": "Turn off",
       "failed": "Something went wrong. Please try again."
-    }
+    },
+    "daysAgo": "{{count}}d ago",
+    "delete": "Delete",
+    "hoursAgo": "{{count}}h ago",
+    "justNow": "Just now",
+    "loading": "Loading...",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "minutesAgo": "{{count}} min ago",
+    "noNotifications": "No notifications yet",
+    "title": "Notifications"
   },
   "projectStatus": {
     "not_started": "Niso začeli",
@@ -2668,7 +2868,8 @@
     "presetsLabel": "Or start with",
     "presetWalk": "Morning walk",
     "presetRead": "Read 20 minutes",
-    "presetReview": "Weekly review"
+    "presetReview": "Weekly review",
+    "newHabit": "New habit"
   },
   "aiAssistant": {
     "title": "AI Pomočnik",
@@ -2877,7 +3078,8 @@
     "linkedAccount": "Povezana z uporabniškim računom",
     "archivedBadge": "arhivirana",
     "deletePerson": "Izbriši osebo",
-    "deleteConfirm": "Ali res želite izbrisati »{{name}}«? Tega ni mogoče razveljaviti."
+    "deleteConfirm": "Ali res želite izbrisati »{{name}}«? Tega ni mogoče razveljaviti.",
+    "contact": "Contact"
   },
   "members": {
     "addTitle": "Dodaj člana",
@@ -2906,7 +3108,8 @@
     "removed": "Član odstranjen",
     "updated": "Član posodobljen",
     "invitationSent": "Vabilo poslano",
-    "failedToRemove": "Člana ni bilo mogoče odstraniti"
+    "failedToRemove": "Člana ni bilo mogoče odstraniti",
+    "title": "Members"
   },
   "signInLink": {
     "action": "Povezava za prijavo",
@@ -3140,7 +3343,12 @@
     "close": "Close"
   },
   "area": {
-    "loadError": "Področij ni bilo mogoče naložiti"
+    "loadError": "Področij ni bilo mogoče naložiti",
+    "clearArea": "Remove area",
+    "noAreasFound": "No areas found",
+    "searchAreas": "Search areas…",
+    "viaProject": "via project",
+    "viewArea": "Go to area"
   },
   "goals": {
     "newGoal": "Nov cilj",
@@ -3178,7 +3386,24 @@
     "clearGoal": "Odstrani cilj",
     "noGoalsFound": "Ni najdenih ciljev",
     "inactive": "Neaktiven",
-    "viewGoal": "Pojdi na cilj"
+    "viewGoal": "Pojdi na cilj",
+    "maintenance": "Maintenance",
+    "noAvailableGoals": "No available goals",
+    "noGoalsInArea": "No goals linked to this area.",
+    "noGoalsSelected": "No goals selected",
+    "removeFromArea": "Remove from area",
+    "reorderError": "Failed to save goal order",
+    "sort": {
+      "area": "Area",
+      "custom": "Custom order",
+      "horizon": "Horizon",
+      "label": "Sort goals",
+      "projects": "Most projects",
+      "status": "Status",
+      "tasks": "Most tasks",
+      "titleAsc": "Title A to Z",
+      "titleDesc": "Title Z to A"
+    }
   },
   "templates": {
     "new": "Nova predloga",
@@ -3307,7 +3532,9 @@
   "sortable": {
     "move": "Move",
     "project": "sortable project",
-    "task": "sortable task"
+    "task": "sortable task",
+    "area": "sortable area",
+    "goal": "sortable goal"
   },
   "relations": {
     "title": "Relations",
@@ -3559,5 +3786,27 @@
     "overwhelmedHint": "Just this one thing. Everything else can wait.",
     "showAll": "Show my whole day again",
     "nothingToMove": "Your day is already light. One small step at a time."
+  },
+  "colors": {
+    "label": "Color",
+    "none": "None"
+  },
+  "loading": {
+    "subtasks": "Loading subtasks...",
+    "tasks": "Loading tasks…"
+  },
+  "notFound": {
+    "description": "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+    "goBack": "Go Back",
+    "goHome": "Go to Today",
+    "inboxDescription": "Check your inbox items",
+    "notesDescription": "Browse your notes",
+    "projectsDescription": "Browse your projects",
+    "quickActions": "Quick Actions",
+    "title": "Page Not Found",
+    "todayDescription": "View today's tasks"
+  },
+  "tag": {
+    "viewTag": "Go to tag"
   }
 }

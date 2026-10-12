@@ -45,7 +45,22 @@
     "hideSearch": "검색 접기",
     "showSearch": "검색 표시",
     "beta": "베타",
-    "comingSoon": "곧 제공 예정"
+    "comingSoon": "곧 제공 예정",
+    "actions": "Actions",
+    "breadcrumb": "Breadcrumb",
+    "createCalendar": "Create Calendar",
+    "creating": "Creating...",
+    "due": "Due",
+    "goToToday": "Go to Today",
+    "goal": "Goal",
+    "loadMore": "Load More",
+    "priority": "Priority",
+    "resolving": "Resolving...",
+    "showAll": "Show All",
+    "showLess": "Show less",
+    "tags": "Tags",
+    "undo": "Undo",
+    "untitled": "Untitled"
   },
   "sidebar": {
     "dashboard": "대시보드",
@@ -134,7 +149,11 @@
       "primary": "Primary",
       "lifeStub": "The life timeline will appear here later.",
       "reviewStub": "Guided review will appear here later."
-    }
+    },
+    "inbox": "Inbox",
+    "notes": "Notes",
+    "projects": "Projects",
+    "today": "Today"
   },
   "settings": {
     "todayPageSettings": "오늘 페이지 설정",
@@ -245,14 +264,30 @@
       "inProgress": "진행 중",
       "waiting": "대기 중",
       "done": "완료",
-      "dropHere": "여기에 드롭"
+      "dropHere": "여기에 드롭",
+      "archived": "Archived",
+      "cancelled": "Cancelled",
+      "columns": "Columns",
+      "customizeColumns": "Customize columns",
+      "planned": "Planned"
     },
     "chaseUp": "추적",
     "habit": "습관",
     "assignedTo": "할당됨",
     "subtasks": "하위 작업",
     "openFullPage": "전체 보기 열기",
-    "reorderError": "Failed to save task order"
+    "reorderError": "Failed to save task order",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleteConfirmTitle": "Delete Task",
+    "dueInDays": "Due in {{days}}d",
+    "dueSoon": "due soon",
+    "noDue": "No due date",
+    "overdueBy": "Overdue by {{days}}d",
+    "priority": "Priority",
+    "progress": "Progress",
+    "startNow": "Start now",
+    "startedSuccessfully": "Task started successfully!",
+    "todayPlan": "Today plan"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",
@@ -572,7 +607,9 @@
       "setupSuccess": "일정이 성공적으로 구성되었습니다!",
       "setupFailed": "일정을 생성하지 못했습니다",
       "serverUrlPlaceholder": "https://caldav.example.com",
-      "calendarPathPlaceholder": "/calendars/user/tasks"
+      "calendarPathPlaceholder": "/calendars/user/tasks",
+      "fillServerDetails": "Please fill in all server connection details first",
+      "validationError": "Please fill in all required fields and test the connection"
     },
     "conflictResolver": {
       "title": "동기화 충돌 해결",
@@ -599,7 +636,8 @@
       "resolveSuccess": "모든 충돌이 성공적으로 해결되었습니다",
       "resolveError": "충돌을 해결하지 못했습니다",
       "nextConflict": "다음",
-      "prevConflict": "이전"
+      "prevConflict": "이전",
+      "mixedResolutionError": "Please choose \"Use all local\" or \"Use all remote\" for each conflict. Mixed field selections are not yet supported."
     },
     "editCalendar": {
       "title": "캘린더 편집",
@@ -907,7 +945,8 @@
     "allClearHint": "지금은 모호한 작업, 멈춘 작업, 막힌 프로젝트가 없습니다. 다음 계획을 세우기 좋은 때입니다.",
     "goToTasks": "작업으로 이동",
     "goToProjects": "프로젝트로 이동",
-    "planDay": "하루 계획하기"
+    "planDay": "하루 계획하기",
+    "andMore": "... and {{count}} more"
   },
   "modals": {
     "confirmDelete": "정말 삭제하시겠습니까?",
@@ -951,7 +990,12 @@
       "message": "목표 \"{{title}}\"을(를) 삭제하시겠습니까?"
     },
     "createGoal": "목표 만들기",
-    "updateGoal": "목표 업데이트"
+    "updateGoal": "목표 업데이트",
+    "saveAsTemplate": {
+      "message": "Save \"{{name}}\" as a template? This will create a reusable template based on this project.",
+      "title": "Save as Template"
+    },
+    "updateTask": "Update Task"
   },
   "forms": {
     "title": "제목",
@@ -984,7 +1028,9 @@
         "weekOfMonth": "월의 주",
         "recurrenceEndDate": "종료일 (선택 사항)",
         "completionBased": "완료 후 반복",
-        "repeatOn": "반복"
+        "repeatOn": "반복",
+        "attachments": "Attachments",
+        "recurrence": "Repeat"
       },
       "projectSearchPlaceholder": "프로젝트 검색 또는 생성...",
       "noMatchingProjects": "일치하는 프로젝트가 없습니다",
@@ -1032,7 +1078,12 @@
     "goalTargetDate": "목표 날짜",
     "color": "색상",
     "goalArea": "영역",
-    "noArea": "영역 없음"
+    "noArea": "영역 없음",
+    "goalTitle": "Outcome",
+    "name": "Name",
+    "noProject": "No project",
+    "project": "Project",
+    "taskName": "Name"
   },
   "auth": {
     "login": "로그인",
@@ -1073,7 +1124,25 @@
     },
     "captcha_required": "인증을 완료한 뒤 다시 시도해 주세요.",
     "registration_successful": "이메일 주소를 인증하세요",
-    "registration_email_sent": "계정을 활성화하려면 이메일 주소를 인증하세요. 링크를 보내드렸으니 받은 편지함을 확인하세요."
+    "registration_email_sent": "계정을 활성화하려면 이메일 주소를 인증하세요. 링크를 보내드렸으니 받은 편지함을 확인하세요.",
+    "already_have_account": "Already have an account?",
+    "already_verified": "Your email is already verified. You can log in.",
+    "back_to_login": "Back to Login",
+    "confirm_password": "Confirm Password",
+    "email_not_verified": "Please verify your email address before logging in.",
+    "email_verified": "Your email has been verified! You can now log in.",
+    "error_occurred": "An error occurred. Please try again.",
+    "no_account": "Don't have an account?",
+    "no_auth_methods": "No authentication methods available. Please contact your administrator.",
+    "password_registration_disabled": "Password Registration Disabled",
+    "password_registration_disabled_message": "Password-based registration is not available. Please use SSO to sign in.",
+    "passwords_not_match": "Passwords do not match",
+    "registration_closed_message": "New account registration is currently disabled. Contact your administrator for access.",
+    "registration_closed_title": "Registration Closed",
+    "registration_failed": "Registration failed. Please try again.",
+    "sign_up": "Sign Up",
+    "verification_expired": "Verification link has expired. Please register again.",
+    "verification_failed": "Email verification failed. Please try again."
   },
   "dropdown": {
     "createNew": "새로 만들기",
@@ -1090,7 +1159,8 @@
     "priority": "우선순위",
     "status": "상태",
     "created_at": "생성일",
-    "custom": "사용자 지정"
+    "custom": "사용자 지정",
+    "completed_at": "Completed At"
   },
   "priority": {
     "low": "낮음",
@@ -1179,7 +1249,9 @@
     "noFilesYet": "No files yet. Drop files here or use +.",
     "allFiles": "All files",
     "dropToUpload": "Drop to upload",
-    "fewerFiles": "Show fewer"
+    "fewerFiles": "Show fewer",
+    "noCompletedTasks": "No completed tasks.",
+    "noTasks": "No tasks."
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -1217,7 +1289,15 @@
     "failedToSaveGoal": "목표를 저장하지 못했습니다.",
     "failedToDeleteGoal": "목표를 삭제하지 못했습니다.",
     "failedToDeleteNote": "노트를 삭제하지 못했습니다.",
-    "failedToDeleteTag": "태그를 삭제하지 못했습니다."
+    "failedToDeleteTag": "태그를 삭제하지 못했습니다.",
+    "failedToDeleteArea": "Failed to delete area.",
+    "failedToDeleteProject": "Failed to delete project.",
+    "failedToSaveProject": "Failed to save project.",
+    "failedToSaveTask": "Failed to save task.",
+    "failedToUpdateGoal": "Failed to update goal.",
+    "permissionDenied": "Permission denied",
+    "projectNameTooLong": "Project name must be {{max}} characters or less",
+    "projectStatusUpdateFailed": "Failed to update project status"
   },
   "inbox": {
     "title": "받은 편지함",
@@ -1329,7 +1409,8 @@
     "goalCreated": "목표를 만들었습니다!",
     "goalUpdated": "목표를 업데이트했습니다!",
     "goalDeleted": "목표를 삭제했습니다!",
-    "tagDeleted": "태그를 삭제했습니다!"
+    "tagDeleted": "태그를 삭제했습니다!",
+    "areaDeleted": "Area deleted successfully!"
   },
   "note": {
     "title": "제목",
@@ -1416,7 +1497,8 @@
       "waiting": "대기 중",
       "setAsDone": "완료로 설정",
       "planned": "계획됨",
-      "cancelled": "취소됨"
+      "cancelled": "취소됨",
+      "label": "Status"
     },
     "noSubtasksClickToAdd": "아직 하위 작업이 없습니다. 클릭하여 추가하세요",
     "project": "프로젝트",
@@ -1454,7 +1536,19 @@
     "dueDateInPastWarning": "경고: 과거의 기한을 설정하고 있습니다",
     "overview": "개요",
     "schedule": "일정",
-    "attachments": "첨부파일",
+    "attachments": {
+      "title": "첨부파일",
+      "anyFormat": "Any file type",
+      "clickToUpload": "Click to upload",
+      "deleteConfirmMessage": "Are you sure you want to delete this attachment? This action cannot be undone.",
+      "deleteConfirmTitle": "Delete Attachment",
+      "deleteError": "Failed to delete attachment",
+      "deleteSuccess": "Attachment deleted successfully",
+      "maxSize": "Max {{size}}MB",
+      "uploadError": "Failed to upload file",
+      "uploadSuccess": "File uploaded successfully",
+      "uploading": "Uploading..."
+    },
     "attachmentsComingSoon": "첨부파일 기능이 곧 제공됩니다",
     "activity": "활동",
     "lastUpdatedAt": "마지막 업데이트 시각",
@@ -1475,7 +1569,31 @@
     "starterStep": "First step",
     "starterStepPlaceholder": "Something you can do in 5 minutes",
     "starterStepHint": "Shown first on the Now card, to make starting easy.",
-    "starterStepError": "Failed to update the first step"
+    "starterStepError": "Failed to update the first step",
+    "areaClearError": "Failed to clear area",
+    "areaCleared": "Area cleared successfully",
+    "areaUpdateError": "Failed to update area",
+    "areaUpdated": "Area updated successfully",
+    "deferAfterDueError": "Defer until date cannot be after the due date",
+    "dueDateBeforeDeferError": "Due date cannot be before the defer until date",
+    "editDetails": "Edit details",
+    "goalClearError": "Failed to clear goal",
+    "goalCleared": "Goal cleared",
+    "goalUpdateError": "Failed to update goal",
+    "goalUpdated": "Goal updated",
+    "hoursAgo": "{{count}} hours ago",
+    "inHours": "in {{count}} hours",
+    "inMinutes": "in {{count}} minutes",
+    "minutesAgo": "{{count}} minutes ago",
+    "nameRequired": "Task name is required",
+    "noArea": "Assign to an area",
+    "noUpcomingOccurrences": "No upcoming occurrences.",
+    "notFound": "Task Not Found",
+    "notFoundDescription": "The task you are looking for does not exist or has been deleted.",
+    "pastDue": "Past Due",
+    "title": "Task",
+    "titlePlaceholder": "Enter task title",
+    "untitled": "Untitled task"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",
@@ -1569,7 +1687,15 @@
       "showCompleted": "Show completed projects",
       "saveError": "Failed to save projects settings"
     },
-    "reorderError": "Failed to save project order"
+    "reorderError": "Failed to save project order",
+    "deleteError": "Failed to delete project",
+    "fromTemplate": "From Template",
+    "saveAsTemplateError": "Failed to save project as template.",
+    "savedAsTemplate": "\"{{name}}\" saved as template.",
+    "shared": "Shared",
+    "sortTasks": "Sort tasks",
+    "status": "Project Status",
+    "upcomingProjects": "Upcoming Projects"
   },
   "projectItem": {
     "edit": "편집",
@@ -1590,7 +1716,8 @@
     "moreSharedUsers": "+{{count}}명 더 보기",
     "saveAsTemplate": "템플릿으로 저장",
     "pinToSidebar": "사이드바에 고정",
-    "unpinFromSidebar": "사이드바에서 고정 해제"
+    "unpinFromSidebar": "사이드바에서 고정 해제",
+    "changeStatus": "Change status"
   },
   "areas": {
     "title": "영역",
@@ -1621,7 +1748,28 @@
     "presetHome": "Home",
     "presetWork": "Work",
     "presetHealth": "Health",
-    "presetFamily": "Family"
+    "presetFamily": "Family",
+    "delete": "Delete",
+    "edit": "Edit",
+    "goals": "goals",
+    "noProjects": "No projects in this area.",
+    "noTasks": "No tasks directly in this area",
+    "progressSummary": "Area progress · {{done}} of {{total}} tasks done",
+    "projects": "projects",
+    "reorderError": "Failed to save area order",
+    "singular": "Area",
+    "sort": {
+      "custom": "Custom order",
+      "goals": "Most goals",
+      "label": "Sort areas",
+      "nameAsc": "Name A to Z",
+      "nameDesc": "Name Z to A",
+      "projects": "Most projects",
+      "tasks": "Most tasks"
+    },
+    "tasks": "tasks",
+    "tasksInArea": "Tasks",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "notes": {
     "loading": "노트 로딩 중...",
@@ -1683,7 +1831,14 @@
     "linkedNoteCreateFailed": "노트를 만들 수 없습니다.",
     "backgroundImage": "배경",
     "noBackground": "배경 없음",
-    "openInNotes": "Open in Notes"
+    "openInNotes": "Open in Notes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "fileUploadError": "Could not upload {{name}}",
+    "saveBeforeFiles": "Give the note a title or some text first, then add files.",
+    "slashFile": "Image or File",
+    "slashFileHint": "Upload and place it here",
+    "toggleDropdownMenu": "Toggle dropdown menu"
   },
   "tags": {
     "loading": "태그 로딩 중...",
@@ -1732,7 +1887,8 @@
     "pinnedTag": "고정된 태그",
     "frequentlyUsed": "자주 사용",
     "createTag": "+ \"{{name}}\" 만들기",
-    "pinTag": "빠르게 쓰도록 고정"
+    "pinTag": "빠르게 쓰도록 고정",
+    "progressSummary": "Tag progress · {{done}} of {{total}} tasks done"
   },
   "recurrence": {
     "none": "없음",
@@ -1756,7 +1912,16 @@
     "every": "매",
     "weeks": "주",
     "months": "개월",
-    "advancedHint": "특정 요일이나 종료 날짜를 위해 전체 작업을 열어보세요."
+    "advancedHint": "특정 요일이나 종료 날짜를 위해 전체 작업을 열어보세요.",
+    "completionBased": "After completion",
+    "everyNDays": "Every {{count}} days",
+    "everyNMonths": "Every {{count}} months",
+    "everyNWeeks": "Every {{count}} weeks",
+    "instance": "Recurring instance",
+    "monthDayPlaceholder": "Select day of month",
+    "onDay": "On day",
+    "recurring": "Recurring",
+    "until": "Until"
   },
   "weekdays": {
     "sunday": "일요일",
@@ -1822,7 +1987,8 @@
     "manageDescription": "Connect read-only calendars and choose which ones appear here. Life-to-Day never changes them.",
     "hideCalendar": "Hide {{name}}",
     "showCalendar": "Show {{name}}",
-    "feedError": "Could not load: {{names}}"
+    "feedError": "Could not load: {{names}}",
+    "task": "Task"
   },
   "pages": {
     "notFound": {
@@ -2046,7 +2212,12 @@
       "joined": "가입됨",
       "empty": "아직 등록한 사람이 없습니다",
       "noMatches": "해당 검색과 일치하는 주소가 없습니다",
-      "showing": "{{from}}-{{to}} / {{total}}"
+      "showing": "{{from}}-{{to}} / {{total}}",
+      "confirmRemove": "Remove {{email}} from the waitlist? This cannot be undone.",
+      "ipAddress": "IP Address",
+      "removeFailed": "Failed to remove entry",
+      "removeTitle": "Remove Address",
+      "removed": "Removed from the waitlist"
     },
     "passwordInviteHint": "초대 이메일을 보내려면 비워 두세요",
     "invitationSent": "{{email}}로 초대 이메일이 전송되었습니다",
@@ -2266,7 +2437,20 @@
       "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
       "threeDays": "Kept planning",
       "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days"
-    }
+    },
+    "aiUsage": {
+      "empty": "No users yet",
+      "limit": "Limit",
+      "plan": "Plan",
+      "remaining": "Remaining",
+      "searchPlaceholder": "Search by email",
+      "title": "AI Usage",
+      "totalCredits": "Credits used this month (all users)",
+      "used": "Used",
+      "user": "User",
+      "users": "Users"
+    },
+    "userDeletedSuccessfully": "User deleted successfully"
   },
   "shares": {
     "shareProject": "프로젝트 공유",
@@ -2347,7 +2531,11 @@
     "blankSlateNew": "검색해서 뷰 만들기",
     "noViewsMatch": "뷰를 찾을 수 없습니다",
     "blankSlateFilteredHint": "다른 검색어를 입력해 보세요.",
-    "blankSlateClearSearch": "검색 지우기"
+    "blankSlateClearSearch": "검색 지우기",
+    "filters": "filters",
+    "progressSummary": "View progress · {{done}} of {{total}} tasks done",
+    "sortTasks": "Sort tasks",
+    "view": "View"
   },
   "search": {
     "placeholder": "작업, 프로젝트, 노트 검색...",
@@ -2402,7 +2590,8 @@
     }
   },
   "subtasks": {
-    "placeholder": "하위 작업 추가..."
+    "placeholder": "하위 작업 추가...",
+    "title": "Subtasks"
   },
   "backup": {
     "title": "백업 및 복원",
@@ -2453,7 +2642,8 @@
     "restoreButton": "복원",
     "adminInstanceNote": "관리자의 백업에는 이 인스턴스의 모든 계정이 데이터와 비밀번호 해시와 함께 포함됩니다. 새 설치에 복원하면 모두 돌아옵니다. 파일을 데이터베이스만큼 안전하게 보관하세요.",
     "accountsCount_one": "다른 계정 {{count}}개",
-    "accountsCount_other": "다른 계정 {{count}}개"
+    "accountsCount_other": "다른 계정 {{count}}개",
+    "delete": "Delete"
   },
   "notifications": {
     "table": {
@@ -2516,7 +2706,17 @@
       "enable": "Turn on",
       "disable": "Turn off",
       "failed": "Something went wrong. Please try again."
-    }
+    },
+    "daysAgo": "{{count}}d ago",
+    "delete": "Delete",
+    "hoursAgo": "{{count}}h ago",
+    "justNow": "Just now",
+    "loading": "Loading...",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "minutesAgo": "{{count}} min ago",
+    "noNotifications": "No notifications yet",
+    "title": "Notifications"
   },
   "projectStatus": {
     "not_started": "시작되지 않음",
@@ -2666,7 +2866,8 @@
     "presetsLabel": "Or start with",
     "presetWalk": "Morning walk",
     "presetRead": "Read 20 minutes",
-    "presetReview": "Weekly review"
+    "presetReview": "Weekly review",
+    "newHabit": "New habit"
   },
   "aiAssistant": {
     "title": "AI 어시스턴트",
@@ -2873,7 +3074,8 @@
     "linkedAccount": "사용자 계정과 연결됨",
     "archivedBadge": "보관됨",
     "deletePerson": "사람 삭제",
-    "deleteConfirm": "\"{{name}}\"을(를) 삭제하시겠습니까? 되돌릴 수 없습니다."
+    "deleteConfirm": "\"{{name}}\"을(를) 삭제하시겠습니까? 되돌릴 수 없습니다.",
+    "contact": "Contact"
   },
   "members": {
     "addTitle": "멤버 추가",
@@ -2902,7 +3104,8 @@
     "removed": "멤버를 삭제했습니다",
     "updated": "멤버를 업데이트했습니다",
     "invitationSent": "초대를 보냈습니다",
-    "failedToRemove": "멤버를 삭제하지 못했습니다"
+    "failedToRemove": "멤버를 삭제하지 못했습니다",
+    "title": "Members"
   },
   "signInLink": {
     "action": "로그인 링크",
@@ -3134,7 +3337,12 @@
     "filesAttached_one": "1 file attached."
   },
   "area": {
-    "loadError": "영역을 불러오지 못했습니다"
+    "loadError": "영역을 불러오지 못했습니다",
+    "clearArea": "Remove area",
+    "noAreasFound": "No areas found",
+    "searchAreas": "Search areas…",
+    "viaProject": "via project",
+    "viewArea": "Go to area"
   },
   "goals": {
     "newGoal": "새 목표",
@@ -3172,7 +3380,24 @@
     "clearGoal": "목표 제거",
     "noGoalsFound": "목표를 찾을 수 없습니다",
     "inactive": "비활성",
-    "viewGoal": "목표로 이동"
+    "viewGoal": "목표로 이동",
+    "maintenance": "Maintenance",
+    "noAvailableGoals": "No available goals",
+    "noGoalsInArea": "No goals linked to this area.",
+    "noGoalsSelected": "No goals selected",
+    "removeFromArea": "Remove from area",
+    "reorderError": "Failed to save goal order",
+    "sort": {
+      "area": "Area",
+      "custom": "Custom order",
+      "horizon": "Horizon",
+      "label": "Sort goals",
+      "projects": "Most projects",
+      "status": "Status",
+      "tasks": "Most tasks",
+      "titleAsc": "Title A to Z",
+      "titleDesc": "Title Z to A"
+    }
   },
   "templates": {
     "new": "새 템플릿",
@@ -3301,7 +3526,9 @@
   "sortable": {
     "move": "Move",
     "project": "sortable project",
-    "task": "sortable task"
+    "task": "sortable task",
+    "area": "sortable area",
+    "goal": "sortable goal"
   },
   "relations": {
     "title": "Relations",
@@ -3553,5 +3780,27 @@
     "overwhelmedHint": "Just this one thing. Everything else can wait.",
     "showAll": "Show my whole day again",
     "nothingToMove": "Your day is already light. One small step at a time."
+  },
+  "colors": {
+    "label": "Color",
+    "none": "None"
+  },
+  "loading": {
+    "subtasks": "Loading subtasks...",
+    "tasks": "Loading tasks…"
+  },
+  "notFound": {
+    "description": "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+    "goBack": "Go Back",
+    "goHome": "Go to Today",
+    "inboxDescription": "Check your inbox items",
+    "notesDescription": "Browse your notes",
+    "projectsDescription": "Browse your projects",
+    "quickActions": "Quick Actions",
+    "title": "Page Not Found",
+    "todayDescription": "View today's tasks"
+  },
+  "tag": {
+    "viewTag": "Go to tag"
   }
 }

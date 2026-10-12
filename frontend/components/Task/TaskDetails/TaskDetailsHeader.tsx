@@ -620,7 +620,8 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
                         >
-                            {t('task.attachments', 'Attachments')}
+                            {/* LTD-PATCH(T-405): task.attachments is now an object of attachment strings */}
+                            {t('task.attachments.title', 'Attachments')}
                             {attachmentCount > 0 && (
                                 <span className="absolute -top-0.5 -end-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
                             )}
