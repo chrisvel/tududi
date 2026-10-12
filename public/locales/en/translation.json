@@ -1265,6 +1265,7 @@
     "recurringFrom": "{{phrase}}, from {{date}}",
     "keepDateAsText": "Keep as text",
     "removeAssignee": "Remove assignee",
+    "removeArea": "Remove area",
     "attachments": "Attachments",
     "linkPreview": "Link preview",
     "linkPreviewError": "Could not fetch link details",

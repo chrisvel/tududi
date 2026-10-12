@@ -63,7 +63,11 @@ import {
     deleteProject,
     fetchProjects,
 } from '../../utils/projectsService';
-import { getFocus, mergeFocusTags } from '../../utils/focus';
+import {
+    focusAreaIdForTask,
+    getFocus,
+    mergeFocusTags,
+} from '../../utils/focus';
 import {
     LinkIcon,
     PaperClipIcon,
@@ -73,6 +77,16 @@ import { useStore } from '../../store/useStore';
 import { isUrl, extractUrlTitle } from '../../utils/urlService';
 import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
+import SlashItemRow from './SlashItemRow';
+import {
+    applySlashItem,
+    slashItems,
+    slashQuery,
+    slashTriggerAt,
+    SlashItem,
+    SlashLabels,
+    SlashMenuState,
+} from '../../utils/slashMenu';
 export interface QuickCaptureInputHandle {
     submit: (forceInbox?: boolean) => Promise<void>;
     focus: () => void;
@@ -175,8 +189,8 @@ const extractFirstUrlFromText = (text: string): string | null => {
     return null;
 };
 
-// Five suggestions at their row height, plus a little room.
-const SUGGESTIONS_HEIGHT = 200;
+// The slash menu's six rows at their height, plus a little room.
+const SUGGESTIONS_HEIGHT = 280;
 
 const QuickCaptureInput = React.forwardRef<
     QuickCaptureInputHandle,
@@ -229,7 +243,6 @@ const QuickCaptureInput = React.forwardRef<
         const [isUploading, setIsUploading] = useState(false);
         const { showSuccessToast, showErrorToast } = useToast();
         const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
-        const fieldRef = useRef<HTMLDivElement>(null);
         const fileInputRef = useRef<HTMLInputElement>(null);
         const [draggingFiles, setDraggingFiles] = useState(false);
         const handleFileError = useCallback(
@@ -291,6 +304,10 @@ const QuickCaptureInput = React.forwardRef<
         const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
         const peopleCacheRef = useRef<Record<string, Person[]>>({});
         const personQueryRequestRef = useRef(0);
+        const [slash, setSlash] = useState<SlashMenuState | null>(null);
+        const [slashPeople, setSlashPeople] = useState<string[]>([]);
+        const { areasStore } = useStore();
+        const areas = areasStore?.areas ?? [];
         // A date phrase the user chose to keep as plain text
         const [dismissedDateText, setDismissedDateText] = useState<
             string | null
@@ -690,6 +707,11 @@ const QuickCaptureInput = React.forwardRef<
             const wanted = query.toLowerCase();
             const filtered = people
                 .filter((person) => person.name.toLowerCase().includes(wanted))
+                .sort((a, b) =>
+                    a.name.localeCompare(b.name, undefined, {
+                        sensitivity: 'base',
+                    })
+                )
                 .slice(0, 5);
             setDropdownPosition(calculateDropdownPosition(input, position));
             setFilteredPeople(filtered);
@@ -783,10 +805,25 @@ const QuickCaptureInput = React.forwardRef<
             inputRef.current?.focus();
         };
 
+        const removeAreaFromText = (areaName: string) => {
+            const escaped = escapeRegExp(areaName);
+            const pattern = new RegExp(
+                `(^|\\s)~(?:"${escaped}"|${escaped})(?=$|[\\s.,;:!?)])`,
+                'gi'
+            );
+            setInputText(
+                cleanInputSpacing(
+                    inputText.replace(pattern, (_, prefix) => prefix ?? '')
+                )
+            );
+            setAnalysisResult(null);
+            inputRef.current?.focus();
+        };
+
         const getCaretViewportCoords = (
             element: HTMLTextAreaElement | HTMLInputElement,
             position: number
-        ): { left: number; top: number } => {
+        ): { left: number; top: number; lineTop: number } => {
             const cs = window.getComputedStyle(element);
             const rect = element.getBoundingClientRect();
 
@@ -832,6 +869,7 @@ const QuickCaptureInput = React.forwardRef<
             return {
                 left: caretRect.left,
                 top: caretRect.bottom + 4,
+                lineTop: caretRect.top,
             };
         };
 
@@ -862,26 +900,29 @@ const QuickCaptureInput = React.forwardRef<
             return getCaretViewportCoords(input, cursorPos);
         };
 
-        // In the compact box, suggestions open on whichever side of the field
-        // has room (below it on wide screens, above it in the phone sheet),
-        // lined up with the # + or @ that started them, so they never cover
-        // the text being typed.
+        // Suggestions open under the line being typed, lined up with the
+        // # + @ or / that started them (`exact` anchors at the given index
+        // as is). When there is no room below the line they open above it,
+        // which is what the phone sheet at the bottom of the screen needs.
         const calculateDropdownPosition = (
             input: HTMLInputElement | HTMLTextAreaElement,
-            cursorPos: number
+            cursorPos: number,
+            exact = false
         ) => {
-            const caret = caretDropdownPosition(input, cursorPos);
-            const field = fieldRef.current;
-            if (!compact || !field) return caret;
-            const rect = field.getBoundingClientRect();
-            const spaceBelow = window.innerHeight - rect.bottom;
-            if (spaceBelow >= SUGGESTIONS_HEIGHT || spaceBelow >= rect.top) {
-                return { left: caret.left, top: rect.bottom + 4 };
+            const caret = exact
+                ? getCaretViewportCoords(input, cursorPos)
+                : caretDropdownPosition(input, cursorPos);
+            const spaceBelow = window.innerHeight - caret.top;
+            if (
+                spaceBelow >= SUGGESTIONS_HEIGHT ||
+                spaceBelow >= caret.lineTop
+            ) {
+                return { left: caret.left, top: caret.top };
             }
             return {
                 left: caret.left,
                 top: 0,
-                bottom: window.innerHeight - rect.top + 4,
+                bottom: window.innerHeight - caret.lineTop + 4,
             };
         };
 
@@ -896,6 +937,21 @@ const QuickCaptureInput = React.forwardRef<
             }
             setInputText(newText);
             setCursorPosition(newCursorPosition);
+
+            // A "/" at the start of a word opens the token menu; it stays
+            // open while what follows the "/" still filters it.
+            const menu: SlashMenuState | null =
+                slash ?? slashTriggerAt(newText, newCursorPosition);
+            if (menu && slashQuery(newText, newCursorPosition, menu) !== null) {
+                closeSuggestions();
+                setSlash(menu);
+                setSelectedSuggestionIndex(0);
+                setDropdownPosition(
+                    calculateDropdownPosition(e.target, menu.start, true)
+                );
+                return;
+            }
+            if (slash) setSlash(null);
 
             const hashtagQuery = getCurrentHashtagQuery(
                 newText,
@@ -945,6 +1001,11 @@ const QuickCaptureInput = React.forwardRef<
                             .toLowerCase()
                             .startsWith(hashtagQuery.toLowerCase())
                     )
+                    .sort((a, b) =>
+                        a.name.localeCompare(b.name, undefined, {
+                            sensitivity: 'base',
+                        })
+                    )
                     .slice(0, 5);
 
                 const position = calculateDropdownPosition(
@@ -978,6 +1039,11 @@ const QuickCaptureInput = React.forwardRef<
                             project.name
                                 .toLowerCase()
                                 .includes(projectQuery.toLowerCase())
+                        )
+                        .sort((a, b) =>
+                            a.name.localeCompare(b.name, undefined, {
+                                sensitivity: 'base',
+                            })
                         )
                         .slice(0, 5);
 
@@ -1361,7 +1427,11 @@ const QuickCaptureInput = React.forwardRef<
                                 projectUid = matchingProject.uid;
                             }
                         }
-                        if (!projectUid && focus?.project_uid) {
+                        if (
+                            !projectUid &&
+                            !analysisResult.parsed_area &&
+                            focus?.project_uid
+                        ) {
                             projectUid = focus.project_uid;
                         }
 
@@ -1372,6 +1442,11 @@ const QuickCaptureInput = React.forwardRef<
                                 priority: 'low',
                                 tags: taskTags,
                                 project_uid: projectUid,
+                                area_id: focusAreaIdForTask(
+                                    focus,
+                                    projectUid,
+                                    useStore.getState().areasStore?.areas ?? []
+                                ),
                                 completed_at: null,
                             },
                             analysisResult
@@ -1587,6 +1662,12 @@ const QuickCaptureInput = React.forwardRef<
             }
         };
 
+        const areaIdByUid = (areaUid: string): number | null =>
+            useStore
+                .getState()
+                .areasStore?.areas?.find((entry) => entry.uid === areaUid)
+                ?.id ?? null;
+
         // The Focus area's id, for projects created from the box
         const focusAreaId = (): number | null => {
             const areaUid = getFocus()?.area_uid;
@@ -1684,15 +1765,17 @@ const QuickCaptureInput = React.forwardRef<
             const tagObjects = buildTagObjects(tagNames);
 
             if (destination === 'project') {
+                // A ~area in the text wins over the Focus area
+                const areaId = analysis?.parsed_area
+                    ? areaIdByUid(analysis.parsed_area.uid)
+                    : focusAreaId();
                 const created = await createProject({
                     name: title,
                     description: rest,
                     status: 'planned',
                     tags: tagObjects,
                     due_date_at: analysis?.parsed_due_date ?? undefined,
-                    ...(focusAreaId() !== null
-                        ? { area_id: focusAreaId() }
-                        : {}),
+                    ...(areaId !== null ? { area_id: areaId } : {}),
                 });
                 await refreshProjectsStore();
                 return { target: destination, uid: created.uid, title };
@@ -1709,10 +1792,12 @@ const QuickCaptureInput = React.forwardRef<
                         defaultProject.name.toLowerCase())
                     ? defaultProject.uid
                     : undefined;
+            // A ~area in the text means the task is not for the Focus, so
+            // the Focus project (which sits in the Focus area) is not used.
             const projectUid =
                 pageProjectUid ??
                 (await resolveOrCreateProject(projectName)) ??
-                focus?.project_uid ??
+                (analysis?.parsed_area ? undefined : focus?.project_uid) ??
                 undefined;
 
             if (destination === 'task') {
@@ -1723,6 +1808,11 @@ const QuickCaptureInput = React.forwardRef<
                         status: 'not_started',
                         tags: tagObjects,
                         project_uid: projectUid,
+                        area_id: focusAreaIdForTask(
+                            focus,
+                            projectUid,
+                            useStore.getState().areasStore?.areas ?? []
+                        ),
                         completed_at: null,
                     },
                     analysis
@@ -2075,6 +2165,76 @@ const QuickCaptureInput = React.forwardRef<
             [handleSubmit, handleUnifiedSubmit, unified]
         );
 
+        const slashLabels: SlashLabels = {
+            tag: t('capture.slash.tag', 'Tag'),
+            project: t('capture.slash.project', 'Project'),
+            person: t('capture.slash.person', 'Person'),
+            area: t('capture.slash.area', 'Area'),
+            date: t('capture.slash.date', 'Due date'),
+            repeat: t('capture.slash.repeat', 'Repeat'),
+            today: t('capture.slash.today', 'Today'),
+            tomorrow: t('capture.slash.tomorrow', 'Tomorrow'),
+            nextMonday: t('capture.slash.nextMonday', 'Next Monday'),
+            inAWeek: t('capture.slash.inAWeek', 'In a week'),
+            everyDay: t('capture.slash.everyDay', 'Every day'),
+            everyWeekday: t('capture.slash.everyWeekday', 'Every weekday'),
+            everyWeek: t('capture.slash.everyWeek', 'Every week'),
+            everyMonth: t('capture.slash.everyMonth', 'Every month'),
+            create: (token) =>
+                t('capture.slash.create', 'Create {{token}}', { token }),
+        };
+
+        // The "/" menu: its list for what has been typed after the "/"
+        const slashQueryNow = slash
+            ? slashQuery(inputText, cursorPosition, slash)
+            : null;
+        const slashItemsNow =
+            slash && slashQueryNow !== null
+                ? slashItems(slash.stage, slashQueryNow, {
+                      target,
+                      labels: slashLabels,
+                      tags: tags.map((tag) => tag.name),
+                      projects: projects.map((project) => project.name),
+                      areas: areas.map((area) => area.name),
+                      people: slashPeople,
+                  })
+                : [];
+
+        useEffect(() => {
+            if (slash?.stage !== 'person') return;
+            let cancelled = false;
+            void loadAssignablePeople(
+                resolveProjectUid(parseProjectRefs(inputText))
+            ).then((people) => {
+                if (!cancelled) setSlashPeople(people.map((p) => p.name));
+            });
+            return () => {
+                cancelled = true;
+            };
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [slash?.stage]);
+
+        const pickSlashItem = (item: SlashItem) => {
+            if (!slash) return;
+            const applied = applySlashItem(
+                inputText,
+                slash,
+                cursorPosition,
+                item
+            );
+            setInputText(applied.text);
+            setCursorPosition(applied.cursor);
+            setSlash(applied.next);
+            setSelectedSuggestionIndex(applied.next ? 0 : -1);
+            setTimeout(() => {
+                inputRef.current?.focus();
+                inputRef.current?.setSelectionRange(
+                    applied.cursor,
+                    applied.cursor
+                );
+            }, 0);
+        };
+
         const closeSuggestions = () => {
             setShowTagSuggestions(false);
             setFilteredTags([]);
@@ -2083,6 +2243,7 @@ const QuickCaptureInput = React.forwardRef<
             personQueryRequestRef.current += 1;
             setShowPersonSuggestions(false);
             setFilteredPeople([]);
+            setSlash(null);
             setSelectedSuggestionIndex(-1);
         };
 
@@ -2091,38 +2252,57 @@ const QuickCaptureInput = React.forwardRef<
             count: number;
             select: (index: number) => void;
         } | null =
-            showTagSuggestions && filteredTags.length > 0
+            slashItemsNow.length > 0
                 ? {
-                      count: filteredTags.length,
-                      select: (index) =>
-                          handleTagSelect(filteredTags[index].name),
+                      count: slashItemsNow.length,
+                      select: (index) => pickSlashItem(slashItemsNow[index]),
                   }
-                : showProjectSuggestions && filteredProjects.length > 0
+                : showTagSuggestions && filteredTags.length > 0
                   ? {
-                        count: filteredProjects.length,
+                        count: filteredTags.length,
                         select: (index) =>
-                            handleProjectSelect(filteredProjects[index].name),
+                            handleTagSelect(filteredTags[index].name),
                     }
-                  : showPersonSuggestions && filteredPeople.length > 0
+                  : showProjectSuggestions && filteredProjects.length > 0
                     ? {
-                          count: filteredPeople.length,
+                          count: filteredProjects.length,
                           select: (index) =>
-                              handlePersonSelect(filteredPeople[index].name),
+                              handleProjectSelect(filteredProjects[index].name),
                       }
-                    : null;
+                    : showPersonSuggestions && filteredPeople.length > 0
+                      ? {
+                            count: filteredPeople.length,
+                            select: (index) =>
+                                handlePersonSelect(filteredPeople[index].name),
+                        }
+                      : null;
 
         const handleCaretEvent = (
             e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>
         ) => {
+            // The key that just picked a menu item has already moved the
+            // caret in state; the browser's caret catches up afterwards.
+            const key = 'key' in e && typeof e.key === 'string' ? e.key : '';
+            if (slash && ['Enter', 'Tab'].includes(key)) {
+                return;
+            }
             const pos = e.currentTarget.selectionStart || 0;
             setCursorPosition(pos);
+            if (slash && slashQuery(inputText, pos, slash) === null) {
+                setSlash(null);
+            }
             if (
                 showTagSuggestions ||
                 showProjectSuggestions ||
-                showPersonSuggestions
+                showPersonSuggestions ||
+                slash
             ) {
                 setDropdownPosition(
-                    calculateDropdownPosition(e.currentTarget, pos)
+                    calculateDropdownPosition(
+                        e.currentTarget,
+                        slash ? slash.start : pos,
+                        !!slash
+                    )
                 );
             }
         };
@@ -2229,6 +2409,9 @@ const QuickCaptureInput = React.forwardRef<
                               currentAnalysis.parsed_assignee?.uid
                       )?.color,
               }
+            : null;
+        const areaChip = currentAnalysis?.parsed_area
+            ? { name: currentAnalysis.parsed_area.name }
             : null;
 
         const composerFooterContext = useMemo<InboxComposerFooterContext>(
@@ -2622,6 +2805,12 @@ const QuickCaptureInput = React.forwardRef<
                         removePersonFromText(currentAnalysis.parsed_person);
                     }
                 }}
+                area={areaChip}
+                onRemoveArea={() => {
+                    if (currentAnalysis?.parsed_area) {
+                        removeAreaFromText(currentAnalysis.parsed_area.name);
+                    }
+                }}
             />
         );
 
@@ -2653,7 +2842,6 @@ const QuickCaptureInput = React.forwardRef<
                     <div className="flex flex-row gap-3 items-start">
                         <div className="relative flex-1">
                             <div
-                                ref={fieldRef}
                                 {...fileDropHandlers}
                                 data-testid="capture-field"
                                 className={`relative ${compact ? 'rounded-xl bg-gray-100 dark:bg-black/30 px-3.5 py-1 focus-within:ring-2 focus-within:ring-blue-500' : ''} ${draggingFiles ? '!bg-blue-50 dark:!bg-blue-900/30' : ''}`}
@@ -2772,6 +2960,18 @@ const QuickCaptureInput = React.forwardRef<
                                     handleProjectSelect(project.name)
                                 }
                                 renderLabel={(project) => <>+{project.name}</>}
+                            />
+
+                            <SuggestionsDropdown
+                                isVisible={slashItemsNow.length > 0}
+                                items={slashItemsNow}
+                                position={dropdownPosition}
+                                selectedIndex={selectedSuggestionIndex}
+                                onSelect={pickSlashItem}
+                                rich
+                                renderLabel={(item) => (
+                                    <SlashItemRow item={item} />
+                                )}
                             />
 
                             {urlPreview && (

@@ -24,6 +24,8 @@ export interface InboxAnalysis {
     parsed_recurrence: InboxRecurrence | null;
     parsed_person: string | null;
     parsed_assignee: { uid: string; name: string } | null;
+    // A ~area that names an area the user can add tasks to
+    parsed_area: { uid: string; name: string } | null;
     suggested_type: 'task' | 'note' | null;
     suggested_reason: string | null;
 }
@@ -48,7 +50,7 @@ export const analyzeInboxText = async (
     return response.json();
 };
 
-// Copy the parsed due date, recurrence and assignee onto a task draft.
+// Copy the parsed due date, recurrence, assignee and ~area onto a task draft.
 export const applyAnalysisToTask = (
     task: Task,
     analysis: InboxAnalysis | null | undefined
@@ -63,6 +65,16 @@ export const applyAnalysisToTask = (
     }
     if (analysis.parsed_assignee) {
         next.assigned_to = analysis.parsed_assignee.uid;
+    }
+    if (analysis.parsed_area) {
+        // The task modal edits the area by id; the API accepts either.
+        const area = useStore
+            .getState()
+            .areasStore?.areas?.find(
+                (entry) => entry.uid === analysis.parsed_area?.uid
+            );
+        next.area_uid = analysis.parsed_area.uid;
+        if (area?.id !== undefined) next.area_id = area.id;
     }
     return next;
 };

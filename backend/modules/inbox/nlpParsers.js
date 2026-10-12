@@ -1,7 +1,7 @@
 'use strict';
 
 // Natural-language parsing for inbox capture: due dates ("tomorrow",
-// "next fri"), recurrence ("every monday") and @person references.
+// "next fri"), recurrence ("every monday"), @person and ~area references.
 // Positions are always reported against the original text so callers can
 // cut the matched phrase out of the title.
 
@@ -46,11 +46,11 @@ const AMBIGUOUS_DATE_WORDS = new Set(['sun', 'sat', 'wed', 'mar', 'may']);
 const WEEKDAY_PATTERN =
     '(?:sunday|monday|tuesday|wednesday|thursday|friday|saturday|sun|mon|tues|tue|wed|thurs|thur|thu|fri|sat)';
 
-// Replace #tags, +projects, @people and URLs with spaces of equal length so
-// the date parsers never match inside them and indexes stay aligned.
+// Replace #tags, +projects, @people, ~areas and URLs with spaces of equal
+// length so the date parsers never match inside them and indexes stay aligned.
 const maskTokens = (text) =>
     text.replace(
-        /https?:\/\/\S+|(^|\s)([#+@](?:"[^"]*"|\S+))/g,
+        /https?:\/\/\S+|(^|\s)([#+@~](?:"[^"]*"|\S+))/g,
         (match, lead = '') =>
             match.startsWith('http')
                 ? ' '.repeat(match.length)
@@ -271,6 +271,28 @@ const parsePersonRef = (text) => {
     return { name, text: raw, index: start };
 };
 
+// Every ~Area or ~"Full Name", only at the start of a word. Like @person a
+// ~word is only a reference once it names a real area, so the caller picks
+// the first one that does and the rest stay in the text.
+const parseAreaRefs = (text) => {
+    const pattern = /(^|\s)~(?:"([^"]+)"|([^\s"~]+))/gu;
+    const refs = [];
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+        const name = (match[2] || match[3] || '')
+            .replace(/[.,;:!?)]+$/, '')
+            .trim();
+        if (!name) continue;
+        const raw = match[2] ? match[0].slice(match[1].length) : `~${name}`;
+        refs.push({
+            name,
+            text: raw,
+            index: match.index + match[1].length,
+        });
+    }
+    return refs;
+};
+
 // Cut the given spans out of the text and collapse the leftover spacing.
 const removeSpans = (text, spans) =>
     spans
@@ -293,5 +315,6 @@ module.exports = {
     parseDueDate,
     parseRecurrence,
     parsePersonRef,
+    parseAreaRefs,
     removeSpans,
 };

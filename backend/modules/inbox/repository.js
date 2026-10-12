@@ -1,8 +1,9 @@
 'use strict';
 
 const { Op, fn, col, where } = require('sequelize');
-const { InboxItem, Project } = require('../../models');
+const { Area, InboxItem, Project } = require('../../models');
 const {
+    getAccess,
     ownershipOrPermissionWhere,
 } = require('../../services/permissionsService');
 const BaseRepository = require('../../shared/database/BaseRepository');
@@ -97,6 +98,29 @@ class InboxRepository extends BaseRepository {
             raw: true,
         });
         return project ? project.uid : null;
+    }
+
+    // An area the user can add tasks to (own or shared read-write), matched
+    // by name the way the ~area token matches it (case-insensitive).
+    async findWritableAreaByName(userId, name) {
+        const accessWhere = await ownershipOrPermissionWhere('area', userId);
+        const areas = await Area.findAll({
+            where: {
+                [Op.and]: [
+                    accessWhere,
+                    where(fn('lower', col('name')), name.toLowerCase()),
+                ],
+            },
+            attributes: ['uid', 'name'],
+            raw: true,
+        });
+        for (const area of areas) {
+            const access = await getAccess(userId, 'area', area.uid);
+            if (access === 'rw' || access === 'admin') {
+                return { uid: area.uid, name: area.name };
+            }
+        }
+        return null;
     }
 }
 

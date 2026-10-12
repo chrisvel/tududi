@@ -15,7 +15,7 @@ While a Focus is set:
 - **Projects** is locked to the Focus area (the area filter shows the area instead of a dropdown) and narrowed to the Focus project and tags.
 - **Notes** shows the notes of projects in the Focus, narrowed by tags.
 - **Universal search** (the live search box) only finds items in the Focus area or project. Saved Views keep their own criteria and are not scoped.
-- **New tasks** from the capture box get the Focus project and tags when the text names none. A `+project` or `#tag` typed in the text wins; Focus tags are added to the text's tags. Converting an inbox item to a task works the same way.
+- **New tasks** from the capture box get the Focus project and tags when the text names none. A `+project` or `#tag` typed in the text wins; Focus tags are added to the text's tags. A task that ends up with no project gets the Focus area directly, so it shows in the Focus it was made in. A `~area` typed in the text wins over the Focus area and project (the task goes to that area, and may then not show in the Focus). Converting an inbox item to a task works the same way.
 - **New notes** from the capture box or the Notes page get the Focus project.
 - **New projects** from the capture box or the New project panel start in the Focus area.
 

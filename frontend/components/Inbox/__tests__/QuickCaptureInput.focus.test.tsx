@@ -44,7 +44,12 @@ jest.mock('../../../store/useStore', () => {
             deleteTask: jest.fn(),
         },
         projectsStore: { setProjects: jest.fn() },
-        areasStore: { areas: [{ id: 7, uid: 'work', name: 'Work' }] },
+        areasStore: {
+            areas: [
+                { id: 7, uid: 'work', name: 'Work' },
+                { id: 8, uid: 'home', name: 'Home' },
+            ],
+        },
         notesStore: { addNote: jest.fn() },
         userSettingsStore: {
             get focus() {
@@ -76,8 +81,9 @@ jest.mock('../../../utils/inboxService', () => ({
     deleteInboxItemWithStore: jest.fn(),
 }));
 
-const analyze = (text: string) =>
-    Promise.resolve({
+const analyze = (text: string) => {
+    const areaUid = /(?:^|\s)~(\w+)/.exec(text)?.[1] ?? null;
+    return Promise.resolve({
         parsed_tags: (text.match(/#[\w-]+/g) ?? []).map((tag) => tag.slice(1)),
         parsed_projects: (text.match(/\+\w+/g) ?? []).map((p) => p.slice(1)),
         parsed_due_date: null,
@@ -85,14 +91,17 @@ const analyze = (text: string) =>
         parsed_recurrence: null,
         parsed_person: null,
         parsed_assignee: null,
+        parsed_area: areaUid ? { uid: areaUid, name: areaUid } : null,
         suggested_type: null,
         suggested_reason: null,
         cleaned_content: text
             .replace(/#[\w-]+/g, '')
             .replace(/\+\w+/g, '')
+            .replace(/(^|\s)~\w+/g, '')
             .replace(/\s+/g, ' ')
             .trim(),
     });
+};
 
 describe('QuickCaptureInput with a Focus', () => {
     const type = (value: string) =>
@@ -164,6 +173,70 @@ describe('QuickCaptureInput with a Focus', () => {
 
         expect(createTaskInStore).toHaveBeenCalledWith(
             expect.objectContaining({ project_uid: 'garden' })
+        );
+    });
+
+    it('lets a ~area in the text win over the whole focus', async () => {
+        renderBox();
+        chooseTarget('task');
+        type('Fix the tap ~home');
+        await clickAdd();
+
+        expect(createTaskInStore).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: 'Fix the tap',
+                project_uid: undefined,
+                area_id: 8,
+                area_uid: 'home',
+            })
+        );
+    });
+
+    it('keeps a +project typed next to a ~area', async () => {
+        renderBox();
+        chooseTarget('task');
+        type('Fix the tap ~home +Garden');
+        await clickAdd();
+
+        expect(createTaskInStore).toHaveBeenCalledWith(
+            expect.objectContaining({ project_uid: 'garden', area_id: 8 })
+        );
+    });
+
+    it('puts a new project in the ~area of the text, not the focus area', async () => {
+        renderBox();
+        chooseTarget('project');
+        type('Declutter ~home');
+        await clickAdd();
+
+        expect(createProject).toHaveBeenCalledWith(
+            expect.objectContaining({ name: 'Declutter', area_id: 8 })
+        );
+    });
+
+    it('puts a task with no project straight into an area-only focus', async () => {
+        mockFocusHolder.focus = { area_uid: 'work' };
+        renderBox();
+        chooseTarget('task');
+        type('Prepare the offsite');
+        await clickAdd();
+
+        expect(createTaskInStore).toHaveBeenCalledWith(
+            expect.objectContaining({ project_uid: undefined, area_id: 7 })
+        );
+    });
+
+    it('leaves the area to the project when the focus names one', async () => {
+        renderBox();
+        chooseTarget('task');
+        type('Write the brief');
+        await clickAdd();
+
+        expect(createTaskInStore).toHaveBeenCalledWith(
+            expect.objectContaining({
+                project_uid: 'launch',
+                area_id: undefined,
+            })
         );
     });
 
