@@ -32,6 +32,8 @@ const { isSqlite, truncateTables } = require('../../utils/db-dialect');
 // LTD-PATCH(T-305): fork-only table must be cleaned before users (FK).
 // LTD-PATCH(T-404): remove planning children before goals/users on both dialects.
 const CLEANUP_TABLES = [
+    // LTD-PATCH(T-601): milestones reference goals and users.
+    'ltd_milestones',
     'ltd_metric_checkins',
     'ltd_goal_metrics',
     'ltd_journal',

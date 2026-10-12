@@ -338,6 +338,12 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Scopes Today, Upcoming, Tasks, Projects, Notes and live search; capture defaults to the Focus project and tags
     - `area_uid`, `project_uid` and `tags` query params resolved by `backend/services/scopeService.js`; the API, MCP and Telegram stay unscoped
 
+35. **[Life Timeline](docs/26-life-timeline.md)**
+    - The Life tab: milestones above the axis, dated goals below it, zoom from weeks to decades
+    - `ltd_milestones` and `/api/milestones`; Journal Undo; human-only delete
+    - Jalali axis and dates; axis left to right by default (A-11) with a saved option
+    - Vision editor = goals with `horizon = 'vision'` in the existing goal panel
+
 ---
 
 ## Project Overview

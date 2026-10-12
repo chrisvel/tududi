@@ -207,6 +207,49 @@ describe.each(fixtures)('upgrade from $name', (fixture) => {
         );
     });
 
+    // LTD-PATCH(T-601): the Phase 6 milestones table on real legacy fixtures.
+    it('adds ltd_milestones with user and goal foreign keys', async () => {
+        expect(await inspect.tableNames(temp.file)).toEqual(
+            expect.arrayContaining(['ltd_milestones'])
+        );
+        const columns = (
+            await inspect.query(temp.file, 'PRAGMA table_info(ltd_milestones)')
+        ).map((c) => c.name);
+        expect(columns).toEqual(
+            expect.arrayContaining([
+                'uid',
+                'user_id',
+                'title',
+                'date',
+                'date_precision',
+                'kind',
+                'goal_id',
+                'note',
+                'color',
+                'created_at',
+                'updated_at',
+            ])
+        );
+        const foreignKeys = await inspect.query(
+            temp.file,
+            'PRAGMA foreign_key_list(ltd_milestones)'
+        );
+        expect(foreignKeys).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    from: 'goal_id',
+                    table: 'goals',
+                    on_delete: 'SET NULL',
+                }),
+                expect.objectContaining({
+                    from: 'user_id',
+                    table: 'users',
+                    on_delete: 'CASCADE',
+                }),
+            ])
+        );
+    });
+
     it('records every migration file in SequelizeMeta', async () => {
         expect(await inspect.metaNames(temp.file)).toEqual(migrationFiles());
     });

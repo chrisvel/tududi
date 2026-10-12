@@ -99,6 +99,43 @@ async function restore(entry, userId, transaction) {
         );
         return;
     }
+    if (entry.entity_type === 'milestone') {
+        // T-601: Life timeline milestones.
+        const milestone = await repository.milestone(
+            userId,
+            entry.entity_uid,
+            transaction
+        );
+        if (entry.op === 'milestone_delete') {
+            if (milestone) throw new ConflictError('Milestone already exists');
+            // A goal deleted since then would have nulled the link anyway.
+            const goalId =
+                before.goal_id &&
+                (await repository.ownedGoalId(
+                    userId,
+                    before.goal_id,
+                    transaction
+                ))
+                    ? before.goal_id
+                    : null;
+            await repository.createMilestone(
+                { ...before, user_id: userId, goal_id: goalId },
+                transaction
+            );
+            return;
+        }
+        if (!milestone) throw new NotFoundError('Milestone not found');
+        assertUnchanged(milestone, after);
+        if (entry.op === 'milestone_create')
+            await milestone.destroy({ transaction });
+        else if (entry.op === 'milestone_update')
+            await milestone.update(before, { transaction });
+        else
+            throw new ConflictError(
+                'This milestone operation cannot be undone'
+            );
+        return;
+    }
     if (entry.entity_type !== 'metric')
         throw new ConflictError('This operation cannot be undone');
     if (entry.op === 'metric_delete') {

@@ -116,6 +116,8 @@ const LtdMetricCheckin = require('./ltd_metric_checkin')(sequelize);
 const LtdJournal = require('./ltd_journal')(sequelize);
 // LTD-PATCH(T-502): register single-task Focus sessions.
 const LtdFocusSession = require('./ltd_focus_session')(sequelize);
+// LTD-PATCH(T-601): register Life timeline milestones.
+const LtdMilestone = require('./ltd_milestone')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
@@ -173,6 +175,13 @@ User.hasMany(LtdFocusSession, {
 });
 LtdFocusSession.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 LtdFocusSession.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+User.hasMany(LtdMilestone, {
+    foreignKey: 'user_id',
+    as: 'Milestones',
+    onDelete: 'CASCADE',
+});
+LtdMilestone.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+LtdMilestone.belongsTo(Goal, { foreignKey: 'goal_id', as: 'Goal' });
 User.hasMany(Goal, { foreignKey: 'user_id', as: 'Goals' });
 Goal.belongsTo(User, { foreignKey: 'user_id' });
 Area.hasMany(Goal, { foreignKey: 'area_id', as: 'Goals' });
@@ -717,6 +726,7 @@ module.exports = {
     LtdMetricCheckin,
     LtdJournal,
     LtdFocusSession,
+    LtdMilestone,
     Project,
     Task,
     Tag,

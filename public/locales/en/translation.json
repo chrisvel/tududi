@@ -3426,6 +3426,57 @@
     "achievementQuestion": "Do you feel this goal has been achieved?",
     "markAchieved": "Mark achieved"
   },
+  "ltdLife": {
+    "addMilestone": "Add milestone",
+    "milestone": "Milestone",
+    "newMilestone": "New milestone",
+    "editMilestone": "Edit milestone",
+    "save": "Save",
+    "delete": "Delete",
+    "deleted": "Milestone deleted",
+    "undoFailed": "Could not undo",
+    "titleRequired": "A title is required",
+    "dateRequired": "A date is required",
+    "noGoal": "No goal",
+    "openGoal": "Open goal",
+    "fields": {
+      "title": "What happened",
+      "date": "Date",
+      "precision": "Show as",
+      "goal": "Goal",
+      "note": "Note"
+    },
+    "precision": {
+      "day": "Day",
+      "month": "Month",
+      "year": "Year"
+    },
+    "timeline": "Timeline",
+    "timelineLabel": "Life timeline. Use + and − to zoom, arrow keys to move, Home for today.",
+    "layers": {
+      "milestones": "Milestones",
+      "goals": "Goals with a date"
+    },
+    "axisRtl": "Time runs right to left",
+    "zoomLevel": "Zoom level",
+    "zoom": {
+      "weeks": "Weeks",
+      "months": "Months",
+      "years": "Years",
+      "decades": "Decades"
+    },
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "today": "Today",
+    "loadError": "Could not load milestones.",
+    "empty": "Add a milestone, or give a goal a target date, to see it here.",
+    "vision": {
+      "heading": "Vision",
+      "add": "Add vision",
+      "edit": "Edit vision",
+      "empty": "Write the life you are heading towards. It is a goal with the Vision horizon."
+    }
+  },
   "focusMode": {
     "label": "Focus",
     "whereWasI": "Where was I?",
