@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { CpuChipIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../../Shared/ToastContext';
 import { getApiPath } from '../../../config/paths';
+import McpClientsPanel from '../../Proposals/McpClientsPanel';
 
 interface McpTabProps {
     isActive: boolean;
@@ -282,6 +283,9 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                         </ul>
                     </div>
                 </section>
+
+                {/* LTD-PATCH(T-706): connected clients, read-only and kill switch. */}
+                <McpClientsPanel />
             </div>
         </div>
     );

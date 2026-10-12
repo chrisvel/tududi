@@ -170,6 +170,7 @@
     "nanoid": "^3.3.18",
     "node-cron": "~4.1.0",
     "nodemailer": "^10.0.9",
+    "oidc-provider": "9.12.2",
     "openai": "^6.45.0",
     "openid-client": "^5.7.1",
     "pg": "^8.23.0",
@@ -186,7 +187,8 @@
     "umzug": "^2.3.0",
     "use-debounce": "^10.0.6",
     "web-push": "^3.6.7",
-    "xml2js": "^0.6.0"
+    "xml2js": "^0.6.0",
+    "zod": "^4.6.6"
   },
   "overrides": {
     "tar": "^7.5.19",

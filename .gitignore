@@ -63,3 +63,6 @@ backend/tests/test-files/
 tmp/
 *.bak
 !backend/tests/fixtures/legacy/*.sqlite3
+
+# Life-to-Day (T-701): OAuth signing keys are secrets
+*jwks*.json

@@ -34,6 +34,8 @@ export const CAPTURE_SHORTCUT = 'c';
 
 const MORE_LINKS = [
     { id: 'settings', path: '/profile' },
+    // T-704: changes proposed by MCP clients wait for review here.
+    { id: 'proposals', path: '/proposals' },
     { id: 'habits', path: '/habits' },
     { id: 'notes', path: '/notes' },
     { id: 'areas', path: '/areas' },

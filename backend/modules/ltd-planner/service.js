@@ -6,6 +6,7 @@
 const moment = require('moment-timezone');
 const capacityModel = require('./capacity');
 const repository = require('./repository');
+const slots = require('../daily-plan/slots');
 const dailyPlanService = require('../daily-plan/service');
 const dailyPlanRepository = require('../daily-plan/repository');
 const calendarFeeds = require('../calendar-feeds/service');
@@ -291,7 +292,107 @@ async function getContribution(user, date) {
     };
 }
 
+const MAX_DRAFT_BLOCKS = 8;
+const DEFAULT_BLOCK_MINUTES = 30;
+
+// T-705: a deterministic plan for one day (plan_tomorrow). Candidates in the
+// planner's own ranking go into free 15-minute slots of the work hours,
+// around busy events and existing blocks with a buffer, while the day's load
+// stays at or under the realistic threshold. Nothing is written here; the
+// caller turns the result into a Proposal.
+async function draftDay(user, date) {
+    const timezone = getSafeTimezone(user.timezone);
+    const planDate = dailyPlanService.resolvePlanDate(date, timezone);
+    const [{ plan }, candidates, window, events, factor] = await Promise.all([
+        dailyPlanService.getPlan(user, planDate),
+        dailyPlanService.getCandidates(user),
+        getWorkHours(user),
+        dayEvents(user, planDate),
+        factorFor(user.id),
+    ]);
+    const existing = (plan?.items || []).map((item) => ({
+        task_uid: item.task_uid,
+        start_minute: item.start_minute,
+        duration_minutes: item.duration_minutes,
+        priority: item.task?.priority ?? 0,
+        done: isDone(item),
+    }));
+    const byUid = new Map();
+    for (const group of [
+        'tagged_today',
+        'overdue',
+        'due_today',
+        'in_progress',
+        'suggested',
+    ]) {
+        for (const task of candidates[group] || []) {
+            if (!byUid.has(task.uid)) byUid.set(task.uid, { task, group });
+        }
+    }
+    const planned = new Set(existing.map((item) => item.task_uid));
+    const today = moment.tz(timezone).format('YYYY-MM-DD');
+    const from =
+        planDate === today
+            ? minuteNow(timezone)
+            : planDate < today
+              ? slots.MINUTES_PER_DAY
+              : 0;
+    const range = { start: window.start, end: window.end };
+    const blocks = [];
+    for (const uid of candidates.ranked || []) {
+        if (blocks.length >= MAX_DRAFT_BLOCKS) break;
+        const entry = byUid.get(uid);
+        if (!entry || planned.has(uid)) continue;
+        const duration = Math.max(
+            slots.SLOT_MINUTES,
+            slots.snapUp(entry.task.estimated_minutes || DEFAULT_BLOCK_MINUTES)
+        );
+        // Each block keeps the buffer from its neighbours and from events.
+        const spans = slots
+            .blockedSpans([...existing, ...blocks], events)
+            .map(([s, e]) => [
+                s - capacityModel.BUFFER_MINUTES,
+                e + capacityModel.BUFFER_MINUTES,
+            ]);
+        const start = slots.findFreeSlot(spans, duration, range, from);
+        if (start === null) continue;
+        const candidate = {
+            task_uid: uid,
+            start_minute: start,
+            duration_minutes: duration,
+            priority: entry.task.priority ?? 0,
+            done: false,
+        };
+        const { load } = capacityModel.computeCapacity({
+            window,
+            events,
+            items: [...existing, ...blocks, candidate],
+            factor,
+        });
+        if (load === null || load > capacityModel.UNREALISTIC_LOAD) continue;
+        blocks.push({
+            ...candidate,
+            task_name: entry.task.name,
+            reason: entry.group,
+        });
+    }
+    const capacity = capacityModel.computeCapacity({
+        window,
+        events,
+        items: [...existing, ...blocks],
+        factor,
+    });
+    return {
+        date: planDate,
+        blocks: blocks.map(({ priority, done, ...block }) => block),
+        load: capacity.load,
+        capacity_minutes: capacity.capacity_minutes,
+        planned_minutes: capacity.planned_minutes,
+    };
+}
+
 module.exports = {
+    draftDay,
     getWorkHours,
     saveWorkHours,
     getCapacity,

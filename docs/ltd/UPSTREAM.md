@@ -486,3 +486,28 @@ Milestones (T-601) and the Life timeline with the Vision editor (T-602). New cod
 | T-601 | `backend/tests/helpers/setup.js` | Clean `ltd_milestones` before goals and users between tests | No |
 | T-601 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert the Phase 6 table and foreign keys on real legacy fixtures | No |
 | T-602 | `public/locales/*/translation.json` | Phase 6 strings (`ltdLife`): Persian and English copy, English fallback in other locales | No |
+
+## Phase 7 Remote MCP, Capability Registry and Proposals
+
+The embedded OAuth server (T-701, T-702), the Capability Registry (T-703), Proposals (T-704), the planning tools (T-705) and MCP access controls (T-706). New code lives in `backend/modules/ltd-oauth`, `ltd-capabilities`, `ltd-proposals`, `ltd-mcp-control`, the three `backend/models/ltd_*.js` files of this phase, the migration `20261013000001-ltd-mcp-remote.js`, `frontend/components/Proposals` and `frontend/utils/proposalsService.ts`. `backend/modules/ltd-journal`, `ltd-planner` and `frontend/components/Nav/LtdNav.tsx` are Life-to-Day files. The rows below are the core touch points. No upstream pull request was created.
+
+| Task | File | Why | Upstream PR |
+| --- | --- | --- | --- |
+| T-701 | `package.json`, `package-lock.json` | Add `oidc-provider` 9.12.2 (exact, MIT, ESM loaded with `import()`) and `zod` as a direct dependency (already installed through the MCP SDK) | No |
+| T-701 | `backend/app.js` | Mount the embedded OAuth server after the session middleware and before CSRF, only when `LTD_OAUTH_ENABLED=true` (G4 finding 4) | No |
+| T-701 | `backend/models/index.js` | Register `LtdProposal`, `LtdOauthModel` and `LtdMcpSetting` with their user associations | No |
+| T-701 | `.gitignore` | Never commit OAuth signing keys (`*jwks*.json`) | No |
+| T-702 | `backend/middleware/auth.js` | On `/api/mcp` only and when enabled: verify tokens of the embedded AS (iss, aud, typ, live grant, `ltd.read`), 403 `insufficient_scope`, and a 401 challenge pointing at the `/api/mcp` resource metadata | No |
+| T-702 | `backend/modules/oauth/protectedResource.js`, `backend/modules/oauth/routes.js` | When enabled, the RFC 9728 document names `/api/mcp` and the embedded AS; add the path-suffixed `/.well-known/oauth-protected-resource/api/mcp` | No |
+| T-703 | `backend/modules/mcp/toolRegistry.js` | Build Life-to-Day tools from the Capability Registry; OAuth clients see legacy reads only; read-only mode stops legacy writes | No |
+| T-703 | `backend/modules/mcp/tools/goalTools.js` | The Phase 4 goal reads are now Registry definitions | No |
+| T-703 | `backend/modules/mcp/httpTransport.js` | Pass the resolved client (scopes, controls) into the tool context | No |
+| T-703 | `backend/modules/mcp/controller.js` | The Settings tool catalogue lists the Registry tools | No |
+| T-706 | `backend/modules/mcp/routes.js` | Resolve the MCP client and enforce the kill switch before the MCP handler | No |
+| T-706 | `backend/modules/mcp/server.js` | stdio honours the kill switch and read-only mode | No |
+| T-706 | `frontend/components/Profile/tabs/McpTab.tsx` | Show the connected clients panel with revoke, read-only and the kill switch | No |
+| T-704 | `frontend/App.tsx` | `/proposals` route | No |
+| T-704 | `backend/tests/helpers/setup.js` | Clean the Phase 7 tables before users between tests | No |
+| T-704 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert the Phase 7 tables and foreign keys on real legacy fixtures | No |
+| T-704 | `public/locales/*/translation.json` | Phase 7 strings (`ltdProposals`, three Journal operations, the nav label): Persian and English copy, English in other locales | No |
+| T-701 | `backend/.env.example` | Document `LTD_OAUTH_ENABLED` and `LTD_OAUTH_JWKS_FILE` | No |

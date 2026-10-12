@@ -42,6 +42,8 @@ async function withJournal(actor, fn) {
                     actor_type: actor.actor_type || 'user',
                     actor_id:
                         actor.actor_id == null ? null : String(actor.actor_id),
+                    // T-704: writes applied from a Proposal stay linked to it.
+                    proposal_id: actor.proposal_id ?? null,
                 },
                 transaction
             );
@@ -89,8 +91,12 @@ async function restore(entry, userId, transaction) {
         await goal.update(before, { transaction });
         return;
     }
-    if (entry.entity_type === 'daily_plan' && entry.op === 'recovery') {
+    if (
+        entry.entity_type === 'daily_plan' &&
+        ['recovery', 'plan_blocks'].includes(entry.op)
+    ) {
         // T-504: Recovery moved open plan items to tomorrow.
+        // T-705: an applied plan_tomorrow Proposal added blocks to a day.
         await require('../ltd-planner/repository').restoreDays(
             userId,
             before,
@@ -134,6 +140,28 @@ async function restore(entry, userId, transaction) {
             throw new ConflictError(
                 'This milestone operation cannot be undone'
             );
+        return;
+    }
+    if (entry.entity_type === 'task' && entry.op === 'task_update') {
+        // T-705: a due date changed by an applied Proposal.
+        const task = await repository.task(
+            userId,
+            entry.entity_uid,
+            transaction
+        );
+        assertUnchanged(task, after);
+        await task.update(before, { transaction });
+        return;
+    }
+    if (entry.entity_type === 'inbox_item' && entry.op === 'inbox_create') {
+        // T-705: a capture from MCP; Undo removes exactly what it added.
+        const item = await repository.inboxItem(
+            userId,
+            entry.entity_uid,
+            transaction
+        );
+        assertUnchanged(item, after);
+        await item.destroy({ transaction });
         return;
     }
     if (entry.entity_type !== 'metric')

@@ -43,10 +43,22 @@ async function startMcpServer() {
         }
 
         // Create context for all tools
+        // LTD-PATCH(T-706): stdio honours the same kill switch and read-only mode.
+        const client =
+            await require('../ltd-mcp-control/service').resolveClient({
+                currentUser: user,
+                authToken: tokenRecord,
+            });
+        if (client.revoked) {
+            throw new Error(
+                'MCP access was revoked in Settings. Please generate a new token.'
+            );
+        }
         const context = {
             userId: user.id,
             user: user,
             apiToken: tokenRecord,
+            client,
         };
 
         // Initialize MCP server
