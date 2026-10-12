@@ -336,6 +336,8 @@ const QuickCaptureInput = React.forwardRef<
         const lastAnalyzedTextRef = useRef<string>('');
 
         const isEditMode = mode === 'edit';
+        // The edit box and the main capture box both colour their tokens as you type.
+        const colourTokens = isEditMode || Boolean(unified);
 
         useEffect(() => {
             setTarget(defaultTarget);
@@ -2887,7 +2889,7 @@ const QuickCaptureInput = React.forwardRef<
                                         {/* Edit mode colours the tokens behind a transparent
                                             textarea, so the text is still typed and selected
                                             in the textarea itself. */}
-                                        {isEditMode && (
+                                        {colourTokens && (
                                             <div
                                                 aria-hidden="true"
                                                 className={`pointer-events-none absolute inset-0 w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal whitespace-pre-wrap break-words overflow-hidden text-gray-900 dark:text-gray-100 px-0 py-1.5`}
@@ -2920,7 +2922,7 @@ const QuickCaptureInput = React.forwardRef<
                                             onSelect={handleCaretEvent}
                                             onKeyUp={handleCaretEvent}
                                             onClick={handleCaretEvent}
-                                            className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent ${isEditMode ? 'relative text-transparent caret-gray-900 dark:caret-gray-100' : 'text-gray-900 dark:text-gray-100'} border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
+                                            className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent ${colourTokens ? 'relative text-transparent caret-gray-900 dark:caret-gray-100' : 'text-gray-900 dark:text-gray-100'} border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
                                             placeholder=""
                                             onKeyDown={handleKeyDown}
                                             onPaste={
