@@ -1722,6 +1722,7 @@ const QuickCaptureInput = React.forwardRef<
                 analysis?.cleaned_content ??
                 line
                     .replace(/#[a-zA-Z0-9_-]+/g, '')
+                    .replace(/(^|\s)~(?:"[^"]+"|\S+)/g, '$1')
                     .replace(/\+(?:"[^"]+"|\S+)/g, '')
             ).trim();
             return cleaned || line.trim();
