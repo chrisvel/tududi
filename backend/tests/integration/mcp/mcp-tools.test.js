@@ -1,3 +1,4 @@
+// LTD-PATCH(T-1203): the task estimate accepts twelve 90-minute intervals.
 'use strict';
 // LTD-PATCH(T-407): Legacy destructive tools are unavailable; verify records remain intact.
 
@@ -792,7 +793,7 @@ describe('MCP Tools Integration', () => {
                 expect(jsonRpc.result.isError).toBe(true);
                 const { content } = getToolContent(response);
                 expect(content._rawError).toMatch(
-                    /estimated_minutes must be a whole number between 5 and 720/
+                    /estimated_minutes must be a whole number between 5 and 1080/
                 );
             });
         });
@@ -1436,7 +1437,7 @@ describe('MCP Tools Integration', () => {
                 expect(jsonRpc.result.isError).toBe(true);
                 const { content } = getToolContent(response);
                 expect(content._rawError).toMatch(
-                    /estimated_minutes must be a whole number between 5 and 720/
+                    /estimated_minutes must be a whole number between 5 and 1080/
                 );
 
                 await task.reload();

@@ -110,6 +110,24 @@ describe.each(fixtures)('upgrade from $name', (fixture) => {
         }
     });
 
+    // LTD-PATCH(T-1203): existing task lengths must remain inherited after upgrade.
+    it('adds nullable focus_minutes without backfilling legacy tasks', async () => {
+        expectExitZero(firstRun.migrate, 'db:migrate');
+        const columns = await inspect.query(
+            temp.file,
+            'PRAGMA table_info(tasks)'
+        );
+        expect(columns.find((c) => c.name === 'focus_minutes')).toMatchObject({
+            notnull: 0,
+            dflt_value: null,
+        });
+        const [{ n }] = await inspect.query(
+            temp.file,
+            'SELECT COUNT(*) AS n FROM tasks WHERE focus_minutes IS NOT NULL'
+        );
+        expect(Number(n)).toBe(0);
+    });
+
     // LTD-PATCH(T-401): the planning migration must upgrade actual legacy fixtures.
     it('adds phase 4 planning tables and preserves existing goal horizons', async () => {
         const columns = await inspect.query(

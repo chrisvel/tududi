@@ -1,3 +1,4 @@
+// LTD-PATCH(T-1203): task-bound Focus projection under the task title.
 // LTD-PATCH(T-405): show the task contribution chain on its existing card with isolated user text.
 // LTD-PATCH(T-301): Use readable body sizing for existing task titles.
 import React, { useEffect, useRef, useState } from 'react';
@@ -28,6 +29,7 @@ import {
     getYesterdayDateString,
 } from '../../../utils/dateUtils';
 import { formatDisplayDate, isPersianCalendar } from '../../../utils/jalali';
+import FocusSummaryLine from '../../FocusMode/FocusSummaryLine';
 import TaskWhyChain from '../../GoalTree/TaskWhyChain';
 import TaskStatusControl from '../TaskStatusControl';
 import PriorityBadge, {
@@ -378,6 +380,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                     )}
                 </div>
 
+                <FocusSummaryLine task={task} />
                 <TaskWhyChain task={task} />
                 {hasMeta && (
                     <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">

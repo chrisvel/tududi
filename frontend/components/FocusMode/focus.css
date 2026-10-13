@@ -1,0 +1,29 @@
+.ltd-focus-progress {
+    transition: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .ltd-focus-progress {
+        transition: stroke-dashoffset 1s linear;
+    }
+    .ltd-focus-enter {
+        animation: ltd-focus-enter 400ms ease-out 1;
+    }
+    .ltd-focus-bell {
+        animation: ltd-focus-bell 600ms ease-in-out 1;
+    }
+}
+@keyframes ltd-focus-enter {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+@keyframes ltd-focus-bell {
+    50% {
+        transform: scale(1.025);
+    }
+}

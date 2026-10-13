@@ -259,7 +259,8 @@ const Navbar: React.FC<NavbarProps> = ({
                         <BoltIcon className="h-4 w-4 text-ink" />
                         <InboxIcon className="hidden md:inline-block ms-1.5 h-4 w-4 text-secondary" />
                     </button>
-                    {pomodoroEnabled && <PomodoroTimer />}
+                    {/* LTD-PATCH(T-1203): the shared session host stays mounted even with the inactive chip off. */}
+                    <PomodoroTimer enabled={pomodoroEnabled} />
 
                     <NotificationsDropdown isDarkMode={isDarkMode} />
 

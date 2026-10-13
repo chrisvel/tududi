@@ -1,3 +1,4 @@
+// LTD-PATCH(T-1203): persist task Focus length without editing its minute budget.
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -1385,6 +1386,17 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleFocusLengthChange = async (minutes: number | null) => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { focus_minutes: minutes });
+            if (uid) tasksStore.updateTaskInStore(await fetchTaskByUid(uid));
+        } catch (error) {
+            showErrorToast(String(error));
+        }
+    };
+
     // LTD-PATCH(T-503): save the starter step like the estimate.
     const handleStarterStepChange = async (step: string | null) => {
         if (!task?.uid) return;
@@ -1705,6 +1717,7 @@ const TaskDetails: React.FC = () => {
                                 <TaskEstimateCard
                                     task={task}
                                     onChange={handleEstimateChange}
+                                    onLengthChange={handleFocusLengthChange}
                                 />
 
                                 <TaskStarterStepCard

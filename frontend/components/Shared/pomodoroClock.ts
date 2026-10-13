@@ -19,20 +19,34 @@ export const formatClock = (seconds: number): string => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
-// Date.now(), refreshed every second while active and whenever the page
-// becomes visible again.
-export const useClockNow = (active: boolean, everyMs = 1000): number => {
+// One shared rendering clock. Hidden pages have no ticking interval; every
+// subscriber reads the timestamp again on visibilitychange.
+const listeners = new Set<(now: number) => void>();
+let timer: ReturnType<typeof setInterval> | undefined;
+const tick = () => listeners.forEach((listener) => listener(Date.now()));
+const syncClock = () => {
+    if (timer) clearInterval(timer);
+    timer = undefined;
+    tick();
+    if (listeners.size && document.visibilityState !== 'hidden')
+        timer = setInterval(tick, 1000);
+};
+export const useClockNow = (active: boolean): number => {
     const [now, setNow] = useState(() => Date.now());
     useEffect(() => {
         if (!active) return undefined;
-        const tick = () => setNow(Date.now());
-        tick();
-        const timer = setInterval(tick, everyMs);
-        document.addEventListener('visibilitychange', tick);
+        listeners.add(setNow);
+        if (listeners.size === 1)
+            document.addEventListener('visibilitychange', syncClock);
+        syncClock();
         return () => {
-            clearInterval(timer);
-            document.removeEventListener('visibilitychange', tick);
+            listeners.delete(setNow);
+            if (!listeners.size) {
+                if (timer) clearInterval(timer);
+                timer = undefined;
+                document.removeEventListener('visibilitychange', syncClock);
+            }
         };
-    }, [active, everyMs]);
+    }, [active]);
     return now;
 };

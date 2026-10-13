@@ -98,6 +98,14 @@ export const createTask = async (taskData: Task): Promise<Task> => {
     await handleAuthResponse(response, 'Failed to create task.');
     const created = await response.json();
     refreshTagCountsIfTagsChanged(taskData);
+    // LTD-PATCH(T-1203): every estimate editor revalidates the same Focus projection.
+    if (
+        taskData.estimated_minutes !== undefined ||
+        taskData.focus_minutes !== undefined
+    )
+        void mutate(
+            (key) => typeof key === 'string' && key.startsWith('focus/summary/')
+        );
     void mutate((key) => typeof key === 'string' && key.startsWith('ltd:'));
     return created;
 };
@@ -130,6 +138,14 @@ export const updateTask = async (
     await handleAuthResponse(response, 'Failed to update task.');
     const updated = await response.json();
     refreshTagCountsIfTagsChanged(taskData);
+    // LTD-PATCH(T-1203): every estimate editor revalidates the same Focus projection.
+    if (
+        taskData.estimated_minutes !== undefined ||
+        taskData.focus_minutes !== undefined
+    )
+        void mutate(
+            (key) => typeof key === 'string' && key.startsWith('focus/summary/')
+        );
     void mutate((key) => typeof key === 'string' && key.startsWith('ltd:'));
     return updated;
 };

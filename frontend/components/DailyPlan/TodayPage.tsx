@@ -65,7 +65,11 @@ import {
     startFocus,
 } from '../../utils/todayService';
 import { revertJournal } from '../../utils/planningService';
-import FocusMode from '../FocusMode/FocusMode';
+// LTD-PATCH(T-1203): Today opens the global server-session overlay.
+import useSWR from 'swr';
+import { useFocusTimer, refreshFocus } from '../FocusMode/focusState';
+import FocusTodayLine from '../FocusMode/FocusTodayLine';
+import { focusKeys } from '../../utils/todayService';
 import NowCard from './NowCard';
 import CapacityBar from '../Recovery/CapacityBar';
 import ContributionCard from '../Recovery/ContributionCard';
@@ -75,7 +79,6 @@ import DayLessonCard from '../Lessons/DayLessonCard';
 
 // The degraded path (blueprint 3.5): from 14:00 with nothing done yet.
 const HEAVY_DAY_FROM = 14 * 60;
-const MAX_FOCUS_MINUTES = 240;
 
 const isRecurring = (task: Task): boolean =>
     !task.habit_mode &&
@@ -118,8 +121,17 @@ const TodayPage: React.FC = () => {
     const [reloadKey, setReloadKey] = useState(0);
     const [capacity, setCapacity] = useState<Capacity | null>(null);
     const [contribution, setContribution] = useState<Contribution | null>(null);
-    const [focusSession, setFocusSession] = useState<FocusSession | null>(null);
-    const [resumable, setResumable] = useState<FocusSession | null>(null);
+    const setFocusSession = useFocusTimer((s) => s.show);
+    const { data: currentSession } = useSWR(
+        focusKeys.current,
+        fetchCurrentFocus
+    );
+    const focusSession =
+        currentSession && !currentSession.ended_at ? currentSession : null;
+    const resumable =
+        currentSession?.interrupted && currentSession.ended_at
+            ? currentSession
+            : null;
     const [overwhelmed, setOverwhelmed] = useState(false);
     const [recoveryBusy, setRecoveryBusy] = useState(false);
     const [now, setNow] = useState(() =>
@@ -164,19 +176,11 @@ const TodayPage: React.FC = () => {
         };
     }, [t, focusId, reloadKey]);
 
-    // A running session reopens Focus after a reload; an interrupted one is
-    // offered as "Continue" on the Now card.
-    const loadFocus = useCallback(async () => {
-        const session = await fetchCurrentFocus().catch(() => null);
-        setFocusSession(session && !session.ended_at ? session : null);
-        setResumable(session && session.ended_at ? session : null);
-    }, []);
     useEffect(() => {
-        loadFocus();
         fetchOverwhelmed()
             .then((state) => setOverwhelmed(state.on))
             .catch(() => undefined);
-    }, [loadFocus]);
+    }, []);
 
     // Calendar feeds belong to the Calendar feature; with it off Today shows
     // no events and no prompt to connect a calendar.
@@ -443,16 +447,8 @@ const TodayPage: React.FC = () => {
     const handleFocus = useCallback(
         async (item: DailyPlanItem) => {
             try {
-                setFocusSession(
-                    await startFocus(
-                        item.task_uid,
-                        Math.min(
-                            MAX_FOCUS_MINUTES,
-                            item.duration_minutes || DEFAULT_DURATION
-                        )
-                    )
-                );
-                setResumable(null);
+                setFocusSession(await startFocus(item.task_uid));
+                void refreshFocus();
             } catch (err) {
                 showErrorToast(
                     err instanceof Error ? err.message : String(err)
@@ -466,7 +462,7 @@ const TodayPage: React.FC = () => {
         async (session: FocusSession) => {
             try {
                 setFocusSession(await resumeFocus(session.uid));
-                setResumable(null);
+                void refreshFocus();
             } catch (err) {
                 showErrorToast(
                     err instanceof Error ? err.message : String(err)
@@ -591,16 +587,6 @@ const TodayPage: React.FC = () => {
           }).format(new Date(`${planResponse.date}T12:00:00`))
         : '';
 
-    const focusOverlay = focusSession && (
-        <FocusMode
-            session={focusSession}
-            onClose={() => {
-                setFocusSession(null);
-                loadFocus();
-            }}
-        />
-    );
-
     // Overwhelmed: only the Now card; everything else and notifications
     // stay away until the person leaves the mode.
     if (overwhelmed && planResponse && started) {
@@ -609,7 +595,6 @@ const TodayPage: React.FC = () => {
                 className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-10"
                 data-testid="overwhelmed-mode"
             >
-                {focusOverlay}
                 <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
                     <p className="text-gray-700 dark:text-gray-300">
                         {t(
@@ -649,7 +634,7 @@ const TodayPage: React.FC = () => {
 
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-10">
-            {focusOverlay}
+            <FocusTodayLine />
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-7">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                     <div className="flex flex-1 items-baseline gap-2">

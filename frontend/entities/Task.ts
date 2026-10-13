@@ -43,6 +43,8 @@ export interface Task {
     due_date?: string;
     defer_until?: string;
     reminder_at?: string;
+    // LTD-PATCH(T-1203): nullable Focus length override.
+    focus_minutes?: number | null;
     estimated_minutes?: number | null;
     // LTD-PATCH(T-503): optional five-minute first step for the Now card.
     starter_step?: string | null;

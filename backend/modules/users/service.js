@@ -299,6 +299,8 @@ class UsersService {
             // The Focus chip saves through its own endpoint too, so a
             // profile save must not clear it.
             const kept = {};
+            // LTD-PATCH(T-1203): a profile save cannot overwrite dedicated Pomodoro preferences.
+            if (current?.pomodoro) kept.pomodoro = current.pomodoro;
             if (current?.planning) kept.planning = current.planning;
             if (current?.focus !== undefined) kept.focus = current.focus;
             allowedUpdates.ui_settings =

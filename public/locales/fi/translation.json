@@ -3990,5 +3990,36 @@
       "hint": "Optional. One line is enough; an if/then makes it show up on the right task next time.",
       "write": "Write a lesson"
     }
+  },
+  "taskPomodoro": {
+    "minimize": "Keep working in the app",
+    "break": "Break",
+    "next": "Next interval",
+    "walk": "Stand up and walk a little.",
+    "resting": "Take your time.",
+    "autoClosed": "Session closed. Time after the bell was not counted.",
+    "stillHere": "Still here?",
+    "bell": "Interval complete.",
+    "takeBreak": "Take a break",
+    "continue": "I’ll keep going",
+    "closeAtBell": "Close at the bell",
+    "chooseTask": "Choose from today’s plan",
+    "emptyPlan": "Add a task to today’s plan first.",
+    "defaults": "Pomodoro preferences",
+    "focus_minutes": "Focus minutes",
+    "short_break_minutes": "Short break minutes",
+    "long_break_minutes": "Long break minutes",
+    "long_every": "Long break every",
+    "sound": "Short sound at the bell",
+    "spent": "{{minutes}} minutes",
+    "overEstimate": "More than estimated",
+    "today": "Today: {{minutes}} focus minutes",
+    "taskLength": "Length for this task",
+    "inherit": "User default ({{minutes}} minutes)",
+    "estimateCount": "Estimated intervals",
+    "planHint": "This same duration is used for your daily plan.",
+    "manual": "Record forgotten time",
+    "started": "Started",
+    "ended": "Ended"
   }
 }

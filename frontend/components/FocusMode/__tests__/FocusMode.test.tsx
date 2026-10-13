@@ -20,8 +20,23 @@ jest.mock('react-i18next', () => ({
 
 const endFocus = jest.fn();
 jest.mock('../../../utils/todayService', () => ({
+    ...jest.requireActual('../../../utils/todayService'),
     endFocus: (...args: unknown[]) => endFocus(...args),
+    startFocus: jest.fn(),
+    fetchPomodoroSettings: () =>
+        Promise.resolve({
+            focus_minutes: 25,
+            short_break_minutes: 5,
+            long_break_minutes: 15,
+            long_every: 4,
+            sound: false,
+        }),
+    fetchFocusToday: () =>
+        Promise.resolve({ spent_minutes: 25, completed_count: 1 }),
 }));
+
+jest.mock('../focusState', () => ({ refreshFocus: jest.fn() }));
+jest.mock('../../Lessons/EffectLine', () => () => null);
 
 const T0 = new Date('2026-10-11T09:00:00Z').getTime();
 const session = {
