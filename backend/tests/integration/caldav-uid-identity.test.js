@@ -4,13 +4,9 @@ const { Task, CalDAVCalendar } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 const { propfind } = require('../helpers/caldav-test-utils');
 
-// RFC 4791 5.3.2: the URL of a calendar object resource is arbitrary and need
-// not match the UID inside it. tasks.org, DAVx5 and iOS Reminders all name the
-// file themselves, so the UID a client sends and the resource name it uploads
-// under are two different things. Reading the URL as the identity made the
-// server hand the client back a VTODO whose UID had changed; clients answer
-// that by re-uploading, which left a row behind each time - the duplicate,
-// undeletable "ghost tasks" of #1371.
+// RFC 4791 5.3.2: a resource URL is arbitrary and need not match the UID
+// inside it. Reading the URL as the identity made clients see their task change
+// identity and re-upload it, leaving a duplicate row each time (#1371).
 describe('CalDAV resource name is not the task identity (#1371)', () => {
     const CLIENT_UID = '3f7c2b1a-8e5d-4c9f-9a2b-1d6e4f0a7c33';
     const RESOURCE_NAME = '1754712345678-9021';
@@ -120,8 +116,7 @@ describe('CalDAV resource name is not the task identity (#1371)', () => {
             await put(RESOURCE_NAME);
 
             // The collection advertises this href, so a client may PROPFIND it
-            // directly (DAVx5 refreshes one resource that way). Resolving the
-            // URL by uid only made that 404 on a URL the client was just given.
+            // directly; resolving by uid alone 404s on a URL it was just given.
             const response = await propfind(
                 app,
                 `${base()}/${RESOURCE_NAME}.ics`
@@ -245,8 +240,7 @@ describe('CalDAV resource name is not the task identity (#1371)', () => {
             expect(response.status).toBe(204);
 
             const task = await Task.findOne({ where: { user_id: user.id } });
-            // The URL is not the identity: an upload that arrives without a
-            // UID must not rewrite the one this resource was created with.
+            // A re-upload without a UID must not rewrite the row's uid.
             expect(task.uid).toBe(CLIENT_UID);
             expect(task.caldav_resource_name).toBe(RESOURCE_NAME);
             expect(await Task.count({ where: { user_id: user.id } })).toBe(1);
@@ -258,13 +252,11 @@ describe('CalDAV resource name is not the task identity (#1371)', () => {
     });
 
     describe('a resource name is only unique to the client that chose it', () => {
-        test('another user\'s task of the same name does not shadow this one', async () => {
+        test("another user's task of the same name does not shadow this one", async () => {
             otherUser = await createTestUser({
                 email: `uid-identity-other-${Date.now()}@example.com`,
             });
-            // Same string, both columns: the other user's task has it as its
-            // uid, ours as its resource name. Both are legal, and the URL we
-            // ask about is ours.
+            // Same string in both columns: theirs as a uid, ours as a name.
             await Task.create({
                 uid: 'clashing-uid-and-name',
                 user_id: otherUser.id,
@@ -280,7 +272,7 @@ describe('CalDAV resource name is not the task identity (#1371)', () => {
             expect(response.text).toContain(`UID:${CLIENT_UID}`);
             expect(response.text).not.toContain('Their task');
 
-            // And the other user's task is untouched.
+            // Theirs is untouched.
             const theirs = await Task.findOne({
                 where: { user_id: otherUser.id },
             });

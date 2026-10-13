@@ -267,9 +267,8 @@ describe('CalDAV Per-Project Calendars', () => {
             });
 
             test('multiget resolves an href by the resource name it advertises', async () => {
-                // The href the REPORT branch hands out is built from the
-                // resource name, so resolving it by uid alone 404s on a URL
-                // this very collection just advertised.
+                // The href handed out is built from the resource name, so
+                // resolving it by uid alone 404s on the collection's own URL.
                 await Task.create({
                     uid: 'multiget-task-uid',
                     caldav_resource_name: 'client-chosen-name',

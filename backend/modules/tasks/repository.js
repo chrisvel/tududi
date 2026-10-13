@@ -25,15 +25,9 @@ class TaskRepository {
         });
     }
 
-    // A CalDAV client addresses a resource by the name it chose for it, which
-    // RFC 4791 5.3.2 says need not be the object's UID, so a URL can name a task
-    // either way. The uid is looked up on its own and first: it is the identity
-    // and is globally unique, while a resource name is only unique to the client
-    // that picked it, so one query over both - especially a limited one - can
-    // answer with another user's row of the same name, or drop the uid match it
-    // was meant to prefer. Callers that know who is asking pass their
-    // visibility scope as options.where, so the name fallback can only answer
-    // with a task that caller can actually see.
+    // RFC 4791 5.3.2: a resource URL names a task by its uid or by the name
+    // the client chose. The uid is tried first because it is globally unique;
+    // a name is only unique to its client, so options.where must scope it.
     async findByUidOrResourceName(name, options = {}) {
         const { where = {}, ...rest } = options;
 

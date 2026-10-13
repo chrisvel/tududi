@@ -13,10 +13,7 @@ const taskRepository = require('../../tasks/repository');
 const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { canReadTask, visibleTaskWhere } = require('../access');
-const {
-    resourceNameFromParam,
-    findTaskResource,
-} = require('./task-resource');
+const { resourceNameFromParam, findTaskResource } = require('./task-resource');
 
 async function handlePropfind(req, res) {
     try {

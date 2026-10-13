@@ -13,10 +13,7 @@ const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { Op } = require('sequelize');
 const { ciLike } = require('../../../utils/db-dialect');
 const { canReadTask, visibleTaskWhere } = require('../access');
-const {
-    resourceNameFromHref,
-    findTaskResource,
-} = require('./task-resource');
+const { resourceNameFromHref, findTaskResource } = require('./task-resource');
 
 async function handleReport(req, res) {
     try {

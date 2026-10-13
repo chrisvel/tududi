@@ -9,10 +9,7 @@ const { deleteTaskFromRemotes } = require('../services/task-deletion-service');
 const { canReadTask, canWriteTask } = require('../access');
 const { STATUS_TUDUDI_TO_ICAL } = require('../icalendar/field-mappings');
 const { buildHref, resourceNameOf } = require('./utils');
-const {
-    resourceNameFromParam,
-    findTaskResource,
-} = require('./task-resource');
+const { resourceNameFromParam, findTaskResource } = require('./task-resource');
 
 // RFC 4791 5.3.2.1: a UID may be used by one resource in a calendar only.
 function uidConflictResponse(res, username, task) {
@@ -36,10 +33,7 @@ async function handleGetTask(req, res) {
         }
 
         const userId = req.currentUser.id;
-        const task = await findTaskResource(
-            resourceNameFromParam(uid),
-            userId
-        );
+        const task = await findTaskResource(resourceNameFromParam(uid), userId);
 
         if (!(await canReadTask(task, userId))) {
             return res.status(404).send('Not Found');
@@ -119,19 +113,12 @@ async function handlePutTask(req, res) {
             return res.status(400).send('Bad Request: Invalid VTODO data');
         }
 
-        // RFC 4791 5.3.2: the URL of a calendar object resource is arbitrary
-        // and need not match the UID inside it. The UID the client sent is the
-        // task's identity; the name it uploaded under is only its URL, and both
-        // are kept (see caldav_resource_name). Reading the URL as the identity
-        // made a client see its own task change identity after every upload,
-        // re-upload it, and leave a row behind each time (#1371).
+        // RFC 4791 5.3.2: the UID the client sent is the identity, the name it
+        // uploaded under is only the URL, and both are kept (#1371).
         const clientUid = taskData.uid ? String(taskData.uid).trim() : null;
 
         if (clientUid) {
-            // A UID belongs to one resource in a calendar collection, so an
-            // upload that would give it a second one is refused rather than
-            // stored as another row for the same task - the duplicate that made
-            // deleting a task pointless.
+            // A UID belongs to one resource in a collection: refuse a second.
             const uidOwner = await taskRepository.findByUid(clientUid);
 
             if (
@@ -141,16 +128,13 @@ async function handlePutTask(req, res) {
                 if (await canReadTask(uidOwner, userId)) {
                     return uidConflictResponse(res, username, uidOwner);
                 }
-                // Someone else's task owns this UID. Refuse without naming it:
-                // that href is a uid the caller has no business seeing.
+                // Refuse unnamed: that href is not the caller's to see.
                 return res
                     .status(409)
                     .json({ error: 'This UID is already in use' });
             }
 
-            // The URL already answers with a task that has a different uid: the
-            // request would change the UID of an existing resource, which the
-            // spec refuses as plainly as it refuses a duplicate UID.
+            // Changing an existing resource's uid is refused too.
             if (existingTask && existingTask.uid !== clientUid) {
                 return uidConflictResponse(res, username, existingTask);
             }
@@ -160,15 +144,10 @@ async function handlePutTask(req, res) {
                 taskData.caldav_resource_name = resourceName;
             }
         } else if (existingTask) {
-            // No UID in the object and the URL already answers with a task:
-            // keep the uid that row has. Taking the URL as the identity is what
-            // made a client see its own task change identity after every
-            // upload and re-upload it (#1371), so a re-upload that arrives
-            // without a UID must not rewrite it either.
+            // No UID in the object: keep the uid the row already has (#1371).
             delete taskData.uid;
         } else {
-            // No UID and no row yet - the URL is all there is to identify this
-            // resource by, which is what this always did.
+            // No UID and no row yet: the URL is the only identity there is.
             taskData.uid = resourceName;
         }
 
@@ -242,10 +221,7 @@ async function handleDeleteTask(req, res) {
         }
 
         const userId = req.currentUser.id;
-        const task = await findTaskResource(
-            resourceNameFromParam(uid),
-            userId
-        );
+        const task = await findTaskResource(resourceNameFromParam(uid), userId);
 
         if (!task) {
             return res.status(404).send('Not Found');
