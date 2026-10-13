@@ -7,14 +7,14 @@ const planner = require('./service');
 const repository = require('./repository');
 const capacity = require('./capacity');
 const slots = require('../daily-plan/slots');
-const calendars = require('../calendar-feeds/service');
+const busy = require('../ltd-gcal/busy');
 const { ValidationError } = require('../../shared/errors');
 const CLOSED = [2, 3, 5];
 async function state(user, date, transaction) {
     const [stored, window, result, sessions] = await Promise.all([
         repository.planRows(user.id, date, transaction),
         planner.getWorkHours(user),
-        calendars.eventsForDay(user, date),
+        busy.eventsForDay(user, date),
         repository.finishedSessions(user.id, 30),
     ]);
     const tasks = await Task.findAll({

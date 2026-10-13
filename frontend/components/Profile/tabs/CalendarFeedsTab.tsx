@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../../Shared/ToastContext';
 import CalendarFeedsManager from '../../CalendarFeeds/CalendarFeedsManager';
+// LTD-PATCH(T-901): Google Calendar connection above the iCal feeds.
+import GoogleCalendarCard from '../../Integrations/GoogleCalendarCard';
 import {
     CalendarFeed,
     fetchCalendarFeeds,
@@ -47,6 +49,8 @@ const CalendarFeedsTab: React.FC<CalendarFeedsTabProps> = ({ isActive }) => {
                     'Show your meetings next to your day plan and on the Calendar page. Life-to-Day only reads these calendars; it never changes them.'
                 )}
             </p>
+
+            <GoogleCalendarCard />
 
             <CalendarFeedsManager
                 feeds={feeds}

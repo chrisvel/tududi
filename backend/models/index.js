@@ -124,6 +124,9 @@ const LtdAiRun = require('./ltd_ai_run')(sequelize);
 const LtdProposal = require('./ltd_proposal')(sequelize);
 const LtdOauthModel = require('./ltd_oauth_model')(sequelize);
 const LtdMcpSetting = require('./ltd_mcp_setting')(sequelize);
+// LTD-PATCH(T-901): Google Calendar account and external event read model.
+const LtdGcalAccount = require('./ltd_gcal_account')(sequelize);
+const LtdExternalEventLink = require('./ltd_external_event_link')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
@@ -749,6 +752,8 @@ module.exports = {
     LtdAiRun,
     LtdOauthModel,
     LtdMcpSetting,
+    LtdGcalAccount,
+    LtdExternalEventLink,
     Project,
     Task,
     Tag,

@@ -35,6 +35,8 @@ const getCronExpression = (frequency) => {
         due_projects: '*/15 * * * *',
         habit_reminders: '*/5 * * * *',
         account_lifecycle: '0 3 * * *',
+        // LTD-PATCH(T-901): Google Calendar poll, every 10 minutes (no watch).
+        gcal_sync: '*/10 * * * *',
     };
     return expressions[frequency];
 };
@@ -53,6 +55,8 @@ const runJob = async (frequency) => {
             runAccountLifecycle,
         } = require('../../services/trialLifecycleService');
         await runAccountLifecycle();
+    } else if (frequency === 'gcal_sync') {
+        await require('../ltd-gcal/service').syncAll();
     } else if (frequency === 'habit_reminders') {
         const {
             checkHabitReminders,
@@ -86,6 +90,7 @@ const createJobEntries = () => {
         'due_projects',
         'habit_reminders',
         'account_lifecycle',
+        'gcal_sync',
     ];
 
     return frequencies.map((frequency) => {
@@ -246,4 +251,5 @@ module.exports = {
     _createSchedulerState: createSchedulerState,
     _shouldDisableScheduler: shouldDisableScheduler,
     _getCronExpression: getCronExpression,
+    _createJobHandler: createJobHandler,
 };

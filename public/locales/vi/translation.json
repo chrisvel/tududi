@@ -335,6 +335,22 @@
     "noActivity": "Chưa có hoạt động nào"
   },
   "profile": {
+    "gcal": {
+      "title": "Google Calendar",
+      "description": "Count busy time from all your Google calendars in the day plan. Life-to-Day reads them and never changes them. When connected, it replaces the iCal address for planning.",
+      "unavailable": "Google Calendar is not set up on this server yet.",
+      "connect": "Connect Google Calendar",
+      "connected": "Google Calendar connected",
+      "connectError": "Google Calendar was not connected. Try again.",
+      "disconnect": "Disconnect",
+      "disconnected": "Google Calendar disconnected",
+      "revokeFailed": "Removed here, but Google did not confirm. Remove Life-to-Day at myaccount.google.com/permissions.",
+      "revoked": "Google access was withdrawn. Disconnect, then connect again.",
+      "syncFailed": "The last sync failed. Life-to-Day will try again in a few minutes.",
+      "lastSync": "Connected. Last sync {{time}}",
+      "firstSync": "Connected. The first sync is running.",
+      "export": "Show my time blocks in a separate \"Life-to-Day\" calendar in Google"
+    },
     "settings": "Cài đặt hồ sơ",
     "language": "Ngôn ngữ",
     "theme": "Chủ đề",
