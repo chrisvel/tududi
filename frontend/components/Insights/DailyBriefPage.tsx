@@ -18,9 +18,6 @@ const DailyBriefPage: React.FC = () => {
                     <h2 className="text-2xl font-light">
                         {t('aiAssistant.title', 'Daily Brief')}
                     </h2>
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-500 dark:text-indigo-400">
-                        {t('common.beta', 'beta')}
-                    </span>
                 </div>
                 {aiLocked ? (
                     <TrialLockNotice feature="ai" />

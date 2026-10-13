@@ -551,3 +551,5 @@ The embedded OAuth server (T-701, T-702), the Capability Registry (T-703), Propo
 | T-301 | `frontend/styles/tokens.css` | Force Vazirmatn on `html:lang(fa)`, including `fa-IR` | No |
 | T-303 | `frontend/components/DailyPlan/planUtils.ts` | Jalali date labels use Persian month and weekday names in any UI language | No |
 | T-303 | `frontend/components/Task/TaskRow/TaskRowCollapsed.tsx`, `frontend/components/Task/TaskDetails/TaskRecurrenceCard.tsx`, `frontend/components/Shared/DateTimePicker.tsx`, `frontend/components/Habits/HabitDayPanel.tsx`, `frontend/utils/habitUtils.ts` | Jalali month and weekday names stay Persian when the UI language is English | No |
+| T-303 | `frontend/components/DailyPlan/TodayPage.tsx` | Remove the Today beta badge | No |
+| T-303 | `frontend/components/Insights/DailyBriefPage.tsx`, `frontend/components/Insights/ReportsPage.tsx`, `frontend/components/Insights/ProductivityPage.tsx` | Remove the beta badge | No |

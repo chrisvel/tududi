@@ -27,11 +27,11 @@ const ProductivityPage: React.FC = () => {
             <div className="w-full">
                 <div className="flex items-center gap-3 mb-8">
                     <h2 className="text-2xl font-light">
-                        {t('sidebar.productivityAssistant', 'Productivity Assistant')}
+                        {t(
+                            'sidebar.productivityAssistant',
+                            'Productivity Assistant'
+                        )}
                     </h2>
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-500 dark:text-blue-400">
-                        {t('common.beta', 'beta')}
-                    </span>
                 </div>
                 {tasksLoading ? (
                     <div className="flex items-center justify-center py-16">
