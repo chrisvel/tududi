@@ -7,7 +7,8 @@
     <title><%= t('contact.title') %> · tududi</title>
     <meta name="description" content="<%= t('contact.lede') %>">
     <link rel="canonical" href="<%= canonicalUrl %>" />
-    <link rel="icon" href="/landing-assets/favicon.ico">
+    <%# LTD-PATCH(T-301): Refresh the approved brand favicon. %>
+    <link rel="icon" href="/landing-assets/favicon.ico?v=path-to-today-1">
     <%- include('partials/head-assets') %>
     <%- include('partials/styles') %>
     <style>

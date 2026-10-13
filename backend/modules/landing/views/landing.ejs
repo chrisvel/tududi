@@ -106,7 +106,8 @@
             });
         }),
     }) %></script>
-    <link rel="icon" href="/landing-assets/favicon.ico">
+    <%# LTD-PATCH(T-301): Refresh the approved brand favicon. %>
+    <link rel="icon" href="/landing-assets/favicon.ico?v=path-to-today-1">
     <%- include('partials/head-assets') %>
     <%- include('partials/styles') %>
 </head>
@@ -317,14 +318,15 @@
                 <span style="background:#e5b95c;"></span>
                 <span style="background:#61c454;"></span>
             </div>
-            <%# A short loop of the planner drafting a day with AI, then Today.
+            <%# LTD-PATCH(T-301): A short loop of the current planner and Today
+                screenshots, captured from an isolated account with the new brand.
                 It plays only when a script starts it and the visitor has not
                 asked for reduced motion; everyone else keeps the poster, the
                 same frame as a still. Recorded from a seeded account. %>
             <video id="hero-video" class="hero-video" muted loop playsinline preload="metadata"
-                   poster="/landing-assets/screenshots/hero-light.png"
+                   poster="/landing-assets/screenshots/hero-light.png?v=path-to-today-1"
                    aria-label="<%= t('hero.screenshotAlt') %>">
-                <source src="/landing-assets/screenshots/hero.mp4" type="video/mp4">
+                <source src="/landing-assets/screenshots/hero.mp4?v=path-to-today-1" type="video/mp4">
             </video>
             <script>
                 (function () {
@@ -410,7 +412,7 @@
                         <span style="background:#e5b95c;"></span>
                         <span style="background:#61c454;"></span>
                     </div>
-                    <img src="/landing-assets/screenshots/<%= step.img %>" alt="<%= t('plan.steps.' + step.id + '.alt') %>" loading="lazy">
+                    <img src="/landing-assets/screenshots/<%= step.img %>?v=path-to-today-1" alt="<%= t('plan.steps.' + step.id + '.alt') %>" loading="lazy">
                 </div>
             </div>
             <% }); %>
@@ -446,7 +448,7 @@
                     <h4><%= title %></h4>
                     <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
                     <% if (card.shot) { %>
-                    <a class="feature-peek" href="/landing-assets/screenshots/features/<%= card.id %>.webp" data-title="<%= title %>"><i class="far fa-image" aria-hidden="true"></i><%= t('features.preview') %></a>
+                    <a class="feature-peek" href="/landing-assets/screenshots/features/<%= card.id %>.webp?v=path-to-today-1" data-title="<%= title %>"><i class="far fa-image" aria-hidden="true"></i><%= t('features.preview') %></a>
                     <% } %>
                 </div>
             <% } %>

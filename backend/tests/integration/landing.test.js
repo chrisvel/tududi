@@ -207,13 +207,13 @@ describe('Landing page', () => {
             expect(res.text).toMatch(
                 /<meta property="og:description" content="[^"]+">/
             );
-            // Crawlers need an absolute image URL; a relative one is ignored.
+            // LTD-PATCH(T-301): Crawlers need the new, absolute brand image URL.
             expect(res.text).toContain(
-                '<meta property="og:image" content="https://tududi.com/landing-assets/og-1.png">'
+                '<meta property="og:image" content="https://tududi.com/landing-assets/og-path-to-today.png">'
             );
         }
         const image = await request(app)
-            .get('/landing-assets/og-1.png')
+            .get('/landing-assets/og-path-to-today.png')
             .set('Host', 'tududi.com');
         expect(image.status).toBe(200);
         expect(image.headers['content-type']).toBe('image/png');
@@ -336,10 +336,10 @@ describe('Landing page', () => {
     it('plays the hero loop with the still as its poster', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         expect(res.text).toContain(
-            'src="/landing-assets/screenshots/hero.mp4"'
+            'src="/landing-assets/screenshots/hero.mp4?v=path-to-today-1"'
         );
         expect(res.text).toContain(
-            'poster="/landing-assets/screenshots/hero-light.png"'
+            'poster="/landing-assets/screenshots/hero-light.png?v=path-to-today-1"'
         );
         expect(res.text).toContain('prefers-reduced-motion: reduce');
         const video = await request(app)
