@@ -51,10 +51,14 @@ async function handleReport(req, res) {
                     continue;
                 }
 
-                const uid = decodeURIComponent(match[1]);
-                const task = await taskRepository.findByUidOrResourceName(uid, {
-                    include: CALDAV_TASK_INCLUDES,
-                });
+                const resourceName = decodeURIComponent(match[1]);
+                const task = await taskRepository.findByUidOrResourceName(
+                    resourceName,
+                    {
+                        include: CALDAV_TASK_INCLUDES,
+                        where: await visibleTaskWhere(userId),
+                    }
+                );
 
                 if (!(await canReadTask(task, userId))) {
                     responses.push(

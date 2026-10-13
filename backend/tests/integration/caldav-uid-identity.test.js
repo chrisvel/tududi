@@ -17,6 +17,7 @@ describe('CalDAV resource name is not the task identity (#1371)', () => {
     const OTHER_UID = 'b7d1e0c4-2a55-4f31-8f60-9c2d7b1e5a10';
 
     let user;
+    let otherUser;
     let agent;
     let authHeader;
 
@@ -48,6 +49,17 @@ describe('CalDAV resource name is not the task identity (#1371)', () => {
             .get(`${base()}/${name}.ics`)
             .set('Authorization', authHeader);
 
+    const UIDLESS = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'BEGIN:VTODO',
+        'SUMMARY:No uid at all',
+        'STATUS:NEEDS-ACTION',
+        'END:VTODO',
+        'END:VCALENDAR',
+        '',
+    ].join('\r\n');
+
     beforeEach(async () => {
         user = await createTestUser({
             email: `uid-identity-${Date.now()}@example.com`,
@@ -72,6 +84,10 @@ describe('CalDAV resource name is not the task identity (#1371)', () => {
 
     afterEach(async () => {
         await Task.destroy({ where: { user_id: user.id } });
+        if (otherUser) {
+            await Task.destroy({ where: { user_id: otherUser.id } });
+            otherUser = null;
+        }
     });
 
     describe('uploading under a name the client chose', () => {
@@ -98,6 +114,27 @@ describe('CalDAV resource name is not the task identity (#1371)', () => {
             const response = await get(CLIENT_UID);
             expect(response.status).toBe(200);
             expect(response.text).toContain(`UID:${CLIENT_UID}`);
+        });
+
+        test('answers a PROPFIND on the URL it was handed', async () => {
+            await put(RESOURCE_NAME);
+
+            // The collection advertises this href, so a client may PROPFIND it
+            // directly (DAVx5 refreshes one resource that way). Resolving the
+            // URL by uid only made that 404 on a URL the client was just given.
+            const response = await propfind(
+                app,
+                `${base()}/${RESOURCE_NAME}.ics`
+            )
+                .set('Authorization', authHeader)
+                .set('Depth', '0')
+                .send(
+                    '<?xml version="1.0"?><d:propfind xmlns:d="DAV:"><d:prop><d:getetag/></d:prop></d:propfind>'
+                );
+
+            expect(response.status).toBe(207);
+            expect(response.text).toContain(`${RESOURCE_NAME}.ics`);
+            expect(response.text).toContain('getetag');
         });
 
         test('lists the resource under the name the client chose', async () => {
@@ -193,22 +230,62 @@ describe('CalDAV resource name is not the task identity (#1371)', () => {
         });
 
         test('are uploaded with a name when the object has no UID', async () => {
-            const noUid = [
-                'BEGIN:VCALENDAR',
-                'VERSION:2.0',
-                'BEGIN:VTODO',
-                'SUMMARY:No uid at all',
-                'STATUS:NEEDS-ACTION',
-                'END:VTODO',
-                'END:VCALENDAR',
-                '',
-            ].join('\r\n');
-
-            const response = await put('uidless-resource', noUid);
+            const response = await put('uidless-resource', UIDLESS);
             expect(response.status).toBe(201);
 
             const task = await Task.findOne({ where: { user_id: user.id } });
             expect(task.uid).toBe('uidless-resource');
+        });
+
+        test('keep the uid a resource already had when a re-upload has none', async () => {
+            await put(RESOURCE_NAME);
+
+            const response = await put(RESOURCE_NAME, UIDLESS);
+
+            expect(response.status).toBe(204);
+
+            const task = await Task.findOne({ where: { user_id: user.id } });
+            // The URL is not the identity: an upload that arrives without a
+            // UID must not rewrite the one this resource was created with.
+            expect(task.uid).toBe(CLIENT_UID);
+            expect(task.caldav_resource_name).toBe(RESOURCE_NAME);
+            expect(await Task.count({ where: { user_id: user.id } })).toBe(1);
+
+            const served = await get(RESOURCE_NAME);
+            expect(served.status).toBe(200);
+            expect(served.text).toContain(`UID:${CLIENT_UID}`);
+        });
+    });
+
+    describe('a resource name is only unique to the client that chose it', () => {
+        test('another user\'s task of the same name does not shadow this one', async () => {
+            otherUser = await createTestUser({
+                email: `uid-identity-other-${Date.now()}@example.com`,
+            });
+            // Same string, both columns: the other user's task has it as its
+            // uid, ours as its resource name. Both are legal, and the URL we
+            // ask about is ours.
+            await Task.create({
+                uid: 'clashing-uid-and-name',
+                user_id: otherUser.id,
+                name: 'Their task',
+                status: 0,
+            });
+
+            const created = await put('clashing-uid-and-name');
+            expect(created.status).toBe(201);
+
+            const response = await get('clashing-uid-and-name');
+            expect(response.status).toBe(200);
+            expect(response.text).toContain(`UID:${CLIENT_UID}`);
+            expect(response.text).not.toContain('Their task');
+
+            // And the other user's task is untouched.
+            const theirs = await Task.findOne({
+                where: { user_id: otherUser.id },
+            });
+            expect(theirs.uid).toBe('clashing-uid-and-name');
+            expect(theirs.name).toBe('Their task');
         });
     });
 });

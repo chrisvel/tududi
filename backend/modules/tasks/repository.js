@@ -1,4 +1,3 @@
-const { Op } = require('sequelize');
 const { Task, TaskAttachment } = require('../../models');
 const { deleteAttachmentFiles } = require('../../utils/attachment-utils');
 
@@ -28,19 +27,26 @@ class TaskRepository {
 
     // A CalDAV client addresses a resource by the name it chose for it, which
     // RFC 4791 5.3.2 says need not be the object's UID, so a URL can name a task
-    // either way. The uid wins when both match: it is the identity, and it is
-    // globally unique, while a resource name is only unique to the client that
-    // picked it.
+    // either way. The uid is looked up on its own and first: it is the identity
+    // and is globally unique, while a resource name is only unique to the client
+    // that picked it, so one query over both - especially a limited one - can
+    // answer with another user's row of the same name, or drop the uid match it
+    // was meant to prefer. Callers that know who is asking pass their
+    // visibility scope as options.where, so the name fallback can only answer
+    // with a task that caller can actually see.
     async findByUidOrResourceName(name, options = {}) {
-        const matches = await this.model.findAll({
-            where: {
-                [Op.or]: [{ uid: name }, { caldav_resource_name: name }],
-            },
-            limit: 2,
-            ...options,
-        });
+        const { where = {}, ...rest } = options;
 
-        return matches.find((task) => task.uid === name) || matches[0] || null;
+        const byUid = await this.model.findOne({
+            where: { uid: name, ...where },
+            ...rest,
+        });
+        if (byUid) return byUid;
+
+        return await this.model.findOne({
+            where: { caldav_resource_name: name, ...where },
+            ...rest,
+        });
     }
 
     async findRecurringChildren(recurringParentId, options = {}) {

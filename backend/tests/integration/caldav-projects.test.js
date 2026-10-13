@@ -266,6 +266,35 @@ describe('CalDAV Per-Project Calendars', () => {
                 expect(response.text).not.toContain('report-inbox-task.ics');
             });
 
+            test('multiget resolves an href by the resource name it advertises', async () => {
+                // The href the REPORT branch hands out is built from the
+                // resource name, so resolving it by uid alone 404s on a URL
+                // this very collection just advertised.
+                await Task.create({
+                    uid: 'multiget-task-uid',
+                    caldav_resource_name: 'client-chosen-name',
+                    user_id: testUser.id,
+                    project_id: testProject.id,
+                    name: 'Multiget Task',
+                    status: 0,
+                });
+
+                const multigetXml = `<?xml version="1.0" encoding="utf-8"?>
+<C:calendar-multiget xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+  <D:prop><D:getetag/><C:calendar-data/></D:prop>
+  <D:href>${projectUrl()}client-chosen-name.ics</D:href>
+</C:calendar-multiget>`;
+
+                const response = await report(app, projectUrl())
+                    .set('Authorization', authHeader)
+                    .set('Content-Type', 'application/xml')
+                    .send(multigetXml)
+                    .expect(207);
+
+                expect(response.text).toContain('multiget-task-uid');
+                expect(response.text).not.toContain('404 Not Found');
+            });
+
             test('REPORT on __inbox__ returns only unassigned tasks', async () => {
                 await Task.create({
                     uid: 'report-proj-task-2',

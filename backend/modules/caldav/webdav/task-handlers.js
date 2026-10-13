@@ -7,7 +7,7 @@ const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const vtodoParser = require('../icalendar/vtodo-parser');
 const { resolveProjectIdForPut } = require('./projects');
 const { deleteTaskFromRemotes } = require('../services/task-deletion-service');
-const { canReadTask, canWriteTask } = require('../access');
+const { canReadTask, canWriteTask, visibleTaskWhere } = require('../access');
 const { STATUS_TUDUDI_TO_ICAL } = require('../icalendar/field-mappings');
 const { buildHref, resourceNameOf } = require('./utils');
 
@@ -32,15 +32,20 @@ async function handleGetTask(req, res) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
+        const userId = req.currentUser.id;
         const resourceName = uid.replace('.ics', '');
+        // Scoped to what the caller can see: a resource name is only unique to
+        // the client that chose it, so an unscoped name lookup could answer
+        // with another user's row of the same name.
         const task = await taskRepository.findByUidOrResourceName(
             resourceName,
             {
                 include: CALDAV_TASK_INCLUDES,
+                where: await visibleTaskWhere(userId),
             }
         );
 
-        if (!(await canReadTask(task, req.currentUser.id))) {
+        if (!(await canReadTask(task, userId))) {
             return res.status(404).send('Not Found');
         }
 
@@ -96,6 +101,7 @@ async function handlePutTask(req, res) {
             resourceName,
             {
                 include: CALDAV_TASK_INCLUDES,
+                where: await visibleTaskWhere(userId),
             }
         );
 
@@ -163,9 +169,16 @@ async function handlePutTask(req, res) {
             if (resourceName !== clientUid) {
                 taskData.caldav_resource_name = resourceName;
             }
+        } else if (existingTask) {
+            // No UID in the object and the URL already answers with a task:
+            // keep the uid that row has. Taking the URL as the identity is what
+            // made a client see its own task change identity after every
+            // upload and re-upload it (#1371), so a re-upload that arrives
+            // without a UID must not rewrite it either.
+            delete taskData.uid;
         } else {
-            // No UID in the object, so the URL is all there is to identify it
-            // by - which is what this always did.
+            // No UID and no row yet - the URL is all there is to identify this
+            // resource by, which is what this always did.
             taskData.uid = resourceName;
         }
 
@@ -238,11 +251,13 @@ async function handleDeleteTask(req, res) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
+        const userId = req.currentUser.id;
         const resourceName = uid.replace('.ics', '');
         const task = await taskRepository.findByUidOrResourceName(
             resourceName,
             {
                 include: CALDAV_TASK_INCLUDES,
+                where: await visibleTaskWhere(userId),
             }
         );
 
@@ -250,7 +265,7 @@ async function handleDeleteTask(req, res) {
             return res.status(404).send('Not Found');
         }
 
-        if (!(await canWriteTask(task, req.currentUser.id))) {
+        if (!(await canWriteTask(task, userId))) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 

@@ -251,10 +251,14 @@ async function handleProjectPropfind(req, res) {
 
         const responses = [];
         if (req.params.uid) {
-            const uid = req.params.uid.replace('.ics', '');
-            const task = await taskRepository.findByUidOrResourceName(uid, {
-                include: INCLUDE_PROJECT,
-            });
+            const resourceName = req.params.uid.replace('.ics', '');
+            const task = await taskRepository.findByUidOrResourceName(
+                resourceName,
+                {
+                    include: INCLUDE_PROJECT,
+                    where: await visibleTaskWhere(userId),
+                }
+            );
             if (!(await canReadTask(task, userId))) {
                 return res.status(404).json({ error: 'Task not found' });
             }
@@ -330,10 +334,17 @@ async function handleProjectReport(req, res) {
                     );
                     continue;
                 }
-                const uid = decodeURIComponent(match[1]);
-                const task = await taskRepository.findByUid(uid, {
-                    include: INCLUDE_PROJECT,
-                });
+                const resourceName = decodeURIComponent(match[1]);
+                // The href this multiget answers is built from the resource
+                // name (see the REPORT branch below), so it has to be resolved
+                // the same way a GET/PUT of that URL is - by uid or name.
+                const task = await taskRepository.findByUidOrResourceName(
+                    resourceName,
+                    {
+                        include: INCLUDE_PROJECT,
+                        where: await visibleTaskWhere(userId),
+                    }
+                );
                 if (!(await canReadTask(task, userId))) {
                     responses.push(
                         buildResponse(

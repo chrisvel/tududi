@@ -41,10 +41,18 @@ async function handlePropfind(req, res) {
         const userTimezone = req.currentUser.timezone || 'UTC';
 
         if (isTaskRequest) {
-            const taskUid = req.params.uid.replace('.ics', '');
-            const task = await taskRepository.findByUid(taskUid, {
-                include: CALDAV_TASK_INCLUDES,
-            });
+            // The hrefs this collection advertises come from the resource name
+            // (buildTaskResponse), so PROPFIND on one has to resolve the URL the
+            // same way GET and PUT do - by uid or resource name - or it 404s on
+            // a URL the client was just handed.
+            const resourceName = req.params.uid.replace('.ics', '');
+            const task = await taskRepository.findByUidOrResourceName(
+                resourceName,
+                {
+                    include: CALDAV_TASK_INCLUDES,
+                    where: await visibleTaskWhere(userId),
+                }
+            );
 
             if (!(await canReadTask(task, userId))) {
                 return res.status(404).json({ error: 'Task not found' });
