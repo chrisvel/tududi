@@ -61,25 +61,39 @@ describe('POST /api/inbox/analyze-text: ~area', () => {
         expect(response.body.cleaned_content).toBe('Fix desk lamp');
     });
 
-    it('leaves a ~word that is no area in the title', async () => {
+    it('leaves a ~word that is not a name in the title', async () => {
         const response = await analyze('Walk about ~5 km');
 
         expect(response.body.parsed_area).toBeNull();
         expect(response.body.cleaned_content).toBe('Walk about ~5 km');
     });
 
-    it('skips an unknown ~word and uses the next one that is an area', async () => {
+    it('treats an unknown ~Name as a new area and strips it, like #tag and +project', async () => {
+        const response = await analyze(
+            '#admin #kids #bookmark +"Monday slides prep" ~Career hi '
+        );
+
+        expect(response.body.parsed_area).toEqual({
+            uid: null,
+            name: 'Career',
+        });
+        expect(response.body.cleaned_content).toBe('hi');
+    });
+
+    it('prefers an existing area over an unknown ~word before it', async () => {
         const response = await analyze('Plan ~later ~Work');
 
         expect(response.body.parsed_area.uid).toBe(work.uid);
         expect(response.body.cleaned_content).toBe('Plan ~later');
     });
 
-    it("does not match another user's area", async () => {
+    it("does not hand out another user's area", async () => {
         const response = await analyze('Spy ~Secret');
 
-        expect(response.body.parsed_area).toBeNull();
-        expect(response.body.cleaned_content).toBe('Spy ~Secret');
+        expect(response.body.parsed_area).toEqual({
+            uid: null,
+            name: 'Secret',
+        });
     });
 
     it('works next to a project, tag and date', async () => {

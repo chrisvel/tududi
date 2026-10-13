@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
-import {
-    XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import InboxItemAttachments from './InboxItemAttachments';
 import { useStore } from '../../store/useStore';
-import { focusAreaIdForTask, getFocus, mergeFocusTags } from '../../utils/focus';
+import {
+    focusAreaIdForTask,
+    getFocus,
+    mergeFocusTags,
+} from '../../utils/focus';
 import QuickCaptureInput, {
     InboxComposerFooterContext,
     QuickCaptureInputHandle,
@@ -18,6 +20,7 @@ import QuickCaptureInput, {
 import {
     analyzeInboxText,
     applyAnalysisToTask,
+    ensureAnalysisArea,
     InboxAnalysis,
 } from '../../utils/inboxService';
 
@@ -51,11 +54,32 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    // The edit box opens with the cleaned title (tokens like #tag, ~area,
+    // dates and @person removed). Null until the analysis returns.
+    const [cleanedEditText, setCleanedEditText] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const composerRef = useRef<QuickCaptureInputHandle>(null);
 
     useEffect(() => {
         onEditingChange?.(isEditing);
+    }, [isEditing]);
+
+    useEffect(() => {
+        if (!isEditing) {
+            setCleanedEditText(null);
+            return;
+        }
+        let cancelled = false;
+        analyzeInboxText(fullContent)
+            .then((result) => {
+                const cleaned = result?.cleaned_content?.trim();
+                if (!cancelled && cleaned) setCleanedEditText(cleaned);
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+        // Only when the editor opens; the text is read once for that session.
     }, [isEditing]);
 
     // Tell the list in the same render that this item is opening, so its
@@ -105,14 +129,20 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
-            if (char === '"' && (i === 0 || text[i - 1] === '+' || text[i - 1] === '@')) {
+            if (
+                char === '"' &&
+                (i === 0 || text[i - 1] === '+' || text[i - 1] === '@')
+            ) {
                 inQuotes = true;
                 currentToken += char;
             } else if (char === '"' && inQuotes) {
                 inQuotes = false;
                 currentToken += char;
             } else if (char === ' ' && !inQuotes) {
-                if (currentToken) { tokens.push(currentToken); currentToken = ''; }
+                if (currentToken) {
+                    tokens.push(currentToken);
+                    currentToken = '';
+                }
             } else {
                 currentToken += char;
             }
@@ -128,11 +158,21 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         while (i < words.length) {
             if (words[i].startsWith('#') || words[i].startsWith('+')) {
                 let groupEnd = i;
-                while (groupEnd < words.length && (words[groupEnd].startsWith('#') || words[groupEnd].startsWith('+'))) groupEnd++;
+                while (
+                    groupEnd < words.length &&
+                    (words[groupEnd].startsWith('#') ||
+                        words[groupEnd].startsWith('+'))
+                )
+                    groupEnd++;
                 for (let j = i; j < groupEnd; j++) {
                     if (words[j].startsWith('#')) {
                         const tagName = words[j].substring(1);
-                        if (tagName && /^[a-zA-Z0-9_-]+$/.test(tagName) && !matches.includes(tagName)) matches.push(tagName);
+                        if (
+                            tagName &&
+                            /^[a-zA-Z0-9_-]+$/.test(tagName) &&
+                            !matches.includes(tagName)
+                        )
+                            matches.push(tagName);
                     }
                 }
                 i = groupEnd;
@@ -150,12 +190,24 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         while (i < tokens.length) {
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
                 let groupEnd = i;
-                while (groupEnd < tokens.length && (tokens[groupEnd].startsWith('#') || tokens[groupEnd].startsWith('+'))) groupEnd++;
+                while (
+                    groupEnd < tokens.length &&
+                    (tokens[groupEnd].startsWith('#') ||
+                        tokens[groupEnd].startsWith('+'))
+                )
+                    groupEnd++;
                 for (let j = i; j < groupEnd; j++) {
                     if (tokens[j].startsWith('+')) {
                         let projectName = tokens[j].substring(1);
-                        if (projectName.startsWith('"') && projectName.endsWith('"')) projectName = projectName.slice(1, -1);
-                        if (projectName && !matches.includes(projectName)) { matches.push(projectName); return matches; }
+                        if (
+                            projectName.startsWith('"') &&
+                            projectName.endsWith('"')
+                        )
+                            projectName = projectName.slice(1, -1);
+                        if (projectName && !matches.includes(projectName)) {
+                            matches.push(projectName);
+                            return matches;
+                        }
                     }
                 }
                 i = groupEnd;
@@ -172,7 +224,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         let i = 0;
         while (i < tokens.length) {
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
-                while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) i++;
+                while (
+                    i < tokens.length &&
+                    (tokens[i].startsWith('#') || tokens[i].startsWith('+'))
+                )
+                    i++;
             } else {
                 cleanedTokens.push(tokens[i]);
                 i++;
@@ -201,9 +257,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     // placeholder the row renders as an invisible strip that cannot be clicked.
     const isBlank = displayText.trim().length === 0;
 
-    const extraLineCount = displayText
-        .split('\n')
-        .filter((l) => l.trim().length > 0).length - 1;
+    const extraLineCount =
+        displayText.split('\n').filter((l) => l.trim().length > 0).length - 1;
 
     // ── Inline text segment renderer ──────────────────────────────────────────
     // Parses the first line into plain-text + tag chip + project chip segments
@@ -211,7 +266,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const renderInlineSegments = (text: string): React.ReactNode => {
         // Only render the first line for the preview
         const firstLine = text.split('\n')[0];
-        const re = /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))|(?<!\S)~(?:"([^"]+)"|([\w.'-]*\w))/gu;
+        const re =
+            /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))|(?<!\S)~(?:"([^"]+)"|([\w.'-]*\w))/gu;
         const nodes: React.ReactNode[] = [];
         let last = 0;
         let m: RegExpExecArray | null;
@@ -220,7 +276,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         while ((m = re.exec(firstLine)) !== null) {
             if (m.index > last) {
                 nodes.push(
-                    <span key={`t-${idx}`}>{firstLine.slice(last, m.index)}</span>
+                    <span key={`t-${idx}`}>
+                        {firstLine.slice(last, m.index)}
+                    </span>
                 );
             }
             const raw = m[0];
@@ -336,18 +394,25 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     ) => {
         const sourceText = textOverride ?? baseContent;
         const sourceHashtags = hashtagOverride ?? parseHashtags(sourceText);
-        const sourceProjectRefs = projectRefsOverride ?? parseProjectRefs(sourceText);
-        const cleaned = cleanedOverride ?? cleanTextFromTagsAndProjects(sourceText) ?? sourceText;
+        const sourceProjectRefs =
+            projectRefsOverride ?? parseProjectRefs(sourceText);
+        const cleaned =
+            cleanedOverride ??
+            cleanTextFromTagsAndProjects(sourceText) ??
+            sourceText;
 
         const tagObjects = sourceHashtags.map((hashtagName) => {
-            const existingTag = tags.find((tag) => tag.name.toLowerCase() === hashtagName.toLowerCase());
+            const existingTag = tags.find(
+                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
+            );
             return existingTag || { name: hashtagName };
         });
 
         let projectUid: string | undefined;
         if (sourceProjectRefs.length > 0) {
             const matchingProject = projects.find(
-                (p) => p.name.toLowerCase() === sourceProjectRefs[0].toLowerCase()
+                (p) =>
+                    p.name.toLowerCase() === sourceProjectRefs[0].toLowerCase()
             );
             if (matchingProject) projectUid = matchingProject.uid;
         }
@@ -356,11 +421,25 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             projectUid = getFocus()?.project_uid ?? undefined;
         }
 
-        return { sourceText, cleanedContent: cleaned, tagObjects, projectUid, projectRefsList: sourceProjectRefs, hashtagsList: sourceHashtags };
+        return {
+            sourceText,
+            cleanedContent: cleaned,
+            tagObjects,
+            projectUid,
+            projectRefsList: sourceProjectRefs,
+            hashtagsList: sourceHashtags,
+        };
     };
 
-    const handleConvertToTask = async (context?: InboxComposerFooterContext) => {
-        const payload = buildConversionPayload(context?.text, context?.hashtags, context?.projectRefs, context?.cleanedText);
+    const handleConvertToTask = async (
+        context?: InboxComposerFooterContext
+    ) => {
+        const payload = buildConversionPayload(
+            context?.text,
+            context?.hashtags,
+            context?.projectRefs,
+            context?.cleanedText
+        );
         // Re-analyze against the capture time so "tomorrow" means the day
         // after the item was added. A date dismissed in the composer stays
         // dismissed: its live analysis then has no date.
@@ -368,8 +447,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         try {
             analysis = await analyzeInboxText(payload.sourceText, {
                 referenceDate: item.created_at,
-                parseDates: context?.analysis ? !!context.analysis.parsed_due_date : true,
+                parseDates: context?.analysis
+                    ? !!context.analysis.parsed_due_date
+                    : true,
             });
+            analysis = await ensureAnalysisArea(analysis);
         } catch (error) {
             console.error('Failed to analyze inbox item:', error);
         }
@@ -381,7 +463,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 : payload.projectUid;
         const newTask: Task = applyAnalysisToTask(
             {
-                name: analysis?.cleaned_content || payload.cleanedContent || displayText,
+                name:
+                    analysis?.cleaned_content ||
+                    payload.cleanedContent ||
+                    displayText,
                 status: 'not_started',
                 priority: null,
                 tags: mergeFocusTags(
@@ -391,7 +476,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     (name) =>
                         payload.tagObjects.find((tag) => tag.name === name) ??
                         tags.find(
-                            (tag) => tag.name.toLowerCase() === name.toLowerCase()
+                            (tag) =>
+                                tag.name.toLowerCase() === name.toLowerCase()
                         ) ?? { name }
                 ),
                 project_uid: projectUid,
@@ -408,7 +494,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     };
 
     const handleConvertToProject = (context?: InboxComposerFooterContext) => {
-        const payload = buildConversionPayload(context?.text, context?.hashtags, context?.projectRefs, context?.cleanedText);
+        const payload = buildConversionPayload(
+            context?.text,
+            context?.hashtags,
+            context?.projectRefs,
+            context?.cleanedText
+        );
         const newProject: Project = {
             name: payload.cleanedContent || displayText,
             description: '',
@@ -418,30 +509,49 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         openProjectModal(newProject, item.uid);
     };
 
-    const handleConvertToNote = async (context?: InboxComposerFooterContext) => {
+    const handleConvertToNote = async (
+        context?: InboxComposerFooterContext
+    ) => {
         const sourceText = context?.text ?? baseContent;
         let title = sourceText.split('\n')[0] || sourceText.substring(0, 50);
         let isBookmark = false;
 
         try {
-            const { isUrl: detectUrl, extractUrlTitle } = await import('../../utils/urlService');
+            const { isUrl: detectUrl, extractUrlTitle } =
+                await import('../../utils/urlService');
             if (detectUrl(sourceText.trim())) {
                 setLoading(true);
                 try {
                     const result = (await Promise.race([
                         extractUrlTitle(sourceText.trim()),
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000)),
+                        new Promise((_, reject) =>
+                            setTimeout(() => reject(new Error('Timeout')), 3000)
+                        ),
                     ])) as any;
-                    if (result?.title) { title = result.title; isBookmark = true; }
-                } catch { isBookmark = true; }
-                finally { setLoading(false); }
+                    if (result?.title) {
+                        title = result.title;
+                        isBookmark = true;
+                    }
+                } catch {
+                    isBookmark = true;
+                } finally {
+                    setLoading(false);
+                }
             }
-        } catch { setLoading(false); }
+        } catch {
+            setLoading(false);
+        }
 
-        const payload = buildConversionPayload(context?.text, context?.hashtags, context?.projectRefs, context?.cleanedText);
+        const payload = buildConversionPayload(
+            context?.text,
+            context?.hashtags,
+            context?.projectRefs,
+            context?.cleanedText
+        );
         const bookmarkTag = isBookmark ? [{ name: 'bookmark' }] : [];
         const tagObjects = [...payload.tagObjects, ...bookmarkTag];
-        const finalTitle = title === sourceText ? payload.cleanedContent || sourceText : title;
+        const finalTitle =
+            title === sourceText ? payload.cleanedContent || sourceText : title;
 
         const newNote: Note = {
             title: finalTitle,
@@ -454,7 +564,15 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
     const handleSubmitEdit = async (text: string) => {
         if (!onUpdate || item.uid === undefined) return;
-        if (baseContent.trim() === text.trim()) { setIsEditing(false); return; }
+        // An untouched box (raw or cleaned) saves nothing, so the stored text
+        // keeps its tokens.
+        if (
+            baseContent.trim() === text.trim() ||
+            cleanedEditText === text.trim()
+        ) {
+            setIsEditing(false);
+            return;
+        }
         await onUpdate(item.uid, text);
     };
 
@@ -523,7 +641,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 <QuickCaptureInput
                     ref={composerRef}
                     mode="edit"
-                    initialValue={fullContent}
+                    initialValue={cleanedEditText ?? fullContent}
                     hidePrimaryButton
                     projects={projects}
                     onSubmitOverride={handleSubmitEdit}
@@ -542,7 +660,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     onClick={startEditing}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startEditing(); } }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            startEditing();
+                        }
+                    }}
                 >
                     {/* Text content */}
                     <div className="flex-1 min-w-0">
@@ -557,7 +680,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             {extraLineCount > 0 && (
                                 <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500">
                                     +{extraLineCount}{' '}
-                                    {extraLineCount === 1 ? t('inbox.line', 'line') : t('inbox.lines', 'lines')}
+                                    {extraLineCount === 1
+                                        ? t('inbox.line', 'line')
+                                        : t('inbox.lines', 'lines')}
                                 </span>
                             )}
                         </p>
@@ -572,7 +697,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     {/* Delete button – visible only on hover */}
                     <button
                         type="button"
-                        onClick={(e) => { e.stopPropagation(); handleDelete(); }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete();
+                        }}
                         className="flex-shrink-0 mt-0.5 flex items-center justify-center w-5 h-5 rounded text-gray-300 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 opacity-0 group-hover:opacity-100 transition-all"
                         aria-label={t('common.delete', 'Delete')}
                     >

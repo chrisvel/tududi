@@ -17,7 +17,7 @@ jest.mock('react-i18next', () => ({
     }),
 }));
 
-const overview = (hosted: boolean) => ({
+const overview = (hosted: boolean, trendsOverride: object = {}) => ({
     users: { total: 3, admins: 1, verified: 3, last24h: 0 },
     content: { tasks: 10, projects: 2, notes: 1 },
     waitlist: { total: 0, last7d: 0 },
@@ -31,6 +31,32 @@ const overview = (hosted: boolean) => ({
         waitlist: { last7d: 0, prev7d: 0 },
         activation: { new_users: 14, activated: 7 },
         active_users_7d: 5,
+        tasks: {
+            created: { last7d: 30, prev7d: 10 },
+            completed: { last7d: 12, prev7d: 9 },
+        },
+        visits: {
+            landing: {
+                views: { last7d: 40, prev7d: 20 },
+                visitors: { last7d: 20, prev7d: 10 },
+            },
+            blog: {
+                views: { last7d: 10, prev7d: 10 },
+                visitors: { last7d: 5, prev7d: 5 },
+            },
+            app: {
+                views: { last7d: 9, prev7d: 3 },
+                visitors: { last7d: 4, prev7d: 2 },
+            },
+            days: Array.from({ length: 14 }, (_, i) => ({
+                date: `2026-10-${String(i + 1).padStart(2, '0')}`,
+                views: 3,
+                visitors: 2,
+            })),
+            top_pages: [{ surface: 'landing', path: '/cloud', views: 12 }],
+            top_referrers: [{ host: 'news.example', views: 7 }],
+            app_users: { dau: 4, wau: 6, prev_wau: 3, mau: 11 },
+        },
         billing: hosted
             ? {
                   trials_started_7d: 3,
@@ -39,6 +65,7 @@ const overview = (hosted: boolean) => ({
                   payment_failed_7d: 0,
               }
             : null,
+        ...trendsOverride,
     },
     billing: {
         paying: 0,
@@ -55,13 +82,13 @@ const overview = (hosted: boolean) => ({
 
 const headers = { get: () => null } as unknown as Headers;
 
-const mockFetch = (hosted: boolean) => {
+const mockFetch = (hosted: boolean, trendsOverride: object = {}) => {
     global.fetch = jest.fn((url: string) => {
         if (String(url).includes('admin/overview')) {
             return Promise.resolve({
                 ok: true,
                 headers,
-                json: async () => overview(hosted),
+                json: async () => overview(hosted, trendsOverride),
             } as Response);
         }
         return Promise.resolve({
@@ -167,5 +194,60 @@ describe('Admin dashboard waitlist', () => {
             expect(screen.getByTestId('admin-trends')).toBeInTheDocument()
         );
         expect(screen.queryByTestId('admin-trends-churn')).toBeNull();
+    });
+});
+
+describe('Admin dashboard visits', () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('shows visitors, conversion, app users and the rankings', async () => {
+        mockFetch(false);
+
+        render(
+            <MemoryRouter>
+                <AdminDashboardPage />
+            </MemoryRouter>
+        );
+
+        await waitFor(() =>
+            expect(screen.getByTestId('admin-visits')).toBeInTheDocument()
+        );
+        // 20 landing + 5 blog visitors; 14 signups of them
+        expect(screen.getByTestId('admin-visits')).toHaveTextContent('25');
+        expect(screen.getByTestId('admin-visits-conversion')).toHaveTextContent(
+            '56%'
+        );
+        expect(screen.getByTestId('admin-visits-app-users')).toHaveTextContent(
+            '4 today'
+        );
+        expect(screen.getByTestId('admin-visits-bars').children).toHaveLength(
+            7
+        );
+        expect(screen.getByTestId('admin-visits-pages')).toHaveTextContent(
+            '/cloud'
+        );
+        expect(screen.getByTestId('admin-visits-referrers')).toHaveTextContent(
+            'news.example'
+        );
+        expect(
+            screen.getByTestId('admin-trends-tasks-completed')
+        ).toHaveTextContent('12');
+    });
+
+    it('leaves the section out when tracking is off', async () => {
+        mockFetch(false, { visits: null });
+
+        render(
+            <MemoryRouter>
+                <AdminDashboardPage />
+            </MemoryRouter>
+        );
+
+        await waitFor(() =>
+            expect(screen.getByTestId('admin-trends')).toBeInTheDocument()
+        );
+        expect(screen.queryByTestId('admin-visits')).toBeNull();
     });
 });

@@ -29,6 +29,8 @@ export interface SlashItem {
     insert?: string;
     // The list the item opens instead of inserting anything
     opens?: SlashStage;
+    // Set for a tag, project or area: the box keeps it as a badge
+    pick?: { kind: 'tag' | 'project' | 'area'; name: string };
 }
 
 export interface SlashLabels {
@@ -102,6 +104,13 @@ const quoted = (name: string) => (/\s/.test(name) ? `"${name}"` : name);
 const matches = (name: string, query: string) =>
     name.toLowerCase().includes(query.trim().toLowerCase());
 
+// Tags, projects and areas picked from a list are kept as badges, not text
+const pickOf = (
+    stage: 'tag' | 'project' | 'person' | 'area',
+    name: string
+): SlashItem['pick'] =>
+    stage === 'person' ? undefined : { kind: stage, name };
+
 const valueItems = (
     stage: 'tag' | 'project' | 'person' | 'area',
     prefix: string,
@@ -121,6 +130,7 @@ const valueItems = (
             label: name,
             icon: stage,
             insert: `${prefix}${stage === 'tag' ? name : quoted(name)}`,
+            pick: pickOf(stage, name),
         }));
 
     const wanted = query.trim();
@@ -135,6 +145,7 @@ const valueItems = (
             label: labels.create(token),
             icon: 'create',
             insert: token,
+            pick: pickOf(stage, wanted),
         });
     }
     return items;
@@ -234,6 +245,19 @@ export const slashItems = (
                 query
             );
     }
+};
+
+// Removes "/query" (or "~query") without inserting anything, for items that
+// become badges instead of text. A space left on both sides is collapsed.
+export const removeSlashRange = (
+    text: string,
+    menu: SlashMenuState,
+    end: number
+): { text: string; cursor: number } => {
+    let head = text.slice(0, menu.start);
+    const tail = text.slice(end);
+    if (/\s$/.test(head) && /^\s/.test(tail)) head = head.slice(0, -1);
+    return { text: head + tail, cursor: head.length };
 };
 
 // What picking an item does to the text. `text`/`cursor` describe the box
