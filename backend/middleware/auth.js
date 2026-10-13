@@ -161,6 +161,8 @@ const requireAuth = async (req, res, next) => {
             }
 
             req.currentUser = identity.User;
+            // LTD-PATCH(T-1001): the MCP kill switch needs the issue time.
+            req.oidcClaims = { iat: payload.iat };
             return next();
         }
 
