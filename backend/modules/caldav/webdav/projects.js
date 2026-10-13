@@ -31,6 +31,11 @@ const {
     isWritable,
     ACCESS,
 } = require('../access');
+const {
+    resourceNameFromParam,
+    resourceNameFromHref,
+    findTaskResource,
+} = require('./task-resource');
 
 const INBOX_UID = '__inbox__';
 const INCLUDE_PROJECT = CALDAV_TASK_INCLUDES;
@@ -251,13 +256,9 @@ async function handleProjectPropfind(req, res) {
 
         const responses = [];
         if (req.params.uid) {
-            const resourceName = req.params.uid.replace('.ics', '');
-            const task = await taskRepository.findByUidOrResourceName(
-                resourceName,
-                {
-                    include: INCLUDE_PROJECT,
-                    where: await visibleTaskWhere(userId),
-                }
+            const task = await findTaskResource(
+                resourceNameFromParam(req.params.uid),
+                userId
             );
             if (!(await canReadTask(task, userId))) {
                 return res.status(404).json({ error: 'Task not found' });
@@ -324,8 +325,8 @@ async function handleProjectReport(req, res) {
         const responses = [];
         if (queryRequest.isMultiget) {
             for (const href of queryRequest.hrefs) {
-                const match = href.match(/\/([^/]+)\.ics$/);
-                if (!match) {
+                const resourceName = resourceNameFromHref(href);
+                if (!resourceName) {
                     responses.push(
                         buildResponse(
                             href,
@@ -334,17 +335,7 @@ async function handleProjectReport(req, res) {
                     );
                     continue;
                 }
-                const resourceName = decodeURIComponent(match[1]);
-                // The href this multiget answers is built from the resource
-                // name (see the REPORT branch below), so it has to be resolved
-                // the same way a GET/PUT of that URL is - by uid or name.
-                const task = await taskRepository.findByUidOrResourceName(
-                    resourceName,
-                    {
-                        include: INCLUDE_PROJECT,
-                        where: await visibleTaskWhere(userId),
-                    }
-                );
+                const task = await findTaskResource(resourceName, userId);
                 if (!(await canReadTask(task, userId))) {
                     responses.push(
                         buildResponse(

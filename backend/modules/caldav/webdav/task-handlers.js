@@ -2,14 +2,17 @@ const { generateETag } = require('../utils/etag-generator');
 const entitlements = require('../../../services/entitlementsService');
 const { matchesETag } = require('../utils/etag-generator');
 const taskRepository = require('../../tasks/repository');
-const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const vtodoParser = require('../icalendar/vtodo-parser');
 const { resolveProjectIdForPut } = require('./projects');
 const { deleteTaskFromRemotes } = require('../services/task-deletion-service');
-const { canReadTask, canWriteTask, visibleTaskWhere } = require('../access');
+const { canReadTask, canWriteTask } = require('../access');
 const { STATUS_TUDUDI_TO_ICAL } = require('../icalendar/field-mappings');
 const { buildHref, resourceNameOf } = require('./utils');
+const {
+    resourceNameFromParam,
+    findTaskResource,
+} = require('./task-resource');
 
 // RFC 4791 5.3.2.1: a UID may be used by one resource in a calendar only.
 function uidConflictResponse(res, username, task) {
@@ -33,16 +36,9 @@ async function handleGetTask(req, res) {
         }
 
         const userId = req.currentUser.id;
-        const resourceName = uid.replace('.ics', '');
-        // Scoped to what the caller can see: a resource name is only unique to
-        // the client that chose it, so an unscoped name lookup could answer
-        // with another user's row of the same name.
-        const task = await taskRepository.findByUidOrResourceName(
-            resourceName,
-            {
-                include: CALDAV_TASK_INCLUDES,
-                where: await visibleTaskWhere(userId),
-            }
+        const task = await findTaskResource(
+            resourceNameFromParam(uid),
+            userId
         );
 
         if (!(await canReadTask(task, userId))) {
@@ -87,7 +83,7 @@ async function handlePutTask(req, res) {
         }
 
         const userId = req.currentUser.id;
-        const resourceName = uid.replace('.ics', '');
+        const resourceName = resourceNameFromParam(uid);
         const vtodoData = req.rawBody;
 
         console.log('[PUT] rawBody:', !!vtodoData, vtodoData?.length);
@@ -97,13 +93,7 @@ async function handlePutTask(req, res) {
             return res.status(400).send('Bad Request: No data provided');
         }
 
-        const existingTask = await taskRepository.findByUidOrResourceName(
-            resourceName,
-            {
-                include: CALDAV_TASK_INCLUDES,
-                where: await visibleTaskWhere(userId),
-            }
-        );
+        const existingTask = await findTaskResource(resourceName, userId);
 
         if (existingTask && !(await canWriteTask(existingTask, userId))) {
             return res.status(403).json({ error: 'Forbidden' });
@@ -252,13 +242,9 @@ async function handleDeleteTask(req, res) {
         }
 
         const userId = req.currentUser.id;
-        const resourceName = uid.replace('.ics', '');
-        const task = await taskRepository.findByUidOrResourceName(
-            resourceName,
-            {
-                include: CALDAV_TASK_INCLUDES,
-                where: await visibleTaskWhere(userId),
-            }
+        const task = await findTaskResource(
+            resourceNameFromParam(uid),
+            userId
         );
 
         if (!task) {

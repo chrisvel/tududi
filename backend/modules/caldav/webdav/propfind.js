@@ -13,6 +13,10 @@ const taskRepository = require('../../tasks/repository');
 const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { canReadTask, visibleTaskWhere } = require('../access');
+const {
+    resourceNameFromParam,
+    findTaskResource,
+} = require('./task-resource');
 
 async function handlePropfind(req, res) {
     try {
@@ -41,17 +45,9 @@ async function handlePropfind(req, res) {
         const userTimezone = req.currentUser.timezone || 'UTC';
 
         if (isTaskRequest) {
-            // The hrefs this collection advertises come from the resource name
-            // (buildTaskResponse), so PROPFIND on one has to resolve the URL the
-            // same way GET and PUT do - by uid or resource name - or it 404s on
-            // a URL the client was just handed.
-            const resourceName = req.params.uid.replace('.ics', '');
-            const task = await taskRepository.findByUidOrResourceName(
-                resourceName,
-                {
-                    include: CALDAV_TASK_INCLUDES,
-                    where: await visibleTaskWhere(userId),
-                }
+            const task = await findTaskResource(
+                resourceNameFromParam(req.params.uid),
+                userId
             );
 
             if (!(await canReadTask(task, userId))) {

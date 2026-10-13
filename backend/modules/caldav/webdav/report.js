@@ -13,6 +13,10 @@ const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { Op } = require('sequelize');
 const { ciLike } = require('../../../utils/db-dialect');
 const { canReadTask, visibleTaskWhere } = require('../access');
+const {
+    resourceNameFromHref,
+    findTaskResource,
+} = require('./task-resource');
 
 async function handleReport(req, res) {
     try {
@@ -40,8 +44,8 @@ async function handleReport(req, res) {
             const responses = [];
 
             for (const href of queryRequest.hrefs) {
-                const match = href.match(/\/([^/]+)\.ics$/);
-                if (!match) {
+                const resourceName = resourceNameFromHref(href);
+                if (!resourceName) {
                     responses.push(
                         buildResponse(
                             href,
@@ -51,14 +55,7 @@ async function handleReport(req, res) {
                     continue;
                 }
 
-                const resourceName = decodeURIComponent(match[1]);
-                const task = await taskRepository.findByUidOrResourceName(
-                    resourceName,
-                    {
-                        include: CALDAV_TASK_INCLUDES,
-                        where: await visibleTaskWhere(userId),
-                    }
-                );
+                const task = await findTaskResource(resourceName, userId);
 
                 if (!(await canReadTask(task, userId))) {
                     responses.push(
