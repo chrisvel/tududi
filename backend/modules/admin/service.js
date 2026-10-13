@@ -504,14 +504,18 @@ class AdminService {
 
     // The last 14 days as UTC days, oldest first, so the dashboard can show
     // this week next to the one before. Signups and waitlist joins per day,
-    // how many of this week's signups did anything, who was active, and on
-    // a hosted instance the trial and churn signals for the same window.
+    // how many of this week's signups did anything, who was active, page
+    // views, what people created and finished, and on a hosted instance the
+    // trial and churn signals for the same window.
     async trends(now = new Date()) {
         const {
             User,
             WaitlistSubscriber,
             BillingAccount,
+            Task,
         } = require('../../models');
+        const { getConfig } = require('../../config/config');
+        const visitService = require('../../services/visitService');
         const entitlements = require('../../services/entitlementsService');
         const { Op } = require('sequelize');
         const DAY_MS = 24 * 60 * 60 * 1000;
@@ -524,6 +528,25 @@ class AdminService {
         const weekStart = new Date(today.getTime() - 6 * DAY_MS);
         const weekAhead = new Date(now.getTime() + 7 * DAY_MS);
         const hosted = entitlements.isHostedMode();
+        const dayKeys = Array.from({ length: DAYS }, (_, i) =>
+            new Date(start.getTime() + i * DAY_MS).toISOString().slice(0, 10)
+        );
+
+        // This week's count and the week before's for one date column.
+        const countByWeek = async (Model, field, where) => {
+            const [last7d, prev7d] = await Promise.all([
+                Model.count({
+                    where: { ...where, [field]: { [Op.gte]: weekStart } },
+                }),
+                Model.count({
+                    where: {
+                        ...where,
+                        [field]: { [Op.gte]: start, [Op.lt]: weekStart },
+                    },
+                }),
+            ]);
+            return { last7d, prev7d };
+        };
 
         const [
             signups,
@@ -533,9 +556,12 @@ class AdminService {
             trialsEnding,
             canceled,
             failed,
+            visits,
+            tasksCreated,
+            tasksCompleted,
         ] = await Promise.all([
             User.findAll({
-                attributes: ['id', 'created_at'],
+                attributes: ['id', 'created_at', 'email_verified'],
                 where: { created_at: { [Op.gte]: start } },
                 raw: true,
             }),
@@ -570,6 +596,11 @@ class AdminService {
                       },
                   })
                 : 0,
+            getConfig().visits?.enabled === false
+                ? null
+                : visitService.summary(dayKeys, now),
+            countByWeek(Task, 'created_at', { recurring_parent_id: null }),
+            countByWeek(Task, 'completed_at', {}),
         ]);
 
         const dayKey = (value) => new Date(value).toISOString().slice(0, 10);
@@ -591,9 +622,10 @@ class AdminService {
         const sum = (list, field) => list.reduce((n, d) => n + d[field], 0);
         const thisWeek = days.slice(7);
         const lastWeek = days.slice(0, 7);
-        const newIds = signups
-            .filter((u) => new Date(u.created_at) >= weekStart)
-            .map((u) => u.id);
+        const newUsers = signups.filter(
+            (u) => new Date(u.created_at) >= weekStart
+        );
+        const newIds = newUsers.map((u) => u.id);
         const activated = newIds.length
             ? await adminRepository.findCreatorIdsSince(weekStart, newIds)
             : new Set();
@@ -609,9 +641,15 @@ class AdminService {
                 last7d: sum(thisWeek, 'waitlist'),
                 prev7d: sum(lastWeek, 'waitlist'),
             },
-            activation: { new_users: newIds.length, activated: activated.size },
+            activation: {
+                new_users: newIds.length,
+                activated: activated.size,
+                verified: newUsers.filter((u) => u.email_verified).length,
+            },
             onboarding,
             active_users_7d: active.size,
+            tasks: { created: tasksCreated, completed: tasksCompleted },
+            visits,
             billing: hosted
                 ? {
                       trials_started_7d: trialsStarted,

@@ -264,6 +264,11 @@ app.use((req, res, next) => {
     return next();
 });
 
+// Counts page views for the admin dashboard. Before the host switches so the
+// marketing and blog hosts are seen too; it only looks at the finished
+// response, so it cannot change what is served.
+app.use(require('./services/visitService').track());
+
 // Marketing page for the hostnames in TUDUDI_LANDING_HOSTS. A no-op unless
 // that variable is set, so a self-hosted instance never sees it. It sits
 // before the static handlers because the landing hosts must not serve the
