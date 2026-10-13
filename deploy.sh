@@ -25,6 +25,9 @@ trap 'rm -f "$marker"' EXIT
 # Uses the existing online SQLite backup API, not a copy of a WAL-mode file.
 COMPOSE_FILE=docker-compose.yml BACKUP_PATH_FILE="$marker" ./backup.sh
 snapshot=$(cat "$marker")
+# No verified snapshot, no update: a rollback must never run without one.
+have_snapshot() { [ -n "$snapshot" ] && [ -f "$snapshot" ] && [ -s "$snapshot" ]; }
+have_snapshot || { echo "No pre-deploy snapshot; nothing was changed" >&2; exit 2; }
 "${compose[@]}" stop app
 printf 'LTD_VERSION=%s\n' "$version" > .env.version
 export LTD_VERSION="$version"
@@ -44,6 +47,11 @@ fi
 
 echo "Deploy failed; restoring image $previous and SQLite snapshot $snapshot" >&2
 "${compose[@]}" stop app
+if ! have_snapshot; then
+    # The image alone is never rolled back; the live files stay where they are.
+    echo "Snapshot $snapshot is gone; app left stopped for operator recovery" >&2
+    exit 1
+fi
 failed="data/failed-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 mkdir -p "$failed"
 # Retain failed files for diagnosis, including WAL/SHM; none may be replayed
