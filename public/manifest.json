@@ -6,8 +6,8 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "theme_color": "#4a5568",
-  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "background_color": "#f7f6f2",
   "lang": "en",
   "orientation": "portrait-primary",
   "share_target": {
@@ -21,29 +21,29 @@
   },
   "icons": [
     {
-      "src": "/icon-logo.png",
+      "src": "/icon-logo.png?v=path-to-today-1",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-logo.png",
+      "src": "/icon-logo.png?v=path-to-today-1",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/apple-touch-icon.png",
+      "src": "/apple-touch-icon.png?v=path-to-today-1",
       "sizes": "180x180",
       "type": "image/png"
     },
     {
-      "src": "/favicon-32.png",
+      "src": "/favicon-32.png?v=path-to-today-1",
       "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "/favicon-16.png",
+      "src": "/favicon-16.png?v=path-to-today-1",
       "sizes": "16x16",
       "type": "image/png"
     }

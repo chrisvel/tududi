@@ -38,14 +38,15 @@
     </script>
     <title>Life-to-Day</title>
     <!-- LTD-PATCH(T-301): Use the shared system UI font; preserve the supplied brand. -->
-    <meta name="theme-color" content="#4a5568">
+    <meta name="theme-color" content="#2563eb">
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <!-- LTD-PATCH(T-301): Version approved artwork to refresh previous installs. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=path-to-today-1">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=path-to-today-1">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=path-to-today-1">
     
     <!-- Web app manifest for PWA support -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json?v=path-to-today-1">
     <!-- LTD-PATCH(T-301): static Vazirmatn; webpack must not resolve the font urls -->
     <link rel="stylesheet" href="fonts/vazirmatn/vazirmatn.css">
   </head>

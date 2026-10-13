@@ -2,7 +2,8 @@
 // v2: manifest.json gained a share_target member, and the static cache is
 // cache-first — existing installs need the stale copy evicted to pick it up
 // v3: push notifications
-const CACHE_VERSION = 'life-to-day-v1';
+// LTD-PATCH(T-301): Evict cached assets from the previous logo release.
+const CACHE_VERSION = 'life-to-day-v2';
 const API_CACHE = 'tududi-api-v1';
 const SYNC_QUEUE = 'tududi-sync-queue';
 
@@ -25,10 +26,11 @@ let sessionUserId = null;
 
 const STATIC_ASSETS = [
     '/',
-    '/manifest.json',
-    '/favicon-32.png',
-    '/apple-touch-icon.png',
-    '/icon-logo.png',
+    '/manifest.json?v=path-to-today-1',
+    '/favicon-32.png?v=path-to-today-1',
+    '/apple-touch-icon.png?v=path-to-today-1',
+    '/icon-logo.png?v=path-to-today-1',
+    '/brand-mark.png?v=path-to-today-1',
 ];
 
 // ─── Install ────────────────────────────────────────────────────────────────
@@ -370,8 +372,8 @@ self.addEventListener('push', (event) => {
     event.waitUntil(
         self.registration.showNotification(title, {
             body: payload.body || '',
-            icon: '/icon-logo.png',
-            badge: '/favicon-32.png',
+            icon: '/icon-logo.png?v=path-to-today-1',
+            badge: '/brand-badge.png?v=path-to-today-1',
             tag: payload.tag || undefined,
             data: { url: payload.url || '/' },
         })

@@ -5,7 +5,7 @@
 </head>
 <body>
     <h2>Favicon Generator for Life-to-Day</h2>
-    <p>Use this canvas to generate a favicon.ico file:</p>
+    <p>Preview the approved favicon and download a PNG copy:</p>
     
     <canvas id="favicon" width="32" height="32" style="border: 1px solid #ccc; image-rendering: pixelated; width: 160px; height: 160px;"></canvas>
     <br><br>
@@ -24,7 +24,7 @@
                 ctx.clearRect(0, 0, 32, 32);
                 ctx.drawImage(image, 0, 0, 32, 32);
             };
-            image.src = 'favicon-32.png';
+            image.src = 'favicon-32.png?v=path-to-today-1';
         }
         
         function downloadFavicon() {
@@ -40,10 +40,7 @@
     </script>
     
     <p><small>
-        After downloading the PNG, you can convert it to ICO format using online tools like:
-        <br>• https://convertio.co/png-ico/
-        <br>• https://favicon.io/favicon-converter/
-        <br>Then replace this file with the generated favicon.ico
+        The project already includes favicon.ico with multiple sizes. This preview downloads PNG only.
     </small></p>
 </body>
 </html>

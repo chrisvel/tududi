@@ -128,8 +128,8 @@ module.exports = {
                         return content
                             .toString()
                             .replace(
-                                "const CACHE_VERSION = 'life-to-day-v1';",
-                                `const CACHE_VERSION = 'life-to-day-v1-${buildId}';`
+                                "const CACHE_VERSION = 'life-to-day-v2';",
+                                `const CACHE_VERSION = 'life-to-day-v2-${buildId}';`
                             );
                     },
                 },

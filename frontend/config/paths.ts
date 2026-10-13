@@ -115,5 +115,18 @@ export function getLocalesPath(path: string): string {
  */
 export function getAssetPath(path: string): string {
     const cleanPath = stripLeadingSlash(path);
-    return withBasePath(cleanPath);
+    // LTD-PATCH(T-301): Skip immutable copies of the previous brand artwork.
+    const assetPath = withBasePath(cleanPath);
+    return BRAND_ASSETS.has(cleanPath)
+        ? `${assetPath}?v=path-to-today-1`
+        : assetPath;
 }
+
+const BRAND_ASSETS = new Set([
+    'brand-mark.png',
+    'life-wordmark-light.png',
+    'life-wordmark-dark.png',
+    'wide-logo-light.png',
+    'wide-logo-dark.png',
+    'icon-logo.png',
+]);
