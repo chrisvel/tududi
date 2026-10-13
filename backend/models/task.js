@@ -43,12 +43,28 @@ module.exports = (sequelize) => {
                 type: DataTypes.TEXT,
                 allowNull: true,
             },
+            // LTD-PATCH(T-1203): task-specific Focus length; NULL inherits user preferences.
+            focus_minutes: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                validate: {
+                    isInt: true,
+                    min: 5,
+                    max: 90,
+                    step(value) {
+                        if (value != null && value % 5 !== 0)
+                            throw new Error(
+                                'focus_minutes must use steps of 5'
+                            );
+                    },
+                },
+            },
             estimated_minutes: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
                 validate: {
                     min: 5,
-                    max: 720,
+                    max: 1080,
                 },
             },
             priority: {

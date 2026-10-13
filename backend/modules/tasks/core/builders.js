@@ -1,3 +1,5 @@
+// LTD-PATCH(T-1203): accept a task Focus length without rewriting its minute estimate.
+const { parseLength } = require('../../ltd-focus/rules');
 const moment = require('moment-timezone');
 const { Task } = require('../../../models');
 const {
@@ -186,6 +188,8 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         attrs.user_id = userId;
     }
 
+    if (body.focus_minutes !== undefined)
+        attrs.focus_minutes = parseLength(body.focus_minutes);
     if (body.estimated_minutes !== undefined) {
         attrs.estimated_minutes = parseEstimatedMinutes(body.estimated_minutes);
     }
@@ -297,6 +301,8 @@ function buildUpdateAttributes(body, task, timezone) {
         );
     }
 
+    if (body.focus_minutes !== undefined)
+        attrs.focus_minutes = parseLength(body.focus_minutes);
     if (body.estimated_minutes !== undefined) {
         attrs.estimated_minutes = parseEstimatedMinutes(body.estimated_minutes);
     }

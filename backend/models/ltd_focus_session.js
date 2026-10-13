@@ -43,6 +43,10 @@ module.exports = (sequelize) =>
         {
             tableName: 'ltd_focus_sessions',
             timestamps: false,
-            indexes: [{ fields: ['user_id'] }, { fields: ['task_id'] }],
+            indexes: [
+                { fields: ['user_id'] },
+                { fields: ['task_id'] },
+                { fields: ['user_id', 'task_id'] },
+            ],
         }
     );

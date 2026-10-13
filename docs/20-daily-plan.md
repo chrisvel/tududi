@@ -149,8 +149,8 @@ Deterministic rules from blueprint 14.5 (ADR-006); nothing derived is stored. Co
 | GET/PUT | `/api/planner/overwhelmed` | Body `{ on: boolean }`; returns `{ on, until }` |
 | GET | `/api/planner/contribution?date=` | `{ date, goals: [{ goal_uid, title, horizon, chain, minutes, tasks }], unaligned_minutes }` |
 | GET | `/api/focus-sessions/current` | `{ session }`: the latest session if it is running or was interrupted and its task is open, else null |
-| POST | `/api/focus-sessions` | Body `{ task_uid, planned_minutes? }` (1–240, default 25); 201 |
-| POST | `/api/focus-sessions/:uid/end` | Body `{ interrupted?, resume_note? }`; `actual_minutes` comes from the server clock |
+| POST | `/api/focus-sessions` | Body `{ task_uid, planned_minutes? }`; length comes from task → user → 25 (5–90, step 5); an open session is 409; 201 |
+| POST | `/api/focus-sessions/:uid/end` | Body `{ interrupted?, resume_note?, ended_at? }`; `actual_minutes` comes from the server clock or the supplied end timestamp |
 | POST | `/api/focus-sessions/:uid/resume` | New session on the same task carrying the note; 201 |
 
 `ltd_focus_sessions`: `uid, user_id, task_id (SET NULL), started_at, ended_at, planned_minutes, actual_minutes, interrupted, resume_note`. SQLite connections start transactions IMMEDIATE, so concurrent read-then-write transactions wait on `busy_timeout` instead of failing with `SQLITE_BUSY`.
@@ -186,3 +186,21 @@ Each draft, estimate batch or wrap-up counts as one AI request, and one AI credi
 - Two open planners for the same day overwrite each other; the last save wins.
 - Unfinished tasks are not carried over to the next day's plan.
 - There are no MCP tools for the plan yet.
+
+
+### Task-bound Pomodoro (Phase 12, ADR-015)
+
+The top bar and Today open the same Focus session, using the same `pomodoroClock`. The old `tududi_pomodoro_timer` key is removed on mount and is never migrated. Hidden tabs stop rendering-clock intervals and recompute on visibility. A task's nullable `focus_minutes` overrides `ui_settings.pomodoro.focus_minutes`, then 25. Defaults: focus 25, short break 5, long break 15, every 4 completed intervals today, sound off. Preferences are in the top-bar picker.
+
+The estimate is still `estimated_minutes`: writing N intervals writes N × length, up to twelve 90-minute intervals (1080 minutes). Changing length does not rewrite that estimate or previous sessions. Summary target = max(1, round(estimate / length)), or null when unknown. A completed interval is ended, uninterrupted, and actual + 1 >= planned. Interrupted minutes remain; only its completion dot is absent. Lifetime spent minutes exclude open sessions and breaks.
+
+At the bell the session stays open. Break ends it at started + planned and starts a local rest display. Continuing shows +mm:ss and the eventual end uses server time. A visible tab asks after planned + 15; after planned + 120 the server and UI close at the bell. Break expiry only offers a Next interval button. Ring transitions, entry and the single bell pulse are limited to `prefers-reduced-motion: no-preference`.
+
+| Method | Route | Contract |
+| --- | --- | --- |
+| GET | `/api/focus-sessions/summary?task_uids=` | Up to 100 task UIDs; UID-keyed spent_minutes, completed_count, target_count, length_minutes; viewer's sessions only |
+| GET | `/api/focus-sessions/today` | Today's completed work totals in the user's timezone, grouped by session start day |
+| POST | `/api/focus-sessions/manual` | task_uid, started_at, ended_at; 1–240 minutes, within the last seven days, never future; overlap with any same-user session is 409 |
+| GET / PUT | `/api/focus-sessions/settings` | Normalized defaults / save `ui_settings.pomodoro`, preserving other preference bags |
+
+Focus writes require a signed-in human session; API tokens and MCP cannot create them. There is no Journal entry, calendar export, second timer, second time table or stored count. Per-user transactions serialize start and overlap checks on SQLite and PostgreSQL. The capacity factor f remains unchanged.

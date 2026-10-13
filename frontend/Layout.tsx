@@ -1,3 +1,4 @@
+// LTD-PATCH(T-1203): keep the Navbar/Focus host mounted while initial data finishes loading.
 // LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -487,22 +488,32 @@ const Layout: React.FC<LayoutProps> = ({
     );
 
     if (isLoading) {
-        return renderShell(
-            <div className="flex-1 flex items-center justify-center">
-                <div className="text-xl text-gray-700 dark:text-gray-200">
-                    {t('common.loading')}
-                </div>
-            </div>
+        return (
+            <SidebarProvider isSidebarOpen={isSidebarOpen}>
+                <UpgradeModal />
+                {renderShell(
+                    <div className="flex-1 flex items-center justify-center">
+                        <div className="text-xl text-gray-700 dark:text-gray-200">
+                            {t('common.loading')}
+                        </div>
+                    </div>
+                )}
+            </SidebarProvider>
         );
     }
 
     if (isError) {
-        return renderShell(
-            <div className="flex-1 flex flex-col items-center justify-center">
-                <div className="text-xl text-red-500">
-                    {t('errors.somethingWentWrong')}
-                </div>
-            </div>
+        return (
+            <SidebarProvider isSidebarOpen={isSidebarOpen}>
+                <UpgradeModal />
+                {renderShell(
+                    <div className="flex-1 flex flex-col items-center justify-center">
+                        <div className="text-xl text-red-500">
+                            {t('errors.somethingWentWrong')}
+                        </div>
+                    </div>
+                )}
+            </SidebarProvider>
         );
     }
 
