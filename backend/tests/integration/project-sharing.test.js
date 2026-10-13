@@ -93,6 +93,31 @@ describe('Project Sharing Integration Tests', () => {
             expect(sharedProject.share_count).toBeGreaterThan(0);
         });
 
+        test('project with only a pending invitation still shows as shared', async () => {
+            const pendingResponse = await ownerAgent.post('/api/project').send({
+                name: 'Pending Share Project',
+            });
+            const pendingProject = pendingResponse.body;
+            await ownerAgent.post('/api/shares').send({
+                resource_type: 'project',
+                resource_uid: pendingProject.uid,
+                target_user_email: sharedUser.email,
+                access_level: 'ro',
+            });
+
+            const listResponse = await ownerAgent.get('/api/projects');
+            const listed = listResponse.body.projects.find(
+                (p) => p.uid === pendingProject.uid
+            );
+            expect(listed.is_shared).toBe(true);
+            expect(listed.share_count).toBe(0);
+
+            const detailResponse = await ownerAgent.get(
+                `/api/project/${pendingProject.uid}`
+            );
+            expect(detailResponse.body.is_shared).toBe(true);
+        });
+
         test('owner can fetch share list with emails via /api/shares', async () => {
             const response = await ownerAgent.get(
                 `/api/shares?resource_type=project&resource_uid=${project.uid}`

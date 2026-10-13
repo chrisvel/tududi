@@ -45,6 +45,11 @@ RUN npm cache clean --force && \
 ####################
 FROM node:22-alpine AS production
 
+# service: Kamal (the hosted deploy) refuses images without it.
+# source: links the ghcr.io package to this repository.
+LABEL service="tududi" \
+      org.opencontainers.image.source="https://github.com/chrisvel/tududi"
+
 ENV APP_UID=1001
 ENV APP_GID=1001
 
@@ -76,13 +81,13 @@ RUN chmod +x /app/scripts/docker-entrypoint.sh
 # Copy package files first
 COPY --chown=app:app package.json package-lock.json /app/
 
-# Install production dependencies only
+# Install production dependencies only. A failed install must fail the
+# build: only the size cleanup below is allowed to fail.
 RUN npm install --omit=dev --no-audit --no-fund && \
     npm cache clean --force && \
-
     ln -s /app/node_modules /app/backend/node_modules && \
     # Remove unnecessary files from node_modules to reduce size
-    find /app/node_modules -type f \( \
+    { find /app/node_modules -type f \( \
     -name "*.md" -o \
     -name "*.ts" -o \
     -name "*.map" -o \
@@ -101,7 +106,9 @@ RUN npm install --omit=dev --no-audit --no-fund && \
     -name "example" -o \
     -name "coverage" -o \
     -name ".github" \
-    \) -exec rm -rf {} + 2>/dev/null || true
+    \) -exec rm -rf {} + 2>/dev/null || true; } && \
+    cd /app/backend && \
+    node -e "require('sequelize'); require('sqlite3'); require('express')"
 
 # Copy frontend
 RUN rm -rf /app/backend/dist

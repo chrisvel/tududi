@@ -24,6 +24,12 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // Starter key while this task is an untouched example from the
+            // welcome screen; cleared on the first edit or completion.
+            example_of: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             defer_until: {
                 type: DataTypes.DATE,
                 allowNull: true,

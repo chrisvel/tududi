@@ -8,8 +8,10 @@ import {
     fetchDailyPlan,
     fetchPlanCandidates,
 } from '../../../utils/dailyPlanService';
+import { fetchCalendarEvents } from '../../../utils/calendarFeedsService';
 
 let aiEnabled = false;
+let calendarEnabled = true;
 
 // A stable t, like the real one: the planner reloads when t changes.
 jest.mock('react-i18next', () => {
@@ -43,7 +45,12 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('../../../store/useStore', () => ({
     useStore: (selector: any) =>
-        selector({ userSettingsStore: { aiAssistantEnabled: aiEnabled } }),
+        selector({
+            userSettingsStore: {
+                aiAssistantEnabled: aiEnabled,
+                calendarEnabled,
+            },
+        }),
 }));
 
 jest.mock('../../Shared/ToastContext', () => ({
@@ -104,6 +111,7 @@ const existing = {
 describe('PlanMyDay AI help', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        calendarEnabled = true;
         (fetchDailyPlan as jest.Mock).mockResolvedValue({
             date: '2026-09-24',
             plan: {
@@ -125,6 +133,28 @@ describe('PlanMyDay AI help', () => {
         expect(screen.queryByTestId('ai-draft-button')).not.toBeInTheDocument();
         expect(screen.queryByTestId('plan-tips')).not.toBeInTheDocument();
         expect(estimateWithAi).not.toHaveBeenCalled();
+    });
+
+    it('loads calendar events while the Calendar feature is on', async () => {
+        render(<PlanMyDay />);
+
+        await waitFor(() =>
+            expect(fetchCalendarEvents).toHaveBeenCalledWith('2026-09-24')
+        );
+        fireEvent.click(screen.getByTestId('plan-more'));
+        expect(screen.getByTestId('plan-refresh-calendar')).toBeInTheDocument();
+    });
+
+    it('leaves calendars out while the Calendar feature is off', async () => {
+        calendarEnabled = false;
+        render(<PlanMyDay />);
+
+        expect(await screen.findByText('Pay invoice')).toBeInTheDocument();
+        expect(fetchCalendarEvents).not.toHaveBeenCalled();
+        fireEvent.click(screen.getByTestId('plan-more'));
+        expect(
+            screen.queryByTestId('plan-refresh-calendar')
+        ).not.toBeInTheDocument();
     });
 
     it('fills free time with a draft and undoes it', async () => {

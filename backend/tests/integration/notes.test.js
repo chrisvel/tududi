@@ -209,6 +209,26 @@ describe('Notes Routes', () => {
             expect(response.body.project_id).toBe(project.id);
         });
 
+        it('sets and clears the note background', async () => {
+            const set = await agent
+                .patch(`/api/note/${note.uid}`)
+                .send({ background: 'mural' });
+            expect(set.status).toBe(200);
+            expect(set.body.background).toBe('mural');
+
+            const cleared = await agent
+                .patch(`/api/note/${note.uid}`)
+                .send({ background: null });
+            expect(cleared.body.background).toBeNull();
+        });
+
+        it('rejects a background that is not a background id', async () => {
+            const response = await agent
+                .patch(`/api/note/${note.uid}`)
+                .send({ background: 'url(x)' });
+            expect(response.status).toBe(400);
+        });
+
         it('should return 404 for non-existent note', async () => {
             const response = await agent
                 .patch('/api/note/abcd1234efghijk')

@@ -6,6 +6,7 @@ import { getApiPath, getAssetPath } from '../config/paths';
 import OIDCProviderButtons from './Auth/OIDCProviderButtons';
 import CaptchaWidget from './Auth/CaptchaWidget';
 import { fetchCaptchaConfig, CaptchaConfig } from '../utils/captcha';
+import { clearCsrfToken } from '../utils/csrfService';
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -177,6 +178,8 @@ const Login: React.FC = () => {
             const data = await response.json();
 
             if (response.ok) {
+                // A token fetched before signing in belongs to another session.
+                clearCsrfToken();
                 if (data.user && data.user.language) {
                     await i18n.changeLanguage(data.user.language);
                 }

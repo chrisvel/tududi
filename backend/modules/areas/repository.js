@@ -1,8 +1,16 @@
 'use strict';
 
-const { Area, Project, Goal, Task, sequelize } = require('../../models');
+const {
+    Area,
+    Project,
+    Goal,
+    Task,
+    UserAreaOrder,
+    sequelize,
+} = require('../../models');
 const { Op } = require('sequelize');
 const BaseRepository = require('../../shared/database/BaseRepository');
+const permissionsService = require('../../services/permissionsService');
 
 const PUBLIC_ATTRIBUTES = ['uid', 'name', 'description', 'color'];
 const LIST_ATTRIBUTES = ['id', 'uid', 'name', 'description', 'color'];
@@ -12,12 +20,64 @@ class AreasRepository extends BaseRepository {
         super(Area);
     }
 
+    // Custom order positions of the Areas page for a user, by area_id.
+    async getUserAreaPositions(userId) {
+        const rows = await UserAreaOrder.findAll({
+            where: { user_id: userId },
+            attributes: ['area_id', 'position'],
+            raw: true,
+        });
+        const map = {};
+        rows.forEach((row) => {
+            map[row.area_id] = row.position;
+        });
+        return map;
+    }
+
+    async findIdsByUids(whereClause, uids) {
+        return this.model.findAll({
+            where: { [Op.and]: [whereClause, { uid: { [Op.in]: uids } }] },
+            attributes: ['id', 'uid'],
+            raw: true,
+        });
+    }
+
+    // Replaces the user's whole custom order with areaIds, in that order.
+    async replaceUserAreaOrder(userId, areaIds) {
+        await sequelize.transaction(async (transaction) => {
+            await UserAreaOrder.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
+            await UserAreaOrder.bulkCreate(
+                areaIds.map((areaId, index) => ({
+                    user_id: userId,
+                    area_id: areaId,
+                    position: index,
+                })),
+                { transaction }
+            );
+        });
+    }
+
     /**
-     * Find all areas for a user with counts of associated projects, goals, and tasks.
+     * Find all areas a user owns or has been shared, with counts of the
+     * projects, goals, and tasks in them that the user can see.
      */
     async findAllByUser(userId) {
+        const [areaWhere, projectWhere, goalWhere, taskWhere] =
+            await Promise.all([
+                permissionsService.ownershipOrPermissionWhere('area', userId),
+                permissionsService.ownershipOrPermissionWhere(
+                    'project',
+                    userId
+                ),
+                permissionsService.ownershipOrPermissionWhere('goal', userId),
+                permissionsService.ownershipOrPermissionWhere('task', userId),
+            ]);
+
         const areas = await this.model.findAll({
-            where: { user_id: userId },
+            where: areaWhere,
             attributes: LIST_ATTRIBUTES,
             order: [['name', 'ASC']],
         });
@@ -28,7 +88,9 @@ class AreasRepository extends BaseRepository {
 
         const [projectCounts, goalCounts, taskCounts] = await Promise.all([
             Project.findAll({
-                where: { area_id: { [Op.in]: areaIds }, user_id: userId },
+                where: {
+                    [Op.and]: [{ area_id: { [Op.in]: areaIds } }, projectWhere],
+                },
                 attributes: [
                     'area_id',
                     [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
@@ -37,7 +99,9 @@ class AreasRepository extends BaseRepository {
                 raw: true,
             }),
             Goal.findAll({
-                where: { area_id: { [Op.in]: areaIds }, user_id: userId },
+                where: {
+                    [Op.and]: [{ area_id: { [Op.in]: areaIds } }, goalWhere],
+                },
                 attributes: [
                     'area_id',
                     [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
@@ -47,9 +111,10 @@ class AreasRepository extends BaseRepository {
             }),
             Task.findAll({
                 where: {
-                    area_id: { [Op.in]: areaIds },
-                    user_id: userId,
-                    parent_task_id: null,
+                    [Op.and]: [
+                        { area_id: { [Op.in]: areaIds }, parent_task_id: null },
+                        taskWhere,
+                    ],
                 },
                 attributes: [
                     'area_id',
@@ -107,6 +172,14 @@ class AreasRepository extends BaseRepository {
     }
 
     /**
+     * Find an area by UID whoever owns it; the caller checks access, so
+     * areas shared with the user are found too.
+     */
+    async findAnyByUid(uid, attributes) {
+        return this.model.findOne({ where: { uid }, attributes });
+    }
+
+    /**
      * Create a new area for a user.
      */
     async createForUser(userId, { name, description, color }) {
@@ -121,3 +194,4 @@ class AreasRepository extends BaseRepository {
 
 module.exports = new AreasRepository();
 module.exports.PUBLIC_ATTRIBUTES = PUBLIC_ATTRIBUTES;
+module.exports.LIST_ATTRIBUTES = LIST_ATTRIBUTES;

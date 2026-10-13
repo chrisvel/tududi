@@ -21,12 +21,39 @@ function normalizeHref(href) {
     }
 }
 
+// A multistatus href is an absolute path on the server (RFC 4918 8.3), so when
+// the server lives under a path prefix (https://host/radicale) the href already
+// carries it. Gluing it onto server_url doubled the prefix, so every request
+// after the first sync went to a path that does not exist (#1822). An href that
+// does not start with the prefix is still appended, as before.
+function resolveRemoteHref(remoteCalendar, remoteHref) {
+    const href = normalizeHref(remoteHref);
+    if (!href) return null;
+
+    const baseUrl = remoteCalendar.server_url.replace(/\/$/, '');
+
+    try {
+        const base = new URL(baseUrl);
+        const basePath = base.pathname.replace(/\/$/, '');
+        if (
+            basePath &&
+            (href === basePath || href.startsWith(`${basePath}/`))
+        ) {
+            return `${base.origin}${href}`;
+        }
+    } catch {
+        // Not an absolute URL: fall through to plain concatenation.
+    }
+
+    return `${baseUrl}${href}`;
+}
+
 function buildRemoteTaskUrl(remoteCalendar, remoteHref, taskUid) {
     const baseUrl = remoteCalendar.server_url.replace(/\/$/, '');
 
-    const href = normalizeHref(remoteHref);
-    if (href) {
-        return `${baseUrl}${href}`;
+    const resolved = resolveRemoteHref(remoteCalendar, remoteHref);
+    if (resolved) {
+        return resolved;
     }
 
     // No href on record: the task has never been seen on this server, so Tududi
@@ -46,6 +73,7 @@ function extractUidFromHref(href) {
 
 module.exports = {
     normalizeHref,
+    resolveRemoteHref,
     buildRemoteTaskUrl,
     extractUidFromHref,
 };

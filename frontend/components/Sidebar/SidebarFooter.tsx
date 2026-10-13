@@ -10,11 +10,14 @@ import {
     Squares2X2Icon,
     TagIcon,
     InboxIcon,
+    BugAntIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import AppsGridIcon from '../Shared/Icons/AppsGridIcon';
 import AppLauncherModal from './AppLauncherModal';
+import FeedbackModal from '../Feedback/FeedbackModal';
 import { useTranslation } from 'react-i18next';
+import { canOpenAccess } from '../../entities/Role';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
 import { getApiPath } from '../../config/paths';
@@ -28,7 +31,12 @@ import {
 } from '../../utils/keyboardShortcutsService';
 
 interface SidebarFooterProps {
-    currentUser: { email: string; is_admin?: boolean; avatar_image?: string };
+    currentUser: {
+        email: string;
+        is_admin?: boolean;
+        role?: string;
+        avatar_image?: string;
+    };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     isSidebarOpen: boolean;
@@ -58,9 +66,10 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isLauncherOpen, setIsLauncherOpen] = useState(false);
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
     const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [version, setVersion] = useState<string>('v0.86');
+    const [version, setVersion] = useState<string>('');
     const navigate = useNavigate();
 
     // Get shortcuts config, using defaults if not provided
@@ -209,7 +218,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
             {/* Version */}
             <div className="px-[14px] pt-[10px] flex justify-end">
                 <span className="text-[11px] text-gray-400 dark:text-gray-600 font-light italic opacity-60">
-                    {version}
+                    {version || '\u00a0'}
                 </span>
             </div>
 
@@ -228,24 +237,33 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     {isDropdownOpen && (
                         <div className="absolute bottom-full left-0 mb-2 w-60 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                             <div className="py-1">
-                                {dropdownItems.map(({ label, translationKey, icon, action }) => (
-                                    <button
-                                        key={label}
-                                        onClick={() => handleDropdownSelect(label)}
-                                        className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
-                                    >
-                                        <div className="flex items-center">
-                                            {icon}
-                                            {t(translationKey, label)}
-                                        </div>
-                                        <span
-                                            className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
-                                            style={{ fontSize: '10px' }}
+                                {dropdownItems.map(
+                                    ({
+                                        label,
+                                        translationKey,
+                                        icon,
+                                        action,
+                                    }) => (
+                                        <button
+                                            key={label}
+                                            onClick={() =>
+                                                handleDropdownSelect(label)
+                                            }
+                                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
                                         >
-                                            {getShortcutDisplay(action)}
-                                        </span>
-                                    </button>
-                                ))}
+                                            <div className="flex items-center">
+                                                {icon}
+                                                {t(translationKey, label)}
+                                            </div>
+                                            <span
+                                                className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
+                                                style={{ fontSize: '10px' }}
+                                            >
+                                                {getShortcutDisplay(action)}
+                                            </span>
+                                        </button>
+                                    )
+                                )}
                             </div>
                         </div>
                     )}
@@ -261,18 +279,37 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     </button>
                 </div>
 
-                {/* Right side: telegram + dark mode */}
+                {/* Right side: telegram + feedback + dark mode */}
                 <div className="flex items-center gap-1.5">
                     {telegramStatus !== 'none' && (
                         <div
                             className="flex items-center justify-center"
-                            title={telegramStatus === 'healthy' ? t('sidebar.telegramConnected', 'Telegram connected') : t('sidebar.telegramProblem', 'Telegram connection problem')}
+                            title={
+                                telegramStatus === 'healthy'
+                                    ? t(
+                                          'sidebar.telegramConnected',
+                                          'Telegram connected'
+                                      )
+                                    : t(
+                                          'sidebar.telegramProblem',
+                                          'Telegram connection problem'
+                                      )
+                            }
                         >
                             <TelegramIcon
                                 className={`h-4 w-4 ${telegramStatus === 'healthy' ? 'text-green-500' : 'text-red-500'}`}
                             />
                         </div>
                     )}
+                    <button
+                        onClick={() => setIsFeedbackOpen(true)}
+                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        aria-label={t('feedback.title', 'Send feedback')}
+                        title={t('feedback.title', 'Send feedback')}
+                        data-testid="feedback-button"
+                    >
+                        <BugAntIcon className="h-4 w-4" />
+                    </button>
                     <button
                         onClick={toggleDarkMode}
                         className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
@@ -289,10 +326,17 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 
             <AppLauncherModal
                 isOpen={isLauncherOpen}
-                isAdmin={currentUser?.is_admin === true}
+                isAdmin={canOpenAccess(currentUser)}
                 onClose={() => setIsLauncherOpen(false)}
                 onSelect={handleLauncherSelect}
             />
+
+            {isFeedbackOpen && (
+                <FeedbackModal
+                    onClose={() => setIsFeedbackOpen(false)}
+                    appVersion={version || undefined}
+                />
+            )}
         </div>
     );
 };

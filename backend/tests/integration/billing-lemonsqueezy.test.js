@@ -60,6 +60,17 @@ function mockFetch(url, options = {}) {
         );
         return jsonResponse(200, { data });
     }
+    m = path.match(/^\/subscription-items\/(\d+)$/);
+    if (m && method === 'PATCH') {
+        const { quantity } = JSON.parse(options.body).data.attributes;
+        return jsonResponse(200, {
+            data: {
+                type: 'subscription-items',
+                id: m[1],
+                attributes: { quantity },
+            },
+        });
+    }
     m = path.match(/^\/customers\/(\d+)$/);
     if (m && method === 'GET') {
         const customer = ls.customers[m[1]];
@@ -278,6 +289,32 @@ describe('Billing with Lemon Squeezy', () => {
             const status = await agent.get('/api/billing');
             expect(status.body.plan).toBe('pro');
             expect(status.body.portal_available).toBe(true);
+        });
+
+        it('records the seat line and brings it up to the members already added', async () => {
+            await createTestUser({
+                email: `member_${Date.now()}@example.com`,
+                created_by_user_id: user.id,
+            });
+            const data = subscriptionResource(2, user, {
+                first_subscription_item: { id: 900, quantity: 1 },
+            });
+
+            const res = await postEvent('subscription_created', data, {
+                custom: { user_uid: user.uid },
+            });
+
+            expect(res.status).toBe(200);
+            const patch = ls.calls.find(
+                (c) =>
+                    c.method === 'PATCH' && c.path === '/subscription-items/900'
+            );
+            expect(patch.body.data.attributes.quantity).toBe(2);
+            const account = await BillingAccount.findOne({
+                where: { user_id: user.id },
+            });
+            expect(account.provider_subscription_item_id).toBe('900');
+            expect(account.seat_quantity).toBe(2);
         });
 
         it('keeps access until ends_at when cancelled, drops to Free when expired', async () => {

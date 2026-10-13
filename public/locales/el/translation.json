@@ -5,6 +5,7 @@
     "save": "Αποθήκευση",
     "cancel": "Ακύρωση",
     "delete": "Διαγραφή",
+    "moreActions": "Περισσότερες ενέργειες",
     "edit": "Επεξεργασία",
     "create": "Δημιουργία",
     "submit": "Υποβολή",
@@ -43,7 +44,8 @@
     "optional": "προαιρετικό",
     "hideSearch": "Σύμπτυξη αναζήτησης",
     "showSearch": "Εμφάνιση αναζήτησης",
-    "beta": "beta"
+    "beta": "beta",
+    "comingSoon": "Έρχεται σύντομα"
   },
   "sidebar": {
     "dashboard": "Πίνακας Ελέγχου",
@@ -180,15 +182,14 @@
     "logoutSuccess": "Επιτυχής Αποσύνδεση",
     "or_continue_with_email": "Ή συνεχίστε με email",
     "sign_in_with": "Συνδεθείτε με {{provider}}",
+    "sign_up_with": "Εγγραφή με {{provider}}",
     "oidc": {
       "completing_signin": "Ολοκλήρωση σύνδεσης...",
       "authenticating_with_provider": "Αυθεντικοποίηση με τον πάροχο. Παρακαλώ περιμένετε..."
     },
     "captcha_required": "Ολοκληρώστε την επαλήθευση και δοκιμάστε ξανά.",
     "registration_successful": "Επιβεβαιώστε τη διεύθυνση email σας",
-    "registration_email_sent": "Επιβεβαιώστε τη διεύθυνση email σας για να ενεργοποιήσετε τον λογαριασμό σας. Σας στείλαμε έναν σύνδεσμο, ελέγξτε τα εισερχόμενά σας.",
-    "notify_joined": "Είστε στη λίστα. Θα σας στείλουμε email την ημέρα που θα ανοίξει το tududi Cloud.",
-    "notify_failed": "Δεν μπορέσαμε να αποθηκεύσουμε τη διεύθυνσή σας. Παρακαλώ δοκιμάστε ξανά."
+    "registration_email_sent": "Επιβεβαιώστε τη διεύθυνση email σας για να ενεργοποιήσετε τον λογαριασμό σας. Σας στείλαμε έναν σύνδεσμο, ελέγξτε τα εισερχόμενά σας."
   },
   "profile": {
     "title": "Ρυθμίσεις Προφίλ",
@@ -273,7 +274,14 @@
       "oidc": "OIDC/SSO",
       "caldav": "Συγχρονισμός CalDAV",
       "calendars": "Ημερολόγια",
-      "planning": "Σχεδιασμός"
+      "planning": "Σχεδιασμός",
+      "aiAssistant": "Βοηθός AI",
+      "apiKeys": "Κλειδιά API",
+      "appearance": "Εμφάνιση",
+      "features": "Λειτουργίες & Πρόσθετα",
+      "keyboardShortcuts": "Συντομεύσεις",
+      "mcp": "Ενσωμάτωση MCP",
+      "sidebar": "Πλαϊνή στήλη"
     },
     "security": "Ρυθμίσεις Ασφάλειας",
     "changePassword": "Αλλαγή Κωδικού",
@@ -331,6 +339,7 @@
     "norwegian": "Νορβηγικά",
     "polish": "Πολωνικά",
     "slovenian": "Σλοβενικά",
+    "slovak": "Σλοβακικά",
     "swedish": "Σουηδικά",
     "firstDayOfWeek": "Πρώτη ημέρα της εβδομάδας",
     "name": "Όνομα",
@@ -514,7 +523,10 @@
       "removeTitle": "Αφαίρεση ημερολογίου",
       "removeMessage": "Να σταματήσει η εμφάνιση του «{{name}}» στο Σήμερα; Το ίδιο το ημερολόγιο δεν αλλάζει.",
       "removeConfirm": "Αφαίρεση",
-      "missingFields": "Πρόσθεσε όνομα και τη διεύθυνση του ημερολογίου"
+      "missingFields": "Πρόσθεσε όνομα και τη διεύθυνση του ημερολογίου",
+      "showOnCalendar": "Εμφάνιση του {{name}} στη σελίδα Ημερολογίου",
+      "showOnCalendarShort": "Εμφάνιση στη σελίδα Ημερολογίου",
+      "toggleError": "Δεν ήταν δυνατή η ενημέρωση του ημερολογίου"
     },
     "planning": {
       "title": "Σχεδιασμός",
@@ -539,47 +551,217 @@
       "loadError": "Δεν ήταν δυνατή η φόρτωση της σειράς σχεδιασμού",
       "saveError": "Δεν ήταν δυνατή η αποθήκευση της σειράς σχεδιασμού",
       "open": "Σχεδίασε τη μέρα μου",
-      "suggestionsLoadError": "Could not load your suggestion settings",
-      "suggestedLoading": "Open tasks you could pick up.",
-      "listOr": "{{first}} or {{last}}",
-      "suggestedFromProjectsAndNone": "Open tasks from projects marked {{statuses}}, and tasks with no project.",
-      "suggestedFromProjects": "Open tasks from projects marked {{statuses}}.",
-      "suggestedFromNone": "Open tasks with no project.",
-      "suggestedFromNothing": "Nothing, because no project status and no tasks without a project are chosen below.",
-      "suggestedExcluded": "Projects you chose to never suggest are left out.",
-      "suggestedLeftOutDay": "Deferred tasks, someday tasks and tasks due more than a day out are left out.",
-      "suggestedLeftOutDays": "Deferred tasks, someday tasks and tasks due more than {{count}} days out are left out.",
-      "suggestedStale": "So are tasks nobody changed in {{months}} months.",
-      "suggestedCap": "Up to {{count}} are shown.",
-      "suggestionsSaveError": "Could not save your suggestion settings",
-      "ruleDueRecent": "The earlier due date first, then the task changed most recently.",
-      "ruleDueNewest": "The earlier due date first, then the newest task.",
-      "ruleDueOldest": "The earlier due date first, then the oldest task.",
-      "tieRecent": "Most recently changed first",
-      "tieNewest": "Newest first",
-      "tieOldest": "Oldest first",
+      "suggestionsLoadError": "Δεν ήταν δυνατή η φόρτωση των ρυθμίσεων προτάσεων",
+      "suggestedLoading": "Ανοιχτές εργασίες που θα μπορούσες να αναλάβεις.",
+      "listOr": "{{first}} ή {{last}}",
+      "suggestedFromProjectsAndNone": "Ανοιχτές εργασίες από έργα με κατάσταση {{statuses}} και εργασίες χωρίς έργο.",
+      "suggestedFromProjects": "Ανοιχτές εργασίες από έργα με κατάσταση {{statuses}}.",
+      "suggestedFromNone": "Ανοιχτές εργασίες χωρίς έργο.",
+      "suggestedFromNothing": "Τίποτα, γιατί δεν έχει επιλεγεί παρακάτω καμία κατάσταση έργου ούτε οι εργασίες χωρίς έργο.",
+      "suggestedExcluded": "Τα έργα που επέλεξες να μην προτείνονται ποτέ παραλείπονται.",
+      "suggestedLeftOutDay": "Οι αναβληθείσες εργασίες, οι εργασίες «κάποια μέρα» και όσες λήγουν σε πάνω από μία ημέρα παραλείπονται.",
+      "suggestedLeftOutDays": "Οι αναβληθείσες εργασίες, οι εργασίες «κάποια μέρα» και όσες λήγουν σε πάνω από {{count}} ημέρες παραλείπονται.",
+      "suggestedStale": "Το ίδιο και οι εργασίες που δεν άλλαξε κανείς εδώ και {{months}} μήνες.",
+      "suggestedCap": "Εμφανίζονται έως {{count}}.",
+      "suggestionsSaveError": "Δεν ήταν δυνατή η αποθήκευση των ρυθμίσεων προτάσεων",
+      "ruleDueRecent": "Πρώτα η νωρίτερη ημερομηνία λήξης, μετά η εργασία που άλλαξε πιο πρόσφατα.",
+      "ruleDueNewest": "Πρώτα η νωρίτερη ημερομηνία λήξης, μετά η νεότερη εργασία.",
+      "ruleDueOldest": "Πρώτα η νωρίτερη ημερομηνία λήξης, μετά η παλαιότερη εργασία.",
+      "tieRecent": "Πρώτα όσες άλλαξαν πιο πρόσφατα",
+      "tieNewest": "Πρώτα οι νεότερες",
+      "tieOldest": "Πρώτα οι παλαιότερες",
       "staleOff": "Off",
-      "staleMonths": "{{count}} months",
-      "horizonDay": "1 day",
-      "horizonDays": "{{count}} days",
-      "projectsTitle": "Which projects count",
-      "includeNoProject": "Tasks with no project",
-      "excludedTitle": "Never suggest these projects",
-      "excludedRemove": "Suggest {{name}} again",
-      "excludedAdd": "Add a project…",
-      "tieTitle": "When tasks tie",
-      "tieDescription": "After priority and due date, which task comes first.",
-      "staleTitle": "Leave out untouched tasks",
-      "staleDescription": "Skip suggestions nobody has changed for this long.",
-      "horizonTitle": "Look ahead",
-      "horizonDescription": "Suggest tasks due up to this far ahead.",
-      "maxTitle": "Show up to",
-      "maxDescription": "The most tasks to suggest under Everything else.",
-      "maxOption": "{{count}} tasks",
-      "intro": "How Plan my day lays out your day and which tasks it offers you.",
-      "suggestedTitle": "What gets suggested",
-      "suggestedDescription": "Which open tasks can show up under Everything else, and how many. Overdue, due today and in progress tasks always show."
-    }
+      "staleMonths": "{{count}} μήνες",
+      "horizonDay": "1 ημέρα",
+      "horizonDays": "{{count}} ημέρες",
+      "projectsTitle": "Ποια έργα μετράνε",
+      "includeNoProject": "Εργασίες χωρίς έργο",
+      "excludedTitle": "Να μην προτείνονται ποτέ αυτά τα έργα",
+      "excludedRemove": "Να προτείνεται ξανά το {{name}}",
+      "excludedAdd": "Προσθήκη έργου…",
+      "tieTitle": "Όταν οι εργασίες ισοβαθμούν",
+      "tieDescription": "Μετά την προτεραιότητα και την ημερομηνία λήξης, ποια εργασία έρχεται πρώτη.",
+      "staleTitle": "Παράλειψη εργασιών που δεν έχουν αγγιχτεί",
+      "staleDescription": "Παράλειψη προτάσεων που δεν έχει αλλάξει κανείς εδώ και τόσο καιρό.",
+      "horizonTitle": "Κοίτα μπροστά",
+      "horizonDescription": "Πρότεινε εργασίες που λήγουν έως τόσο μπροστά.",
+      "maxTitle": "Εμφάνιση έως",
+      "maxDescription": "Ο μέγιστος αριθμός εργασιών που προτείνονται στο Όλα τα υπόλοιπα.",
+      "maxOption": "{{count}} εργασίες",
+      "intro": "Πώς το Σχεδίασε τη μέρα μου οργανώνει τη μέρα σου και ποιες εργασίες σου προτείνει.",
+      "suggestedTitle": "Τι προτείνεται",
+      "suggestedDescription": "Ποιες ανοιχτές εργασίες μπορούν να εμφανιστούν στο Όλα τα υπόλοιπα και πόσες. Οι εκπρόθεσμες, όσες λήγουν σήμερα και όσες είναι σε εξέλιξη εμφανίζονται πάντα.",
+      "hoursDescription": "Οι ώρες που δείχνει το χρονολόγιο στο Σήμερα και όταν σχεδιάζεις τη μέρα σου. Οι νέες εργασίες και τα προσχέδια του AI παίρνουν ώρα μέσα σε αυτές. Οι ώρες είναι στη ζώνη ώρας σου ({{timezone}}).",
+      "hoursFrom": "Από",
+      "hoursLoadError": "Δεν ήταν δυνατή η φόρτωση των ωρών της ημέρας σου",
+      "hoursSaveError": "Δεν ήταν δυνατή η αποθήκευση των ωρών της ημέρας σου",
+      "hoursTitle": "Η μέρα σου",
+      "hoursTo": "έως"
+    },
+    "aiApiKey": "Κλειδί API",
+    "aiApiKeyClear": "Εκκαθάριση",
+    "aiAssistantDescription": "Ενεργοποίηση ημερήσιων ενημερώσεων, αναλύσεων εργασιών και έργων με τεχνητή νοημοσύνη.",
+    "aiAssistantLabel": "Βοηθός AI (Αναλύσεις)",
+    "aiAssistantTab": "Βοηθός AI",
+    "aiAssistantTabDescription": "Ημερήσιες ενημερώσεις, αναλύσεις εργασιών και έργων από οποιοδήποτε μοντέλο συμβατό με OpenAI.",
+    "aiBaseUrl": "Βασικό URL",
+    "aiBaseUrlPlaceholder": "https://api.openai.com/v1 (προεπιλογή)",
+    "aiCreditsDescription": "Κάθε ημερήσια ενημέρωση, ανάλυση εργασίας ή ανάλυση έργου που δημιουργείς χρησιμοποιεί μία μονάδα. Το υπόλοιπο μηδενίζεται την 1η κάθε μήνα.",
+    "aiCreditsLabel": "Μονάδες αυτόν τον μήνα",
+    "aiCreditsSection": "Μονάδες AI",
+    "aiEnableSection": "Ενεργοποίηση",
+    "aiKeyMissingHint": "Όρισε ένα κλειδί API παραπάνω για να ενεργοποιήσεις τις λειτουργίες AI.",
+    "aiModel": "Μοντέλο",
+    "aiModelPlaceholder": "gpt-4o-mini (προεπιλογή)",
+    "aiProfileDescription": "Προαιρετικό πλαίσιο που δίνεται στις οδηγίες του AI: ο ρόλος σου, ο τομέας σου ή οτιδήποτε βοηθά να εξατομικευτούν οι ενημερώσεις και οι αναλύσεις (π.χ. \"Ακαδημαϊκός ερευνητής με έμφαση σε προθεσμίες επιχορηγήσεων και περιόδους βαθμολόγησης\").",
+    "aiProfileLabel": "Σχετικά με εσένα",
+    "aiProfilePlaceholder": "π.χ. Ακαδημαϊκός ερευνητής. Η δουλειά μου περιστρέφεται γύρω από προθεσμίες επιχορηγήσεων, κρίσεις δημοσιεύσεων και διδακτικές περιόδους, όχι sprints ή deploys.",
+    "aiProviderDescription": "Χρησιμοποίησε το δικό σου κλειδί API για οποιονδήποτε πάροχο συμβατό με OpenAI. Άφησέ το κενό για να χρησιμοποιηθεί η προεπιλογή του διακομιστή, αν έχει οριστεί.",
+    "aiProviderSection": "Πάροχος AI",
+    "apiKeys": {
+      "copied": "Το κλειδί API αντιγράφηκε στο πρόχειρο.",
+      "copyButton": "Αντιγραφή κλειδιού",
+      "copyFailed": "Δεν ήταν δυνατή η αντιγραφή του κλειδιού API στο πρόχειρο.",
+      "copyNotice": "Αντίγραψε αυτό το token τώρα. Δεν θα εμφανιστεί ξανά.",
+      "created": "Το κλειδί API δημιουργήθηκε.",
+      "createdAt": "Δημιουργήθηκε {{date}}",
+      "deleteAria": "Διαγραφή κλειδιού API",
+      "deleteConfirm": "Διαγραφή αυτού του κλειδιού API; Η ενέργεια δεν αναιρείται.",
+      "deleteTitle": "Διαγραφή κλειδιού API",
+      "deleted": "Το κλειδί API διαγράφηκε.",
+      "description": "Δημιούργησε προσωπικά tokens πρόσβασης για ενσωματώσεις ή χρήση από τη γραμμή εντολών. Μπορείς να ανακαλέσεις ή να διαγράψεις κλειδιά οποιαδήποτε στιγμή.",
+      "empty": "Δεν υπάρχουν ακόμη κλειδιά API. Δημιούργησε ένα για να ξεκινήσεις.",
+      "expirationLabel": "Λήγει στις (προαιρετικό)",
+      "generateButton": "Δημιουργία κλειδιού",
+      "invalidExpiration": "Η ημερομηνία λήξης δεν είναι έγκυρη.",
+      "loading": "Φόρτωση κλειδιών API...",
+      "nameLabel": "Όνομα κλειδιού",
+      "namePlaceholder": "π.χ. Προσωπικό laptop",
+      "nameRequired": "Το όνομα του κλειδιού API είναι υποχρεωτικό.",
+      "never": "Ποτέ",
+      "noExpiry": "Καμία",
+      "revokeButton": "Ανάκληση",
+      "revokedLabel": "Ανακλήθηκε",
+      "revokedMessage": "Το κλειδί API ανακλήθηκε.",
+      "status": {
+        "active": "Ενεργό",
+        "expired": "Έληξε",
+        "revoked": "Ανακλήθηκε"
+      },
+      "table": {
+        "actions": "Ενέργειες",
+        "expires": "Λήξη",
+        "lastUsed": "Τελευταία χρήση",
+        "name": "Όνομα",
+        "prefix": "Πρόθεμα",
+        "status": "Κατάσταση"
+      },
+      "title": "Κλειδιά API"
+    },
+    "calendarDescription": "Ενεργοποίηση της προβολής Ημερολογίου για να βλέπεις τις εργασίες ανά ημερομηνία λήξης σε ημέρα, εβδομάδα και μήνα.",
+    "connected": {
+      "linkError": "Η σύνδεση του λογαριασμού απέτυχε",
+      "loadError": "Η φόρτωση των συνδεδεμένων λογαριασμών απέτυχε",
+      "unlinkError": "Η αποσύνδεση του λογαριασμού απέτυχε"
+    },
+    "eisenhowerDescription": "Ενεργοποίηση της σελίδας Πίνακα Eisenhower για ιεράρχηση εργασιών με βάση το επείγον και τη σημασία.",
+    "exampleMixed": "Συνδυασμός ονομάτων χρηστών και ID",
+    "exampleUserIds": "Να επιτρέπονται συγκεκριμένα ID χρηστών",
+    "exampleUsernames": "Να επιτρέπονται συγκεκριμένα ονόματα χρηστών",
+    "examples": "Παραδείγματα:",
+    "fetchError": "Η φόρτωση των στοιχείων προφίλ απέτυχε.",
+    "habitsDescription": "Ενεργοποίηση της ενότητας Συνήθειες για παρακολούθηση επαναλαμβανόμενων συμπεριφορών και σερί.",
+    "loading": "Φόρτωση...",
+    "mcp": {
+      "description": "Σύνδεσε το tududi με οποιαδήποτε εφαρμογή υποστηρίζει MCP μέσω του Model Context Protocol. Έτσι οι βοηθοί AI μπορούν να δουλεύουν με τις εργασίες, τα έργα και τις σημειώσεις σου, είτε σε τοπικό είτε σε απομακρυσμένο διακομιστή tududi.",
+      "example1": "Δείξε μου τις εργασίες μου για σήμερα",
+      "example2": "Δημιούργησε μια εργασία για έλεγχο της ενσωμάτωσης MCP",
+      "example3": "Ποια έργα έχω σε εξέλιξη;",
+      "example4": "Πρόσθεσε στα εισερχόμενα μια υπενθύμιση να ελέγξω τα email",
+      "example5": "Βρες εργασίες που σχετίζονται με την τεκμηρίωση",
+      "remote": {
+        "cloud": "Πρόσβαση σε απομακρυσμένο tududi (διακομιστές cloud)",
+        "docker": "Χρήση από εγκαταστάσεις Docker",
+        "local": "Πρόσβαση σε τοπικό tududi (localhost)",
+        "title": "Η απομακρυσμένη πρόσβαση είναι ενεργή",
+        "tokens": "Ασφαλής σύνδεση με tokens API",
+        "usesPrefix": "Αυτή η ρύθμιση χρησιμοποιεί το",
+        "usesSuffix": "για σύνδεση μέσω HTTP. Αυτό σημαίνει ότι μπορείς:"
+      },
+      "step1": {
+        "button": "Μετάβαση στα Κλειδιά API →",
+        "description": "Χρειάζεσαι ένα token API για την πιστοποίηση του διακομιστή MCP. Πήγαινε στην καρτέλα Κλειδιά API για να δημιουργήσεις ένα.",
+        "title": "1. Δημιουργία token API"
+      },
+      "step2": {
+        "copy": "Αντιγραφή",
+        "description": "Πρόσθεσε αυτή τη ρύθμιση στον πελάτη MCP σου. Αντικατέστησε το YOUR_API_TOKEN_HERE με το token που δημιούργησες στο βήμα 1. Χρησιμοποιεί το mcp-remote για σύνδεση με τον διακομιστή tududi μέσω HTTP. Το παράδειγμα αφορά το Claude Desktop:",
+        "loading": "Φόρτωση...",
+        "locationTitle": "Θέση του αρχείου ρυθμίσεων του Claude Desktop:",
+        "otherClients": "Άλλοι πελάτες MCP μπορεί να ρυθμίζονται διαφορετικά, δες την τεκμηρίωση του πελάτη σου.",
+        "title": "2. Ρύθμιση του πελάτη MCP"
+      },
+      "step3": {
+        "description": "Μόλις ρυθμιστεί, ο πελάτης MCP θα έχει πρόσβαση σε αυτές τις 16 λειτουργίες:",
+        "title": "3. Διαθέσιμες λειτουργίες"
+      },
+      "step4": {
+        "description": "Αφού προσθέσεις τη ρύθμιση, επανεκκίνησε τον πελάτη MCP. Μετά μπορείς να μιλάς στο tududi σε φυσική γλώσσα:",
+        "examplesTitle": "Παραδείγματα εντολών:",
+        "title": "4. Ξεκίνα"
+      },
+      "title": "Ενσωμάτωση MCP",
+      "troubleshooting": {
+        "firewall": "Για απομακρυσμένους διακομιστές, έλεγξε τις ρυθμίσεις του firewall",
+        "intro": "Αν ο πελάτης MCP δεν συνδέεται, έλεγξε ότι:",
+        "restart": "Έχεις επανεκκινήσει πλήρως τον πελάτη MCP",
+        "server": "Ο διακομιστής tududi τρέχει και είναι προσβάσιμος",
+        "title": "Αντιμετώπιση προβλημάτων",
+        "token": "Το token API είναι έγκυρο και δεν έχει λήξει"
+      }
+    },
+    "oidcAddProvider": "Προσθήκη παρόχου",
+    "oidcAutoProvision": "Αυτόματη δημιουργία νέων χρηστών",
+    "oidcConfigFromDb": "Αποθηκεύτηκε στη βάση δεδομένων. Όσο υπάρχει ρύθμιση εδώ, υπερισχύει των μεταβλητών περιβάλλοντος OIDC_*.",
+    "oidcConfigFromEnv": "Εμφανίζονται οι τιμές που φορτώθηκαν από το .env. Αποθήκευσε για να μεταφερθούν στη βάση δεδομένων: οι αλλαγές ισχύουν τότε μέσα σε περίπου 30 δευτερόλεπτα, χωρίς επανεκκίνηση.",
+    "oidcConfigLoadError": "Η φόρτωση της ρύθμισης OIDC απέτυχε",
+    "oidcConfigSaveError": "Η αποθήκευση της ρύθμισης OIDC απέτυχε",
+    "oidcConfigSaved": "Η ρύθμιση OIDC αποθηκεύτηκε",
+    "oidcEnabled": "Ενεργό OIDC/SSO",
+    "oidcEnabledDescription": "Ενεργοποιεί ή απενεργοποιεί τη σύνδεση SSO για όλους σε αυτή την εγκατάσταση.",
+    "oidcNewProvider": "Νέος πάροχος",
+    "oidcProviderAdminDomains": "Domains email διαχειριστών (χωρισμένα με κόμμα)",
+    "oidcProviderClientId": "Client ID",
+    "oidcProviderClientSecret": "Client secret",
+    "oidcProviderConfig": "Ρύθμιση παρόχου",
+    "oidcProviderIssuer": "URL εκδότη",
+    "oidcProviderName": "Όνομα",
+    "oidcProviderScope": "Scope",
+    "oidcProviderSlug": "Slug",
+    "oidcRemoveProvider": "Αφαίρεση παρόχου",
+    "oidcSecretNotSet": "Υποχρεωτικό",
+    "oidcSecretSet": "Ορισμένο (••••{{last4}}), άφησέ το κενό για να παραμείνει",
+    "pollingStatusError": "Η φόρτωση της κατάστασης ελέγχου απέτυχε.",
+    "saving": "Αποθήκευση...",
+    "sendSummaryFailed": "Η αποστολή της σύνοψης απέτυχε.",
+    "setPassword": "Ορισμός κωδικού",
+    "setPasswordInfo": "Δεν έχεις ορίσει ακόμη κωδικό. Με κωδικό μπορείς να συνδέεσαι απευθείας και να χρησιμοποιείς το CalDAV.",
+    "sidebarFeatureOff": "Ανενεργό στις Λειτουργίες",
+    "sidebarLayoutDescription": "Αυτή είναι μια προεπισκόπηση της πλαϊνής στήλης. Με τους διακόπτες επιλέγεις τι εμφανίζεται και σύροντας τις λαβές αλλάζεις τη σειρά.",
+    "sidebarLayoutHint": "Τα Πρότυπα και η Πρόσβαση μένουν στο κάτω μέρος. Όσα είναι ανενεργά στις Λειτουργίες μένουν κρυφά μέχρι να ενεργοποιήσεις τη λειτουργία.",
+    "sidebarMoveItem": "Μετακίνηση: {{name}}",
+    "sidebarNoCollaborators": "Χωρίς συνεργάτες",
+    "sidebarSectionDescription": "Εμφάνιση της ενότητας {{name}} στην πλαϊνή στήλη.",
+    "sidebarShowItem": "Εμφάνιση: {{name}}",
+    "systemMode": "Σύστημα",
+    "telegram": {
+      "botName": "Όνομα bot:"
+    },
+    "telegramAllowedUsers": "Επιτρεπόμενοι χρήστες",
+    "telegramAllowedUsersDescription": "Όρισε ποιος μπορεί να στέλνει μηνύματα στο bot σου. Άφησέ το κενό για να επιτρέπονται όλοι.",
+    "telegramRequiredForSummaries": "Για τις συνόψεις εργασιών πρέπει να έχει ρυθμιστεί το Telegram.",
+    "templatesDescription": "Ενεργοποίηση Προτύπων Έργων για αποθήκευση και επαναχρησιμοποίηση δομών έργων.",
+    "aiApiKeyPlaceholder": "sk-..."
   },
   "errors": {
     "required": "Αυτό το πεδίο είναι υποχρεωτικό",
@@ -868,8 +1050,33 @@
     "deleteNoteConfirm": "Θέλετε σίγουρα να διαγράψετε τη σημείωση «{{title}}»;",
     "untitled": "Σημείωση χωρίς τίτλο",
     "publicShare": {
-      "sharedTitle": "Κοινοποιήθηκε σε όποιον έχει τον σύνδεσμο"
-    }
+      "sharedTitle": "Κοινοποιήθηκε σε όποιον έχει τον σύνδεσμο",
+      "open": "Κοινοποίηση σημείωσης",
+      "title": "Κοινοποίηση \"{{title}}\"",
+      "generalAccess": "Γενική πρόσβαση",
+      "restricted": "Περιορισμένη",
+      "anyone": "Όποιος έχει τον σύνδεσμο",
+      "restrictedHint": "Μόνο εσείς και όσοι μοιραστήκατε τη σημείωση μπορείτε να την ανοίξετε.",
+      "anyoneHint": "Οποιοσδήποτε στο διαδίκτυο έχει τον σύνδεσμο μπορεί να διαβάσει αυτή τη σημείωση χωρίς σύνδεση. Δεν μπορεί να την επεξεργαστεί. Αν το απενεργοποιήσετε, ο σύνδεσμος σταματά αμέσως να λειτουργεί.",
+      "link": "Δημόσιος σύνδεσμος",
+      "copyLink": "Αντιγραφή συνδέσμου",
+      "copied": "Αντιγράφηκε",
+      "copyFailed": "Η αυτόματη αντιγραφή απέτυχε. Επιλέξτε τον σύνδεσμο και αντιγράψτε τον.",
+      "ownerOnly": "Μόνο ο κάτοχος μιας σημείωσης μπορεί να την κοινοποιήσει δημόσια.",
+      "failed": "Κάτι πήγε στραβά. Δοκιμάστε ξανά.",
+      "createLink": "Δημιουργία δημόσιου συνδέσμου",
+      "inheritStyle": "Μεταφορά της εμφάνισης (φόντο και χρώμα) στη δημόσια σημείωση",
+      "rotate": "Νέος σύνδεσμος και απενεργοποίηση του τρέχοντος",
+      "rotateWarning": "Ο τρέχων σύνδεσμος θα σταματήσει να λειτουργεί για όλους όσοι τον έχουν.",
+      "rotateConfirm": "Νέος σύνδεσμος"
+    },
+    "createLinkedNote": "Δημιουργία σημείωσης \"{{title}}\"",
+    "linkedNoteMissing": "Δεν υπάρχει ακόμη σημείωση με τίτλο \"{{title}}\". Να δημιουργηθεί;",
+    "linkedNoteNotNow": "Όχι τώρα",
+    "linkedNoteCreate": "Δημιουργία σημείωσης",
+    "linkedNoteCreateFailed": "Δεν ήταν δυνατή η δημιουργία της σημείωσης.",
+    "backgroundImage": "Φόντο",
+    "noBackground": "Χωρίς φόντο"
   },
   "projectItem": {
     "edit": "Επεξεργασία",
@@ -1362,6 +1569,7 @@
     "system": "Σύστημα",
     "customize": "Προσαρμογή",
     "addTag": "Προσθήκη Ετικέτας",
+    "new": "Νέα ετικέτα",
     "loadingTags": "Φόρτωση ετικετών...",
     "errorLoadingTags": "Σφάλμα φόρτωσης ετικετών.",
     "toggleDropdownMenu": "Άνοιγμα ή κλείσιμο μενού",
@@ -1786,12 +1994,15 @@
       "names": {
         "admin": "Διαχειριστής",
         "user": "Χρήστης",
-        "guest": "Επισκέπτης"
+        "guest": "Επισκέπτης",
+        "superadmin": "Υπερδιαχειριστής"
       },
       "descriptions": {
         "admin": "Διαχειρίζεται λογαριασμούς, ρόλους και ομάδες και μπορεί να κάνει οτιδήποτε άλλο.",
+        "accountAdmin": "Διαχειρίζεται τα μέλη, τους ρόλους και τις ομάδες αυτού του λογαριασμού. Βλέπει μόνο ό,τι μοιράζεται μαζί του.",
         "user": "Ένα κανονικό μέλος. Δουλεύει με τα δικά του στοιχεία και με ό,τι μοιράζεται μαζί του.",
-        "guest": "Δουλεύει μέσα σε ό,τι μοιράζεται μαζί του ή του ανατίθεται."
+        "guest": "Δουλεύει μέσα σε ό,τι μοιράζεται μαζί του ή του ανατίθεται.",
+        "superadmin": "Διαχειρίζεται αυτή την εγκατάσταση: όλους τους λογαριασμούς, τη χρέωση και τις ρυθμίσεις. Υπάρχει μόνο ένας· οι πελάτες είναι διαχειριστές του δικού τους λογαριασμού."
       },
       "capabilities": {
         "createPeople": "Προσθήκη ατόμων",
@@ -1816,7 +2027,19 @@
     },
     "turnContactIntoAccount": "Μετάτρεψε μία από τις επαφές σου σε αυτόν τον λογαριασμό (προαιρετικό)",
     "noContact": "(κανένα)",
-    "turnContactNote": "Η επαφή διατηρεί το ιστορικό της, οπότε οι εργασίες που της έχουν ανατεθεί παραμένουν ανατεθειμένες. Οι ιδιωτικές σημειώσεις σου γι' αυτήν δεν μεταφέρονται."
+    "turnContactNote": "Η επαφή διατηρεί το ιστορικό της, οπότε οι εργασίες που της έχουν ανατεθεί παραμένουν ανατεθειμένες. Οι ιδιωτικές σημειώσεις σου γι' αυτήν δεν μεταφέρονται.",
+    "blog": {
+      "title": "Blog",
+      "description": "Διάλεξε μία από τις σημειώσεις σου ως αρχική σελίδα. Οι δημόσιες σημειώσεις που συνδέει με [[Τίτλο]] γίνονται τα άρθρα. Μοιράσου δημόσια την αρχική σελίδα και κάθε άρθρο για να εμφανιστούν.",
+      "placeholder": "Σύνδεσμος ή ID σημείωσης, π.χ. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Σημείωση αρχικής σελίδας",
+      "turnOff": "Απενεργοποίηση",
+      "shared": "Δημόσια",
+      "notShared": "Δεν μοιράστηκε ακόμα: μοιράσου τη από τη σημείωση για να δημοσιευτεί το blog",
+      "postCount": "Άρθρα: {{count}}",
+      "open": "Άνοιγμα του blog",
+      "preview": "Προεπισκόπηση στην εφαρμογή"
+    }
   },
   "shares": {
     "shareProject": "Κοινή χρήση έργου",
@@ -1899,6 +2122,7 @@
     "allItems": "όλα τα στοιχεία",
     "containingText": ", περιέχοντας το κείμενο",
     "withPriority": ", με",
+    "withStatus": ", με κατάσταση",
     "priority": "προτεραιότητα",
     "due": ", προθεσμία",
     "taggedWith": ", με ετικέτα",
@@ -1906,6 +2130,7 @@
     "criteria": "Κριτήρια Αναζήτησης",
     "metadataFilters": "Φίλτρα Μεταδεδομένων",
     "priorityFilter": "Προτεραιότητα",
+    "statusFilter": "Κατάσταση",
     "dueFilter": "Προθεσμία",
     "tagsFilter": "Ετικέτες",
     "saveAsSmartView": "Αποθήκευση ως Έξυπνη Προβολή",
@@ -1992,7 +2217,10 @@
     "validationErrors": "Σφάλματα επικύρωσης:",
     "versionIncompatible": "Μη συμβατή έκδοση",
     "backupVersion": "Έκδοση αντιγράφου ασφαλείας",
-    "restoreButton": "Αποκατάσταση"
+    "restoreButton": "Αποκατάσταση",
+    "adminInstanceNote": "Ως διαχειριστής, το αντίγραφο ασφαλείας σου περιλαμβάνει κάθε λογαριασμό αυτής της εγκατάστασης, με τα δεδομένα και τα hash των κωδικών τους. Η επαναφορά του σε νέα εγκατάσταση τους φέρνει όλους πίσω. Φύλαξε το αρχείο όσο προσεκτικά φυλάς τη βάση δεδομένων.",
+    "accountsCount_one": "{{count}} ακόμη λογαριασμός",
+    "accountsCount_other": "{{count}} ακόμη λογαριασμοί"
   },
   "notifications": {
     "table": {
@@ -2010,7 +2238,8 @@
       "deferUntil": "Αναβολή έως",
       "dueProjects": "Έργα που λήγουν",
       "overdueProjects": "Έργα που έχουν καθυστερήσει",
-      "taskAssigned": "Καθήκον Ανατεθέν"
+      "taskAssigned": "Καθήκον Ανατεθέν",
+      "habitReminders": "Υπενθυμίσεις συνηθειών"
     },
     "descriptions": {
       "dueTasks": "Εργασίες που λήγουν εντός 24 ωρών",
@@ -2018,7 +2247,8 @@
       "deferUntil": "Εργασίες που είναι πλέον διαθέσιμες για εργασία",
       "dueProjects": "Έργα που λήγουν εντός 24 ωρών",
       "overdueProjects": "Έργα που έχουν περάσει την προθεσμία τους",
-      "taskAssigned": "Ένα καθήκον σας ανατέθηκε από κάποιον άλλο"
+      "taskAssigned": "Ένα καθήκον σας ανατέθηκε από κάποιον άλλο",
+      "habitReminders": "Την ώρα υπενθύμισης μιας συνήθειας, όσο είναι ακόμη ανοιχτή"
     },
     "telegram": {
       "notConfigured": {
@@ -2287,7 +2517,8 @@
       "project": "έργα",
       "note": "σημειώσεις",
       "storage": "αποθηκευτικό χώρο συνημμένων",
-      "ai": "αιτήματα AI σήμερα"
+      "ai": "αιτήματα AI σήμερα",
+      "aiCredits": "Μονάδες AI αυτόν τον μήνα"
     },
     "feature": {
       "ai": "τον βοηθό AI",
@@ -2295,8 +2526,13 @@
       "caldav": "τον συγχρονισμό CalDAV",
       "telegram": "το bot Telegram",
       "backups_import": "την εισαγωγή αντιγράφων ασφαλείας",
-      "attachments": "τα συνημμένα"
-    }
+      "attachments": "τα συνημμένα",
+      "public_notes": "τις δημόσιες σημειώσεις",
+      "members": "την προσθήκη μελών"
+    },
+    "seatCovered": "Τη θέση σας πληρώνει ο/η {{name}}.",
+    "workspaceOwner": "ο κάτοχος του χώρου εργασίας",
+    "seats": "{{count}} θέσεις στη συνδρομή σας: εσείς και {{members}} ακόμη."
   },
   "subscription": {
     "title": "Συνδρομή",
@@ -2316,7 +2552,18 @@
     "perkExport": "Εξάγετε τα πάντα οποιαδήποτε στιγμή",
     "taxNote": "Οι πληρωμές διαχειρίζονται από τον {{provider}}. Οι τιμές δεν περιλαμβάνουν τους εφαρμοστέους φόρους. Ακυρώστε οποιαδήποτε στιγμή.",
     "notConfigured": "Οι συνδρομές δεν είναι διαθέσιμες σε αυτήν την εγκατάσταση ακόμα. Παρακαλώ επικοινωνήστε με την υποστήριξη.",
-    "exportData": "Εξάγετε τα δεδομένα σας"
+    "exportData": "Εξάγετε τα δεδομένα σας",
+    "subscribe": "Συνδρομή",
+    "readOnlyBanner": "Η δοκιμαστική περίοδος έληξε, οπότε τα δεδομένα σας είναι μόνο για ανάγνωση. Εγγραφείτε συνδρομητής για να συνεχίσετε να χρησιμοποιείτε το tududi ή εξαγάγετε τα δεδομένα σας. Ο λογαριασμός θα διαγραφεί στις {{date}}.",
+    "lockedAi": "Ο βοηθός AI είναι μέρος του επί πληρωμή πλάνου.",
+    "lockedPublicNotes": "Οι δημόσιοι σύνδεσμοι σημειώσεων είναι μέρος του επί πληρωμή πλάνου.",
+    "lockedMembers": "Η προσθήκη μελών είναι μέρος του επί πληρωμή πλάνου.",
+    "trialEnded": "Η δοκιμαστική περίοδος έληξε",
+    "onTrial": "Βρίσκεστε στη δωρεάν δοκιμαστική περίοδο",
+    "readOnlyUntil": "Τα δεδομένα σας είναι μόνο για ανάγνωση έως τις {{date}} και μετά ο λογαριασμός διαγράφεται. Εγγραφείτε συνδρομητής για να συνεχίσετε να χρησιμοποιείτε το tududi Cloud.",
+    "trialIncludes": "Η δοκιμαστική περίοδος λήγει στις {{date}}. Ο βοηθός AI, οι δημόσιες σημειώσεις και η προσθήκη μελών ξεκλειδώνονται με τη συνδρομή.",
+    "backToApp": "Επιστροφή στο tududi",
+    "trialBanner": "Δωρεάν δοκιμή, ημέρες που απομένουν: {{count}}"
   },
   "demo": {
     "opening": "Άνοιγμα του demo...",
@@ -2381,7 +2628,18 @@
     "add": "Προσθήκη μέλους",
     "giveAccount": "Δώσε λογαριασμό",
     "nameRequiredWithoutEmail": "Εισήγαγε όνομα όταν δεν υπάρχει email",
-    "failedToAdd": "Αποτυχία προσθήκης μέλους"
+    "failedToAdd": "Αποτυχία προσθήκης μέλους",
+    "seatNote": "Κάθε μέλος είναι μία ακόμη θέση στη συνδρομή σας. Η αλλαγή χρεώνεται αναλογικά στο επόμενο τιμολόγιο, και η αφαίρεση ενός μέλους επιστρέφει τη θέση.",
+    "editTitle": "Επεξεργασία μέλους",
+    "nameRequired": "Συμπληρώστε ένα όνομα",
+    "failedToUpdate": "Αποτυχία ενημέρωσης μέλους",
+    "addEmailHint": "Η προσθήκη email τού στέλνει πρόσκληση για να ορίσει κωδικό. Δεν μπορεί να αλλάξει αργότερα.",
+    "remove": "Αφαίρεση μέλους",
+    "removeConfirm": "Αφαίρεση του/της {{name}}; Ο λογαριασμός και όλο το περιεχόμενό του διαγράφονται και αυτό δεν αναιρείται. Στο tududi Cloud η θέση αφαιρείται από τη συνδρομή σας.",
+    "removed": "Το μέλος αφαιρέθηκε",
+    "updated": "Το μέλος ενημερώθηκε",
+    "invitationSent": "Η πρόσκληση στάλθηκε",
+    "failedToRemove": "Αποτυχία αφαίρεσης μέλους"
   },
   "signInLink": {
     "action": "Σύνδεσμος σύνδεσης",
@@ -2428,7 +2686,6 @@
     "connectCalendar": "Σύνδεση ημερολογίου",
     "continuePlanning": "Συνέχισε τον σχεδιασμό",
     "planYourDay": "Σχεδίασε τη μέρα σου",
-    "skipShowEverything": "Παράλειψη και εμφάνιση όλων",
     "moveBlock": "Μετακίνηση {{name}}",
     "removeFromPlan": "Αφαίρεση από το πλάνο",
     "freeGap": "{{duration}} ελεύθερα",
@@ -2473,7 +2730,6 @@
     "addAsTask": "Προσθήκη ως εργασία",
     "moreInInbox": "{{count}} ακόμη στα εισερχόμενα",
     "sidebarProgress": "{{done}} από {{total}} προγραμματισμένες εργασίες ολοκληρώθηκαν",
-    "oldTodayLink": "Μετάβαση στην παλιά σελίδα Σήμερα",
     "nowMarker": "Τώρα, {{time}}",
     "beta": "Beta",
     "betaHint": "Η σελίδα Σήμερα με πλάνο είναι νέα. Η κλασική σελίδα υπάρχει ακόμη στο κάτω μέρος αυτής της σελίδας.",
@@ -2587,7 +2843,17 @@
     "addN": "Προσθήκη {{total}}",
     "undo": "Αναίρεση",
     "lineBreak": "Αλλαγή γραμμής",
-    "placeholder": "Πληκτρολογήστε τον τίτλο"
+    "placeholder": "Πληκτρολογήστε τον τίτλο",
+    "settings": {
+      "description": "Πώς συμπεριφέρεται το πλαίσιο Προσθήκης. Οι ρυθμίσεις ισχύουν αμέσως και αποθηκεύονται σε αυτή τη συσκευή.",
+      "enterKeyboard": "Πλήκτρο Enter σε πληκτρολόγιο υπολογιστή",
+      "enterTouch": "Πλήκτρο Return σε κινητό ή tablet",
+      "newline": "Ξεκινά νέα γραμμή",
+      "oneItemPerLine": "Ένα στοιχείο ανά γραμμή",
+      "oneItemPerLineHelp": "Ανενεργό: ό,τι πληκτρολογείς γίνεται ένα στοιχείο, με την πρώτη γραμμή ως τίτλο και τις υπόλοιπες ως σημειώσεις. Ενεργό: κάθε γραμμή γίνεται ξεχωριστό στοιχείο.",
+      "save": "Αποθηκεύει",
+      "title": "Προσθήκη στοιχείων"
+    }
   },
   "area": {
     "loadError": "Δεν ήταν δυνατή η φόρτωση των περιοχών"
@@ -2689,5 +2955,48 @@
     "myTemplates": "Τα πρότυπά μου",
     "confirmDelete": "Διαγραφή προτύπου",
     "confirmDeleteMessage": "Διαγραφή του «{{name}}»; Τα έργα που δημιουργήθηκαν από αυτό δεν θα επηρεαστούν."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Αυτή η σημείωση δεν είναι κοινόχρηστη δημόσια."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Ξεκίνα τώρα",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Όροι",
+    "footerPrivacy": "Απόρρητο",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Βγάλε τα μικρά πράγματα από το μυαλό σου.",
+    "ctaBody": "Εργασίες, έργα, σημειώσεις και συνήθειες σε ένα ήρεμο μέρος, κοινά με τους ανθρώπους με τους οποίους ζεις και δουλεύεις. Χωρίς server, χωρίς εγκατάσταση.",
+    "ctaPrice": "{{monthly}} τον μήνα ή {{annual}} τον χρόνο",
+    "ctaGuarantee": "Εγγύηση επιστροφής χρημάτων 14 ημερών",
+    "ctaPrimary": "Ξεκίνα τώρα",
+    "ctaSecondary": "Δες τι περιλαμβάνει",
+    "readPost": "Διάβασε το άρθρο",
+    "emptyTitle": "Τίποτα ακόμα εδώ",
+    "emptyBody": "Τα πρώτα άρθρα έρχονται. Πέρασε ξανά σύντομα.",
+    "failedTitle": "Δεν ήταν δυνατή η φόρτωση του blog",
+    "failedBody": "Κάτι πήγε στραβά από τη μεριά μας. Δοκίμασε ξανά σε λίγο.",
+    "missingTitle": "Αυτό το άρθρο δεν είναι εδώ",
+    "missingBody": "Μπορεί να μετακινήθηκε ή να αφαιρέθηκε. Τα υπόλοιπα άρθρα είναι ένα κλικ μακριά.",
+    "allPosts": "Όλα τα άρθρα",
+    "morePosts": "Περισσότερα από το blog"
+  },
+  "focus": {
+    "chip": "Εστίαση",
+    "title": "Εστίαση σε",
+    "activeTitle": "Εστίαση: {{label}}",
+    "area": "Τομέας",
+    "anyArea": "Όλοι οι τομείς",
+    "project": "Έργο",
+    "anyProject": "Όλα τα έργα",
+    "tags": "Ετικέτες",
+    "hint": "Το Σήμερα, τα Επερχόμενα, οι Εργασίες, τα Έργα, οι Σημειώσεις και η αναζήτηση δείχνουν μόνο αυτό. Οι νέες εργασίες παίρνουν το έργο και τις ετικέτες.",
+    "apply": "Εφαρμογή",
+    "clear": "Καθαρισμός",
+    "clearFocus": "Καθαρισμός εστίασης",
+    "locked": "Ορίστηκε από την εστίασή σου. Καθάρισέ την από το chip στην πάνω μπάρα.",
+    "emptyHint": "Εμφανίζει μόνο {{label}}",
+    "saveError": "Η εστίαση δεν αποθηκεύτηκε."
   }
 }

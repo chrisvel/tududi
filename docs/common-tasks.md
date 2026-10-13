@@ -319,7 +319,7 @@ Backend typically doesn't use translations (API responses in English).
    ```
 
 3. **Add the key to every locale**
-   - Add it to `public/locales/<code>/translation.json` for all 25 languages
+   - Add it to `public/locales/<code>/translation.json` for all 26 languages
    - There is no sync script: copy the English text into the other files (or translate it) so no locale falls back silently
 
 ---

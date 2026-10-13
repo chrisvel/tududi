@@ -9,6 +9,19 @@ const { logError } = require('../../services/logService');
 const { getConfig } = require('../../config/config');
 const { OidcUserError } = require('./errors');
 
+// A hosted instance has one superadmin, so an admin email domain never
+// makes a second one.
+async function mayAddAdmin(transaction) {
+    const { getConfig } = require('../../config/config');
+    if (getConfig().hosted?.enabled !== true) return true;
+    const { Role } = require('../../models');
+    const admins = await Role.count({
+        where: { is_admin: true },
+        transaction,
+    });
+    return admins === 0;
+}
+
 function shouldBeAdmin(config, email) {
     if (!config.adminEmailDomains || config.adminEmailDomains.length === 0) {
         return false;
@@ -26,6 +39,33 @@ function shouldBeAdmin(config, email) {
 // Some providers send the claim as the string "true".
 function isEmailVerified(claims) {
     return claims.email_verified === true || claims.email_verified === 'true';
+}
+
+function clean(value) {
+    return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+// The account name comes from the profile claims: given and family name when
+// the provider sends them, else the display name.
+function nameFromClaims(claims) {
+    const given = clean(claims.given_name);
+    const family = clean(claims.family_name);
+    if (given || family) {
+        return { name: given || family, surname: given ? family : null };
+    }
+    return { name: clean(claims.name), surname: null };
+}
+
+// Fills in the name of an account that has none yet, so an SSO account does
+// not keep showing the part of its email before the @. A name the user set
+// themselves is never replaced. The User hooks rename the account's person.
+async function fillMissingName(user, claims, transaction) {
+    if (!user || clean(user.name) || clean(user.surname)) return;
+
+    const { name, surname } = nameFromClaims(claims);
+    if (!name) return;
+
+    await user.update({ name, surname }, { transaction });
 }
 
 async function findOrCreateIdentity(providerSlug, claims) {
@@ -69,6 +109,7 @@ async function provisionUser(providerSlug, claims, req) {
                 },
                 { transaction }
             );
+            await fillMissingName(identity.User, claims, transaction);
 
             await transaction.commit();
             return { user: identity.User, isNewUser: false };
@@ -121,8 +162,17 @@ async function provisionUser(providerSlug, claims, req) {
                 }
             }
 
+            const { isTakenMailbox } = require('../auth/registrationService');
+            if (await isTakenMailbox(claims.email, transaction)) {
+                await transaction.rollback();
+                throw new OidcUserError(
+                    'An account already exists for this email address. Sign in with it instead.'
+                );
+            }
+
             user = await User.create(
                 {
+                    ...nameFromClaims(claims),
                     email: claims.email,
                     email_verified: true,
                     password_digest: null,
@@ -134,7 +184,10 @@ async function provisionUser(providerSlug, claims, req) {
 
             isNewUser = true;
 
-            if (shouldBeAdmin(config, claims.email)) {
+            if (
+                shouldBeAdmin(config, claims.email) &&
+                (await mayAddAdmin(transaction))
+            ) {
                 const { Role } = require('../../models');
                 await Role.update(
                     { is_admin: true },
@@ -159,6 +212,7 @@ async function provisionUser(providerSlug, claims, req) {
             },
             { transaction }
         );
+        if (!isNewUser) await fillMissingName(user, claims, transaction);
 
         await transaction.commit();
 
@@ -168,6 +222,10 @@ async function provisionUser(providerSlug, claims, req) {
             } catch (err) {
                 logError(err, 'Failed to create self-person for new OIDC user');
             }
+            // The provider vouched for the address, so the trial starts now.
+            await require('../../services/entitlementsService').startTrial(
+                user.id
+            );
         }
 
         return { user, isNewUser };
@@ -230,6 +288,7 @@ async function linkIdentityToUser(userId, providerSlug, claims) {
             },
             { transaction }
         );
+        await fillMissingName(user, claims, transaction);
 
         await transaction.commit();
         return identity;
@@ -245,6 +304,7 @@ module.exports = {
     provisionUser,
     linkIdentityToUser,
     findOrCreateIdentity,
+    nameFromClaims,
     shouldBeAdmin,
     isEmailVerified,
 };

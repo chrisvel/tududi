@@ -15,17 +15,16 @@ import {
 import { EditorState, Compartment } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands';
-import {
-    syntaxHighlighting,
-    defaultHighlightStyle,
-} from '@codemirror/language';
-import { oneDark } from '@codemirror/theme-one-dark';
 import FormattingToolbar from './FormattingToolbar';
 import SlashCommandMenu, { SlashCommand } from './SlashCommandMenu';
 import WikilinkMenu, { NoteTitle } from './WikilinkMenu';
+import MissingNotePrompt from './MissingNotePrompt';
+import { createNote } from '../../utils/notesService';
 import { useNavigate } from 'react-router-dom';
 import { livePreviewExtension } from './editor';
+import { neutralEditorTheme } from './editor/highlightStyle';
 import { blockUxKeymap } from './editor/keymaps';
+import { isTouchScreen, touchReading } from './editor/touchReading';
 import { blockHandlePlugin, blockHandleTheme } from './editor/blockHandle';
 import {
     wrapSelection as wrapSelectionCmd,
@@ -37,6 +36,7 @@ import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import { ownerAttachmentsApi } from '../../utils/attachmentsService';
 import { noteLinkFor } from '../../utils/noteAttachmentLinks';
+import { takePickedFiles } from '../Capture/useCaptureFiles';
 import {
     filesToAttachFromPaste,
     nameForPastedFile,
@@ -105,6 +105,23 @@ interface WikilinkMenuState {
     from: number;
     to: number;
 }
+
+interface MissingNoteState {
+    open: boolean;
+    x: number;
+    y: number;
+    title: string;
+    // Open the new note once it exists (Cmd/Ctrl-click) or stay here (typing).
+    openAfterCreate: boolean;
+}
+
+const CLOSED_MISSING: MissingNoteState = {
+    open: false,
+    x: 0,
+    y: 0,
+    title: '',
+    openAfterCreate: false,
+};
 
 const CLOSED_SLASH: SlashMenuState = {
     open: false,
@@ -187,6 +204,22 @@ function detectWikilinkTrigger(view: EditorView): {
     };
 }
 
+// The title of a [[link]] the user just closed by typing "]]".
+function detectClosedWikilink(update: ViewUpdate): string | null {
+    const typed = update.transactions.some((tr) =>
+        tr.isUserEvent('input.type')
+    );
+    if (!typed) return null;
+
+    const { main } = update.state.selection;
+    if (!main.empty) return null;
+
+    const line = update.state.doc.lineAt(main.from);
+    const textToCursor = line.text.slice(0, main.from - line.from);
+    const m = textToCursor.match(/\[\[([^[\]\n]+?)\]\]$/);
+    return m ? m[1].trim() || null : null;
+}
+
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     value,
     onChange,
@@ -212,6 +245,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     const storeNotes = useStore((state) => state.notesStore.notes);
     const hasNotesLoaded = useStore((state) => state.notesStore.hasLoaded);
     const loadNotes = useStore((state) => state.notesStore.loadNotes);
+    const addNote = useStore((state) => state.notesStore.addNote);
 
     useEffect(() => {
         if (!hasNotesLoaded) loadNotes();
@@ -227,6 +261,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
     const noteTitlesRef = useRef(noteTitles);
     noteTitlesRef.current = noteTitles;
+    const hasNotesLoadedRef = useRef(hasNotesLoaded);
+    hasNotesLoadedRef.current = hasNotesLoaded;
     const navigateRef = useRef(navigate);
     navigateRef.current = navigate;
 
@@ -244,6 +280,10 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     slashMenuRef.current = slashMenu;
     const wikilinkMenuRef = useRef(wikilinkMenu);
     wikilinkMenuRef.current = wikilinkMenu;
+    const [missingNote, setMissingNote] =
+        useState<MissingNoteState>(CLOSED_MISSING);
+    const missingNoteRef = useRef(missingNote);
+    missingNoteRef.current = missingNote;
 
     const lightText = shouldUseLightText(noteColor);
     const textColor = noteColor
@@ -254,6 +294,43 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
     const closeSlash = useCallback(() => setSlashMenu(CLOSED_SLASH), []);
     const closeWikilink = useCallback(() => setWikilinkMenu(CLOSED_WIKI), []);
+    const closeMissingNote = useCallback(
+        () => setMissingNote(CLOSED_MISSING),
+        []
+    );
+
+    const findNoteByTitle = (title: string) => {
+        const wanted = title.trim().toLowerCase();
+        return noteTitlesRef.current.find(
+            (n) => n.title.trim().toLowerCase() === wanted
+        );
+    };
+
+    const createLinkedNote = useCallback(
+        async (title: string, openAfterCreate = false) => {
+            try {
+                const created = await createNote({ title, content: '' });
+                addNote?.(created);
+                if (openAfterCreate && created.uid) {
+                    navigateRef.current(`/notes/${created.uid}`);
+                }
+            } catch {
+                showErrorToast(
+                    t(
+                        'notes.linkedNoteCreateFailed',
+                        'Could not create the note.'
+                    )
+                );
+            }
+        },
+        [addNote, showErrorToast, t]
+    );
+
+    const confirmMissingNote = useCallback(() => {
+        const { title, openAfterCreate } = missingNoteRef.current;
+        setMissingNote(CLOSED_MISSING);
+        void createLinkedNote(title, openAfterCreate);
+    }, [createLinkedNote]);
 
     // Each file gets a placeholder where it will go, replaced by an inline
     // image or a link once it is uploaded, or removed if it fails.
@@ -333,7 +410,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
         const getThemeExtension = () => {
             const isDark = document.documentElement.classList.contains('dark');
-            return isDark ? oneDark : syntaxHighlighting(defaultHighlightStyle);
+            return neutralEditorTheme(isDark);
         };
 
         const colorOverride = noteColor
@@ -394,14 +471,23 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                         return true;
                     },
                 }),
+                touchReading(isTouchScreen(), {
+                    startEditing: autoFocus || !value.trim(),
+                }),
                 livePreviewExtension({
-                    onOpenWikilink: (title) => {
-                        const target = noteTitlesRef.current.find(
-                            (n) =>
-                                n.title.trim().toLowerCase() ===
-                                title.toLowerCase()
-                        );
-                        if (target) navigateRef.current(`/notes/${target.uid}`);
+                    onOpenWikilink: (title, event) => {
+                        const target = findNoteByTitle(title);
+                        if (target) {
+                            navigateRef.current(`/notes/${target.uid}`);
+                        } else if (hasNotesLoadedRef.current) {
+                            setMissingNote({
+                                open: true,
+                                x: event.clientX,
+                                y: event.clientY - 18,
+                                title,
+                                openAfterCreate: true,
+                            });
+                        }
                     },
                 }),
                 EditorView.updateListener.of((update: ViewUpdate) => {
@@ -411,9 +497,40 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
                     const view = update.view;
 
-                    // Formatting toolbar (on selection)
+                    // Typing or moving on dismisses the missing-note prompt;
+                    // closing a [[link]] to a note that does not exist opens it.
+                    if (
+                        missingNoteRef.current.open &&
+                        (update.docChanged || update.selectionSet)
+                    ) {
+                        setMissingNote(CLOSED_MISSING);
+                    }
+                    const closedTitle = detectClosedWikilink(update);
+                    if (
+                        closedTitle &&
+                        hasNotesLoadedRef.current &&
+                        !findNoteByTitle(closedTitle)
+                    ) {
+                        const coords = view.coordsAtPos(
+                            update.state.selection.main.head
+                        );
+                        if (coords) {
+                            setMissingNote({
+                                open: true,
+                                x: coords.left,
+                                y: coords.top,
+                                title: closedTitle,
+                                openAfterCreate: false,
+                            });
+                        }
+                    }
+
+                    // Formatting toolbar (on selection, while editing)
                     const { main } = update.state.selection;
-                    if (!main.empty) {
+                    if (
+                        !main.empty &&
+                        update.state.facet(EditorView.editable)
+                    ) {
                         const fromCoords = view.coordsAtPos(main.from);
                         const toCoords = view.coordsAtPos(main.to);
                         if (fromCoords && toCoords) {
@@ -562,9 +679,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 multiple
                 hidden
                 data-testid="note-file-input"
-                onChange={(e) => {
-                    const picked = Array.from(e.target.files ?? []);
-                    e.target.value = '';
+                onChange={async (e) => {
+                    const picked = await takePickedFiles(e.currentTarget);
                     const view = viewRef.current;
                     if (!view || picked.length === 0) return;
                     void uploadIntoEditor(
@@ -609,6 +725,16 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                     view={viewRef.current}
                     noteTitles={noteTitles}
                     onClose={closeWikilink}
+                    onCreateNote={(title) => void createLinkedNote(title)}
+                />
+            )}
+            {missingNote.open && (
+                <MissingNotePrompt
+                    x={missingNote.x}
+                    y={missingNote.y}
+                    title={missingNote.title}
+                    onCreate={confirmMissingNote}
+                    onClose={closeMissingNote}
                 />
             )}
         </div>

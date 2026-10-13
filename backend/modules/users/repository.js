@@ -27,6 +27,8 @@ const PROFILE_ATTRIBUTES = [
     'notification_preferences',
     'keyboard_shortcuts',
     'ai_profile',
+    'onboarded_at',
+    'onboarding_starter',
 ];
 
 const PROFILE_UPDATE_ATTRIBUTES = [

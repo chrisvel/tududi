@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHostedMode } from '../../hooks/useHostedMode';
 import { CheckIcon, MinusIcon } from '@heroicons/react/24/outline';
 import {
     CAPABILITY_IDS,
     RoleId,
+    isAdminRole,
     RoleSummary,
     RolesOverview,
 } from '../../entities/Role';
@@ -47,6 +49,7 @@ const AdminRolesPanel: React.FC<AdminRolesPanelProps> = ({
     error,
 }) => {
     const { t } = useTranslation();
+    const hosted = useHostedMode();
 
     const roles: RoleSummary[] = overview?.roles ?? [];
     const allowedLabel = t('admin.roles.allowed', 'Allowed');
@@ -91,7 +94,7 @@ const AdminRolesPanel: React.FC<AdminRolesPanelProps> = ({
                                     data-testid={`role-column-${role.id}`}
                                 >
                                     <div className="text-gray-900 dark:text-gray-100 normal-case text-sm font-semibold">
-                                        {roleName(t, role.id)}
+                                        {roleName(t, role.id, hosted)}
                                     </div>
                                     <div
                                         className="mt-1 normal-case font-normal tracking-normal text-xs"
@@ -105,7 +108,7 @@ const AdminRolesPanel: React.FC<AdminRolesPanelProps> = ({
                                         )}
                                     </div>
                                     <div className="mt-2 normal-case font-normal tracking-normal text-xs max-w-[16rem]">
-                                        {roleDescription(t, role.id)}
+                                        {roleDescription(t, role.id, hosted)}
                                     </div>
                                 </th>
                             ))}
@@ -144,7 +147,7 @@ const AdminRolesPanel: React.FC<AdminRolesPanelProps> = ({
                                     </td>
                                     {roles.map((role) => (
                                         <td key={role.id} className="px-6 py-4">
-                                            {cell(role.id === 'admin')}
+                                            {cell(isAdminRole(role.id))}
                                         </td>
                                     ))}
                                 </tr>

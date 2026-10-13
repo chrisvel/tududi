@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -9,6 +9,7 @@ import {
 import { Person } from '../../entities/Person';
 import { useStore } from '../../store/useStore';
 import { useCan } from '../../hooks/useCan';
+import { useSidebarSectionExpanded } from '../../hooks/useSidebarSectionExpanded';
 
 interface SidebarPeopleProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -25,7 +26,7 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
 }) => {
     const { t } = useTranslation();
     const canCreatePeople = useCan('create_people');
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('people');
 
     const people = useStore((state) => state.peopleStore.people);
     const hasLoaded = useStore((state) => state.peopleStore.hasLoaded);
@@ -68,9 +69,12 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
     return (
         <ul className="flex flex-col">
             <li
-                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md hover:bg-gray-100 dark:hover:bg-white/5 ${
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
                     isPeoplePageActive ? 'bg-gray-100 dark:bg-white/5' : ''
                 }`}
+                onClick={() => {
+                    if (sortedPeople.length > 0) setIsExpanded((v) => !v);
+                }}
             >
                 <span
                     className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
@@ -78,8 +82,8 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                             ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() => {
-                        setIsExpanded(true);
+                    onClick={(e) => {
+                        e.stopPropagation();
                         handleNavClick(
                             '/people',
                             t('sidebar.people', 'People'),
@@ -114,7 +118,8 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                                     e.stopPropagation();
                                     setIsExpanded((v) => !v);
                                 }}
-                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                                aria-expanded={isExpanded}
+                                className="p-2 -m-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"

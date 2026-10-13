@@ -40,7 +40,8 @@ export function renderInline(text: string): DocumentFragment {
             fragment.append(el);
         } else if (token.startsWith('[[')) {
             const el = document.createElement('span');
-            el.className = 'cm-md-wikilink';
+            el.className = 'cm-md-wikilink cm-md-wikilink-chip';
+            el.dataset.wikilink = token.slice(2, -2).trim();
             el.textContent = token.slice(2, -2);
             fragment.append(el);
         } else if (token.startsWith('[')) {

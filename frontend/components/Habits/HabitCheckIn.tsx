@@ -9,7 +9,7 @@ import { CheckCircleIcon as CheckCircleSolid } from '@heroicons/react/24/solid';
 import { Task } from '../../entities/Task';
 import { ACCENT } from '../../constants/colorPalette';
 import {
-    isHabitCompletedInPeriod,
+    isHabitDoneForNow,
     isMeasurableHabit,
     isQuitHabit,
 } from '../../utils/habitUtils';
@@ -39,11 +39,7 @@ const HabitCheckIn: React.FC<HabitCheckInProps> = ({
     const quit = isQuitHabit(habit);
     const measurable = isMeasurableHabit(habit);
     const multiple = habit.habit_progress?.multiple_per_day ?? false;
-    // Weekly "3×" habits count distinct days, so today can be done while
-    // the week is not.
-    const done =
-        isHabitCompletedInPeriod(habit) ||
-        (!multiple && (habit.habit_progress?.today_check_ins ?? 0) > 0);
+    const done = isHabitDoneForNow(habit);
     const slippedToday =
         quit && habit.habit_progress ? !habit.habit_progress.met : false;
 

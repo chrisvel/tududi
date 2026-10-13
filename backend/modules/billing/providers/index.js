@@ -18,6 +18,8 @@ const { getConfig } = require('../../../config/config');
 //   sync({ user, account, checkoutRef })   -> account fields, or null
 //   parseWebhook(rawBody, headers)         -> normalized event (below)
 //   cancelForDeletedUser(account)
+//   updateSeats({ account, quantity })     -> { provider_subscription_item_id,
+//                                             seat_quantity }
 //   validateConfig()                       -> [problem strings]
 //
 // A normalized webhook event is

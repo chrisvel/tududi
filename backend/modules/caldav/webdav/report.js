@@ -11,6 +11,7 @@ const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { Op } = require('sequelize');
 const { ciLike } = require('../../../utils/db-dialect');
+const { canReadTask, visibleTaskWhere } = require('../access');
 
 async function handleReport(req, res) {
     try {
@@ -54,7 +55,7 @@ async function handleReport(req, res) {
                     include: CALDAV_TASK_INCLUDES,
                 });
 
-                if (!task || task.user_id !== userId) {
+                if (!(await canReadTask(task, userId))) {
                     responses.push(
                         buildResponse(
                             href,
@@ -99,7 +100,7 @@ async function handleReport(req, res) {
                 .send(xml);
         }
 
-        const where = { user_id: userId };
+        const where = {};
 
         if (queryRequest.filters.timeRange) {
             const { start, end } = queryRequest.filters.timeRange;
@@ -142,9 +143,10 @@ async function handleReport(req, res) {
             }
         }
 
-        const tasks = await taskRepository.findAll(where, {
-            include: CALDAV_TASK_INCLUDES,
-        });
+        const tasks = await taskRepository.findAll(
+            { [Op.and]: [await visibleTaskWhere(userId), where] },
+            { include: CALDAV_TASK_INCLUDES }
+        );
 
         const responses = [];
         for (const task of tasks) {

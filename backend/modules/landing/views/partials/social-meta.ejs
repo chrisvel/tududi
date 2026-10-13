@@ -1,0 +1,14 @@
+<%# Link previews for X, LinkedIn, Slack, iMessage and friends. Without
+    og:image and twitter:card a shared tududi.com link shows as bare text.
+    Bump the image's number when it changes: X caches cards for days and
+    only a new URL makes it fetch again. %>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="tududi">
+<meta property="og:title" content="<%= title %>">
+<meta property="og:description" content="<%= description %>">
+<meta property="og:url" content="<%= url %>">
+<meta property="og:image" content="<%= siteOrigin %>/landing-assets/og-1.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="tududi: productivity made simple">
+<meta name="twitter:card" content="summary_large_image">

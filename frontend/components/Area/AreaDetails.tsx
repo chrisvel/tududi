@@ -1,32 +1,25 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-    PencilIcon,
-    FlagIcon,
-    ShareIcon,
-    XMarkIcon,
-} from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { Area } from '../../entities/Area';
 import { Goal } from '../../entities/Goal';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { fetchTasks } from '../../utils/tasksService';
+import { fetchProjects } from '../../utils/projectsService';
 import { updateArea } from '../../utils/areasService';
 import { updateGoal } from '../../utils/goalsService';
 import AreaModal from './AreaModal';
+import AreaHero from './AreaHero';
+import GoalRow from '../Goal/GoalRow';
 import TaskList from '../Task/TaskList';
+import ProjectItem from '../Project/ProjectItem';
+import useProjectCardActions from '../Project/useProjectCardActions';
 import ShareModal from '../Shared/ShareModal';
-import { createGoalUrl } from '../../utils/slugUtils';
+import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 
-const STATUS_COLORS: Record<string, string> = {
-    active: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-    achieved:
-        'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    paused: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-    dropped: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
-};
+type AreaTab = 'projects' | 'goals' | 'tasks';
 
 const AreaDetails: React.FC = () => {
     const { t } = useTranslation();
@@ -45,6 +38,7 @@ const AreaDetails: React.FC = () => {
     const [loadingTasks, setLoadingTasks] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<AreaTab>('projects');
 
     const areaUid = uidSlug?.split('-')[0] || '';
 
@@ -101,10 +95,22 @@ const AreaDetails: React.FC = () => {
         if (area?.uid) loadAreaTasks();
     }, [area?.uid, loadAreaTasks]);
 
-    const areaProjects = projectsStore.projects.filter((p: Project) => {
-        const projectArea = p.area || (p as any).Area;
-        return projectArea?.uid === areaUid;
-    });
+    // Reloads the full project list and keeps the global store in step.
+    const refreshProjects = async () => {
+        const list = await fetchProjects('all', '');
+        useStore.getState().projectsStore.setProjects(list);
+    };
+
+    const { cardActions, modals: projectModals } = useProjectCardActions(() =>
+        refreshProjects()
+    );
+
+    const areaProjects: Project[] = projectsStore.projects.filter(
+        (p: Project) => {
+            const projectArea = p.area || (p as any).Area;
+            return projectArea?.uid === areaUid;
+        }
+    );
 
     const areaGoals: Goal[] = goalsStore.goals.filter(
         (g: Goal) =>
@@ -191,178 +197,111 @@ const AreaDetails: React.FC = () => {
         (t) => t.status === 'done' || t.status === 2
     );
 
+    const tabClass = (tab: AreaTab) =>
+        `relative flex items-center self-stretch py-2.5 text-sm font-medium transition-colors ${
+            activeTab === tab
+                ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
+                : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'
+        }`;
+
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
-            {/* Area Header */}
-            <div
-                className="rounded-xl mb-8 overflow-hidden"
-                style={area.color ? { backgroundColor: area.color } : undefined}
-            >
-                <div
-                    className={`p-6 ${area.color ? '' : 'bg-gray-50 dark:bg-gray-900 rounded-xl'}`}
-                >
-                    <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                            <p
-                                className={`text-xs font-medium uppercase tracking-widest mb-1 ${
-                                    area.color
-                                        ? 'text-white/60'
-                                        : 'text-gray-400 dark:text-gray-500'
-                                }`}
-                            >
-                                Area
-                            </p>
-                            <h1
-                                className={`text-3xl font-light uppercase tracking-wide ${
-                                    area.color
-                                        ? 'text-white'
-                                        : 'text-gray-900 dark:text-gray-100'
-                                }`}
-                            >
-                                {area.name}
-                            </h1>
-                            {area.description && (
-                                <p
-                                    className={`mt-2 text-sm ${area.color ? 'text-white/80' : 'text-gray-600 dark:text-gray-400'}`}
-                                >
-                                    {area.description}
-                                </p>
-                            )}
-                            <div
-                                className={`mt-3 flex gap-4 text-xs ${area.color ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}
-                            >
-                                <Link
-                                    to={`/projects?area=${area.uid}`}
-                                    className={`hover:underline ${area.color ? 'hover:text-white' : 'hover:text-gray-700 dark:hover:text-gray-200'}`}
-                                >
-                                    {areaProjects.length}{' '}
-                                    {t('areas.projects', 'projects')}
-                                </Link>
-                                <span>
-                                    {areaGoals.length}{' '}
-                                    {t('areas.goals', 'goals')}
-                                </span>
-                                <span>
-                                    {areaTasks.length}{' '}
-                                    {t('areas.tasks', 'tasks')}
-                                </span>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-1 flex-shrink-0">
-                            <button
-                                onClick={() => setIsShareModalOpen(true)}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    area.color
-                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                                title={t('shares.shareArea', 'Share area')}
-                            >
-                                <ShareIcon className="h-5 w-5" />
-                            </button>
-                            <button
-                                onClick={() => setIsEditModalOpen(true)}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    area.color
-                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                                title={t('areas.edit', 'Edit area')}
-                            >
-                                <PencilIcon className="h-5 w-5" />
-                            </button>
-                        </div>
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-12">
+            <AreaHero
+                area={area}
+                t={t}
+                projectsCount={areaProjects.length}
+                goalsCount={areaGoals.length}
+                tasksCount={areaTasks.length}
+                doneCount={completedTasks.length}
+                totalCount={areaTasks.length}
+                onShareClick={() => setIsShareModalOpen(true)}
+                onEditClick={() => setIsEditModalOpen(true)}
+            />
+
+            <div className="mb-4">
+                <div className="flex items-center min-h-[2.5rem]">
+                    <div className="flex items-center gap-4 sm:gap-6 self-stretch pl-2 sm:pl-3">
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('projects')}
+                            className={tabClass('projects')}
+                            aria-pressed={activeTab === 'projects'}
+                        >
+                            {t('projects.title', 'Projects')} (
+                            {areaProjects.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('goals')}
+                            className={tabClass('goals')}
+                            aria-pressed={activeTab === 'goals'}
+                        >
+                            {t('goals.title', 'Goals')} ({areaGoals.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('tasks')}
+                            className={tabClass('tasks')}
+                            aria-pressed={activeTab === 'tasks'}
+                        >
+                            {t('areas.tasksInArea', 'Tasks')} (
+                            {areaTasks.length})
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* Goals section */}
-            <div className="mb-10">
-                <h2 className="text-lg font-light text-gray-700 dark:text-gray-300 mb-4">
-                    {t('goals.title', 'Goals')} ({areaGoals.length})
-                </h2>
+            {activeTab === 'projects' &&
+                (areaProjects.length === 0 ? (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 px-2">
+                        {t('areas.noProjects', 'No projects in this area.')}
+                    </p>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {areaProjects.map((project) => (
+                            <ProjectItem
+                                key={project.id}
+                                project={project}
+                                viewMode="cards"
+                                getCompletionPercentage={() =>
+                                    (project as any).completion_percentage || 0
+                                }
+                                {...cardActions}
+                            />
+                        ))}
+                    </div>
+                ))}
 
-                {areaGoals.length === 0 ? (
-                    <p className="text-sm text-gray-400 dark:text-gray-500">
+            {activeTab === 'goals' &&
+                (areaGoals.length === 0 ? (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 px-2">
                         {t(
                             'goals.noGoalsInArea',
                             'No goals linked to this area.'
                         )}
                     </p>
                 ) : (
-                    <div className="flex flex-col gap-2">
-                        {areaGoals.map((goal) => {
-                            const goalUrl = goal.uid
-                                ? createGoalUrl({
-                                      uid: goal.uid,
-                                      title: goal.title,
-                                  })
-                                : '/goals';
-                            return (
-                                <div
-                                    key={goal.uid}
-                                    className="flex items-center gap-2 group"
-                                >
-                                    <Link
-                                        to={goalUrl}
-                                        className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 hover:bg-white dark:hover:bg-gray-800 transition-colors ${goal.color ? 'border-l-4' : ''}`}
-                                        style={
-                                            goal.color
-                                                ? {
-                                                      borderLeftColor:
-                                                          goal.color,
-                                                  }
-                                                : {}
-                                        }
-                                    >
-                                        <FlagIcon className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate flex-1">
-                                            {goal.title}
-                                        </span>
-                                        {goal.why && (
-                                            <span className="text-xs text-gray-400 dark:text-gray-500 truncate hidden sm:block max-w-xs">
-                                                {goal.why}
-                                            </span>
-                                        )}
-                                        <span
-                                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ${STATUS_COLORS[goal.status] ?? ''}`}
-                                        >
-                                            {t(
-                                                `goals.status.${goal.status}`,
-                                                goal.status
-                                            )}
-                                        </span>
-                                    </Link>
-                                    <button
-                                        onClick={() =>
-                                            handleRemoveGoalFromArea(goal)
-                                        }
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 rounded"
-                                        title={t(
-                                            'goals.removeFromArea',
-                                            'Remove from area'
-                                        )}
-                                    >
-                                        <XMarkIcon className="h-4 w-4" />
-                                    </button>
-                                </div>
-                            );
-                        })}
+                    <div
+                        className={`task-list-container overflow-visible ${TASK_SHEET_CLASS} task-sheet-rails`}
+                    >
+                        {areaGoals.map((goal) => (
+                            <div key={goal.uid}>
+                                <GoalRow
+                                    goal={goal}
+                                    onRemoveFromArea={handleRemoveGoalFromArea}
+                                />
+                            </div>
+                        ))}
                     </div>
-                )}
-            </div>
+                ))}
 
-            {/* Tasks */}
-            <div>
-                <h2 className="text-lg font-light text-gray-700 dark:text-gray-300 mb-4">
-                    {t('areas.tasksInArea', 'Tasks')}
-                </h2>
-                {loadingTasks ? (
-                    <div className="text-sm text-gray-400 dark:text-gray-500">
+            {activeTab === 'tasks' &&
+                (loadingTasks ? (
+                    <div className="px-2 text-sm text-gray-400 dark:text-gray-500">
                         {t('loading.tasks', 'Loading tasks…')}
                     </div>
                 ) : activeTasks.length === 0 && completedTasks.length === 0 ? (
-                    <p className="text-sm text-gray-400 dark:text-gray-500">
+                    <p className="text-sm text-gray-400 dark:text-gray-500 px-2">
                         {t('areas.noTasks', 'No tasks directly in this area')}
                     </p>
                 ) : (
@@ -377,7 +316,7 @@ const AreaDetails: React.FC = () => {
                         )}
                         {completedTasks.length > 0 && (
                             <div>
-                                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
+                                <h3 className="px-2 text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
                                     {t('tasks.completed', 'Completed')} (
                                     {completedTasks.length})
                                 </h3>
@@ -391,8 +330,9 @@ const AreaDetails: React.FC = () => {
                             </div>
                         )}
                     </div>
-                )}
-            </div>
+                ))}
+
+            {projectModals}
 
             {isEditModalOpen && (
                 <AreaModal

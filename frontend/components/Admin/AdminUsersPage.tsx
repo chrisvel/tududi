@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHostedMode } from '../../hooks/useHostedMode';
 import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -32,8 +33,15 @@ import {
     ROLE_IDS,
     RoleId,
     RolesOverview,
+    isAdminRole,
 } from '../../entities/Role';
+import { useStore } from '../../store/useStore';
 import { FORM } from '../../constants/formClasses';
+import {
+    ADMIN_TABLE_WRAPPER,
+    SortHeader,
+    useSortedRows,
+} from './SortableTable';
 
 type AccountStatus = 'active' | 'invited' | 'no_sign_in';
 
@@ -44,8 +52,11 @@ interface AdminUserItem {
     name?: string;
     surname?: string;
     created_at: string;
+    email_verified?: boolean;
     role: RoleId;
     capabilities?: Capabilities;
+    // tududi Cloud: the person who pays for the account. Always an admin of it.
+    is_account_owner?: boolean;
     invited?: boolean;
     verification_requested?: boolean;
     email_sent?: boolean;
@@ -201,6 +212,7 @@ const AddUserModal: React.FC<{
     roleDefaults?: Partial<Record<RoleId, Capabilities>> | null;
 }> = ({ isOpen, onClose, onCreated, onUpdated, editingUser, roleDefaults }) => {
     const { t } = useTranslation();
+    const hosted = useHostedMode();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -230,6 +242,19 @@ const AddUserModal: React.FC<{
         editingUser && role === editingUser.role && editingUser.capabilities
             ? editingUser.capabilities
             : (roleDefaults?.[role] ?? null);
+
+    // The roles the server offers (an account admin gets only its account's).
+    // On tududi Cloud nobody is made superadmin here, and an account owner
+    // always stays an admin of its account.
+    const offeredRoles: RoleId[] = roleDefaults
+        ? (Object.keys(roleDefaults) as RoleId[])
+        : ROLE_IDS;
+    const roleOptions: RoleId[] =
+        editingUser?.is_account_owner ||
+        (hosted && editingUser?.role === 'admin')
+            ? [editingUser.role]
+            : offeredRoles.filter((id) => !(hosted && id === 'admin'));
+    const roleLocked = roleOptions.length <= 1;
 
     useEffect(() => {
         if (isOpen) {
@@ -587,22 +612,23 @@ const AddUserModal: React.FC<{
                             <button
                                 type="button"
                                 data-testid="role-trigger"
-                                className="w-full inline-flex justify-between items-center rounded border border-gray-300 dark:border-gray-600 shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                className="w-full inline-flex justify-between items-center rounded border border-gray-300 dark:border-gray-600 shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                                disabled={roleLocked}
                                 onClick={() =>
                                     setIsRoleDropdownOpen(!isRoleDropdownOpen)
                                 }
                             >
-                                <span>{roleName(t, role)}</span>
+                                <span>{roleName(t, role, hosted)}</span>
                                 <ChevronDownIcon
                                     className={`h-4 w-4 text-gray-500 dark:text-gray-300 transition-transform ${
                                         isRoleDropdownOpen ? 'rotate-180' : ''
                                     }`}
                                 />
                             </button>
-                            {isRoleDropdownOpen && (
+                            {isRoleDropdownOpen && !roleLocked && (
                                 <div className="absolute mt-1 w-full rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50">
                                     <div className="p-1">
-                                        {ROLE_IDS.map((id) => (
+                                        {roleOptions.map((id) => (
                                             <button
                                                 key={id}
                                                 type="button"
@@ -618,7 +644,11 @@ const AddUserModal: React.FC<{
                                             >
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-gray-900 dark:text-gray-100">
-                                                        {roleName(t, id)}
+                                                        {roleName(
+                                                            t,
+                                                            id,
+                                                            hosted
+                                                        )}
                                                     </span>
                                                     {role === id && (
                                                         <CheckIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
@@ -781,10 +811,21 @@ const AdminUsersPanel: React.FC<{
     onChanged?: () => void;
 }> = ({ roleDefaults, onChanged }) => {
     const { t } = useTranslation();
+    const hosted = useHostedMode();
     const { showSuccessToast, showErrorToast } = useToast();
+    const viewerIsSuperadmin =
+        useStore((state) => state.userSettingsStore.role) === 'admin';
     const [users, setUsers] = useState<AdminUserItem[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const { sorted, sortKey, sortDir, toggle } = useSortedRows(users ?? [], {
+        email: (u) => u.email,
+        name: (u) => u.name,
+        surname: (u) => u.surname,
+        created: (u) => new Date(u.created_at).getTime(),
+        verified: (u) => (u.email ? Number(!!u.email_verified) : null),
+        role: (u) => u.role,
+    });
     const [addOpen, setAddOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<AdminUserItem | null>(null);
     const [signInLinkUser, setSignInLinkUser] = useState<AdminUserItem | null>(
@@ -864,25 +905,58 @@ const AdminUsersPanel: React.FC<{
                     </div>
                 )}
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className={ADMIN_TABLE_WRAPPER}>
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead className="bg-gray-50 dark:bg-gray-900">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.email', 'Email')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.name', 'Name')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.surname', 'Surname')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.created', 'Created')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.role', 'Role')}
-                                </th>
+                                <SortHeader
+                                    column="email"
+                                    label={t('admin.email', 'Email')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="name"
+                                    label={t('admin.name', 'Name')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="surname"
+                                    label={t('admin.surname', 'Surname')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="created"
+                                    label={t('admin.created', 'Created')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="verified"
+                                    label={t('admin.verified', 'Verified')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
+                                <SortHeader
+                                    column="role"
+                                    label={t('admin.role', 'Role')}
+                                    sortKey={sortKey}
+                                    sortDir={sortDir}
+                                    onSort={toggle}
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                />
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     {t('admin.actions', 'Actions')}
                                 </th>
@@ -892,7 +966,7 @@ const AdminUsersPanel: React.FC<{
                             {loading && (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={7}
                                         className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                     >
                                         {t(
@@ -905,7 +979,7 @@ const AdminUsersPanel: React.FC<{
                             {!loading && users && users.length === 0 && (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={7}
                                         className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                     >
                                         {t('admin.noUsers', 'No users')}
@@ -914,7 +988,7 @@ const AdminUsersPanel: React.FC<{
                             )}
                             {!loading &&
                                 users &&
-                                users.map((u) => (
+                                sorted.map((u) => (
                                     <tr
                                         key={u.id}
                                         className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150"
@@ -963,10 +1037,35 @@ const AdminUsersPanel: React.FC<{
                                                 u.created_at
                                             ).toLocaleString()}
                                         </td>
+                                        <td
+                                            className="px-6 py-4 whitespace-nowrap text-sm"
+                                            data-testid={`user-verified-${u.id}`}
+                                        >
+                                            {!u.email ? (
+                                                <span className="text-gray-400 dark:text-gray-500">
+                                                    -
+                                                </span>
+                                            ) : u.email_verified ? (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                    <CheckIcon className="w-3.5 h-3.5 mr-1" />
+                                                    {t(
+                                                        'admin.verifiedYes',
+                                                        'Verified'
+                                                    )}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-500 dark:text-gray-400">
+                                                    {t(
+                                                        'admin.verifiedNo',
+                                                        'Not verified'
+                                                    )}
+                                                </span>
+                                            )}
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span
                                                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                    u.role === 'admin'
+                                                    isAdminRole(u.role)
                                                         ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
                                                         : u.role === 'guest'
                                                           ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
@@ -974,7 +1073,7 @@ const AdminUsersPanel: React.FC<{
                                                 }`}
                                                 data-testid={`user-role-${u.id}`}
                                             >
-                                                {roleName(t, u.role)}
+                                                {roleName(t, u.role, hosted)}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -1012,18 +1111,23 @@ const AdminUsersPanel: React.FC<{
                                                 >
                                                     <PencilIcon className="h-5 w-5" />
                                                 </button>
-                                                <button
-                                                    onClick={() =>
-                                                        setUserToDelete(u)
-                                                    }
-                                                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                                                    title={t(
-                                                        'common.delete',
-                                                        'Delete'
-                                                    )}
-                                                >
-                                                    <TrashIcon className="h-5 w-5" />
-                                                </button>
+                                                {!(
+                                                    u.is_account_owner &&
+                                                    !viewerIsSuperadmin
+                                                ) && (
+                                                    <button
+                                                        onClick={() =>
+                                                            setUserToDelete(u)
+                                                        }
+                                                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                        title={t(
+                                                            'common.delete',
+                                                            'Delete'
+                                                        )}
+                                                    >
+                                                        <TrashIcon className="h-5 w-5" />
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

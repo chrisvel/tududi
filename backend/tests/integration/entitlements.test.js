@@ -96,14 +96,35 @@ describe('entitlementsService with hosted mode on', () => {
         ).toBe(1);
     });
 
-    it('starts a trial from the account creation date when configured', async () => {
+    it('starts no trial until the email is verified', async () => {
         config.hosted.trialDays = 14;
         const ent = await entitlements.getEntitlements(user.id);
-        expect(ent.plan).toBe('pro');
+        expect(ent.reason).toBe('free');
+        expect(ent.trial_ends_at).toBeNull();
+    });
+
+    it('starts the trial once, on the trial plan', async () => {
+        config.hosted.trialDays = 14;
+        await entitlements.startTrial(user.id);
+        const ent = await entitlements.getEntitlements(user.id);
+        expect(ent.plan).toBe('trial');
         expect(ent.reason).toBe('trial');
+        expect(ent.features.ai).toBe(false);
+        expect(ent.features.public_notes).toBe(false);
+        expect(ent.limits.max_members).toBe(0);
         expect(new Date(ent.trial_ends_at).getTime()).toBeGreaterThan(
             Date.now()
         );
+
+        // A second verification (or reset) never extends it.
+        const account = await BillingAccount.findOne({
+            where: { user_id: user.id },
+        });
+        const ended = new Date(Date.now() - 1000);
+        await account.update({ trial_ends_at: ended });
+        await entitlements.startTrial(user.id);
+        await account.reload();
+        expect(account.trial_ends_at.getTime()).toBe(ended.getTime());
     });
 
     it('stops task creation at the limit, counting only active tasks', async () => {

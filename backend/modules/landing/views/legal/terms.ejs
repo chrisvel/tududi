@@ -13,6 +13,9 @@
 <h2>2. Subscription and payment</h2>
 <ul>
     <li>tududi Cloud is a paid subscription, billed monthly or yearly at the price shown on the <a href="/cloud">Cloud page</a> when you subscribe. There is no free tier.</li>
+    <% if (typeof trialDays !== 'undefined' && trialDays > 0) { %>
+    <li>A new account gets a free trial of <%= trialDays %> days once its email address is verified, without a card, one per person. The trial does not include the AI assistant, public note links or adding members. If you do not subscribe by the end of the trial, the account becomes read-only for 30 days so you can export your data, and is then deleted. We email you at least 7 days before it is deleted.</li>
+    <% } %>
     <li>Payments are handled by our reseller, <a href="https://www.lemonsqueezy.com">Lemon Squeezy</a>, who acts as the merchant of record. Your purchase is made from Lemon Squeezy under <a href="https://www.lemonsqueezy.com/buyer-terms">their buyer terms</a>, and they handle VAT and sales tax.</li>
     <li>Your subscription renews automatically at the end of each billing period until you cancel it.</li>
     <li>You can cancel at any time from Profile &rsaquo; Billing. Cancelling stops the next renewal; you keep access until the end of the period you have paid for.</li>

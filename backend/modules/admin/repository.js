@@ -7,8 +7,9 @@ class AdminRepository {
     /**
      * Find all users with basic attributes.
      */
-    async findAllUsers() {
+    async findAllUsers(userIds = null) {
         return User.findAll({
+            where: userIds ? { id: userIds } : {},
             attributes: [
                 'id',
                 'email',
@@ -17,8 +18,148 @@ class AdminRepository {
                 'created_at',
                 'password_digest',
                 'email_verified',
+                'account_id',
             ],
         });
+    }
+
+    // Items each user created, per kind, plus when they last created one.
+    // Recurring instances, system tags and self-people are made by the app,
+    // not the user, so none of them count.
+    async countItemsByUser() {
+        const models = require('../../models');
+        const { Op, fn, col } = require('sequelize');
+        const kinds = [
+            ['tasks', 'Task', { habit_mode: false, recurring_parent_id: null }],
+            ['habits', 'Task', { habit_mode: true, recurring_parent_id: null }],
+            ['projects', 'Project', {}],
+            ['notes', 'Note', {}],
+            ['areas', 'Area', {}],
+            ['goals', 'Goal', {}],
+            ['tags', 'Tag', { tag_type: { [Op.ne]: 'system' } }],
+            [
+                'people',
+                'Person',
+                {
+                    [Op.or]: [
+                        { linked_user_id: null },
+                        {
+                            linked_user_id: {
+                                [Op.ne]: col('Person.user_id'),
+                            },
+                        },
+                    ],
+                },
+            ],
+            ['views', 'View', {}],
+            ['inbox', 'InboxItem', {}],
+        ];
+
+        const results = await Promise.all(
+            kinds.map(([, modelName, where]) =>
+                models[modelName].findAll({
+                    attributes: [
+                        'user_id',
+                        [fn('COUNT', col('id')), 'count'],
+                        [fn('MAX', col('created_at')), 'last'],
+                    ],
+                    where,
+                    group: ['user_id'],
+                    raw: true,
+                })
+            )
+        );
+
+        const byUser = new Map();
+        kinds.forEach(([kind], i) => {
+            for (const row of results[i]) {
+                if (!byUser.has(row.user_id)) {
+                    byUser.set(row.user_id, { counts: {}, last: null });
+                }
+                const entry = byUser.get(row.user_id);
+                entry.counts[kind] = Number(row.count);
+                const last = row.last ? new Date(row.last) : null;
+                if (last && (!entry.last || last > entry.last)) {
+                    entry.last = last;
+                }
+            }
+        });
+        return byUser;
+    }
+
+    // Users who created a task, project, note, area or inbox item since
+    // `since`, optionally only among `userIds`. Signup seeds none of these,
+    // so a row means the person did something. Recurring instances are
+    // made by the scheduler and do not count.
+    async findCreatorIdsSince(since, userIds = null) {
+        const models = require('../../models');
+        const { Op } = require('sequelize');
+        const kinds = [
+            ['Task', { recurring_parent_id: null }],
+            ['Project', {}],
+            ['Note', {}],
+            ['Area', {}],
+            ['InboxItem', {}],
+        ];
+        const scope = userIds ? { user_id: userIds } : {};
+        const results = await Promise.all(
+            kinds.map(([modelName, where]) =>
+                models[modelName].findAll({
+                    attributes: ['user_id'],
+                    where: {
+                        ...where,
+                        ...scope,
+                        created_at: { [Op.gte]: since },
+                    },
+                    group: ['user_id'],
+                    raw: true,
+                })
+            )
+        );
+        return new Set(results.flat().map((row) => row.user_id));
+    }
+
+    // Every day plan of the given users that holds at least one task, as
+    // `{ user_id, plan_date, items }` rows, so the dashboard can tell who
+    // planned a first day and who kept planning.
+    async findPlanSizes(userIds) {
+        if (!userIds || userIds.length === 0) return [];
+        const { DailyPlan, DailyPlanItem } = require('../../models');
+        const plans = await DailyPlan.findAll({
+            attributes: ['id', 'user_id', 'plan_date'],
+            where: { user_id: userIds },
+            raw: true,
+        });
+        if (plans.length === 0) return [];
+        const items = await DailyPlanItem.findAll({
+            attributes: ['daily_plan_id'],
+            where: { daily_plan_id: plans.map((p) => p.id) },
+            raw: true,
+        });
+        const counts = new Map();
+        for (const item of items) {
+            counts.set(
+                item.daily_plan_id,
+                (counts.get(item.daily_plan_id) || 0) + 1
+            );
+        }
+        return plans
+            .filter((p) => counts.has(p.id))
+            .map((p) => ({
+                user_id: p.user_id,
+                plan_date: String(p.plan_date).slice(0, 10),
+                items: counts.get(p.id),
+            }));
+    }
+
+    async findAccountOwnerIds(accountIds = null) {
+        const { Account } = require('../../models');
+        const rows = await Account.findAll({
+            where: accountIds ? { id: accountIds } : {},
+            attributes: ['owner_user_id'],
+            raw: true,
+        });
+        return new Set(rows.map((row) => row.owner_user_id));
     }
 
     async findIdentityUserIds(userIds) {
@@ -34,8 +175,9 @@ class AdminRepository {
     /**
      * Find all roles.
      */
-    async findAllRoles() {
+    async findAllRoles(userIds = null) {
         return Role.findAll({
+            where: userIds ? { user_id: userIds } : {},
             attributes: ['user_id', 'is_admin', 'role', 'capabilities'],
         });
     }

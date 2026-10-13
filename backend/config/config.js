@@ -41,18 +41,21 @@ const displayPricing = () => ({
     // deliberately if that ever changes.
     standard: 50,
     launchActive: true,
-    // False while Cloud is being stood up on new infrastructure: the CTAs
-    // become "join the waitlist", the pricing card swaps to an "opening
-    // soon" notice with an email capture instead of the register link, and
-    // in hosted mode registration is closed with it (see
-    // modules/auth/registrationService). Reopen with
-    // TUDUDI_PRICING_JSON='{"cloudOpen":true}' or by flipping this back.
-    cloudOpen: false,
     ...parseJsonEnv(
         process.env.TUDUDI_PRICING_JSON ||
             process.env.TUDUDI_LANDING_PRICING_JSON
     ),
 });
+
+// Where the blog lives, for links from the marketing pages and the sitemap:
+// TUDUDI_BLOG_URL, else the first blog host, else null (no blog host).
+function blogSiteUrl() {
+    if (process.env.TUDUDI_BLOG_URL) {
+        return process.env.TUDUDI_BLOG_URL.replace(/\/$/, '');
+    }
+    const host = (process.env.TUDUDI_BLOG_HOSTS || '').split(',')[0].trim();
+    return host ? `https://${host.toLowerCase()}` : null;
+}
 
 // A JSON object from an environment variable, or {} when unset or invalid.
 function parseJsonEnv(value) {
@@ -92,6 +95,12 @@ const registrationConfig = {
     tokenExpiryHours: process.env.REGISTRATION_TOKEN_EXPIRY_HOURS
         ? parseInt(process.env.REGISTRATION_TOKEN_EXPIRY_HOURS, 10)
         : 24,
+    // Whether a new account's email domain must be able to receive mail (an
+    // MX lookup that fails open when DNS is unreachable). Off under test so
+    // the suite never touches the network.
+    mxCheck: process.env.REGISTRATION_MX_CHECK
+        ? process.env.REGISTRATION_MX_CHECK === 'true'
+        : environment !== 'test',
 };
 
 const passwordResetConfig = {
@@ -138,6 +147,13 @@ const config = {
         trialDays: process.env.TUDUDI_TRIAL_DAYS
             ? parseInt(process.env.TUDUDI_TRIAL_DAYS, 10)
             : 14,
+        // After a trial ends without a subscription the account can still
+        // read (and export) its data for this many days, then it is deleted.
+        trialReadOnlyDays: process.env.TUDUDI_TRIAL_READ_ONLY_DAYS
+            ? parseInt(process.env.TUDUDI_TRIAL_READ_ONLY_DAYS, 10)
+            : 30,
+        deleteExpiredTrials:
+            process.env.TUDUDI_DELETE_EXPIRED_TRIALS !== 'false',
         graceDays: process.env.TUDUDI_PAST_DUE_GRACE_DAYS
             ? parseInt(process.env.TUDUDI_PAST_DUE_GRACE_DAYS, 10)
             : 14,
@@ -223,6 +239,26 @@ const config = {
                 : 'https://tududi.com'),
         appUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
         pricing: displayPricing(),
+        blogUrl: blogSiteUrl(),
+    },
+
+    // Blog. The superadmin picks a publicly shared note of theirs as the
+    // front page in the admin area; the public notes it links with [[Title]]
+    // are the posts. TUDUDI_BLOG_HOSTS serves the blog at the root of those
+    // hostnames; without it the blog is still readable at /blog.
+    blog: {
+        hosts: (process.env.TUDUDI_BLOG_HOSTS || '')
+            .split(',')
+            .map((h) => h.trim().toLowerCase())
+            .filter(Boolean),
+        siteUrl: blogSiteUrl(),
+    },
+
+    // Page views for the admin dashboard: marketing, blog and app loads. No
+    // address is stored (see models/site_visit.js). TUDUDI_VISIT_TRACKING=false
+    // turns it off, and the dashboard then shows no visit numbers.
+    visits: {
+        enabled: process.env.TUDUDI_VISIT_TRACKING !== 'false',
     },
 
     // Same object the marketing page uses, so /api/billing can quote the
@@ -233,7 +269,14 @@ const config = {
 
     environment,
 
-    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
+    // In production the app and the API share one address, so BASE_URL (the
+    // public URL of the deployment) also stands in for FRONTEND_URL. Without
+    // it, email links (verification redirect, password reset) would point at
+    // the development server on localhost:8080.
+    frontendUrl:
+        process.env.FRONTEND_URL ||
+        process.env.BASE_URL ||
+        'http://localhost:8080',
 
     // BACKEND_URL is the primary variable; BASE_URL (documented for OIDC
     // callbacks) is accepted as a fallback since it's the publicly-facing
@@ -374,6 +417,15 @@ const config = {
                 parseInt(process.env.RATE_LIMIT_AUTH_EMAIL_WINDOW_MS) ||
                 15 * 60 * 1000, // 15 minutes
             max: parseInt(process.env.RATE_LIMIT_AUTH_EMAIL_MAX) || 10,
+        },
+
+        // Password sign-ups per IP on a hosted instance. Only accounts that
+        // were actually created count, so typos and refusals do not.
+        signup: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_SIGNUP_WINDOW_MS) ||
+                24 * 60 * 60 * 1000, // 24 hours
+            max: parseInt(process.env.RATE_LIMIT_SIGNUP_MAX) || 3,
         },
 
         // CalDAV Basic-auth attempts, per IP + username, per auth window

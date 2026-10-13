@@ -4,6 +4,8 @@ import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import Areas from '../Areas';
 
+import { ToastProvider } from '../Shared/ToastContext';
+
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, fallback?: string) => fallback ?? key,
@@ -43,9 +45,11 @@ jest.mock('../../store/useStore', () => {
 describe('Areas overview page', () => {
     const renderAreas = () =>
         render(
-            <MemoryRouter>
-                <Areas />
-            </MemoryRouter>
+            <ToastProvider>
+                <MemoryRouter>
+                    <Areas />
+                </MemoryRouter>
+            </ToastProvider>
         );
 
     it('forces a fresh reload of areas on mount so card counts do not go stale', () => {

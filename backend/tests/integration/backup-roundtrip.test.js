@@ -128,6 +128,11 @@ async function seedSource(user) {
     await user.update({
         avatar_image: `/uploads/avatars/${avatarFile}`,
         appearance: 'dark',
+        features: {
+            ...user.features,
+            kanban_enabled: true,
+            eisenhower_enabled: true,
+        },
     });
 
     return {
@@ -254,6 +259,8 @@ describe('Backup export and import round trip (format 2)', () => {
         // (#1603), but never the source's email/password.
         const updatedTarget = await User.findByPk(target.id);
         expect(updatedTarget.appearance).toBe('dark');
+        expect(updatedTarget.features.kanban_enabled).toBe(true);
+        expect(updatedTarget.features.eisenhower_enabled).toBe(true);
         expect(updatedTarget.email).toBe(target.email);
         expect(updatedTarget.avatar_image).toMatch(/^\/uploads\/avatars\//);
         const avatarContent = await fs.readFile(

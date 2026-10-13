@@ -9,6 +9,7 @@ import { Tag } from '../../entities/Tag';
 import TaskItem from '../Task/TaskItem';
 import { getCsrfToken } from '../../utils/csrfService';
 import { isQueuedOfflineResponse } from '../../utils/authUtils';
+import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 
 const COLUMN_STATUS: Record<string, number> = {
     not_started: 0,
@@ -394,7 +395,8 @@ const KanbanBoard: React.FC = () => {
                                                 : '-'}
                                         </p>
                                     ) : (
-                                        colTasks.map((task) => (
+                                        <div className={TASK_SHEET_CLASS}>
+                                        {colTasks.map((task) => (
                                             <div
                                                 key={task.id}
                                                 draggable
@@ -414,7 +416,8 @@ const KanbanBoard: React.FC = () => {
                                                     isKanbanView={true}
                                                 />
                                             </div>
-                                        ))
+                                        ))}
+                                        </div>
                                     )}
                                 </div>
                             </div>

@@ -489,10 +489,85 @@ async function completeOccurrence(task, { timezone = 'UTC', userId } = {}) {
     return occurrence;
 }
 
+// Moves a recurring task to its next due date without completing it. The
+// occurrence is recorded with skipped = true, so stats, streaks and the daily
+// plan, which all read only skipped = false rows, ignore it.
+async function skipRecurringOccurrence(task, userId, userTimezone) {
+    if (
+        !task.recurrence_type ||
+        task.recurrence_type === 'none' ||
+        task.recurring_parent_id
+    ) {
+        return { error: 'Only recurring tasks can skip an occurrence.' };
+    }
+
+    if (task.status === Task.STATUS.DONE || task.status === 'done') {
+        return { error: 'Completed tasks cannot skip an occurrence.' };
+    }
+
+    const skippedAt = new Date();
+    const originalDueDate = task.due_date
+        ? new Date(task.due_date)
+        : new Date(skippedAt);
+    const recurrenceContext = {
+        ...task.get({ plain: true }),
+        due_date: originalDueDate,
+    };
+    const baseDate = task.completion_based
+        ? skippedAt
+        : new Date(originalDueDate);
+    const nextDueDate = calculateNextDueDate(
+        recurrenceContext,
+        baseDate,
+        getSafeTimezone(userTimezone)
+    );
+
+    if (
+        !nextDueDate ||
+        !shouldGenerateNextTask(recurrenceContext, nextDueDate)
+    ) {
+        return { error: 'This task has no next occurrence to skip to.' };
+    }
+
+    await task.update({
+        due_date: nextDueDate,
+        status: Task.STATUS.NOT_STARTED,
+        completed_at: null,
+    });
+
+    await RecurringCompletion.create({
+        task_id: task.id,
+        completed_at: skippedAt,
+        original_due_date: originalDueDate,
+        skipped: true,
+    });
+
+    try {
+        await logEvent({
+            taskId: task.id,
+            userId,
+            eventType: 'recurring_occurrence_skipped',
+            fieldName: 'recurrence',
+            oldValue: originalDueDate,
+            newValue: nextDueDate,
+            metadata: {
+                action: 'recurring_occurrence_skipped',
+                original_due_date: originalDueDate.toISOString(),
+                next_due_date: nextDueDate.toISOString(),
+            },
+        });
+    } catch (eventError) {
+        logError('Error logging recurring occurrence skip event:', eventError);
+    }
+
+    return { originalDueDate, nextDueDate };
+}
+
 module.exports = {
     handleRecurrenceUpdate,
     calculateNextIterations,
     planOccurrenceAdvance,
     recordOccurrence,
     completeOccurrence,
+    skipRecurringOccurrence,
 };

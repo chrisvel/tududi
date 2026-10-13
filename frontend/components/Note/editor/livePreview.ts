@@ -10,7 +10,13 @@ import {
 import { ensureSyntaxTree, syntaxTree } from '@codemirror/language';
 import { CALLOUT_MARKER_REGEX } from '../../../utils/calloutParser';
 import type { CalloutType } from '../../Shared/CalloutBlock';
-import { blockWidgetKind, selectionTouches } from './blockWidgets';
+import {
+    blockWidgetKind,
+    holdForPointer,
+    readFenceBody,
+    selectionTouches,
+    setPointerDown,
+} from './blockWidgets';
 import {
     BulletWidget,
     CalloutTitleWidget,
@@ -308,7 +314,8 @@ export function buildLivePreview(
                                         ? state
                                               .sliceDoc(info.from, info.to)
                                               .trim()
-                                        : ''
+                                        : '',
+                                    readFenceBody(state, ref.node)
                                 )
                             );
                         }
@@ -351,9 +358,14 @@ export function buildLivePreview(
             const show = touches(from, to);
             marker(from, from + 2, show);
             marker(to - 2, to, show);
-            addMark(from + 2, to - 2, 'cm-md-wikilink', {
-                'data-wikilink': match[1].trim(),
-            });
+            // Away from the caret the link reads as a chip and opens on a
+            // plain click; with the caret on it, it is ordinary editable text.
+            addMark(
+                from + 2,
+                to - 2,
+                show ? 'cm-md-wikilink' : 'cm-md-wikilink cm-md-wikilink-chip',
+                { 'data-wikilink': match[1].trim() }
+            );
         }
     }
 
@@ -372,10 +384,23 @@ class LivePreviewPlugin {
     }
 
     update(update: ViewUpdate) {
+        const released = update.transactions.some((tr) =>
+            tr.effects.some((e) => e.is(setPointerDown) && !e.value)
+        );
         if (
+            !released &&
+            !update.viewportChanged &&
+            update.transactions.length > 0 &&
+            update.transactions.every(holdForPointer)
+        ) {
+            return;
+        }
+        if (
+            released ||
             update.docChanged ||
             update.selectionSet ||
             update.viewportChanged ||
+            update.transactions.some((tr) => tr.reconfigured) ||
             syntaxTree(update.startState) !== syntaxTree(update.state)
         ) {
             this.rebuild(update.view);

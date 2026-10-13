@@ -49,8 +49,8 @@ class TaskRepository {
         });
     }
 
-    async create(taskData) {
-        return await this.model.create(taskData);
+    async create(taskData, options = {}) {
+        return await this.model.create(taskData, options);
     }
 
     async update(id, userId, updates) {

@@ -6,6 +6,7 @@ const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const { selfPersonName } = require('../../utils/selfPersonName');
 const { accountStatusOf } = require('../admin/accountStatus');
 const signInLinkService = require('../members/signInLinkService');
+const membersService = require('../members/service');
 const {
     NotFoundError,
     ValidationError,
@@ -44,10 +45,10 @@ class PeopleService {
             ])
         );
 
-        const signInLinkIds = await signInLinkService.issuableAccountIds(
-            userId,
-            accountIds
-        );
+        const [signInLinkIds, manageableIds] = await Promise.all([
+            signInLinkService.issuableAccountIds(userId, accountIds),
+            membersService.manageableAccountIds(userId, accountIds),
+        ]);
 
         return people.map((p) => {
             const isMember = p.user_id === p.linked_user_id;
@@ -59,6 +60,7 @@ class PeopleService {
             if (isMember) {
                 entry.account_status = status.get(p.linked_user_id);
                 entry.can_sign_in_link = signInLinkIds.has(p.linked_user_id);
+                entry.can_manage = manageableIds.has(p.linked_user_id);
             }
             return entry;
         });

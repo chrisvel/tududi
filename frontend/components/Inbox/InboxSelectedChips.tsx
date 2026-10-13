@@ -7,10 +7,12 @@ import {
     CalendarDaysIcon,
     CalendarIcon,
     UserIcon,
+    Squares2X2Icon,
 } from '@heroicons/react/24/outline';
 import {
     TagIcon as SolidTagIcon,
     FolderIcon as SolidFolderIcon,
+    Squares2X2Icon as SolidSquares2X2Icon,
 } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import { Tag } from '../../entities/Tag';
@@ -28,6 +30,12 @@ export interface InboxPersonChip {
     color?: string | null;
 }
 
+export interface InboxAreaChip {
+    name: string;
+    // Created when the item is saved
+    isNew?: boolean;
+}
+
 interface InboxSelectedChipsProps {
     selectedTags: string[];
     selectedProjects: string[];
@@ -39,6 +47,8 @@ interface InboxSelectedChipsProps {
     assignee?: InboxPersonChip | null;
     onDismissDate?: () => void;
     onRemovePerson?: () => void;
+    area?: InboxAreaChip | null;
+    onRemoveArea?: () => void;
     // "line" shows everything on one row, the way a task row shows its
     // project, tags and due date.
     variant?: 'chips' | 'line';
@@ -63,6 +73,8 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
     assignee = null,
     onDismissDate,
     onRemovePerson,
+    area = null,
+    onRemoveArea,
     variant = 'chips',
 }) => {
     const { t } = useTranslation();
@@ -258,7 +270,8 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
             selectedProjects.length > 0 ||
             selectedTags.length > 0 ||
             !!dueDate ||
-            !!assignee;
+            !!assignee ||
+            !!area;
         if (!hasAny) return null;
 
         // Names that do not exist yet will be created on save, so they keep
@@ -268,8 +281,26 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
         return (
             <div
                 data-testid="capture-metadata"
-                className="flex items-center gap-3 whitespace-nowrap overflow-x-auto text-xs text-gray-500 dark:text-gray-400 pb-1.5"
+                className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400 pb-1.5"
             >
+                {area && (
+                    <div
+                        data-testid="selected-area"
+                        className="flex items-center"
+                    >
+                        <SolidSquares2X2Icon className="h-3 w-3 mr-1 flex-shrink-0" />
+                        <span
+                            className={`inline-flex items-center max-w-[12rem] ${area.isNew ? newItemClass : ''}`}
+                        >
+                            <span className="truncate">{area.name}</span>
+                            {onRemoveArea &&
+                                removeButton(
+                                    onRemoveArea,
+                                    t('inbox.removeArea', 'Remove area')
+                                )}
+                        </span>
+                    </div>
+                )}
                 {selectedProjects.length > 0 && (
                     <div
                         data-testid="selected-projects-container"
@@ -318,7 +349,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                                     key={`${tagName}-${index}`}
                                     data-testid={`selected-tag-${tagName}`}
                                     data-tag-exists={String(!!tag)}
-                                    className={`inline-flex items-center px-2 py-px rounded-full text-[10px] font-medium bg-white dark:bg-gray-900 ${tag ? 'text-gray-500 dark:text-gray-400' : newItemClass}`}
+                                    className={`inline-flex items-center px-2 py-px rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 ${tag ? 'text-gray-500 dark:text-gray-400' : newItemClass}`}
                                     style={
                                         tag
                                             ? tagColorStyle(tag.color)
@@ -387,6 +418,28 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
                     <UserIcon className="h-3 w-3 mr-1" />
                     {renderPersonChip(assignee)}
+                </div>
+            )}
+
+            {area && (
+                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
+                    <Squares2X2Icon className="h-3 w-3 mr-1" />
+                    <span
+                        data-testid="selected-area"
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/20 rounded text-purple-600 dark:text-purple-300"
+                    >
+                        {area.name}
+                        {onRemoveArea && (
+                            <button
+                                type="button"
+                                onClick={onRemoveArea}
+                                className="h-3 w-3 text-purple-400 hover:text-red-500 transition-colors"
+                                title={t('inbox.removeArea', 'Remove area')}
+                            >
+                                <XMarkIcon className="h-3 w-3" />
+                            </button>
+                        )}
+                    </span>
                 </div>
             )}
 

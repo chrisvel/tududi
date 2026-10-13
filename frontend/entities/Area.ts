@@ -8,4 +8,5 @@ export interface Area {
     projects_count?: number;
     goals_count?: number;
     tasks_count?: number;
+    sort_position?: number | null;
 }

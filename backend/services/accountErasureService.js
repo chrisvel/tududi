@@ -42,9 +42,14 @@ const {
     Person,
     UserProjectArea,
     UserProjectOrder,
+    UserGoalOrder,
+    UserAreaOrder,
     UserTaskOrder,
     BillingAccount,
     UsageCounter,
+    Feedback,
+    PushSubscription,
+    SiteVisit,
 } = require('../models');
 const { getConfig } = require('../config/config');
 const { assertAnotherAdminRemains } = require('./rolesService');
@@ -210,6 +215,8 @@ async function eraseUserAccount(userId) {
         await Note.destroy(byUser);
         await UserProjectArea.destroy(byUser);
         await UserProjectOrder.destroy(byUser);
+        await UserGoalOrder.destroy(byUser);
+        await UserAreaOrder.destroy(byUser);
         await Project.destroy(byUser);
         await Goal.destroy(byUser);
         await Area.destroy(byUser);
@@ -223,7 +230,13 @@ async function eraseUserAccount(userId) {
         await OIDCIdentity.destroy(byUser);
         await AuthAuditLog.destroy(byUser);
         await UsageCounter.destroy(byUser);
+        await Feedback.destroy(byUser);
+        await PushSubscription.destroy(byUser);
+        await SiteVisit.destroy(byUser);
         await BillingAccount.destroy(byUser);
+
+        // A hosted account this one owned goes with it; its members stay.
+        await require('./accountsService').releaseOwnedAccount(userId, tx);
 
         // Accounts this one created stay, and just forget who created them.
         await User.update(

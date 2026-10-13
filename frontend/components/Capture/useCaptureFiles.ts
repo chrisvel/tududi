@@ -43,6 +43,29 @@ export const nameForPastedFile = (file: File, now = new Date()): File => {
     });
 };
 
+// The files picked in a file input, read into memory before the input is
+// cleared. On iOS a picked photo is a temporary copy that WebKit drops once
+// the input is reset, so a File kept by reference uploads as a cut-off form.
+export const takePickedFiles = async (
+    input: HTMLInputElement
+): Promise<File[]> => {
+    const picked = Array.from(input.files ?? []);
+    const copies = await Promise.all(
+        picked.map(async (file) => {
+            try {
+                return new File([await file.arrayBuffer()], file.name, {
+                    type: file.type,
+                    lastModified: file.lastModified,
+                });
+            } catch {
+                return file;
+            }
+        })
+    );
+    input.value = '';
+    return copies;
+};
+
 // A title for an item saved with files and no text.
 export const titleFromFiles = (files: CaptureFile[]): string => {
     const name = files[0]?.file.name ?? '';

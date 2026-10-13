@@ -85,17 +85,17 @@ const notificationsController = {
     async triggerTestNotification(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const { type } = req.body;
+            const { channel } = req.body;
 
-            if (!type) {
+            if (!channel) {
                 return res
                     .status(400)
-                    .json({ error: 'Notification type is required' });
+                    .json({ error: 'Notification channel is required' });
             }
 
             const result = await notificationsService.triggerTestNotification(
                 userId,
-                type
+                channel
             );
             res.json(result);
         } catch (error) {

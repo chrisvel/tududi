@@ -2,6 +2,7 @@ const { Task, RecurringCompletion } = require('../../../models');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
 const permissionsService = require('../../../services/permissionsService');
+const { withScope } = require('../../../services/scopeService');
 const {
     countTotalOpenTasks,
     countTasksPendingOverMonth,
@@ -18,6 +19,7 @@ const {
 } = require('./metrics-queries');
 const { compareCandidates } = require('../../daily-plan/ranking');
 const { isSuggestible } = require('../../daily-plan/planningSettings');
+const habitService = require('../../habits/habitService');
 
 const MAX_SUGGESTED_TASKS = 50;
 
@@ -82,7 +84,8 @@ async function computeSuggestedTasks(
     tasksDueToday,
     tasksOverdue,
     todayPlanTasks,
-    planning = null
+    planning = null,
+    scopeWhere = null
 ) {
     if (
         totalOpenTasks < 3 &&
@@ -119,7 +122,12 @@ async function computeSuggestedTasks(
         ? (tasks) => tasks.filter((task) => isSuggestible(task, planning, now))
         : (tasks) => tasks;
 
-    let combinedTasks = keep([...nonProjectTasks, ...projectTasks]);
+    // Habits stay open, so only the ones asking for a check-in today count.
+    const keepDue = (tasks) => habitService.keepHabitsDueToday(tasks, userId);
+
+    let combinedTasks = keep(
+        await keepDue([...nonProjectTasks, ...projectTasks])
+    );
 
     if (combinedTasks.length < 6) {
         const usedTaskIds = [
@@ -130,10 +138,15 @@ async function computeSuggestedTasks(
         const somedayFallbackTasks = await fetchSomedayFallbackTasks(
             userId,
             usedTaskIds,
-            somedayTaskIds
+            somedayTaskIds,
+            null,
+            scopeWhere
         );
 
-        combinedTasks = [...combinedTasks, ...keep(somedayFallbackTasks)];
+        combinedTasks = [
+            ...combinedTasks,
+            ...keep(await keepDue(somedayFallbackTasks)),
+        ];
     }
 
     if (planning) {
@@ -243,18 +256,23 @@ async function computeWeeklyCompletions(userId, userTimezone) {
     return weeklyData;
 }
 
+// `scopeWhere` (from scopeService.taskScopeWhere) narrows every list to a
+// Focus scope; the visible-tasks where then carries it into each query.
 async function computeTaskMetrics(
     userId,
     userTimezone = 'UTC',
     permissionCache = null,
-    planning = null
+    planning = null,
+    scopeWhere = null
 ) {
-    const visibleTasksWhere =
+    const visibleTasksWhere = withScope(
         await permissionsService.ownershipOrPermissionWhere(
             'task',
             userId,
             permissionCache
-        );
+        ),
+        scopeWhere
+    );
 
     const somedayExcludedIds = await fetchSomedayExcludedTaskIds(userId);
 
@@ -286,7 +304,7 @@ async function computeTaskMetrics(
             somedayExcludedIds,
             permissionCache
         ),
-        fetchTasksCompletedToday(userId, userTimezone),
+        fetchTasksCompletedToday(userId, userTimezone, scopeWhere),
         computeWeeklyCompletions(userId, userTimezone),
     ]);
 
@@ -298,7 +316,8 @@ async function computeTaskMetrics(
         tasksDueToday,
         tasksOverdue,
         todayPlanTasks,
-        planning
+        planning,
+        scopeWhere
     );
 
     return {

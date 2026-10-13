@@ -11,6 +11,8 @@ const { requireCapability } = require('../../middleware/roles');
 
 router.param('uid', numericIdParam('area', Area));
 
+// Save the current user's custom order of areas
+router.put('/areas/order', areasController.reorder);
 router.get('/areas', areasController.list);
 router.get('/areas/:uid', areasController.getOne);
 router.post(

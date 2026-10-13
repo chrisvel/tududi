@@ -24,6 +24,32 @@ const membersController = {
         }
     },
 
+    async update(req, res, next) {
+        try {
+            const actorId = requireUserId(req);
+            const memberId = validateUserId(req.params.id);
+            const member = await membersService.updateMember(
+                actorId,
+                memberId,
+                req.body
+            );
+            res.json(member);
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async remove(req, res, next) {
+        try {
+            const actorId = requireUserId(req);
+            const memberId = validateUserId(req.params.id);
+            await membersService.removeMember(actorId, memberId);
+            res.status(204).end();
+        } catch (err) {
+            next(err);
+        }
+    },
+
     async createSignInLink(req, res, next) {
         try {
             const actorId = requireUserId(req);

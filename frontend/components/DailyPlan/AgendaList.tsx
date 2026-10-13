@@ -4,6 +4,7 @@ import {
     CalendarIcon,
     ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import {
     arrayMove,
@@ -15,10 +16,12 @@ import { Project } from '../../entities/Project';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import TaskRow from '../Task/TaskRow';
+import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 import {
     buildAgenda,
     formatDuration,
     formatMinute,
+    intlLocale,
     isItemDone,
     itemEnd,
     pickCurrentItem,
@@ -38,6 +41,8 @@ interface AgendaListProps {
     now: number;
     projects: Project[];
     onTaskUpdate: (task: Task) => Promise<void>;
+    // Called with the saved task after its checkbox is toggled.
+    onTaskComplete?: (task: Task) => void;
     onTaskDelete: (taskUid: string) => Promise<void>;
     // Makes the "Anytime" tasks draggable; timed ones follow the clock.
     // Called with their task uids in the new order.
@@ -54,10 +59,11 @@ const AgendaList: React.FC<AgendaListProps> = ({
     now,
     projects,
     onTaskUpdate,
+    onTaskComplete,
     onTaskDelete,
     onReorderUntimed,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const sensors = useSortableSensors();
     const agenda = buildAgenda(items, events);
     const current = pickCurrentItem(items, now);
@@ -144,11 +150,13 @@ const AgendaList: React.FC<AgendaListProps> = ({
                 const row = (
                     <div
                         key={`task-${item.task_uid}`}
-                        className="flex flex-col gap-1 sm:flex-row sm:items-start sm:gap-3"
+                        className={`flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3${
+                            item.in_focus === false ? ' opacity-50' : ''
+                        }`}
                         data-testid={`agenda-task-${item.task_uid}`}
                     >
                         <span
-                            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs sm:w-32 sm:pt-3 sm:text-sm ${
+                            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs sm:w-32 sm:text-sm ${
                                 late
                                     ? 'font-medium text-amber-700 dark:text-amber-400'
                                     : isCurrent
@@ -169,16 +177,68 @@ const AgendaList: React.FC<AgendaListProps> = ({
                             )}
                         </span>
                         <div className="min-w-0 flex-1">
-                            <TaskRow
-                                task={item.task}
-                                projects={projects}
-                                onTaskUpdate={onTaskUpdate}
-                                onTaskCompletionToggle={(task) => {
-                                    void onTaskUpdate(task);
-                                }}
-                                onTaskDelete={onTaskDelete}
-                                compact
-                            />
+                            {item.occurrence_done ? (
+                                // The task itself is open again for its next
+                                // due date, so it is shown as done here
+                                // without a checkbox that would complete the
+                                // next occurrence too.
+                                <div
+                                    className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 dark:bg-gray-900"
+                                    data-testid={`occurrence-done-${item.task_uid}`}
+                                >
+                                    <CheckCircleIcon
+                                        className="h-5 w-5 shrink-0 text-green-500"
+                                        aria-label={t(
+                                            'dailyPlan.doneForToday',
+                                            'Done for today'
+                                        )}
+                                    />
+                                    <span className="min-w-0 flex-1 truncate text-[15px] font-medium tracking-tight text-gray-400 line-through dark:text-gray-500">
+                                        {item.task.name}
+                                    </span>
+                                    {item.task.due_date && (
+                                        <span className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
+                                            {t(
+                                                'dailyPlan.nextOccurrence',
+                                                'Next on {{date}}',
+                                                {
+                                                    date: new Intl.DateTimeFormat(
+                                                        intlLocale(
+                                                            i18n.language
+                                                        ),
+                                                        {
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                        }
+                                                    ).format(
+                                                        new Date(
+                                                            `${item.task.due_date.slice(0, 10)}T12:00:00`
+                                                        )
+                                                    ),
+                                                }
+                                            )}
+                                        </span>
+                                    )}
+                                </div>
+                            ) : (
+                                // A one-row sheet, so agenda tasks match the
+                                // task lists elsewhere.
+                                <div className={TASK_SHEET_CLASS}>
+                                    <TaskRow
+                                        task={item.task}
+                                        projects={projects}
+                                        onTaskUpdate={onTaskUpdate}
+                                        onTaskCompletionToggle={(task) => {
+                                            if (onTaskComplete)
+                                                onTaskComplete(task);
+                                            else void onTaskUpdate(task);
+                                        }}
+                                        onTaskDelete={onTaskDelete}
+                                        compact
+                                        saveStatusChanges
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
                 );

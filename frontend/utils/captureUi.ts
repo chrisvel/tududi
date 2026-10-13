@@ -5,10 +5,20 @@ import { CaptureTarget, CapturedItem } from './captureText';
 // one goes on today's plan.
 export type CaptureScope = 'today';
 
+// The project the box was opened from. Matched by uid, since two projects
+// can share a name.
+export interface CaptureProject {
+    uid: string;
+    name: string;
+}
+
 interface CaptureUiState {
     open: boolean;
     target: CaptureTarget;
     scope: CaptureScope | null;
+    // Text the box starts with, e.g. +"Project" when opened from a project
+    initialText: string;
+    project: CaptureProject | null;
     // Changes on every open, so the composer can start from the same place
     openCount: number;
 }
@@ -24,6 +34,8 @@ let state: CaptureUiState = {
     open: false,
     target: 'inbox',
     scope: null,
+    initialText: '',
+    project: null,
     openCount: 0,
 };
 const listeners = new Set<() => void>();
@@ -36,12 +48,16 @@ const setState = (next: CaptureUiState) => {
 
 export const openCapture = (
     target: CaptureTarget = 'inbox',
-    scope: CaptureScope | null = null
+    scope: CaptureScope | null = null,
+    initialText = '',
+    project: CaptureProject | null = null
 ): void => {
     setState({
         open: true,
         target: scope === 'today' ? 'task' : target,
         scope,
+        initialText,
+        project,
         openCount: state.openCount + 1,
     });
 };

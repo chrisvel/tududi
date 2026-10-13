@@ -3,6 +3,7 @@ const moment = require('moment-timezone');
 const app = require('../../app');
 const {
     Task,
+    Tag,
     Project,
     InboxItem,
     DailyPlan,
@@ -235,6 +236,45 @@ describe('Daily plan routes', () => {
         ]);
     });
 
+    it('lists open tasks tagged #today first, out of their other groups', async () => {
+        const tag = await Tag.create({ name: 'Today', user_id: user.id });
+        const lastWeek = moment
+            .tz('Europe/Athens')
+            .subtract(7, 'days')
+            .format('YYYY-MM-DD');
+        const late = await makeTask({
+            name: 'Late, high',
+            priority: 2,
+            due_date: lastWeek,
+        });
+        const tagged = await makeTask({ name: 'Tagged, low', priority: 0 });
+        const taggedLate = await makeTask({
+            name: 'Tagged and late',
+            priority: 2,
+            due_date: lastWeek,
+        });
+        const taggedDone = await makeTask({
+            name: 'Tagged but done',
+            status: Task.STATUS.DONE,
+        });
+        await tagged.addTag(tag);
+        await taggedLate.addTag(tag);
+        await taggedDone.addTag(tag);
+
+        const res = await agent.get('/api/daily-plan/candidates');
+
+        expect(res.status).toBe(200);
+        expect(res.body.tagged_today.map((t) => t.uid).sort()).toEqual(
+            [tagged.uid, taggedLate.uid].sort()
+        );
+        expect(res.body.overdue.map((t) => t.uid)).toEqual([late.uid]);
+        expect(res.body.ranked.slice(0, 3)).toEqual([
+            taggedLate.uid,
+            tagged.uid,
+            late.uid,
+        ]);
+    });
+
     it('saves a custom ranking and uses it for candidates', async () => {
         const project = await Project.create({
             name: 'Work',
@@ -345,6 +385,53 @@ describe('Daily plan routes', () => {
             .put(`/api/daily-plan/${today}`)
             .send({ items: [{ task_uid: recurring.uid }] });
         expect(plan.body.plan.items[0].task.name).toBe('Water plants');
+    });
+
+    it('marks a recurring task done for the day once its occurrence is completed', async () => {
+        const noon = moment.tz(today, 'Europe/Athens').hour(12).toDate();
+        const recurring = await makeTask({
+            name: 'Water plants',
+            recurrence_type: 'daily',
+            recurrence_interval: 1,
+            due_date: noon,
+        });
+        const other = await makeTask({ name: 'Write spec' });
+        await agent.put(`/api/daily-plan/${today}`).send({
+            items: [{ task_uid: recurring.uid }, { task_uid: other.uid }],
+        });
+
+        const completed = await agent
+            .patch(`/api/task/${recurring.uid}`)
+            .send({ status: 'done' });
+        expect(completed.status).toBe(200);
+        expect(completed.body.due_date > today).toBe(true);
+
+        const res = await agent.get('/api/daily-plan');
+        const [first, second] = res.body.plan.items;
+        expect(first.task_uid).toBe(recurring.uid);
+        expect(first.occurrence_done).toBe(true);
+        expect(first.task.status).toBe(Task.STATUS.NOT_STARTED);
+        expect(second.occurrence_done).toBe(false);
+    });
+
+    it('does not count a completion once its due date is back on the day', async () => {
+        const noon = moment.tz(today, 'Europe/Athens').hour(12).toDate();
+        const recurring = await makeTask({
+            recurrence_type: 'daily',
+            recurrence_interval: 1,
+            due_date: noon,
+        });
+        await agent
+            .put(`/api/daily-plan/${today}`)
+            .send({ items: [{ task_uid: recurring.uid }] });
+        await agent
+            .patch(`/api/task/${recurring.uid}`)
+            .send({ status: 'done' });
+        // Undoing the completion puts the old due date back.
+        await Task.update({ due_date: noon }, { where: { id: recurring.id } });
+
+        const res = await agent.get('/api/daily-plan');
+        expect(res.body.plan.items[0].occurrence_done).toBe(false);
     });
 
     it('saves the day hours and returns them with the plan', async () => {

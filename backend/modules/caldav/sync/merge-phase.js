@@ -105,19 +105,50 @@ class MergePhase {
                 `Task ${taskUid} was modified locally after remote deletion, conflict detected`
             );
 
+            if (calendar.conflict_resolution === 'manual') {
+                if (!dryRun) {
+                    await SyncStateRepository.markConflict(
+                        existingTask.id,
+                        calendar.id,
+                        existingTask.toJSON(),
+                        null
+                    );
+                }
+
+                results.conflicts.push({
+                    uid: taskUid,
+                    taskId: existingTask.id,
+                    type: 'remote_deleted_local_modified',
+                });
+                return;
+            }
+
+            // The local edit is the newer change, so it wins: forget the
+            // remote copy and let the push phase create the resource again.
+            // Leaving the state in 'conflict' (as before) meant the push phase
+            // skipped the task forever, because nothing on the server could
+            // ever settle a conflict about a resource that no longer exists.
             if (!dryRun) {
-                await SyncStateRepository.markConflict(
+                await SyncStateRepository.createOrUpdate(
                     existingTask.id,
                     calendar.id,
-                    existingTask.toJSON(),
-                    null
+                    {
+                        etag: '',
+                        remote_href: null,
+                        sync_status: 'pending',
+                        conflict_local_version: null,
+                        conflict_remote_version: null,
+                        conflict_detected_at: null,
+                    }
                 );
             }
 
-            results.conflicts.push({
+            results.merged.push({
                 uid: taskUid,
                 taskId: existingTask.id,
+                action: 'conflict_resolved',
                 type: 'remote_deleted_local_modified',
+                strategy: 'local',
             });
             return;
         }
@@ -190,6 +221,25 @@ class MergePhase {
                 results,
                 existingTask,
                 href
+            );
+            return;
+        }
+
+        // A push that failed its If-Match leaves the state in 'conflict', and
+        // the push phase skips it from then on. Unless the user asked to settle
+        // conflicts by hand, resolve it here on the next pull, whether or not
+        // the remote copy changed again, so the task does not stay stuck.
+        if (
+            syncState.sync_status === 'conflict' &&
+            calendar.conflict_resolution !== 'manual'
+        ) {
+            await this._handleConflict(
+                existingTask,
+                remoteTask,
+                calendar,
+                etag,
+                dryRun,
+                results
             );
             return;
         }
@@ -445,18 +495,39 @@ class MergePhase {
         }
 
         if (!dryRun) {
-            await existingTask.update(resolved.taskData);
+            if (resolved.winner === 'local') {
+                // Keep the local task as it is and record the server's current
+                // etag, so the push phase sends the local version with an
+                // If-Match the server accepts. Marking it synced instead (as
+                // before) meant the winning local edit was never pushed.
+                await SyncStateRepository.createOrUpdate(
+                    existingTask.id,
+                    calendar.id,
+                    {
+                        etag,
+                        last_modified: new Date(),
+                        sync_status: 'pending',
+                    }
+                );
+            } else {
+                await existingTask.update({
+                    ...this._sanitizeRemoteTask(remoteTask),
+                    id: existingTask.id,
+                    uid: existingTask.uid,
+                    user_id: existingTask.user_id,
+                });
 
-            await SyncStateRepository.createOrUpdate(
-                existingTask.id,
-                calendar.id,
-                {
-                    etag,
-                    last_modified: new Date(),
-                    last_synced_at: new Date(),
-                    sync_status: 'synced',
-                }
-            );
+                await SyncStateRepository.createOrUpdate(
+                    existingTask.id,
+                    calendar.id,
+                    {
+                        etag,
+                        last_modified: new Date(),
+                        last_synced_at: new Date(),
+                        sync_status: 'synced',
+                    }
+                );
+            }
         }
 
         results.merged.push({

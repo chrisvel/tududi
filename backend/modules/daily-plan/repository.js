@@ -7,10 +7,21 @@ const {
     Task,
     InboxItem,
     Project,
+    RecurringCompletion,
+    Tag,
     User,
     sequelize,
 } = require('../../models');
 const { TASK_INCLUDES } = require('../tasks/utils/constants');
+const {
+    getTaskIncludeConfigLight,
+} = require('../tasks/queries/query-builders');
+
+const OPEN_STATUSES_EXCLUDED = [
+    Task.STATUS.DONE,
+    Task.STATUS.ARCHIVED,
+    Task.STATUS.CANCELLED,
+];
 
 class DailyPlanRepository {
     async findPlan(userId, planDate) {
@@ -38,6 +49,21 @@ class DailyPlanRepository {
             where: { [Op.and]: [visibleWhere, { id: { [Op.in]: ids } }] },
             include: TASK_INCLUDES,
         });
+    }
+
+    // Tasks with a recurring occurrence completed (not skipped) in the range.
+    async findTaskIdsCompletedBetween(taskIds, start, end) {
+        if (taskIds.length === 0) return new Set();
+        const rows = await RecurringCompletion.findAll({
+            where: {
+                task_id: { [Op.in]: taskIds },
+                skipped: false,
+                completed_at: { [Op.between]: [start, end] },
+            },
+            attributes: ['task_id'],
+            raw: true,
+        });
+        return new Set(rows.map((row) => row.task_id));
     }
 
     async findVisibleProjectIds(visibleWhere, ids) {
@@ -106,6 +132,41 @@ class DailyPlanRepository {
             });
             await plan.destroy({ transaction });
             return true;
+        });
+    }
+
+    // Open top-level tasks the user tagged "today" (any case), with every
+    // tag loaded, not only the matching one.
+    async findTasksTaggedToday(visibleWhere) {
+        const tagged = await Task.findAll({
+            where: {
+                [Op.and]: [
+                    visibleWhere,
+                    {
+                        status: { [Op.notIn]: OPEN_STATUSES_EXCLUDED },
+                        parent_task_id: null,
+                        recurring_parent_id: null,
+                    },
+                ],
+            },
+            attributes: ['id'],
+            include: [
+                {
+                    model: Tag,
+                    attributes: [],
+                    through: { attributes: [] },
+                    required: true,
+                    where: sequelize.where(
+                        sequelize.fn('lower', sequelize.col('Tags.name')),
+                        'today'
+                    ),
+                },
+            ],
+        });
+        if (tagged.length === 0) return [];
+        return Task.findAll({
+            where: { id: { [Op.in]: tagged.map((task) => task.id) } },
+            include: getTaskIncludeConfigLight(),
         });
     }
 

@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
@@ -13,6 +19,7 @@ import {
     saveDailyPlanItems,
     toPlanItemInputs,
 } from '../../utils/dailyPlanService';
+import { focusKey, focusScopeParams, useFocus } from '../../utils/focus';
 import {
     CalendarEvent,
     fetchCalendarEvents,
@@ -20,6 +27,8 @@ import {
 } from '../../utils/calendarFeedsService';
 import { deleteTask, toggleTaskCompletion } from '../../utils/tasksService';
 import { getUserTimezone } from '../../utils/dateUtils';
+import { isTaskDone } from '../../constants/taskStatus';
+import { isHabitDoneForNow } from '../../utils/habitUtils';
 import { useToast } from '../Shared/ToastContext';
 import { useDailyPlanProgress } from '../../store/dailyPlanStore';
 import { useStore } from '../../store/useStore';
@@ -38,19 +47,43 @@ import {
     minuteOfDay,
     intlLocale,
 } from './planUtils';
+import { useAiAllowed } from '../../hooks/useTrialStatus';
+
+const isRecurring = (task: Task): boolean =>
+    !task.habit_mode &&
+    !!task.recurrence_type &&
+    task.recurrence_type !== 'none';
+
+// True when a due date on or before the day (or none) became a later one.
+const movedPastDay = (
+    before: string | null | undefined,
+    after: string | null | undefined,
+    day: string
+): boolean => {
+    const later = (date: string | null | undefined) =>
+        !!date && date.slice(0, 10) > day;
+    return !later(before) && later(after);
+};
 
 const TodayPage: React.FC = () => {
+    const aiAllowed = useAiAllowed();
     const { t, i18n } = useTranslation();
-    const { showErrorToast } = useToast();
+    const focus = useFocus();
+    const focusId = focusKey(focus);
+    const { showErrorToast, showUndoToast } = useToast();
     const setProgress = useDailyPlanProgress((s) => s.setProgress);
     const quote = useDailyQuote(i18n.language);
     const projects = useStore((state) => state.projectsStore.projects);
+    const calendarEnabled = useStore(
+        (state) => state.userSettingsStore.calendarEnabled
+    );
 
     const [planResponse, setPlanResponse] = useState<DailyPlanResponse | null>(
         null
     );
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [hasFeeds, setHasFeeds] = useState(false);
+    const [showsFeeds, setShowsFeeds] = useState(false);
     const [candidates, setCandidates] = useState<PlanCandidates | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [busyUid, setBusyUid] = useState<string | null>(null);
@@ -70,23 +103,17 @@ const TodayPage: React.FC = () => {
         let cancelled = false;
         (async () => {
             try {
-                const plan = await fetchDailyPlan();
+                const scope = focusScopeParams(focus);
+                const plan = await fetchDailyPlan(undefined, scope);
                 if (cancelled) return;
                 setPlanResponse(plan);
 
-                const [feeds, candidateList] = await Promise.all([
-                    fetchCalendarFeeds().catch(() => []),
-                    fetchPlanCandidates().catch(() => null),
-                ]);
+                const candidateList = await fetchPlanCandidates(
+                    undefined,
+                    scope
+                ).catch(() => null);
                 if (cancelled) return;
-                setHasFeeds(feeds.length > 0);
                 setCandidates(candidateList);
-                if (feeds.length > 0) {
-                    const day = await fetchCalendarEvents(plan.date).catch(
-                        () => null
-                    );
-                    if (!cancelled && day) setEvents(day.events);
-                }
             } catch (err) {
                 if (!cancelled) {
                     setError(
@@ -100,11 +127,42 @@ const TodayPage: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [t]);
+    }, [t, focusId]);
+
+    // Calendar feeds belong to the Calendar feature; with it off Today shows
+    // no events and no prompt to connect a calendar.
+    const planDate = planResponse?.date;
+    useEffect(() => {
+        if (!planDate || !calendarEnabled) {
+            setHasFeeds(false);
+            setShowsFeeds(false);
+            setEvents([]);
+            return;
+        }
+        let cancelled = false;
+        (async () => {
+            const feeds = await fetchCalendarFeeds().catch(() => []);
+            if (cancelled) return;
+            // Calendars switched off in Profile -> Calendars stay out of Today.
+            const shown = feeds.some((feed) => feed.show_on_calendar);
+            setHasFeeds(feeds.length > 0);
+            setShowsFeeds(shown);
+            if (!shown) return;
+            const day = await fetchCalendarEvents(planDate).catch(() => null);
+            if (!cancelled && day) setEvents(day.events);
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [planDate, calendarEnabled]);
 
     const plan = planResponse?.plan ?? null;
     const items = useMemo(() => plan?.items ?? [], [plan]);
     const started = !!plan?.started_at;
+    // A row can report an edit from an older render (a delayed refetch), so
+    // edits are checked against the latest items.
+    const itemsRef = useRef(items);
+    itemsRef.current = items;
 
     useEffect(() => {
         setProgress(
@@ -145,6 +203,49 @@ const TodayPage: React.FC = () => {
         [planResponse, showErrorToast, t]
     );
 
+    const mergePlannedTask = useCallback(
+        (updated: Task, extra?: Partial<DailyPlanItem>) =>
+            setPlanResponse((current) =>
+                current?.plan
+                    ? {
+                          ...current,
+                          plan: {
+                              ...current.plan,
+                              items: current.plan.items.map((i) =>
+                                  i.task_uid === updated.uid
+                                      ? {
+                                            ...i,
+                                            ...extra,
+                                            task: { ...i.task, ...updated },
+                                        }
+                                      : i
+                              ),
+                          },
+                      }
+                    : current
+            ),
+        []
+    );
+
+    // Completing a recurring task reopens the same task for its next due
+    // date, and a habit stays open after a check-in, so the plan records the
+    // day's occurrence as done itself.
+    const syncCompletedTask = useCallback(
+        (updated: Task) => {
+            const planDate = planResponse?.date;
+            mergePlannedTask(updated, {
+                occurrence_done: updated.habit_mode
+                    ? isHabitDoneForNow(updated)
+                    : !!planDate &&
+                      isRecurring(updated) &&
+                      !isTaskDone(updated.status) &&
+                      !!updated.due_date &&
+                      updated.due_date.slice(0, 10) > planDate,
+            });
+        },
+        [mergePlannedTask, planResponse?.date]
+    );
+
     const handleToggleDone = useCallback(
         async (item: DailyPlanItem) => {
             setBusyUid(item.task_uid);
@@ -153,24 +254,7 @@ const TodayPage: React.FC = () => {
                     item.task_uid,
                     item.task
                 );
-                setPlanResponse((current) =>
-                    current?.plan
-                        ? {
-                              ...current,
-                              plan: {
-                                  ...current.plan,
-                                  items: current.plan.items.map((i) =>
-                                      i.task_uid === item.task_uid
-                                          ? {
-                                                ...i,
-                                                task: { ...i.task, ...updated },
-                                            }
-                                          : i
-                                  ),
-                              },
-                          }
-                        : current
-                );
+                syncCompletedTask(updated);
             } catch (err) {
                 showErrorToast(
                     err instanceof Error
@@ -181,28 +265,40 @@ const TodayPage: React.FC = () => {
                 setBusyUid(null);
             }
         },
-        [showErrorToast, t]
+        [showErrorToast, syncCompletedTask, t]
     );
 
     // The expandable rows save their own edits; these keep the plan's copy
     // of each task in step.
-    const syncPlannedTask = useCallback(async (updated: Task) => {
-        setPlanResponse((current) =>
-            current?.plan
-                ? {
-                      ...current,
-                      plan: {
-                          ...current.plan,
-                          items: current.plan.items.map((i) =>
-                              i.task_uid === updated.uid
-                                  ? { ...i, task: { ...i.task, ...updated } }
-                                  : i
-                          ),
-                      },
-                  }
-                : current
-        );
-    }, []);
+    const syncPlannedTask = useCallback(
+        async (updated: Task) => {
+            const planDate = planResponse?.date;
+            const current = itemsRef.current;
+            const item = current.find((i) => i.task_uid === updated.uid);
+            // A due date moved from today (or earlier) to a later day takes
+            // the task off today's plan, with an undo to keep it.
+            if (
+                planDate &&
+                item &&
+                !isItemDone(item) &&
+                !isTaskDone(updated.status) &&
+                movedPastDay(item.task.due_date, updated.due_date, planDate)
+            ) {
+                replaceItems(current.filter((i) => i !== item));
+                showUndoToast(
+                    t(
+                        'dailyPlan.movedOffPlan',
+                        "'{{name}}' is no longer due today, so it left today's plan.",
+                        { name: updated.name }
+                    ),
+                    () => replaceItems(current)
+                );
+                return;
+            }
+            mergePlannedTask(updated);
+        },
+        [mergePlannedTask, planResponse?.date, replaceItems, showUndoToast, t]
+    );
 
     const replaceCandidate = useCallback(
         (uid: string | undefined, updated: Task | null) =>
@@ -281,9 +377,9 @@ const TodayPage: React.FC = () => {
         ? Math.round((doneCount / items.length) * 100)
         : 0;
     const range = dayRange(items, events, planResponse?.day_hours);
-    const aiEnabled = useStore(
-        (state) => state.userSettingsStore.aiAssistantEnabled
-    );
+    const aiEnabled =
+        useStore((state) => state.userSettingsStore.aiAssistantEnabled) &&
+        aiAllowed;
     const tips =
         aiEnabled && started
             ? buildTips({
@@ -291,6 +387,7 @@ const TodayPage: React.FC = () => {
                   events,
                   candidates: candidates
                       ? [
+                            ...(candidates.tagged_today ?? []),
                             ...candidates.overdue,
                             ...candidates.due_today,
                             ...candidates.in_progress,
@@ -421,6 +518,8 @@ const TodayPage: React.FC = () => {
                         events={events}
                         freeMinutes={freeMinutes}
                         hasFeeds={hasFeeds}
+                        showsFeeds={showsFeeds}
+                        calendarEnabled={calendarEnabled}
                         hasDraft={items.length > 0}
                     />
                 )}
@@ -437,6 +536,7 @@ const TodayPage: React.FC = () => {
                         onAdd={handleAdd}
                         projects={projects}
                         onPlannedTaskUpdate={syncPlannedTask}
+                        onPlannedTaskComplete={syncCompletedTask}
                         onPlannedTaskDelete={handleDeleteTask}
                         onReorderUntimed={(orderedUids) => {
                             const byUid = new Map(
@@ -468,19 +568,6 @@ const TodayPage: React.FC = () => {
                             onGenerated: setWrapUp,
                         }}
                     />
-                )}
-
-                {planResponse && (
-                    <Link
-                        to="/today_legacy"
-                        className="self-center pt-4 text-xs text-gray-400 underline-offset-2 hover:text-gray-600 hover:underline dark:text-gray-500 dark:hover:text-gray-300"
-                        data-testid="old-today-link"
-                    >
-                        {t(
-                            'dailyPlan.oldTodayLink',
-                            'Go to the old Today page instead'
-                        )}
-                    </Link>
                 )}
             </div>
         </div>

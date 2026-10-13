@@ -10,13 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { getCsrfToken } from '../../utils/csrfService';
 import {
     MagnifyingGlassIcon,
-    EllipsisHorizontalCircleIcon,
-    ClipboardDocumentListIcon,
-    PlayIcon,
-    ClockIcon,
-    CheckCircleIcon,
-    XCircleIcon,
-    ChartBarIcon,
     CheckIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
@@ -24,9 +17,9 @@ import { useToast } from '../Shared/ToastContext';
 import ProjectAIInsights, {
     ProjectAIInsightsHandle,
 } from '../AI/ProjectAIInsights';
-import ProjectModal from './ProjectModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
-import NoteModal from '../Note/NoteModal';
+import NoteSidePanel from '../Note/NoteSidePanel';
+import { deleteNote as apiDeleteNote } from '../../utils/notesService';
 import { useStore } from '../../store/useStore';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
@@ -38,35 +31,31 @@ import {
     fetchProjects,
 } from '../../utils/projectsService';
 import {
-    createTask,
     deleteTask,
     fetchTaskOrder,
     saveTaskOrder,
 } from '../../utils/tasksService';
 import { mergeVisibleOrder } from '../Shared/sortableList';
-import {
-    updateNote,
-    deleteNote as apiDeleteNote,
-} from '../../utils/notesService';
-import { createNote } from '../../utils/notesService';
 import IconSortDropdown from '../Shared/IconSortDropdown';
 import LoadingSpinner from '../Shared/LoadingSpinner';
-import { usePersistedModal } from '../../hooks/usePersistedModal';
 import { getApiPath } from '../../config/paths';
-import ProjectInsightsPanel from './ProjectInsightsPanel';
-import ProjectBanner from './ProjectBanner';
+import ProjectHero from './ProjectHero';
+import NewItemButton from '../Shared/NewItemButton';
+import { onCaptureSaved, openCapture } from '../../utils/captureUi';
 import BannerEditModal from './BannerEditModal';
 import ProjectShareModal from './ProjectShareModal';
 import ProjectTasksSection from './ProjectTasksSection';
-import ProjectNotesSection from './ProjectNotesSection';
-import AttachmentsPanel from '../Shared/AttachmentsPanel';
+import ProjectOverviewRail from './ProjectOverviewRail';
+import ProjectAttachmentsWidget from './ProjectAttachmentsWidget';
 import { ownerAttachmentsApi } from '../../utils/attachmentsService';
 import { useProjectMetrics } from './useProjectMetrics';
+import {
+    matchesTaskStatusFilter,
+    TaskStatusFilter,
+} from '../../constants/taskStatus';
 import { saveProjectAsTemplate } from '../../utils/templatesService';
 
 const ProjectDetails: React.FC = () => {
-    const UI_OPTIONS_KEY = 'ui_app_options';
-
     const { uidSlug } = useParams<{ uidSlug: string }>();
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -83,42 +72,20 @@ const ProjectDetails: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [isTemplateConfirmOpen, setIsTemplateConfirmOpen] = useState(false);
-    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+    const [previewNote, setPreviewNote] = useState<Note | null>(null);
     const [isBannerEditModalOpen, setIsBannerEditModalOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState<
-        'tasks' | 'notes' | 'attachments'
-    >('tasks');
-    const [attachmentCount, setAttachmentCount] = useState(0);
     const attachmentsApi = useMemo(
         () =>
             project?.uid ? ownerAttachmentsApi('project', project.uid) : null,
         [project?.uid]
     );
 
-    // The tab shows how many files there are before it is opened.
-    useEffect(() => {
-        if (!attachmentsApi) return;
-        let cancelled = false;
-        attachmentsApi
-            .list()
-            .then((list) => {
-                if (!cancelled) setAttachmentCount(list.length);
-            })
-            .catch(() => {
-                // The tab still works; the count just stays hidden.
-            });
-        return () => {
-            cancelled = true;
-        };
-    }, [attachmentsApi]);
-    const [taskStatusFilter, setTaskStatusFilter] = useState<
-        'all' | 'active' | 'completed'
-    >(() => {
-        const saved = localStorage.getItem('project_task_status_filter');
-        return (saved as 'all' | 'active' | 'completed') || 'active';
-    });
-    const [showMetrics, setShowMetrics] = useState(true);
+    const [taskStatusFilter, setTaskStatusFilter] = useState<TaskStatusFilter>(
+        () => {
+            const saved = localStorage.getItem('project_task_status_filter');
+            return (saved as TaskStatusFilter) || 'active';
+        }
+    );
     const [orderBy, setOrderBy] = useState<string>('status:inProgressFirst');
     // Task uids in the user's manual order for this project.
     const [taskOrder, setTaskOrder] = useState<string[]>([]);
@@ -126,11 +93,6 @@ const ProjectDetails: React.FC = () => {
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [aiInsightsActive, setAiInsightsActive] = useState(false);
     const aiInsightsRef = useRef<ProjectAIInsightsHandle>(null);
-    const {
-        isOpen: isModalOpen,
-        openModal,
-        closeModal,
-    } = usePersistedModal(project?.id);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const sortOptions = useMemo(
         () => [
@@ -156,96 +118,6 @@ const ProjectDetails: React.FC = () => {
     }, [areasStore]);
 
     useEffect(() => {
-        // Load persisted UI options (local or remote)
-        const load = async () => {
-            let localShow: boolean | undefined;
-            try {
-                const stored = localStorage.getItem(UI_OPTIONS_KEY);
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    if (typeof parsed.showMetrics === 'boolean') {
-                        localShow = parsed.showMetrics;
-                        setShowMetrics(parsed.showMetrics);
-                    }
-                }
-            } catch {
-                // ignore parse errors
-            }
-
-            try {
-                const response = await fetch(getApiPath('profile'), {
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    const profile = await response.json();
-                    if (
-                        profile.ui_settings &&
-                        typeof profile.ui_settings.project?.details
-                            ?.showMetrics === 'boolean'
-                    ) {
-                        setShowMetrics(
-                            profile.ui_settings.project.details.showMetrics
-                        );
-                        localStorage.setItem(
-                            UI_OPTIONS_KEY,
-                            JSON.stringify({
-                                showMetrics:
-                                    profile.ui_settings.project.details
-                                        .showMetrics,
-                            })
-                        );
-                    } else if (localShow === undefined) {
-                        setShowMetrics(true);
-                    }
-                } else if (localShow === undefined) {
-                    setShowMetrics(true);
-                }
-            } catch {
-                if (localShow === undefined) setShowMetrics(true);
-            }
-        };
-        load();
-    }, [getApiPath]);
-
-    const persistUiSettings = async (nextShowMetrics: boolean) => {
-        try {
-            localStorage.setItem(
-                UI_OPTIONS_KEY,
-                JSON.stringify({ showMetrics: nextShowMetrics })
-            );
-        } catch {
-            // ignore storage errors
-        }
-
-        try {
-            await fetch(getApiPath('profile/ui-settings'), {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    project: {
-                        details: {
-                            showMetrics: nextShowMetrics,
-                        },
-                    },
-                }),
-            });
-        } catch {
-            // ignore network errors
-        }
-    };
-
-    const toggleMetrics = () => {
-        setShowMetrics((prev) => {
-            const next = !prev;
-            persistUiSettings(next);
-            return next;
-        });
-    };
-
-    useEffect(() => {
         if (allProjects.length === 0) {
             fetchProjects()
                 .then(setAllProjects)
@@ -263,6 +135,16 @@ const ProjectDetails: React.FC = () => {
             setOrderBy(storedSort);
         }
     }, []);
+
+    // Bumped after something is captured, so new tasks and notes show up
+    const [reloadKey, setReloadKey] = useState(0);
+    useEffect(
+        () =>
+            onCaptureSaved(() => {
+                setReloadKey((key) => key + 1);
+            }),
+        []
+    );
 
     useEffect(() => {
         if (!uidSlug) return;
@@ -300,31 +182,7 @@ const ProjectDetails: React.FC = () => {
             }
         };
         loadProjectData();
-    }, [uidSlug]);
-
-    const handleTaskCreate = async (taskName: string) => {
-        if (!project) throw new Error('Cannot create task: Project is missing');
-        const newTask = await createTask({
-            name: taskName,
-            status: 0,
-            project_uid: project.uid,
-            completed_at: null,
-        });
-        setTasks([...tasks, newTask]);
-        const taskLink = (
-            <span>
-                {t('task.created', 'Task')}{' '}
-                <a
-                    href={`/task/${newTask.uid}`}
-                    className="text-green-200 underline hover:text-green-100"
-                >
-                    {newTask.name}
-                </a>{' '}
-                {t('task.createdSuccessfully', 'created successfully!')}
-            </span>
-        );
-        showSuccessToast(taskLink);
-    };
+    }, [uidSlug, reloadKey]);
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         if (!updatedTask.id) return;
@@ -403,25 +261,29 @@ const ProjectDetails: React.FC = () => {
         );
     };
 
-    const handleSaveProject = async (updatedProject: Project) => {
-        if (!updatedProject.uid) return;
-        const savedProject = await updateProject(
-            updatedProject.uid,
-            updatedProject
-        );
-        setProject((prev) => ({
-            ...savedProject,
-            area: savedProject.area || prev?.area,
-            Area: (savedProject as any).Area || (prev as any)?.Area,
-        }));
-
-        const currentProjects = projectsStore.projects;
-        const updatedProjects = currentProjects.map((p) =>
-            p.id === savedProject.id ? savedProject : p
-        );
-        projectsStore.setProjects(updatedProjects);
-
-        closeModal();
+    // Each field on the page saves on its own, so the page only patches what
+    // changed and keeps the associations the response does not carry.
+    const handleUpdateProject = async (patch: Partial<Project>) => {
+        if (!project?.uid) return;
+        try {
+            const savedProject = await updateProject(project.uid, patch);
+            setProject((prev) => ({
+                ...prev,
+                ...savedProject,
+                area: savedProject.area || prev?.area,
+                Area: (savedProject as any).Area || (prev as any)?.Area,
+            }));
+            projectsStore.setProjects(
+                projectsStore.projects.map((p) =>
+                    p.uid === savedProject.uid ? { ...p, ...savedProject } : p
+                )
+            );
+        } catch (err) {
+            showErrorToast(
+                t('errors.projectSaveFailed', 'Failed to save project')
+            );
+            throw err;
+        }
     };
 
     const handleEditBannerClick = () => {
@@ -495,9 +357,7 @@ const ProjectDetails: React.FC = () => {
         );
     };
 
-    const handleTaskStatusFilterChange = (
-        status: 'all' | 'active' | 'completed'
-    ) => {
+    const handleTaskStatusFilterChange = (status: TaskStatusFilter) => {
         setTaskStatusFilter(status);
         localStorage.setItem('project_task_status_filter', status);
     };
@@ -517,23 +377,16 @@ const ProjectDetails: React.FC = () => {
         navigate('/projects');
     };
 
-    const handleEditNote = async (note: Note) => {
-        try {
-            const response = await fetch(getApiPath(`note/${note.uid}`), {
-                credentials: 'include',
-                headers: { Accept: 'application/json' },
-            });
-            if (response.ok) {
-                const fullNote = await response.json();
-                setSelectedNote(fullNote);
-            } else {
-                setSelectedNote(note);
-            }
-        } catch (error) {
-            console.error('Error fetching note details:', error);
-            setSelectedNote(note);
-        }
-        setIsNoteModalOpen(true);
+    // Opens the capture box on a task or note with this project filled in
+    const openCaptureForProject = (target: 'task' | 'note' = 'task') => {
+        if (!project) return;
+        const token = /\s/.test(project.name)
+            ? `+"${project.name}"`
+            : `+${project.name}`;
+        openCapture(target, null, `${token} `, {
+            uid: project.uid,
+            name: project.name,
+        });
     };
 
     const handleDeleteNote = async (noteIdentifier: string) => {
@@ -556,70 +409,6 @@ const ProjectDetails: React.FC = () => {
         );
         setNoteToDelete(null);
         setIsConfirmDialogOpen(false);
-    };
-
-    const handleSaveNote = async (noteData: Note) => {
-        try {
-            let savedNote: Note;
-            const noteIdentifier =
-                noteData.uid ??
-                (noteData.id !== undefined ? String(noteData.id) : null);
-            let isUpdate = false;
-            if (noteIdentifier) {
-                savedNote = await updateNote(noteIdentifier, noteData);
-                isUpdate = true;
-            } else {
-                savedNote = await createNote(noteData);
-            }
-            if ((savedNote as any).Tags && !(savedNote as any).tags) {
-                (savedNote as any).tags = (savedNote as any).Tags;
-            }
-            const savedNoteProjectId = savedNote.project_id ?? null;
-            const currentProjectId = project?.id ?? null;
-            if (savedNote.id && savedNoteProjectId !== currentProjectId) {
-                setNotes(notes.filter((n) => n.id !== savedNote.id));
-                const globalNotes = useStore.getState().notesStore.notes;
-                useStore
-                    .getState()
-                    .notesStore.setNotes(
-                        globalNotes.map((note) =>
-                            note.uid === savedNote.uid ? savedNote : note
-                        )
-                    );
-            } else if (isUpdate) {
-                const savedIdentifier =
-                    savedNote.uid ??
-                    (savedNote.id !== undefined ? String(savedNote.id) : null);
-                setNotes(
-                    notes.map((n) => {
-                        const currentIdentifier =
-                            n.uid ??
-                            (n.id !== undefined ? String(n.id) : undefined);
-                        return currentIdentifier === savedIdentifier
-                            ? savedNote
-                            : n;
-                    })
-                );
-                const globalNotes = useStore.getState().notesStore.notes;
-                useStore
-                    .getState()
-                    .notesStore.setNotes(
-                        globalNotes.map((note) =>
-                            note.uid === savedNote.uid ? savedNote : note
-                        )
-                    );
-            } else {
-                setNotes([savedNote, ...notes]);
-                const globalNotes = useStore.getState().notesStore.notes;
-                useStore
-                    .getState()
-                    .notesStore.setNotes([savedNote, ...globalNotes]);
-            }
-            setIsNoteModalOpen(false);
-            setSelectedNote(null);
-        } catch {
-            // silent
-        }
     };
 
     // Unplaced tasks (never dragged) come first, newest first.
@@ -645,10 +434,11 @@ const ProjectDetails: React.FC = () => {
             const getStatusRank = (status: Task['status']) => {
                 if (status === 'in_progress' || status === 1) return 0;
                 if (status === 'not_started' || status === 0) return 1;
-                if (status === 'waiting' || status === 4) return 2;
-                if (status === 'done' || status === 2) return 3;
-                if (status === 'archived' || status === 3) return 4;
-                return 5;
+                if (status === 'planned' || status === 6) return 2;
+                if (status === 'waiting' || status === 4) return 3;
+                if (status === 'done' || status === 2) return 4;
+                if (status === 'archived' || status === 3) return 5;
+                return 6;
             };
             if (orderBy === 'status:inProgressFirst') {
                 const rankA = getStatusRank(a.status);
@@ -738,30 +528,9 @@ const ProjectDetails: React.FC = () => {
     };
 
     const displayTasks = useMemo(() => {
-        let filteredTasks: Task[];
-
-        if (taskStatusFilter === 'completed') {
-            filteredTasks = tasks.filter(
-                (task) =>
-                    task.status === 'done' ||
-                    task.status === 'archived' ||
-                    task.status === 2 ||
-                    task.status === 3
-            );
-        } else if (taskStatusFilter === 'active') {
-            filteredTasks = tasks.filter(
-                (task) =>
-                    task.status === 'not_started' ||
-                    task.status === 'in_progress' ||
-                    task.status === 'waiting' ||
-                    task.status === 0 ||
-                    task.status === 1 ||
-                    task.status === 4
-            );
-        } else {
-            // taskStatusFilter === 'all'
-            filteredTasks = tasks;
-        }
+        let filteredTasks = tasks.filter((task) =>
+            matchesTaskStatusFilter(task.status, taskStatusFilter)
+        );
         if (taskSearchQuery.trim()) {
             const query = taskSearchQuery.toLowerCase();
             filteredTasks = filteredTasks.filter(
@@ -774,54 +543,12 @@ const ProjectDetails: React.FC = () => {
         return [...filteredTasks].sort(compareTasks);
     }, [tasks, taskStatusFilter, taskSearchQuery, compareTasks]);
 
-    const {
-        taskStats,
-        completionGradient,
-        dueBuckets,
-        dueHighlights,
-        nextBestAction,
-        getDueDescriptor,
-        handleStartNextAction,
-        completionTrend,
-        upcomingDueTrend,
-        createdTrend,
-        upcomingInsights,
-        weeklyPace,
-        monthlyCompleted,
-    } = useProjectMetrics(tasks, handleTaskUpdate, t, showSuccessToast);
-
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'not_started':
-                return (
-                    <EllipsisHorizontalCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
-                );
-            case 'planned':
-                return (
-                    <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
-                );
-            case 'in_progress':
-                return (
-                    <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
-                );
-            case 'waiting':
-                return (
-                    <ClockIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
-                );
-            case 'done':
-                return (
-                    <CheckCircleIcon className="h-3 w-3 text-green-600 flex-shrink-0 mt-0.5" />
-                );
-            case 'cancelled':
-                return (
-                    <XCircleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
-                );
-            default:
-                return (
-                    <EllipsisHorizontalCircleIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
-                );
-        }
-    };
+    const { taskStats } = useProjectMetrics(
+        tasks,
+        handleTaskUpdate,
+        t,
+        showSuccessToast
+    );
 
     if (loading) return <LoadingSpinner message="Loading project details..." />;
     if (error)
@@ -861,8 +588,7 @@ const ProjectDetails: React.FC = () => {
                                 type="button"
                                 onClick={() =>
                                     handleTaskStatusFilterChange(
-                                        opt.key as
-                                            'all' | 'active' | 'completed'
+                                        opt.key as TaskStatusFilter
                                     )
                                 }
                                 className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
@@ -921,12 +647,13 @@ const ProjectDetails: React.FC = () => {
 
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-12">
-            <ProjectBanner
+            <ProjectHero
                 project={project}
                 areas={areas}
                 t={t}
-                getStatusIcon={getStatusIcon}
-                onEditClick={openModal}
+                doneCount={taskStats.completed}
+                totalCount={taskStats.total}
+                onUpdate={handleUpdateProject}
                 onDeleteClick={() => {
                     setNoteToDelete(null);
                     setIsConfirmDialogOpen(true);
@@ -943,101 +670,19 @@ const ProjectDetails: React.FC = () => {
                 <div className="w-full">
                     <div className="mb-4">
                         <div className="flex items-center justify-between min-h-[2.5rem]">
-                            <div className="flex items-center space-x-3 sm:space-x-6">
-                                <button
-                                    onClick={() => setActiveTab('tasks')}
-                                    className={`flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium transition-colors ${
-                                        activeTab === 'tasks'
-                                            ? 'text-gray-900 dark:text-gray-100'
-                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                    }`}
-                                >
-                                    <span>{t('sidebar.tasks', 'Tasks')}</span>
-                                    {displayTasks.length > 0 && (
-                                        <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
-                                            {displayTasks.length}
-                                        </span>
-                                    )}
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('notes')}
-                                    className={`flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium transition-colors ${
-                                        activeTab === 'notes'
-                                            ? 'text-gray-900 dark:text-gray-100'
-                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                    }`}
-                                >
-                                    <span>{t('sidebar.notes', 'Notes')}</span>
-                                    {notes.length > 0 && (
-                                        <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
-                                            {notes.length}
-                                        </span>
-                                    )}
-                                </button>
-                                <button
-                                    data-testid="project-attachments-tab"
-                                    onClick={() => setActiveTab('attachments')}
-                                    className={`flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium transition-colors ${
-                                        activeTab === 'attachments'
-                                            ? 'text-gray-900 dark:text-gray-100'
-                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                    }`}
-                                >
-                                    <span>
-                                        {t(
-                                            'project.attachments',
-                                            'Attachments'
-                                        )}
-                                    </span>
-                                    {attachmentCount > 0 && (
-                                        <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
-                                            {attachmentCount}
-                                        </span>
-                                    )}
-                                </button>
+                            <div className="flex items-center gap-4 sm:gap-6 self-stretch pl-2 sm:pl-3">
+                                <span className="relative flex items-center self-stretch py-2.5 text-sm font-medium text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100">
+                                    {t('tasks.title', 'Tasks')}
+                                </span>
                             </div>
 
-                            {activeTab === 'tasks' && (
+                            {
                                 <div className="flex items-center justify-end gap-2 sm:gap-4">
-                                    <button
-                                        onClick={toggleMetrics}
-                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-1.5 sm:p-2 ${
-                                            showMetrics
-                                                ? 'bg-blue-100 dark:bg-blue-900/30 shadow-sm'
-                                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
-                                        }`}
-                                        aria-pressed={showMetrics}
-                                        aria-label={
-                                            showMetrics
-                                                ? t(
-                                                      'projects.hideMetrics',
-                                                      'Hide metrics'
-                                                  )
-                                                : t(
-                                                      'projects.showMetrics',
-                                                      'Show metrics'
-                                                  )
-                                        }
-                                        title={
-                                            showMetrics
-                                                ? t(
-                                                      'projects.hideMetrics',
-                                                      'Hide metrics'
-                                                  )
-                                                : t(
-                                                      'projects.showMetrics',
-                                                      'Show metrics'
-                                                  )
-                                        }
-                                    >
-                                        <ChartBarIcon
-                                            className={`h-4 w-4 sm:h-5 sm:w-5 ${
-                                                showMetrics
-                                                    ? 'text-blue-600 dark:text-blue-200'
-                                                    : 'text-gray-600 dark:text-gray-200'
-                                            }`}
-                                        />
-                                    </button>
+                                    <NewItemButton
+                                        label={t('capture.add', 'Add')}
+                                        onClick={() => openCaptureForProject()}
+                                        testId="project-add-button"
+                                    />
                                     <button
                                         onClick={() =>
                                             aiInsightsRef.current?.activate()
@@ -1102,11 +747,11 @@ const ProjectDetails: React.FC = () => {
                                         footerContent={renderStatusFilter()}
                                     />
                                 </div>
-                            )}
+                            }
                         </div>
                     </div>
 
-                    {activeTab === 'tasks' && (
+                    {
                         <>
                             <div className="mb-6">
                                 <ProjectAIInsights
@@ -1141,119 +786,88 @@ const ProjectDetails: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start transition-all duration-300">
-                                <div
-                                    className={`flex justify-center transition-all duration-300 relative z-10 ${
-                                        showMetrics
-                                            ? 'xl:col-span-2 translate-x-0'
-                                            : 'xl:col-span-3 translate-x-0'
-                                    }`}
-                                >
-                                    <div
-                                        className={`w-full max-w-5xl transition-all duration-300 ${
-                                            showMetrics
-                                                ? 'xl:translate-x-0'
-                                                : 'xl:translate-x-6'
-                                        }`}
-                                    >
-                                        <ProjectTasksSection
-                                            displayTasks={displayTasks}
-                                            onTaskCreate={handleTaskCreate}
-                                            onTaskUpdate={handleTaskUpdate}
-                                            onTaskCompletionToggle={
-                                                handleTaskCompletionToggle
-                                            }
-                                            onTaskDelete={handleTaskDelete}
-                                            onToggleToday={undefined}
-                                            allProjects={allProjects}
-                                            showCompleted={
-                                                taskStatusFilter !== 'active'
-                                            }
-                                            taskSearchQuery={taskSearchQuery}
-                                            onTaskReorder={handleTaskReorder}
-                                            t={t}
-                                        />
-                                    </div>
+                            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-start">
+                                <div className="min-w-0 space-y-4">
+                                    <ProjectTasksSection
+                                        displayTasks={displayTasks}
+                                        onTaskUpdate={handleTaskUpdate}
+                                        onTaskCompletionToggle={
+                                            handleTaskCompletionToggle
+                                        }
+                                        onTaskDelete={handleTaskDelete}
+                                        onToggleToday={undefined}
+                                        allProjects={allProjects}
+                                        showCompleted={
+                                            taskStatusFilter !== 'active'
+                                        }
+                                        taskSearchQuery={taskSearchQuery}
+                                        onTaskReorder={handleTaskReorder}
+                                        t={t}
+                                    />
                                 </div>
 
-                                <div className="xl:col-span-1">
-                                    <div
-                                        className={`transition-all duration-300 ease-in-out ${
-                                            showMetrics
-                                                ? 'max-h-[2000px] opacity-100 translate-x-0'
-                                                : 'max-h-0 opacity-0 translate-x-8 pointer-events-none'
-                                        }`}
-                                        style={{ overflow: 'hidden' }}
-                                        aria-hidden={!showMetrics}
-                                    >
-                                        <ProjectInsightsPanel
-                                            taskStats={taskStats}
-                                            completionGradient={
-                                                completionGradient
-                                            }
-                                            dueBuckets={dueBuckets}
-                                            dueHighlights={dueHighlights}
-                                            nextBestAction={nextBestAction}
-                                            getDueDescriptor={getDueDescriptor}
-                                            onStartNextAction={
-                                                handleStartNextAction
-                                            }
+                                <div className="space-y-4">
+                                    <ProjectOverviewRail
+                                        project={project}
+                                        areas={areas}
+                                        notes={notes}
+                                        t={t}
+                                        onUpdate={handleUpdateProject}
+                                        onShareClick={() =>
+                                            setIsShareModalOpen(true)
+                                        }
+                                        onCreateNote={() =>
+                                            openCaptureForProject('note')
+                                        }
+                                        onOpenNote={setPreviewNote}
+                                    />
+                                    {attachmentsApi && (
+                                        <ProjectAttachmentsWidget
+                                            api={attachmentsApi}
                                             t={t}
-                                            completionTrend={completionTrend}
-                                            upcomingDueTrend={upcomingDueTrend}
-                                            createdTrend={createdTrend}
-                                            upcomingInsights={upcomingInsights}
-                                            weeklyPace={weeklyPace}
-                                            monthlyCompleted={monthlyCompleted}
                                         />
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         </>
-                    )}
+                    }
 
-                    {activeTab === 'attachments' && attachmentsApi && (
-                        <AttachmentsPanel
-                            api={attachmentsApi}
-                            showTitle={false}
-                            onAttachmentsCountChange={setAttachmentCount}
-                        />
-                    )}
-
-                    {activeTab === 'notes' && project && (
-                        <ProjectNotesSection
-                            project={project}
-                            notes={notes}
-                            t={t}
-                            onCreateNote={() => {
-                                setSelectedNote({
-                                    title: '',
-                                    content: '',
-                                    tags: [],
-                                    project: {
-                                        id: project.id!,
-                                        name: project.name,
-                                        uid: project.uid,
-                                    },
-                                    project_uid: project.uid,
-                                });
-                                setIsNoteModalOpen(true);
+                    {previewNote && (
+                        <NoteSidePanel
+                            note={previewNote}
+                            onClose={() => setPreviewNote(null)}
+                            onSaved={(saved) => {
+                                const savedProjectUid =
+                                    saved.project_uid ??
+                                    saved.project?.uid ??
+                                    saved.Project?.uid;
+                                setNotes((prev) =>
+                                    savedProjectUid &&
+                                    savedProjectUid !== project.uid
+                                        ? // Moved to another project
+                                          prev.filter(
+                                              (n) => n.uid !== saved.uid
+                                          )
+                                        : prev.map((n) =>
+                                              n.uid === saved.uid
+                                                  ? { ...n, ...saved }
+                                                  : n
+                                          )
+                                );
+                                const { notesStore } = useStore.getState();
+                                notesStore.setNotes(
+                                    notesStore.notes.map((n) =>
+                                        n.uid === saved.uid ? saved : n
+                                    )
+                                );
                             }}
-                            onEditNote={handleEditNote}
-                            onDeleteNote={(note) => {
+                            onDelete={(note) => {
+                                setPreviewNote(null);
                                 setNoteToDelete(note);
                                 setIsConfirmDialogOpen(true);
                             }}
                         />
                     )}
-
-                    <ProjectModal
-                        isOpen={isModalOpen}
-                        onClose={closeModal}
-                        onSave={handleSaveProject}
-                        project={project}
-                        areas={areas}
-                    />
 
                     <BannerEditModal
                         isOpen={isBannerEditModalOpen}
@@ -1269,17 +883,6 @@ const ProjectDetails: React.FC = () => {
                             project={project}
                         />
                     )}
-
-                    <NoteModal
-                        isOpen={isNoteModalOpen}
-                        onClose={() => {
-                            setIsNoteModalOpen(false);
-                            setSelectedNote(null);
-                        }}
-                        onSave={handleSaveNote}
-                        note={selectedNote}
-                        projects={allProjects}
-                    />
 
                     {isConfirmDialogOpen && noteToDelete && (
                         <ConfirmDialog
@@ -1307,7 +910,8 @@ const ProjectDetails: React.FC = () => {
                             )}
                             message={t(
                                 'modals.deleteProject.message',
-                                'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?'
+                                'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?',
+                                { projectName: project?.name }
                             )}
                             onConfirm={handleDeleteProject}
                             onCancel={() => setIsConfirmDialogOpen(false)}

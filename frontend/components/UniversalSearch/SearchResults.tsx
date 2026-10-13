@@ -9,11 +9,13 @@ import {
     TagIcon,
 } from '@heroicons/react/24/outline';
 import { searchUniversal } from '../../utils/searchService';
+import { focusKey, focusScopeParams, useFocus } from '../../utils/focus';
 
 interface SearchResultsProps {
     searchQuery: string;
     selectedFilters: string[];
     selectedPriority: string | null;
+    selectedStatus: string | null;
     selectedDue: string | null;
     selectedDefer: string | null;
     selectedTags: string[];
@@ -36,6 +38,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     searchQuery,
     selectedFilters,
     selectedPriority,
+    selectedStatus,
     selectedDue,
     selectedDefer,
     selectedTags,
@@ -43,6 +46,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     onClose,
 }) => {
     const { t } = useTranslation();
+    const focus = useFocus();
+    const focusId = focusKey(focus);
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -54,6 +59,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 !searchQuery.trim() &&
                 selectedFilters.length === 0 &&
                 !selectedPriority &&
+                !selectedStatus &&
                 !selectedDue &&
                 !selectedDefer &&
                 selectedTags.length === 0 &&
@@ -69,11 +75,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     query: searchQuery,
                     filters: selectedFilters,
                     priority: selectedPriority || undefined,
+                    taskStatus: selectedStatus || undefined,
                     due: selectedDue || undefined,
                     defer: selectedDefer || undefined,
                     tags: selectedTags.length > 0 ? selectedTags : undefined,
                     extras:
                         selectedExtras.length > 0 ? selectedExtras : undefined,
+                    scope: focusScopeParams(focus),
                 });
                 setResults(data.results);
             } catch (error) {
@@ -90,10 +98,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         searchQuery,
         selectedFilters,
         selectedPriority,
+        selectedStatus,
         selectedDue,
         selectedDefer,
         selectedTags,
         selectedExtras,
+        focusId,
     ]);
 
     const getIcon = (type: string) => {
@@ -135,7 +145,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             case 'Task':
                 // Tasks use uid directly
                 if (result.uid) {
-                    navigate(`/task/${result.uid}`, { state: { from: location.pathname + location.search } });
+                    navigate(`/task/${result.uid}`, {
+                        state: { from: location.pathname + location.search },
+                    });
                 }
                 break;
             case 'Project': {
@@ -189,6 +201,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         !searchQuery.trim() &&
         selectedFilters.length === 0 &&
         !selectedPriority &&
+        !selectedStatus &&
         !selectedDue &&
         selectedTags.length === 0
     ) {

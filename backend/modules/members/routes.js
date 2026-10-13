@@ -15,6 +15,11 @@ router.post(
     membersController.create
 );
 
+// Rename a member, give one without an email an address (which invites
+// them), or remove one. Whoever created the account, or an admin.
+router.patch('/members/:id', createResourceLimiter, membersController.update);
+router.delete('/members/:id', createResourceLimiter, membersController.remove);
+
 // A link that signs in a member who has no email. Whoever created the account,
 // or an admin, can make one and take it back.
 router.post(

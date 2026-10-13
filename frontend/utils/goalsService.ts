@@ -51,6 +51,21 @@ export const updateGoal = async (
     return response.json();
 };
 
+export const reorderGoals = async (goalUids: string[]): Promise<void> => {
+    const token = await getCsrfToken();
+    const response = await fetch(getApiPath('goals/order'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'x-csrf-token': token,
+        },
+        body: JSON.stringify({ goal_uids: goalUids }),
+    });
+    await handleAuthResponse(response, 'Failed to save goal order.');
+};
+
 export const deleteGoal = async (uid: string): Promise<void> => {
     const response = await fetch(getApiPath(`goals/${uid}`), {
         method: 'DELETE',

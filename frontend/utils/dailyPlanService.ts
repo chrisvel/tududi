@@ -1,4 +1,5 @@
 import { Task } from '../entities/Task';
+import type { FocusScopeParams } from './focus';
 import {
     handleAuthResponse,
     getDefaultHeaders,
@@ -12,6 +13,12 @@ export interface DailyPlanItem {
     start_minute: number | null;
     duration_minutes: number;
     task: Task;
+    // A recurring task whose occurrence for this day is done; the task
+    // itself has moved on to its next due date.
+    occurrence_done?: boolean;
+    // Only sent when the plan was asked for with a Focus scope: false for
+    // an item outside it (the item stays, the page dims it).
+    in_focus?: boolean;
 }
 
 export interface AiWrapUp {
@@ -66,6 +73,7 @@ export interface InboxCandidate {
 }
 
 export interface PlanCandidates {
+    tagged_today: Task[];
     in_progress: Task[];
     overdue: Task[];
     due_today: Task[];
@@ -74,10 +82,13 @@ export interface PlanCandidates {
     inbox_count: number;
     // Task uids in the user's ranking order (Profile > Planning).
     ranked?: string[];
+    // How many tasks qualify as suggested in all; `suggested` holds the
+    // first ones up to the Planning setting or the limit asked for.
+    suggested_total?: number;
 }
 
 export type RankingGroup =
-    'overdue' | 'due_today' | 'in_progress' | 'suggested';
+    'tagged_today' | 'overdue' | 'due_today' | 'in_progress' | 'suggested';
 export type RankingBucket = `${RankingGroup}:${'project' | 'none'}`;
 
 export interface PlanRanking {
@@ -123,25 +134,57 @@ export interface PlanItemInput {
     duration_minutes: number;
 }
 
-export const fetchDailyPlan = async (
-    date?: string
-): Promise<DailyPlanResponse> => {
-    const query = date ? `?date=${encodeURIComponent(date)}` : '';
-    const response = await fetch(getApiPath(`daily-plan${query}`), {
-        credentials: 'include',
-        headers: getDefaultHeaders(),
-        cache: 'no-store',
+const withQuery = (
+    path: string,
+    params: Record<string, string | undefined>
+) => {
+    const search = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+        if (value) search.set(key, value);
     });
+    const query = search.toString();
+    return query ? `${path}?${query}` : path;
+};
+
+// `scope` is the Focus scope (see utils/focus.ts); the plan keeps all its
+// items and marks the ones outside it.
+export const fetchDailyPlan = async (
+    date?: string,
+    scope: FocusScopeParams = {}
+): Promise<DailyPlanResponse> => {
+    const response = await fetch(
+        getApiPath(withQuery('daily-plan', { date, ...scope })),
+        {
+            credentials: 'include',
+            headers: getDefaultHeaders(),
+            cache: 'no-store',
+        }
+    );
     await handleAuthResponse(response, 'Failed to load the day plan.');
     return response.json();
 };
 
-export const fetchPlanCandidates = async (): Promise<PlanCandidates> => {
-    const response = await fetch(getApiPath('daily-plan/candidates'), {
-        credentials: 'include',
-        headers: getDefaultHeaders(),
-        cache: 'no-store',
-    });
+// `suggestedLimit` asks for more suggestions than the Planning setting
+// sends at first; the planner raises it page by page from "Show more".
+export const fetchPlanCandidates = async (
+    suggestedLimit?: number | null,
+    scope: FocusScopeParams = {}
+): Promise<PlanCandidates> => {
+    const response = await fetch(
+        getApiPath(
+            withQuery('daily-plan/candidates', {
+                suggested_limit: suggestedLimit
+                    ? String(suggestedLimit)
+                    : undefined,
+                ...scope,
+            })
+        ),
+        {
+            credentials: 'include',
+            headers: getDefaultHeaders(),
+            cache: 'no-store',
+        }
+    );
     await handleAuthResponse(response, 'Failed to load tasks to plan.');
     return response.json();
 };

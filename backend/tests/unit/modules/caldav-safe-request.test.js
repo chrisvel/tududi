@@ -103,6 +103,18 @@ describe('assertSafeCalDavUrl', () => {
             })
         ).resolves.toBeDefined();
     });
+
+    it.each([
+        'http://169.254.169.254/latest/meta-data/',
+        'http://[fd00:ec2::254]/latest/meta-data/',
+        'http://[fe80::1]/dav/',
+        'http://[::ffff:169.254.169.254]/',
+    ])('still refuses %s when private hosts are allowed', async (url) => {
+        mockAllowPrivate = true;
+        await expect(assertSafeCalDavUrl(url)).rejects.toMatchObject({
+            statusCode: 400,
+        });
+    });
 });
 
 describe('safeRequest', () => {
@@ -262,5 +274,19 @@ describe('guardedLookup', () => {
         expect(error).toBeNull();
         expect(Array.isArray(rest[0])).toBe(true);
         expect(rest[0].length).toBeGreaterThan(0);
+    });
+
+    it('refuses a link-local answer even when private hosts are allowed', async () => {
+        mockAllowPrivate = true;
+        const dns = require('dns');
+        jest.spyOn(dns, 'lookup').mockImplementationOnce(
+            (host, options, callback) =>
+                callback(null, [{ address: '169.254.169.254', family: 4 }])
+        );
+
+        const { error } = await lookup('metadata.internal', { all: true });
+
+        expect(error).toBeDefined();
+        expect(error.statusCode).toBe(400);
     });
 });

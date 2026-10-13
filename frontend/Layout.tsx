@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import UpgradeModal from './components/Billing/UpgradeModal';
+import TrialBanner from './components/Billing/TrialBanner';
 import { SidebarProvider } from './contexts/SidebarContext';
 import Navbar from './components/Navbar';
+import Breadcrumbs from './components/Shared/Breadcrumbs';
 import CaptureHost from './components/Capture/CaptureHost';
 import { openCapture } from './utils/captureUi';
-import Sidebar from './components/Sidebar';
+import Sidebar, { SIDEBAR_CANVAS } from './components/Sidebar';
 import './styles/tailwind.css';
 import ProjectModal from './components/Project/ProjectModal';
 import AreaModal from './components/Area/AreaModal';
+import GoalModal from './components/Goal/GoalModal';
+import HabitModal from './components/Habits/HabitModal';
 import TagModal from './components/Tag/TagModal';
 import PersonModal from './components/People/PersonModal';
 import { Area } from './entities/Area';
@@ -17,6 +21,7 @@ import { Person } from './entities/Person';
 import { Project } from './entities/Project';
 import { User } from './entities/User';
 import { useStore } from './store/useStore';
+import { applyFocus, isFocusDangling, useFocus } from './utils/focus';
 import { createArea, updateArea } from './utils/areasService';
 import { createTag, updateTag } from './utils/tagsService';
 import { createPerson, updatePerson } from './utils/peopleService';
@@ -30,6 +35,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { TaskRowExpansionProvider } from './components/Task/TaskRow/TaskRowExpansionContext';
 import { getApiPath } from './config/paths';
 import { KeyboardShortcutsConfig } from './utils/keyboardShortcutsService';
+import PhotoCredit from './components/Shared/PhotoCredit';
+import {
+    CONTENT_BACKGROUND_OVERLAY,
+    contentBackgroundUrl,
+    findContentBackground,
+} from './constants/contentBackgrounds';
 
 interface LayoutProps {
     currentUser: User;
@@ -50,12 +61,15 @@ const Layout: React.FC<LayoutProps> = ({
     const navigate = useNavigate();
     const location = useLocation();
     const isUpcomingView = location.pathname === '/upcoming';
+    // Notes fill the content area edge to edge.
+    const isNotesView = /^\/notes?(\/|$)/.test(location.pathname);
     const [isSidebarOpen, setIsSidebarOpen] = useState(
         window.innerWidth >= 1024
     );
-    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
+    const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+    const [isHabitModalOpen, setIsHabitModalOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
     const [isPersonModalOpen, setIsPersonModalOpen] = useState(false);
 
@@ -115,6 +129,23 @@ const Layout: React.FC<LayoutProps> = ({
             hasLoaded: hasTagsLoaded,
         },
     } = useStore();
+    const contentBackground = findContentBackground(
+        useStore((state) => state.userSettingsStore.contentBackground)
+    );
+
+    // A Focus pointing at a deleted area or project, or at a project that
+    // left its area, is cleared once the lists it needs are loaded.
+    const focus = useFocus();
+    const haveAreas = useStore((state) => state.areasStore.hasLoaded);
+    useEffect(() => {
+        if (!focus || !haveAreas) return;
+        if (focus.project_uid && projects.length === 0) return;
+        if (isFocusDangling(focus, areas, projects)) {
+            applyFocus(null).catch(() => undefined);
+        }
+    }, [focus, haveAreas, areas, projects]);
+    const focusAreaId =
+        areas.find((area) => area.uid === focus?.area_uid)?.id ?? null;
 
     // Task shortcuts and the sidebar's New > Task open the shared capture
     // box on Task. The navbar and phone buttons open it on Inbox.
@@ -128,23 +159,6 @@ const Layout: React.FC<LayoutProps> = ({
         };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    useEffect(() => {
-        // Listen for mobile search toggle events from Navbar
-        const handleMobileSearchToggle = (event: CustomEvent) => {
-            setIsMobileSearchOpen(event.detail.isOpen);
-        };
-
-        window.addEventListener(
-            'mobileSearchToggle',
-            handleMobileSearchToggle as EventListener
-        );
-        return () =>
-            window.removeEventListener(
-                'mobileSearchToggle',
-                handleMobileSearchToggle as EventListener
-            );
     }, []);
 
     useEffect(() => {
@@ -190,7 +204,11 @@ const Layout: React.FC<LayoutProps> = ({
     };
 
     const openNewHabit = () => {
-        navigate('/habit/new');
+        setIsHabitModalOpen(true);
+    };
+
+    const closeHabitModal = () => {
+        setIsHabitModalOpen(false);
     };
 
     const openAreaModal = (area: Area | null = null) => {
@@ -201,6 +219,14 @@ const Layout: React.FC<LayoutProps> = ({
     const closeAreaModal = () => {
         setIsAreaModalOpen(false);
         setSelectedArea(null);
+    };
+
+    const openGoalModal = () => {
+        setIsGoalModalOpen(true);
+    };
+
+    const closeGoalModal = () => {
+        setIsGoalModalOpen(false);
     };
 
     const openTagModal = (tag: Tag | null = null) => {
@@ -347,7 +373,9 @@ const Layout: React.FC<LayoutProps> = ({
         }
     };
 
-    const mainContentMarginLeft = isSidebarOpen ? 'ml-sidebar' : 'ml-0';
+    const mainContentMarginLeft = isSidebarOpen
+        ? 'ml-sidebar'
+        : 'ml-0 sm:ml-rail';
 
     // Only show the full-screen loader for a store's *first* load. Once a
     // store has loaded once, subsequent background refreshes (e.g. a page
@@ -367,17 +395,38 @@ const Layout: React.FC<LayoutProps> = ({
         isProjectsError ||
         isTagsError;
 
-    if (isLoading) {
-        return (
-            <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-                <Navbar
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    currentUser={currentUser}
-                    setCurrentUser={setCurrentUser}
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                />
+    // The app canvas: the sidebar on it, and the page as a rounded panel
+    // beside it with its own top bar. The panel sits 8px in, so the bar ends
+    // 64px down, where fixed overlays (modals, toasts, search) expect it.
+    // The page background photo sits behind both the top bar and the page,
+    // so the bar reads as part of the panel.
+    const background = contentBackground ? (
+        <>
+            <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                    backgroundImage: `url(${contentBackgroundUrl(contentBackground)})`,
+                }}
+                data-testid="content-background"
+            />
+            <div
+                aria-hidden="true"
+                className={`absolute inset-0 ${CONTENT_BACKGROUND_OVERLAY}`}
+            />
+            <PhotoCredit
+                background={contentBackground}
+                className="absolute bottom-3 left-3"
+            />
+        </>
+    ) : null;
+
+    const renderShell = (
+        panel: React.ReactNode,
+        overlays?: React.ReactNode
+    ) => (
+        <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+            <div className={`h-screen ${SIDEBAR_CANVAS}`}>
                 <Sidebar
                     isSidebarOpen={isSidebarOpen}
                     setIsSidebarOpen={setIsSidebarOpen}
@@ -388,6 +437,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openProjectModal={openProjectModal}
                     onCreateNote={openNewNote}
                     openAreaModal={openAreaModal}
+                    openGoalModal={openGoalModal}
                     openTagModal={openTagModal}
                     openPersonModal={openPersonModal}
                     openNewHabit={openNewHabit}
@@ -397,51 +447,42 @@ const Layout: React.FC<LayoutProps> = ({
                     keyboardShortcuts={keyboardShortcuts}
                 />
                 <div
-                    className={`flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
+                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col sm:p-2 sm:pl-0`}
                 >
-                    <div className="text-xl text-gray-700 dark:text-gray-200">
-                        {t('common.loading')}
+                    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 pt-[env(safe-area-inset-top)] sm:rounded-2xl sm:shadow-sm sm:pt-0">
+                        {background}
+                        <Navbar
+                            transparent={!!background}
+                            isDarkMode={isDarkMode}
+                            toggleDarkMode={toggleDarkMode}
+                            currentUser={currentUser}
+                            setCurrentUser={setCurrentUser}
+                            isSidebarOpen={isSidebarOpen}
+                            setIsSidebarOpen={setIsSidebarOpen}
+                        />
+                        {panel}
                     </div>
+                </div>
+            </div>
+            {overlays}
+        </div>
+    );
+
+    if (isLoading) {
+        return renderShell(
+            <div className="flex-1 flex items-center justify-center">
+                <div className="text-xl text-gray-700 dark:text-gray-200">
+                    {t('common.loading')}
                 </div>
             </div>
         );
     }
 
     if (isError) {
-        return (
-            <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-                <Navbar
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    currentUser={currentUser}
-                    setCurrentUser={setCurrentUser}
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                />
-                <Sidebar
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                    currentUser={currentUser}
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    openTaskModal={openTaskModal}
-                    openProjectModal={openProjectModal}
-                    onCreateNote={openNewNote}
-                    openAreaModal={openAreaModal}
-                    openTagModal={openTagModal}
-                    openPersonModal={openPersonModal}
-                    openNewHabit={openNewHabit}
-                    notes={notes}
-                    areas={areas}
-                    tags={tags}
-                    keyboardShortcuts={keyboardShortcuts}
-                />
-                <div
-                    className={`flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
-                >
-                    <div className="text-xl text-red-500">
-                        {t('errors.somethingWentWrong')}
-                    </div>
+        return renderShell(
+            <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="text-xl text-red-500">
+                    {t('errors.somethingWentWrong')}
                 </div>
             </div>
         );
@@ -449,115 +490,115 @@ const Layout: React.FC<LayoutProps> = ({
 
     return (
         <SidebarProvider isSidebarOpen={isSidebarOpen}>
-            <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-                <UpgradeModal />
-                <Navbar
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    currentUser={currentUser}
-                    setCurrentUser={setCurrentUser}
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                />
-                <Sidebar
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                    currentUser={currentUser}
-                    isDarkMode={isDarkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    openTaskModal={openTaskModal}
-                    openProjectModal={openProjectModal}
-                    onCreateNote={openNewNote}
-                    openAreaModal={openAreaModal}
-                    openTagModal={openTagModal}
-                    openPersonModal={openPersonModal}
-                    openNewHabit={openNewHabit}
-                    notes={notes}
-                    areas={areas}
-                    tags={tags}
-                    keyboardShortcuts={keyboardShortcuts}
-                />
-
-                <div
-                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col`}
-                >
-                    <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 overflow-hidden">
+            <UpgradeModal />
+            {renderShell(
+                <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div
+                        className={`relative flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
+                            isNotesView ? 'pt-0' : 'pt-4'
+                        } ${
+                            isUpcomingView
+                                ? 'md:px-6 lg:px-8'
+                                : isNotesView
+                                  ? ''
+                                  : 'md:px-4'
+                        } overflow-hidden`}
+                    >
                         <div
-                            className={`flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
-                                isMobileSearchOpen ? 'pt-32' : 'pt-20'
-                            } md:pt-20 ${isUpcomingView ? 'md:px-6 lg:px-8' : 'md:px-4'} overflow-hidden`}
+                            className={`w-full h-full ${
+                                isNotesView
+                                    ? 'flex flex-col overflow-hidden'
+                                    : 'overflow-auto'
+                            }`}
                         >
-                            <div className="w-full h-full overflow-auto">
-                                <TaskRowExpansionProvider
-                                    key={location.pathname}
-                                >
-                                    {children}
-                                </TaskRowExpansionProvider>
-                            </div>
+                            <TrialBanner />
+                            <Breadcrumbs />
+                            <TaskRowExpansionProvider key={location.pathname}>
+                                {children}
+                            </TaskRowExpansionProvider>
                         </div>
                     </div>
-                </div>
+                </div>,
+                <>
+                    {isProjectModalOpen && (
+                        <ProjectModal
+                            isOpen={isProjectModalOpen}
+                            onClose={closeProjectModal}
+                            onSave={handleSaveProject}
+                            onDelete={async (projectUid) => {
+                                try {
+                                    const { deleteProject } =
+                                        await import('./utils/projectsService');
+                                    await deleteProject(projectUid);
 
-                {isProjectModalOpen && (
-                    <ProjectModal
-                        isOpen={isProjectModalOpen}
-                        onClose={closeProjectModal}
-                        onSave={handleSaveProject}
-                        onDelete={async (projectUid) => {
-                            try {
-                                const { deleteProject } = await import(
-                                    './utils/projectsService'
-                                );
-                                await deleteProject(projectUid);
+                                    // Update global projects store
+                                    const currentProjects =
+                                        useStore.getState().projectsStore
+                                            .projects;
+                                    useStore
+                                        .getState()
+                                        .projectsStore.setProjects(
+                                            currentProjects.filter(
+                                                (p) => p.uid !== projectUid
+                                            )
+                                        );
 
-                                // Update global projects store
-                                const currentProjects =
-                                    useStore.getState().projectsStore.projects;
-                                useStore
-                                    .getState()
-                                    .projectsStore.setProjects(
-                                        currentProjects.filter(
-                                            (p) => p.uid !== projectUid
-                                        )
+                                    closeProjectModal();
+                                } catch (error) {
+                                    console.error(
+                                        'Error deleting project:',
+                                        error
                                     );
+                                }
+                            }}
+                            areas={areas}
+                            defaultAreaId={focusAreaId}
+                        />
+                    )}
 
-                                closeProjectModal();
-                            } catch (error) {
-                                console.error('Error deleting project:', error);
-                            }
-                        }}
-                        areas={areas}
-                    />
-                )}
+                    {isAreaModalOpen && (
+                        <AreaModal
+                            isOpen={isAreaModalOpen}
+                            onClose={closeAreaModal}
+                            onSave={handleSaveArea}
+                            area={selectedArea}
+                        />
+                    )}
 
-                {isAreaModalOpen && (
-                    <AreaModal
-                        isOpen={isAreaModalOpen}
-                        onClose={closeAreaModal}
-                        onSave={handleSaveArea}
-                        area={selectedArea}
-                    />
-                )}
+                    {isGoalModalOpen && (
+                        <GoalModal
+                            isOpen={isGoalModalOpen}
+                            onClose={closeGoalModal}
+                        />
+                    )}
 
-                {isTagModalOpen && (
-                    <TagModal
-                        isOpen={isTagModalOpen}
-                        onClose={closeTagModal}
-                        onSave={handleSaveTag}
-                        tag={selectedTag}
-                    />
-                )}
+                    {isHabitModalOpen && (
+                        <HabitModal
+                            isOpen={isHabitModalOpen}
+                            onClose={closeHabitModal}
+                        />
+                    )}
 
-                {isPersonModalOpen && (
-                    <PersonModal
-                        person={selectedPerson}
-                        onSave={handleSavePerson}
-                        onClose={closePersonModal}
-                    />
-                )}
+                    {isTagModalOpen && (
+                        <TagModal
+                            isOpen={isTagModalOpen}
+                            onClose={closeTagModal}
+                            onSave={handleSaveTag}
+                            tag={selectedTag}
+                        />
+                    )}
 
-                <CaptureHost sidebarOpen={isSidebarOpen} />
-            </div>
+                    {isPersonModalOpen && (
+                        <PersonModal
+                            person={selectedPerson}
+                            onSave={handleSavePerson}
+                            onClose={closePersonModal}
+                        />
+                    )}
+
+                    <CaptureHost sidebarOpen={isSidebarOpen} />
+                </>
+            )}
         </SidebarProvider>
     );
 };

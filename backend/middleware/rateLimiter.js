@@ -65,6 +65,28 @@ const authLimiter = rateLimit({
     },
 });
 
+// OIDC sign-in (start and callback). Same budget as authLimiter, but only
+// failed attempts count, so successful SSO from a shared office IP never
+// locks people out (#1716). authLimiter keeps counting every request because
+// it also guards registration, where a success is what needs limiting.
+const oidcLimiter = rateLimit({
+    store: createRateLimitStore('oidc'),
+    windowMs: rateLimitConfig.auth.windowMs,
+    max: rateLimitConfig.auth.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: skipInTest,
+    skipSuccessfulRequests: true,
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Too many authentication attempts',
+            message:
+                'You have exceeded the maximum number of login attempts. Please try again after 15 minutes.',
+            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+        });
+    },
+});
+
 // The two public sign-in link routes (look at a link, use it). Each device
 // needs two requests, so a household handing links to several devices would
 // use up the strict auth limit at once. The token is 256 random bits, so this
@@ -144,6 +166,28 @@ const loginLimiter = rateLimit({
 
 const loginEmailLimiter = createAuthEmailLimiter('auth-login-email', {
     skipSuccessfulRequests: true,
+});
+
+// New accounts per IP on a hosted instance, on top of authLimiter's attempt
+// budget: someone farming trials gets a few accounts a day from one address,
+// not one per 15-minute window. Only created accounts count. Self-hosted
+// instances skip it, since a household often signs up from one address.
+const signupLimiter = rateLimit({
+    store: createRateLimitStore('signup'),
+    windowMs: rateLimitConfig.signup.windowMs,
+    max: rateLimitConfig.signup.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => skipInTest(req) || getConfig().hosted?.enabled !== true,
+    skipFailedRequests: true,
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Too many sign-ups',
+            message:
+                'Too many accounts were created from this network today. Please try again tomorrow.',
+            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+        });
+    },
 });
 
 /**
@@ -325,6 +369,7 @@ const uploadsLimiter = rateLimit({
 // CalDAV clients authenticate with Basic auth on every request, outside the
 // /api limiters. Keyed by IP plus the attempted username so a password
 // guess against one account is throttled without blocking a whole office.
+// Only failed attempts count so normal sync traffic does not lock users out.
 const caldavAuthLimiter = rateLimit({
     store: createRateLimitStore('caldav-auth'),
     windowMs: rateLimitConfig.auth.windowMs,
@@ -332,6 +377,10 @@ const caldavAuthLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skip: skipInTest,
+    skipSuccessfulRequests: true,
+    // Only failed Basic auth (401) counts. Authenticated DAV sync often
+    // returns 404/403/409/412; those must not lock the client out (issue #1716).
+    requestWasSuccessful: (req, res) => res.statusCode !== 401,
     keyGenerator: (req) => {
         const username = (req.caldavUsername || '').trim().toLowerCase();
         return `${ipKeyGenerator(req.ip)}|${username}`;
@@ -349,10 +398,12 @@ const caldavAuthLimiter = rateLimit({
 module.exports = {
     caldavAuthLimiter,
     authLimiter,
+    oidcLimiter,
     signInLinkLimiter,
     authEmailLimiter,
     loginLimiter,
     loginEmailLimiter,
+    signupLimiter,
     bearerFailureLimiter,
     passwordConfirmLimiter,
     uploadsLimiter,

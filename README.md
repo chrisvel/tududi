@@ -62,12 +62,12 @@ For the thinking behind tududi, read:
 - **Due Date Tracking**: Set due dates for tasks and view them based on due date categories.
 - **Responsive Design**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
 - **Installable PWA**: Add tududi to your home screen on Android, iOS, and desktop browsers for a native app-like experience. The app stays readable from cache when offline, and write operations are queued and synced automatically when connectivity returns.
-- **Multi-Language Support**: Available in 25 languages with full localization support for a truly global productivity experience.
+- **Multi-Language Support**: Available in 26 languages with full localization support for a truly global productivity experience.
 - **Telegram Integration**:
     - Create tasks directly through Telegram messages
     - Receive daily digests of your tasks
     - Quick capture of ideas and todos on the go
-- **Open API & Access Tokens**: Versioned Swagger docs exposed at `/api/v1` plus personal API keys for integrating tududi with your own tooling or automations.
+- **Open API & Access Tokens**: Interactive Swagger docs at `/api-docs` plus personal API keys for integrating tududi with your own tooling or automations.
 - **OIDC/SSO Authentication**: Enterprise-ready Single Sign-On support with:
     - Multiple OIDC providers (Google, Okta, Keycloak, Authentik, PocketID, Azure AD, and more)
     - Just-In-Time (JIT) user provisioning
@@ -107,6 +107,8 @@ docker run \
 ```
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
+
+If people reach tududi at another address (for example `http://zima.local:3002` or `https://tududi.example.com`), add `-e BASE_URL=<that address>` so links in emails (account verification, password reset) point there instead of `localhost`.
 
 ### Using docker-compose
 

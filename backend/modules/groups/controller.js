@@ -13,8 +13,9 @@ function requireUserId(req) {
 const groupsController = {
     async listForPicker(req, res, next) {
         try {
-            requireUserId(req);
-            const groups = await groupsService.listForPicker();
+            const groups = await groupsService.listForPicker(
+                requireUserId(req)
+            );
             res.json({ groups });
         } catch (err) {
             next(err);

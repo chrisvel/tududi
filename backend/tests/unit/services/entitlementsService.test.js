@@ -15,9 +15,9 @@ describe('plans catalog', () => {
         plans._resetCache();
     });
 
-    it('ships a free and a pro plan with every limit and feature key', () => {
+    it('ships free, pro and trial plans with every limit and feature key', () => {
         const all = plans.getPlans();
-        expect(Object.keys(all)).toEqual(['free', 'pro']);
+        expect(Object.keys(all)).toEqual(['free', 'pro', 'trial']);
         for (const key of plans.LIMIT_KEYS) {
             expect(all.free.limits).toHaveProperty(key);
             expect(all.pro.limits).toHaveProperty(key);

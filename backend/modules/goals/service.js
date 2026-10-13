@@ -3,7 +3,15 @@
 const goalsRepository = require('./repository');
 const { Area } = require('../../models');
 const permissionsService = require('../../services/permissionsService');
-const { NotFoundError, ValidationError } = require('../../shared/errors');
+const {
+    NotFoundError,
+    ValidationError,
+    ForbiddenError,
+} = require('../../shared/errors');
+
+const { ACCESS } = permissionsService;
+
+const MAX_REORDER_GOALS = 5000;
 
 class GoalsService {
     // A goal can only be placed in an area the caller owns or can edit.
@@ -25,22 +33,79 @@ class GoalsService {
     }
 
     async getAll(userId, areaId, areaUid) {
-        if (areaUid) {
-            const area = await Area.findOne({ where: { uid: areaUid } });
-            if (area) {
-                return goalsRepository.findAllByArea(userId, area.id);
-            }
-            return [];
+        let goals;
+        if (areaUid || areaId) {
+            const area = await Area.findOne({
+                where: areaUid ? { uid: areaUid } : { id: areaId },
+                attributes: ['id', 'uid'],
+            });
+            const access = area
+                ? await permissionsService.getAccess(userId, 'area', area.uid)
+                : ACCESS.NONE;
+            if (access === ACCESS.NONE) return [];
+            goals = await goalsRepository.findAllByArea(userId, area.id);
+        } else {
+            goals = await goalsRepository.findAllByUser(userId);
         }
-        if (areaId) {
-            return goalsRepository.findAllByArea(userId, areaId);
+
+        const positions = await goalsRepository.getUserGoalPositions(userId);
+        return goals.map((goal) => ({
+            ...goal,
+            sort_position: positions[goal.id] ?? null,
+        }));
+    }
+
+    /**
+     * Save the user's custom order of the Goals page.
+     */
+    async reorder(userId, goalUids) {
+        if (
+            !Array.isArray(goalUids) ||
+            goalUids.some((uid) => typeof uid !== 'string' || !uid)
+        ) {
+            throw new ValidationError('goal_uids must be a list of UIDs.');
         }
-        return goalsRepository.findAllByUser(userId);
+        if (goalUids.length > MAX_REORDER_GOALS) {
+            throw new ValidationError(
+                `Cannot order more than ${MAX_REORDER_GOALS} goals.`
+            );
+        }
+        if (new Set(goalUids).size !== goalUids.length) {
+            throw new ValidationError('goal_uids contains duplicates.');
+        }
+
+        const whereClause = await permissionsService.ownershipOrPermissionWhere(
+            'goal',
+            userId
+        );
+        const goals = goalUids.length
+            ? await goalsRepository.findIdsByUids(whereClause, goalUids)
+            : [];
+        if (goals.length !== goalUids.length) {
+            throw new NotFoundError('One or more goals not found.');
+        }
+
+        const idByUid = new Map(goals.map((g) => [g.uid, g.id]));
+        await goalsRepository.replaceUserGoalOrder(
+            userId,
+            goalUids.map((uid) => idByUid.get(uid))
+        );
+        return { goal_uids: goalUids };
+    }
+
+    // The goal and the caller's access to it; a goal they cannot see reads
+    // as missing.
+    async findAccessible(userId, uid) {
+        const goal = await goalsRepository.findVisibleByUid(userId, uid);
+        const access = goal
+            ? await permissionsService.getAccess(userId, 'goal', uid)
+            : ACCESS.NONE;
+        if (access === ACCESS.NONE) throw new NotFoundError('Goal not found');
+        return { goal, access };
     }
 
     async getByUid(userId, uid) {
-        const goal = await goalsRepository.findByUid(userId, uid);
-        if (!goal) throw new NotFoundError('Goal not found');
+        const { goal } = await this.findAccessible(userId, uid);
         return goal;
     }
 
@@ -64,8 +129,10 @@ class GoalsService {
     }
 
     async update(userId, uid, data) {
-        const goal = await goalsRepository.findByUid(userId, uid);
-        if (!goal) throw new NotFoundError('Goal not found');
+        const { goal, access } = await this.findAccessible(userId, uid);
+        if (access !== ACCESS.RW && access !== ACCESS.ADMIN) {
+            throw new ForbiddenError('Forbidden');
+        }
 
         const { title, area_id, why, horizon, target_date, status, color } =
             data;
@@ -85,8 +152,11 @@ class GoalsService {
     }
 
     async delete(userId, uid) {
-        const goal = await goalsRepository.findByUid(userId, uid);
-        if (!goal) throw new NotFoundError('Goal not found');
+        const { goal } = await this.findAccessible(userId, uid);
+        // Only the owner deletes a goal, not someone it was shared with.
+        if (goal.user_id !== userId) {
+            throw new ForbiddenError('Only the owner can delete this goal.');
+        }
         await goalsRepository.delete(goal);
     }
 

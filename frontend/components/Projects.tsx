@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { MagnifyingGlassIcon, Squares2X2Icon } from '@heroicons/react/24/solid';
+import {
+    Bars3Icon,
+    ChevronUpDownIcon,
+    MagnifyingGlassIcon,
+    Squares2X2Icon,
+} from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import ProjectModal from './Project/ProjectModal';
 import IconSortDropdown from './Shared/IconSortDropdown';
@@ -31,9 +36,12 @@ import {
     RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
+import { PROJECT_TABLE_GRID } from './Project/projectTableLayout';
 import SortableItem from './Shared/SortableItem';
 import NewItemButton from './Shared/NewItemButton';
 import BlankSlate from './Shared/BlankSlate';
+import { projectMatchesFocus, useFocus } from '../utils/focus';
+import FocusEmptyHint from './Focus/FocusEmptyHint';
 import { useCan } from '../hooks/useCan';
 import {
     mergeVisibleOrder,
@@ -45,6 +53,10 @@ import {
 import ProjectShareModal from './Project/ProjectShareModal';
 import { useToast } from './Shared/ToastContext';
 import { saveProjectAsTemplate } from '../utils/templatesService';
+import { fetchProfile, updateUiSettings } from '../utils/profileService';
+import ProjectsListSettings, {
+    ProjectsListFilters,
+} from './Project/ProjectsListSettings';
 
 // Custom order: projects without a position (new ones) come first, newest
 // first, then the rest by the position the user dragged them to.
@@ -92,8 +104,40 @@ const compareProjects = (a: Project, b: Project, orderBy: string) => {
     return 0;
 };
 
+const LIST_FILTERS_KEY = 'projectsListFilters';
+
+const readCachedListFilters = (): ProjectsListFilters => {
+    const defaults = { showSomeday: false, showCompleted: false };
+    try {
+        const cached = localStorage.getItem(LIST_FILTERS_KEY);
+        if (cached) {
+            const { showSomeday, showCompleted } = JSON.parse(cached);
+            return {
+                showSomeday: showSomeday === true,
+                showCompleted: showCompleted === true,
+            };
+        }
+        // Carry over the older someday-only toggle
+        if (localStorage.getItem('projectsSomedayFilter') === '1') {
+            return { ...defaults, showSomeday: true };
+        }
+    } catch {
+        // ignore storage errors
+    }
+    return defaults;
+};
+
+const cacheListFilters = (filters: ProjectsListFilters) => {
+    try {
+        localStorage.setItem(LIST_FILTERS_KEY, JSON.stringify(filters));
+    } catch {
+        // ignore storage errors
+    }
+};
+
 const Projects: React.FC = () => {
     const { t } = useTranslation();
+    const focus = useFocus();
     const { showErrorToast, showSuccessToast } = useToast();
     const {
         areas,
@@ -147,7 +191,54 @@ const Projects: React.FC = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const statusFilter = searchParams.get('status') || 'not_completed';
-    const somedayFilter = searchParams.get('someday') === '1';
+    const [listFilters, setListFilters] = useState<ProjectsListFilters>(
+        readCachedListFilters
+    );
+    const somedayFilter = listFilters.showSomeday;
+    const completedFilter = listFilters.showCompleted;
+
+    // The saved settings live on the user; the local copy only avoids a
+    // flash of hidden projects before the profile loads.
+    useEffect(() => {
+        let cancelled = false;
+        fetchProfile()
+            .then((profile) => {
+                const saved = profile.ui_settings?.project?.list;
+                if (cancelled || !saved) return;
+                setListFilters((current) => {
+                    const next = {
+                        showSomeday:
+                            typeof saved.showSomeday === 'boolean'
+                                ? saved.showSomeday
+                                : current.showSomeday,
+                        showCompleted:
+                            typeof saved.showCompleted === 'boolean'
+                                ? saved.showCompleted
+                                : current.showCompleted,
+                    };
+                    cacheListFilters(next);
+                    return next;
+                });
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const handleListFiltersChange = (next: ProjectsListFilters) => {
+        setListFilters(next);
+        cacheListFilters(next);
+        updateUiSettings({ project: { list: next } }).catch((error) => {
+            console.error('Error saving projects settings:', error);
+            showErrorToast(
+                t(
+                    'projects.listSettings.saveError',
+                    'Failed to save projects settings'
+                )
+            );
+        });
+    };
 
     // Restore persisted filters from localStorage on first mount (URL params take precedence)
     useEffect(() => {
@@ -166,14 +257,6 @@ const Projects: React.FC = () => {
             const saved = localStorage.getItem('projectsAreaFilter');
             if (saved) {
                 params.set('area', saved);
-                changed = true;
-            }
-        }
-
-        if (!params.has('someday')) {
-            const saved = localStorage.getItem('projectsSomedayFilter');
-            if (saved === '1') {
-                params.set('someday', '1');
                 changed = true;
             }
         }
@@ -204,10 +287,6 @@ const Projects: React.FC = () => {
         { value: 'custom:asc', label: t('sort.custom', 'Custom') },
     ];
     const isCustomOrder = orderBy.startsWith('custom:');
-    // Status and area show on the page; someday lives in the menu, so the
-    // menu marks it when someday projects are shown.
-    const filtersActive = somedayFilter;
-
     const sensors = useSortableSensors();
 
     // Filter options for dropdowns
@@ -233,6 +312,7 @@ const Projects: React.FC = () => {
             value: 'not_completed',
             label: t('projects.filters.notCompleted', 'Not Completed'),
         },
+        { value: 'shared', label: t('projects.filters.shared', 'Shared') },
     ];
 
     const areaOptions: FilterOption[] = [
@@ -336,12 +416,13 @@ const Projects: React.FC = () => {
         const params = new URLSearchParams(searchParams);
         params.set('status', 'all');
         params.delete('area');
-        params.set('someday', '1');
         localStorage.setItem('projectsStatusFilter', 'all');
         localStorage.setItem('projectsAreaFilter', '');
-        localStorage.setItem('projectsSomedayFilter', '1');
         setSearchParams(params);
         setSearchQuery('');
+        if (!listFilters.showSomeday || !listFilters.showCompleted) {
+            handleListFiltersChange({ showSomeday: true, showCompleted: true });
+        }
     };
 
     const handleEditProject = (project: Project) => {
@@ -454,18 +535,6 @@ const Projects: React.FC = () => {
         setSearchParams(params);
     };
 
-    const handleSomedayToggle = () => {
-        const params = new URLSearchParams(searchParams);
-        if (somedayFilter) {
-            params.delete('someday');
-            localStorage.setItem('projectsSomedayFilter', '0');
-        } else {
-            params.set('someday', '1');
-            localStorage.setItem('projectsSomedayFilter', '1');
-        }
-        setSearchParams(params);
-    };
-
     const handleAreaFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
@@ -478,10 +547,12 @@ const Projects: React.FC = () => {
         setSearchParams(params);
     };
 
-    // Update the area filter when areas are loaded (to handle area UID lookups)
+    // Update the area filter when areas are loaded (to handle area UID lookups).
+    // While a Focus names an area, the page is locked to it.
+    const focusAreaUid = focus?.area_uid ?? '';
     const actualAreaFilter = useMemo(() => {
-        return getAreaUidFromParams();
-    }, [searchParams, areas]);
+        return focusAreaUid || getAreaUidFromParams();
+    }, [searchParams, areas, focusAreaUid]);
 
     // Filter, sort and search projects
     const displayProjects = useMemo(() => {
@@ -492,6 +563,10 @@ const Projects: React.FC = () => {
             filteredProjects = filteredProjects.filter(
                 (project) =>
                     project.status !== 'done' && project.status !== 'cancelled'
+            );
+        } else if (statusFilter === 'shared') {
+            filteredProjects = filteredProjects.filter(
+                (project) => project.is_shared
             );
         } else if (statusFilter !== 'all') {
             filteredProjects = filteredProjects.filter(
@@ -507,13 +582,32 @@ const Projects: React.FC = () => {
             });
         }
 
-        // Hide someday-tagged projects unless the button is active
+        // A Focus project or tags narrow the list further (the area is
+        // already applied above)
+        if (focus && (focus.project_uid || focus.tags?.length)) {
+            filteredProjects = filteredProjects.filter((project) =>
+                projectMatchesFocus(project, {
+                    project_uid: focus.project_uid,
+                    tags: focus.tags,
+                })
+            );
+        }
+
+        // Hide someday-tagged projects unless the setting shows them
         if (!somedayFilter) {
             filteredProjects = filteredProjects.filter(
                 (project) =>
                     !project.tags?.some(
                         (tag) => tag.name.toLowerCase() === 'someday'
                     )
+            );
+        }
+
+        // Hide completed projects unless the setting shows them or the
+        // status filter asks for them
+        if (!completedFilter && statusFilter !== 'done') {
+            filteredProjects = filteredProjects.filter(
+                (project) => project.status !== 'done'
             );
         }
 
@@ -539,7 +633,9 @@ const Projects: React.FC = () => {
         projects,
         statusFilter,
         actualAreaFilter,
+        focus,
         somedayFilter,
+        completedFilter,
         searchQuery,
         orderBy,
     ]);
@@ -606,8 +702,49 @@ const Projects: React.FC = () => {
 
     const projectsContainerClass =
         viewMode === 'cards'
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-            : 'flex flex-col space-y-1';
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+            : 'flex flex-col rounded-lg bg-gray-50 dark:bg-gray-900 shadow-sm p-1.5';
+
+    const sortHeader = (label: string, value: string) => (
+        <button
+            type="button"
+            onClick={() => handleSortChange(value)}
+            className={`flex items-center gap-1 uppercase tracking-wide hover:text-gray-800 dark:hover:text-gray-200 transition-colors ${
+                orderBy === value ? 'text-gray-800 dark:text-gray-200' : ''
+            }`}
+            aria-pressed={orderBy === value}
+        >
+            {label}
+            <ChevronUpDownIcon className="h-3.5 w-3.5" />
+        </button>
+    );
+
+    const tableHeader =
+        viewMode === 'list' ? (
+            <div
+                className={`${PROJECT_TABLE_GRID} px-4 py-2.5 mb-1 rounded-md bg-gray-100 dark:bg-gray-800/60 text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400`}
+                role="row"
+            >
+                {sortHeader(t('projects.table.name', 'Name'), 'name:asc')}
+                <span>{t('projects.table.status', 'Status')}</span>
+                <span className="hidden xl:block">
+                    {t('projects.table.summary', 'Summary')}
+                </span>
+                <span className="hidden lg:block">
+                    {t('projects.table.members', 'Members')}
+                </span>
+                <span className="hidden md:block">
+                    {sortHeader(
+                        t('projects.table.due', 'Due'),
+                        'due_date_at:asc'
+                    )}
+                </span>
+                <span className="hidden md:block">
+                    {t('projects.table.progress', 'Progress')}
+                </span>
+                <span />
+            </div>
+        ) : null;
 
     if (isLoading) {
         return (
@@ -652,8 +789,42 @@ const Projects: React.FC = () => {
                         >
                             <MagnifyingGlassIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-200" />
                         </button>
-                        {/* Sort, view and filters in one menu, like the
-                            other list pages */}
+                        <div
+                            className="flex items-center rounded-lg bg-gray-100 dark:bg-gray-800 p-0.5"
+                            role="group"
+                            aria-label={t('projects.viewAs', 'View')}
+                        >
+                            {(
+                                [
+                                    [
+                                        'cards',
+                                        Squares2X2Icon,
+                                        t('projects.cardViewAriaLabel'),
+                                    ],
+                                    [
+                                        'list',
+                                        Bars3Icon,
+                                        t('projects.listViewAriaLabel'),
+                                    ],
+                                ] as const
+                            ).map(([mode, Icon, label]) => (
+                                <button
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => setViewMode(mode)}
+                                    className={`p-1 sm:p-1.5 rounded-md focus:outline-none transition-colors ${
+                                        viewMode === mode
+                                            ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    }`}
+                                    aria-label={label}
+                                    aria-pressed={viewMode === mode}
+                                    title={label}
+                                >
+                                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                                </button>
+                            ))}
+                        </div>
                         <IconSortDropdown
                             options={sortOptions}
                             value={orderBy}
@@ -662,61 +833,10 @@ const Projects: React.FC = () => {
                             title={t('tasks.sortBy', 'Sort by')}
                             dropdownLabel={t('tasks.sortBy', 'Sort by')}
                             align="right"
-                            active={filtersActive}
-                            sections={[
-                                {
-                                    key: 'view',
-                                    label: t('projects.viewAs', 'View'),
-                                    options: [
-                                        {
-                                            value: 'cards',
-                                            label: t(
-                                                'projects.cardViewAriaLabel'
-                                            ),
-                                        },
-                                        {
-                                            value: 'list',
-                                            label: t(
-                                                'projects.listViewAriaLabel'
-                                            ),
-                                        },
-                                    ],
-                                    value: viewMode,
-                                    onChange: (value) =>
-                                        setViewMode(value as 'cards' | 'list'),
-                                },
-                                {
-                                    key: 'someday',
-                                    label: t(
-                                        'projects.filters.someday',
-                                        'Someday'
-                                    ),
-                                    options: [
-                                        {
-                                            value: 'hide',
-                                            label: t(
-                                                'projects.filters.somedayHide',
-                                                'Hide'
-                                            ),
-                                        },
-                                        {
-                                            value: 'show',
-                                            label: t(
-                                                'projects.filters.somedayShow',
-                                                'Show'
-                                            ),
-                                        },
-                                    ],
-                                    value: somedayFilter ? 'show' : 'hide',
-                                    onChange: (value) => {
-                                        if (
-                                            (value === 'show') !==
-                                            somedayFilter
-                                        )
-                                            handleSomedayToggle();
-                                    },
-                                },
-                            ]}
+                        />
+                        <ProjectsListSettings
+                            value={listFilters}
+                            onChange={handleListFiltersChange}
                         />
                         {templatesEnabled && (
                             <Link
@@ -729,7 +849,7 @@ const Projects: React.FC = () => {
                                     'projects.fromTemplate',
                                     'From Template'
                                 )}
-                                className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                                className="flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-2 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-sm text-sm font-medium text-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                             >
                                 <RectangleStackIcon className="h-5 w-5 sm:h-4 sm:w-4" />
                                 <span className="hidden sm:inline">
@@ -760,14 +880,28 @@ const Projects: React.FC = () => {
                         autoWidth={true}
                         fill
                     />
-                    <FilterDropdown
-                        options={areaOptions}
-                        value={actualAreaFilter}
-                        onChange={handleAreaFilterChange}
-                        size="desktop"
-                        autoWidth={true}
-                        fill
-                    />
+                    {focusAreaUid ? (
+                        <span
+                            className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-blue-50 px-3 text-sm text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                            title={t(
+                                'focus.locked',
+                                'Set by your Focus. Clear it from the chip in the top bar.'
+                            )}
+                            data-testid="projects-area-locked"
+                        >
+                            {areas.find((area) => area.uid === focusAreaUid)
+                                ?.name ?? t('focus.chip', 'Focus')}
+                        </span>
+                    ) : (
+                        <FilterDropdown
+                            options={areaOptions}
+                            value={actualAreaFilter}
+                            onChange={handleAreaFilterChange}
+                            size="desktop"
+                            autoWidth={true}
+                            fill
+                        />
+                    )}
                 </div>
 
                 {/* Collapsible Search Bar */}
@@ -838,38 +972,41 @@ const Projects: React.FC = () => {
                             ]}
                         />
                     ) : (
-                        <BlankSlate
-                            title={t(
-                                'projects.noProjectsFound',
-                                'No projects found'
-                            )}
-                            hint={t(
-                                'projects.blankSlateFilteredHint',
-                                'Try changing your filters or search.'
-                            )}
-                            actions={[
-                                {
-                                    label: t(
-                                        'projects.blankSlateShowAll',
-                                        'Show all projects'
-                                    ),
-                                    icon: FunnelIcon,
-                                    onClick: handleShowAllProjects,
-                                },
-                                ...(canCreateProjects
-                                    ? [
-                                          {
-                                              label: t(
-                                                  'projects.new',
-                                                  'New Project'
-                                              ),
-                                              icon: PlusIcon,
-                                              onClick: handleNewProject,
-                                          },
-                                      ]
-                                    : []),
-                            ]}
-                        />
+                        <>
+                            <BlankSlate
+                                title={t(
+                                    'projects.noProjectsFound',
+                                    'No projects found'
+                                )}
+                                hint={t(
+                                    'projects.blankSlateFilteredHint',
+                                    'Try changing your filters or search.'
+                                )}
+                                actions={[
+                                    {
+                                        label: t(
+                                            'projects.blankSlateShowAll',
+                                            'Show all projects'
+                                        ),
+                                        icon: FunnelIcon,
+                                        onClick: handleShowAllProjects,
+                                    },
+                                    ...(canCreateProjects
+                                        ? [
+                                              {
+                                                  label: t(
+                                                      'projects.new',
+                                                      'New Project'
+                                                  ),
+                                                  icon: PlusIcon,
+                                                  onClick: handleNewProject,
+                                              },
+                                          ]
+                                        : []),
+                                ]}
+                            />
+                            <FocusEmptyHint className="mx-auto mt-4 max-w-md" />
+                        </>
                     )
                 ) : displayProjects.every((p) => p.uid) ? (
                     <DndContext
@@ -887,6 +1024,7 @@ const Projects: React.FC = () => {
                             }
                         >
                             <div className={projectsContainerClass}>
+                                {tableHeader}
                                 {displayProjects.map((project) => (
                                     <SortableItem
                                         key={project.id}
@@ -906,6 +1044,7 @@ const Projects: React.FC = () => {
                     </DndContext>
                 ) : (
                     <div className={projectsContainerClass}>
+                        {tableHeader}
                         {displayProjects.map((project) => (
                             <React.Fragment key={project.id}>
                                 {renderProjectItem(project)}
@@ -942,6 +1081,10 @@ const Projects: React.FC = () => {
                     }}
                     project={modalState.projectToEdit || undefined}
                     areas={areas}
+                    defaultAreaId={
+                        areas.find((area) => area.uid === focusAreaUid)?.id ??
+                        null
+                    }
                 />
             )}
 

@@ -4,6 +4,7 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "moreActions": "More actions",
     "edit": "Edit",
     "create": "Create",
     "submit": "Submit",
@@ -339,6 +340,7 @@
     "norwegian": "Norwegian",
     "polish": "Polish",
     "slovenian": "Slovenian",
+    "slovak": "Slovak",
     "swedish": "Swedish",
     "title": "Profile Settings",
     "appearance": "Appearance",
@@ -441,7 +443,7 @@
     "featuresAddons": "Features & Add-ons",
     "tabs": {
       "billing": "Plan & Billing",
-      "notifications": "Notification Preferences",
+      "notifications": "Notifications",
       "oidc": "OIDC/SSO",
       "caldav": "CalDAV Sync",
       "calendars": "Calendars",
@@ -621,8 +623,8 @@
       "deleteError": "Could not remove that calendar",
       "title": "Calendars",
       "description": "Show your meetings next to your day plan and on the Calendar page. Tududi only reads these calendars; it never changes them.",
-      "showOnCalendar": "Show {{name}} on the Calendar page",
-      "showOnCalendarShort": "Show on Calendar page",
+      "showOnCalendar": "Show {{name}} on the Calendar page and Today",
+      "showOnCalendarShort": "Show on Calendar and Today",
       "toggleError": "Could not update that calendar",
       "empty": "No calendars connected yet.",
       "lastSync": "updated {{time}}",
@@ -651,6 +653,8 @@
       "description": "How \"What could you do today?\" orders your tasks when you plan your day. Drag the rows into the order you want; the same tasks always come out in the same order.",
       "orderTitle": "Order (drag to change)",
       "reset": "Reset to default",
+      "taggedToday": "Tagged #today",
+      "taggedTodayDetail": "Open tasks you tagged #today, whatever their dates.",
       "overdue": "Overdue",
       "overdueDetail": "Past their due date, including tasks you already started.",
       "dueToday": "Due today",
@@ -680,7 +684,7 @@
       "suggestedLeftOutDay": "Deferred tasks, someday tasks and tasks due more than a day out are left out.",
       "suggestedLeftOutDays": "Deferred tasks, someday tasks and tasks due more than {{count}} days out are left out.",
       "suggestedStale": "So are tasks nobody changed in {{months}} months.",
-      "suggestedCap": "Up to {{count}} are shown.",
+      "suggestedCap": "{{count}} load at first; Show more brings the rest.",
       "suggestionsSaveError": "Could not save your suggestion settings",
       "ruleDueRecent": "The earlier due date first, then the task changed most recently.",
       "ruleDueNewest": "The earlier due date first, then the newest task.",
@@ -704,7 +708,7 @@
       "horizonTitle": "Look ahead",
       "horizonDescription": "Suggest tasks due up to this far ahead.",
       "maxTitle": "Show up to",
-      "maxDescription": "The most tasks to suggest under Everything else.",
+      "maxDescription": "How many Everything else tasks load at first. Show more brings the rest.",
       "maxOption": "{{count}} tasks",
       "intro": "How Plan my day lays out your day and which tasks it offers you.",
       "suggestedTitle": "What gets suggested",
@@ -774,10 +778,11 @@
     "aiProfileDescription": "Optional context fed into the AI prompts: your role, field, or anything that helps personalise the briefs and insights (e.g. \"Academic researcher focused on grant deadlines and grading cycles\").",
     "aiProfilePlaceholder": "e.g. Academic researcher. My work revolves around grant deadlines, paper reviews, and teaching cycles, not sprints or deploys.",
     "systemMode": "System",
-    "tasks": "Tasks",
-    "taskItem": "Task Item",
-    "showTaskContextMenu": "Show context menu button",
-    "showTaskContextMenuDescription": "Display a three-dot button on each task with Edit and Delete actions",
+    "contentBackground": "Background",
+    "contentBackgroundDescription": "Show a photo behind the main content area. Photos come from Unsplash and are credited to their photographers.",
+    "contentBackgroundNone": "None",
+    "photoBy": "Photo by",
+    "photoOn": "on",
     "connected": {
       "loadError": "Failed to load connected accounts",
       "linkError": "Failed to initiate account linking",
@@ -932,7 +937,7 @@
     },
     "deleteProject": {
       "title": "Delete Project",
-      "message": "Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?"
+      "message": "Deleting the project \"{{projectName}}\" will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?"
     },
     "deleteGoal": {
       "title": "Delete Goal",
@@ -1053,15 +1058,14 @@
     "logoutSuccess": "Logout Successful",
     "or_continue_with_email": "Or continue with email",
     "sign_in_with": "Sign in with {{provider}}",
+    "sign_up_with": "Sign up with {{provider}}",
     "oidc": {
       "completing_signin": "Completing sign-in...",
       "authenticating_with_provider": "Authenticating with provider. Please wait..."
     },
     "captcha_required": "Please complete the verification and try again.",
     "registration_successful": "Verify your email address",
-    "registration_email_sent": "Verify your email address to activate your account. We have sent you a link, check your inbox.",
-    "notify_joined": "You're on the list. We'll email you the day tududi Cloud opens.",
-    "notify_failed": "We could not save your address. Please try again."
+    "registration_email_sent": "Verify your email address to activate your account. We have sent you a link, check your inbox."
   },
   "dropdown": {
     "createNew": "Create New",
@@ -1118,7 +1122,61 @@
     "createdAndAssigned": "Project created and assigned",
     "createError": "Failed to create project",
     "viewProject": "Go to project",
-    "attachments": "Attachments"
+    "attachments": "Attachments",
+    "overview": "Overview",
+    "people": "People",
+    "info": "Project info",
+    "clickToEdit": "Click to edit",
+    "addDescription": "Add a description",
+    "changeArea": "Change area",
+    "setArea": "Set area",
+    "changeGoal": "Change goal",
+    "setGoal": "Set goal",
+    "changePriority": "Change priority",
+    "setPriority": "Set priority",
+    "changeDue": "Change due date",
+    "changeTags": "Change tags",
+    "addTags": "Add tags",
+    "changeColor": "Change color",
+    "setColor": "Set color",
+    "moreOptions": "More options",
+    "pin": "Pin",
+    "pinned": "Pinned",
+    "started": "Started",
+    "startedOn": "Started {{date}}",
+    "daysToDue_one": "{{count}} day to due date",
+    "daysToDue_other": "{{count}} days to due date",
+    "daysOverdue_one": "{{count}} day overdue",
+    "daysOverdue_other": "{{count}} days overdue",
+    "progressSummary": "Project progress · {{done}} of {{total}} tasks done",
+    "timeUsed": "{{percent}}% of time used",
+    "progressHint": "Bar: tasks done. Line: time passed between start and due date.",
+    "openTasks": "Open tasks",
+    "overdueTasks": "Overdue",
+    "doneThisWeek": "Done this week",
+    "untilDate": "Until {{date}}",
+    "pastDate": "Past {{date}}",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "noteCount_one": "{{count}} note",
+    "noteCount_other": "{{count}} notes",
+    "roleOwner": "Owner",
+    "rolePending": "Invited",
+    "roleEdit": "Can edit",
+    "roleView": "Can view",
+    "notShared": "Only you can see this project.",
+    "addNote": "Add note",
+    "noNotesYet": "No notes yet.",
+    "allNotes": "All notes",
+    "fewerNotes": "Show fewer",
+    "fileCount_one": "{{count}} file",
+    "fileCount_other": "{{count}} files",
+    "addFile": "Add file",
+    "uploading": "Uploading...",
+    "noFilesYet": "No files yet. Drop files here or use +.",
+    "allFiles": "All files",
+    "dropToUpload": "Drop to upload",
+    "fewerFiles": "Show fewer"
   },
   "errors": {
     "required": "This field is required",
@@ -1207,6 +1265,7 @@
     "recurringFrom": "{{phrase}}, from {{date}}",
     "keepDateAsText": "Keep as text",
     "removeAssignee": "Remove assignee",
+    "removeArea": "Remove area",
     "attachments": "Attachments",
     "linkPreview": "Link preview",
     "linkPreviewError": "Could not fetch link details",
@@ -1403,12 +1462,23 @@
     "estimateHint": "Roughly how long? Used when you plan your day.",
     "estimateClearHint": "Click again to clear",
     "estimateError": "Failed to update the estimate",
-    "noGoal": "Assign to a goal"
+    "noGoal": "Assign to a goal",
+    "skipOccurrence": "Skip this occurrence",
+    "occurrenceSkipped": "Occurrence skipped",
+    "skipOccurrenceError": "Failed to skip occurrence"
   },
   "subtasks": {
     "placeholder": "Add a subtask..."
   },
   "projects": {
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "summary": "Summary",
+      "members": "Members",
+      "due": "Due",
+      "progress": "Progress"
+    },
     "addProject": "Add Project",
     "loading": "Loading projects...",
     "error": "Error loading projects",
@@ -1461,12 +1531,20 @@
       "all": "All",
       "allAreas": "All Areas",
       "notCompleted": "Not Completed",
+      "shared": "Shared",
       "someday": "Someday",
       "somedayTooltip": "Projects tagged \"someday\" are hidden by default. Click to reveal them.",
       "systemTagCannotBeDeleted": "System tags cannot be deleted",
       "systemTagCannotBeRenamed": "System tags cannot be renamed",
       "somedayHide": "Hide",
       "somedayShow": "Show"
+    },
+    "listSettings": {
+      "title": "Projects settings",
+      "showSomeday": "Show someday projects",
+      "showSomedayHint": "Projects tagged #someday.",
+      "showCompleted": "Show completed projects",
+      "saveError": "Failed to save projects settings"
     },
     "noResults": "No projects",
     "reorderError": "Failed to save project order",
@@ -1531,10 +1609,22 @@
     "deleteGoal": "Delete goal",
     "moveBackToUnlinked": "Move back to unlinked",
     "horizonSeason": "Season",
-    "horizonYear": "Year"
+    "horizonYear": "Year",
+    "presetsLabel": "Most people start with",
+    "presetHome": "Home",
+    "presetWork": "Work",
+    "presetHealth": "Health",
+    "presetFamily": "Family"
   },
   "notes": {
     "addNote": "Add Note",
+    "backgroundImage": "Background",
+    "noBackground": "No background",
+    "createLinkedNote": "Create note \"{{title}}\"",
+    "linkedNoteMissing": "No note called \"{{title}}\" yet. Create it?",
+    "linkedNoteNotNow": "Not now",
+    "linkedNoteCreate": "Create note",
+    "linkedNoteCreateFailed": "Could not create the note.",
     "loading": "Loading notes...",
     "error": "Error loading notes",
     "searchPlaceholder": "Search notes...",
@@ -1563,6 +1653,8 @@
       "folders": "Folders"
     },
     "publicShare": {
+      "createLink": "Create public link",
+      "inheritStyle": "Inherit styling (background and color) to the public note",
       "open": "Share note",
       "sharedTitle": "Shared with anyone who has the link",
       "title": "Share \"{{title}}\"",
@@ -1576,14 +1668,19 @@
       "copied": "Copied",
       "copyFailed": "Could not copy automatically. Select the link and copy it.",
       "ownerOnly": "Only the owner of a note can share it publicly.",
-      "failed": "Something went wrong. Try again."
+      "failed": "Something went wrong. Try again.",
+      "rotate": "Get a new link and turn off this one",
+      "rotateWarning": "The current link will stop working for everyone who has it.",
+      "rotateConfirm": "Get new link"
     },
     "deleteNote": "Delete Note",
     "deleteNoteConfirm": "Are you sure you want to delete the note \"{{title}}\"?",
-    "untitled": "Untitled Note"
+    "untitled": "Untitled Note",
+    "openInNotes": "Open in Notes"
   },
   "tags": {
     "addTag": "Add Tag",
+    "new": "New Tag",
     "loading": "Loading tags...",
     "searchPlaceholder": "Search tags...",
     "title": "Tags",
@@ -1761,7 +1858,11 @@
     "perDay": "a day",
     "weekdays": "Weekdays",
     "weekends": "Weekends",
-    "quitTarget": "Avoid"
+    "quitTarget": "Avoid",
+    "presetsLabel": "Or start with",
+    "presetWalk": "Morning walk",
+    "presetRead": "Read 20 minutes",
+    "presetReview": "Weekly review"
   },
   "recurrence": {
     "none": "None",
@@ -2004,7 +2105,14 @@
       "reason": "Reason (optional)",
       "overrideSaved": "Override saved",
       "overrideCleared": "Override removed",
-      "synced": "Synced from the payment provider"
+      "synced": "Synced from the payment provider",
+      "onTrial": "On trial",
+      "trialsOnly": "Trials only",
+      "trial": "Trial",
+      "trialDaysLeft_one": "{{count}} day left",
+      "trialDaysLeft_other": "{{count}} days left",
+      "trialEnded": "Trial ended",
+      "readOnlyUntil": "Read-only, deleted on {{date}}"
     },
     "manageUsers": "Manage users",
     "userManagement": "User Management",
@@ -2015,6 +2123,9 @@
     "name": "Name",
     "surname": "Surname",
     "created": "Created",
+    "verified": "Verified",
+    "verifiedYes": "Verified",
+    "verifiedNo": "Not verified",
     "role": "Role",
     "actions": "Actions",
     "loadingUsers": "Loading users...",
@@ -2040,6 +2151,8 @@
       "subtitle": "tududi {{version}} · {{env}}",
       "users": "Users",
       "usersHint": "{{verified}} verified · {{admins}} admin · {{new}} today",
+      "emptyAccounts": "Nothing created",
+      "emptyAccountsHint": "accounts that never created anything ({{pct}}% of users)",
       "paying": "Paying",
       "selfHosted": "self-hosted",
       "waitlist": "Waitlist",
@@ -2142,12 +2255,15 @@
       "names": {
         "admin": "Admin",
         "user": "User",
-        "guest": "Guest"
+        "guest": "Guest",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Manages accounts, roles and groups, and can do everything else.",
+        "accountAdmin": "Manages the members, roles and groups of this account. Sees only what is shared with them.",
         "user": "A regular member. Works with their own items and everything shared with them.",
-        "guest": "Works inside what is shared with them or assigned to them."
+        "guest": "Works inside what is shared with them or assigned to them.",
+        "superadmin": "Runs this instance: every account, billing and settings. There is only one; customers are admins of their own account."
       },
       "capabilities": {
         "createPeople": "Add people",
@@ -2172,7 +2288,139 @@
     },
     "turnContactIntoAccount": "Turn one of your contacts into this account (optional)",
     "noContact": "(none)",
-    "turnContactNote": "The contact keeps its history, so tasks assigned to it stay assigned. Your private notes on it are not carried over."
+    "turnContactNote": "The contact keeps its history, so tasks assigned to it stay assigned. Your private notes on it are not carried over.",
+    "feedback": {
+      "title": "Feedback",
+      "open": "Open ({{count}})",
+      "resolved": "Resolved",
+      "all": "All",
+      "emptyOpen": "Nothing open. Nice.",
+      "empty": "No feedback yet.",
+      "markResolved": "Mark resolved",
+      "reopen": "Reopen",
+      "updateFailed": "Failed to update",
+      "deleted": "Feedback deleted",
+      "deleteFailed": "Failed to delete",
+      "deleteTitle": "Delete Feedback",
+      "confirmDelete": "Delete this feedback? This cannot be undone.",
+      "statusOpen": "Open",
+      "statusResolved": "Resolved"
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Pick one of your notes as the front page. The public notes it links with [[Title]] become the posts. Share the front page and each post publicly for them to show.",
+      "placeholder": "Note link or ID, e.g. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Front page note",
+      "turnOff": "Turn off",
+      "shared": "Public",
+      "notShared": "Not shared yet: share it from the note to publish the blog",
+      "postCount": "Posts: {{count}}",
+      "open": "Open the blog",
+      "preview": "Preview in the app"
+    },
+    "userStatus": {
+      "title": "Users",
+      "user": "User",
+      "signedUp": "Signed up",
+      "verified": "Verified",
+      "status": "Status",
+      "daysLeft": "Trial days left",
+      "paid": "Paid",
+      "trial": "Trial",
+      "subscribed": "Subscribed",
+      "pastDue": "Past due",
+      "comped": "Comped",
+      "admin": "Admin",
+      "member": "Member",
+      "trialEnded": "Trial ended",
+      "free": "No plan",
+      "addedBy": "Added by {{email}}",
+      "selfSignUp": "Signed up",
+      "deletedOn": "Deleted on {{date}}",
+      "paidByOwner": "Yes, by owner",
+      "paidYes": "Yes",
+      "paidBefore": "Not now, paid before",
+      "paidNo": "No",
+      "items": "Items",
+      "itemsCreated_one": "{{count}} item",
+      "itemsCreated_other": "{{count}} items",
+      "lastCreated": "Last on {{date}}",
+      "nothingCreated": "Nothing yet",
+      "kinds": {
+        "tasks": "Tasks",
+        "habits": "Habits",
+        "projects": "Projects",
+        "notes": "Notes",
+        "areas": "Areas",
+        "goals": "Goals",
+        "tags": "Tags",
+        "people": "People",
+        "views": "Views",
+        "inbox": "Inbox"
+      }
+    },
+    "userFilter": {
+      "filter": "Filter",
+      "clear": "Clear filters",
+      "showing": "{{shown}} of {{total}}",
+      "empty": "No users match these filters.",
+      "source": "How they joined",
+      "signedUp": "Signed up",
+      "member": "Added as member",
+      "invited": "Invitation pending",
+      "verification": "Email",
+      "verified": "Verified",
+      "unverified": "Not verified",
+      "activity": "Activity",
+      "created": "Created something",
+      "nothingCreated": "Nothing created yet",
+      "plan": "Plan",
+      "trial": "On trial",
+      "trialEnded": "Trial ended",
+      "paid": "Paying",
+      "paidBefore": "Paid before",
+      "neverPaid": "Never paid"
+    },
+    "trends": {
+      "title": "Last 7 days",
+      "signups": "signups",
+      "vsLastWeek": "{{diff}} vs last week",
+      "chartLabel": "Signups per day",
+      "barTitle": "{{date}}: {{n}} signups ({{prev}} a week before)",
+      "activation": "Activated",
+      "activationHint": "{{n}} of {{total}} new users created something",
+      "active": "Active users",
+      "activeHint": "created something this week",
+      "waitlist": "Waitlist joins",
+      "trialsStarted": "Trials started",
+      "trialsEnding": "Trials ending in 7 days",
+      "churn": "Canceled · failed payments",
+      "firstPlan": "Planned a first day",
+      "firstPlanHint": "{{n}} of {{total}} new users planned 3+ tasks",
+      "threeDays": "Kept planning",
+      "threeDaysHint": "{{n}} of {{total}} of last week's signups planned 3 days",
+      "tasksCreated": "Tasks created",
+      "tasksCompleted": "Tasks completed",
+      "verified": "Verified email",
+      "verifiedHint": "{{n}} of {{total}} new users"
+    },
+    "visits": {
+      "title": "Visits, last 7 days",
+      "visitors": "visitors",
+      "chartLabel": "Visitors per day",
+      "barTitle": "{{date}}: {{n}} visitors ({{prev}} a week before)",
+      "views": "Page views",
+      "conversion": "Visit to signup",
+      "conversionHint": "{{n}} signups from {{total}} visitors",
+      "blog": "Blog readers",
+      "appOpens": "App opens",
+      "appUsers": "App users",
+      "appUsersHint": "{{day}} today · {{month}} in 30 days",
+      "topPages": "Top pages",
+      "noPages": "No page views yet",
+      "topReferrers": "Top referrers",
+      "noReferrers": "No referrers yet"
+    }
   },
   "billing": {
     "title": "Plan & Billing",
@@ -2218,12 +2466,23 @@
       "caldav": "CalDAV sync",
       "telegram": "the Telegram bot",
       "backups_import": "backup import",
-      "attachments": "attachments"
-    }
+      "attachments": "attachments",
+      "public_notes": "public notes",
+      "members": "adding members"
+    },
+    "seatCovered": "Your seat is paid by {{name}}.",
+    "workspaceOwner": "the workspace owner",
+    "seats": "{{count}} seats on your subscription: you and {{members}} more."
   },
   "shares": {
     "shareProject": "Share project",
     "targetUser": "Invite by email",
+    "shareWith": "Share with",
+    "selectPerson": "Select a person",
+    "selectPersonError": "Choose a person",
+    "alreadyHasAccess": "already has access",
+    "someoneElseByEmail": "Someone else, by email",
+    "you": "you",
     "emailPlaceholder": "name@example.com",
     "inviteHint": "They will get an invitation and see the project after accepting.",
     "invitationSent": "Invitation sent.",
@@ -2300,6 +2559,7 @@
     "allItems": "all items",
     "containingText": ", containing the text",
     "withPriority": ", with",
+    "withStatus": ", with status",
     "priority": "priority",
     "due": ", due",
     "taggedWith": ", tagged with",
@@ -2309,6 +2569,7 @@
     "metadataFilters": "Metadata Filters",
     "extras": "Extras",
     "priorityFilter": "Priority",
+    "statusFilter": "Status",
     "dueFilter": "Due",
     "deferUntilFilter": "Defer Until",
     "deferUntil": ", defer until",
@@ -2384,7 +2645,10 @@
     "validationError": "The selected file is not a valid backup",
     "validationErrors": "Validation errors:",
     "versionIncompatible": "Version Incompatible",
-    "backupVersion": "Backup version"
+    "backupVersion": "Backup version",
+    "adminInstanceNote": "As an admin, your backup includes every account on this instance, with their data and password hashes. Restoring it on a new install brings everyone back. Keep the file as safe as the database.",
+    "accountsCount_one": "{{count}} other account",
+    "accountsCount_other": "{{count}} other accounts"
   },
   "notifications": {
     "table": {
@@ -2403,7 +2667,8 @@
       "dueProjects": "Due Projects",
       "overdueProjects": "Overdue Projects",
       "taskAssigned": "Task Assigned",
-      "habitReminders": "Habit Reminders"
+      "habitReminders": "Habit Reminders",
+      "comments": "Comments & Mentions"
     },
     "descriptions": {
       "dueTasks": "Tasks that are due within 24 hours",
@@ -2412,7 +2677,8 @@
       "dueProjects": "Projects that are due within 24 hours",
       "overdueProjects": "Projects that have passed their due date",
       "taskAssigned": "A task was assigned to you by someone else",
-      "habitReminders": "At the reminder time set on a habit, while it is still open"
+      "habitReminders": "At the reminder time set on a habit, while it is still open",
+      "comments": "Replies, comments on your tasks, and @mentions"
     },
     "telegram": {
       "notConfigured": {
@@ -2421,14 +2687,27 @@
       }
     },
     "test": {
-      "title": "Test Notifications",
-      "description": "Send a test notification to see how it appears in-app and on enabled channels (Telegram, etc.)",
-      "send": "Send Test",
-      "sending": "Sending..."
+      "rowLabel": "Send a test notification",
+      "button": "Test",
+      "sendVia": "Send a test via {{channel}}",
+      "sending": "Sending...",
+      "sent": "Test sent via {{channel}}.",
+      "failed": "Could not send the test."
     },
     "info": {
       "title": "Note:",
-      "message": "Email and Push notifications are coming soon. In-app and Telegram notifications are currently available."
+      "message": "Email notifications are coming soon. In-app, Push and Telegram notifications are available."
+    },
+    "push": {
+      "title": "Push notifications on this device",
+      "prompt": "Get notifications on this device even when tududi is closed.",
+      "subscribed": "This device receives push notifications. Choose which ones in the Push column below.",
+      "needsInstall": "To get notifications on iPhone or iPad, add tududi to your Home Screen first: tap Share, then Add to Home Screen, and open it from there.",
+      "unsupported": "This browser does not support push notifications.",
+      "denied": "Notifications are blocked for tududi. Allow them in your browser or system settings, then come back here.",
+      "enable": "Turn on",
+      "disable": "Turn off",
+      "failed": "Something went wrong. Please try again."
     }
   },
   "aiAssistant": {
@@ -2463,6 +2742,7 @@
     "statOverdue": "Overdue"
   },
   "reports": {
+    "overview": "Overview",
     "weeklyReview": "Weekly Review",
     "inboxItems": "Inbox items",
     "stalledProjects": "Stalled projects",
@@ -2518,7 +2798,24 @@
     "perkExport": "Export everything at any time",
     "taxNote": "Payments are handled by {{provider}}. Prices exclude applicable taxes. Cancel at any time.",
     "notConfigured": "Subscriptions are not available on this instance yet. Please contact support.",
-    "exportData": "Export your data"
+    "exportData": "Export your data",
+    "subscribe": "Subscribe",
+    "readOnlyBanner": "Your trial has ended, so your data is read-only. Subscribe to keep using tududi, or export your data. The account will be deleted on {{date}}.",
+    "lockedAi": "The AI assistant is part of the paid plan.",
+    "lockedPublicNotes": "Public note links are part of the paid plan.",
+    "lockedMembers": "Adding members is part of the paid plan.",
+    "trialEnded": "Your trial has ended",
+    "onTrial": "You are on the free trial",
+    "readOnlyUntil": "Your data is read-only until {{date}}, then the account is deleted. Subscribe to keep using tududi Cloud.",
+    "trialIncludes": "Your trial ends on {{date}}. The AI assistant, public notes and adding members unlock when you subscribe.",
+    "backToApp": "Back to tududi",
+    "trialBanner_one": "You're on the free trial, {{count}} day left",
+    "trialBanner_other": "You're on the free trial, {{count}} days left",
+    "trialLock": {
+      "ai": "The AI assistant is not part of the free trial. Subscribe to turn it on.",
+      "publicNotes": "Public note links are not part of the free trial. Subscribe to share notes with anyone.",
+      "members": "Adding members is not part of the free trial. Subscribe to add family members or teammates."
+    }
   },
   "demo": {
     "opening": "Opening the demo...",
@@ -2583,7 +2880,18 @@
     "add": "Add member",
     "giveAccount": "Give account",
     "nameRequiredWithoutEmail": "Enter a name when there is no email",
-    "failedToAdd": "Failed to add member"
+    "failedToAdd": "Failed to add member",
+    "seatNote": "Each member is one more seat on your subscription. The change is prorated on your next invoice, and removing a member gives the seat back.",
+    "editTitle": "Edit member",
+    "nameRequired": "Enter a name",
+    "failedToUpdate": "Failed to update member",
+    "addEmailHint": "Adding an email sends them an invitation to set a password. It cannot be changed afterwards.",
+    "remove": "Remove member",
+    "removeConfirm": "Remove {{name}}? Their account and everything in it is deleted, and this cannot be undone. On tududi Cloud their seat is taken off your subscription.",
+    "removed": "Member removed",
+    "updated": "Member updated",
+    "invitationSent": "Invitation sent",
+    "failedToRemove": "Failed to remove member"
   },
   "signInLink": {
     "action": "Sign-in link",
@@ -2609,6 +2917,7 @@
     "invalidHint": "It may have been used already or expired. Ask the person who sent it for a new one."
   },
   "publicNote": {
+    "linkedNoteNotShared": "This note is not shared publicly.",
     "toggleTheme": "Toggle dark mode",
     "openApp": "Open tududi",
     "updated": "Last updated {{date}}",
@@ -2622,6 +2931,7 @@
   },
   "dailyPlan": {
     "addTask": "Add task",
+    "taggedToday": "Tagged #today",
     "inProgress": "In progress",
     "overdue": "Overdue",
     "dueToday": "Due today",
@@ -2643,7 +2953,6 @@
     "connectCalendar": "Connect a calendar",
     "continuePlanning": "Continue planning",
     "planYourDay": "Plan your day",
-    "skipShowEverything": "Skip and show everything",
     "moveBlock": "Move {{name}}",
     "removeFromPlan": "Remove from plan",
     "freeGap": "{{duration}} free",
@@ -2688,7 +2997,6 @@
     "addAsTask": "Add as task",
     "moreInInbox": "{{count}} more in the inbox",
     "sidebarProgress": "{{done}} of {{total}} planned tasks done",
-    "oldTodayLink": "Go to the old Today page instead",
     "nowMarker": "Now, {{time}}",
     "beta": "Beta",
     "betaHint": "The planned Today page is new. The classic page is still at the bottom of this page.",
@@ -2720,9 +3028,13 @@
       "skippedCount": "Left out ({{count}})"
     },
     "lateWarning": "Time passed and not done yet",
+    "doneForToday": "Done for today",
+    "nextOccurrence": "Next on {{date}}",
+    "movedOffPlan": "'{{name}}' is no longer due today, so it left today's plan.",
     "tips": {
       "title": "Planning tips",
-      "missed": "{{count}} planned blocks already passed",
+      "missed_one": "{{count}} planned block already passed",
+      "missed_other": "{{count}} planned blocks already passed",
       "moveMissed": "Move to next free slots",
       "overbooked": "Planned {{planned}}, only {{free}} free: {{over}} over",
       "gapFit": "{{gap}} free at {{time}} fits {{name}} ({{duration}})",
@@ -2731,6 +3043,9 @@
       "next": "Next tip"
     },
     "more": "More options",
+    "refreshCalendar": "Refresh calendar",
+    "refreshCalendarError": "Could not refresh the calendar.",
+    "refreshingCalendar": "Refreshing calendar…",
     "switchToList": "Switch to list",
     "switchToTimeline": "Switch to timeline",
     "leaveWithoutStarting": "Back to Today",
@@ -2739,6 +3054,7 @@
     "browse": "Browse",
     "showMore": "Show {{count}} more",
     "countOf": {
+      "tagged_today": "{{count}} tagged #today",
       "overdue": "{{count}} overdue",
       "due_today": "{{count}} due today",
       "in_progress": "{{count}} in progress",
@@ -2837,7 +3153,15 @@
     "filesAttached_other": "{{count}} files attached."
   },
   "attachments": {
-    "limitReached": "Maximum 20 attachments allowed"
+    "limitReached": "Maximum 20 attachments allowed",
+    "addTitle": "Add a title",
+    "title": "Title",
+    "download": "Download",
+    "noPreview": "No preview for this file type.",
+    "previous": "Previous file",
+    "next": "Next file",
+    "renameError": "Could not save the title",
+    "confirmDelete": "Delete file?"
   },
   "area": {
     "loadError": "Failed to load areas"
@@ -2939,5 +3263,64 @@
     "myTemplates": "My Templates",
     "confirmDelete": "Delete Template",
     "confirmDeleteMessage": "Delete \"{{name}}\"? Projects created from it will not be affected."
+  },
+  "feedback": {
+    "title": "Send feedback",
+    "subtitle": "Found a bug or have an idea? Let us know.",
+    "placeholder": "What happened, or what would make tududi better?",
+    "contextNote": "The page you are on and the app version are sent along with your message.",
+    "send": "Send",
+    "sending": "Sending...",
+    "sent": "Thanks! Your feedback was sent.",
+    "failed": "Could not send your feedback"
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Start now",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Terms",
+    "footerPrivacy": "Privacy",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Get the small things out of your head.",
+    "ctaBody": "Tasks, projects, notes and habits in one calm place, shared with the people you live and work with. No server, nothing to install.",
+    "ctaPrice": "{{monthly}} a month or {{annual}} a year",
+    "ctaGuarantee": "14-day money-back guarantee",
+    "ctaPrimary": "Start now",
+    "ctaSecondary": "See what is included",
+    "readPost": "Read the post",
+    "emptyTitle": "Nothing here yet",
+    "emptyBody": "The first posts are on their way. Come back soon.",
+    "failedTitle": "Could not load the blog",
+    "failedBody": "Something went wrong on our side. Try again in a moment.",
+    "missingTitle": "This post is not here",
+    "missingBody": "It may have moved or been taken down. The other posts are one click away.",
+    "allPosts": "All posts",
+    "morePosts": "More from the blog"
+  },
+  "focus": {
+    "chip": "Focus",
+    "title": "Focus on",
+    "activeTitle": "Focus: {{label}}",
+    "area": "Area",
+    "anyArea": "Any area",
+    "project": "Project",
+    "anyProject": "Any project",
+    "tags": "Tags",
+    "hint": "Today, Upcoming, Tasks, Projects, Notes and search show only this. New tasks get the project and tags.",
+    "apply": "Apply",
+    "clear": "Clear",
+    "clearFocus": "Clear focus",
+    "locked": "Set by your Focus. Clear it from the chip in the top bar.",
+    "emptyHint": "Showing {{label}} only",
+    "saveError": "Could not save the focus."
+  },
+  "onboarding": {
+    "starter": {
+      "kicker": "Welcome to tududi",
+      "welcomeTitle": "Take a look at what you can do with tududi in a minute",
+      "videoTitle": "A one minute tour of tududi",
+      "letsStart": "I'm done, let's start",
+      "settingUp": "Setting up..."
+    }
   }
 }

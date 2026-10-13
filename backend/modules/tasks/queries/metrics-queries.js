@@ -204,12 +204,13 @@ async function fetchTasksDueToday(
     if (projectWhere && projectWhere[Op.or]) {
         const conditions = [];
         projectWhere[Op.or].forEach((condition) => {
-            if (condition.user_id) {
-                conditions.push(`projects.user_id = ${condition.user_id}`);
+            const ownerId = Number(condition.user_id);
+            if (Number.isInteger(ownerId)) {
+                conditions.push(`projects.user_id = ${ownerId}`);
             }
             if (condition.uid && condition.uid[Op.in]) {
                 const uids = condition.uid[Op.in]
-                    .map((uid) => `'${uid}'`)
+                    .map((uid) => sequelize.escape(String(uid)))
                     .join(',');
                 if (uids) {
                     conditions.push(`projects.uid IN (${uids})`);
@@ -288,12 +289,13 @@ async function fetchOverdueTasks(
     if (projectWhere && projectWhere[Op.or]) {
         const conditions = [];
         projectWhere[Op.or].forEach((condition) => {
-            if (condition.user_id) {
-                conditions.push(`projects.user_id = ${condition.user_id}`);
+            const ownerId = Number(condition.user_id);
+            if (Number.isInteger(ownerId)) {
+                conditions.push(`projects.user_id = ${ownerId}`);
             }
             if (condition.uid && condition.uid[Op.in]) {
                 const uids = condition.uid[Op.in]
-                    .map((uid) => `'${uid}'`)
+                    .map((uid) => sequelize.escape(String(uid)))
                     .join(',');
                 if (uids) {
                     conditions.push(`projects.uid IN (${uids})`);
@@ -463,7 +465,8 @@ async function fetchSomedayFallbackTasks(
     userId,
     usedTaskIds,
     somedayTaskIds,
-    limit = null
+    limit = null,
+    scopeWhere = null
 ) {
     if (somedayTaskIds.length === 0) {
         return [];
@@ -477,6 +480,7 @@ async function fetchSomedayFallbackTasks(
             },
             parent_task_id: null,
             recurring_parent_id: null,
+            ...(scopeWhere ? { [Op.and]: [scopeWhere] } : {}),
         },
         include: getTaskIncludeConfigLight(),
         order: [
@@ -504,7 +508,11 @@ async function fetchSomedayFallbackTasks(
     return await Task.findAll(queryOptions);
 }
 
-async function fetchTasksCompletedToday(userId, userTimezone) {
+async function fetchTasksCompletedToday(
+    userId,
+    userTimezone,
+    scopeWhere = null
+) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
@@ -520,6 +528,7 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
                 [Op.gte]: todayBounds.start,
                 [Op.lte]: todayBounds.end,
             },
+            ...(scopeWhere ? { [Op.and]: [scopeWhere] } : {}),
         },
         include: getTaskIncludeConfigLight(),
     });
@@ -541,6 +550,7 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
                 where: {
                     user_id: userId,
                     parent_task_id: null,
+                    ...(scopeWhere ? { [Op.and]: [scopeWhere] } : {}),
                 },
                 include: getTaskIncludeConfigLight(),
             },

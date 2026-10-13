@@ -16,7 +16,7 @@ class CommentsRepository extends BaseRepository {
                 {
                     model: User,
                     as: 'Author',
-                    attributes: ['id', 'uid', 'name', 'email'],
+                    attributes: ['id', 'uid', 'name', 'surname', 'email'],
                 },
             ],
             order: [['created_at', 'ASC']],
@@ -31,7 +31,7 @@ class CommentsRepository extends BaseRepository {
                 {
                     model: User,
                     as: 'Author',
-                    attributes: ['id', 'uid', 'name', 'email'],
+                    attributes: ['id', 'uid', 'name', 'surname', 'email'],
                 },
             ],
         });

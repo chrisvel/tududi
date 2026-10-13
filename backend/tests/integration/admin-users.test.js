@@ -54,6 +54,25 @@ describe('Admin Users Management API', () => {
             expect(found.role).toBe('admin');
             expect(found.created_at).toBeTruthy();
         });
+
+        it('says whether each user has verified their email', async () => {
+            const pending = await createTestUser({
+                email: 'pending@example.com',
+            });
+            await User.update(
+                { email_verified: false },
+                { where: { id: pending.id } }
+            );
+            await User.update(
+                { email_verified: true },
+                { where: { id: adminUser.id } }
+            );
+
+            const res = await adminAgent.get('/api/admin/users');
+            const byEmail = (email) => res.body.find((u) => u.email === email);
+            expect(byEmail('admin@example.com').email_verified).toBe(true);
+            expect(byEmail('pending@example.com').email_verified).toBe(false);
+        });
     });
 
     describe('POST /api/admin/users', () => {

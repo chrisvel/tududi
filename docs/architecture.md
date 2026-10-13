@@ -14,7 +14,7 @@
 - **Styling:** Tailwind CSS 3.4.13 + Heroicons
 - **State Management:** Zustand 5.0.3 (global state), SWR 2.2.5 (server state)
 - **Routing:** React Router DOM 6.26.2
-- **Internationalization:** i18next + react-i18next (25 languages)
+- **Internationalization:** i18next + react-i18next (26 languages)
 - **Charts/Analytics:** Recharts 2.15.4
 - **Drag & Drop:** @dnd-kit (sortable tasks)
 - **Development:** webpack-dev-server with proxy configuration

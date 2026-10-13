@@ -4,7 +4,12 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import MarkdownEditor from './MarkdownEditor';
+import PhotoCredit from '../Shared/PhotoCredit';
 import { Note } from '../../entities/Note';
+import {
+    contentBackgroundUrl,
+    findContentBackground,
+} from '../../constants/contentBackgrounds';
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
     if (!hexColor) return false;
@@ -40,6 +45,19 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
     const { t } = useTranslation();
     const noteColor = note.color;
     const lightText = shouldUseLightText(noteColor);
+    // The note's photo shows through a tint of its color (or the page color),
+    // as in the notes pane.
+    const notePhoto = findContentBackground(note.background ?? null);
+    const backgroundStyle: React.CSSProperties = notePhoto
+        ? ({
+              backgroundImage: `linear-gradient(var(--note-tint), var(--note-tint)), url(${contentBackgroundUrl(notePhoto)})`,
+              ...(noteColor && /^#[0-9a-f]{6}$/i.test(noteColor)
+                  ? { '--note-tint': `${noteColor}bf` }
+                  : {}),
+          } as React.CSSProperties)
+        : noteColor
+          ? { backgroundColor: noteColor }
+          : {};
 
     useEffect(() => {
         const prev = document.body.style.overflow;
@@ -62,7 +80,8 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
             }
         };
         document.addEventListener('keydown', handleKeyDown, true);
-        return () => document.removeEventListener('keydown', handleKeyDown, true);
+        return () =>
+            document.removeEventListener('keydown', handleKeyDown, true);
     }, [isEditing, onExitEditing, onClose]);
 
     const textColor = noteColor
@@ -78,9 +97,16 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
 
     return ReactDOM.createPortal(
         <div
-            className="fixed inset-0 z-[60] flex flex-col bg-white dark:bg-gray-900 transition-opacity duration-200"
-            style={noteColor ? { backgroundColor: noteColor } : undefined}
+            className={`fixed inset-0 z-[60] flex flex-col bg-white dark:bg-gray-900 transition-opacity duration-200 ${notePhoto ? 'bg-cover bg-center [--note-tint:rgb(255_255_255/0.75)] dark:[--note-tint:rgb(17_24_39/0.75)]' : ''}`}
+            style={backgroundStyle}
+            data-testid="note-focus-mode"
         >
+            {notePhoto && (
+                <PhotoCredit
+                    background={notePhoto}
+                    className="absolute bottom-2 right-3 z-10"
+                />
+            )}
             {/* Minimal header */}
             <div className="flex items-center justify-between px-6 py-3 flex-shrink-0">
                 <div className="text-xs">
@@ -89,7 +115,11 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                             {saveStatus === 'saving' && (
                                 <span
                                     className="text-blue-500 dark:text-blue-400 italic"
-                                    style={mutedColor ? { color: mutedColor } : undefined}
+                                    style={
+                                        mutedColor
+                                            ? { color: mutedColor }
+                                            : undefined
+                                    }
                                 >
                                     Saving...
                                 </span>
@@ -97,7 +127,11 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                             {saveStatus === 'saved' && (
                                 <span
                                     className="text-gray-400 dark:text-gray-500"
-                                    style={mutedColor ? { color: mutedColor } : undefined}
+                                    style={
+                                        mutedColor
+                                            ? { color: mutedColor }
+                                            : undefined
+                                    }
                                 >
                                     Saved
                                 </span>
@@ -105,7 +139,11 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                             {saveStatus === 'unsaved' && (
                                 <span
                                     className="text-amber-600 dark:text-amber-400"
-                                    style={mutedColor ? { color: mutedColor } : undefined}
+                                    style={
+                                        mutedColor
+                                            ? { color: mutedColor }
+                                            : undefined
+                                    }
                                 >
                                     Unsaved
                                 </span>
@@ -145,16 +183,25 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                                     paddingRight: 0,
                                 }}
                             />
-                            <MarkdownEditor
-                                noteUid={note.uid}
-                                value={note.content || ''}
-                                onChange={(val) => onNoteChange({ content: val })}
-                                placeholder={t('notes.contentPlaceholderFocus')}
-                                noteColor={noteColor}
-                                autoFocus={isEditing}
-                                minHeight="60vh"
-                                className="text-lg"
-                            />
+                            {/* Pull the editor's 24px block handle gutter
+                                into the margin so its text lines up with
+                                the title. */}
+                            <div className="-ml-6">
+                                <MarkdownEditor
+                                    noteUid={note.uid}
+                                    value={note.content || ''}
+                                    onChange={(val) =>
+                                        onNoteChange({ content: val })
+                                    }
+                                    placeholder={t(
+                                        'notes.contentPlaceholderFocus'
+                                    )}
+                                    noteColor={noteColor}
+                                    autoFocus={isEditing}
+                                    minHeight="60vh"
+                                    className="text-lg"
+                                />
+                            </div>
                         </>
                     ) : (
                         <>
@@ -174,7 +221,9 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                             <div
                                 onClick={onEditNote}
                                 className="cursor-pointer text-gray-900 dark:text-gray-100 text-lg leading-relaxed"
-                                style={textColor ? { color: textColor } : undefined}
+                                style={
+                                    textColor ? { color: textColor } : undefined
+                                }
                                 title={t('notes.clickToEdit')}
                             >
                                 <MarkdownRenderer

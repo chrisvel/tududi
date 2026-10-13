@@ -9,11 +9,11 @@ const { Permission, GroupPermission } = require('../models');
 const SOURCES = [Permission, GroupPermission];
 const LEVEL_RANK = { ro: 1, rw: 2 };
 
-async function findAccepted(where, attributes) {
+async function findAccepted(where, attributes, status = 'accepted') {
     const perSource = await Promise.all(
         SOURCES.map((model) =>
             model.findAll({
-                where: { ...where, status: 'accepted' },
+                where: { ...where, status },
                 attributes,
                 raw: true,
             })
@@ -80,9 +80,22 @@ async function countDistinctUsersByResource(resourceType, resourceUids) {
     );
 }
 
+// Uids of the given resources shared with anyone, including invitations
+// that are not accepted yet.
+async function findSharedResourceUids(resourceType, resourceUids) {
+    if (resourceUids.length === 0) return new Set();
+    const rows = await findAccepted(
+        { resource_type: resourceType, resource_uid: resourceUids },
+        ['resource_uid'],
+        ['accepted', 'pending']
+    );
+    return new Set(rows.map((r) => r.resource_uid));
+}
+
 module.exports = {
     findAccepted,
     countAccepted,
     findAcceptedAccessLevel,
     countDistinctUsersByResource,
+    findSharedResourceUids,
 };

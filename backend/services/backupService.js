@@ -195,6 +195,7 @@ async function saveBackup(userId, backupData) {
             notes: backupData.data.notes?.length || 0,
             inbox_items: backupData.data.inbox_items?.length || 0,
             views: backupData.data.views?.length || 0,
+            accounts: backupData.instance?.accounts?.length || 0,
         };
 
         // Create database record

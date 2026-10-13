@@ -19,6 +19,7 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
     - [HTTP Mode (Remote)](#http-mode-remote)
 - [Available Tools](#available-tools)
     - [Tasks Tools (11)](#tasks-tools-11)
+    - [Comments Tools (2)](#comments-tools-2)
     - [Projects Tools (5)](#projects-tools-5)
     - [Inbox Tools (6)](#inbox-tools-6)
     - [Views Tools (5)](#views-tools-5)
@@ -44,7 +45,7 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 **Key Features:**
 
-- **59 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people
+- **65 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people, plus task comments
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
 - **Enabled by default:** No configuration needed to turn MCP on
@@ -170,9 +171,9 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 62 MCP tools organized into 11 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 65 MCP tools organized into 12 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
-### Tasks Tools (11)
+### Tasks Tools (12)
 
 #### `list_tasks`
 
@@ -181,7 +182,7 @@ List tasks with optional filtering by type, status, or project.
 **Parameters:**
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `type` | string | No | — | Filter: `today`, `upcoming`, `completed`, `archived`, `all` |
+| `type` | string | No | — | Filter: `today` (what the Today page shows: in progress, planned for today, due today, overdue), `upcoming` (due or deferred in the next 7 days), `completed`, `archived`, `all` |
 | `status` | string | No | — | Filter: `pending`, `in_progress`, `completed`, `archived` |
 | `project_id` | number | No | — | Filter by project ID |
 | `blocked` | boolean | No | — | `true`: only tasks with an open blocker. `false`: only tasks without one |
@@ -233,6 +234,9 @@ Create a new task.
 | `due_date` | string | No | ISO 8601 date |
 | `defer_until` | string | No | ISO 8601 date/time; task is hidden from view until this point |
 | `project_id` | number | No | Assign to a project |
+| `area_id` | number | No | Assign directly to an area (tasks in a project take the project's area) |
+| `area_uid` | string | No | Area UID, alternative to `area_id` |
+| `assigned_to` | string | No | Person UID to assign the task to (from `list_people`) |
 | `tags` | string[] | No | Array of tag names to apply |
 | `recurrence_type` | string | No | `none`, `daily`, `weekly`, `monthly`, `monthly_weekday`, or `monthly_last_day` |
 | `recurrence_interval` | number | No | Repeat every N days/weeks/months (default: 1) |
@@ -284,6 +288,9 @@ Update an existing task.
 | `due_date` | string | No | New due date (ISO 8601) |
 | `defer_until` | string | No | New defer until date/time (ISO 8601); pass `null` or `""` to clear it |
 | `project_id` | number | No | Reassign to a project (`null` to remove) |
+| `area_id` | number | No | Assign directly to an area (`null` to remove) |
+| `area_uid` | string | No | Area UID, alternative to `area_id` |
+| `assigned_to` | string | No | Person UID to assign the task to (`null` to unassign) |
 | `today` | boolean | No | Add to Today list |
 | `tags` | string[] | No | Array of tag names (replaces existing tags) |
 | `recurrence_type` | string | No | `none`, `daily`, `weekly`, `monthly`, `monthly_weekday`, or `monthly_last_day` |
@@ -314,6 +321,25 @@ Changing recurrence fields on a task that already has future recurring instances
 #### `complete_task`
 
 Toggle a task between completed and pending.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+
+**Example:**
+
+```json
+{
+    "id": "abc123"
+}
+```
+
+---
+
+#### `skip_task_occurrence`
+
+Move a recurring task to its next due date without completing it. The skipped occurrence does not count in completion stats or streaks. Returns an error for non-recurring tasks, completed tasks, and tasks whose recurrence has no further occurrence.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
@@ -424,6 +450,42 @@ Get productivity metrics and task statistics.
 
 ---
 
+### Comments Tools (2)
+
+#### `list_task_comments`
+
+List the comments on a task, oldest first. Replies are nested under the comment they answer in `replies`. You need read access to the task.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+
+---
+
+#### `add_task_comment`
+
+Add a comment to a task. Read access is enough, so a read-only collaborator can comment too. The task owner, the assignee and anyone mentioned get the usual comment notifications.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number/string | Yes | Task ID or UID |
+| `body` | string | Yes | Comment text (max 10,000 characters) |
+| `parent_comment_uid` | string | No | Reply to this top-level comment |
+| `mentioned_person_uids` | string[] | No | Person UIDs to mention |
+
+**Example:**
+
+```json
+{
+    "id": "abc123",
+    "body": "Blocked on the vendor, following up Monday"
+}
+```
+
+---
+
 ### Projects Tools (5)
 
 #### `list_projects`
@@ -448,6 +510,8 @@ Get a single project by UID.
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Project UID |
 
+Project responses from `list_projects`, `get_project`, `create_project` and `update_project` include `goal` and `is_maintenance`.
+
 ---
 
 #### `create_project`
@@ -466,6 +530,7 @@ Create a new project. Refused for an account whose role does not allow creating 
 | `tags` | string[] | No | Array of tag names |
 | `goal_id` | number | No | Goal ID to link the project to (must be your own goal) |
 | `goal_uid` | string | No | Goal UID, as an alternative to `goal_id` |
+| `is_maintenance` | boolean | No | Mark as a maintenance project; cannot be combined with a goal |
 
 ---
 
@@ -485,6 +550,7 @@ Update an existing project.
 | `pinned` | boolean | No | Pin to sidebar |
 | `goal_id` | number | No | Link to a goal you own; `null` unlinks (owner only) |
 | `goal_uid` | string | No | Goal UID, as an alternative to `goal_id`; `null` or empty unlinks |
+| `is_maintenance` | boolean | No | `true` marks as maintenance and unlinks any goal (owner only if a goal is set); linking a goal sets it back to `false` |
 
 ---
 

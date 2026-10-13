@@ -3,15 +3,15 @@ const router = express.Router();
 const controller = require('./controller');
 const { requireAuth } = require('../../middleware/auth');
 const {
-    authLimiter,
+    oidcLimiter,
     authenticatedApiLimiter,
 } = require('../../middleware/rateLimiter');
 
 router.get('/providers', controller.listProviders);
 
-router.get('/auth/:slug', authLimiter, controller.initiateAuth);
+router.get('/auth/:slug', oidcLimiter, controller.initiateAuth);
 
-router.get('/callback/:slug', authLimiter, controller.handleCallback);
+router.get('/callback/:slug', oidcLimiter, controller.handleCallback);
 
 router.post(
     '/link/:slug',

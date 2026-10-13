@@ -6,31 +6,32 @@ import DurationChips from '../DurationChips';
 import {
     fetchDailyPlan,
     fetchPlanCandidates,
+    saveDailyPlanItems,
 } from '../../../utils/dailyPlanService';
 import {
     fetchCalendarEvents,
     fetchCalendarFeeds,
 } from '../../../utils/calendarFeedsService';
 
-jest.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (
-            _key: string,
-            fallback: string | Record<string, unknown>,
-            values?: Record<string, unknown>
-        ) => {
-            const options = typeof fallback === 'object' ? fallback : values;
-            const text =
-                typeof fallback === 'string'
-                    ? fallback
-                    : String(fallback?.defaultValue ?? _key);
-            return text.replace(/{{(\w+)}}/g, (_m, name) =>
-                String(options?.[name] ?? '')
-            );
-        },
-        i18n: { language: 'en' },
-    }),
-}));
+// A stable t, like i18next's: the page reloads when t changes.
+jest.mock('react-i18next', () => {
+    const t = (
+        _key: string,
+        fallback: string | Record<string, unknown>,
+        values?: Record<string, unknown>
+    ) => {
+        const options = typeof fallback === 'object' ? fallback : values;
+        const text =
+            typeof fallback === 'string'
+                ? fallback
+                : String(fallback?.defaultValue ?? _key);
+        return text.replace(/{{(\w+)}}/g, (_m, name) =>
+            String(options?.[name] ?? '')
+        );
+    };
+    const i18n = { language: 'en' };
+    return { useTranslation: () => ({ t, i18n }) };
+});
 
 jest.mock('react-router-dom', () => ({
     Link: ({ children, to, ...rest }: any) => (
@@ -42,21 +43,47 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('../../Task/TaskRow', () => ({
     __esModule: true,
-    default: ({ task }: any) => <div data-testid="task-row">{task.name}</div>,
+    default: ({ task, onTaskUpdate, onTaskCompletionToggle }: any) => (
+        <div data-testid="task-row">
+            {task.name}
+            <button
+                data-testid={`complete-${task.uid}`}
+                onClick={() =>
+                    onTaskCompletionToggle({
+                        ...task,
+                        status: 0,
+                        due_date: '2026-10-01',
+                    })
+                }
+            />
+            <button
+                data-testid={`move-${task.uid}`}
+                onClick={() =>
+                    onTaskUpdate({ ...task, due_date: '2026-10-01' })
+                }
+            />
+        </div>
+    ),
 }));
 
+let mockCalendarEnabled = true;
 jest.mock('../../../store/useStore', () => ({
     useStore: (selector: any) =>
         selector({
             projectsStore: { projects: [] },
-            userSettingsStore: { aiAssistantEnabled: false },
+            userSettingsStore: {
+                aiAssistantEnabled: false,
+                calendarEnabled: mockCalendarEnabled,
+            },
         }),
 }));
 
+const mockShowUndoToast = jest.fn();
 jest.mock('../../Shared/ToastContext', () => ({
     useToast: () => ({
         showErrorToast: jest.fn(),
         showSuccessToast: jest.fn(),
+        showUndoToast: mockShowUndoToast,
     }),
 }));
 
@@ -92,6 +119,7 @@ const candidates = {
 describe('TodayPage', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        mockCalendarEnabled = true;
         (fetchPlanCandidates as jest.Mock).mockResolvedValue(candidates);
         (fetchCalendarFeeds as jest.Mock).mockResolvedValue([]);
         (fetchCalendarEvents as jest.Mock).mockResolvedValue({
@@ -116,9 +144,67 @@ describe('TodayPage', () => {
             '/today/plan'
         );
         expect(
-            screen.getByText('Skip and show everything').closest('a')
-        ).toHaveAttribute('href', '/today_legacy');
+            screen.queryByText('Skip and show everything')
+        ).not.toBeInTheDocument();
         await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+    });
+
+    it('offers to connect a calendar when the Calendar feature is on', async () => {
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: null,
+        });
+
+        render(<TodayPage />);
+
+        expect(
+            await screen.findByText('Connect a calendar')
+        ).toBeInTheDocument();
+    });
+
+    it('leaves calendars out when the Calendar feature is off', async () => {
+        mockCalendarEnabled = false;
+        (fetchCalendarFeeds as jest.Mock).mockResolvedValue([
+            { uid: 'f1', name: 'Work' },
+        ]);
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: null,
+        });
+
+        render(<TodayPage />);
+
+        await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+        expect(fetchCalendarFeeds).not.toHaveBeenCalled();
+        expect(fetchCalendarEvents).not.toHaveBeenCalled();
+        expect(
+            screen.queryByText('Connect a calendar')
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText('From your calendar')
+        ).not.toBeInTheDocument();
+    });
+
+    it('leaves out calendars switched off in Profile', async () => {
+        (fetchCalendarFeeds as jest.Mock).mockResolvedValue([
+            { uid: 'f1', name: 'Work', show_on_calendar: false },
+        ]);
+        (fetchDailyPlan as jest.Mock).mockResolvedValue({
+            date: '2026-09-24',
+            plan: null,
+        });
+
+        render(<TodayPage />);
+
+        await waitFor(() => expect(fetchCalendarFeeds).toHaveBeenCalled());
+        await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+        expect(fetchCalendarEvents).not.toHaveBeenCalled();
+        expect(
+            screen.queryByText('From your calendar')
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText('Connect a calendar')
+        ).not.toBeInTheDocument();
     });
 
     it('offers to continue a draft plan', async () => {
@@ -235,6 +321,179 @@ describe('TodayPage', () => {
         expect(
             await screen.findByTestId('not-planned-toggle')
         ).toHaveTextContent('Not planned (1)');
+    });
+
+    const startedPlan = (items: any[]) => ({
+        date: '2026-09-24',
+        plan: {
+            uid: 'p',
+            date: '2026-09-24',
+            started_at: '2026-09-24T06:00:00Z',
+            items: items.map((item, position) => ({
+                position,
+                start_minute: null,
+                duration_minutes: 30,
+                ...item,
+            })),
+        },
+    });
+
+    it('shows a recurring task completed today as done', async () => {
+        (fetchDailyPlan as jest.Mock).mockResolvedValue(
+            startedPlan([
+                {
+                    task_uid: 'r1',
+                    occurrence_done: true,
+                    task: {
+                        uid: 'r1',
+                        name: 'Water plants',
+                        status: 0,
+                        recurrence_type: 'daily',
+                        due_date: '2026-09-25',
+                    },
+                },
+                {
+                    task_uid: 't1',
+                    task: { uid: 't1', name: 'Write spec', status: 0 },
+                },
+            ])
+        );
+
+        render(<TodayPage />);
+
+        const row = await screen.findByTestId('occurrence-done-r1');
+        expect(row).toHaveTextContent('Water plants');
+        expect(row).toHaveTextContent('Next on Sep 25');
+        expect(screen.getByText('1 of 2 done · 30m left')).toBeInTheDocument();
+    });
+
+    it('marks the day done when a recurring task moves on', async () => {
+        (fetchDailyPlan as jest.Mock).mockResolvedValue(
+            startedPlan([
+                {
+                    task_uid: 'r1',
+                    task: {
+                        uid: 'r1',
+                        name: 'Water plants',
+                        status: 0,
+                        recurrence_type: 'daily',
+                        due_date: '2026-09-24',
+                    },
+                },
+            ])
+        );
+
+        render(<TodayPage />);
+
+        fireEvent.click(await screen.findByTestId('complete-r1'));
+
+        expect(
+            await screen.findByTestId('occurrence-done-r1')
+        ).toBeInTheDocument();
+        expect(screen.getByText('1 of 1 done')).toBeInTheDocument();
+        expect(saveDailyPlanItems).not.toHaveBeenCalled();
+    });
+
+    it('marks the day done when a planned habit is checked in', async () => {
+        (fetchDailyPlan as jest.Mock).mockResolvedValue(
+            startedPlan([
+                {
+                    task_uid: 'h1',
+                    task: {
+                        uid: 'h1',
+                        name: 'Stretch',
+                        status: 0,
+                        habit_mode: true,
+                        recurrence_type: 'daily',
+                        habit_frequency_period: 'weekly',
+                        habit_target_count: 3,
+                        habit_progress: {
+                            period_start: '2026-09-21',
+                            period_end: '2026-09-27',
+                            today: '2026-09-24',
+                            first_day: '2026-09-01',
+                            progress: 1,
+                            check_ins: 1,
+                            today_check_ins: 1,
+                            goal: 3,
+                            met: false,
+                            skipped: false,
+                            scheduled_today: true,
+                            multiple_per_day: false,
+                        },
+                    },
+                },
+            ])
+        );
+
+        render(<TodayPage />);
+
+        fireEvent.click(await screen.findByTestId('complete-h1'));
+
+        expect(
+            await screen.findByTestId('occurrence-done-h1')
+        ).toBeInTheDocument();
+        expect(screen.getByText('1 of 1 done')).toBeInTheDocument();
+    });
+
+    it('takes a task off the plan when its due date moves later', async () => {
+        const plan = startedPlan([
+            {
+                task_uid: 't1',
+                task: {
+                    uid: 't1',
+                    name: 'Write spec',
+                    status: 0,
+                    due_date: '2026-09-24',
+                },
+            },
+            {
+                task_uid: 't2',
+                task: { uid: 't2', name: 'Pay invoice', status: 0 },
+            },
+        ]);
+        (fetchDailyPlan as jest.Mock).mockResolvedValue(plan);
+        (saveDailyPlanItems as jest.Mock).mockResolvedValue(
+            startedPlan([plan.plan.items[1]])
+        );
+
+        render(<TodayPage />);
+
+        fireEvent.click(await screen.findByTestId('move-t1'));
+
+        await waitFor(() =>
+            expect(saveDailyPlanItems).toHaveBeenCalledWith('2026-09-24', [
+                { task_uid: 't2', start_minute: null, duration_minutes: 30 },
+            ])
+        );
+        expect(screen.queryByTestId('agenda-task-t1')).not.toBeInTheDocument();
+        expect(mockShowUndoToast).toHaveBeenCalledWith(
+            "'Write spec' is no longer due today, so it left today's plan.",
+            expect.any(Function)
+        );
+    });
+
+    it('keeps a task on the plan when its due date was already later', async () => {
+        (fetchDailyPlan as jest.Mock).mockResolvedValue(
+            startedPlan([
+                {
+                    task_uid: 't1',
+                    task: {
+                        uid: 't1',
+                        name: 'Write spec',
+                        status: 0,
+                        due_date: '2026-09-28',
+                    },
+                },
+            ])
+        );
+
+        render(<TodayPage />);
+
+        fireEvent.click(await screen.findByTestId('move-t1'));
+
+        expect(screen.getByTestId('agenda-task-t1')).toBeInTheDocument();
+        expect(saveDailyPlanItems).not.toHaveBeenCalled();
     });
 
     it('lets you drag the Anytime tasks but not the timed ones', async () => {

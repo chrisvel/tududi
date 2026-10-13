@@ -366,6 +366,47 @@ describe('Universal Search Routes', () => {
                 // Not started + in progress only; done/archived/cancelled excluded
                 expect(activeResponse.body.pagination.total).toBe(2);
             });
+
+            it('should only return tasks with the given task_status', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    task_status: 'in_progress',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((t) => t.name);
+                expect(names).toEqual(['In progress task']);
+            });
+
+            it('should let task_status override a contradicting status filter', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    status: 'active',
+                    task_status: 'done',
+                    limit: 20,
+                    offset: 0,
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results.map((t) => t.name);
+                expect(names).toEqual(['Done task']);
+                expect(response.body.pagination.total).toBe(1);
+            });
+
+            it('should ignore an invalid task_status value', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    task_status: 'bogus',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((t) => t.name);
+                expect(names).toHaveLength(5);
+            });
         });
 
         describe('Filter by Priority', () => {

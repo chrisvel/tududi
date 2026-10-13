@@ -1,13 +1,11 @@
 import React from 'react';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
-import NewTask from '../Task/NewTask';
 import TaskList from '../Task/TaskList';
 import { TFunction } from 'i18next';
 
 interface ProjectTasksSectionProps {
     displayTasks: Task[];
-    onTaskCreate: (taskName: string) => Promise<void>;
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskCompletionToggle: (task: Task) => void;
     onTaskDelete: (taskUid: string) => void;
@@ -21,7 +19,6 @@ interface ProjectTasksSectionProps {
 
 const ProjectTasksSection: React.FC<ProjectTasksSectionProps> = ({
     displayTasks,
-    onTaskCreate,
     onTaskUpdate,
     onTaskCompletionToggle,
     onTaskDelete,
@@ -34,10 +31,6 @@ const ProjectTasksSection: React.FC<ProjectTasksSectionProps> = ({
 }) => {
     return (
         <div className="xl:col-span-2 flex flex-col gap-2">
-            <div className="transition-all duration-300 ease-in-out overflow-visible opacity-100 transform translate-y-0">
-                <NewTask onTaskCreate={onTaskCreate} />
-            </div>
-
             <div className="transition-all duration-300 ease-in-out overflow-visible">
                 {displayTasks.length > 0 ? (
                     <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 overflow-visible">

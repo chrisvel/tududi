@@ -116,6 +116,14 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
             task.completed_at = completed.toJSDate();
         }
 
+        // When the remote copy last changed. Not a task column: the sync
+        // conflict resolver compares it with the local updated_at, and without
+        // it the remote side won every last-write-wins conflict.
+        const lastModified = vtodo.getFirstPropertyValue('last-modified');
+        if (lastModified && typeof lastModified.toJSDate === 'function') {
+            task.last_modified = lastModified.toJSDate();
+        }
+
         const rrule = vtodo.getFirstPropertyValue('rrule');
         if (rrule) {
             const recurrenceData = parseRRULE(rrule.toString());

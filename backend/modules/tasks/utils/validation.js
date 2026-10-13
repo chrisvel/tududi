@@ -157,17 +157,27 @@ function validateDeferUntilAndDueDate(
     }
 }
 
+// Owners and anyone the area or goal is shared with read-write can file tasks
+// under it. Anything else, including a missing row, gets the same error so
+// ids cannot be probed.
+async function canWriteTo(userId, resourceType, uid) {
+    const access = await permissionsService.getAccess(
+        userId,
+        resourceType,
+        uid
+    );
+    return access === 'rw' || access === 'admin';
+}
+
 async function validateAreaAccess(areaIdOrUid, userId) {
     if (!areaIdOrUid || !areaIdOrUid.toString().trim()) {
         return null;
     }
 
     const value = areaIdOrUid.toString().trim();
-    const where = isUid(value)
-        ? { uid: value, user_id: userId }
-        : { id: value, user_id: userId };
+    const where = isUid(value) ? { uid: value } : { id: value };
     const area = await Area.findOne({ where });
-    if (!area) {
+    if (!area || !(await canWriteTo(userId, 'area', area.uid))) {
         throw new Error('Invalid area.');
     }
 
@@ -180,11 +190,9 @@ async function validateGoalAccess(goalIdOrUid, userId) {
     }
 
     const value = goalIdOrUid.toString().trim();
-    const where = isUid(value)
-        ? { uid: value, user_id: userId }
-        : { id: value, user_id: userId };
+    const where = isUid(value) ? { uid: value } : { id: value };
     const goal = await Goal.findOne({ where });
-    if (!goal) {
+    if (!goal || !(await canWriteTo(userId, 'goal', goal.uid))) {
         throw new Error('Invalid goal.');
     }
 

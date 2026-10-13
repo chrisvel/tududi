@@ -18,6 +18,7 @@ import {
     deleteInboxItemWithStore,
     analyzeInboxText,
     applyAnalysisToTask,
+    ensureAnalysisArea,
     InboxAnalysis,
     uploadInboxAttachment,
 } from '../../utils/inboxService';
@@ -34,6 +35,8 @@ import {
     splitCaptureText,
     splitFirstLine,
 } from '../../utils/captureText';
+import type { CaptureProject } from '../../utils/captureUi';
+import { InboxTokenKind, splitInboxTokens } from '../../utils/inboxTokens';
 import {
     isTouchDevice,
     updateCaptureSettings,
@@ -46,6 +49,7 @@ import {
     CaptureFileError,
     filesToAttachFromPaste,
     nameForPastedFile,
+    takePickedFiles,
     titleFromFiles,
     useCaptureFiles,
 } from '../Capture/useCaptureFiles';
@@ -62,6 +66,11 @@ import {
     fetchProjects,
 } from '../../utils/projectsService';
 import {
+    focusAreaIdForTask,
+    getFocus,
+    mergeFocusTags,
+} from '../../utils/focus';
+import {
     LinkIcon,
     PaperClipIcon,
     XMarkIcon,
@@ -70,6 +79,17 @@ import { useStore } from '../../store/useStore';
 import { isUrl, extractUrlTitle } from '../../utils/urlService';
 import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
+import SlashItemRow from './SlashItemRow';
+import {
+    applySlashItem,
+    removeSlashRange,
+    slashItems,
+    slashQuery,
+    slashTriggerAt,
+    SlashItem,
+    SlashLabels,
+    SlashMenuState,
+} from '../../utils/slashMenu';
 export interface QuickCaptureInputHandle {
     submit: (forceInbox?: boolean) => Promise<void>;
     focus: () => void;
@@ -113,6 +133,11 @@ interface QuickCaptureInputProps {
     scopeLabel?: string;
     // Changing this puts the box back on defaultTarget (a new open)
     resetKey?: number;
+    // Text a new open starts with, replacing any half-typed text
+    prefillText?: string;
+    // The project the box was opened from. A task or note with no +project,
+    // or with this project's name, is linked to it by uid.
+    defaultProject?: CaptureProject | null;
     compact?: boolean;
     onClose?: () => void;
     onCaptured?: (items: CapturedItem[]) => void;
@@ -167,8 +192,24 @@ const extractFirstUrlFromText = (text: string): string | null => {
     return null;
 };
 
-// Five suggestions at their row height, plus a little room.
-const SUGGESTIONS_HEIGHT = 200;
+// The slash menu's six rows at their height, plus a little room.
+const SUGGESTIONS_HEIGHT = 280;
+
+// Tags, projects and areas the user picked from a list, kept as badges
+interface PickedTokens {
+    tags: string[];
+    project: string | null;
+    area: { uid: string; name: string } | null;
+}
+const NO_PICKS: PickedTokens = { tags: [], project: null, area: null };
+// Text colours for the tokens in the edit box, matching their chips.
+
+const TOKEN_TEXT_CLASS: Record<InboxTokenKind, string> = {
+    tag: 'text-blue-600 dark:text-blue-400',
+    project: 'text-green-700 dark:text-green-400',
+    person: 'text-indigo-600 dark:text-indigo-400',
+    area: 'text-purple-600 dark:text-purple-400',
+};
 
 const QuickCaptureInput = React.forwardRef<
     QuickCaptureInputHandle,
@@ -196,6 +237,8 @@ const QuickCaptureInput = React.forwardRef<
             lockTarget = false,
             scopeLabel,
             resetKey,
+            prefillText,
+            defaultProject = null,
             compact = false,
             onClose,
             onCaptured,
@@ -213,9 +256,12 @@ const QuickCaptureInput = React.forwardRef<
                 ? captureSettings.enterTouch
                 : captureSettings.enterKeyboard) === 'save';
         const [isSaving, setIsSaving] = useState(false);
+        // Picked files are read into memory first, then uploaded after the
+        // item is saved; Add stays locked through both.
+        const [isPreparingFiles, setIsPreparingFiles] = useState(false);
+        const [isUploading, setIsUploading] = useState(false);
         const { showSuccessToast, showErrorToast } = useToast();
         const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
-        const fieldRef = useRef<HTMLDivElement>(null);
         const fileInputRef = useRef<HTMLInputElement>(null);
         const [draggingFiles, setDraggingFiles] = useState(false);
         const handleFileError = useCallback(
@@ -277,6 +323,65 @@ const QuickCaptureInput = React.forwardRef<
         const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
         const peopleCacheRef = useRef<Record<string, Person[]>>({});
         const personQueryRequestRef = useRef(0);
+        const [slash, setSlash] = useState<SlashMenuState | null>(null);
+        const [slashPeople, setSlashPeople] = useState<string[]>([]);
+        const { areasStore } = useStore();
+        const areas = areasStore?.areas ?? [];
+        // Tags, projects and areas chosen from a list are kept as badges
+        // (not as text) and added to the text when it is saved.
+        const [picked, setPicked] = useState<PickedTokens>(NO_PICKS);
+        const addPicked = (kind: 'tag' | 'project' | 'area', name: string) => {
+            if (kind === 'tag') {
+                setPicked((p) =>
+                    p.tags.some((x) => x.toLowerCase() === name.toLowerCase())
+                        ? p
+                        : { ...p, tags: [...p.tags, name] }
+                );
+            } else if (kind === 'project') {
+                setPicked((p) => ({ ...p, project: name }));
+            } else {
+                const area = areas.find(
+                    (entry) => entry.name.toLowerCase() === name.toLowerCase()
+                );
+                if (area) {
+                    setPicked((p) => ({
+                        ...p,
+                        area: { uid: area.uid, name: area.name },
+                    }));
+                }
+            }
+        };
+        // Text with the picked tokens added to its first line, where the
+        // box reads dates, people and areas
+        const withPicked = (text: string, destination: CaptureTarget) => {
+            const name = (value: string) =>
+                /\s/.test(value) ? `"${value}"` : value;
+            const tokens = [
+                ...picked.tags.map((tag) => `#${tag}`),
+                ...(picked.project && destination !== 'project'
+                    ? [`+${name(picked.project)}`]
+                    : []),
+                ...(picked.area && destination !== 'note'
+                    ? [`~${name(picked.area.name)}`]
+                    : []),
+            ];
+            if (tokens.length === 0) return text;
+            const add = ` ${tokens.join(' ')}`;
+            const newline = text.indexOf('\n');
+            return newline < 0
+                ? text + add
+                : text.slice(0, newline) + add + text.slice(newline);
+        };
+        // Takes the "#abc" or "+abc" being typed out of the text
+        const dropTrigger = (
+            before: string,
+            after: string,
+            pattern: RegExp
+        ) => {
+            let head = before.replace(pattern, '');
+            if (/\s$/.test(head) && /^\s/.test(after)) head = head.slice(0, -1);
+            return { text: head + after, cursor: head.length };
+        };
         // A date phrase the user chose to keep as plain text
         const [dismissedDateText, setDismissedDateText] = useState<
             string | null
@@ -293,10 +398,13 @@ const QuickCaptureInput = React.forwardRef<
         const lastAnalyzedTextRef = useRef<string>('');
 
         const isEditMode = mode === 'edit';
+        // The edit box and the main capture box both colour their tokens as you type.
+        const colourTokens = isEditMode || Boolean(unified);
 
         useEffect(() => {
             setTarget(defaultTarget);
-        }, [resetKey, defaultTarget]);
+            if (prefillText) setInputText(prefillText);
+        }, [resetKey, defaultTarget, prefillText]);
 
         useEffect(() => {
             if (isEditMode) {
@@ -347,6 +455,7 @@ const QuickCaptureInput = React.forwardRef<
 
         const clearComposerText = useCallback(() => {
             setInputText('');
+            setPicked(NO_PICKS);
             setAnalysisResult(null);
             setUrlPreview(null);
             dismissedPreviewUrlRef.current = null;
@@ -675,6 +784,11 @@ const QuickCaptureInput = React.forwardRef<
             const wanted = query.toLowerCase();
             const filtered = people
                 .filter((person) => person.name.toLowerCase().includes(wanted))
+                .sort((a, b) =>
+                    a.name.localeCompare(b.name, undefined, {
+                        sensitivity: 'base',
+                    })
+                )
                 .slice(0, 5);
             setDropdownPosition(calculateDropdownPosition(input, position));
             setFilteredPeople(filtered);
@@ -768,10 +882,25 @@ const QuickCaptureInput = React.forwardRef<
             inputRef.current?.focus();
         };
 
+        const removeAreaFromText = (areaName: string) => {
+            const escaped = escapeRegExp(areaName);
+            const pattern = new RegExp(
+                `(^|\\s)~(?:"${escaped}"|${escaped})(?=$|[\\s.,;:!?)])`,
+                'gi'
+            );
+            setInputText(
+                cleanInputSpacing(
+                    inputText.replace(pattern, (_, prefix) => prefix ?? '')
+                )
+            );
+            setAnalysisResult(null);
+            inputRef.current?.focus();
+        };
+
         const getCaretViewportCoords = (
             element: HTMLTextAreaElement | HTMLInputElement,
             position: number
-        ): { left: number; top: number } => {
+        ): { left: number; top: number; lineTop: number } => {
             const cs = window.getComputedStyle(element);
             const rect = element.getBoundingClientRect();
 
@@ -817,6 +946,7 @@ const QuickCaptureInput = React.forwardRef<
             return {
                 left: caretRect.left,
                 top: caretRect.bottom + 4,
+                lineTop: caretRect.top,
             };
         };
 
@@ -847,26 +977,29 @@ const QuickCaptureInput = React.forwardRef<
             return getCaretViewportCoords(input, cursorPos);
         };
 
-        // In the compact box, suggestions open on whichever side of the field
-        // has room (below it on wide screens, above it in the phone sheet),
-        // lined up with the # + or @ that started them, so they never cover
-        // the text being typed.
+        // Suggestions open under the line being typed, lined up with the
+        // # + @ or / that started them (`exact` anchors at the given index
+        // as is). When there is no room below the line they open above it,
+        // which is what the phone sheet at the bottom of the screen needs.
         const calculateDropdownPosition = (
             input: HTMLInputElement | HTMLTextAreaElement,
-            cursorPos: number
+            cursorPos: number,
+            exact = false
         ) => {
-            const caret = caretDropdownPosition(input, cursorPos);
-            const field = fieldRef.current;
-            if (!compact || !field) return caret;
-            const rect = field.getBoundingClientRect();
-            const spaceBelow = window.innerHeight - rect.bottom;
-            if (spaceBelow >= SUGGESTIONS_HEIGHT || spaceBelow >= rect.top) {
-                return { left: caret.left, top: rect.bottom + 4 };
+            const caret = exact
+                ? getCaretViewportCoords(input, cursorPos)
+                : caretDropdownPosition(input, cursorPos);
+            const spaceBelow = window.innerHeight - caret.top;
+            if (
+                spaceBelow >= SUGGESTIONS_HEIGHT ||
+                spaceBelow >= caret.lineTop
+            ) {
+                return { left: caret.left, top: caret.top };
             }
             return {
                 left: caret.left,
                 top: 0,
-                bottom: window.innerHeight - rect.top + 4,
+                bottom: window.innerHeight - caret.lineTop + 4,
             };
         };
 
@@ -881,6 +1014,21 @@ const QuickCaptureInput = React.forwardRef<
             }
             setInputText(newText);
             setCursorPosition(newCursorPosition);
+
+            // A "/" at the start of a word opens the token menu; it stays
+            // open while what follows the "/" still filters it.
+            const menu: SlashMenuState | null =
+                slash ?? slashTriggerAt(newText, newCursorPosition);
+            if (menu && slashQuery(newText, newCursorPosition, menu) !== null) {
+                closeSuggestions();
+                setSlash(menu);
+                setSelectedSuggestionIndex(0);
+                setDropdownPosition(
+                    calculateDropdownPosition(e.target, menu.start, true)
+                );
+                return;
+            }
+            if (slash) setSlash(null);
 
             const hashtagQuery = getCurrentHashtagQuery(
                 newText,
@@ -930,6 +1078,11 @@ const QuickCaptureInput = React.forwardRef<
                             .toLowerCase()
                             .startsWith(hashtagQuery.toLowerCase())
                     )
+                    .sort((a, b) =>
+                        a.name.localeCompare(b.name, undefined, {
+                            sensitivity: 'base',
+                        })
+                    )
                     .slice(0, 5);
 
                 const position = calculateDropdownPosition(
@@ -963,6 +1116,11 @@ const QuickCaptureInput = React.forwardRef<
                             project.name
                                 .toLowerCase()
                                 .includes(projectQuery.toLowerCase())
+                        )
+                        .sort((a, b) =>
+                            a.name.localeCompare(b.name, undefined, {
+                                sensitivity: 'base',
+                            })
                         )
                         .slice(0, 5);
 
@@ -1169,6 +1327,25 @@ const QuickCaptureInput = React.forwardRef<
             const afterCursor = inputText.substring(cursorPosition);
             const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
 
+            if (hashtagMatch && unified) {
+                addPicked('tag', tagName);
+                const dropped = dropTrigger(
+                    beforeCursor,
+                    afterCursor,
+                    /#([a-zA-Z0-9_]*)$/
+                );
+                setInputText(dropped.text);
+                closeSuggestions();
+                setTimeout(() => {
+                    inputRef.current?.focus();
+                    inputRef.current?.setSelectionRange(
+                        dropped.cursor,
+                        dropped.cursor
+                    );
+                }, 0);
+                return;
+            }
+
             if (hashtagMatch) {
                 const newText =
                     beforeCursor.replace(/#([a-zA-Z0-9_]*)$/, `#${tagName} `) +
@@ -1200,6 +1377,25 @@ const QuickCaptureInput = React.forwardRef<
             const projectMatch = beforeCursor.match(
                 /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/
             );
+
+            if (projectMatch && unified) {
+                addPicked('project', projectName);
+                const dropped = dropTrigger(
+                    beforeCursor,
+                    afterCursor,
+                    /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/
+                );
+                setInputText(dropped.text);
+                closeSuggestions();
+                setTimeout(() => {
+                    inputRef.current?.focus();
+                    inputRef.current?.setSelectionRange(
+                        dropped.cursor,
+                        dropped.cursor
+                    );
+                }, 0);
+                return;
+            }
 
             if (projectMatch) {
                 const formattedProjectName = projectName.includes(' ')
@@ -1288,6 +1484,9 @@ const QuickCaptureInput = React.forwardRef<
                     );
                 }
             }
+            if (missingProjects.length > 0) {
+                await refreshProjectsStore();
+            }
         };
 
         const handleSubmit = useCallback(
@@ -1317,16 +1516,18 @@ const QuickCaptureInput = React.forwardRef<
 
                         const cleanedText = getCleanedContent(trimmedText);
 
-                        const taskTags = analysisResult.parsed_tags.map(
-                            (tagName) => {
-                                const existingTag = tags.find(
-                                    (tag) =>
-                                        tag.name.toLowerCase() ===
-                                        tagName.toLowerCase()
-                                );
-                                return existingTag || { name: tagName };
-                            }
-                        );
+                        const focus = getFocus();
+                        const taskTags = mergeFocusTags(
+                            analysisResult.parsed_tags,
+                            focus
+                        ).map((tagName) => {
+                            const existingTag = tags.find(
+                                (tag) =>
+                                    tag.name.toLowerCase() ===
+                                    tagName.toLowerCase()
+                            );
+                            return existingTag || { name: tagName };
+                        });
 
                         let projectUid: string | undefined = undefined;
                         if (analysisResult.parsed_projects.length > 0) {
@@ -1341,6 +1542,13 @@ const QuickCaptureInput = React.forwardRef<
                                 projectUid = matchingProject.uid;
                             }
                         }
+                        if (
+                            !projectUid &&
+                            !analysisResult.parsed_area &&
+                            focus?.project_uid
+                        ) {
+                            projectUid = focus.project_uid;
+                        }
 
                         const newTask: Task = applyAnalysisToTask(
                             {
@@ -1349,6 +1557,11 @@ const QuickCaptureInput = React.forwardRef<
                                 priority: 'low',
                                 tags: taskTags,
                                 project_uid: projectUid,
+                                area_id: focusAreaIdForTask(
+                                    focus,
+                                    projectUid,
+                                    useStore.getState().areasStore?.areas ?? []
+                                ),
                                 completed_at: null,
                             },
                             analysisResult
@@ -1564,6 +1777,22 @@ const QuickCaptureInput = React.forwardRef<
             }
         };
 
+        const areaIdByUid = (areaUid: string): number | null =>
+            useStore
+                .getState()
+                .areasStore?.areas?.find((entry) => entry.uid === areaUid)
+                ?.id ?? null;
+
+        // The Focus area's id, for projects created from the box
+        const focusAreaId = (): number | null => {
+            const areaUid = getFocus()?.area_uid;
+            if (!areaUid) return null;
+            const area = useStore
+                .getState()
+                .areasStore?.areas?.find((entry) => entry.uid === areaUid);
+            return area?.id ?? null;
+        };
+
         const resolveOrCreateProject = async (
             name: string | undefined
         ): Promise<string | undefined> => {
@@ -1576,7 +1805,12 @@ const QuickCaptureInput = React.forwardRef<
             if (existing) {
                 return existing.uid;
             }
-            const created = await createProject({ name, status: 'planned' });
+            const areaId = focusAreaId();
+            const created = await createProject({
+                name,
+                status: 'planned',
+                ...(areaId !== null ? { area_id: areaId } : {}),
+            });
             await refreshProjectsStore();
             return created.uid;
         };
@@ -1589,6 +1823,7 @@ const QuickCaptureInput = React.forwardRef<
                 analysis?.cleaned_content ??
                 line
                     .replace(/#[a-zA-Z0-9_-]+/g, '')
+                    .replace(/(^|\s)~(?:"[^"]+"|\S+)/g, '$1')
                     .replace(/\+(?:"[^"]+"|\S+)/g, '')
             ).trim();
             return cleaned || line.trim();
@@ -1624,10 +1859,14 @@ const QuickCaptureInput = React.forwardRef<
                 } catch (error) {
                     console.error('Error analyzing text:', error);
                 }
+                analysis = await ensureAnalysisArea(analysis);
             }
 
             const title = cleanFirstLine(first, analysis);
-            const tagNames = Array.from(
+            // The text's own #tags and +project win; a Focus fills the
+            // gaps for tasks (project and tags) and notes (project).
+            const focus = getFocus();
+            const textTagNames = Array.from(
                 new Map(
                     [
                         ...(analysis?.parsed_tags ?? []),
@@ -1635,24 +1874,48 @@ const QuickCaptureInput = React.forwardRef<
                     ].map((name) => [name.toLowerCase(), name])
                 ).values()
             );
+            const tagNames =
+                destination === 'task'
+                    ? mergeFocusTags(textTagNames, focus)
+                    : textTagNames;
             await createMissingTags(itemText);
             const tagObjects = buildTagObjects(tagNames);
 
             if (destination === 'project') {
+                // A ~area in the text wins over the Focus area
+                const areaId = analysis?.parsed_area
+                    ? areaIdByUid(analysis.parsed_area.uid)
+                    : focusAreaId();
                 const created = await createProject({
                     name: title,
                     description: rest,
                     status: 'planned',
                     tags: tagObjects,
                     due_date_at: analysis?.parsed_due_date ?? undefined,
+                    ...(areaId !== null ? { area_id: areaId } : {}),
                 });
                 await refreshProjectsStore();
                 return { target: destination, uid: created.uid, title };
             }
 
-            const projectUid = await resolveOrCreateProject(
-                analysis?.parsed_projects?.[0] ?? parseProjectRefs(itemText)[0]
-            );
+            const projectName =
+                analysis?.parsed_projects?.[0] ?? parseProjectRefs(itemText)[0];
+            // Matched by uid, not name: two projects can share a name, and a
+            // capture from a project page belongs to that page's project.
+            const pageProjectUid =
+                defaultProject &&
+                (!projectName ||
+                    projectName.toLowerCase() ===
+                        defaultProject.name.toLowerCase())
+                    ? defaultProject.uid
+                    : undefined;
+            // A ~area in the text means the task is not for the Focus, so
+            // the Focus project (which sits in the Focus area) is not used.
+            const projectUid =
+                pageProjectUid ??
+                (await resolveOrCreateProject(projectName)) ??
+                (analysis?.parsed_area ? undefined : focus?.project_uid) ??
+                undefined;
 
             if (destination === 'task') {
                 const task = applyAnalysisToTask(
@@ -1662,6 +1925,11 @@ const QuickCaptureInput = React.forwardRef<
                         status: 'not_started',
                         tags: tagObjects,
                         project_uid: projectUid,
+                        area_id: focusAreaIdForTask(
+                            focus,
+                            projectUid,
+                            useStore.getState().areasStore?.areas ?? []
+                        ),
                         completed_at: null,
                     },
                     analysis
@@ -1688,6 +1956,7 @@ const QuickCaptureInput = React.forwardRef<
                         : tagObjects,
                 project_uid: projectUid,
             });
+            useStore.getState().notesStore.addNote(created);
             return { target: destination, uid: created.uid, title, body };
         };
 
@@ -1761,6 +2030,12 @@ const QuickCaptureInput = React.forwardRef<
                             .tasksStore.deleteTask(item.uid);
                     } else if (item.target === 'note') {
                         await deleteNote(item.uid);
+                        const { notesStore } = useStore.getState();
+                        notesStore.setNotes(
+                            notesStore.notes.filter(
+                                (note) => note.uid !== item.uid
+                            )
+                        );
                     } else {
                         await deleteProject(item.uid);
                         await refreshProjectsStore();
@@ -1841,7 +2116,12 @@ const QuickCaptureInput = React.forwardRef<
                     uploaded.push(await upload(file));
                 } catch (error) {
                     console.error('Failed to attach file:', error);
-                    failed.push(file.name);
+                    // The server's reason (too large, storage full) is what
+                    // tells the user what to do about it.
+                    const reason = error instanceof Error ? error.message : '';
+                    failed.push(
+                        reason ? `${file.name} (${reason})` : file.name
+                    );
                 }
             }
             // A note shows its files in its text: images inline, the rest
@@ -1889,7 +2169,7 @@ const QuickCaptureInput = React.forwardRef<
             // becomes the title.
             const raw =
                 inputText.trim() || (withFiles ? titleFromFiles(files) : '');
-            if (!raw || isSaving) return;
+            if (!raw || isSaving || isPreparingFiles) return;
 
             const texts = splitCaptureText(raw, captureSettings.oneItemPerLine);
             const captured: CapturedItem[] = [];
@@ -1901,6 +2181,7 @@ const QuickCaptureInput = React.forwardRef<
                 attached = 0
             ) => {
                 setInputText(remaining.join('\n'));
+                if (remaining.length === 0) setPicked(NO_PICKS);
                 setAnalysisResult(null);
                 setUrlPreview(null);
                 dismissedPreviewUrlRef.current = null;
@@ -1926,14 +2207,27 @@ const QuickCaptureInput = React.forwardRef<
             setStatus(null);
             try {
                 for (const itemText of texts) {
-                    captured.push(await captureOne(destination, itemText));
+                    captured.push(
+                        await captureOne(
+                            destination,
+                            withPicked(itemText, destination)
+                        )
+                    );
                 }
                 // With several items, the files go on the first one.
                 let attached = 0;
                 if (withFiles) {
                     const toUpload = files;
                     clearFiles();
-                    attached = await uploadCaptureFiles(captured[0], toUpload);
+                    setIsUploading(true);
+                    try {
+                        attached = await uploadCaptureFiles(
+                            captured[0],
+                            toUpload
+                        );
+                    } finally {
+                        setIsUploading(false);
+                    }
                 }
                 finish(captured, [], attached);
             } catch (error) {
@@ -1994,6 +2288,97 @@ const QuickCaptureInput = React.forwardRef<
             [handleSubmit, handleUnifiedSubmit, unified]
         );
 
+        const slashLabels: SlashLabels = {
+            tag: t('capture.slash.tag', 'Tag'),
+            project: t('capture.slash.project', 'Project'),
+            person: t('capture.slash.person', 'Person'),
+            area: t('capture.slash.area', 'Area'),
+            date: t('capture.slash.date', 'Due date'),
+            repeat: t('capture.slash.repeat', 'Repeat'),
+            today: t('capture.slash.today', 'Today'),
+            tomorrow: t('capture.slash.tomorrow', 'Tomorrow'),
+            nextMonday: t('capture.slash.nextMonday', 'Next Monday'),
+            inAWeek: t('capture.slash.inAWeek', 'In a week'),
+            everyDay: t('capture.slash.everyDay', 'Every day'),
+            everyWeekday: t('capture.slash.everyWeekday', 'Every weekday'),
+            everyWeek: t('capture.slash.everyWeek', 'Every week'),
+            everyMonth: t('capture.slash.everyMonth', 'Every month'),
+            create: (token) =>
+                t('capture.slash.create', 'Create {{token}}', { token }),
+        };
+
+        // The "/" menu: its list for what has been typed after the "/"
+        const slashQueryNow = slash
+            ? slashQuery(inputText, cursorPosition, slash)
+            : null;
+        const slashItemsNow =
+            slash && slashQueryNow !== null
+                ? slashItems(slash.stage, slashQueryNow, {
+                      target,
+                      labels: slashLabels,
+                      tags: tags.map((tag) => tag.name),
+                      projects: projects.map((project) => project.name),
+                      areas: areas.map((area) => area.name),
+                      people: slashPeople,
+                  })
+                : [];
+
+        useEffect(() => {
+            if (slash?.stage !== 'person') return;
+            let cancelled = false;
+            void loadAssignablePeople(
+                resolveProjectUid(parseProjectRefs(inputText))
+            ).then((people) => {
+                if (!cancelled) setSlashPeople(people.map((p) => p.name));
+            });
+            return () => {
+                cancelled = true;
+            };
+        }, [slash?.stage]);
+
+        const pickSlashItem = (item: SlashItem) => {
+            if (!slash) return;
+            // In the unified box a tag, project or area becomes a badge
+            // and the "/query" typed for it leaves the text.
+            if (unified && item.pick) {
+                const removed = removeSlashRange(
+                    inputText,
+                    slash,
+                    cursorPosition
+                );
+                addPicked(item.pick.kind, item.pick.name);
+                setInputText(removed.text);
+                setCursorPosition(removed.cursor);
+                setSlash(null);
+                setSelectedSuggestionIndex(-1);
+                setTimeout(() => {
+                    inputRef.current?.focus();
+                    inputRef.current?.setSelectionRange(
+                        removed.cursor,
+                        removed.cursor
+                    );
+                }, 0);
+                return;
+            }
+            const applied = applySlashItem(
+                inputText,
+                slash,
+                cursorPosition,
+                item
+            );
+            setInputText(applied.text);
+            setCursorPosition(applied.cursor);
+            setSlash(applied.next);
+            setSelectedSuggestionIndex(applied.next ? 0 : -1);
+            setTimeout(() => {
+                inputRef.current?.focus();
+                inputRef.current?.setSelectionRange(
+                    applied.cursor,
+                    applied.cursor
+                );
+            }, 0);
+        };
+
         const closeSuggestions = () => {
             setShowTagSuggestions(false);
             setFilteredTags([]);
@@ -2002,6 +2387,7 @@ const QuickCaptureInput = React.forwardRef<
             personQueryRequestRef.current += 1;
             setShowPersonSuggestions(false);
             setFilteredPeople([]);
+            setSlash(null);
             setSelectedSuggestionIndex(-1);
         };
 
@@ -2010,38 +2396,57 @@ const QuickCaptureInput = React.forwardRef<
             count: number;
             select: (index: number) => void;
         } | null =
-            showTagSuggestions && filteredTags.length > 0
+            slashItemsNow.length > 0
                 ? {
-                      count: filteredTags.length,
-                      select: (index) =>
-                          handleTagSelect(filteredTags[index].name),
+                      count: slashItemsNow.length,
+                      select: (index) => pickSlashItem(slashItemsNow[index]),
                   }
-                : showProjectSuggestions && filteredProjects.length > 0
+                : showTagSuggestions && filteredTags.length > 0
                   ? {
-                        count: filteredProjects.length,
+                        count: filteredTags.length,
                         select: (index) =>
-                            handleProjectSelect(filteredProjects[index].name),
+                            handleTagSelect(filteredTags[index].name),
                     }
-                  : showPersonSuggestions && filteredPeople.length > 0
+                  : showProjectSuggestions && filteredProjects.length > 0
                     ? {
-                          count: filteredPeople.length,
+                          count: filteredProjects.length,
                           select: (index) =>
-                              handlePersonSelect(filteredPeople[index].name),
+                              handleProjectSelect(filteredProjects[index].name),
                       }
-                    : null;
+                    : showPersonSuggestions && filteredPeople.length > 0
+                      ? {
+                            count: filteredPeople.length,
+                            select: (index) =>
+                                handlePersonSelect(filteredPeople[index].name),
+                        }
+                      : null;
 
         const handleCaretEvent = (
             e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>
         ) => {
+            // The key that just picked a menu item has already moved the
+            // caret in state; the browser's caret catches up afterwards.
+            const key = 'key' in e && typeof e.key === 'string' ? e.key : '';
+            if (slash && ['Enter', 'Tab'].includes(key)) {
+                return;
+            }
             const pos = e.currentTarget.selectionStart || 0;
             setCursorPosition(pos);
+            if (slash && slashQuery(inputText, pos, slash) === null) {
+                setSlash(null);
+            }
             if (
                 showTagSuggestions ||
                 showProjectSuggestions ||
-                showPersonSuggestions
+                showPersonSuggestions ||
+                slash
             ) {
                 setDropdownPosition(
-                    calculateDropdownPosition(e.currentTarget, pos)
+                    calculateDropdownPosition(
+                        e.currentTarget,
+                        slash ? slash.start : pos,
+                        !!slash
+                    )
                 );
             }
         };
@@ -2149,6 +2554,14 @@ const QuickCaptureInput = React.forwardRef<
                       )?.color,
               }
             : null;
+        const areaChip = picked.area
+            ? { name: picked.area.name }
+            : currentAnalysis?.parsed_area
+              ? {
+                    name: currentAnalysis.parsed_area.name,
+                    isNew: !currentAnalysis.parsed_area.uid,
+                }
+              : null;
 
         const composerFooterContext = useMemo<InboxComposerFooterContext>(
             () => ({
@@ -2184,7 +2597,7 @@ const QuickCaptureInput = React.forwardRef<
                             {openTaskModal && (
                                 <button
                                     type="button"
-                                    onClick={() => {
+                                    onClick={async () => {
                                         const taskTags = buildTagObjects(
                                             composerFooterContext.hashtags
                                         );
@@ -2197,6 +2610,10 @@ const QuickCaptureInput = React.forwardRef<
                                         if (!cleaned) {
                                             return;
                                         }
+                                        const analysis =
+                                            await ensureAnalysisArea(
+                                                composerFooterContext.analysis
+                                            );
                                         const newTask: Task =
                                             applyAnalysisToTask(
                                                 {
@@ -2207,7 +2624,7 @@ const QuickCaptureInput = React.forwardRef<
                                                     project_uid: projectUid,
                                                     completed_at: null,
                                                 },
-                                                composerFooterContext.analysis
+                                                analysis
                                             );
                                         void openTaskModal(newTask);
                                         composerFooterContext.clearText();
@@ -2421,9 +2838,10 @@ const QuickCaptureInput = React.forwardRef<
                         hidden
                         data-testid="capture-file-input"
                         onChange={(e) => {
-                            const picked = Array.from(e.target.files ?? []);
-                            e.target.value = '';
-                            void attachFiles(picked);
+                            setIsPreparingFiles(true);
+                            void takePickedFiles(e.currentTarget)
+                                .then(attachFiles)
+                                .finally(() => setIsPreparingFiles(false));
                         }}
                     />
                     <div className="order-3 sm:order-2 ml-auto flex items-center gap-2">
@@ -2431,7 +2849,7 @@ const QuickCaptureInput = React.forwardRef<
                             type="button"
                             data-testid="capture-attach"
                             onClick={() => fileInputRef.current?.click()}
-                            disabled={isSaving}
+                            disabled={isSaving || isPreparingFiles}
                             title={t(
                                 'capture.attachHint',
                                 'Attach files. You can also paste or drop them here.'
@@ -2450,15 +2868,28 @@ const QuickCaptureInput = React.forwardRef<
                             onClick={() => void handleUnifiedSubmit()}
                             disabled={
                                 (!inputText.trim() && files.length === 0) ||
-                                isSaving
+                                isSaving ||
+                                isPreparingFiles
                             }
-                            className="rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                            aria-busy={isSaving || isPreparingFiles}
+                            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 dark:disabled:bg-black/30 disabled:text-gray-400 dark:disabled:text-gray-500 text-white text-sm font-semibold px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         >
-                            {itemTotal > 1
-                                ? t('capture.addN', 'Add {{total}}', {
-                                      total: itemTotal,
-                                  })
-                                : t('capture.add', 'Add')}
+                            {(isSaving || isPreparingFiles) && (
+                                <span
+                                    data-testid="capture-add-spinner"
+                                    className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin"
+                                    aria-hidden="true"
+                                />
+                            )}
+                            {isUploading
+                                ? t('common.uploading', 'Uploading...')
+                                : isSaving
+                                  ? t('common.saving', 'Saving...')
+                                  : itemTotal > 1
+                                    ? t('capture.addN', 'Add {{total}}', {
+                                          total: itemTotal,
+                                      })
+                                    : t('capture.add', 'Add')}
                         </button>
                     </div>
                     <div className="order-2 sm:order-3 flex-1 sm:flex-none sm:w-full min-w-0 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 min-h-[20px] text-xs text-gray-500 dark:text-gray-400">
@@ -2506,35 +2937,80 @@ const QuickCaptureInput = React.forwardRef<
         const shouldShowPrimaryButton =
             !hidePrimaryButton && !isEditMode && !unified;
 
-        const selectedMetadata = (variant: 'chips' | 'line') => (
-            <InboxSelectedChips
-                variant={variant}
-                selectedTags={getAllTags(inputText)}
-                selectedProjects={getAllProjects(inputText)}
-                tags={tags}
-                projects={projects}
-                onRemoveTag={removeTagFromText}
-                onRemoveProject={removeProjectFromText}
-                dueDate={dateChip}
-                assignee={assigneeChip}
-                onDismissDate={() =>
-                    setDismissedDateText(
-                        currentAnalysis?.parsed_date_text ?? null
-                    )
-                }
-                onRemovePerson={() => {
-                    if (currentAnalysis?.parsed_person) {
-                        removePersonFromText(currentAnalysis.parsed_person);
+        const selectedMetadata = (variant: 'chips' | 'line') => {
+            // Tags, projects and areas picked from a list live in `picked`
+            // and show next to the ones typed in the text.
+            const textTags = getAllTags(inputText);
+            const textProjects = getAllProjects(inputText);
+            const allTags = [
+                ...textTags,
+                ...picked.tags.filter(
+                    (name) =>
+                        !textTags.some(
+                            (x) => x.toLowerCase() === name.toLowerCase()
+                        )
+                ),
+            ];
+            const allProjects =
+                picked.project &&
+                !textProjects.some(
+                    (x) => x.toLowerCase() === picked.project?.toLowerCase()
+                )
+                    ? [...textProjects, picked.project]
+                    : textProjects;
+            return (
+                <InboxSelectedChips
+                    variant={variant}
+                    selectedTags={allTags}
+                    selectedProjects={allProjects}
+                    tags={tags}
+                    projects={projects}
+                    onRemoveTag={(name) => {
+                        setPicked((p) => ({
+                            ...p,
+                            tags: p.tags.filter(
+                                (x) => x.toLowerCase() !== name.toLowerCase()
+                            ),
+                        }));
+                        removeTagFromText(name);
+                    }}
+                    onRemoveProject={(name) => {
+                        setPicked((p) => ({ ...p, project: null }));
+                        removeProjectFromText(name);
+                    }}
+                    dueDate={dateChip}
+                    assignee={assigneeChip}
+                    onDismissDate={() =>
+                        setDismissedDateText(
+                            currentAnalysis?.parsed_date_text ?? null
+                        )
                     }
-                }}
-            />
-        );
+                    onRemovePerson={() => {
+                        if (currentAnalysis?.parsed_person) {
+                            removePersonFromText(currentAnalysis.parsed_person);
+                        }
+                    }}
+                    area={areaChip}
+                    onRemoveArea={() => {
+                        if (picked.area) {
+                            setPicked((p) => ({ ...p, area: null }));
+                        } else if (currentAnalysis?.parsed_area) {
+                            removeAreaFromText(
+                                currentAnalysis.parsed_area.name
+                            );
+                        }
+                    }}
+                />
+            );
+        };
 
         const cardClasses = cardClassName ?? 'mb-6';
 
         return (
             <div
-                className={`relative w-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden ${cardClasses}`}
+                className={`relative w-full bg-white dark:bg-gray-900 rounded-2xl ${
+                    isEditMode ? '' : 'shadow-sm'
+                } overflow-hidden ${cardClasses}`}
             >
                 {!isEditMode && !compact && (
                     <svg
@@ -2556,7 +3032,6 @@ const QuickCaptureInput = React.forwardRef<
                     <div className="flex flex-row gap-3 items-start">
                         <div className="relative flex-1">
                             <div
-                                ref={fieldRef}
                                 {...fileDropHandlers}
                                 data-testid="capture-field"
                                 className={`relative ${compact ? 'rounded-xl bg-gray-100 dark:bg-black/30 px-3.5 py-1 focus-within:ring-2 focus-within:ring-blue-500' : ''} ${draggingFiles ? '!bg-blue-50 dark:!bg-blue-900/30' : ''}`}
@@ -2587,26 +3062,58 @@ const QuickCaptureInput = React.forwardRef<
                                 )}
                                 <div className="relative z-10 flex items-start">
                                     {multiline ? (
-                                        <textarea
-                                            ref={(el) => {
-                                                inputRef.current = el;
-                                            }}
-                                            data-testid="quick-capture-input"
-                                            value={inputText}
-                                            rows={3}
-                                            onChange={handleChange}
-                                            onSelect={handleCaretEvent}
-                                            onKeyUp={handleCaretEvent}
-                                            onClick={handleCaretEvent}
-                                            className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
-                                            placeholder=""
-                                            onKeyDown={handleKeyDown}
-                                            onPaste={
-                                                unified
-                                                    ? handlePaste
-                                                    : undefined
-                                            }
-                                        ></textarea>
+                                        <>
+                                            {/* Edit mode colours the tokens behind a transparent
+                                            textarea, so the text is still typed and selected
+                                            in the textarea itself. */}
+                                            {colourTokens && (
+                                                <div
+                                                    aria-hidden="true"
+                                                    className={`pointer-events-none absolute inset-0 w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal whitespace-pre-wrap break-words overflow-hidden text-gray-900 dark:text-gray-100 px-0 py-1.5`}
+                                                >
+                                                    {splitInboxTokens(
+                                                        inputText
+                                                    ).map((segment, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className={
+                                                                segment.kind
+                                                                    ? TOKEN_TEXT_CLASS[
+                                                                          segment
+                                                                              .kind
+                                                                      ]
+                                                                    : undefined
+                                                            }
+                                                        >
+                                                            {segment.text}
+                                                        </span>
+                                                    ))}
+                                                    {inputText.endsWith('\n')
+                                                        ? ' '
+                                                        : null}
+                                                </div>
+                                            )}
+                                            <textarea
+                                                ref={(el) => {
+                                                    inputRef.current = el;
+                                                }}
+                                                data-testid="quick-capture-input"
+                                                value={inputText}
+                                                rows={3}
+                                                onChange={handleChange}
+                                                onSelect={handleCaretEvent}
+                                                onKeyUp={handleCaretEvent}
+                                                onClick={handleCaretEvent}
+                                                className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent ${colourTokens ? 'relative text-transparent caret-gray-900 dark:caret-gray-100' : 'text-gray-900 dark:text-gray-100'} border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
+                                                placeholder=""
+                                                onKeyDown={handleKeyDown}
+                                                onPaste={
+                                                    unified
+                                                        ? handlePaste
+                                                        : undefined
+                                                }
+                                            ></textarea>
+                                        </>
                                     ) : (
                                         <input
                                             ref={(el) => {
@@ -2675,6 +3182,18 @@ const QuickCaptureInput = React.forwardRef<
                                     handleProjectSelect(project.name)
                                 }
                                 renderLabel={(project) => <>+{project.name}</>}
+                            />
+
+                            <SuggestionsDropdown
+                                isVisible={slashItemsNow.length > 0}
+                                items={slashItemsNow}
+                                position={dropdownPosition}
+                                selectedIndex={selectedSuggestionIndex}
+                                onSelect={pickSlashItem}
+                                rich
+                                renderLabel={(item) => (
+                                    <SlashItemRow item={item} />
+                                )}
                             />
 
                             {urlPreview && (

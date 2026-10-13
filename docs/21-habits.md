@@ -45,6 +45,10 @@ The **current streak** counts successes backwards from the current period, passi
 
 The counters on the task row (`habit_current_streak`, `habit_best_streak`, `habit_total_completions`, `habit_last_completion_at`, `habit_strength`) are caches. They are rebuilt on every check-in, skip, deletion, settings change and on `GET /api/habits`, so a missed day shows up without any background job.
 
+## In task lists
+
+A habit is never done: a check-in leaves its status open, so it stays in All tasks. Today's suggestions (and the planner) and Upcoming show a habit only on the days it asks for a check-in: a scheduled day that is not skipped, while the period goal is not met, and, unless several check-ins a day count, not yet checked in that day. A daily habit checked in today comes back tomorrow, a weekly habit whose goal is met comes back next week. Quit habits are left out, since checking one off records a slip. On a plan, a habit checked in on the plan's day shows as done for the day. `habitEngine.isDueOn` holds the rule.
+
 ## Archiving
 
 Archiving sets the habit's status to archived (3). It disappears from the Habits page and from Today, keeps its history, and can be restored from the Archived list. Deleting removes the habit and every check-in.

@@ -35,7 +35,8 @@ interface CaptureHostProps {
 // It stays mounted once opened, so half-typed text survives closing it.
 const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
     const { t } = useTranslation();
-    const { open, target, scope, openCount } = useCaptureUi();
+    const { open, target, scope, initialText, project, openCount } =
+        useCaptureUi();
     const location = useLocation();
     const projects = useStore((state) => state.projectsStore.projects);
     const inputRef = useRef<QuickCaptureInputHandle>(null);
@@ -162,6 +163,8 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
                                     : undefined
                             }
                             resetKey={openCount}
+                            prefillText={initialText}
+                            defaultProject={project}
                             projects={projects}
                             onClose={closeCapture}
                             onCaptured={(items) =>

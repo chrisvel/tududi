@@ -122,13 +122,11 @@ const UniversalSearch: React.FC = () => {
                 ref={searchRef}
                 data-testid="universal-search"
                 data-state={isOpen ? 'open' : 'closed'}
-                className={`relative flex-1 mx-4 transition-all duration-300 ${
-                    isOpen ? 'max-w-5xl' : 'max-w-3xl'
-                }`}
+                className="relative flex-1 mx-4"
             >
                 {/* Search Bar */}
                 <div
-                    className={`flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2 transition-all ${
+                    className={`flex items-center bg-white dark:bg-gray-900/60 rounded-lg px-3 py-2 transition-all ${
                         isOpen ? 'ring-2 ring-blue-500 relative z-50' : ''
                     }`}
                 >

@@ -53,7 +53,13 @@ const cases = [
     {
         name: 'goals',
         label: 'Add Goal',
-        node: <SidebarGoals handleNavClick={noop} location={location} />,
+        node: (
+            <SidebarGoals
+                handleNavClick={noop}
+                location={location}
+                openGoalModal={noop}
+            />
+        ),
     },
     {
         name: 'people',

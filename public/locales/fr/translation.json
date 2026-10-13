@@ -4,6 +4,7 @@
     "save": "Enregistrer",
     "cancel": "Annuler",
     "delete": "Supprimer",
+    "moreActions": "Plus d'actions",
     "edit": "Modifier",
     "create": "Créer",
     "submit": "Soumettre",
@@ -427,22 +428,23 @@
     "norwegian": "Norvégien",
     "polish": "Polonais",
     "slovenian": "Slovène",
+    "slovak": "Slovaque",
     "swedish": "Suédois",
     "firstDayOfWeek": "Premier jour de la semaine",
     "name": "Nom",
     "surname": "Prénom",
     "enterName": "Entrez votre nom",
     "enterSurname": "Entrez votre prénom",
-    "avatar": "Profile Photo",
-    "uploadAvatar": "Upload Photo",
-    "removeAvatar": "Remove Avatar",
-    "avatarDescription": "Upload a profile photo (max 5MB)",
-    "avatarUploadError": "Please upload an image file",
-    "avatarSizeError": "Image must be smaller than 5MB",
-    "avatarUploadSuccess": "Avatar uploaded successfully!",
-    "avatarRemoveSuccess": "Avatar removed successfully!",
-    "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar",
+    "avatar": "Photo de profil",
+    "uploadAvatar": "Téléverser une photo",
+    "removeAvatar": "Supprimer la photo",
+    "avatarDescription": "Téléversez une photo de profil (5 Mo max.)",
+    "avatarUploadError": "Veuillez téléverser un fichier image",
+    "avatarSizeError": "L'image doit faire moins de 5 Mo",
+    "avatarUploadSuccess": "Photo téléversée !",
+    "avatarRemoveSuccess": "Photo supprimée !",
+    "avatarUploadFailed": "Impossible de téléverser la photo",
+    "avatarRemoveFailed": "Impossible de supprimer la photo",
     "notificationsDescription": "Choisissez comment vous souhaitez être informé des événements importants.",
     "aiFeatures": "Fonctionnalités d'IA",
     "keyboardShortcuts": "Raccourcis Clavier",
@@ -488,7 +490,7 @@
       "neverSynced": "Jamais synchronisé",
       "interval": "Intervalle",
       "minutes": "min",
-      "direction": "Direction",
+      "direction": "Sens",
       "tasks": "Tâches",
       "bidirectional": "Bidirectionnel",
       "pullOnly": "Tirer uniquement",
@@ -610,7 +612,10 @@
       "removeTitle": "Supprimer le calendrier",
       "removeMessage": "Ne plus afficher « {{name}} » dans Aujourd'hui ? Le calendrier lui-même n'est pas modifié.",
       "removeConfirm": "Supprimer",
-      "missingFields": "Ajoutez un nom et l'adresse du calendrier"
+      "missingFields": "Ajoutez un nom et l'adresse du calendrier",
+      "showOnCalendar": "Afficher {{name}} sur la page Calendrier",
+      "showOnCalendarShort": "Afficher sur la page Calendrier",
+      "toggleError": "Impossible de mettre à jour ce calendrier"
     },
     "planning": {
       "title": "Planification",
@@ -641,46 +646,46 @@
       "hoursDescription": "Les heures affichées par la chronologie dans Aujourd'hui et lors de la planification. Les nouvelles tâches et les brouillons IA y reçoivent un horaire. Heures dans votre fuseau ({{timezone}}).",
       "hoursFrom": "De",
       "hoursTo": "à",
-      "suggestionsLoadError": "Could not load your suggestion settings",
-      "suggestedLoading": "Open tasks you could pick up.",
-      "listOr": "{{first}} or {{last}}",
-      "suggestedFromProjectsAndNone": "Open tasks from projects marked {{statuses}}, and tasks with no project.",
-      "suggestedFromProjects": "Open tasks from projects marked {{statuses}}.",
-      "suggestedFromNone": "Open tasks with no project.",
-      "suggestedFromNothing": "Nothing, because no project status and no tasks without a project are chosen below.",
-      "suggestedExcluded": "Projects you chose to never suggest are left out.",
-      "suggestedLeftOutDay": "Deferred tasks, someday tasks and tasks due more than a day out are left out.",
-      "suggestedLeftOutDays": "Deferred tasks, someday tasks and tasks due more than {{count}} days out are left out.",
-      "suggestedStale": "So are tasks nobody changed in {{months}} months.",
-      "suggestedCap": "Up to {{count}} are shown.",
-      "suggestionsSaveError": "Could not save your suggestion settings",
-      "ruleDueRecent": "The earlier due date first, then the task changed most recently.",
-      "ruleDueNewest": "The earlier due date first, then the newest task.",
-      "ruleDueOldest": "The earlier due date first, then the oldest task.",
-      "tieRecent": "Most recently changed first",
-      "tieNewest": "Newest first",
-      "tieOldest": "Oldest first",
+      "suggestionsLoadError": "Impossible de charger vos réglages de suggestions",
+      "suggestedLoading": "Tâches ouvertes que vous pourriez reprendre.",
+      "listOr": "{{first}} ou {{last}}",
+      "suggestedFromProjectsAndNone": "Tâches ouvertes des projets au statut {{statuses}}, et tâches sans projet.",
+      "suggestedFromProjects": "Tâches ouvertes des projets au statut {{statuses}}.",
+      "suggestedFromNone": "Tâches ouvertes sans projet.",
+      "suggestedFromNothing": "Rien, car aucun statut de projet et aucune tâche sans projet ne sont sélectionnés ci-dessous.",
+      "suggestedExcluded": "Les projets que vous avez choisi de ne jamais suggérer sont écartés.",
+      "suggestedLeftOutDay": "Les tâches reportées, les tâches « un jour » et celles dues dans plus d'un jour sont écartées.",
+      "suggestedLeftOutDays": "Les tâches reportées, les tâches « un jour » et celles dues dans plus de {{count}} jours sont écartées.",
+      "suggestedStale": "Tout comme les tâches que personne n'a modifiées depuis {{months}} mois.",
+      "suggestedCap": "Jusqu'à {{count}} sont affichées.",
+      "suggestionsSaveError": "Impossible d'enregistrer vos réglages de suggestions",
+      "ruleDueRecent": "L'échéance la plus proche d'abord, puis la tâche modifiée le plus récemment.",
+      "ruleDueNewest": "L'échéance la plus proche d'abord, puis la tâche la plus récente.",
+      "ruleDueOldest": "L'échéance la plus proche d'abord, puis la tâche la plus ancienne.",
+      "tieRecent": "Les dernières modifiées d'abord",
+      "tieNewest": "Les plus récentes d'abord",
+      "tieOldest": "Les plus anciennes d'abord",
       "staleOff": "Off",
-      "staleMonths": "{{count}} months",
-      "horizonDay": "1 day",
-      "horizonDays": "{{count}} days",
-      "projectsTitle": "Which projects count",
-      "includeNoProject": "Tasks with no project",
-      "excludedTitle": "Never suggest these projects",
-      "excludedRemove": "Suggest {{name}} again",
-      "excludedAdd": "Add a project…",
-      "tieTitle": "When tasks tie",
-      "tieDescription": "After priority and due date, which task comes first.",
-      "staleTitle": "Leave out untouched tasks",
-      "staleDescription": "Skip suggestions nobody has changed for this long.",
-      "horizonTitle": "Look ahead",
-      "horizonDescription": "Suggest tasks due up to this far ahead.",
-      "maxTitle": "Show up to",
-      "maxDescription": "The most tasks to suggest under Everything else.",
-      "maxOption": "{{count}} tasks",
-      "intro": "How Plan my day lays out your day and which tasks it offers you.",
-      "suggestedTitle": "What gets suggested",
-      "suggestedDescription": "Which open tasks can show up under Everything else, and how many. Overdue, due today and in progress tasks always show."
+      "staleMonths": "{{count}} mois",
+      "horizonDay": "1 jour",
+      "horizonDays": "{{count}} jours",
+      "projectsTitle": "Projets pris en compte",
+      "includeNoProject": "Tâches sans projet",
+      "excludedTitle": "Ne jamais suggérer ces projets",
+      "excludedRemove": "Suggérer à nouveau {{name}}",
+      "excludedAdd": "Ajouter un projet…",
+      "tieTitle": "En cas d'égalité",
+      "tieDescription": "Après la priorité et l'échéance, quelle tâche passe en premier.",
+      "staleTitle": "Écarter les tâches laissées de côté",
+      "staleDescription": "Ignorer les suggestions que personne n'a modifiées depuis aussi longtemps.",
+      "horizonTitle": "Anticiper",
+      "horizonDescription": "Suggérer les tâches dont l'échéance tombe dans ce délai.",
+      "maxTitle": "Afficher jusqu'à",
+      "maxDescription": "Le nombre maximal de tâches suggérées dans Tout le reste.",
+      "maxOption": "{{count}} tâches",
+      "intro": "Comment Planifier ma journée organise votre journée et quelles tâches il vous propose.",
+      "suggestedTitle": "Ce qui est suggéré",
+      "suggestedDescription": "Quelles tâches ouvertes peuvent apparaître dans Tout le reste, et combien. Les tâches en retard, dues aujourd'hui et en cours s'affichent toujours."
     },
     "apiKeys": {
       "nameRequired": "Le nom de la clé API est obligatoire.",
@@ -693,7 +698,7 @@
       "status": {
         "revoked": "Révoquée",
         "expired": "Expirée",
-        "active": "Active"
+        "active": "Actif"
       },
       "never": "Jamais",
       "deleteTitle": "Supprimer la clé API",
@@ -751,10 +756,6 @@
     "aiProfileDescription": "Contexte facultatif transmis à l'IA : votre rôle, votre domaine ou tout ce qui personnalise les résumés et analyses (ex. « Chercheuse axée sur les échéances de financement et les périodes d'examens »).",
     "aiProfilePlaceholder": "ex. Chercheuse. Mon travail tourne autour des échéances de financement, des relectures d'articles et des cycles d'enseignement, pas des sprints ni des déploiements.",
     "systemMode": "Système",
-    "tasks": "Tâches",
-    "taskItem": "Élément de tâche",
-    "showTaskContextMenu": "Afficher le bouton de menu contextuel",
-    "showTaskContextMenuDescription": "Affiche sur chaque tâche un bouton à trois points avec Modifier et Supprimer",
     "connected": {
       "loadError": "Impossible de charger les comptes connectés",
       "linkError": "Impossible de lancer la liaison du compte",
@@ -848,7 +849,8 @@
     "telegram": {
       "botName": "Nom du bot :"
     },
-    "telegramRequiredForSummaries": "L'intégration Telegram doit être configurée pour utiliser les résumés de tâches."
+    "telegramRequiredForSummaries": "L'intégration Telegram doit être configurée pour utiliser les résumés de tâches.",
+    "sidebarSectionDescription": "Afficher la section {{name}} dans la barre latérale."
   },
   "productivity": {
     "stalledProjects": "Projets Bloqués",
@@ -1032,15 +1034,14 @@
     "logoutSuccess": "Déconnexion réussie",
     "or_continue_with_email": "Ou continuez avec l'email",
     "sign_in_with": "Se connecter avec {{provider}}",
+    "sign_up_with": "S'inscrire avec {{provider}}",
     "oidc": {
       "completing_signin": "Finalisation de la connexion...",
       "authenticating_with_provider": "Authentification avec le fournisseur. Veuillez patienter..."
     },
     "captcha_required": "Veuillez compléter la vérification et réessayer.",
     "registration_successful": "Vérifiez votre adresse e-mail",
-    "registration_email_sent": "Vérifiez votre adresse e-mail pour activer votre compte. Nous vous avons envoyé un lien, vérifiez votre boîte de réception.",
-    "notify_joined": "Vous êtes sur la liste. Nous vous enverrons un e-mail le jour où tududi Cloud ouvrira.",
-    "notify_failed": "Nous n'avons pas pu enregistrer votre adresse. Veuillez réessayer."
+    "registration_email_sent": "Vérifiez votre adresse e-mail pour activer votre compte. Nous vous avons envoyé un lien, vérifiez votre boîte de réception."
   },
   "dropdown": {
     "createNew": "Créer nouveau",
@@ -1538,8 +1539,33 @@
     "deleteNoteConfirm": "Voulez-vous vraiment supprimer la note « {{title}} » ?",
     "untitled": "Note sans titre",
     "publicShare": {
-      "sharedTitle": "Partagé avec toute personne disposant du lien"
-    }
+      "sharedTitle": "Partagé avec toute personne disposant du lien",
+      "open": "Partager la note",
+      "title": "Partager « {{title}} »",
+      "generalAccess": "Accès général",
+      "restricted": "Restreint",
+      "anyone": "Toute personne disposant du lien",
+      "restrictedHint": "Seuls vous et les personnes avec qui vous l'avez partagée pouvez ouvrir cette note.",
+      "anyoneHint": "Toute personne sur internet disposant du lien peut lire cette note sans se connecter. Elle ne peut pas la modifier. Désactivez cette option et le lien cesse de fonctionner immédiatement.",
+      "link": "Lien public",
+      "copyLink": "Copier le lien",
+      "copied": "Copié",
+      "copyFailed": "Impossible de copier automatiquement. Sélectionnez le lien et copiez-le.",
+      "ownerOnly": "Seul le propriétaire d'une note peut la partager publiquement.",
+      "failed": "Un problème est survenu. Réessayez.",
+      "createLink": "Créer un lien public",
+      "inheritStyle": "Reprendre le style (arrière-plan et couleur) dans la note publique",
+      "rotate": "Obtenir un nouveau lien et désactiver celui-ci",
+      "rotateWarning": "Le lien actuel cessera de fonctionner pour tous ceux qui l'ont.",
+      "rotateConfirm": "Obtenir un nouveau lien"
+    },
+    "createLinkedNote": "Créer la note « {{title}} »",
+    "linkedNoteMissing": "Aucune note nommée « {{title}} » pour l'instant. La créer ?",
+    "linkedNoteNotNow": "Pas maintenant",
+    "linkedNoteCreate": "Créer la note",
+    "linkedNoteCreateFailed": "Impossible de créer la note.",
+    "backgroundImage": "Arrière-plan",
+    "noBackground": "Aucun arrière-plan"
   },
   "tags": {
     "loading": "Chargement des étiquettes...",
@@ -1569,6 +1595,7 @@
     "system": "Système",
     "customize": "Personnaliser",
     "addTag": "Ajouter une étiquette",
+    "new": "Nouvelle étiquette",
     "loadingTags": "Chargement des étiquettes...",
     "errorLoadingTags": "Erreur lors du chargement des étiquettes.",
     "toggleDropdownMenu": "Ouvrir ou fermer le menu",
@@ -1967,12 +1994,15 @@
       "names": {
         "admin": "Admin",
         "user": "Utilisateur",
-        "guest": "Invité"
+        "guest": "Invité",
+        "superadmin": "Superadmin"
       },
       "descriptions": {
         "admin": "Gère les comptes, les rôles et les groupes, et peut faire tout le reste.",
+        "accountAdmin": "Gère les membres, les rôles et les groupes de ce compte. Ne voit que ce qui est partagé avec lui.",
         "user": "Un membre ordinaire. Travaille avec ses propres éléments et tout ce qui est partagé avec lui.",
-        "guest": "Travaille dans ce qui est partagé avec lui ou qui lui est assigné."
+        "guest": "Travaille dans ce qui est partagé avec lui ou qui lui est assigné.",
+        "superadmin": "Gère cette instance : tous les comptes, la facturation et les réglages. Il n'y en a qu'un ; les clients sont administrateurs de leur propre compte."
       },
       "capabilities": {
         "createPeople": "Ajouter des personnes",
@@ -1997,7 +2027,19 @@
     },
     "turnContactIntoAccount": "Transformer l'un de vos contacts en ce compte (facultatif)",
     "noContact": "(aucun)",
-    "turnContactNote": "Le contact conserve son historique, donc les tâches qui lui sont assignées le restent. Vos notes privées à son sujet ne sont pas reprises."
+    "turnContactNote": "Le contact conserve son historique, donc les tâches qui lui sont assignées le restent. Vos notes privées à son sujet ne sont pas reprises.",
+    "blog": {
+      "title": "Blog",
+      "description": "Choisissez une de vos notes comme page d'accueil. Les notes publiques qu'elle relie avec [[Titre]] deviennent les articles. Partagez publiquement la page d'accueil et chaque article pour qu'ils apparaissent.",
+      "placeholder": "Lien ou ID de la note, ex. https://app.tududi.com/notes/abc123",
+      "inputLabel": "Note de page d'accueil",
+      "turnOff": "Désactiver",
+      "shared": "Publique",
+      "notShared": "Pas encore partagée : partagez-la depuis la note pour publier le blog",
+      "postCount": "Articles : {{count}}",
+      "open": "Ouvrir le blog",
+      "preview": "Aperçu dans l'app"
+    }
   },
   "shares": {
     "shareProject": "Partager le projet",
@@ -2080,6 +2122,7 @@
     "allItems": "tous les éléments",
     "containingText": ", contenant le texte",
     "withPriority": ", avec",
+    "withStatus": ", avec le statut",
     "priority": "priorité",
     "due": ", dû",
     "taggedWith": ", étiqueté avec",
@@ -2087,6 +2130,7 @@
     "criteria": "Critères de recherche",
     "metadataFilters": "Filtres de métadonnées",
     "priorityFilter": "Priorité",
+    "statusFilter": "Statut",
     "dueFilter": "Dû",
     "tagsFilter": "Étiquettes",
     "saveAsSmartView": "Enregistrer en tant que vue intelligente",
@@ -2173,7 +2217,10 @@
     "validationErrors": "Erreurs de validation :",
     "versionIncompatible": "Version incompatible",
     "backupVersion": "Version de la sauvegarde",
-    "restoreButton": "Restaurer"
+    "restoreButton": "Restaurer",
+    "adminInstanceNote": "En tant qu'admin, votre sauvegarde inclut tous les comptes de cette instance, avec leurs données et les hachages de leurs mots de passe. La restaurer sur une nouvelle installation fait revenir tout le monde. Conservez le fichier aussi soigneusement que la base de données.",
+    "accountsCount_one": "{{count}} autre compte",
+    "accountsCount_other": "{{count}} autres comptes"
   },
   "notifications": {
     "table": {
@@ -2181,7 +2228,7 @@
     },
     "channels": {
       "inApp": "Dans l'application",
-      "email": "Email",
+      "email": "E-mail",
       "push": "Push",
       "telegram": "Telegram"
     },
@@ -2479,8 +2526,13 @@
       "caldav": "la synchronisation CalDAV",
       "telegram": "le bot Telegram",
       "backups_import": "l'import de sauvegardes",
-      "attachments": "les pièces jointes"
-    }
+      "attachments": "les pièces jointes",
+      "public_notes": "les notes publiques",
+      "members": "l'ajout de membres"
+    },
+    "seatCovered": "Votre place est payée par {{name}}.",
+    "workspaceOwner": "la personne propriétaire de l'espace de travail",
+    "seats": "{{count}} places sur votre abonnement : vous et {{members}} de plus."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2500,7 +2552,18 @@
     "perkExport": "Exporter tout à tout moment",
     "taxNote": "Les paiements sont gérés par {{provider}}. Les prix excluent les taxes applicables. Annulez à tout moment.",
     "notConfigured": "Les souscriptions ne sont pas encore disponibles sur cette instance. Veuillez contacter le support.",
-    "exportData": "Exporter vos données"
+    "exportData": "Exporter vos données",
+    "subscribe": "S'abonner",
+    "readOnlyBanner": "Votre essai est terminé : vos données sont en lecture seule. Abonnez-vous pour continuer à utiliser tududi, ou exportez vos données. Le compte sera supprimé le {{date}}.",
+    "lockedAi": "L'assistant IA fait partie de l'offre payante.",
+    "lockedPublicNotes": "Les liens publics de notes font partie de l'offre payante.",
+    "lockedMembers": "L'ajout de membres fait partie de l'offre payante.",
+    "trialEnded": "Votre essai est terminé",
+    "onTrial": "Vous profitez de l'essai gratuit",
+    "readOnlyUntil": "Vos données sont en lecture seule jusqu'au {{date}}, puis le compte sera supprimé. Abonnez-vous pour continuer à utiliser tududi Cloud.",
+    "trialIncludes": "Votre essai se termine le {{date}}. L'assistant IA, les notes publiques et l'ajout de membres se débloquent avec un abonnement.",
+    "backToApp": "Retour à tududi",
+    "trialBanner": "Essai gratuit, jours restants : {{count}}"
   },
   "demo": {
     "opening": "Ouverture de la démo...",
@@ -2565,7 +2628,18 @@
     "add": "Ajouter un membre",
     "giveAccount": "Donner un compte",
     "nameRequiredWithoutEmail": "Saisissez un nom quand il n'y a pas d'e-mail",
-    "failedToAdd": "Échec de l'ajout du membre"
+    "failedToAdd": "Échec de l'ajout du membre",
+    "seatNote": "Chaque membre est une place de plus sur votre abonnement. Le changement est calculé au prorata sur votre prochaine facture, et retirer un membre libère la place.",
+    "editTitle": "Modifier le membre",
+    "nameRequired": "Saisissez un nom",
+    "failedToUpdate": "Impossible de modifier le membre",
+    "addEmailHint": "Ajouter une adresse e-mail lui envoie une invitation pour choisir un mot de passe. Elle ne pourra plus être modifiée ensuite.",
+    "remove": "Retirer le membre",
+    "removeConfirm": "Retirer {{name}} ? Son compte et tout son contenu sont supprimés, et c'est définitif. Sur tududi Cloud, sa place est retirée de votre abonnement.",
+    "removed": "Membre retiré",
+    "updated": "Membre modifié",
+    "invitationSent": "Invitation envoyée",
+    "failedToRemove": "Impossible de retirer le membre"
   },
   "signInLink": {
     "action": "Lien de connexion",
@@ -2612,7 +2686,6 @@
     "connectCalendar": "Connecter un calendrier",
     "continuePlanning": "Continuer la planification",
     "planYourDay": "Planifier ma journée",
-    "skipShowEverything": "Passer et tout afficher",
     "moveBlock": "Déplacer {{name}}",
     "removeFromPlan": "Retirer du plan",
     "freeGap": "{{duration}} libres",
@@ -2657,7 +2730,6 @@
     "addAsTask": "Ajouter comme tâche",
     "moreInInbox": "{{count}} de plus dans la boîte de réception",
     "sidebarProgress": "{{done}} sur {{total}} tâches planifiées terminées",
-    "oldTodayLink": "Aller plutôt à l'ancienne page Aujourd'hui",
     "nowMarker": "Maintenant, {{time}}",
     "beta": "Bêta",
     "betaHint": "La page Aujourd'hui planifiée est nouvelle. La page classique reste accessible en bas de cette page.",
@@ -2883,5 +2955,48 @@
     "myTemplates": "Mes modèles",
     "confirmDelete": "Supprimer le modèle",
     "confirmDeleteMessage": "Supprimer « {{name}} » ? Les projets créés à partir de celui-ci ne seront pas affectés."
+  },
+  "publicNote": {
+    "linkedNoteNotShared": "Cette note n'est pas partagée publiquement."
+  },
+  "blog": {
+    "nav": "Blog",
+    "navCta": "Commencer maintenant",
+    "footerCloud": "tududi Cloud",
+    "footerTerms": "Conditions",
+    "footerPrivacy": "Confidentialité",
+    "ctaEyebrow": "tududi Cloud",
+    "ctaTitle": "Sortez les petites choses de votre tête.",
+    "ctaBody": "Tâches, projets, notes et habitudes dans un endroit calme, partagés avec les personnes avec qui vous vivez et travaillez. Pas de serveur, rien à installer.",
+    "ctaPrice": "{{monthly}} par mois ou {{annual}} par an",
+    "ctaGuarantee": "Satisfait ou remboursé pendant 14 jours",
+    "ctaPrimary": "Commencer maintenant",
+    "ctaSecondary": "Voir ce qui est inclus",
+    "readPost": "Lire l'article",
+    "emptyTitle": "Rien pour l'instant",
+    "emptyBody": "Les premiers articles arrivent. Revenez bientôt.",
+    "failedTitle": "Impossible de charger le blog",
+    "failedBody": "Un problème est survenu de notre côté. Réessayez dans un instant.",
+    "missingTitle": "Cet article n'est pas ici",
+    "missingBody": "Il a peut-être été déplacé ou retiré. Les autres articles sont à un clic.",
+    "allPosts": "Tous les articles",
+    "morePosts": "Plus sur le blog"
+  },
+  "focus": {
+    "chip": "Focus",
+    "title": "Se concentrer sur",
+    "activeTitle": "Focus : {{label}}",
+    "area": "Domaine",
+    "anyArea": "Tous les domaines",
+    "project": "Projet",
+    "anyProject": "Tous les projets",
+    "tags": "Étiquettes",
+    "hint": "Aujourd'hui, À venir, Tâches, Projets, Notes et la recherche n'affichent que cela. Les nouvelles tâches reçoivent le projet et les étiquettes.",
+    "apply": "Appliquer",
+    "clear": "Effacer",
+    "clearFocus": "Effacer le focus",
+    "locked": "Défini par votre focus. Effacez-le depuis la puce de la barre du haut.",
+    "emptyHint": "Affiche uniquement {{label}}",
+    "saveError": "Impossible d'enregistrer le focus."
   }
 }

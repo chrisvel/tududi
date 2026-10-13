@@ -1,9 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import DailyAssistant from '../AI/DailyAssistant';
+import TrialLockNotice from '../Billing/TrialLockNotice';
+import { isTrialLocked, useBillingState } from '../../hooks/useTrialStatus';
 
 const DailyBriefPage: React.FC = () => {
     const { t } = useTranslation();
+    // The brief generates itself on open, which the trial would refuse, so
+    // wait to know before mounting it.
+    const { status, settled } = useBillingState();
+    const aiLocked = isTrialLocked(status, 'ai');
 
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8">
@@ -16,7 +22,11 @@ const DailyBriefPage: React.FC = () => {
                         {t('common.beta', 'beta')}
                     </span>
                 </div>
-                <DailyAssistant />
+                {aiLocked ? (
+                    <TrialLockNotice feature="ai" />
+                ) : (
+                    settled && <DailyAssistant />
+                )}
             </div>
         </div>
     );

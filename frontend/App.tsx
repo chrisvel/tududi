@@ -44,7 +44,7 @@ const SubscriptionRequired = lazy(
     () => import('./components/Billing/SubscriptionRequired')
 );
 import { User } from './entities/User';
-import TasksToday from './components/Task/TasksToday';
+import { canOpenAccess } from './entities/Role';
 import TodayPage from './components/DailyPlan/TodayPage';
 import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
@@ -61,10 +61,13 @@ import PersonDetails from './components/People/PersonDetails';
 import EveryoneDashboard from './components/Everyone/EveryoneDashboard';
 import Templates from './components/Templates/Templates';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
+import type { StarterResult } from './utils/onboardingService';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
+import { sanitizeFocus } from './utils/focus';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
+import { resyncPush } from './utils/pushService';
 import { resetSessionState } from './utils/sessionReset';
 import {
     clearSharedText,
@@ -73,7 +76,9 @@ import {
 const PublicNotePage = lazy(
     () => import('./components/PublicNote/PublicNotePage')
 );
+const BlogApp = lazy(() => import('./components/Blog/BlogApp'));
 const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
+const Welcome = lazy(() => import('./components/Onboarding/Welcome'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 // Declared at module scope: the users page switches tabs through the query
@@ -89,7 +94,7 @@ const App: React.FC = () => {
     const [loading, setLoading] = useState(true);
 
     if (!i18n.isInitialized) {
-        return <LoadingScreen />;
+        return <LoadingScreen fullScreen />;
     }
 
     const fetchCurrentUser = async () => {
@@ -117,6 +122,7 @@ const App: React.FC = () => {
                 setCurrentUser(data.user);
                 setUserInStorage(data.user);
                 notifySwSession(data.user.id);
+                resyncPush(data.user.uid);
                 useStore
                     .getState()
                     .userSettingsStore.setEisenhowerEnabled(
@@ -157,9 +163,9 @@ const App: React.FC = () => {
                     );
                 useStore
                     .getState()
-                    .userSettingsStore.setShowTaskContextMenu(
-                        data.user.ui_settings?.appearance
-                            ?.showTaskContextMenu === true
+                    .userSettingsStore.setContentBackground(
+                        data.user.ui_settings?.appearance?.contentBackground ??
+                            null
                     );
                 useStore
                     .getState()
@@ -174,6 +180,11 @@ const App: React.FC = () => {
                     .getState()
                     .userSettingsStore.setSidebarWidthPercent(
                         data.user.sidebar_settings?.widthPercent
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setFocus(
+                        sanitizeFocus(data.user.ui_settings?.focus)
                     );
             } else {
                 setCurrentUser(null);
@@ -235,6 +246,20 @@ const App: React.FC = () => {
 
         navigate('/inbox', { replace: true });
     }, [currentUser, location.pathname, navigate]);
+
+    // The welcome page is done with: Today opens.
+    const finishWelcome = (result: StarterResult) => {
+        const user = currentUser
+            ? {
+                  ...currentUser,
+                  onboarded_at: result.onboarded_at,
+                  onboarding_starter: result.onboarding_starter,
+              }
+            : null;
+        if (user) setUserInStorage(user);
+        setCurrentUser(user);
+        navigate('/today', { replace: true });
+    };
 
     // The Inbox keeps offering a claimed share while the user stays on it (the
     // page remounts whenever Layout shows its first-load spinner), so the claim
@@ -344,6 +369,18 @@ const App: React.FC = () => {
                         />
                     }
                 />
+                {/* The blog, for anyone, signed in or not. On a blog host it
+                    renders at the root instead (see index.tsx). */}
+                <Route
+                    path="/blog/*"
+                    element={
+                        <BlogApp
+                            basePath="/blog"
+                            isDarkMode={isDarkMode}
+                            toggleDarkMode={toggleDarkMode}
+                        />
+                    }
+                />
                 {currentUser ? (
                     <>
                         <Route
@@ -351,6 +388,22 @@ const App: React.FC = () => {
                             element={<SubscriptionRequired />}
                         />
                         <Route path="/demo" element={<DemoEntry />} />
+                        {/* The marketing site links here whether or not the
+                            visitor is signed in, so these send an existing
+                            session home instead of falling through to 404. */}
+                        {['/login', '/register', '/forgot-password'].map(
+                            (path) => (
+                                <Route
+                                    key={path}
+                                    path={path}
+                                    element={<Navigate to="/" replace />}
+                                />
+                            )
+                        )}
+                        <Route
+                            path="/reset-password"
+                            element={<ResetPassword />}
+                        />
                         <Route
                             element={
                                 <SubscriptionGate>
@@ -360,7 +413,13 @@ const App: React.FC = () => {
                                         isDarkMode={isDarkMode}
                                         toggleDarkMode={toggleDarkMode}
                                     >
-                                        <Outlet />
+                                        {currentUser.onboarding_starter ===
+                                            null &&
+                                        location.pathname !== '/welcome' ? (
+                                            <Navigate to="/welcome" replace />
+                                        ) : (
+                                            <Outlet />
+                                        )}
                                     </Layout>
                                 </SubscriptionGate>
                             }
@@ -371,8 +430,20 @@ const App: React.FC = () => {
                             />
                             <Route path="/today" element={<TodayPage />} />
                             <Route
+                                path="/welcome"
+                                element={
+                                    currentUser.onboarding_starter === null ? (
+                                        <Suspense fallback={<LoadingScreen />}>
+                                            <Welcome onDone={finishWelcome} />
+                                        </Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
+                            <Route
                                 path="/today_legacy"
-                                element={<TasksToday />}
+                                element={<Navigate to="/today" replace />}
                             />
                             <Route
                                 path="/today/plan"
@@ -464,6 +535,10 @@ const App: React.FC = () => {
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/habits" element={<Habits />} />
                             <Route
+                                path="/habit/new"
+                                element={<Navigate to="/habits" replace />}
+                            />
+                            <Route
                                 path="/habit/:uid"
                                 element={<HabitDetails />}
                             />
@@ -484,6 +559,10 @@ const App: React.FC = () => {
                                 element={<TagDetails />}
                             />
                             <Route path="/goals" element={<Goals />} />
+                            <Route
+                                path="/goal/new"
+                                element={<Navigate to="/goals" replace />}
+                            />
                             <Route
                                 path="/goal/:uidSlug"
                                 element={<GoalDetails />}
@@ -515,7 +594,20 @@ const App: React.FC = () => {
                                 path="/about"
                                 element={<About isDarkMode={isDarkMode} />}
                             />
-                            <Route path="/backup" element={<BackupRestore />} />
+                            <Route
+                                path="/backup"
+                                element={
+                                    <BackupRestore
+                                        isAdmin={currentUser.is_admin === true}
+                                        onImportSuccess={() => {
+                                            // A restore brings back the profile
+                                            // settings, so reload them (#1776)
+                                            invalidateProfileCache();
+                                            fetchCurrentUser();
+                                        }}
+                                    />
+                                }
+                            />
                             <Route path="/people" element={<PeopleList />} />
                             <Route
                                 path="/person/:uid"
@@ -595,6 +687,29 @@ const App: React.FC = () => {
                                 }
                             />
                             <Route
+                                path="/admin/feedback"
+                                element={
+                                    currentUser?.is_admin === true ? (
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            {React.createElement(
+                                                React.lazy(
+                                                    () =>
+                                                        import('./components/Admin/AdminFeedbackPage')
+                                                )
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
+                            <Route
                                 path="/admin/waitlist"
                                 element={
                                     currentUser?.is_admin === true ? (
@@ -620,7 +735,7 @@ const App: React.FC = () => {
                             <Route
                                 path="/admin/users"
                                 element={
-                                    currentUser?.is_admin === true ? (
+                                    canOpenAccess(currentUser) ? (
                                         <React.Suspense
                                             fallback={
                                                 <div className="p-4">

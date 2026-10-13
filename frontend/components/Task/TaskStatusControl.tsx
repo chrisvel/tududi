@@ -23,6 +23,10 @@ import {
 
 type CompletionMenuTarget = 'desktop' | 'mobile';
 
+const isPhone = () =>
+    typeof window !== 'undefined' &&
+    (window.matchMedia?.('(max-width: 639px)').matches ?? false);
+
 interface TaskStatusControlProps {
     task: Task;
     onToggleCompletion?: () => void;
@@ -71,7 +75,13 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     // Open the status menu upwards when there is not enough room below it
     // (the last rows of a long list), so it never runs off the screen.
     const [menuOpensUp, setMenuOpensUp] = useState(false);
+    // The menu hangs off the control's right edge, which is wrong when the
+    // control sits near the left edge of a narrow screen (the task page on a
+    // phone): the menu would run off the left side. Align it to the left
+    // edge instead whenever that keeps more of it on screen.
+    const [menuAlignsLeft, setMenuAlignsLeft] = useState(false);
     const MENU_HEIGHT = 280;
+    const MENU_WIDTH = 192;
     const toggleMenu = (
         target: CompletionMenuTarget,
         anchor: HTMLElement | null
@@ -80,9 +90,13 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
             const rect = anchor.getBoundingClientRect();
             const below = window.innerHeight - rect.bottom;
             setMenuOpensUp(below < MENU_HEIGHT && rect.top > below);
+            const overflowsLeft = rect.right - MENU_WIDTH < 0;
+            const overflowsRight = rect.left + MENU_WIDTH > window.innerWidth;
+            setMenuAlignsLeft(overflowsLeft && !overflowsRight);
         }
         setCompletionMenuOpen((prev) => (prev === target ? null : target));
     };
+    const menuPlacementClass = `${menuAlignsLeft ? 'left-0' : 'right-0'} ${menuOpensUp ? 'bottom-full mb-1' : 'top-full mt-1'}`;
 
     useEffect(() => {
         if (!completionMenuOpen) return;
@@ -146,6 +160,9 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
         ? 'px-2 py-1 sm:px-2.5'
         : 'px-2 py-1 sm:px-3';
     const quickButtonPaddingClass = isSquareVariant ? 'px-1.5' : 'px-2';
+    // Big enough to hit with a thumb on phones (#1669).
+    const phoneTapTargetClass =
+        'max-sm:min-h-9 max-sm:min-w-9 max-sm:justify-center';
     const hoverPaddingClass = isSquareVariant
         ? 'md:group-hover:px-1.5'
         : 'md:group-hover:px-2';
@@ -374,7 +391,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
             className={`relative ${completionMenuOpen ? 'z-[10000]' : ''} ${className}`}
         >
             <div
-                className={`inline-flex items-stretch ${containerRoundedClass} border ${statusBorderColorClass} overflow-hidden ${hoverRevealQuickActions ? 'group' : ''}`}
+                className={`inline-flex items-stretch ${containerRoundedClass} border ${statusBorderColorClass} overflow-hidden [.task-sheet_&]:rounded-full [.task-sheet_&]:border-transparent [.task-sheet_&_*]:border-transparent ${hoverRevealQuickActions ? 'group' : ''}`}
                 ref={desktopCompletionMenuRef}
             >
                 <button
@@ -387,10 +404,18 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                             ? (e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
+                                  // Phones hide the start/done shortcuts, so
+                                  // the status button opens the menu there.
+                                  if (isPhone()) {
+                                      toggleMenu(
+                                          'desktop',
+                                          desktopCompletionMenuRef.current
+                                      );
+                                  }
                               }
                             : handleCompletionClick
                     }
-                    className={`${completionButtonMainClasses} ${completionButtonPaddingClass} ${statusButtonColorClasses}`}
+                    className={`${completionButtonMainClasses} ${completionButtonPaddingClass} ${phoneTapTargetClass} ${statusButtonColorClasses}`}
                     title={
                         taskCompleted
                             ? t('common.undo', 'Undo')
@@ -443,7 +468,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                         e.stopPropagation();
                         toggleMenu('desktop', desktopCompletionMenuRef.current);
                     }}
-                    className={`${completionButtonChevronClasses} ${quickButtonPaddingClass} border-l ${statusBorderColorClass}`}
+                    className={`${completionButtonChevronClasses} ${quickButtonPaddingClass} ${phoneTapTargetClass} border-l ${statusBorderColorClass}`}
                     aria-haspopup="menu"
                     aria-expanded={completionMenuOpen === 'desktop'}
                 >
@@ -452,7 +477,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
             </div>
             {completionMenuOpen === 'desktop' && (
                 <div
-                    className={`absolute right-0 ${menuOpensUp ? 'bottom-full mb-1' : 'top-full mt-1'} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
+                    className={`absolute ${menuPlacementClass} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
                 >
                     {renderStatusMenuOptions('desktop')}
                 </div>
@@ -540,7 +565,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                     </div>
                     {completionMenuOpen === 'mobile' && (
                         <div
-                            className={`absolute right-0 ${menuOpensUp ? 'bottom-full mb-1' : 'top-full mt-1'} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
+                            className={`absolute ${menuPlacementClass} max-h-[70vh] w-48 overflow-y-auto bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
                         >
                             {renderStatusMenuOptions('mobile')}
                         </div>

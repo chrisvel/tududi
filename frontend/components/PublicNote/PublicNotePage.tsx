@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MoonIcon, SunIcon } from '@heroicons/react/24/solid';
-import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { getApiPath, getAssetPath } from '../../config/paths';
 import { PublicNote, fetchPublicNote } from '../../utils/publicNotesService';
+import PublicNoteArticle, { PublicNoteBackground } from './PublicNoteArticle';
 
 interface PublicNotePageProps {
     isSignedIn: boolean;
@@ -22,7 +22,7 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
     isDarkMode,
     toggleDarkMode,
 }) => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const { token = '' } = useParams<{ token: string }>();
     const [stage, setStage] = useState<Stage>('loading');
     const [note, setNote] = useState<PublicNote | null>(null);
@@ -80,18 +80,13 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
         };
     }, [stage, note]);
 
-    const updated =
-        note?.updated_at &&
-        new Date(note.updated_at).toLocaleDateString(i18n.language, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-
     const showSignUp = !isSignedIn && registrationEnabled;
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+        <div className="relative min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            {stage === 'ready' && (
+                <PublicNoteBackground background={note?.background} />
+            )}
             <nav
                 className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
                 data-testid="public-note-navbar"
@@ -154,7 +149,7 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
             </nav>
 
             <main
-                className={`w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 ${showSignUp ? 'pb-24' : 'pb-16'}`}
+                className={`relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 ${showSignUp ? 'pb-24' : 'pb-16'}`}
             >
                 {stage === 'loading' && (
                     <p
@@ -206,26 +201,13 @@ const PublicNotePage: React.FC<PublicNotePageProps> = ({
                 )}
 
                 {stage === 'ready' && note && (
-                    <article data-testid="public-note">
-                        <header className="mb-6">
-                            <h1 className="text-3xl font-light break-words">
-                                {note.title ||
-                                    t('notes.untitled', 'Untitled Note')}
-                            </h1>
-                            {updated && (
-                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    {t(
-                                        'publicNote.updated',
-                                        'Last updated {{date}}',
-                                        { date: updated }
-                                    )}
-                                </p>
-                            )}
-                        </header>
-                        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 break-words">
-                            <MarkdownRenderer content={note.content || ''} />
-                        </div>
-                    </article>
+                    <PublicNoteArticle
+                        title={note.title}
+                        content={note.content || ''}
+                        color={note.color}
+                        updatedAt={note.updated_at}
+                        linkedNotes={note.linked_notes ?? []}
+                    />
                 )}
             </main>
 

@@ -7,6 +7,7 @@ export interface ShareGrantRequest {
     resource_type: 'project' | 'task' | 'note' | 'area' | 'goal' | 'tag';
     resource_uid: string;
     target_user_email?: string;
+    target_user_id?: number;
     target_group_uid?: string;
     access_level: AccessLevel;
 }
@@ -32,6 +33,24 @@ export async function grantShare(req: ShareGrantRequest): Promise<void> {
         }
         throw new Error(message);
     }
+}
+
+export interface ShareCandidate {
+    id: number;
+    uid: string;
+    name: string;
+}
+
+// The members of the user's workspace, offered in the share modal.
+export async function fetchShareCandidates(): Promise<ShareCandidate[]> {
+    const res = await fetch(getApiPath('shares/candidates'), {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) throw new Error('Failed to load people');
+    const body = await res.json();
+    return body.users || [];
 }
 
 export type ShareStatus = 'pending' | 'accepted';

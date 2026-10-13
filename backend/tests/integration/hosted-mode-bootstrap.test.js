@@ -49,7 +49,7 @@ describe('Hosted mode: admin bootstrap is never implicit', () => {
         expect(roles).toBe(0);
     });
 
-    it('still lets an explicit admin manage roles', async () => {
+    it('lets the explicit admin manage roles but never add a second superadmin', async () => {
         const admin = await createTestUser({
             email: `admin_${Date.now()}@example.com`,
         });
@@ -67,9 +67,20 @@ describe('Hosted mode: admin bootstrap is never implicit', () => {
             .post('/api/admin/set-admin-role')
             .send({ user_id: other.id, is_admin: true });
 
-        expect(res.status).toBe(200);
+        expect(res.status).toBe(400);
         const role = await Role.findOne({ where: { user_id: other.id } });
-        expect(role.is_admin).toBe(true);
+        expect(role.is_admin).toBe(false);
+
+        const guest = await agent
+            .put(`/api/admin/users/${other.id}`)
+            .send({ role: 'guest' });
+        expect(guest.status).toBe(400);
+        expect(guest.body.error || guest.body.message).toMatch(
+            /owner is always an admin/
+        );
+
+        const roles = await agent.get('/api/admin/roles');
+        expect(roles.status).toBe(200);
     });
 });
 

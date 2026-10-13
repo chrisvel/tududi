@@ -163,19 +163,24 @@ test.describe.serial('Disabled', () => {
         await page.goto(appUrl + '/register');
     });
 
-    test('Shows disabled error', async ({ page }) => {
-        const timestamp = Date.now();
-        const email = `test${timestamp}@example.com`;
-        const password = 'password123';
+    test('Shows the closed notice instead of the form', async ({ page }) => {
+        await expect(
+            page.getByRole('heading', { name: /registration closed/i })
+        ).toBeVisible();
+        await expect(page.getByTestId('register-email')).toHaveCount(0);
+        await expect(page.getByRole('link', { name: /back to login/i })).toBeVisible();
+    });
 
-        await page.getByTestId('register-email').fill(email);
-        await page.getByTestId('register-password').fill(password);
-        await page.getByTestId('register-confirm-password').fill(password);
-
-        await page.getByTestId('register-submit').click();
-
-        await expect(page.getByTestId('register-error')).toBeVisible();
-        await expect(page.getByTestId('register-error')).toContainText(/registration is not enabled/i);
+    test('Refuses a direct registration request', async ({ request, baseURL }) => {
+        const appUrl = baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
+        const response = await request.post(`${appUrl}/api/register`, {
+            data: {
+                email: `test${Date.now()}@example.com`,
+                password: 'password123',
+            },
+        });
+        expect(response.ok()).toBe(false);
+        expect(await response.text()).toMatch(/registration is not enabled/i);
     });
 });
 });

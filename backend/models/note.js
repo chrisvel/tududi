@@ -44,6 +44,17 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+            // A content background id (see frontend/constants/contentBackgrounds).
+            background: {
+                type: DataTypes.STRING(40),
+                allowNull: true,
+            },
+            // The public page shows the note's color and background.
+            public_inherit_style: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: true,
+            },
             pin_to_sidebar: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
@@ -85,7 +96,11 @@ module.exports = (sequelize) => {
     Note.prototype.toJSON = function toJSON() {
         const values = this.get({ plain: true });
         if (values.public_token !== undefined) {
-            values.is_public = Boolean(values.public_token);
+            // Sharing that was turned off keeps its token but not its time.
+            values.is_public =
+                values.public_shared_at === undefined
+                    ? Boolean(values.public_token)
+                    : Boolean(values.public_token && values.public_shared_at);
             delete values.public_token;
         }
         return values;

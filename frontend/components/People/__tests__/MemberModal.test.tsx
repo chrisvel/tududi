@@ -58,7 +58,7 @@ describe('Member form', () => {
             renderModal();
 
             expect(
-                screen.getByText('Add member', { selector: 'h3' })
+                screen.getByText('Add member', { selector: 'h2' })
             ).toBeVisible();
             expect(screen.queryByTestId('convert-note')).toBeNull();
         });
@@ -248,12 +248,13 @@ describe('Member form', () => {
             expect(onCreated).not.toHaveBeenCalled();
         });
 
-        it('closes without adding anyone when cancelled', () => {
+        it('closes without adding anyone when cancelled', async () => {
             renderModal();
 
             fireEvent.click(screen.getByText('Cancel'));
 
-            expect(onClose).toHaveBeenCalled();
+            // The panel slides out before it reports the close
+            await waitFor(() => expect(onClose).toHaveBeenCalled());
             expect(createMember).not.toHaveBeenCalled();
         });
     });

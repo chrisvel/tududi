@@ -51,6 +51,7 @@ jest.mock('../../../store/useStore', () => {
             deleteTask: jest.fn(),
         },
         projectsStore: { setProjects: jest.fn() },
+        notesStore: { notes: [], addNote: jest.fn(), setNotes: jest.fn() },
         inboxStore: {
             inboxItems: [{ uid: 'inbox-1', content: 'x', attachments: [] }],
             updateInboxItem: (item: unknown) => updateInboxItem(item),
@@ -288,6 +289,34 @@ describe('QuickCaptureInput files', () => {
         expect(screen.getByTestId('capture-status')).toHaveTextContent(
             'Saved "Receipt" to Inbox.'
         );
+    });
+
+    it('locks Add with a spinner while the files upload', async () => {
+        let finishUpload!: (value: unknown) => void;
+        (uploadInboxAttachment as jest.Mock).mockReturnValue(
+            new Promise((resolve) => {
+                finishUpload = resolve;
+            })
+        );
+        renderBox();
+        await paste([screenshot()]);
+        type('Receipt');
+
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('capture-add'));
+        });
+
+        const add = screen.getByTestId('capture-add');
+        expect(add).toBeDisabled();
+        expect(add).toHaveTextContent('Uploading...');
+        expect(screen.getByTestId('capture-add-spinner')).toBeInTheDocument();
+
+        await act(async () => {
+            finishUpload({ uid: 'att-1', original_filename: 'x.png' });
+        });
+
+        expect(screen.queryByTestId('capture-add-spinner')).toBeNull();
+        expect(screen.getByTestId('capture-add')).toHaveTextContent('Add');
     });
 
     it('refuses a file over the upload limit', async () => {

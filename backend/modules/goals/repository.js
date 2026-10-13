@@ -1,17 +1,39 @@
 'use strict';
 
-const { Goal, Area, Project, Task, sequelize } = require('../../models');
+const {
+    Goal,
+    Area,
+    Project,
+    Task,
+    UserGoalOrder,
+    sequelize,
+} = require('../../models');
 const { Op } = require('sequelize');
+const permissionsService = require('../../services/permissionsService');
+
+const visibleWhere = (resourceType, userId) =>
+    permissionsService.ownershipOrPermissionWhere(resourceType, userId);
+
+const AREA_INCLUDE = {
+    model: Area,
+    attributes: ['id', 'uid', 'name', 'color'],
+};
 
 class GoalsRepository {
     async _attachCounts(goals, userId) {
         if (goals.length === 0) return [];
 
         const goalIds = goals.map((g) => g.id);
+        const [projectWhere, taskWhere] = await Promise.all([
+            visibleWhere('project', userId),
+            visibleWhere('task', userId),
+        ]);
 
         const [projectCounts, taskCounts] = await Promise.all([
             Project.findAll({
-                where: { goal_id: { [Op.in]: goalIds }, user_id: userId },
+                where: {
+                    [Op.and]: [{ goal_id: { [Op.in]: goalIds } }, projectWhere],
+                },
                 attributes: [
                     'goal_id',
                     [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
@@ -21,9 +43,10 @@ class GoalsRepository {
             }),
             Task.findAll({
                 where: {
-                    goal_id: { [Op.in]: goalIds },
-                    user_id: userId,
-                    parent_task_id: null,
+                    [Op.and]: [
+                        { goal_id: { [Op.in]: goalIds }, parent_task_id: null },
+                        taskWhere,
+                    ],
                 },
                 attributes: [
                     'goal_id',
@@ -50,12 +73,51 @@ class GoalsRepository {
         }));
     }
 
+    // Custom order positions of the Goals page for a user, by goal_id.
+    async getUserGoalPositions(userId) {
+        const rows = await UserGoalOrder.findAll({
+            where: { user_id: userId },
+            attributes: ['goal_id', 'position'],
+            raw: true,
+        });
+        const map = {};
+        rows.forEach((row) => {
+            map[row.goal_id] = row.position;
+        });
+        return map;
+    }
+
+    async findIdsByUids(whereClause, uids) {
+        return Goal.findAll({
+            where: { [Op.and]: [whereClause, { uid: { [Op.in]: uids } }] },
+            attributes: ['id', 'uid'],
+            raw: true,
+        });
+    }
+
+    // Replaces the user's whole custom order with goalIds, in that order.
+    async replaceUserGoalOrder(userId, goalIds) {
+        await sequelize.transaction(async (transaction) => {
+            await UserGoalOrder.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
+            await UserGoalOrder.bulkCreate(
+                goalIds.map((goalId, index) => ({
+                    user_id: userId,
+                    goal_id: goalId,
+                    position: index,
+                })),
+                { transaction }
+            );
+        });
+    }
+
+    // Goals the user owns or has been shared.
     async findAllByUser(userId) {
         const goals = await Goal.findAll({
-            where: { user_id: userId },
-            include: [
-                { model: Area, attributes: ['id', 'uid', 'name', 'color'] },
-            ],
+            where: await visibleWhere('goal', userId),
+            include: [AREA_INCLUDE],
             order: [['title', 'ASC']],
         });
         return this._attachCounts(goals, userId);
@@ -63,20 +125,61 @@ class GoalsRepository {
 
     async findAllByArea(userId, areaId) {
         const goals = await Goal.findAll({
-            where: { user_id: userId, area_id: areaId },
-            include: [
-                { model: Area, attributes: ['id', 'uid', 'name', 'color'] },
-            ],
+            where: {
+                [Op.and]: [
+                    { area_id: areaId },
+                    await visibleWhere('goal', userId),
+                ],
+            },
+            include: [AREA_INCLUDE],
             order: [['title', 'ASC']],
         });
         return this._attachCounts(goals, userId);
+    }
+
+    // A goal whoever owns it, with the projects and tasks in it that the user
+    // can see. The caller checks access to the goal itself.
+    async findVisibleByUid(userId, uid) {
+        const [projectWhere, taskWhere] = await Promise.all([
+            visibleWhere('project', userId),
+            visibleWhere('task', userId),
+        ]);
+        return Goal.findOne({
+            where: { uid },
+            include: [
+                AREA_INCLUDE,
+                {
+                    model: Project,
+                    as: 'Projects',
+                    where: projectWhere,
+                    required: false,
+                    attributes: ['id', 'uid', 'name', 'status', 'color'],
+                },
+                {
+                    model: Task,
+                    as: 'Tasks',
+                    where: taskWhere,
+                    required: false,
+                    attributes: [
+                        'id',
+                        'uid',
+                        'name',
+                        'status',
+                        'priority',
+                        'due_date',
+                        'project_id',
+                        'area_id',
+                    ],
+                },
+            ],
+        });
     }
 
     async findByUid(userId, uid) {
         return Goal.findOne({
             where: { uid, user_id: userId },
             include: [
-                { model: Area, attributes: ['id', 'uid', 'name', 'color'] },
+                AREA_INCLUDE,
                 {
                     model: Project,
                     as: 'Projects',

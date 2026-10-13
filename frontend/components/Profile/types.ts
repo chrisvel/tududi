@@ -19,7 +19,7 @@ export interface Features {
 
 export interface UiSettingsAppearance {
     theme?: 'light' | 'dark' | 'system';
-    showTaskContextMenu?: boolean;
+    contentBackground?: string | null;
 }
 
 export interface UiSettings {
@@ -29,6 +29,11 @@ export interface UiSettings {
             showMetrics?: boolean;
         };
     };
+    focus?: {
+        area_uid?: string | null;
+        project_uid?: string | null;
+        tags?: string[];
+    } | null;
     [key: string]: unknown;
 }
 
@@ -101,6 +106,12 @@ export interface NotificationPreferences {
         telegram: boolean;
     };
     habitReminders: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
+    comments: {
         inApp: boolean;
         email: boolean;
         push: boolean;

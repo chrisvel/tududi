@@ -63,7 +63,7 @@ const PlanRow: React.FC<{
             }}
             className={`flex flex-col gap-2 rounded-xl bg-gray-50 px-3 py-2.5 sm:flex-row sm:items-center dark:bg-gray-800/50 ${
                 isDragging ? 'z-10 opacity-70 shadow-lg' : ''
-            }`}
+            }${item.in_focus === false ? ' opacity-50' : ''}`}
             data-testid={`plan-row-${item.task_uid}`}
         >
             <div className="flex min-w-0 flex-1 items-center gap-2">

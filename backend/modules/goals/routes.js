@@ -6,6 +6,8 @@ const goalsController = require('./controller');
 const { requireCapability } = require('../../middleware/roles');
 
 router.get('/goals', goalsController.list);
+// Save the current user's custom order of goals
+router.put('/goals/order', goalsController.reorder);
 router.get('/goals/:uid', goalsController.getOne);
 router.post(
     '/goals',

@@ -22,6 +22,23 @@ const goalsController = {
         }
     },
 
+    /**
+     * PUT /api/goals/order
+     * Save the current user's custom order of goals.
+     */
+    async reorder(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await goalsService.reorder(
+                userId,
+                req.body?.goal_uids
+            );
+            res.json(result);
+        } catch (err) {
+            next(err);
+        }
+    },
+
     async getOne(req, res, next) {
         try {
             const userId = requireUserId(req);

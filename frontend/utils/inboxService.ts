@@ -5,6 +5,7 @@ import { useStore } from '../store/useStore';
 import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
+import { createArea } from './areasService';
 
 export interface InboxRecurrence {
     recurrence_type: RecurrenceType;
@@ -24,6 +25,9 @@ export interface InboxAnalysis {
     parsed_recurrence: InboxRecurrence | null;
     parsed_person: string | null;
     parsed_assignee: { uid: string; name: string } | null;
+    // A ~Area in the text. uid is null for a name that is no area yet; it
+    // is created when the item is saved (see ensureAnalysisArea).
+    parsed_area: { uid: string | null; name: string } | null;
     suggested_type: 'task' | 'note' | null;
     suggested_reason: string | null;
 }
@@ -48,7 +52,23 @@ export const analyzeInboxText = async (
     return response.json();
 };
 
-// Copy the parsed due date, recurrence and assignee onto a task draft.
+// An unknown ~Name is created when the item is saved, the way a new #tag
+// or +project is, so the task can be put in it.
+export const ensureAnalysisArea = async (
+    analysis: InboxAnalysis | null
+): Promise<InboxAnalysis | null> => {
+    const ref = analysis?.parsed_area;
+    if (!analysis || !ref || ref.uid) return analysis;
+    const created = await createArea({ name: ref.name });
+    const { areasStore } = useStore.getState();
+    areasStore.setAreas([...(areasStore.areas ?? []), created]);
+    return {
+        ...analysis,
+        parsed_area: { uid: created.uid, name: created.name },
+    };
+};
+
+// Copy the parsed due date, recurrence, assignee and ~area onto a task draft.
 export const applyAnalysisToTask = (
     task: Task,
     analysis: InboxAnalysis | null | undefined
@@ -63,6 +83,16 @@ export const applyAnalysisToTask = (
     }
     if (analysis.parsed_assignee) {
         next.assigned_to = analysis.parsed_assignee.uid;
+    }
+    if (analysis.parsed_area?.uid) {
+        // The task modal edits the area by id; the API accepts either.
+        const area = useStore
+            .getState()
+            .areasStore?.areas?.find(
+                (entry) => entry.uid === analysis.parsed_area?.uid
+            );
+        next.area_uid = analysis.parsed_area.uid;
+        if (area?.id !== undefined) next.area_id = area.id;
     }
     return next;
 };

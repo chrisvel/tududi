@@ -2,6 +2,7 @@ import { mutate } from 'swr';
 import { useStore } from '../../store/useStore';
 import { useDailyPlanProgress } from '../../store/dailyPlanStore';
 import { resetSessionState } from '../sessionReset';
+import { getCsrfToken } from '../csrfService';
 
 jest.mock('swr', () => ({
     mutate: jest.fn(),
@@ -49,5 +50,24 @@ describe('resetSessionState', () => {
             .projectsStore.setProjects([{ id: 2, name: 'Mine' } as any]);
 
         expect(useStore.getState().projectsStore.projects).toHaveLength(1);
+    });
+
+    it("forgets the old session's CSRF token so the next login fetches a new one", async () => {
+        const fetchMock = jest
+            .fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ csrfToken: 'old-session' }),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ csrfToken: 'new-session' }),
+            });
+        global.fetch = fetchMock as any;
+
+        expect(await getCsrfToken()).toBe('old-session');
+        resetSessionState();
+        expect(await getCsrfToken()).toBe('new-session');
+        expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 });

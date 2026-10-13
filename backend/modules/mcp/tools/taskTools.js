@@ -7,26 +7,36 @@ const {
     serializeTasks,
 } = require('../../tasks/core/serializers');
 const { calculateInitialDueDate } = require('../../tasks/core/builders');
+const { parseEstimatedMinutes } = require('../../tasks/core/parsers');
 const {
     handleRecurrenceUpdate,
+    skipRecurringOccurrence,
     planOccurrenceAdvance,
     recordOccurrence,
     completeOccurrence,
 } = require('../../tasks/operations/recurring');
 const { handleCompletionStatus } = require('../../tasks/operations/completion');
 const { Op } = require('sequelize');
-const { Task, Project, Tag } = require('../../../models');
+const { sequelize, Task, Project, Tag, Area } = require('../../../models');
 const {
     validateProjectAccess,
     validateDeferUntilAndDueDate,
+    validateAreaAccess,
+    validateAssignee,
     getRecurringParentEndDate,
 } = require('../../tasks/utils/validation');
+const { notifyAssignee } = require('../../tasks/operations/assignment');
 const {
     processDueDateForStorage,
     processDeferUntilForStorage,
 } = require('../../../utils/timezone-utils');
 const permissionsService = require('../../../services/permissionsService');
+const { resolveTagsForTransaction } = require('./tagResolver');
 const relationsService = require('../../tasks/relations/service');
+const {
+    computeTaskMetrics,
+} = require('../../tasks/queries/metrics-computation');
+const { filterTasksByParams } = require('../../tasks/queries/query-builders');
 
 const RECURRENCE_TYPES = [
     'none',
@@ -93,11 +103,19 @@ const recurrenceInputSchemaProperties = {
     },
 };
 
+// The area set directly on a task (tasks in a project get theirs from it).
+const AREA_INCLUDE = {
+    model: Area,
+    attributes: ['id', 'name', 'uid', 'color'],
+    required: false,
+};
+
 async function findTaskByIdentifier(identifier) {
     const isNumeric = !isNaN(identifier);
 
     const includeOptions = [
         { model: Project, as: 'Project' },
+        AREA_INCLUDE,
         { model: Tag, as: 'Tags' },
         {
             model: Task,
@@ -129,6 +147,21 @@ async function findTaskByIdentifier(identifier) {
     }
 }
 
+// The same tasks the Today page and the Upcoming view show, as ids.
+async function scheduledTaskIds(type, userId, timezone) {
+    if (type === 'today') {
+        const metrics = await computeTaskMetrics(userId, timezone);
+        return [
+            ...metrics.tasks_in_progress,
+            ...metrics.today_plan_tasks,
+            ...metrics.tasks_due_today,
+            ...metrics.tasks_overdue,
+        ].map((task) => task.id);
+    }
+    const tasks = await filterTasksByParams({ type }, userId, timezone);
+    return tasks.map((task) => task.id);
+}
+
 function registerTaskTools(server, context, tools) {
     // 1. list_tasks - List tasks with filtering
     tools.push({
@@ -140,7 +173,8 @@ function registerTaskTools(server, context, tools) {
                 type: {
                     type: 'string',
                     enum: ['today', 'upcoming', 'completed', 'archived', 'all'],
-                    description: 'Filter tasks by type',
+                    description:
+                        'Filter tasks by type. today: what the Today page shows (in progress, planned for today, due today, overdue). upcoming: tasks due or deferred in the next 7 days.',
                 },
                 status: {
                     type: 'string',
@@ -213,17 +247,41 @@ function registerTaskTools(server, context, tools) {
                 whereClause.status = 2;
             } else if (params.type === 'archived') {
                 whereClause.status = 3;
-            } else if (params.type === 'today' || params.type === 'upcoming') {
-                whereClause.status = { [Op.ne]: 3 };
+            }
+
+            const scheduled =
+                params.type === 'today' || params.type === 'upcoming';
+            if (scheduled) {
+                const ids = await scheduledTaskIds(
+                    params.type,
+                    context.userId,
+                    context.user.timezone
+                );
+                whereClause.id = { [Op.in]: [...new Set(ids)] };
+                if (!params.status) {
+                    whereClause.status = {
+                        [Op.notIn]: [
+                            Task.STATUS.DONE,
+                            Task.STATUS.ARCHIVED,
+                            Task.STATUS.CANCELLED,
+                        ],
+                    };
+                }
             }
 
             const tasks = await taskRepository.findAll(whereClause, {
                 include: [
                     { model: Project, as: 'Project' },
+                    AREA_INCLUDE,
                     { model: Tag, as: 'Tags' },
                 ],
                 limit: limit,
-                order: [['created_at', 'DESC']],
+                order: scheduled
+                    ? [
+                          ['due_date', 'ASC NULLS LAST'],
+                          ['created_at', 'DESC'],
+                      ]
+                    : [['created_at', 'DESC']],
             });
 
             const serializedTasks = await serializeTasks(
@@ -321,6 +379,11 @@ function registerTaskTools(server, context, tools) {
                     enum: ['low', 'medium', 'high'],
                     description: 'Task priority',
                 },
+                estimated_minutes: {
+                    type: 'number',
+                    description:
+                        'Estimated duration in minutes (whole number between 5 and 720)',
+                },
                 due_date: {
                     type: 'string',
                     description:
@@ -334,6 +397,20 @@ function registerTaskTools(server, context, tools) {
                 project_id: {
                     type: 'number',
                     description: 'Project ID to assign task to',
+                },
+                area_id: {
+                    type: 'number',
+                    description: 'Area ID to assign task to directly',
+                },
+                area_uid: {
+                    type: 'string',
+                    description:
+                        'Area UID to assign task to directly (alternative to area_id)',
+                },
+                assigned_to: {
+                    type: 'string',
+                    description:
+                        'Person UID to assign the task to (see list_people)',
                 },
                 tags: {
                     type: 'array',
@@ -351,6 +428,15 @@ function registerTaskTools(server, context, tools) {
             const resolvedProjectId = params.project_id
                 ? await validateProjectAccess(params.project_id, context.userId)
                 : null;
+            const resolvedAreaId = await validateAreaAccess(
+                params.area_uid || params.area_id,
+                context.userId
+            );
+            const assignedTo = await validateAssignee(
+                params.assigned_to,
+                context.userId,
+                { projectId: resolvedProjectId }
+            );
 
             const recurrenceType = params.recurrence_type || 'none';
             let dueDateInput = params.due_date || null;
@@ -390,6 +476,8 @@ function registerTaskTools(server, context, tools) {
                 due_date: dueDate,
                 defer_until: deferUntil,
                 project_id: resolvedProjectId,
+                area_id: resolvedAreaId,
+                assigned_to: assignedTo,
                 recurrence_type: recurrenceType,
                 recurrence_interval: params.recurrence_interval ?? null,
                 recurrence_end_date: params.recurrence_end_date || null,
@@ -412,19 +500,29 @@ function registerTaskTools(server, context, tools) {
                 completion_based: params.completion_based || false,
             };
 
-            await entitlements.assertCanCreate(context.userId, 'task');
-            const task = await taskRepository.create(taskData);
-
-            if (params.tags && params.tags.length > 0) {
-                const tagInstances = [];
-                for (const tagName of params.tags) {
-                    const [tag] = await Tag.findOrCreate({
-                        where: { name: tagName, user_id: context.userId },
-                    });
-                    tagInstances.push(tag);
-                }
-                await task.setTags(tagInstances);
+            if (params.estimated_minutes !== undefined) {
+                taskData.estimated_minutes = parseEstimatedMinutes(
+                    params.estimated_minutes
+                );
             }
+
+            await entitlements.assertCanCreate(context.userId, 'task');
+            const task = await sequelize.transaction(async (transaction) => {
+                const task = await taskRepository.create(taskData, {
+                    transaction,
+                });
+
+                const tagInstances = await resolveTagsForTransaction(
+                    params.tags,
+                    context.userId,
+                    transaction
+                );
+                if (tagInstances !== undefined) {
+                    await task.setTags(tagInstances, { transaction });
+                }
+
+                return task;
+            });
 
             const reloadedTask = await taskRepository.findByIdAndUser(
                 task.id,
@@ -432,10 +530,13 @@ function registerTaskTools(server, context, tools) {
                 {
                     include: [
                         { model: Project, as: 'Project' },
+                        AREA_INCLUDE,
                         { model: Tag, as: 'Tags' },
                     ],
                 }
             );
+
+            await notifyAssignee(reloadedTask, null, context.userId);
 
             const serialized = await serializeTask(
                 reloadedTask,
@@ -491,6 +592,11 @@ function registerTaskTools(server, context, tools) {
                 'planned',
             ],
         },
+        estimated_minutes: {
+            type: 'number',
+            description:
+                'Estimated duration in minutes (whole number between 5 and 720; pass null to clear)',
+        },
         due_date: {
             type: 'string',
             description:
@@ -505,6 +611,21 @@ function registerTaskTools(server, context, tools) {
             type: 'number',
             description:
                 'Project ID to assign task to (use null to remove project)',
+        },
+        area_id: {
+            type: 'number',
+            description:
+                'Area ID to assign task to directly (use null to remove area)',
+        },
+        area_uid: {
+            type: 'string',
+            description:
+                'Area UID to assign task to directly (alternative to area_id)',
+        },
+        assigned_to: {
+            type: ['string', 'null'],
+            description:
+                'Person UID to assign the task to (see list_people), or null to unassign',
         },
         today: {
             type: 'boolean',
@@ -556,6 +677,7 @@ function registerTaskTools(server, context, tools) {
                 throw new Error('Access denied');
             }
 
+            const previousAssignedTo = task.assigned_to;
             const updates = {};
             if (params.name !== undefined) updates.name = params.name;
             const incomingNote = params.note ?? params.description;
@@ -563,6 +685,11 @@ function registerTaskTools(server, context, tools) {
             if (params.priority) {
                 const priorityMap = { low: 0, medium: 1, high: 2 };
                 updates.priority = priorityMap[params.priority];
+            }
+            if (params.estimated_minutes !== undefined) {
+                updates.estimated_minutes = parseEstimatedMinutes(
+                    params.estimated_minutes
+                );
             }
             if (params.status) {
                 const statusMap = {
@@ -600,6 +727,29 @@ function registerTaskTools(server, context, tools) {
                     context.userId
                 );
                 updates.project_id = validProjectId;
+            }
+            const areaIdentifier =
+                params.area_uid !== undefined
+                    ? params.area_uid
+                    : params.area_id;
+            if (areaIdentifier !== undefined) {
+                updates.area_id = await validateAreaAccess(
+                    areaIdentifier,
+                    context.userId
+                );
+            }
+            if (params.assigned_to !== undefined) {
+                updates.assigned_to = await validateAssignee(
+                    params.assigned_to,
+                    context.userId,
+                    {
+                        projectId:
+                            updates.project_id !== undefined
+                                ? updates.project_id
+                                : task.project_id,
+                        currentAssignedTo: task.assigned_to,
+                    }
+                );
             }
             if (params.today !== undefined) updates.today = params.today;
 
@@ -698,7 +848,18 @@ function registerTaskTools(server, context, tools) {
                 updates.due_date = recurringOccurrence.nextDueDate;
             }
 
-            await task.update(updates);
+            await sequelize.transaction(async (transaction) => {
+                await task.update(updates, { transaction });
+
+                const tagInstances = await resolveTagsForTransaction(
+                    params.tags,
+                    context.userId,
+                    transaction
+                );
+                if (tagInstances !== undefined) {
+                    await task.setTags(tagInstances, { transaction });
+                }
+            });
 
             if (recurringOccurrence) {
                 await recordOccurrence(
@@ -708,23 +869,19 @@ function registerTaskTools(server, context, tools) {
                 );
             }
 
-            if (params.tags !== undefined) {
-                const tagInstances = [];
-                for (const tagName of params.tags) {
-                    const [tag] = await Tag.findOrCreate({
-                        where: { name: tagName, user_id: context.userId },
-                    });
-                    tagInstances.push(tag);
-                }
-                await task.setTags(tagInstances);
-            }
-
             const reloadedTask = await taskRepository.findById(task.id, {
                 include: [
                     { model: Project, as: 'Project' },
+                    AREA_INCLUDE,
                     { model: Tag, as: 'Tags' },
                 ],
             });
+
+            await notifyAssignee(
+                reloadedTask,
+                previousAssignedTo,
+                context.userId
+            );
 
             const serialized = await serializeTask(
                 reloadedTask,
@@ -817,6 +974,7 @@ function registerTaskTools(server, context, tools) {
             const reloadedTask = await taskRepository.findById(task.id, {
                 include: [
                     { model: Project, as: 'Project' },
+                    AREA_INCLUDE,
                     { model: Tag, as: 'Tags' },
                 ],
             });
@@ -859,7 +1017,86 @@ function registerTaskTools(server, context, tools) {
         },
     });
 
-    // 6. delete_task - Delete task (owner only)
+    // 6. skip_task_occurrence - Skip one occurrence of a recurring task
+    tools.push({
+        name: 'skip_task_occurrence',
+        description:
+            'Skip the current occurrence of a recurring task: move it to its next due date without counting it as completed',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                id: {
+                    type: ['number', 'string'],
+                    description: 'Task ID or UID',
+                },
+            },
+            required: ['id'],
+        },
+        handler: async (params) => {
+            const task = await findTaskByIdentifier(params.id);
+
+            if (!task) {
+                throw new Error(`Task not found: ${params.id}`);
+            }
+
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'task',
+                task.uid
+            );
+            const canWrite =
+                task.user_id === context.userId ||
+                access === permissionsService.ACCESS.RW ||
+                access === permissionsService.ACCESS.ADMIN;
+            if (!canWrite) {
+                throw new Error('Access denied');
+            }
+
+            const result = await skipRecurringOccurrence(
+                task,
+                context.userId,
+                context.user.timezone
+            );
+            if (result.error) {
+                throw new Error(result.error);
+            }
+
+            const reloadedTask = await taskRepository.findById(task.id, {
+                include: [
+                    { model: Project, as: 'Project' },
+                    AREA_INCLUDE,
+                    { model: Tag, as: 'Tags' },
+                ],
+            });
+
+            const serialized = await serializeTask(
+                reloadedTask,
+                context.user.timezone,
+                { preserveOriginalName: true }
+            );
+
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify(
+                            {
+                                message: 'Occurrence skipped',
+                                skipped_due_date:
+                                    result.originalDueDate.toISOString(),
+                                next_due_date: result.nextDueDate.toISOString(),
+                                task: serialized,
+                            },
+                            null,
+                            2
+                        ),
+                    },
+                ],
+            };
+        },
+    });
+
+    // 7. delete_task - Delete task (owner only)
     tools.push({
         name: 'delete_task',
         description: 'Permanently delete a task',
@@ -904,7 +1141,7 @@ function registerTaskTools(server, context, tools) {
         },
     });
 
-    // 7. add_subtask - Add subtask to parent
+    // 8. add_subtask - Add subtask to parent
     tools.push({
         name: 'add_subtask',
         description: 'Add a subtask to an existing task',
@@ -975,6 +1212,7 @@ function registerTaskTools(server, context, tools) {
                 {
                     include: [
                         { model: Project, as: 'Project' },
+                        AREA_INCLUDE,
                         { model: Tag, as: 'Tags' },
                     ],
                 }
@@ -1148,7 +1386,7 @@ function registerTaskTools(server, context, tools) {
         },
     });
 
-    // 8. get_task_metrics - Get task statistics
+    // 9. get_task_metrics - Get task statistics
     tools.push({
         name: 'get_task_metrics',
         description: 'Get task statistics and productivity metrics',

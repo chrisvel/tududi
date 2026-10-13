@@ -49,6 +49,10 @@ jest.mock('../components/Area/AreaModal', () => ({
     __esModule: true,
     default: () => null,
 }));
+jest.mock('../components/Habits/HabitModal', () => ({
+    __esModule: true,
+    default: () => null,
+}));
 jest.mock('../components/Tag/TagModal', () => ({
     __esModule: true,
     default: () => null,

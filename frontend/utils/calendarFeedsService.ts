@@ -108,9 +108,13 @@ export const deleteCalendarFeed = async (uid: string): Promise<void> => {
 };
 
 export const fetchCalendarEvents = async (
-    date?: string
+    date?: string,
+    options: { refresh?: boolean } = {}
 ): Promise<CalendarEventsResponse> => {
-    const query = date ? `?date=${encodeURIComponent(date)}` : '';
+    const params = new URLSearchParams();
+    if (date) params.set('date', date);
+    if (options.refresh) params.set('refresh', '1');
+    const query = params.toString() ? `?${params.toString()}` : '';
     const response = await fetch(getApiPath(`calendar-feeds/events${query}`), {
         credentials: 'include',
         headers: getDefaultHeaders(),

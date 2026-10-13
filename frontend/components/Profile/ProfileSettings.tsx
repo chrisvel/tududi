@@ -152,7 +152,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         task_summary_frequency: 'daily',
         features: {
             ai_assistant_enabled: false,
-            pomodoro_enabled: true,
+            pomodoro_enabled: false,
             eisenhower_enabled: false,
             kanban_enabled: false,
             habits_enabled: true,
@@ -162,7 +162,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         ui_settings: {
             appearance: {
                 theme: isDarkMode ? 'dark' : 'light',
-                showTaskContextMenu: false,
             },
         },
         notification_preferences: null,
@@ -563,7 +562,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         pomodoro_enabled:
                             data.features?.pomodoro_enabled !== undefined
                                 ? data.features.pomodoro_enabled
-                                : true,
+                                : false,
                         eisenhower_enabled:
                             data.features?.eisenhower_enabled !== undefined
                                 ? data.features.eisenhower_enabled
@@ -592,9 +591,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 data.appearance ??
                                 (isDarkMode ? 'dark' : 'light')) as
                                 'light' | 'dark' | 'system',
-                            showTaskContextMenu:
+                            contentBackground:
                                 data.ui_settings?.appearance
-                                    ?.showTaskContextMenu ?? false,
+                                    ?.contentBackground ?? null,
                         },
                     },
                     notification_preferences:
@@ -1331,16 +1330,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             }
 
             if (
-                updatedProfile.ui_settings?.appearance?.showTaskContextMenu !==
+                updatedProfile.ui_settings?.appearance?.contentBackground !==
                 undefined
             ) {
                 useStore
                     .getState()
-                    .userSettingsStore.setShowTaskContextMenu(
-                        Boolean(
-                            updatedProfile.ui_settings.appearance
-                                .showTaskContextMenu
-                        )
+                    .userSettingsStore.setContentBackground(
+                        updatedProfile.ui_settings.appearance
+                            .contentBackground ?? null
                     );
             }
 
@@ -1558,11 +1555,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             },
                                         }))
                                     }
-                                    showTaskContextMenu={Boolean(
+                                    contentBackground={
                                         formData.ui_settings?.appearance
-                                            ?.showTaskContextMenu
-                                    )}
-                                    onToggleTaskContextMenu={() =>
+                                            ?.contentBackground ?? null
+                                    }
+                                    onContentBackgroundChange={(background) =>
                                         setFormData((prev) => ({
                                             ...prev,
                                             ui_settings: {
@@ -1570,10 +1567,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 appearance: {
                                                     ...(prev.ui_settings
                                                         ?.appearance || {}),
-                                                    showTaskContextMenu:
-                                                        !prev.ui_settings
-                                                            ?.appearance
-                                                            ?.showTaskContextMenu,
+                                                    contentBackground:
+                                                        background,
                                                 },
                                             },
                                         }))

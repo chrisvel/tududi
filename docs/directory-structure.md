@@ -308,12 +308,9 @@ tududi/                      # Repository root
 ├── components/          # React components (feature-based)
 │   │
 │   ├── Task/           # Task-related components
-│   │   ├── TasksToday.tsx         # Today page
-│   │   ├── TodaySettingsDropdown.tsx
 │   │   ├── TaskDetails.tsx
 │   │   ├── TaskItem.tsx, TaskList.tsx, GroupedTaskList.tsx
 │   │   ├── TaskComments.tsx, CommentComposer.tsx
-│   │   ├── ActiveProjectsSection.tsx, BurndownChart.tsx
 │   │   ├── TaskDetails/         # Task detail sidebar cards
 │   │   │   ├── TaskProjectCard.tsx
 │   │   │   ├── TaskAreaCard.tsx
@@ -432,7 +429,6 @@ tududi/                      # Repository root
 │   ├── Utilities
 │   │   ├── dateUtils.ts           # Date/time helpers
 │   │   ├── timezoneUtils.ts       # Timezone handling
-│   │   ├── taskSortUtils.ts       # Task sorting logic
 │   │   ├── localeUtils.ts         # i18n helpers
 │   │   ├── keyboardShortcutsService.ts # Shortcut definitions
 │   │   ├── bannersService.ts      # Banner management

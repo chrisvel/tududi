@@ -37,6 +37,17 @@ const sessionStore = new SequelizeStore({
     db: sequelize,
 });
 
+// Browsers read a backslash in an http(s) URL as a slash, so a path like
+// /\evil.example can come back in a redirect as a link to another host
+// (GHSA-m2j3-rgfr-57pq). No route uses one, so refuse them outright.
+app.use((req, res, next) => {
+    const pathname = req.originalUrl.split('?')[0];
+    if (/\\|%5c/i.test(pathname)) {
+        return res.status(400).send('Bad Request');
+    }
+    return next();
+});
+
 // Middlewares
 app.use(
     helmet({
@@ -57,7 +68,13 @@ app.use(
                 fontSrc: ["'self'"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
-                frameSrc: ["'self'", 'https://challenges.cloudflare.com'],
+                // youtube-nocookie.com plays the welcome video on the
+                // starter picker
+                frameSrc: [
+                    "'self'",
+                    'https://challenges.cloudflare.com',
+                    'https://www.youtube-nocookie.com',
+                ],
                 upgradeInsecureRequests:
                     process.env.UPGRADE_INSECURE_REQUESTS === 'true'
                         ? []
@@ -247,12 +264,31 @@ app.use((req, res, next) => {
     return next();
 });
 
+// Counts page views for the admin dashboard. Before the host switches so the
+// marketing and blog hosts are seen too; it only looks at the finished
+// response, so it cannot change what is served.
+app.use(require('./services/visitService').track());
+
 // Marketing page for the hostnames in TUDUDI_LANDING_HOSTS. A no-op unless
 // that variable is set, so a self-hosted instance never sees it. It sits
 // before the static handlers because the landing hosts must not serve the
 // app shell at '/'.
 const landingModule = require('./modules/landing');
 app.use(landingModule.hostSwitch(config.landing));
+
+// The blog at the root of the hostnames in TUDUDI_BLOG_HOSTS. Also a no-op
+// unless set; it serves the app shell marked as the blog, so it sits before
+// the static handlers for the same reason.
+const blogModule = require('./modules/blog');
+app.use(
+    blogModule.hostSwitch({
+        shellPath: () =>
+            serveFromDist
+                ? distIndexPath
+                : path.join(__dirname, '../public', 'index.html'),
+        cacheShell: config.production,
+    })
+);
 
 // Static files. Webpack output is content-hashed, so the bundles can be
 // cached for a year; the shell (index.html) and the service worker must
@@ -262,6 +298,7 @@ if (serveFromDist) {
     app.use(
         express.static(path.join(__dirname, 'dist'), {
             index: false,
+            redirect: false,
             maxAge: '1y',
             immutable: true,
             setHeaders: (res, filePath) => {
@@ -273,16 +310,23 @@ if (serveFromDist) {
         })
     );
 } else {
-    app.use(express.static('public'));
+    app.use(express.static('public', { redirect: false }));
 }
 
 // Serve locales
 if (serveFromDist) {
-    app.use('/locales', express.static(path.join(__dirname, 'dist/locales')));
+    app.use(
+        '/locales',
+        express.static(path.join(__dirname, 'dist/locales'), {
+            redirect: false,
+        })
+    );
 } else {
     app.use(
         '/locales',
-        express.static(path.join(__dirname, '../public/locales'))
+        express.static(path.join(__dirname, '../public/locales'), {
+            redirect: false,
+        })
     );
 }
 
@@ -312,6 +356,7 @@ const registerUploadsStatic = (basePath) => {
         uploadsLimiter,
         uploadsAccessControl,
         express.static(config.uploadPath, {
+            redirect: false,
             setHeaders: (res, filePath) => {
                 res.setHeader('X-Content-Type-Options', 'nosniff');
                 const ext = path.extname(filePath).toLowerCase();
@@ -344,6 +389,7 @@ const adminModule = require('./modules/admin');
 const areasModule = require('./modules/areas');
 const goalsModule = require('./modules/goals');
 const dailyPlanModule = require('./modules/daily-plan');
+const onboardingModule = require('./modules/onboarding');
 const calendarFeedsModule = require('./modules/calendar-feeds');
 const authModule = require('./modules/auth');
 const backupModule = require('./modules/backup');
@@ -374,6 +420,8 @@ const templatesModule = require('./modules/templates');
 const reportsModule = require('./modules/reports');
 const everyoneModule = require('./modules/everyone');
 const groupsModule = require('./modules/groups');
+const feedbackModule = require('./modules/feedback');
+const pushModule = require('./modules/push');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -460,6 +508,7 @@ const registerApiRoutes = (basePath) => {
     app.use(`${basePath}/oidc`, oidcModule.routes);
     // Public note links: reachable without signing in
     app.use(basePath, notesModule.publicRoutes);
+    app.use(basePath, blogModule.routes);
 
     app.use(basePath, requireAuth);
     // Instances that sell access close everything past this point until the
@@ -475,6 +524,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, areasModule.routes);
     app.use(basePath, goalsModule.routes);
     app.use(basePath, dailyPlanModule.routes);
+    app.use(basePath, onboardingModule.routes);
     app.use(basePath, calendarFeedsModule.routes);
     app.use(basePath, notesModule.routes);
     app.use(basePath, tagsModule.routes);
@@ -497,6 +547,8 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, reportsModule.routes);
     app.use(basePath, everyoneModule.routes);
     app.use(basePath, groupsModule.routes);
+    app.use(basePath, feedbackModule.routes);
+    app.use(basePath, pushModule.routes);
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility
@@ -574,6 +626,20 @@ async function startServer() {
         const { assertHostedConfig } = require('./config/hostedConfig');
         assertHostedConfig();
         billingModule.billingService.validateConfig();
+
+        // A hosted instance puts every customer and its members into an
+        // account (a no-op once done, and on a self-hosted instance).
+        try {
+            const placed =
+                await require('./services/accountsService').backfill();
+            if (placed.users || placed.groups) {
+                console.log(
+                    `Accounts: placed ${placed.users} users and ${placed.groups} groups`
+                );
+            }
+        } catch (error) {
+            console.error('Could not place users into accounts:', error);
+        }
 
         const server = app.listen(config.port, config.host, () => {
             console.log(`Server running on port ${config.port}`);

@@ -109,8 +109,8 @@ export const fetchNoteBacklinks = async (noteUid: string): Promise<BacklinkNote[
     return await response.json();
 };
 
-export const fetchNoteBySlug = async (uidSlug: string): Promise<Note> => {
-    const response = await fetch(getApiPath(`note/${uidSlug}`), {
+const requestNoteBySlug = (uidSlug: string): Promise<Response> =>
+    fetch(getApiPath(`note/${uidSlug}`), {
         credentials: 'include',
         headers: {
             ...getDefaultHeaders(),
@@ -118,6 +118,43 @@ export const fetchNoteBySlug = async (uidSlug: string): Promise<Note> => {
         },
         cache: 'no-store',
     });
+
+// A note opened by link is requested as soon as the app boots, alongside
+// the user and translation requests, instead of after the page mounts
+// (#1785). The first fetchNoteBySlug for that note picks it up.
+const PREFETCH_MAX_AGE_MS = 15000;
+let prefetchedNote: {
+    uidSlug: string;
+    response: Promise<Response>;
+    startedAt: number;
+} | null = null;
+
+export const prefetchNoteFromPath = (pathname: string): void => {
+    const match = pathname.match(/^\/notes\/([^/?#]+)\/?$/);
+    if (!match) return;
+    const uidSlug = decodeURIComponent(match[1]);
+    const response = requestNoteBySlug(uidSlug);
+    // Errors surface when the page asks for the note.
+    response.catch(() => undefined);
+    prefetchedNote = { uidSlug, response, startedAt: Date.now() };
+};
+
+const takePrefetchedNote = (uidSlug: string): Promise<Response> | null => {
+    const prefetched = prefetchedNote;
+    prefetchedNote = null;
+    if (
+        !prefetched ||
+        prefetched.uidSlug !== uidSlug ||
+        Date.now() - prefetched.startedAt > PREFETCH_MAX_AGE_MS
+    ) {
+        return null;
+    }
+    return prefetched.response;
+};
+
+export const fetchNoteBySlug = async (uidSlug: string): Promise<Note> => {
+    const response = await (takePrefetchedNote(uidSlug) ??
+        requestNoteBySlug(uidSlug));
 
     await handleAuthResponse(response, 'Failed to fetch note.');
     return await response.json();

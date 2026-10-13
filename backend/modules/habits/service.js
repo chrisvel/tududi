@@ -286,11 +286,7 @@ class HabitsService {
     async setArchived(userId, uid, archived) {
         const habit = await this.loadHabit(userId, uid);
         await habitsRepository.update(habit, {
-            status: archived
-                ? habitService.ARCHIVED_STATUS
-                : habit.habit_total_completions > 0
-                  ? 2
-                  : 0,
+            status: archived ? habitService.ARCHIVED_STATUS : 0,
         });
         const ctx = await habitService.getUserContext(userId);
         const evaluation = await habitService.refresh(habit, ctx);

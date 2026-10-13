@@ -1,6 +1,20 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Role, WaitlistSubscriber } = require('../../models');
+const {
+    Role,
+    WaitlistSubscriber,
+    BillingAccount,
+    Project,
+    Task,
+    Note,
+    Tag,
+    Person,
+    DailyPlan,
+    DailyPlanItem,
+    sequelize,
+} = require('../../models');
+const { getConfig } = require('../../config/config');
+const entitlements = require('../../services/entitlementsService');
 const { createTestUser } = require('../helpers/testUtils');
 
 const login = async (user) => {
@@ -41,6 +55,208 @@ describe('Admin dashboard', () => {
         expect(res.body.billing).toHaveProperty('paying');
         expect(res.body.instance).toHaveProperty('registration_enabled');
         expect(typeof res.body.instance.version).toBe('string');
+    });
+
+    it('counts who planned a first day and who kept planning', async () => {
+        const DAY_MS = 24 * 60 * 60 * 1000;
+        const dayKey = (d) => new Date(d).toISOString().slice(0, 10);
+        const planDay = async (owner, date, size) => {
+            const plan = await DailyPlan.create({
+                user_id: owner.id,
+                plan_date: date,
+            });
+            for (let i = 0; i < size; i++) {
+                const task = await Task.create({
+                    name: `t${i}`,
+                    user_id: owner.id,
+                });
+                await DailyPlanItem.create({
+                    daily_plan_id: plan.id,
+                    task_id: task.id,
+                    position: i,
+                    duration_minutes: 30,
+                });
+            }
+        };
+
+        // This week's signup planned three tasks: counts as a first plan.
+        await planDay(plain, dayKey(Date.now()), 3);
+
+        // Last week's signup planned on three days inside the first week.
+        const older = await createTestUser({
+            email: `old_${Date.now()}@example.com`,
+        });
+        const tenDaysAgo = new Date(Date.now() - 10 * DAY_MS);
+        // Sequelize guards created_at, so the signup date moves by hand.
+        await sequelize.query(
+            'UPDATE users SET created_at = :at WHERE id = :id',
+            { replacements: { at: tenDaysAgo, id: older.id } }
+        );
+        for (let i = 0; i < 3; i++) {
+            await planDay(older, dayKey(tenDaysAgo.getTime() + i * DAY_MS), 1);
+        }
+
+        const res = await adminAgent.get('/api/admin/overview');
+        expect(res.status).toBe(200);
+        const { onboarding } = res.body.trends;
+        expect(onboarding.new_users).toBeGreaterThanOrEqual(2);
+        expect(onboarding.first_plan).toBe(1);
+        expect(onboarding.cohort).toBeGreaterThanOrEqual(1);
+        expect(onboarding.three_days).toBe(1);
+    });
+
+    it('reports 14 days of signups, activation and active users', async () => {
+        await Task.create({ name: 'First', user_id: plain.id });
+
+        const res = await adminAgent.get('/api/admin/overview');
+        expect(res.status).toBe(200);
+        const { trends } = res.body;
+        expect(trends.days).toHaveLength(14);
+        expect(trends.days[13].date).toBe(
+            new Date().toISOString().slice(0, 10)
+        );
+        expect(trends.days[13].signups).toBeGreaterThanOrEqual(2);
+        expect(trends.signups.last7d).toBe(
+            trends.days.slice(7).reduce((n, d) => n + d.signups, 0)
+        );
+        expect(trends.activation.new_users).toBeGreaterThanOrEqual(2);
+        expect(trends.activation.activated).toBeGreaterThanOrEqual(1);
+        expect(trends.activation.activated).toBeLessThan(
+            trends.activation.new_users
+        );
+        expect(trends.active_users_7d).toBeGreaterThanOrEqual(1);
+        expect(trends.billing).toBeNull();
+    });
+
+    it('adds trial and churn signals on a hosted instance', async () => {
+        const hosted = getConfig().hosted;
+        const saved = { enabled: hosted.enabled };
+        hosted.enabled = true;
+        entitlements.invalidate();
+        const DAY = 24 * 60 * 60 * 1000;
+        try {
+            await BillingAccount.create({
+                user_id: plain.id,
+                plan: 'free',
+                status: 'none',
+                trial_started_at: new Date(Date.now() - DAY),
+                trial_ends_at: new Date(Date.now() + 3 * DAY),
+            });
+            await BillingAccount.create({
+                user_id: admin.id,
+                plan: 'pro',
+                status: 'canceled',
+                canceled_at: new Date(Date.now() - DAY),
+                last_payment_failed_at: new Date(Date.now() - 2 * DAY),
+            });
+
+            const res = await adminAgent.get('/api/admin/overview');
+            expect(res.body.trends.billing).toEqual({
+                trials_started_7d: 1,
+                trials_ending_7d: 1,
+                canceled_7d: 1,
+                payment_failed_7d: 1,
+            });
+        } finally {
+            Object.assign(hosted, saved);
+            entitlements.invalidate();
+        }
+    });
+
+    it('lists users with their trial, days left and payment', async () => {
+        const hosted = getConfig().hosted;
+        const saved = { enabled: hosted.enabled };
+        hosted.enabled = true;
+        entitlements.invalidate();
+        const DAY = 24 * 60 * 60 * 1000;
+        try {
+            await BillingAccount.create({
+                user_id: plain.id,
+                plan: 'free',
+                status: 'none',
+                trial_started_at: new Date(Date.now() - DAY),
+                trial_ends_at: new Date(Date.now() + 9.5 * DAY),
+            });
+            const payer = await createTestUser({
+                email: `pay_${Date.now()}@example.com`,
+            });
+            await BillingAccount.create({
+                user_id: payer.id,
+                plan: 'pro',
+                status: 'active',
+                provider_subscription_id: 'sub_1',
+            });
+
+            const res = await adminAgent.get('/api/admin/overview/users');
+            expect(res.status).toBe(200);
+            expect(res.body.hosted).toBe(true);
+            const byId = new Map(res.body.users.map((u) => [u.id, u]));
+
+            const trial = byId.get(plain.id);
+            expect(trial.access).toBe('trial');
+            expect(trial.trial_days_left).toBe(10);
+            expect(trial.paid).toBe(false);
+            expect(trial).not.toHaveProperty('password_digest');
+
+            const paying = byId.get(payer.id);
+            expect(paying.access).toBe('subscription');
+            expect(paying.paid).toBe(true);
+            expect(paying.trial_days_left).toBeNull();
+
+            expect(byId.get(admin.id).access).toBe('admin');
+        } finally {
+            Object.assign(hosted, saved);
+            entitlements.invalidate();
+        }
+    });
+
+    it('counts the items each user created', async () => {
+        const project = await Project.create({
+            name: 'P',
+            user_id: plain.id,
+        });
+        const parent = await Task.create({
+            name: 'Weekly',
+            user_id: plain.id,
+            project_id: project.id,
+            recurrence_type: 'weekly',
+        });
+        await Task.create({
+            name: 'Generated',
+            user_id: plain.id,
+            recurring_parent_id: parent.id,
+        });
+        await Task.create({ name: 'Run', user_id: plain.id, habit_mode: true });
+        await Note.create({ title: 'N', content: 'x', user_id: plain.id });
+        await Tag.create({ name: 'home', user_id: plain.id });
+        await Person.create({ name: 'Alex', user_id: plain.id });
+
+        const res = await adminAgent.get('/api/admin/overview/users');
+        expect(res.status).toBe(200);
+        const byId = new Map(res.body.users.map((u) => [u.id, u]));
+
+        const usage = byId.get(plain.id).usage;
+        expect(usage.counts).toEqual({
+            tasks: 1,
+            habits: 1,
+            projects: 1,
+            notes: 1,
+            tags: 1,
+            people: 1,
+        });
+        expect(usage.total).toBe(6);
+        expect(usage.last_created_at).not.toBeNull();
+
+        expect(byId.get(admin.id).usage).toEqual({
+            total: 0,
+            counts: {},
+            last_created_at: null,
+        });
+    });
+
+    it('keeps the user list from regular users', async () => {
+        const res = await plainAgent.get('/api/admin/overview/users');
+        expect(res.status).toBe(403);
     });
 
     it('lists the waitlist newest first', async () => {

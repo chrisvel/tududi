@@ -18,11 +18,14 @@ import TaskRelationsCard from '../TaskDetails/TaskRelationsCard';
 import {
     fetchTaskByUid,
     fetchTaskRelations,
+    TASK_RELATIONS_CHANGED_EVENT,
+    TaskRelationsChangedDetail,
 } from '../../../utils/tasksService';
 import TaskComments from '../TaskComments';
 import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import { TaskRowSetters } from './useTaskRowSave';
 import TaskRowToolbar, { TaskRowSection } from './TaskRowToolbar';
+import MarkdownRenderer from '../../Shared/MarkdownRenderer';
 
 interface TaskRowExpandedProps {
     task: Task;
@@ -110,6 +113,25 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
     useEffect(() => {
         void loadRelationCount();
     }, [loadRelationCount]);
+
+    useEffect(() => {
+        const onRelationsChanged = (event: Event) => {
+            const { taskUids } =
+                (event as CustomEvent<TaskRelationsChangedDetail>).detail || {};
+            if (task.uid && taskUids?.includes(task.uid)) {
+                void loadRelationCount();
+            }
+        };
+        window.addEventListener(
+            TASK_RELATIONS_CHANGED_EVENT,
+            onRelationsChanged
+        );
+        return () =>
+            window.removeEventListener(
+                TASK_RELATIONS_CHANGED_EVENT,
+                onRelationsChanged
+            );
+    }, [task.uid, loadRelationCount]);
 
     const handleRelationsChange = async () => {
         await loadRelationCount();
@@ -311,6 +333,33 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                     commentCount={commentCount}
                     relationCount={relationCount}
                 />
+
+                {openSection !== 'note' && task.note?.trim() && (
+                    <div
+                        role="button"
+                        tabIndex={0}
+                        data-testid="task-row-note-preview"
+                        onClick={(e) => {
+                            // Links in the note open; a tap anywhere else
+                            // edits it.
+                            if ((e.target as HTMLElement).closest('a')) return;
+                            toggleSection('note');
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') toggleSection('note');
+                        }}
+                        className="mt-2 max-h-72 overflow-y-auto rounded-md bg-gray-50 dark:bg-gray-800/60 px-2 py-1.5 text-sm cursor-text"
+                    >
+                        <MarkdownRenderer
+                            content={note}
+                            className="prose prose-sm dark:prose-invert max-w-none break-words"
+                            onContentChange={(next) => {
+                                setNote(next);
+                                void setters.setNote(next);
+                            }}
+                        />
+                    </div>
+                )}
 
                 {openSection === 'note' && (
                     <textarea

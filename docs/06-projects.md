@@ -203,8 +203,8 @@ These properties are computed automatically based on project content:
 
 ### Sharing Metadata
 
-**share_count**: Number of users project is shared with
-**is_shared**: `true` if `share_count > 0`
+**share_count**: Number of users who accepted access to the project
+**is_shared**: `true` once the project is shared with anyone, including invitations not accepted yet
 
 ---
 
@@ -572,6 +572,12 @@ A template is a project row with `is_template = true`. Templates live on the **T
    - Query: `?grouped=true`
    - Groups projects under area names
    - Special "No Area" group for orphaned projects
+
+### Page Controls
+
+- **Cards / list** switch next to search
+- **Status** dropdown also has **Shared**: every project you share or that is shared with you, any status
+- **Cog** menu: **Show someday projects** (projects tagged #someday, hidden by default), saved per user in `ui_settings.project.list.showSomeday`
 
 **Example URLs:**
 - `/projects?status=in_progress` - Active projects

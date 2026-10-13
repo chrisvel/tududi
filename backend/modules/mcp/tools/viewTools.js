@@ -1,6 +1,10 @@
 'use strict';
 
 const viewsRepository = require('../../views/repository');
+const { validateTaskStatus } = require('../../views/validation');
+
+const TASK_STATUS_DESCRIPTION =
+    'Task status filter (not_started, planned, in_progress, waiting, done, cancelled, archived)';
 
 function registerViewTools(server, context, tools) {
     // 1. list_views - List all views
@@ -36,6 +40,7 @@ function registerViewTools(server, context, tools) {
                 tags: v.tags,
                 extras: v.extras,
                 recurring: v.recurring,
+                task_status: v.task_status,
                 created_at: v.created_at,
                 updated_at: v.updated_at,
             }));
@@ -92,6 +97,7 @@ function registerViewTools(server, context, tools) {
                 tags: view.tags,
                 extras: view.extras,
                 recurring: view.recurring,
+                task_status: view.task_status,
                 created_at: view.created_at,
                 updated_at: view.updated_at,
             };
@@ -135,6 +141,10 @@ function registerViewTools(server, context, tools) {
                     type: 'string',
                     description: 'Due date filter (e.g. today, this_week)',
                 },
+                task_status: {
+                    type: 'string',
+                    description: TASK_STATUS_DESCRIPTION,
+                },
                 tags: {
                     type: 'array',
                     items: { type: 'string' },
@@ -154,6 +164,7 @@ function registerViewTools(server, context, tools) {
                 is_pinned: params.is_pinned || false,
                 priority: params.priority || null,
                 due: params.due || null,
+                task_status: validateTaskStatus(params.task_status),
                 tags: params.tags || [],
                 filters: [],
                 extras: [],
@@ -215,6 +226,10 @@ function registerViewTools(server, context, tools) {
                     type: 'string',
                     description: 'New due date filter',
                 },
+                task_status: {
+                    type: 'string',
+                    description: TASK_STATUS_DESCRIPTION,
+                },
                 tags: {
                     type: 'array',
                     items: { type: 'string' },
@@ -242,6 +257,8 @@ function registerViewTools(server, context, tools) {
             if (params.priority !== undefined)
                 updates.priority = params.priority;
             if (params.due !== undefined) updates.due = params.due;
+            if (params.task_status !== undefined)
+                updates.task_status = validateTaskStatus(params.task_status);
             if (params.tags !== undefined) updates.tags = params.tags;
 
             await view.update(updates);

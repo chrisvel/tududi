@@ -89,6 +89,18 @@ export function isHabitCompletedInPeriod(
     );
 }
 
+// What the check-in button shows as done: the period goal is met, or a habit
+// counted in distinct days (weekly "3×") already has today's check-in, so
+// today can be done while the week is not.
+export function isHabitDoneForNow(habit: Task): boolean {
+    if (isHabitCompletedInPeriod(habit)) return true;
+    if (isQuitHabit(habit) || !habit.habit_progress) return false;
+    return (
+        !habit.habit_progress.multiple_per_day &&
+        habit.habit_progress.today_check_ins > 0
+    );
+}
+
 export function formatAmount(value: number): string {
     return Number.isInteger(value)
         ? String(value)

@@ -66,7 +66,7 @@ const initializeEmailService = () => {
     }
 };
 
-const sendEmail = async ({ to, subject, text, html }) => {
+const sendEmail = async ({ to, subject, text, html, replyTo }) => {
     if (!isEmailEnabled()) {
         logInfo(
             `Email would be sent to ${to} with subject: "${subject}" (email service is disabled)`
@@ -102,6 +102,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
         text,
         html,
     };
+    if (replyTo) mailOptions.replyTo = replyTo;
 
     try {
         const info = await transporter.sendMail(mailOptions);

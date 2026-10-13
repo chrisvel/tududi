@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Project } from '../../../entities/Project';
 import { Task } from '../../../entities/Task';
 import TaskItem from '../TaskItem';
+import { TASK_SHEET_CLASS } from '../taskSheet';
 
 interface TaskSubtasksCardProps {
     subtasks: Task[];
@@ -43,7 +44,7 @@ const TaskSubtasksCard: React.FC<TaskSubtasksCardProps> = ({
             </h3>
 
             {subtasks.length > 0 && (
-                <div className="space-y-1 mb-1">
+                <div className={`mb-1 ${TASK_SHEET_CLASS}`}>
                     {subtasks.map((subtask) => (
                         <TaskItem
                             key={subtask.id ?? subtask.uid}

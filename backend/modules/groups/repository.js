@@ -38,8 +38,10 @@ function countsByGroupId(rows) {
 }
 
 class GroupsRepository {
-    async findAllWithCounts() {
+    // Every group, or with accountId only that hosted account's groups.
+    async findAllWithCounts({ accountId = null } = {}) {
         const groups = await UserGroup.findAll({
+            where: accountId ? { account_id: accountId } : {},
             order: [[sequelize.fn('lower', sequelize.col('name')), 'ASC']],
             raw: true,
         });
@@ -74,7 +76,7 @@ class GroupsRepository {
         return UserGroup.findOne({ where: { uid } });
     }
 
-    async findByNameInsensitive(name, excludeId = null) {
+    async findByNameInsensitive(name, excludeId = null, accountId = null) {
         const where = {
             [Op.and]: [
                 sequelize.where(
@@ -83,6 +85,9 @@ class GroupsRepository {
                 ),
             ],
         };
+        if (accountId) {
+            where[Op.and].push({ account_id: accountId });
+        }
         if (excludeId) {
             where[Op.and].push({ id: { [Op.ne]: excludeId } });
         }

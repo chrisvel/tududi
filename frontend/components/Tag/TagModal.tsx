@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tag } from '../../entities/Tag';
-import { TrashIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
-import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
 import ColorPicker from '../Shared/ColorPicker';
+import EntitySidePanel from '../SidePanel/EntitySidePanel';
+import {
+    SidePanelField,
+    SidePanelSection,
+    sidePanelInputClass,
+} from '../SidePanel/SidePanelParts';
 
 interface TagModalProps {
     isOpen: boolean;
@@ -14,6 +18,8 @@ interface TagModalProps {
     tag?: Tag | null;
 }
 
+const toFormData = (tag?: Tag | null): Tag => tag || { name: '' };
+
 const TagModal: React.FC<TagModalProps> = ({
     isOpen,
     onClose,
@@ -21,169 +27,72 @@ const TagModal: React.FC<TagModalProps> = ({
     onDelete,
     tag,
 }) => {
-    const [formData, setFormData] = useState<Tag>(
-        tag || {
-            name: '',
-        }
-    );
-
-    const modalRef = useRef<HTMLDivElement>(null);
-    const nameInputRef = useRef<HTMLInputElement>(null);
-    const [isClosing, setIsClosing] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showDiscardDialog, setShowDiscardDialog] = useState(false);
-    const { showSuccessToast, showErrorToast } = useToast();
     const { t } = useTranslation();
+    const [formData, setFormData] = useState<Tag>(() => toFormData(tag));
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { showSuccessToast, showErrorToast } = useToast();
 
     useEffect(() => {
-        if (tag) {
-            setFormData(tag);
-        } else {
-            setFormData({
-                name: '',
-            });
-        }
-
-        // Auto-focus on the name input when modal opens
         if (isOpen) {
-            setTimeout(() => {
-                nameInputRef.current?.focus();
-            }, 100);
+            setFormData(toFormData(tag));
+            setError(null);
         }
     }, [tag, isOpen]);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (showDiscardDialog) return;
-            if (
-                modalRef.current &&
-                !modalRef.current.contains(event.target as Node)
-            ) {
-                handleClose();
-            }
-        };
+    const isSystemTag = tag?.tag_type === 'system';
 
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
+    const hasUnsavedChanges = () => {
+        if (!tag) {
+            return (
+                formData.name.trim() !== '' ||
+                !!formData.color ||
+                !!formData.pinned
+            );
         }
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen, showDiscardDialog]);
-
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                // Don't show discard dialog if already showing
-                if (showDiscardDialog) {
-                    // Let the dialog handle its own Escape
-                    return;
-                }
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                // Check for unsaved changes using ref to get current value
-                if (hasUnsavedChangesRef.current()) {
-                    setShowDiscardDialog(true);
-                } else {
-                    handleClose();
-                }
-            }
-        };
-        if (isOpen) {
-            document.addEventListener('keydown', handleKeyDown);
-        }
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [isOpen, showDiscardDialog]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        return (
+            formData.name !== tag.name ||
+            formData.pinned !== tag.pinned ||
+            formData.color !== tag.color
+        );
     };
 
     const handleSubmit = async () => {
         if (!formData.name.trim()) {
-            showErrorToast(
-                t('errors.tagNameRequired', 'Tag name is required.')
-            );
+            setError(t('errors.tagNameRequired', 'Tag name is required.'));
             return;
         }
 
         setIsSubmitting(true);
+        setError(null);
 
         try {
-            await onSave(formData); // Wait for the save operation to complete
-            if (tag) {
-                showSuccessToast(
-                    t('success.tagUpdated', 'Tag updated successfully!')
-                );
-            } else {
-                showSuccessToast(
-                    t('success.tagCreated', 'Tag created successfully!')
-                );
-            }
-            handleClose();
-        } catch (error: any) {
-            // Extract error message from the API response if available
-            let errorMessage = t(
-                'errors.failedToSaveTag',
-                'Failed to save tag.'
+            await onSave(formData);
+            showSuccessToast(
+                tag
+                    ? t('success.tagUpdated', 'Tag updated successfully!')
+                    : t('success.tagCreated', 'Tag created successfully!')
             );
-            if (error?.message) {
-                errorMessage = error.message;
-            }
-            showErrorToast(errorMessage);
+            onClose();
+        } catch (err: any) {
+            const message =
+                err?.message ||
+                t('errors.failedToSaveTag', 'Failed to save tag.');
+            setError(message);
+            showErrorToast(message);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Check if there are unsaved changes
-    const hasUnsavedChanges = () => {
-        if (!tag) {
-            return formData.name.trim() !== '' || !!formData.color;
-        }
-        return formData.name !== tag.name || formData.pinned !== tag.pinned || formData.color !== tag.color;
-    };
-
-    // Use ref to store hasUnsavedChanges so it's always current in the event handler
-    const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
-    useEffect(() => {
-        hasUnsavedChangesRef.current = hasUnsavedChanges;
-    });
-
-    const handleClose = () => {
-        setIsClosing(true);
-        setTimeout(() => {
-            onClose();
-            setIsClosing(false);
-            setShowDiscardDialog(false);
-        }, 300);
-    };
-
-    const handleDiscardChanges = () => {
-        setShowDiscardDialog(false);
-        handleClose();
-    };
-
-    const handleCancelDiscard = () => {
-        setShowDiscardDialog(false);
-    };
-
     const handleDeleteTag = async () => {
-        if (formData.uid && onDelete) {
+        if (tag?.uid && onDelete) {
             try {
-                await onDelete(formData.uid);
+                await onDelete(tag.uid);
                 showSuccessToast(
                     t('success.tagDeleted', 'Tag deleted successfully!')
                 );
-                handleClose();
+                onClose();
             } catch {
                 showErrorToast(
                     t('errors.failedToDeleteTag', 'Failed to delete tag.')
@@ -192,148 +101,92 @@ const TagModal: React.FC<TagModalProps> = ({
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <>
-            <div
-                className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
-                    isClosing ? 'opacity-0' : 'opacity-100'
-                }`}
-            >
-                <div
-                    ref={modalRef}
-                    className={`bg-white dark:bg-gray-800 border-0 sm:border sm:border-gray-200 sm:dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-md transform transition-transform duration-300 ${
-                        isClosing ? 'scale-95' : 'scale-100'
-                    } h-full sm:h-auto sm:my-4`}
-                >
-                    <div className="flex flex-col h-auto">
-                        {/* Main Form Section */}
-                        <div className="bg-white dark:bg-gray-800 sm:rounded-t-lg">
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    handleSubmit();
-                                }}
-                            >
-                                <fieldset>
-                                    {/* Tag Title Section - Always Visible */}
-                                    <div className="px-4 pt-4 pb-2">
-                                        <input
-                                            ref={nameInputRef}
-                                            type="text"
-                                            id="tagName"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            required
-                                            readOnly={tag?.tag_type === 'system'}
-                                            className={`block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none shadow-sm py-2 ${
-                                                tag?.tag_type === 'system'
-                                                    ? 'cursor-default opacity-70'
-                                                    : ''
-                                            }`}
-                                            placeholder={t(
-                                                'forms.tagNamePlaceholder',
-                                                'Enter tag name'
-                                            )}
-                                            data-testid="tag-name-input"
-                                        />
-                                    </div>
-                                    {/* Pinned toggle */}
-                                    <div className="px-4 pb-4">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    pinned: !prev.pinned,
-                                                }))
-                                            }
-                                            className={`flex items-center gap-2 text-sm rounded-md px-3 py-1.5 transition-colors duration-150 ${
-                                                formData.pinned
-                                                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700'
-                                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                            }`}
-                                            data-testid="tag-pin-toggle"
-                                        >
-                                            {formData.pinned
-                                                ? t('tags.pinned', 'Pinned for quick access')
-                                                : t('tags.pinTag', 'Pin for quick access')}
-                                        </button>
-                                    </div>
-
-                                    {/* Color picker */}
-                                    <div className="border-t border-gray-200 dark:border-gray-700 px-4 pt-4 pb-4">
-                                        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                            {t('forms.color', 'Color')}
-                                        </h3>
-                                        <ColorPicker
-                                            value={formData.color || ''}
-                                            onChange={(color) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    color: color || undefined,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
-
-                        {/* Action Buttons - Below border with custom layout */}
-                        <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between sm:rounded-b-lg">
-                            {/* Left side: Delete and Cancel */}
-                            <div className="flex items-center space-x-3">
-                                {tag && tag.uid && onDelete && tag.tag_type !== 'system' && (
-                                    <button
-                                        type="button"
-                                        onClick={handleDeleteTag}
-                                        className="p-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out"
-                                        title={t('common.delete', 'Delete')}
-                                    >
-                                        <TrashIcon className="h-4 w-4" />
-                                    </button>
-                                )}
-                                <button
-                                    type="button"
-                                    onClick={handleClose}
-                                    className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none transition duration-150 ease-in-out text-sm"
-                                >
-                                    {t('common.cancel', 'Cancel')}
-                                </button>
-                            </div>
-
-                            {/* Right side: Save */}
-                            <button
-                                type="button"
-                                onClick={handleSubmit}
-                                disabled={isSubmitting}
-                                className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm ${
-                                    isSubmitting
-                                        ? 'opacity-50 cursor-not-allowed'
-                                        : ''
-                                }`}
-                                data-testid="tag-save-button"
-                            >
-                                {isSubmitting
-                                    ? t('modals.submitting', 'Submitting...')
-                                    : tag
-                                      ? t('modals.updateTag', 'Update Tag')
-                                      : t('modals.createTag', 'Create Tag')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {showDiscardDialog && (
-                <DiscardChangesDialog
-                    onDiscard={handleDiscardChanges}
-                    onCancel={handleCancelDiscard}
+        <EntitySidePanel
+            isOpen={isOpen}
+            onClose={onClose}
+            eyebrow={tag ? t('tags.title', 'Tags') : undefined}
+            title={
+                tag
+                    ? formData.name ||
+                      t('forms.tagNamePlaceholder', 'Enter tag name')
+                    : t('modals.createTag', 'Create Tag')
+            }
+            submitLabel={
+                tag
+                    ? t('modals.updateTag', 'Update Tag')
+                    : t('modals.createTag', 'Create Tag')
+            }
+            submitTestId="tag-save-button"
+            isSubmitting={isSubmitting}
+            isDirty={hasUnsavedChanges()}
+            error={error}
+            onSubmit={handleSubmit}
+            onDelete={
+                tag?.uid && onDelete && !isSystemTag
+                    ? handleDeleteTag
+                    : undefined
+            }
+            testId="tag-panel"
+        >
+            <SidePanelField label={t('forms.name', 'Name')} htmlFor="tagName">
+                <input
+                    id="tagName"
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={(e) =>
+                        setFormData((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                        }))
+                    }
+                    required
+                    readOnly={isSystemTag}
+                    className={`${sidePanelInputClass} ${isSystemTag ? 'cursor-default opacity-70' : ''}`}
+                    placeholder={t(
+                        'forms.tagNamePlaceholder',
+                        'Enter tag name'
+                    )}
+                    data-testid="tag-name-input"
                 />
-            )}
-        </>
+            </SidePanelField>
+
+            <SidePanelSection title={t('tags.pinTag', 'Quick access')}>
+                <button
+                    type="button"
+                    onClick={() =>
+                        setFormData((prev) => ({
+                            ...prev,
+                            pinned: !prev.pinned,
+                        }))
+                    }
+                    aria-pressed={!!formData.pinned}
+                    className={`rounded-md px-3 py-2 text-left text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                        formData.pinned
+                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-700'
+                    }`}
+                    data-testid="tag-pin-toggle"
+                >
+                    {formData.pinned
+                        ? t('tags.pinned', 'Pinned for quick access')
+                        : t('tags.pinTag', 'Pin for quick access')}
+                </button>
+            </SidePanelSection>
+
+            <SidePanelSection title={t('forms.color', 'Color')}>
+                <ColorPicker
+                    value={formData.color || ''}
+                    onChange={(color) =>
+                        setFormData((prev) => ({
+                            ...prev,
+                            color: color || undefined,
+                        }))
+                    }
+                />
+            </SidePanelSection>
+        </EntitySidePanel>
     );
 };
 

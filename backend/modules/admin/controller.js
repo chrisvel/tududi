@@ -42,6 +42,14 @@ const adminController = {
         }
     },
 
+    async userStatuses(req, res, next) {
+        try {
+            res.json(await adminService.userStatuses(getRequesterId(req)));
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async listWaitlist(req, res, next) {
         try {
             res.json(
@@ -191,6 +199,26 @@ const adminController = {
                 req.body
             );
             res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // GET /api/admin/blog: the note picked as the blog's front page.
+    async getBlog(req, res, next) {
+        try {
+            res.json(await adminService.getBlog(getRequesterId(req)));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // PUT /api/admin/blog: pick the front page note, or clear it.
+    async updateBlog(req, res, next) {
+        try {
+            res.json(
+                await adminService.updateBlog(getRequesterId(req), req.body)
+            );
         } catch (error) {
             next(error);
         }

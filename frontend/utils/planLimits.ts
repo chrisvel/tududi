@@ -5,7 +5,7 @@
 export const PLAN_LIMIT_EVENT = 'tududi:plan-limit';
 
 export interface PlanLimitDetail {
-    code: 'PLAN_LIMIT_REACHED' | 'FEATURE_NOT_IN_PLAN' | string;
+    code: 'PLAN_LIMIT_REACHED' | 'FEATURE_NOT_IN_PLAN' | 'TRIAL_ENDED' | string;
     error: string;
     details?: {
         resource?: string;
@@ -27,6 +27,23 @@ export class PlanLimitError extends Error {
         this.details = detail.details;
     }
 }
+
+// A trial is not a plan to upgrade within: what it leaves out (AI, public
+// notes, members) and what an ended trial can no longer do are both answered
+// by subscribing, so these go straight to the subscription page.
+export const subscriptionPathFor = (detail: PlanLimitDetail): string | null => {
+    if (detail.code === 'TRIAL_ENDED') return '/subscription/new';
+    if (
+        detail.code === 'FEATURE_NOT_IN_PLAN' &&
+        detail.details?.plan === 'trial'
+    ) {
+        const feature = detail.details.feature;
+        return feature
+            ? `/subscription/new?feature=${encodeURIComponent(feature)}`
+            : '/subscription/new';
+    }
+    return null;
+};
 
 export const broadcastPlanLimit = (detail: PlanLimitDetail): void => {
     window.dispatchEvent(new CustomEvent(PLAN_LIMIT_EVENT, { detail }));

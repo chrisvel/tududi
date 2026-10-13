@@ -433,9 +433,9 @@ export const blockHandleTheme = EditorView.baseTheme({
     // is used inside several different containers (Notes.tsx, NoteModal,
     // NoteFocusMode, task descriptions), and some of those don't leave
     // enough room, which silently hides it behind other UI.
-    '.cm-content': { paddingLeft: '28px !important' },
-    '.cm-block-handle-plus': { left: '2px' },
-    '.cm-block-handle-drag': { left: '2px', cursor: 'grab' },
+    '.cm-content': { paddingLeft: '24px !important' },
+    '.cm-block-handle-plus': { left: '0' },
+    '.cm-block-handle-drag': { left: '0', cursor: 'grab' },
     '.cm-block-handle-dropline': {
         position: 'absolute',
         left: '0',

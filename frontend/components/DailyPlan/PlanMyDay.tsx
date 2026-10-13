@@ -5,7 +5,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CollisionDetection,
@@ -35,6 +35,7 @@ import {
     draftDayWithAi,
     estimateWithAi,
 } from '../../utils/dailyPlanService';
+import { focusKey, focusScopeParams, useFocus } from '../../utils/focus';
 import {
     CalendarEvent,
     fetchCalendarEvents,
@@ -52,7 +53,7 @@ import { useToast } from '../Shared/ToastContext';
 import { useStore } from '../../store/useStore';
 import {
     EllipsisHorizontalIcon,
-    PlusIcon,
+    LockClosedIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
 import PlanTips from './PlanTips';
@@ -60,6 +61,7 @@ import { buildTips, rescheduleMissed } from './tips';
 import CandidateList, { CandidateFilter } from './CandidateList';
 import DayTimeline, { PX_PER_MINUTE } from './DayTimeline';
 import PlanList from './PlanList';
+import { useAiAllowed, useTrialLock } from '../../hooks/useTrialStatus';
 import {
     DEFAULT_DURATION,
     SLOT_MINUTES,
@@ -76,6 +78,16 @@ import {
 type Mode = 'timeline' | 'list';
 const MODE_KEY = 'dailyPlanMode';
 const SAVE_DELAY_MS = 500;
+// How many more suggestions each "Show more" past the loaded ones asks for.
+const SUGGESTIONS_PAGE = 20;
+
+// The server's count of suggestions, moved by a local add or removal so
+// "Show more" still knows whether anything is left to fetch.
+const countSuggested = (list: PlanCandidates, delta: number) =>
+    Math.max(
+        list.suggested.length + delta,
+        (list.suggested_total ?? list.suggested.length) + delta
+    );
 
 const readMode = (): Mode => {
     try {
@@ -150,6 +162,8 @@ const collisionDetection: CollisionDetection = (args) => {
 
 const PlanMyDay: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const focus = useFocus();
+    const focusId = focusKey(focus);
     const navigate = useNavigate();
     const { showErrorToast, showSuccessToast } = useToast();
     const narrow = useIsNarrow();
@@ -159,7 +173,13 @@ const PlanMyDay: React.FC = () => {
     const [started, setStarted] = useState(false);
     const [items, setItems] = useState<DailyPlanItem[]>([]);
     const [candidates, setCandidates] = useState<PlanCandidates | null>(null);
+    // How many suggestions the server was last asked for; null is the
+    // Planning setting. "Show more" raises it and the whole list reloads,
+    // so the first entries keep their order and refreshes never shrink it.
+    const suggestedLimit = useRef<number | null>(null);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
+    const [refreshingEvents, setRefreshingEvents] = useState(false);
     const [durations, setDurations] = useState<Record<string, number>>({});
     const [filter, setFilter] = useState<CandidateFilter>('all');
     const [preferredMode, setPreferredMode] = useState<Mode>(readMode);
@@ -172,8 +192,14 @@ const PlanMyDay: React.FC = () => {
     const [now, setNow] = useState(() =>
         minuteOfDay(new Date(), getUserTimezone())
     );
-    const aiEnabled = useStore(
+    const aiSwitch = useStore(
         (state) => state.userSettingsStore.aiAssistantEnabled
+    );
+    const aiAllowed = useAiAllowed();
+    const aiLocked = useTrialLock('ai');
+    const aiEnabled = aiSwitch && aiAllowed;
+    const calendarEnabled = useStore(
+        (state) => state.userSettingsStore.calendarEnabled
     );
     const [aiEstimates, setAiEstimates] = useState<Record<string, number>>({});
     const [aiDraft, setAiDraft] = useState<{
@@ -210,9 +236,10 @@ const PlanMyDay: React.FC = () => {
         let cancelled = false;
         (async () => {
             try {
+                const scope = focusScopeParams(focus);
                 const [planResponse, candidateList] = await Promise.all([
-                    fetchDailyPlan(),
-                    fetchPlanCandidates(),
+                    fetchDailyPlan(undefined, scope),
+                    fetchPlanCandidates(undefined, scope),
                 ]);
                 if (cancelled) return;
                 setDate(planResponse.date);
@@ -220,10 +247,6 @@ const PlanMyDay: React.FC = () => {
                 setStarted(!!planResponse.plan?.started_at);
                 setItems(planResponse.plan?.items ?? []);
                 setCandidates(candidateList);
-                const day = await fetchCalendarEvents(planResponse.date).catch(
-                    () => null
-                );
-                if (!cancelled && day) setEvents(day.events);
             } catch (err) {
                 if (!cancelled) {
                     setError(
@@ -237,20 +260,62 @@ const PlanMyDay: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [t]);
+    }, [t, focusId]);
+
+    // Calendar feeds belong to the Calendar feature; with it off the day
+    // is planned without events.
+    useEffect(() => {
+        if (!date || !calendarEnabled) {
+            setEvents([]);
+            return;
+        }
+        let cancelled = false;
+        fetchCalendarEvents(date)
+            .then((day) => {
+                if (!cancelled) setEvents(day.events);
+            })
+            .catch(() => undefined);
+        return () => {
+            cancelled = true;
+        };
+    }, [date, calendarEnabled]);
 
     // Priorities or due dates changed in another tab or on the task page
     // should reorder the list as soon as the planner is back in view.
     useEffect(() => {
         const refresh = () => {
             if (document.visibilityState !== 'visible') return;
-            fetchPlanCandidates()
+            fetchPlanCandidates(suggestedLimit.current, focusScopeParams(focus))
                 .then(setCandidates)
                 .catch(() => undefined);
         };
         document.addEventListener('visibilitychange', refresh);
         return () => document.removeEventListener('visibilitychange', refresh);
-    }, []);
+    }, [focusId]);
+
+    // The server keeps each feed for a while; this asks it to fetch again.
+    const refreshEvents = useCallback(async () => {
+        if (!date) return;
+        setRefreshingEvents(true);
+        try {
+            const day = await fetchCalendarEvents(date, { refresh: true });
+            setEvents(day.events);
+            if (day.errors.length > 0) {
+                showErrorToast(day.errors[0].message);
+            }
+        } catch (err) {
+            showErrorToast(
+                err instanceof Error
+                    ? err.message
+                    : t(
+                          'dailyPlan.refreshCalendarError',
+                          'Could not refresh the calendar.'
+                      )
+            );
+        } finally {
+            setRefreshingEvents(false);
+        }
+    }, [date, showErrorToast, t]);
 
     const flush = useCallback(async () => {
         if (saveTimer.current) {
@@ -302,6 +367,7 @@ const PlanMyDay: React.FC = () => {
         if (!aiEnabled || !candidates || estimatesRequested.current) return;
         estimatesRequested.current = true;
         const uids = [
+            ...(candidates.tagged_today ?? []),
             ...candidates.overdue,
             ...candidates.due_today,
             ...candidates.in_progress,
@@ -455,9 +521,44 @@ const PlanMyDay: React.FC = () => {
                       suggested: current.suggested.filter(
                           (x) => x.uid !== taskUid
                       ),
+                      suggested_total: countSuggested(
+                          current,
+                          current.suggested.some((x) => x.uid === taskUid)
+                              ? -1
+                              : 0
+                      ),
                   }
                 : current
         );
+
+    // The next page of suggestions: everything loaded so far plus one more
+    // page, until the server has nothing left.
+    const loadMoreCandidates = useCallback(async () => {
+        if (!candidates || loadingMore) return;
+        const total = candidates.suggested_total ?? candidates.suggested.length;
+        if (candidates.suggested.length >= total) return;
+        const next = Math.min(
+            total,
+            candidates.suggested.length + SUGGESTIONS_PAGE
+        );
+        setLoadingMore(true);
+        try {
+            const list = await fetchPlanCandidates(
+                next,
+                focusScopeParams(focus)
+            );
+            suggestedLimit.current = next;
+            setCandidates(list);
+        } catch (err) {
+            showErrorToast(
+                err instanceof Error
+                    ? err.message
+                    : t('errors.generic', 'Something went wrong')
+            );
+        } finally {
+            setLoadingMore(false);
+        }
+    }, [candidates, loadingMore, t]);
 
     const handleReschedule = async (
         task: Task,
@@ -512,6 +613,7 @@ const PlanMyDay: React.FC = () => {
                           ),
                           inbox_count: Math.max(0, current.inbox_count - 1),
                           suggested: [task, ...current.suggested],
+                          suggested_total: countSuggested(current, 1),
                       }
                     : current
             );
@@ -550,6 +652,12 @@ const PlanMyDay: React.FC = () => {
                                   suggested: list.suggested.filter(
                                       (task) => !uids.includes(task.uid ?? '')
                                   ),
+                                  suggested_total: countSuggested(
+                                      list,
+                                      -list.suggested.filter((task) =>
+                                          uids.includes(task.uid ?? '')
+                                      ).length
+                                  ),
                               }
                             : list
                     );
@@ -562,6 +670,10 @@ const PlanMyDay: React.FC = () => {
                                 ? {
                                       ...list,
                                       suggested: [...tasks, ...list.suggested],
+                                      suggested_total: countSuggested(
+                                          list,
+                                          tasks.length
+                                      ),
                                   }
                                 : list
                         );
@@ -639,6 +751,7 @@ const PlanMyDay: React.FC = () => {
         () =>
             candidates
                 ? [
+                      ...(candidates.tagged_today ?? []),
                       ...candidates.overdue,
                       ...candidates.due_today,
                       ...candidates.in_progress,
@@ -841,80 +954,18 @@ const PlanMyDay: React.FC = () => {
                         </div>
                     )}
 
-                    <button
-                        type="button"
-                        onClick={() => openCapture('task', 'today')}
-                        disabled={!date}
-                        className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium text-blue-700 hover:bg-blue-50 disabled:opacity-60 dark:text-blue-300 dark:hover:bg-blue-900/30"
-                        data-testid="plan-add-task"
-                    >
-                        <PlusIcon className="h-4 w-4" />
-                        {t('dailyPlan.addTask', 'Add task')}
-                    </button>
-
-                    {aiEnabled && (
-                        <div className="relative" ref={draftMenuRef}>
-                            <button
-                                type="button"
-                                onClick={startDraft}
-                                disabled={drafting || !date}
-                                className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium text-violet-700 hover:bg-violet-50 disabled:opacity-60 dark:text-violet-300 dark:hover:bg-violet-900/30"
-                                data-testid="ai-draft-button"
-                            >
-                                <SparklesIcon
-                                    className={`h-4 w-4 ${drafting ? 'animate-pulse' : ''}`}
-                                />
-                                {drafting
-                                    ? t('dailyPlan.ai.drafting', 'Drafting…')
-                                    : t('dailyPlan.ai.draft', 'Draft with AI')}
-                            </button>
-                            {draftChoiceOpen && (
-                                <div className="absolute right-0 z-[45] mt-1 flex w-56 flex-col rounded-lg bg-white p-1 shadow-lg ring-0 dark:bg-gray-800 dark:bg-gray-900">
-                                    <button
-                                        type="button"
-                                        onClick={() => void runDraft('fill')}
-                                        className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    >
-                                        <span className="block font-medium">
-                                            {t(
-                                                'dailyPlan.ai.fill',
-                                                'Fill free time'
-                                            )}
-                                        </span>
-                                        <span className="block text-xs text-gray-500 dark:text-gray-400">
-                                            {t(
-                                                'dailyPlan.ai.fillHint',
-                                                'Keep what is planned, add around it'
-                                            )}
-                                        </span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => void runDraft('replace')}
-                                        className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    >
-                                        <span className="block font-medium">
-                                            {t(
-                                                'dailyPlan.ai.replace',
-                                                'Start over'
-                                            )}
-                                        </span>
-                                        <span className="block text-xs text-gray-500 dark:text-gray-400">
-                                            {t(
-                                                'dailyPlan.ai.replaceHint',
-                                                'Draft the whole day again (you can undo)'
-                                            )}
-                                        </span>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
                     <div className="flex items-center gap-2">
                         {saveState === 'saving' && (
                             <span className="text-xs text-gray-500">
                                 {t('dailyPlan.saving', 'Saving…')}
+                            </span>
+                        )}
+                        {refreshingEvents && (
+                            <span className="text-xs text-gray-500">
+                                {t(
+                                    'dailyPlan.refreshingCalendar',
+                                    'Refreshing calendar…'
+                                )}
                             </span>
                         )}
                         <div className="relative" ref={moreMenuRef}>
@@ -930,6 +981,35 @@ const PlanMyDay: React.FC = () => {
                             </button>
                             {moreOpen && (
                                 <div className="absolute right-0 z-[45] mt-1 flex w-48 flex-col rounded-lg bg-white p-1 text-sm shadow-lg dark:bg-gray-800 dark:bg-gray-900">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setMoreOpen(false);
+                                            openCapture('task', 'today');
+                                        }}
+                                        disabled={!date}
+                                        className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+                                        data-testid="plan-add-task"
+                                    >
+                                        {t('dailyPlan.addTask', 'Add task')}
+                                    </button>
+                                    {calendarEnabled && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setMoreOpen(false);
+                                                void refreshEvents();
+                                            }}
+                                            disabled={refreshingEvents || !date}
+                                            className="rounded-md px-3 py-2 text-left hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+                                            data-testid="plan-refresh-calendar"
+                                        >
+                                            {t(
+                                                'dailyPlan.refreshCalendar',
+                                                'Refresh calendar'
+                                            )}
+                                        </button>
+                                    )}
                                     {!narrow && (
                                         <button
                                             type="button"
@@ -968,6 +1048,88 @@ const PlanMyDay: React.FC = () => {
                                 </div>
                             )}
                         </div>
+                        {aiSwitch && aiLocked && (
+                            <Link
+                                to="/subscription/new?feature=ai"
+                                className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg bg-blue-50 px-3.5 text-sm font-medium text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-200 dark:hover:bg-blue-900/50"
+                                title={t(
+                                    'subscription.trialLock.ai',
+                                    'The AI assistant is not part of the free trial. Subscribe to turn it on.'
+                                )}
+                                data-testid="ai-draft-locked"
+                            >
+                                <LockClosedIcon className="h-4 w-4" />
+                                {t('dailyPlan.ai.draft', 'Draft with AI')}
+                            </Link>
+                        )}
+                        {aiEnabled && (
+                            <div className="relative" ref={draftMenuRef}>
+                                <button
+                                    type="button"
+                                    onClick={startDraft}
+                                    disabled={drafting || !date}
+                                    className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg bg-violet-100 px-3.5 text-sm font-medium text-violet-700 hover:bg-violet-200 disabled:opacity-60 dark:bg-violet-500/20 dark:text-violet-200 dark:hover:bg-violet-500/30"
+                                    data-testid="ai-draft-button"
+                                >
+                                    <SparklesIcon
+                                        className={`h-4 w-4 ${drafting ? 'animate-pulse' : ''}`}
+                                    />
+                                    {drafting
+                                        ? t(
+                                              'dailyPlan.ai.drafting',
+                                              'Drafting…'
+                                          )
+                                        : t(
+                                              'dailyPlan.ai.draft',
+                                              'Draft with AI'
+                                          )}
+                                </button>
+                                {draftChoiceOpen && (
+                                    <div className="absolute right-0 z-[45] mt-1 flex w-56 flex-col rounded-lg bg-white p-1 shadow-lg ring-0 dark:bg-gray-800 dark:bg-gray-900">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                void runDraft('fill')
+                                            }
+                                            className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            <span className="block font-medium">
+                                                {t(
+                                                    'dailyPlan.ai.fill',
+                                                    'Fill free time'
+                                                )}
+                                            </span>
+                                            <span className="block text-xs text-gray-500 dark:text-gray-400">
+                                                {t(
+                                                    'dailyPlan.ai.fillHint',
+                                                    'Keep what is planned, add around it'
+                                                )}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                void runDraft('replace')
+                                            }
+                                            className="rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            <span className="block font-medium">
+                                                {t(
+                                                    'dailyPlan.ai.replace',
+                                                    'Start over'
+                                                )}
+                                            </span>
+                                            <span className="block text-xs text-gray-500 dark:text-gray-400">
+                                                {t(
+                                                    'dailyPlan.ai.replaceHint',
+                                                    'Draft the whole day again (you can undo)'
+                                                )}
+                                            </span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <button
                             type="button"
                             onClick={() => leave(true)}
@@ -1007,10 +1169,12 @@ const PlanMyDay: React.FC = () => {
                                 onReschedule={handleReschedule}
                                 onDrop={handleDrop}
                                 onAddInbox={handleAddInbox}
+                                onLoadMore={loadMoreCandidates}
+                                loadingMore={loadingMore}
                                 today={date ?? ''}
                             />
                         </aside>
-                        <section className="min-w-0 flex-1 rounded-xl bg-white px-4 py-5 sm:px-6 md:overflow-y-auto dark:bg-gray-900">
+                        <section className="isolate min-w-0 flex-1 rounded-xl bg-white px-4 py-5 sm:px-6 md:overflow-y-auto dark:bg-gray-900">
                             {aiDraft && (
                                 <section
                                     className="mb-3 flex flex-col gap-2.5 rounded-xl bg-violet-50/70 px-4 py-3 dark:bg-violet-900/15"
@@ -1082,6 +1246,9 @@ const PlanMyDay: React.FC = () => {
                             )}
 
                             {tips.length > 0 && (
+                                // Sticky above the timeline's own layers; the
+                                // section is isolated so this never rises
+                                // above the navbar and its menu.
                                 <div className="sticky -top-5 z-40 -mx-1 -mt-5 mb-3 bg-white px-1 pb-1 pt-5 dark:bg-gray-900">
                                     <PlanTips
                                         tips={tips}

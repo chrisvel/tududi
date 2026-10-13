@@ -32,6 +32,8 @@ This document explains how user management works in tududi from a user behavior 
 
 4. **Registration validation rules:**
     - Email must be valid format and unique
+    - Disposable email providers (mailinator.com, yopmail.com and the rest of the [community blocklist](https://github.com/disposable-email-domains/disposable-email-domains), subdomains included) are refused
+    - The email's domain must be able to receive mail (an MX lookup, falling back to A/AAAA). A DNS timeout or server failure lets the signup through. Set `REGISTRATION_MX_CHECK=false` to turn the lookup off, for example on an instance without outside DNS
     - Password must be at least 8 characters long
     - Email is automatically normalized (trimmed and lowercased)
 

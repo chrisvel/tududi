@@ -195,6 +195,23 @@ describe('GET /api/everyone', () => {
         expect(col.no_date.some((t) => t.name === 'no date task')).toBe(true);
     });
 
+    it('shows a recurring task by its name, not its pattern', async () => {
+        await Task.create({
+            name: 'Take out the recycling',
+            user_id: owner.id,
+            project_id: project.id,
+            due_date: new Date(),
+            recurrence_type: 'weekly',
+            recurrence_interval: 1,
+        });
+
+        const res = await ownerAgent.get('/api/everyone');
+        const col = res.body.columns.find((c) => c.is_self);
+        const names = col.today.map((t) => t.name);
+        expect(names).toContain('Take out the recycling');
+        expect(names).not.toContain('Weekly');
+    });
+
     it('returns just the caller column for a user with no shares', async () => {
         const solo = await createTestUser({
             email: `evsolo_${Date.now()}@example.com`,

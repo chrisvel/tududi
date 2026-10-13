@@ -262,7 +262,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
 
 23. **[MCP Integration](docs/14-mcp-integration.md)**
     - Model Context Protocol server for AI tool integration
-    - 59 tools across tasks, projects, areas, goals, notes, tags, habits, people, views, inbox and search
+    - 65 tools across tasks, comments, projects, areas, goals, notes, tags, habits, people, views, inbox and search
     - Stdio and HTTP transport modes
     - Claude Desktop, Cursor, VS Code configuration
     - API token authentication and security
@@ -273,6 +273,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Background Sync for replaying queued mutations on reconnect
     - Session-scoped cache security (cleared on logout / 401)
     - Known limitations (sub-path deployments, iOS background sync, offline task creation)
+    - Web Push notifications for Android, iOS (Home Screen apps) and desktop
 
 25. **[PostgreSQL Deployment](docs/16-postgresql.md)**
     - Environment variables (`DATABASE_URL`, `DB_*`) and TLS
@@ -300,7 +301,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Admin, user and guest roles with capabilities, and the admin Access page
 
 29. **[Daily Plan](docs/20-daily-plan.md)**
-    - Today in two modes: planning (`/today/plan`) and doing (`/today`); classic page at `/today_legacy`
+    - Today in two modes: planning (`/today/plan`) and doing (`/today`); `/today_legacy` redirects to `/today`
     - Timeline and list planning, task estimates, the Now card
     - Read-only iCal calendar feeds (Google secret address), encrypted and SSRF-guarded
     - Daily plan API and schema
@@ -310,6 +311,25 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Several check-ins a day, notes, skipped days, full-history year grid
     - Streak rules, the strength score, and archiving
     - Habit reminders and the habits API
+
+31. **[Kubernetes](docs/22-kubernetes.md)**
+    - Example manifests in `docs/examples/kubernetes`
+    - One replica, block storage for SQLite, ingress and backup notes
+
+32. **[Onboarding](docs/24-onboarding.md)**
+    - The welcome page at `/welcome`: the welcome video and one button, seen once by every account
+    - Empty-state starters on Areas and Habits
+    - `users.onboarding_starter`, `POST /api/onboarding/starter`, admin onboarding numbers
+
+33. **[Blog](docs/23-blog.md)**
+    - A front page note and the public notes it links become the blog
+    - Superadmin picks the front page in Admin → Blog
+    - `/blog` in the app, or the root of `TUDUDI_BLOG_HOSTS` (blog.tududi.com)
+
+34. **[Focus](docs/25-focus.md)**
+    - The Focus chip in the top bar: one area, optionally a project and tags, saved in `ui_settings.focus`
+    - Scopes Today, Upcoming, Tasks, Projects, Notes and live search; capture defaults to the Focus project and tags
+    - `area_uid`, `project_uid` and `tags` query params resolved by `backend/services/scopeService.js`; the API, MCP and Telegram stay unscoped
 
 ---
 
@@ -326,12 +346,12 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 **Key Capabilities:**
 - **Hierarchical Organization:** Areas > Goals > Projects > Tasks > Subtasks
 - **Smart Recurring Tasks:** Multiple patterns with parent-child tracking
-- **Multi-Language Support:** 25 languages via i18next
+- **Multi-Language Support:** 26 languages via i18next
 - **Collaboration:** Project sharing with granular permissions
 - **REST API:** Swagger docs + personal API tokens
 - **Telegram Integration:** Create tasks via messages, daily digests
 - **Tag System:** Flexible tagging across tasks, notes, projects
-- **MCP Integration:** AI tool connectivity via Model Context Protocol (59 tools)
+- **MCP Integration:** AI tool connectivity via Model Context Protocol (65 tools)
 
 **Target Users:** Self-hosting individuals and teams managing personal or collaborative productivity
 
@@ -344,7 +364,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - Webpack 5 (build) + webpack-dev-server (development)
 - Tailwind CSS 3.4 + Heroicons
 - Zustand (global state) + SWR (server state)
-- React Router 6, i18next (25 languages)
+- React Router 6, i18next (26 languages)
 
 **Backend:**
 - Express 4.21 + Sequelize 6.37 (ORM)

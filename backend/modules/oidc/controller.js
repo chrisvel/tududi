@@ -146,7 +146,7 @@ async function handleCallback(req, res) {
 
             await auditService.logOidcLinked(linkUser.id, slug, req);
 
-            return res.redirect('/profile/security?success=linked');
+            return res.redirect('/profile?section=oidc&success=linked');
         }
 
         const { user, isNewUser } = await provisioningService.provisionUser(

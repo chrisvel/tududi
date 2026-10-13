@@ -12,6 +12,8 @@ interface TodayUnplannedProps {
     events: CalendarEvent[];
     freeMinutes: number;
     hasFeeds: boolean;
+    showsFeeds: boolean;
+    calendarEnabled: boolean;
     hasDraft: boolean;
 }
 
@@ -39,6 +41,8 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
     events,
     freeMinutes,
     hasFeeds,
+    showsFeeds,
+    calendarEnabled,
     hasDraft,
 }) => {
     const { t } = useTranslation();
@@ -98,7 +102,7 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
                 />
             </div>
 
-            {hasFeeds ? (
+            {calendarEnabled && showsFeeds && (
                 <div className="flex flex-col gap-2">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                         {t('dailyPlan.fromCalendar', 'From your calendar')}
@@ -135,7 +139,8 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
                         </div>
                     ))}
                 </div>
-            ) : (
+            )}
+            {calendarEnabled && !hasFeeds && (
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                     {t(
                         'dailyPlan.connectCalendarHint',
@@ -160,15 +165,6 @@ const TodayUnplanned: React.FC<TodayUnplannedProps> = ({
                     {hasDraft
                         ? t('dailyPlan.continuePlanning', 'Continue planning')
                         : t('dailyPlan.planYourDay', 'Plan your day')}
-                </Link>
-                <Link
-                    to="/today_legacy"
-                    className="text-sm text-gray-600 underline-offset-2 hover:underline dark:text-gray-400"
-                >
-                    {t(
-                        'dailyPlan.skipShowEverything',
-                        'Skip and show everything'
-                    )}
                 </Link>
             </div>
         </section>

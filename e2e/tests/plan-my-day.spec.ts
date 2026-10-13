@@ -51,14 +51,6 @@ test.describe('Plan my day', () => {
             page.getByText('Everything you planned is done')
         ).toBeVisible();
 
-        // The classic page is still one click away.
-        await page.goto(`${appUrl}/today_legacy`);
-        await expect(page.getByRole('heading', { name: 'Today,' })).toBeVisible(
-            {
-                timeout: 10000,
-            }
-        );
-
         await context.request.delete(`${appUrl}/api/daily-plan/today`);
     });
 });

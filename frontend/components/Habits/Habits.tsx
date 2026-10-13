@@ -6,6 +6,7 @@ import HabitCard from './HabitCard';
 import { SURFACE } from '../../constants/colorPalette';
 import NewItemButton from '../Shared/NewItemButton';
 import BlankSlate from '../Shared/BlankSlate';
+import HabitModal from './HabitModal';
 import {
     FireIcon,
     CheckCircleIcon,
@@ -16,11 +17,15 @@ import {
     ArrowUturnLeftIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import { fetchHabits, setHabitArchived } from '../../utils/habitsService';
+import {
+    createHabit,
+    fetchHabits,
+    setHabitArchived,
+} from '../../utils/habitsService';
 import {
     TIMES_OF_DAY,
     formatHabitTarget,
-    isHabitCompletedInPeriod,
+    isHabitDoneForNow,
     isQuitHabit,
 } from '../../utils/habitUtils';
 
@@ -34,6 +39,7 @@ const Habits: React.FC = () => {
     );
     const [showArchived, setShowArchived] = useState(false);
     const [archived, setArchived] = useState<Task[]>([]);
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
 
     useEffect(() => {
         loadHabits();
@@ -47,6 +53,33 @@ const Habits: React.FC = () => {
                 console.error('Failed to load archived habits:', error)
             );
     }, [showArchived]);
+
+    // One click from the blank slate: a daily (or weekly) build habit with
+    // just a name, opened straight away so the schedule can be changed.
+    const habitPresets: { name: string; period: 'daily' | 'weekly' }[] = [
+        { name: t('habits.presetWalk', 'Morning walk'), period: 'daily' },
+        { name: t('habits.presetRead', 'Read 20 minutes'), period: 'daily' },
+        { name: t('habits.presetReview', 'Weekly review'), period: 'weekly' },
+    ];
+
+    const addPresetHabit = async (preset: {
+        name: string;
+        period: 'daily' | 'weekly';
+    }) => {
+        try {
+            const created = await createHabit({
+                name: preset.name,
+                habit_mode: true,
+                habit_polarity: 'build',
+                habit_target_count: 1,
+                habit_frequency_period: preset.period,
+            });
+            await loadHabits();
+            if (created.uid) navigate(`/habit/${created.uid}`);
+        } catch (error) {
+            console.error('Failed to create habit:', error);
+        }
+    };
 
     const openHabit = (habit: Task) => {
         if (habit.uid) navigate(`/habit/${habit.uid}`);
@@ -72,9 +105,7 @@ const Habits: React.FC = () => {
 
     const stats = useMemo(() => {
         const building = habits.filter((h) => !isQuitHabit(h));
-        const doneNow = building.filter((h) =>
-            isHabitCompletedInPeriod(h)
-        ).length;
+        const doneNow = building.filter((h) => isHabitDoneForNow(h)).length;
         const strength =
             habits.length > 0
                 ? Math.round(
@@ -181,7 +212,7 @@ const Habits: React.FC = () => {
                     </button>
                     <NewItemButton
                         label={t('habits.new', 'New Habit')}
-                        onClick={() => navigate('/habit/new')}
+                        onClick={() => setIsCreateOpen(true)}
                     />
                 </div>
             </div>
@@ -254,9 +285,14 @@ const Habits: React.FC = () => {
                                 'Create your first habit'
                             ),
                             icon: PlusIcon,
-                            onClick: () => navigate('/habit/new'),
+                            onClick: () => setIsCreateOpen(true),
                         },
                     ]}
+                    presetsLabel={t('habits.presetsLabel', 'Or start with')}
+                    presets={habitPresets.map((preset) => ({
+                        label: preset.name,
+                        onClick: () => addPresetHabit(preset),
+                    }))}
                 />
             ) : (
                 <>
@@ -312,6 +348,11 @@ const Habits: React.FC = () => {
                     ))}
                 </>
             )}
+
+            <HabitModal
+                isOpen={isCreateOpen}
+                onClose={() => setIsCreateOpen(false)}
+            />
         </div>
     );
 };

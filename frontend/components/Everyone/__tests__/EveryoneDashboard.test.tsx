@@ -25,9 +25,28 @@ jest.mock('../../../utils/projectsService', () => ({
     fetchProjects: () => Promise.resolve([]),
 }));
 
-const toggleTaskCompletion = jest.fn().mockResolvedValue({});
-jest.mock('../../../utils/tasksService', () => ({
-    toggleTaskCompletion: (...a: any[]) => toggleTaskCompletion(...a),
+// The board renders the shared task rows; a stub keeps this test on the
+// board's own wiring. Its button reports the task back as done, the way a
+// row does after completing it.
+jest.mock('../../Task/TaskList', () => ({
+    __esModule: true,
+    default: ({ tasks, onTaskUpdate }: any) => (
+        <ul>
+            {tasks.map((task: any) => (
+                <li key={task.uid}>
+                    <span>{task.name}</span>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            onTaskUpdate({ ...task, status: 'done' })
+                        }
+                    >
+                        Mark complete
+                    </button>
+                </li>
+            ))}
+        </ul>
+    ),
 }));
 
 const emptyBuckets = {
@@ -64,7 +83,6 @@ const renderPage = () =>
 describe('EveryoneDashboard', () => {
     beforeEach(() => {
         fetchEveryone.mockReset();
-        toggleTaskCompletion.mockClear();
     });
 
     it('renders a column per person with their tasks', async () => {
@@ -94,7 +112,7 @@ describe('EveryoneDashboard', () => {
         expect(screen.getByText('You')).toBeInTheDocument();
     });
 
-    it('completes a task from its row and drops it from the board', async () => {
+    it('drops a task from the board when its row completes it', async () => {
         fetchEveryone
             .mockResolvedValueOnce({
                 summary,
@@ -116,10 +134,6 @@ describe('EveryoneDashboard', () => {
             screen.getByRole('button', { name: 'Mark complete' })
         );
 
-        expect(toggleTaskCompletion).toHaveBeenCalledWith(
-            't2',
-            expect.objectContaining({ uid: 't2' })
-        );
         await waitFor(() =>
             expect(screen.queryByText('Mate task')).not.toBeInTheDocument()
         );

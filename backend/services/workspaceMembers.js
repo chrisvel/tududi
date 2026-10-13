@@ -60,13 +60,28 @@ async function getCreationPartnerIds(userId) {
     return ids;
 }
 
+// On a hosted instance, everyone in the same customer account (see
+// accountsService), so a family can assign to each other whichever admin
+// added them.
+async function getAccountPartnerIds(userId) {
+    const accounts = require('./accountsService');
+    if (!accounts.isHosted()) return [];
+    return accounts.getAccountUserIds(userId);
+}
+
 async function getWorkspaceUserIds(userId) {
-    const [groupIds, shareIds, creationIds] = await Promise.all([
+    const [groupIds, shareIds, creationIds, accountIds] = await Promise.all([
         getGroupCoMemberIds(userId),
         getSharePartnerIds(userId),
         getCreationPartnerIds(userId),
+        getAccountPartnerIds(userId),
     ]);
-    const ids = new Set([...groupIds, ...shareIds, ...creationIds]);
+    const ids = new Set([
+        ...groupIds,
+        ...shareIds,
+        ...creationIds,
+        ...accountIds,
+    ]);
     ids.delete(userId);
     return Array.from(ids);
 }

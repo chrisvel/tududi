@@ -222,7 +222,11 @@ async function buildColumns(
         const serialized = {};
         const counts = {};
         for (const key of BUCKET_KEYS) {
-            serialized[key] = await serializeTasks(buckets[key], tz);
+            // A recurring task is shown by its own name, not by its pattern
+            // ("Daily", "Weekly"), since the board lists what to do.
+            serialized[key] = await serializeTasks(buckets[key], tz, {
+                preserveOriginalName: true,
+            });
             counts[key] = buckets[key].length;
         }
 

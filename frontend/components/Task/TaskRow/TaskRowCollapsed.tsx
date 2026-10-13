@@ -11,6 +11,9 @@ import {
     ChevronDownIcon,
     ChatBubbleLeftIcon,
     NoSymbolIcon,
+    EllipsisVerticalIcon,
+    PencilIcon,
+    TrashIcon,
 } from '@heroicons/react/24/outline';
 import { FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { Task } from '../../../entities/Task';
@@ -23,6 +26,10 @@ import {
     getYesterdayDateString,
 } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
+import PriorityBadge, {
+    PriorityLevel,
+    toPriorityLevel,
+} from '../../Shared/PriorityBadge';
 
 interface TaskRowCollapsedProps {
     task: Task;
@@ -43,6 +50,9 @@ interface TaskRowCollapsedProps {
     editable?: boolean;
     onSaveTitle?: (name: string) => void | Promise<void>;
     onEscape?: () => void;
+    onEdit?: () => void;
+    onDelete?: (e: React.MouseEvent) => void;
+    onActionsMenuOpenChange?: (open: boolean) => void;
 }
 
 const tagColorStyle = (color?: string): React.CSSProperties | undefined => {
@@ -51,6 +61,26 @@ const tagColorStyle = (color?: string): React.CSSProperties | undefined => {
     const g = parseInt(color.slice(3, 5), 16);
     const b = parseInt(color.slice(5, 7), 16);
     return { backgroundColor: `rgba(${r}, ${g}, ${b}, 0.2)`, color };
+};
+
+// In quiet-sheet lists the card's colored edge is hidden, so priority shows
+// as title weight instead: bolder for higher priority, low a shade lighter.
+const sheetTitleWeightClass = (
+    level: PriorityLevel | null,
+    completed: boolean
+): string => {
+    switch (level) {
+        case 'high':
+            return '[.task-sheet_&]:font-semibold';
+        case 'medium':
+            return '[.task-sheet_&]:font-medium';
+        case 'low':
+            return completed
+                ? ''
+                : '[.task-sheet_&]:text-gray-500 dark:[.task-sheet_&]:text-gray-400';
+        default:
+            return '';
+    }
 };
 
 const slug = (s: string) =>
@@ -77,11 +107,38 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     editable = false,
     onSaveTitle,
     onEscape,
+    onEdit,
+    onDelete,
+    onActionsMenuOpenChange,
 }) => {
     const { t } = useTranslation();
     const currentName = task.original_name || task.name;
     const titleInputRef = useRef<HTMLInputElement>(null);
     const [draftName, setDraftName] = useState(currentName);
+    const actionsMenuRef = useRef<HTMLDivElement>(null);
+    const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+
+    useEffect(() => {
+        onActionsMenuOpenChange?.(isActionsMenuOpen);
+        if (!isActionsMenuOpen) return;
+        const onPointerDown = (e: MouseEvent) => {
+            if (
+                actionsMenuRef.current &&
+                !actionsMenuRef.current.contains(e.target as Node)
+            ) {
+                setIsActionsMenuOpen(false);
+            }
+        };
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setIsActionsMenuOpen(false);
+        };
+        document.addEventListener('mousedown', onPointerDown);
+        document.addEventListener('keydown', onKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', onPointerDown);
+            document.removeEventListener('keydown', onKeyDown);
+        };
+    }, [isActionsMenuOpen, onActionsMenuOpenChange]);
 
     useEffect(() => {
         setDraftName(currentName);
@@ -157,7 +214,8 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     const showProject = project && project.name && !hideProjectName;
     const hasMeta =
         !compact &&
-        (showProject ||
+        (!!toPriorityLevel(task.priority) ||
+            showProject ||
             (task.tags && task.tags.length > 0) ||
             !!task.due_date ||
             (isTaskCompleted(task.status) && !!task.completed_at) ||
@@ -176,9 +234,11 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
 
     return (
         <div
-            className={`group flex items-center gap-3 px-4 ${
-                hasMeta ? 'py-2' : 'py-3'
-            } cursor-pointer`}
+            className={`group flex items-center px-4 ${
+                condenseStatusControl
+                    ? 'flex-wrap justify-end gap-x-3 gap-y-1.5'
+                    : 'gap-3'
+            } ${hasMeta ? 'py-2' : 'py-3'} cursor-pointer`}
             role="button"
             tabIndex={0}
             onClick={onActivate}
@@ -189,7 +249,11 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                 }
             }}
         >
-            <div className="flex flex-1 min-w-0 flex-col">
+            <div
+                className={`flex flex-1 min-w-0 flex-col ${
+                    condenseStatusControl ? 'basis-full' : ''
+                }`}
+            >
                 <div className="flex items-center gap-1.5 min-w-0">
                     {task.habit_mode && (
                         <FireIcon
@@ -215,7 +279,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                     onEscape?.();
                                 }
                             }}
-                            className="flex-1 min-w-0 bg-transparent text-[15px] font-medium tracking-tight text-gray-900 dark:text-gray-100 border-0 p-0 focus:outline-none focus:ring-0"
+                            className="flex-1 min-w-0 bg-transparent text-[15px] font-normal tracking-tight text-gray-900 dark:text-gray-100 border-0 p-0 focus:outline-none focus:ring-0"
                             placeholder={t(
                                 'forms.task.namePlaceholder',
                                 'Task name'
@@ -223,11 +287,18 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         />
                     ) : (
                         <span
-                            className={`text-[15px] font-medium tracking-tight truncate ${
+                            className={`text-[15px] font-normal tracking-tight ${
+                                condenseStatusControl
+                                    ? 'line-clamp-3 break-words leading-snug'
+                                    : 'max-sm:line-clamp-2 max-sm:break-words sm:truncate'
+                            } ${
                                 isTaskCompleted(task.status)
                                     ? 'text-gray-400 dark:text-gray-500 line-through'
                                     : 'text-gray-900 dark:text-gray-200'
-                            }`}
+                            } ${sheetTitleWeightClass(
+                                toPriorityLevel(task.priority),
+                                isTaskCompleted(task.status)
+                            )}`}
                         >
                             {currentName}
                         </span>
@@ -292,6 +363,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
 
                 {hasMeta && (
                     <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                        <PriorityBadge priority={task.priority} />
                         {task.parent_task && (
                             <span className="flex items-center">
                                 <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
@@ -323,9 +395,21 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                         key={tag.uid || tag.name}
                                         to={`/tag/${tag.uid ? `${tag.uid}-` : ''}${slug(tag.name)}`}
                                         onClick={stop}
-                                        className="inline-flex items-center px-2 py-px rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+                                        className="inline-flex items-center gap-1 px-2 py-px rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 [.task-sheet_&]:!bg-transparent [.task-sheet_&]:!px-0 [.task-sheet_&]:text-[11px] [.task-sheet_&]:font-normal [.task-sheet_&]:!text-gray-500 dark:[.task-sheet_&]:!text-gray-400"
                                         style={tagColorStyle(tag.color)}
                                     >
+                                        <span
+                                            aria-hidden="true"
+                                            className="hidden [.task-sheet_&]:inline-block h-1.5 w-1.5 rounded-full bg-gray-400"
+                                            style={
+                                                tag.color
+                                                    ? {
+                                                          backgroundColor:
+                                                              tag.color,
+                                                      }
+                                                    : undefined
+                                            }
+                                        />
                                         {tag.name}
                                     </Link>
                                 ))}
@@ -365,6 +449,67 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                     </div>
                 )}
             </div>
+
+            {!editable && (onEdit || onDelete) && (
+                <div
+                    ref={actionsMenuRef}
+                    className="relative flex-shrink-0"
+                    onClick={stop}
+                    onKeyDown={(e) => e.stopPropagation()}
+                >
+                    <button
+                        type="button"
+                        onClick={() => setIsActionsMenuOpen((open) => !open)}
+                        aria-haspopup="menu"
+                        aria-expanded={isActionsMenuOpen}
+                        aria-label={t('common.moreActions', 'More actions')}
+                        title={t('common.moreActions', 'More actions')}
+                        data-testid="task-actions-menu-button"
+                        className={`p-1 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-opacity focus-visible:opacity-100 ${
+                            isActionsMenuOpen
+                                ? 'opacity-100'
+                                : '[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100'
+                        }`}
+                    >
+                        <EllipsisVerticalIcon className="h-4 w-4" />
+                    </button>
+                    {isActionsMenuOpen && (
+                        <div
+                            role="menu"
+                            className="absolute right-0 top-full mt-1 w-36 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 overflow-hidden"
+                        >
+                            {onEdit && (
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={() => {
+                                        setIsActionsMenuOpen(false);
+                                        onEdit();
+                                    }}
+                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    <PencilIcon className="h-4 w-4" />
+                                    {t('common.edit', 'Edit')}
+                                </button>
+                            )}
+                            {onDelete && (
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={(e) => {
+                                        setIsActionsMenuOpen(false);
+                                        onDelete(e);
+                                    }}
+                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                >
+                                    <TrashIcon className="h-4 w-4" />
+                                    {t('common.delete', 'Delete')}
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
 
             {!hideStatusControl && !task.habit_mode && onToggleCompletion && (
                 <div className="flex-shrink-0" onClick={stop}>

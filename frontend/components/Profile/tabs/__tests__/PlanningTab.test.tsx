@@ -191,7 +191,7 @@ describe('PlanningTab', () => {
 
             expect(
                 screen.getAllByText(
-                    /Open tasks from projects marked “in_progress”, and tasks with no project\..*due more than 3 days out are left out\. Up to 20 are shown\./
+                    /Open tasks from projects marked “in_progress”, and tasks with no project\..*due more than 3 days out are left out\. 20 load at first; Show more brings the rest\./
                 )
             ).toHaveLength(2);
             expect(

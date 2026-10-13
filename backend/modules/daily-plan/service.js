@@ -1,9 +1,12 @@
 'use strict';
 
 const moment = require('moment-timezone');
+const { Op } = require('sequelize');
+const { Task } = require('../../models');
 const repository = require('./repository');
 const slots = require('./slots');
 const permissionsService = require('../../services/permissionsService');
+const scopeService = require('../../services/scopeService');
 const { serializeTasks } = require('../tasks/core/serializers');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
 const {
@@ -27,6 +30,7 @@ const {
 const {
     getSafeTimezone,
     getCurrentDateInTimezone,
+    getDayBoundsInUTC,
     getTodayBoundsInUTC,
 } = require('../../utils/timezone-utils');
 const { ValidationError, NotFoundError } = require('../../shared/errors');
@@ -144,7 +148,11 @@ async function visibleTaskWhere(userId) {
     return permissionsService.ownershipOrPermissionWhere('task', userId);
 }
 
-async function serializePlan(plan, userId, timezone) {
+// A Focus scope never hides plan items: the planner replaces the whole
+// list on every drag or carry-over from what the client holds, so a hidden
+// item would be dropped on the next save. Items outside the scope are
+// marked in_focus: false and the client dims them instead.
+async function serializePlan(plan, userId, timezone, scopeWhere = null) {
     if (!plan) return null;
 
     const items = plan.Items || [];
@@ -153,10 +161,48 @@ async function serializePlan(plan, userId, timezone) {
         visibleWhere,
         items.map((item) => item.task_id)
     );
+    const inFocusIds = scopeWhere
+        ? new Set(
+              (
+                  await Task.findAll({
+                      where: scopeService.withScope(
+                          { id: { [Op.in]: tasks.map((task) => task.id) } },
+                          scopeWhere
+                      ),
+                      attributes: ['id'],
+                      raw: true,
+                  })
+              ).map((row) => row.id)
+          )
+        : null;
     const serialized = await serializeTasks(tasks, timezone, {
         preserveOriginalName: true,
     });
     const byId = new Map(tasks.map((task, i) => [task.id, serialized[i]]));
+
+    // Completing a recurring task moves the same row on to its next due
+    // date and reopens it, so its status alone would show it as open again.
+    // Count it as done for this day when an occurrence was completed on the
+    // day and the task has since moved past it.
+    const bounds = getDayBoundsInUTC(plan.plan_date, timezone);
+    const completedIds = await repository.findTaskIdsCompletedBetween(
+        tasks.map((task) => task.id),
+        bounds.start,
+        bounds.end
+    );
+    const closedStatuses = [Task.STATUS.DONE, Task.STATUS.ARCHIVED];
+    const statusById = new Map(tasks.map((task) => [task.id, task.status]));
+    // Habits stay open after a check-in, so a check-in on the day is enough.
+    const isOccurrenceDone = (taskId) => {
+        if (byId.get(taskId).habit_mode) return completedIds.has(taskId);
+        const dueDate = byId.get(taskId).due_date;
+        return (
+            completedIds.has(taskId) &&
+            !!dueDate &&
+            dueDate > plan.plan_date &&
+            !closedStatuses.includes(statusById.get(taskId))
+        );
+    };
 
     return {
         uid: plan.uid,
@@ -171,21 +217,31 @@ async function serializePlan(plan, userId, timezone) {
                 start_minute: item.start_minute,
                 duration_minutes: item.duration_minutes,
                 task: byId.get(item.task_id),
+                occurrence_done: isOccurrenceDone(item.task_id),
+                ...(inFocusIds
+                    ? { in_focus: inFocusIds.has(item.task_id) }
+                    : {}),
             })),
     };
 }
 
-async function getPlan(user, date) {
+async function getPlan(user, date, scopeQuery = null) {
     const timezone = getSafeTimezone(user.timezone);
     const planDate = resolvePlanDate(date, timezone);
-    const [plan, dayHours] = await Promise.all([
+    const [plan, dayHours, scope] = await Promise.all([
         repository.findPlan(user.id, planDate),
         getDayHours(user),
+        scopeQuery ? scopeService.resolveScope(scopeQuery, user.id) : null,
     ]);
     return {
         date: planDate,
         day_hours: dayHours,
-        plan: await serializePlan(plan, user.id, timezone),
+        plan: await serializePlan(
+            plan,
+            user.id,
+            timezone,
+            await scopeService.taskScopeWhere(scope)
+        ),
     };
 }
 
@@ -261,19 +317,52 @@ async function clearPlan(user, date) {
     return { date: planDate, plan: null };
 }
 
-// The planner's left column: the same lists the classic Today page shows,
-// deduplicated so a task appears in the first group it belongs to, and
-// ranked by the rules in ranking.js. The user's planning settings decide
-// which tasks count as suggested and how many are shown.
-async function getCandidates(user) {
+// How many suggestions GET /daily-plan/candidates may send at once. The
+// planner raises its limit page by page, so a day with more open tasks than
+// this is still reachable one request at a time.
+const MAX_SUGGESTED_LIMIT = 1000;
+
+// Reads ?suggested_limit=N, the planner's "Show more": absent means the
+// user's Planning setting.
+function parseSuggestedLimit(value) {
+    if (value === undefined || value === null || value === '') return null;
+    const limit = Number(value);
+    if (!isWholeNumberInRange(limit, 1, MAX_SUGGESTED_LIMIT)) {
+        throw new ValidationError(
+            `suggested_limit must be a whole number between 1 and ${MAX_SUGGESTED_LIMIT}`
+        );
+    }
+    return limit;
+}
+
+// The planner's left column: open tasks tagged #today plus the same lists
+// the classic Today page shows, deduplicated so a task appears in the first
+// group it belongs to, and ranked by the rules in ranking.js. The user's
+// planning settings decide which tasks count as suggested and how many are
+// shown at first; suggestedLimit raises that cap when the planner asks for
+// more, and suggested_total says how many there are in all.
+async function getCandidates(
+    user,
+    { suggestedLimit = null, scopeQuery = null } = {}
+) {
     const timezone = getSafeTimezone(user.timezone);
     const { order, suggestions } = await getPlanningSettings(user);
-    const metrics = await computeTaskMetrics(
-        user.id,
-        timezone,
-        null,
-        suggestions
+    const cap = suggestedLimit ?? suggestions.maxSuggestions;
+    const scopeWhere = await scopeService.taskScopeWhere(
+        scopeQuery ? await scopeService.resolveScope(scopeQuery, user.id) : null
     );
+    const [metrics, taggedToday] = await Promise.all([
+        computeTaskMetrics(user.id, timezone, null, suggestions, scopeWhere),
+        repository.findTasksTaggedToday(
+            scopeService.withScope(
+                await permissionsService.ownershipOrPermissionWhere(
+                    'task',
+                    user.id
+                ),
+                scopeWhere
+            )
+        ),
+    ]);
 
     // Groups follow the task's own due date, as Profile > Planning
     // describes them. The Today page lists also count a late or due-today
@@ -298,7 +387,9 @@ async function getCandidates(user) {
         ...metrics.tasks_due_today,
     ].filter((task) => !isLate(task) && !isDueToday(task));
 
+    // Tasks tagged #today come first by default and leave the other groups.
     const groupTasks = {
+        tagged_today: taggedToday,
         overdue: [
             ...metrics.tasks_overdue.filter(isLate),
             ...metrics.tasks_due_today.filter(isLate),
@@ -332,10 +423,11 @@ async function getCandidates(user) {
 
     // The cap comes last: keep the first suggestions in the final order.
     let ranked = orderCandidates(unique, order, suggestions.tieBreak);
+    const suggestedTotal = unique.suggested.length;
     const shown = new Set(
         ranked
             .filter(({ group }) => group === 'suggested')
-            .slice(0, suggestions.maxSuggestions)
+            .slice(0, cap)
             .map(({ task }) => task.id)
     );
     unique.suggested = unique.suggested.filter((task) => shown.has(task.id));
@@ -350,6 +442,7 @@ async function getCandidates(user) {
         });
     }
     result.ranked = ranked.map(({ task }) => task.uid);
+    result.suggested_total = suggestedTotal;
 
     const inbox = await repository.findOpenInboxItems(user.id, INBOX_LIMIT);
     result.inbox = inbox.items.map((item) => ({
@@ -491,6 +584,7 @@ module.exports = {
     clearPlan,
     carryOver,
     getCandidates,
+    parseSuggestedLimit,
     getRanking,
     saveRanking,
     getPlanningSettings,

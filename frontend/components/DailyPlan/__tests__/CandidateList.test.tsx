@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import CandidateList from '../CandidateList';
@@ -28,6 +28,7 @@ const task = (uid: string, name: string, extra = {}) =>
     ({ uid, name, status: 'not_started', ...extra }) as any;
 
 const candidates: PlanCandidates = {
+    tagged_today: [],
     overdue: [task('t-late', 'Renew insurance', { due_date: '2026-09-20' })],
     due_today: [task('t-today', 'Pay rent')],
     in_progress: [task('t-started', 'Draft report')],
@@ -36,10 +37,14 @@ const candidates: PlanCandidates = {
     inbox_count: 0,
 };
 
-const renderList = (list: PlanCandidates = candidates) =>
+const renderList = (
+    list: PlanCandidates = candidates,
+    extra: Partial<React.ComponentProps<typeof CandidateList>> = {}
+) =>
     render(
         <MemoryRouter initialEntries={['/today/plan']}>
             <CandidateList
+                {...extra}
                 candidates={list}
                 planned={new Map()}
                 filter="all"
@@ -84,6 +89,74 @@ describe('CandidateList', () => {
             'Draft report',
             'Pay rent',
         ]);
+    });
+
+    it('puts tasks tagged #today first, labelled as such', () => {
+        renderList({
+            ...candidates,
+            tagged_today: [task('t-tagged', 'Call the bank')],
+        });
+        const names = screen
+            .getAllByTestId(/^candidate-open-/)
+            .map((link) => link.textContent);
+        expect(names[0]).toBe('Call the bank');
+        expect(screen.getByTestId('candidate-t-tagged')).toHaveTextContent(
+            'Tagged #today'
+        );
+    });
+
+    it('shows five at a time and keeps asking the server for more', () => {
+        const onLoadMore = jest.fn();
+        const suggested = Array.from({ length: 8 }, (_, i) =>
+            task(`t-s${i}`, `Idea ${i}`)
+        );
+        renderList(
+            { ...candidates, suggested, suggested_total: 30 },
+            { onLoadMore }
+        );
+        expect(screen.getAllByTestId(/^candidate-open-/)).toHaveLength(5);
+        const more = screen.getByTestId('candidates-show-more');
+        expect(more).toHaveTextContent('Show 5 more');
+
+        fireEvent.click(more);
+        expect(screen.getAllByTestId(/^candidate-open-/)).toHaveLength(10);
+        // One page left locally, so the next page is fetched ahead of time.
+        expect(onLoadMore).toHaveBeenCalledTimes(1);
+
+        // Eleven loaded, 19 still on the server: the button stays.
+        fireEvent.click(screen.getByTestId('candidates-show-more'));
+        expect(screen.getAllByTestId(/^candidate-open-/)).toHaveLength(11);
+        expect(screen.getByTestId('candidates-show-more')).toHaveTextContent(
+            'Show 5 more'
+        );
+        expect(onLoadMore).toHaveBeenCalledTimes(2);
+    });
+
+    it('hides Show more once everything has loaded and been shown', () => {
+        const onLoadMore = jest.fn();
+        const suggested = Array.from({ length: 3 }, (_, i) =>
+            task(`t-s${i}`, `Idea ${i}`)
+        );
+        renderList(
+            { ...candidates, suggested, suggested_total: 3 },
+            { onLoadMore }
+        );
+        fireEvent.click(screen.getByTestId('candidates-show-more'));
+        expect(screen.getAllByTestId(/^candidate-open-/)).toHaveLength(6);
+        expect(
+            screen.queryByTestId('candidates-show-more')
+        ).not.toBeInTheDocument();
+        expect(onLoadMore).not.toHaveBeenCalled();
+    });
+
+    it('shows Loading while the next page is on its way', () => {
+        renderList(
+            { ...candidates, suggested_total: 40 },
+            { onLoadMore: jest.fn(), loadingMore: true }
+        );
+        const more = screen.getByTestId('candidates-show-more');
+        expect(more).toBeDisabled();
+        expect(more).toHaveTextContent('Loading...');
     });
 
     it('opens the task when its name is clicked', () => {

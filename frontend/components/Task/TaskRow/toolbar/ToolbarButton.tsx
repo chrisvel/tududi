@@ -35,7 +35,7 @@ const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
             >
                 <span className="h-4 w-4 flex-shrink-0">{icon}</span>
                 {badge != null && badge !== '' && (
-                    <span className="text-xs font-medium leading-none max-w-[8rem] truncate">
+                    <span className="text-xs font-medium leading-4 max-w-[8rem] truncate">
                         {badge}
                     </span>
                 )}

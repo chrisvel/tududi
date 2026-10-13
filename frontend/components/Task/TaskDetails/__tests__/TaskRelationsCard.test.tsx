@@ -82,7 +82,7 @@ describe('TaskRelationsCard', () => {
         fireEvent.click(screen.getAllByLabelText('Remove relation')[0]);
 
         await waitFor(() =>
-            expect(mockDelete).toHaveBeenCalledWith('task-a', 'rel-1')
+            expect(mockDelete).toHaveBeenCalledWith('task-a', 'rel-1', 'task-b')
         );
         await waitFor(() => expect(onChange).toHaveBeenCalled());
     });

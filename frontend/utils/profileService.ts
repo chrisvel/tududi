@@ -22,11 +22,20 @@ interface Profile {
             details?: {
                 showMetrics?: boolean;
             };
+            list?: {
+                showSomeday?: boolean;
+                showCompleted?: boolean;
+            };
         };
         appearance?: Record<string, unknown>;
         inbox?: {
             recentlyCapturedExpanded?: boolean;
         };
+        focus?: {
+            area_uid?: string | null;
+            project_uid?: string | null;
+            tags?: string[];
+        } | null;
     };
 }
 
@@ -124,10 +133,7 @@ export const getInboxRecentlyCapturedExpanded = async (): Promise<boolean> => {
         const profile = await fetchProfile();
         return profile.ui_settings?.inbox?.recentlyCapturedExpanded ?? false;
     } catch (error) {
-        console.error(
-            'Error fetching inbox recently captured setting:',
-            error
-        );
+        console.error('Error fetching inbox recently captured setting:', error);
         return false;
     }
 };

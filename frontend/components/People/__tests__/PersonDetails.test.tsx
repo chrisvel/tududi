@@ -19,6 +19,13 @@ jest.mock('../../../utils/peopleService', () => ({
     deletePerson: jest.fn(),
 }));
 
+// Assigned tasks render the shared task rows, which pull in the Markdown
+// renderer Jest cannot parse; this page's tests do not need them.
+jest.mock('../../Task/TaskList', () => ({
+    __esModule: true,
+    default: () => null,
+}));
+
 jest.mock('../../../utils/membersService', () => ({
     createSignInLink: jest.fn(),
     revokeSignInLink: jest.fn(),

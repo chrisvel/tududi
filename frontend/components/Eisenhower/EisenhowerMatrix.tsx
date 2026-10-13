@@ -7,6 +7,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskItem from '../Task/TaskItem';
 import { getCsrfToken } from '../../utils/csrfService';
+import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 
 const URGENT_TAG = 'urgent';
 
@@ -246,8 +247,12 @@ const EisenhowerMatrix: React.FC = () => {
         },
     };
 
+    // Korean, Chinese and Japanese stay upright in vertical text, so the
+    // 180 degree turn that makes Latin read bottom-to-top would flip them
+    // upside down. Laying every glyph sideways keeps all scripts readable.
     const axisLabelStyle: React.CSSProperties = {
         writingMode: 'vertical-rl',
+        textOrientation: 'sideways',
         transform: 'rotate(180deg)',
         whiteSpace: 'nowrap',
     };
@@ -301,7 +306,8 @@ const EisenhowerMatrix: React.FC = () => {
                                     : t('tasks.noTasksAvailable', 'No tasks available.')}
                             </p>
                         ) : (
-                            cellTasks.map((task) => (
+                            <div className={TASK_SHEET_CLASS}>
+                            {cellTasks.map((task) => (
                                 <div
                                     key={task.id}
                                     draggable
@@ -319,7 +325,8 @@ const EisenhowerMatrix: React.FC = () => {
                                         onToggleToday={undefined}
                                     />
                                 </div>
-                            ))
+                            ))}
+                            </div>
                         )}
                     </div>
                 )}

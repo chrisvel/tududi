@@ -14,7 +14,9 @@ const dailyPlanController = {
     async get(req, res, next) {
         try {
             const user = requireUser(req);
-            res.json(await dailyPlanService.getPlan(user, req.query.date));
+            res.json(
+                await dailyPlanService.getPlan(user, req.query.date, req.query)
+            );
         } catch (err) {
             next(err);
         }
@@ -23,7 +25,14 @@ const dailyPlanController = {
     async candidates(req, res, next) {
         try {
             const user = requireUser(req);
-            res.json(await dailyPlanService.getCandidates(user));
+            res.json(
+                await dailyPlanService.getCandidates(user, {
+                    suggestedLimit: dailyPlanService.parseSuggestedLimit(
+                        req.query.suggested_limit
+                    ),
+                    scopeQuery: req.query,
+                })
+            );
         } catch (err) {
             next(err);
         }

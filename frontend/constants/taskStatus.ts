@@ -160,3 +160,16 @@ export function isHabitArchived(
 ): boolean {
     return isTaskArchived(status) || isTaskCancelled(status);
 }
+
+export type TaskStatusFilter = 'all' | 'active' | 'completed';
+
+// "Open" is every status that still needs work, so planned and waiting
+// tasks show up next to not started and in progress ones.
+export function matchesTaskStatusFilter(
+    status: StatusType | number | undefined | null,
+    filter: TaskStatusFilter
+): boolean {
+    if (filter === 'completed') return isTaskCompleted(status);
+    if (filter === 'active') return isTaskActive(status);
+    return true;
+}

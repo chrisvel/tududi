@@ -147,7 +147,7 @@ describe('Calendar feed routes', () => {
         expect(bad.status).toBe(400);
     });
 
-    it('keeps a hidden feed in the day events used by the planner', async () => {
+    it('leaves a hidden feed out of the day events used by the planner', async () => {
         const created = await agent
             .post('/api/calendar-feeds')
             .send({ name: 'Google', url: SECRET_URL });
@@ -157,7 +157,8 @@ describe('Calendar feed routes', () => {
 
         const res = await agent.get(`/api/calendar-feeds/events?date=${today}`);
 
-        expect(res.body.events).toHaveLength(1);
+        expect(res.status).toBe(200);
+        expect(res.body.events).toHaveLength(0);
     });
 
     it('returns the events for a date range, tagged with their day', async () => {
@@ -188,6 +189,32 @@ describe('Calendar feed routes', () => {
         expect((await get('start=2026-09-10')).status).toBe(400);
         expect((await get('start=nope&end=2026-09-01')).status).toBe(400);
         expect((await get('start=2026-01-01&end=2026-12-31')).status).toBe(400);
+    });
+
+    it('refetches a cached feed only when asked to refresh', async () => {
+        await agent
+            .post('/api/calendar-feeds')
+            .send({ name: 'Google', url: SECRET_URL });
+        fetchFeed.mockClear();
+        const url = `/api/calendar-feeds/events?date=${today}`;
+
+        await agent.get(url);
+        await agent.get(`${url}&refresh=1`);
+        expect(fetchFeed).not.toHaveBeenCalled();
+
+        const realNow = Date.now();
+        const nowSpy = jest
+            .spyOn(Date, 'now')
+            .mockReturnValue(realNow + 60 * 1000);
+        try {
+            await agent.get(url);
+            expect(fetchFeed).not.toHaveBeenCalled();
+            const res = await agent.get(`${url}&refresh=1`);
+            expect(res.status).toBe(200);
+            expect(fetchFeed).toHaveBeenCalledTimes(1);
+        } finally {
+            nowSpy.mockRestore();
+        }
     });
 
     it('reports a feed that stopped working instead of failing the day', async () => {

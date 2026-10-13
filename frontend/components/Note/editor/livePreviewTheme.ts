@@ -2,13 +2,6 @@ import { EditorView } from '@codemirror/view';
 
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
 
-const calloutTheme = (type: string, rgb: string) => ({
-    [`.cm-md-callout-${type}`]: {
-        backgroundColor: `rgba(${rgb}, 0.1)`,
-        borderLeftColor: `rgb(${rgb})`,
-    },
-});
-
 export const livePreviewTheme = EditorView.baseTheme({
     '.cm-md-h1': { fontSize: '1.8em', fontWeight: '700', lineHeight: '1.3' },
     '.cm-md-h2': { fontSize: '1.5em', fontWeight: '700', lineHeight: '1.3' },
@@ -34,27 +27,51 @@ export const livePreviewTheme = EditorView.baseTheme({
     '.cm-md-link': {
         textDecoration: 'underline',
         textUnderlineOffset: '2px',
+        textDecorationColor: 'rgba(128,128,128,0.6)',
     },
-    '&light .cm-md-link': { color: '#2563eb' },
-    '&dark .cm-md-link': { color: '#60a5fa' },
     '&.cm-mod-pressed .cm-md-link, &.cm-mod-pressed .cm-md-wikilink': {
         cursor: 'pointer',
     },
-    '.cm-md-wikilink': { textUnderlineOffset: '2px' },
-    '&light .cm-md-wikilink': { color: '#2563eb' },
-    '&dark .cm-md-wikilink': { color: '#60a5fa' },
+    '.cm-md-wikilink': {
+        textUnderlineOffset: '2px',
+        textDecorationColor: 'rgba(128,128,128,0.6)',
+    },
+    // Matches the NOTE: badge note links get in read-only markdown.
+    // inline-block stops an underline from a surrounding syntax-highlight
+    // span reaching the chip; the rule below clears it on nested spans.
+    '.cm-md-wikilink-chip': {
+        display: 'inline-block',
+        lineHeight: '1.4',
+        cursor: 'pointer',
+        textDecoration: 'none !important',
+        borderRadius: '4px',
+        padding: '1px 6px 1px 0',
+        background: 'rgba(128,128,128,0.12)',
+    },
+    '.cm-md-wikilink-chip *': { textDecoration: 'none !important' },
+    '.cm-md-wikilink-chip::before': {
+        content: '"NOTE:"',
+        fontSize: '0.72em',
+        fontWeight: '700',
+        letterSpacing: '0.025em',
+        padding: '2px 6px',
+        marginRight: '6px',
+        borderRadius: '3px 0 0 3px',
+        verticalAlign: '1px',
+        opacity: '0.7',
+        background: 'rgba(128,128,128,0.15)',
+    },
 
     '.cm-md-quote': {
         borderLeft: '3px solid rgba(128,128,128,0.5)',
         paddingLeft: '0.75em !important',
     },
-    '.cm-md-callout': { borderLeftWidth: '4px' },
+    '.cm-md-callout': {
+        borderLeftWidth: '4px',
+        borderLeftColor: 'rgba(128,128,128,0.45)',
+        backgroundColor: 'rgba(128,128,128,0.08)',
+    },
     '.cm-md-callout-first': { borderTopRightRadius: '6px', paddingTop: '4px' },
-    ...calloutTheme('note', '96, 165, 250'),
-    ...calloutTheme('tip', '74, 222, 128'),
-    ...calloutTheme('warning', '251, 191, 36'),
-    ...calloutTheme('important', '192, 132, 252'),
-    ...calloutTheme('danger', '248, 113, 113'),
     '.cm-md-callout-label': {
         display: 'inline-flex',
         gap: '0.4em',
@@ -101,9 +118,35 @@ export const livePreviewTheme = EditorView.baseTheme({
         borderBottomRightRadius: '6px',
     },
     '.cm-md-code-lang': {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '8px',
         fontSize: '0.75em',
-        opacity: '0.55',
         textTransform: 'lowercase',
+    },
+    '.cm-md-code-lang > span': {
+        opacity: '0.55',
+    },
+    '.cm-md-code-copy': {
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '28px',
+        height: '28px',
+        borderRadius: '6px',
+        opacity: '0.55',
+        cursor: 'pointer',
+        color: 'inherit',
+        background: 'transparent',
+    },
+    '.cm-md-code-copy:hover, .cm-md-code-copy:focus-visible': {
+        opacity: '1',
+        background: 'rgba(127, 127, 127, 0.15)',
+    },
+    '.cm-md-code-copy svg': {
+        width: '15px',
+        height: '15px',
     },
 
     '.cm-md-hr': {

@@ -96,6 +96,33 @@ describe('Task comments and mentions', () => {
         );
     });
 
+    test('an author without a profile name is not shown as unknown', async () => {
+        await ownerUser.update({ name: null, surname: null }, { hooks: false });
+        const ownerSelf = await Person.findOne({
+            where: { user_id: ownerUser.id, linked_user_id: ownerUser.id },
+        });
+
+        const createResponse = await ownerAgent
+            .post(`/api/task/${task.uid}/comments`)
+            .send({ body: 'Nameless comment' });
+        expect(createResponse.status).toBe(201);
+        expect(createResponse.body.author.name).toBe(ownerSelf.name);
+
+        const listResponse = await collaboratorAgent.get(
+            `/api/task/${task.uid}/comments`
+        );
+        expect(listResponse.body.comments[0].author.name).toBe(ownerSelf.name);
+    });
+
+    test('an author name includes the surname', async () => {
+        await ownerUser.update({ surname: 'Smith' });
+
+        const createResponse = await ownerAgent
+            .post(`/api/task/${task.uid}/comments`)
+            .send({ body: 'Full name' });
+        expect(createResponse.body.author.name).toBe('Owner Smith');
+    });
+
     test('a mention notifies the mentioned collaborator and logs a task event', async () => {
         const collaboratorSelf = await Person.findOne({
             where: {

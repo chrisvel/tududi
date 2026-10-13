@@ -26,6 +26,7 @@ interface TaskDetailsHeaderProps {
     onStatusUpdate: (newStatus: number) => Promise<void>;
     onPriorityUpdate: (newPriority: PriorityType) => Promise<void>;
     onDelete: () => void;
+    onSkipOccurrence?: () => void;
     getProjectLink?: (project: any) => string;
     getTagLink?: (tag: any) => string;
     activePill: string;
@@ -42,6 +43,7 @@ interface TaskDetailsHeaderProps {
     commentCount?: number;
     autoEditTitle?: boolean;
     ancestorChain?: Array<{ uid: string; name: string }>;
+    onEdit?: () => void;
 }
 
 const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
@@ -50,6 +52,8 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     onStatusUpdate,
     onPriorityUpdate,
     onDelete,
+    onSkipOccurrence,
+    onEdit,
     getProjectLink,
     getTagLink,
     activePill,
@@ -830,8 +834,44 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                     ? 'visible'
                                                     : 'hidden',
                                             }}
-                                            className="z-30 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                                            className="z-30 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
                                         >
+                                            {onEdit && (
+                                                <button
+                                                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        setActionsMenuOpen(
+                                                            false
+                                                        );
+                                                        onEdit();
+                                                    }}
+                                                >
+                                                    {t(
+                                                        'task.editDetails',
+                                                        'Edit details'
+                                                    )}
+                                                </button>
+                                            )}
+                                            {onSkipOccurrence && (
+                                                <button
+                                                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        setActionsMenuOpen(
+                                                            false
+                                                        );
+                                                        onSkipOccurrence();
+                                                    }}
+                                                >
+                                                    {t(
+                                                        'task.skipOccurrence',
+                                                        'Skip this occurrence'
+                                                    )}
+                                                </button>
+                                            )}
                                             <button
                                                 className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                                                 onClick={(e) => {

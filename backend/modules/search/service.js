@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const moment = require('moment-timezone');
 const { Task, Tag, Project, sequelize } = require('../../models');
 const searchRepository = require('./repository');
+const scopeService = require('../../services/scopeService');
 const { parseSearchParams, priorityToInt } = require('./validation');
 const { serializeTasks } = require('../tasks/core/serializers');
 const { UnauthorizedError } = require('../../shared/errors');
@@ -60,7 +61,8 @@ class SearchService {
         params,
         dueDateCondition,
         deferDateCondition,
-        nowDate
+        nowDate,
+        scopeWhere = null
     ) {
         const {
             searchQuery,
@@ -69,17 +71,25 @@ class SearchService {
             extras,
             excludeSubtasks,
             status,
+            taskStatus,
         } = params;
 
         const conditions = { user_id: userId };
         const extraConditions = [];
+        if (scopeWhere) {
+            extraConditions.push(scopeWhere);
+        }
 
         if (excludeSubtasks) {
             conditions.parent_task_id = null;
             conditions.recurring_parent_id = null;
         }
 
-        if (status === 'active') {
+        // A specific status (e.g. In Progress) wins over the broader
+        // active/completed toggle, which would otherwise contradict it.
+        if (taskStatus !== undefined) {
+            conditions.status = taskStatus;
+        } else if (status === 'active') {
             conditions.status = { [Op.notIn]: this.completedTaskStatuses() };
         } else if (status === 'completed') {
             conditions.status = { [Op.in]: this.completedTaskStatuses() };
@@ -223,7 +233,8 @@ class SearchService {
         dueDateCondition,
         deferDateCondition,
         nowDate,
-        timezone
+        timezone,
+        scope = null
     ) {
         let matchingIds = null;
         if (tagIds.length > 0) {
@@ -238,7 +249,8 @@ class SearchService {
             params,
             dueDateCondition,
             deferDateCondition,
-            nowDate
+            nowDate,
+            await scopeService.taskScopeWhere(scope)
         );
         if (matchingIds) {
             conditions.id = { [Op.in]: matchingIds };
@@ -280,7 +292,13 @@ class SearchService {
     /**
      * Search projects.
      */
-    async searchProjects(userId, params, tagIds, dueDateCondition) {
+    async searchProjects(
+        userId,
+        params,
+        tagIds,
+        dueDateCondition,
+        scope = null
+    ) {
         const { searchQuery, priority, extras, hasPagination, limit, offset } =
             params;
 
@@ -296,6 +314,10 @@ class SearchService {
         const conditions = { user_id: userId };
         if (matchingIds) {
             conditions.id = { [Op.in]: matchingIds };
+        }
+        const scopeWhere = await scopeService.projectScopeWhere(scope);
+        if (scopeWhere) {
+            conditions[Op.and] = [scopeWhere];
         }
 
         if (searchQuery) {
@@ -373,10 +395,16 @@ class SearchService {
     /**
      * Search areas.
      */
-    async searchAreas(userId, params) {
+    async searchAreas(userId, params, scope = null) {
         const { searchQuery, hasPagination, limit, offset } = params;
 
         const conditions = { user_id: userId };
+        if (scope && scope.matchesNothing) {
+            return { count: 0, results: [] };
+        }
+        if (scope && scope.areaId !== null) {
+            conditions.id = scope.areaId;
+        }
 
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
@@ -422,7 +450,7 @@ class SearchService {
     /**
      * Search notes.
      */
-    async searchNotes(userId, params, tagIds) {
+    async searchNotes(userId, params, tagIds, scope = null) {
         const { searchQuery, hasPagination, limit, offset } = params;
 
         let matchingIds = null;
@@ -436,6 +464,10 @@ class SearchService {
         const conditions = { user_id: userId };
         if (matchingIds) {
             conditions.id = { [Op.in]: matchingIds };
+        }
+        const scopeWhere = await scopeService.noteScopeWhere(scope);
+        if (scopeWhere) {
+            conditions[Op.and] = [scopeWhere];
         }
 
         if (searchQuery) {
@@ -562,6 +594,13 @@ class SearchService {
             return { results: [] };
         }
 
+        // A Focus scope (area and/or project) narrows live search results.
+        // Tags are already handled above, so only the uids are passed on.
+        const scope = await scopeService.resolveScope(
+            { area_uid: params.areaUid, project_uid: params.projectUid },
+            userId
+        );
+
         // Calculate date conditions
         const nowMoment = moment().tz(timezone);
         const startOfToday = nowMoment.clone().startOf('day');
@@ -590,7 +629,8 @@ class SearchService {
                 dueDateCondition,
                 deferDateCondition,
                 nowDate,
-                timezone
+                timezone,
+                scope
             );
             results.push(...taskResults.results);
             totalCount += taskResults.count;
@@ -601,20 +641,26 @@ class SearchService {
                 userId,
                 params,
                 tagIds,
-                dueDateCondition
+                dueDateCondition,
+                scope
             );
             results.push(...projectResults.results);
             totalCount += projectResults.count;
         }
 
         if (filterTypes.includes('Area')) {
-            const areaResults = await this.searchAreas(userId, params);
+            const areaResults = await this.searchAreas(userId, params, scope);
             results.push(...areaResults.results);
             totalCount += areaResults.count;
         }
 
         if (filterTypes.includes('Note')) {
-            const noteResults = await this.searchNotes(userId, params, tagIds);
+            const noteResults = await this.searchNotes(
+                userId,
+                params,
+                tagIds,
+                scope
+            );
             results.push(...noteResults.results);
             totalCount += noteResults.count;
         }

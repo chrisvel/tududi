@@ -10,7 +10,7 @@ const {
     buildTitleFromContent,
 } = require('./validation');
 const { NotFoundError } = require('../../shared/errors');
-const { processInboxItem } = require('./inboxProcessingService');
+const { processInboxItem, parseAreaRefs } = require('./inboxProcessingService');
 const peopleService = require('../people/service');
 const attachments = require('./operations/attachments');
 
@@ -170,14 +170,34 @@ class InboxService {
                   result.parsed_projects[0]
               )
             : null;
-        if (!assignee) {
-            return { ...result, parsed_assignee: null };
+        const area = await this.resolveArea(userId, content);
+        if (!assignee && !area) {
+            return { ...result, parsed_assignee: null, parsed_area: null };
         }
 
-        return {
-            ...processInboxItem(content, { ...options, personResolved: true }),
-            parsed_assignee: assignee,
-        };
+        const resolved = processInboxItem(content, {
+            ...options,
+            personResolved: Boolean(assignee),
+            areaName: area ? area.name : null,
+        });
+        return { ...resolved, parsed_assignee: assignee, parsed_area: area };
+    }
+
+    // The first ~area in the text that names an area the user can add
+    // tasks to. With none, the first ~Name that starts with a letter is an
+    // area to create when the item is saved (uid null), the way an unknown
+    // #tag or +project is. A ~5 or ~$ stays plain text.
+    async resolveArea(userId, content) {
+        const refs = parseAreaRefs(content);
+        for (const ref of refs) {
+            const area = await inboxRepository.findWritableAreaByName(
+                userId,
+                ref.name
+            );
+            if (area) return { uid: area.uid, name: ref.name };
+        }
+        const fresh = refs.find((ref) => /^\p{L}/u.test(ref.name));
+        return fresh ? { uid: null, name: fresh.name } : null;
     }
 
     // Match an @name against the people the task could be assigned to: the

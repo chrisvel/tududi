@@ -1,0 +1,32 @@
+<%# Fonts and icons are served from here rather than Google Fonts and cdnjs,
+    so opening the page sends the visitor's address to nobody else.
+
+    Google Analytics is defined but not loaded: tududiAnalytics() fetches
+    gtag.js only once the visitor has allowed it in the consent banner
+    (partials/consent), and on later visits only if that choice is stored.
+
+    DYNETEQ stats is cookieless and stores no addresses, so it loads without
+    asking. %>
+    <script defer src="https://dyneteq.com/admin/s.js"></script>
+    <link rel="stylesheet" href="/landing-assets/fonts/fonts.css">
+    <link rel="stylesheet" href="/landing-assets/vendor/fontawesome/css/all.min.css">
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.tududiAnalytics = function () {
+        if (window.tududiAnalytics.loaded) return;
+        window.tududiAnalytics.loaded = true;
+        gtag('js', new Date());
+        // page_locale separates the homepages without a second property.
+        // GA's built-in language dimension is the *browser's* language, which
+        // is a different question from which language we actually served.
+        gtag('config', 'G-VC2N7ZBPEE', { page_locale: '<%= i18n.locale %>' });
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE';
+        document.head.appendChild(s);
+      };
+      try {
+        if (localStorage.getItem('tududi_analytics') === 'granted') window.tududiAnalytics();
+      } catch (e) {}
+    </script>

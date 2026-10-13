@@ -1,0 +1,53 @@
+<% const t = i18n.t; %>
+    <%# Shown until the visitor picks one; "Cookie settings" in the footer
+        brings it back. Saying no after a yes deletes the Analytics cookies and
+        reloads, because gtag.js would otherwise keep setting them. %>
+    <div class="consent" id="consent" role="dialog" aria-live="polite" aria-label="<%= t('consent.label') %>" hidden>
+        <p><%= t('consent.body') %> <a href="/privacy"><%= t('footer.linkPrivacy') %></a></p>
+        <div class="consent-actions">
+            <button type="button" data-consent="denied"><%= t('consent.decline') %></button>
+            <button type="button" data-consent="granted"><%= t('consent.accept') %></button>
+        </div>
+    </div>
+    <script>
+      (function () {
+        var KEY = 'tududi_analytics';
+        var banner = document.getElementById('consent');
+        function stored() {
+          try { return localStorage.getItem(KEY); } catch (e) { return null; }
+        }
+        function clearAnalyticsCookies() {
+          var parts = location.hostname.split('.');
+          var domains = [''];
+          for (var i = 0; i < parts.length - 1; i++) {
+            domains.push('; domain=.' + parts.slice(i).join('.'));
+          }
+          document.cookie.split(';').forEach(function (c) {
+            var name = c.split('=')[0].trim();
+            if (name.indexOf('_ga') !== 0) return;
+            domains.forEach(function (d) {
+              document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + d;
+            });
+          });
+        }
+        function choose(value) {
+          try { localStorage.setItem(KEY, value); } catch (e) {}
+          banner.hidden = true;
+          if (value === 'granted') {
+            window.tududiAnalytics();
+          } else if (window.tududiAnalytics.loaded) {
+            clearAnalyticsCookies();
+            location.reload();
+          } else {
+            clearAnalyticsCookies();
+          }
+        }
+        banner.querySelectorAll('[data-consent]').forEach(function (b) {
+          b.addEventListener('click', function () { choose(b.getAttribute('data-consent')); });
+        });
+        document.querySelectorAll('[data-consent-open]').forEach(function (b) {
+          b.addEventListener('click', function () { banner.hidden = false; });
+        });
+        if (stored() !== 'granted' && stored() !== 'denied') banner.hidden = false;
+      })();
+    </script>

@@ -2,7 +2,7 @@
 
 const { getConfig } = require('../../../config/config');
 const { logError } = require('../../../services/logService');
-const { ForbiddenError } = require('../../../shared/errors');
+const { ForbiddenError, NotFoundError } = require('../../../shared/errors');
 const {
     getStripe,
     configuredPrices,
@@ -207,6 +207,27 @@ function validateConfig() {
     return problems;
 }
 
+// Sets the number of paid seats on the subscription's single line item.
+// Stripe prorates the change onto the next invoice by default.
+async function updateSeats({ account, quantity }) {
+    if (!account.provider_subscription_id) {
+        throw new NotFoundError('No subscription to add seats to');
+    }
+    const stripe = getStripe();
+    const sub = await stripe.subscriptions.retrieve(
+        account.provider_subscription_id
+    );
+    const item = sub.items?.data?.[0];
+    if (!item) throw new NotFoundError('No subscription to add seats to');
+    const updated = await stripe.subscriptionItems.update(item.id, {
+        quantity,
+    });
+    return {
+        provider_subscription_item_id: item.id,
+        seat_quantity: updated.quantity ?? quantity,
+    };
+}
+
 module.exports = {
     name: 'stripe',
     displayName: 'Stripe',
@@ -214,6 +235,7 @@ module.exports = {
     isConfigured,
     configuredPrices,
     planForPrice,
+    updateSeats,
     canOpenPortal: (account) => !!account?.provider_customer_id,
     createCheckout,
     createPortal,

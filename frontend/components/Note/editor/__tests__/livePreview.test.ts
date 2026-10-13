@@ -131,10 +131,16 @@ describe('live preview decorations', () => {
 
     it('marks wikilinks but ignores them inside inline code', () => {
         const items = inline('[[Note]] and `[[Code]]`\ntail');
-        expect(has(items, 'mark:cm-md-wikilink', 2, 6)).toBe(true);
+        const chip = 'mark:cm-md-wikilink cm-md-wikilink-chip';
+        expect(has(items, chip, 2, 6)).toBe(true);
         expect(
-            items.filter((i) => i.kind === 'mark:cm-md-wikilink')
+            items.filter((i) => i.kind.startsWith('mark:cm-md-wikilink'))
         ).toHaveLength(1);
+    });
+
+    it('shows a wikilink as plain editable text while the caret is on it', () => {
+        const items = inline('[[Note]] and more', 4);
+        expect(has(items, 'mark:cm-md-wikilink', 2, 6)).toBe(true);
     });
 
     it('renders images as a widget off-line', () => {
@@ -279,6 +285,68 @@ describe('table widget in a real view', () => {
         );
         expect(view.state.selection.main.head).toBe(0);
         expect(parent.querySelector('table.cm-md-table')).toBeNull();
+
+        view.destroy();
+        parent.remove();
+    });
+});
+
+describe('selecting text keeps the rendered note (#1667)', () => {
+    it('keeps bold markers hidden while a range is selected', () => {
+        const doc = 'a **bold** b\ntail';
+        const state = EditorState.create({
+            doc,
+            selection: { anchor: 0, head: 12 },
+            extensions: [markdown({ base: markdownLanguage })],
+        });
+        const items = flatten(
+            buildLivePreview(state, [{ from: 0, to: state.doc.length }])
+                .decorations
+        );
+        expect(has(items, 'hide', 2, 4)).toBe(true);
+        expect(has(items, 'hide', 8, 10)).toBe(true);
+    });
+
+    it('keeps a table rendered while a selection spans it', () => {
+        const doc = '| a | b |\n|---|---|\n| 1 | 2 |\n\ntail';
+        const state = EditorState.create({
+            doc,
+            selection: { anchor: 0, head: doc.length },
+            extensions: [markdown({ base: markdownLanguage })],
+        });
+        expect(flatten(buildBlockWidgets(state)).map((i) => i.kind)).toEqual([
+            'TableWidget',
+        ]);
+    });
+
+    it('waits for the mouse button to be released before revealing source', () => {
+        const parent = document.createElement('div');
+        document.body.append(parent);
+        const doc = 'a **bold** b\n\ntail';
+        const view = new EditorView({
+            parent,
+            state: EditorState.create({
+                doc,
+                selection: { anchor: doc.length },
+                extensions: [
+                    markdown({ base: markdownLanguage }),
+                    livePreviewExtension(),
+                ],
+            }),
+        });
+        const boldMarkersShown = () =>
+            parent.querySelector('.cm-line')?.textContent === 'a **bold** b';
+
+        expect(boldMarkersShown()).toBe(false);
+
+        view.contentDOM.dispatchEvent(
+            new MouseEvent('mousedown', { bubbles: true, button: 0 })
+        );
+        view.dispatch({ selection: { anchor: 5 } });
+        expect(boldMarkersShown()).toBe(false);
+
+        window.dispatchEvent(new MouseEvent('mouseup'));
+        expect(boldMarkersShown()).toBe(true);
 
         view.destroy();
         parent.remove();
