@@ -77,7 +77,7 @@ export default function GoalTree({ areaUid }: { areaUid?: string | null }) {
                     >
                         <bdi>{node.title}</bdi>
                     </Link>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
                         {t(`goals.horizon.${node.horizon}`)}
                     </span>
                 </div>
@@ -141,7 +141,9 @@ export default function GoalTree({ areaUid }: { areaUid?: string | null }) {
             data-testid="goal-tree"
         >
             <h2 className="font-medium">{t('ltdPlanning.tree')}</h2>
-            <p className="text-sm text-gray-500">{t('ltdPlanning.moveHint')}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+                {t('ltdPlanning.moveHint')}
+            </p>
             {(error || loadError) && (
                 <p
                     role="alert"

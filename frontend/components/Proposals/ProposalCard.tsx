@@ -37,7 +37,9 @@ function OpPreview({ op }: { op: ProposalOp }) {
                     {formatMinute(op.start_minute + op.duration_minutes)}
                 </span>{' '}
                 · <bdi>{op.task_name}</bdi>{' '}
-                <span className="text-gray-500">({day(op.date)})</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                    ({day(op.date)})
+                </span>
             </span>
         );
     }
@@ -45,7 +47,7 @@ function OpPreview({ op }: { op: ProposalOp }) {
         return (
             <span>
                 {t('ltdProposals.ops.createGoal')} <bdi>{op.title}</bdi>{' '}
-                <span className="text-gray-500">
+                <span className="text-gray-600 dark:text-gray-400">
                     ({t(`goals.horizon.${op.horizon}`, op.horizon)})
                 </span>
                 {op.why && <bdi className="block">{op.why}</bdi>}
@@ -82,7 +84,7 @@ function OpPreview({ op }: { op: ProposalOp }) {
                         </>
                     )}
                 {op.type === 'update_lesson' && op.changes.status && (
-                    <span className="text-gray-500">
+                    <span className="text-gray-600 dark:text-gray-400">
                         {' '}
                         (
                         {t(
@@ -107,7 +109,7 @@ function OpPreview({ op }: { op: ProposalOp }) {
                     </bdi>
                 )}
                 {op.links && op.links.length > 0 && (
-                    <span className="block text-gray-500">
+                    <span className="block text-gray-600 dark:text-gray-400">
                         {op.links.map((link, index) => (
                             <React.Fragment key={`${link.type}:${link.uid}`}>
                                 {index > 0 && ' · '}
@@ -123,7 +125,7 @@ function OpPreview({ op }: { op: ProposalOp }) {
     return (
         <span>
             <bdi>{op.task_name}</bdi> · {t('ltdProposals.ops.due')}{' '}
-            <del className="text-gray-500">
+            <del className="text-gray-600 dark:text-gray-400">
                 {op.before_day
                     ? day(op.before_day)
                     : t('ltdProposals.ops.noDue')}
@@ -170,7 +172,7 @@ export default function ProposalCard({
                 <h2 id={`proposal-${proposal.uid}`} className="font-medium">
                     <bdi>{proposal.title}</bdi>
                 </h2>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-600 dark:text-gray-400">
                     {t(`ltdProposals.status.${proposal.status}`)} ·{' '}
                     {t('ltdProposals.from')}{' '}
                     <bdi>

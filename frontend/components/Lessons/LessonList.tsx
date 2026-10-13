@@ -59,7 +59,7 @@ const LessonList: React.FC<LessonListProps> = ({
                 </p>
             )}
             {lessons && lessons.length === 0 && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                     {goalUid
                         ? t(
                               'ltdLessons.emptyGoal',
@@ -89,7 +89,7 @@ const LessonList: React.FC<LessonListProps> = ({
                                         {lessonLine(lesson, t)}
                                     </bdi>
                                 )}
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                <span className="text-xs text-gray-600 dark:text-gray-400">
                                     {day(lesson.learned_on)}
                                     {lesson.status !== 'active' &&
                                         ` · ${t(`ltdLessons.status.${lesson.status}`, lesson.status)}`}
