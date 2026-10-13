@@ -7,7 +7,7 @@ const progress = require('../ltd-progress/service');
 const planner = require('../ltd-planner/service');
 const plans = require('../daily-plan/service');
 const { defaultPeriod } = require('../ltd-progress/periods');
-const calendars = require('../calendar-feeds/service');
+const busy = require('../ltd-gcal/busy');
 const planningRepo = require('../ltd-planner/repository');
 const { resolveAIConfig } = require('../ai-assistant/service');
 const {
@@ -130,7 +130,7 @@ async function build(user, raw) {
                 raw: true,
             }),
             planner.getCapacity(user, date),
-            calendars.eventsForDay(user, date),
+            busy.eventsForDay(user, date),
             plans.getPlan(user, date),
             planner.getCapacity(
                 user,

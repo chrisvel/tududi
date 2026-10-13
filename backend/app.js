@@ -575,6 +575,8 @@ const registerApiRoutes = (basePath) => {
     // LTD-PATCH(T-802): consent-gated in-app AI, same auth middleware.
     app.use(basePath, require('./modules/ltd-ai/routes'));
     app.use(basePath, require('./modules/ltd-mcp-control/routes'));
+    // LTD-PATCH(T-901): Google Calendar connect, status and disconnect.
+    app.use(basePath, require('./modules/ltd-gcal/routes'));
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

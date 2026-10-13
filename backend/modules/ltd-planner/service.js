@@ -9,7 +9,7 @@ const repository = require('./repository');
 const slots = require('../daily-plan/slots');
 const dailyPlanService = require('../daily-plan/service');
 const dailyPlanRepository = require('../daily-plan/repository');
-const calendarFeeds = require('../calendar-feeds/service');
+const busy = require('../ltd-gcal/busy');
 const progress = require('../ltd-progress/service');
 const { withJournal } = require('../ltd-journal/service');
 const { Task } = require('../../models');
@@ -56,11 +56,11 @@ async function saveWorkHours(user, body) {
     return next;
 }
 
-// Busy time comes only from the existing iCal feeds; no feed means no
-// events and therefore no event warnings.
+// Busy time comes from Google Calendar when connected (T-902), otherwise
+// from the iCal feeds; neither means no events and no event warnings.
 async function dayEvents(user, date) {
     try {
-        return (await calendarFeeds.eventsForDay(user, date)).events;
+        return (await busy.eventsForDay(user, date)).events;
     } catch {
         return [];
     }

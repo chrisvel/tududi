@@ -296,6 +296,30 @@ describe.each(fixtures)('upgrade from $name', (fixture) => {
         }
     });
 
+    // LTD-PATCH(T-901): Google Calendar account and event read model.
+    it('adds the Phase 9 tables with user foreign keys', async () => {
+        expect(await inspect.tableNames(temp.file)).toEqual(
+            expect.arrayContaining([
+                'ltd_gcal_accounts',
+                'ltd_external_event_links',
+            ])
+        );
+        for (const table of ['ltd_gcal_accounts', 'ltd_external_event_links']) {
+            expect(
+                await inspect.query(
+                    temp.file,
+                    `PRAGMA foreign_key_list(${table})`
+                )
+            ).toEqual([
+                expect.objectContaining({
+                    from: 'user_id',
+                    table: 'users',
+                    on_delete: 'CASCADE',
+                }),
+            ]);
+        }
+    });
+
     it('records every migration file in SequelizeMeta', async () => {
         expect(await inspect.metaNames(temp.file)).toEqual(migrationFiles());
     });

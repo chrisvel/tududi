@@ -524,3 +524,16 @@ The embedded OAuth server (T-701, T-702), the Capability Registry (T-703), Propo
 | T-801 | `backend/tests/integration/profile-ai-settings.test.js` | Verify additive settings and preserved encrypted key | No |
 | T-803 | `public/locales/*/translation.json` | Assistant and consent labels; English and Persian, English placeholders elsewhere | No |
 | T-803 | `backend/modules/goals/service.js` | Recheck the three-weekly-priority ceiling under the existing owner lock when an AI Proposal is approved | No |
+
+### T-901–T-903 Google Calendar patches
+
+| Task | Files | Reason | Upstream candidate |
+|---|---|---|---|
+| T-901 | `package.json`, `package-lock.json` | Pin `nock@14.0.17` (dev only) for recorded Google fixtures | No |
+| T-901 | `backend/app.js` | Mount the human-session-only Google Calendar routes | No |
+| T-901 | `backend/models/index.js`, `backend/tests/helpers/setup.js` | Register and clean `ltd_gcal_accounts` and `ltd_external_event_links` | No |
+| T-901 | `backend/modules/tasks/taskScheduler.js` | Poll Google every 10 minutes from the existing node-cron worker; no watch channel | No |
+| T-901 | `frontend/components/Profile/tabs/CalendarFeedsTab.tsx` | Show the Google Calendar card above the iCal feeds | No |
+| T-901 | `public/locales/*/translation.json` | `profile.gcal` strings: English and Persian, English in other locales | No |
+| T-901 | `backend/.env.example` | Document `GOOGLE_CALENDAR_CLIENT_ID`, `GOOGLE_CALENDAR_CLIENT_SECRET`, `GOOGLE_CALENDAR_REDIRECT_URI` | No |
+| T-901 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert the Phase 9 tables and foreign keys on real legacy fixtures | No |
