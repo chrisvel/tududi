@@ -184,16 +184,20 @@ class InboxService {
     }
 
     // The first ~area in the text that names an area the user can add
-    // tasks to. A ~word that matches nothing stays plain text.
+    // tasks to. With none, the first ~Name that starts with a letter is an
+    // area to create when the item is saved (uid null), the way an unknown
+    // #tag or +project is. A ~5 or ~$ stays plain text.
     async resolveArea(userId, content) {
-        for (const ref of parseAreaRefs(content)) {
+        const refs = parseAreaRefs(content);
+        for (const ref of refs) {
             const area = await inboxRepository.findWritableAreaByName(
                 userId,
                 ref.name
             );
             if (area) return { uid: area.uid, name: ref.name };
         }
-        return null;
+        const fresh = refs.find((ref) => /^\p{L}/u.test(ref.name));
+        return fresh ? { uid: null, name: fresh.name } : null;
     }
 
     // Match an @name against the people the task could be assigned to: the

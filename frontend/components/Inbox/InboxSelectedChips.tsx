@@ -32,6 +32,8 @@ export interface InboxPersonChip {
 
 export interface InboxAreaChip {
     name: string;
+    // Created when the item is saved
+    isNew?: boolean;
 }
 
 interface InboxSelectedChipsProps {
@@ -287,7 +289,9 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                         className="flex items-center"
                     >
                         <SolidSquares2X2Icon className="h-3 w-3 mr-1 flex-shrink-0" />
-                        <span className="inline-flex items-center max-w-[12rem]">
+                        <span
+                            className={`inline-flex items-center max-w-[12rem] ${area.isNew ? newItemClass : ''}`}
+                        >
                             <span className="truncate">{area.name}</span>
                             {onRemoveArea &&
                                 removeButton(
