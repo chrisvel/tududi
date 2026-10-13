@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Online backup of the live SQLite database, safe while the app is writing.
 #
-#   deploy/backup.sh            # from anywhere; needs the app container up
-#   KEEP_DAYS=30 deploy/backup.sh
+#   ./backup.sh            # from anywhere; needs the app container up
+#   KEEP_DAYS=30 ./backup.sh
 #
-# Writes deploy/data/backups/ltd-<UTC time>.sqlite3, verified with
-# PRAGMA integrity_check. Covers the database only: deploy/data/uploads is
+# Writes data/backups/ltd-<UTC time>.sqlite3, verified with
+# PRAGMA integrity_check. Covers the database only: data/uploads is
 # plain files and needs its own off-server copy.
 set -euo pipefail
 cd "$(dirname "$0")"

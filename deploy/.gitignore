@@ -1,4 +1,0 @@
-# Server-only files: secrets and live data never go into git.
-.env
-.env.version
-data/

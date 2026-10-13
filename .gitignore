@@ -16,6 +16,7 @@ CLAUDE.local.md  # User-specific customizations (ignored)
 .byebug_history
 node_modules
 .env
+.env.version
 
 public/js/bundle.js
 .aider*
@@ -32,6 +33,8 @@ backend/backups/
 
 # Docker volumes
 tududi_db/
+# Life-to-Day runtime state: database, uploads, backups
+data/
 
 # Log files
 *.log

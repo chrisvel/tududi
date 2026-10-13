@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 umask 077
 version=${1:-}
 if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
-    echo "Usage: deploy/deploy.sh <version-without-v>" >&2; exit 2
+    echo "Usage: ./deploy.sh <version-without-v>" >&2; exit 2
 fi
 [ -f .env ] || { echo "Missing production .env" >&2; exit 2; }
 # Explicit base file prevents the local build/port override on production.

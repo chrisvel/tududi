@@ -41,7 +41,7 @@ Do not leave it in **Testing**. In Testing, Google expires the refresh token aft
 
 ## 4. Server settings
 
-Put these in the server's environment file (for the Docker setup, `deploy/.env`, which is never committed), then restart:
+Put these in the server's environment file (`.env` in the repo root, which is never committed), then restart:
 
 ```
 GOOGLE_CALENDAR_CLIENT_ID=...

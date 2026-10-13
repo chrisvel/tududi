@@ -537,3 +537,9 @@ The embedded OAuth server (T-701, T-702), the Capability Registry (T-703), Propo
 | T-901 | `public/locales/*/translation.json` | `profile.gcal` strings: English and Persian, English in other locales | No |
 | T-901 | `backend/.env.example` | Document `GOOGLE_CALENDAR_CLIENT_ID`, `GOOGLE_CALENDAR_CLIENT_SECRET`, `GOOGLE_CALENDAR_REDIRECT_URI` | No |
 | T-901 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert the Phase 9 tables and foreign keys on real legacy fixtures | No |
+
+### One env at the repo root
+
+| Task | Files | Reason | Upstream candidate |
+|---|---|---|---|
+| T-201 | `docker-compose.yml`, `docker-compose.local.yml`, `Caddyfile`, `backup.sh`, `deploy.sh`, `restic-backup.sh`, `restore-drill.sh` | The Life-to-Day host setup now lives next to the root `.env`; `deploy/` is removed | No |

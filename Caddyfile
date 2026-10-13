@@ -1,4 +1,4 @@
-# The domain comes from LTD_DOMAIN in deploy/.env, so this file never needs
+# The domain comes from LTD_DOMAIN in .env, so this file never needs
 # a local edit on the server. Caddy gets and renews the certificate itself;
 # ports 80 and 443 must be reachable and the A record must point here.
 {$LTD_DOMAIN:plan.example.com} {

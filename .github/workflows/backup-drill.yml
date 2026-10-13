@@ -8,14 +8,20 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'deploy/**'
+      - 'docker-compose*.yml'
+      - 'Caddyfile'
+      - 'backup.sh'
+      - 'restore-drill.sh'
       - 'Dockerfile'
       - 'package*.json'
       - '.github/workflows/backup-drill.yml'
   push:
     branches: [main]
     paths:
-      - 'deploy/**'
+      - 'docker-compose*.yml'
+      - 'Caddyfile'
+      - 'backup.sh'
+      - 'restore-drill.sh'
       - 'Dockerfile'
       - 'package*.json'
       - '.github/workflows/backup-drill.yml'
@@ -37,7 +43,6 @@ jobs:
       - name: Confirm Docker access
         run: docker info >/dev/null
       - name: Build one local app with disposable credentials
-        working-directory: deploy
         run: |
           cp .env.example .env
           chmod 600 .env
@@ -47,9 +52,9 @@ jobs:
           from pathlib import Path
           import subprocess
           p = Path('.env')
-          text = p.read_text().replace('you@example.com', 'ci@example.invalid')
-          text = text.replace('<replace-with-a-long-random-password>', subprocess.check_output(['openssl', 'rand', '-hex', '32'], text=True).strip())
-          text = text.replace('<replace-with-output-of-openssl-rand-hex-64>', subprocess.check_output(['openssl', 'rand', '-hex', '64'], text=True).strip())
+          text = p.read_text().replace('admin@example.com', 'ci@example.invalid')
+          text = text.replace('change-me-to-a-secure-password', subprocess.check_output(['openssl', 'rand', '-hex', '32'], text=True).strip())
+          text = text.replace('change-me-please-use-openssl-rand-hex-64', subprocess.check_output(['openssl', 'rand', '-hex', '64'], text=True).strip())
           p.write_text(text)
           PY
           docker compose --profile local up -d --build
@@ -59,7 +64,6 @@ jobs:
           done
           curl -fsS http://127.0.0.1:3002/api/health/ready
       - name: Add one synthetic task through the real API
-        working-directory: deploy
         run: |
           python3 - <<'PY'
           import http.cookiejar, json, urllib.request
@@ -75,7 +79,6 @@ jobs:
           call('/api/task', {'name': 'Weekly restore fixture', 'status': 0}, {'X-CSRF-Token': csrf})
           PY
       - name: Backup and recover into an empty folder
-        working-directory: deploy
         run: |
           ./backup.sh | tee backup.log
           mkdir data/drill
@@ -89,11 +92,10 @@ jobs:
         with:
           name: restore-drill-proof
           path: |
-            deploy/backup.log
-            deploy/drill.log
+            backup.log
+            drill.log
           if-no-files-found: warn
           retention-days: 14
       - name: Stop disposable runner containers
         if: always()
-        working-directory: deploy
         run: docker compose --profile local down

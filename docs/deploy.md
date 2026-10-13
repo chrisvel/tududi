@@ -8,7 +8,7 @@ One image, configured only through environment variables, with state in two fold
 | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | Image         | `ghcr.io/danialmasghati/life-to-day:${LTD_VERSION:-latest}`, built from the root `Dockerfile`. Local profile builds `life-to-day:local`. |
 | Port          | `3002`, plain HTTP. HTTPS and the domain are the host's job (Caddy here, the platform on a PaaS).                                             |
-| Config        | Environment variables only; the list is `deploy/.env.example`.                                                                                |
+| Config        | Environment variables only; the list is `.env.example`.                                                                                |
 | State         | `/app/db` (SQLite `production.sqlite3`, WAL mode) and `/app/uploads`. Both need a persistent disk; nothing else has to survive a restart.     |
 | Health        | `GET /api/health` (process up), `GET /api/health/ready` (database answers, no pending migrations).                                            |
 | Replicas      | Exactly one. SQLite has one writer, and migrations run at start with no lock on SQLite.                                                       |
@@ -28,15 +28,14 @@ Every start backs up the database first (`/app/db/db-backup-*.sqlite3`, made wit
 
 | Path on the server                  | What it holds                                                            |
 | ----------------------------------- | ------------------------------------------------------------------------ |
-| `deploy/.env`                       | Secrets and settings, from `.env.example`. `chmod 600`, never committed. |
-| `deploy/data/db/production.sqlite3` | Live database (WAL mode; `-wal`/`-shm` sit beside it)                    |
-| `deploy/data/uploads`               | Attachments and avatars                                                  |
-| `deploy/data/backups/ltd-*.sqlite3` | Output of `backup.sh`, kept 14 days (`KEEP_DAYS`)                        |
+| `.env`                       | Secrets and settings, from `.env.example`. `chmod 600`, never committed. |
+| `data/db/production.sqlite3` | Live database (WAL mode; `-wal`/`-shm` sit beside it)                    |
+| `data/uploads`               | Attachments and avatars                                                  |
+| `data/backups/ltd-*.sqlite3` | Output of `backup.sh`, kept 14 days (`KEEP_DAYS`)                        |
 
 ### Local start (no public hostname required)
 
 ```bash
-cd deploy
 cp .env.example .env && chmod 600 .env
 # Replace the two secret placeholders only in .env with:
 #   openssl rand -base64 24  (TUDUDI_USER_PASSWORD)
@@ -49,14 +48,13 @@ curl -fsS http://127.0.0.1:3002/api/health/ready
 
 The example `.env` selects `docker-compose.yml:docker-compose.local.yml` through `COMPOSE_FILE`. This adds a build and a loopback-only port to the same `app` service, overrides the HTTPS-only settings for local HTTP and leaves Caddy off. Keep `LTD_DOMAIN=plan.example.com` for local use; no public certificate is requested. There is exactly one app container. Its fixed container name prevents scaling it beyond one replica. Never run a second compose project against these state folders.
 
-The local URL is `http://127.0.0.1:3002`. The bootstrap email and password are in the ignored, mode-0600 `.env`; the password is not printed in documentation. The root compose file remains the upstream example.
+The local URL is `http://127.0.0.1:3002`. The bootstrap email and password are in the ignored, mode-0600 `.env`; the password is not printed in documentation. Compose files live in the repo root, next to `.env` and `data/`.
 
 ### First production start
 
 On the production host, set `COMPOSE_FILE=docker-compose.yml`, supply a real `LTD_DOMAIN`, matching HTTPS origins/`BASE_URL`, and a released `LTD_VERSION`. Ensure its A record points to the host and 80/443 TCP plus 443 UDP are available. Then:
 
 ```bash
-cd deploy
 mkdir -p data/db data/uploads data/backups
 docker compose --profile production pull
 docker compose --profile production up -d --scale app=1
@@ -68,17 +66,17 @@ Require HTTP 200 and `Strict-Transport-Security`. Caddy uses a deferred `header 
 ### Backup
 
 ```bash
-deploy/backup.sh                          # online .backup + integrity_check
-deploy/restore-drill.sh                   # boots a throwaway copy on the newest backup
+./backup.sh                          # online .backup + integrity_check
+./restore-drill.sh                   # boots a throwaway copy on the newest backup
 # Optional explicit empty target (retained for inspection):
-deploy/restore-drill.sh /path/to/ltd-backup.sqlite3 /path/to/empty-folder
-deploy/restic-backup.sh                   # local snapshot, then off-site backup
+./restore-drill.sh /path/to/ltd-backup.sqlite3 /path/to/empty-folder
+./restic-backup.sh                   # local snapshot, then off-site backup
 ```
 
 Production-host cron only: configure the server's cron daemon timezone to UTC. Install this daily **03:15 UTC** entry as a user that can run Docker. No cron is installed on the development Mac. `/etc/ltd/backup.env` is a host-only mode-0600 shell environment containing the restic/dead-man variables; do not commit it.
 
 ```cron
-15 3 * * * /bin/bash -c 'set -a; . /etc/ltd/backup.env; set +a; /srv/life-to-day/deploy/restic-backup.sh' >> /var/log/ltd-backup.log 2>&1
+15 3 * * * /bin/bash -c 'set -a; . /etc/ltd/backup.env; set +a; /srv/life-to-day/./restic-backup.sh' >> /var/log/ltd-backup.log 2>&1
 ```
 
 `backup.sh` makes an online `.backup`, includes committed WAL writes and requires `integrity_check=ok`. The snapshot is a standalone file in DELETE journal mode. `restic-backup.sh` first runs that script, then backs up **that exact snapshot** and `data/uploads`. Supply `RESTIC_REPOSITORY` and `RESTIC_PASSWORD` only through the process environment; initialize the remote restic repository on the production host first. Missing variables or restic executable produce an explicit BLOCKED message and exit 2 after the local backup. Off-site execution is **BLOCKED**, not tested, until these are supplied.
@@ -90,7 +88,6 @@ After successful off-site backup, a configured `HEALTHCHECK_URL` receives a GET 
 ### Update
 
 ```bash
-cd deploy
 ./deploy.sh 1.2.3                                # version without v
 ```
 
@@ -114,7 +111,7 @@ Runflare builds the root `Dockerfile` from files sent by its CLI (`runflare depl
 | Replicas      | 1                                                                                                             |
 | Disks         | One disk at `/app/db`, one at `/app/uploads`                                                                  |
 | Network       | Public (NodePort / HTTP) on container port `3002`                                                             |
-| Variables     | From `deploy/.env.example` without `LTD_DOMAIN`; `TUDUDI_USER_PASSWORD` and `TUDUDI_SESSION_SECRET` as Secret |
+| Variables     | From `.env.example` without `LTD_DOMAIN`; `TUDUDI_USER_PASSWORD` and `TUDUDI_SESSION_SECRET` as Secret |
 | Domain        | Own domain or the platform subdomain, free certificate on                                                     |
 
 After the first deploy, `runflare logs -f` should show `Using database file '/app/db/production.sqlite3'`, `Migrations completed successfully` and `TUDUDI_TRUST_PROXY=1 parsed as number 1`. Then check `/api/health/ready`, sign in, and restart the service once to confirm the data survives.

@@ -18,7 +18,7 @@ The [product blueprint](docs/ltd/PRODUCT_BLUEPRINT.md) describes the direction o
 
 ## Run it yourself
 
-For Docker setup, persistent storage, backups and moving between hosts, follow [the deployment guide](deploy/README.md). The release image is `ghcr.io/danialmasghati/life-to-day`.
+For Docker setup, persistent storage, backups and moving between hosts, follow [the deployment guide](docs/deploy.md). The release image is `ghcr.io/danialmasghati/life-to-day`. Run it from the repo root: `docker compose --profile local up -d --build`.
 
 For local development:
 

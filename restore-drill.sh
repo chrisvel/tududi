@@ -2,10 +2,10 @@
 # Restore drill: boots a throwaway copy of the app on a backup and checks it
 # serves. Never touches the live database or the running containers.
 #
-#   deploy/restore-drill.sh                       # newest data/backups/ltd-*.sqlite3
-#   deploy/restore-drill.sh path/to/backup.sqlite3
-#   deploy/restore-drill.sh path/to/backup.sqlite3 /path/to/empty-folder
-#   LTD_IMAGE=ghcr.io/danialmasghati/life-to-day:VERSION deploy/restore-drill.sh
+#   ./restore-drill.sh                       # newest data/backups/ltd-*.sqlite3
+#   ./restore-drill.sh path/to/backup.sqlite3
+#   ./restore-drill.sh path/to/backup.sqlite3 /path/to/empty-folder
+#   LTD_IMAGE=ghcr.io/danialmasghati/life-to-day:VERSION ./restore-drill.sh
 set -euo pipefail
 cd "$(dirname "$0")"
 

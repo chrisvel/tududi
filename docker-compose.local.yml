@@ -4,7 +4,7 @@ services:
     app:
         image: life-to-day:local
         build:
-            context: ..
+            context: .
             dockerfile: Dockerfile
         ports:
             - '127.0.0.1:3002:3002'
