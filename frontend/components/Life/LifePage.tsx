@@ -2,7 +2,10 @@
 // with the Life timeline (milestones above the axis, dated goals below it)
 // and the Vision editor, which edits goals with horizon=vision in the
 // existing goal panel. No separate Vision entity exists.
+// T-1103: life lessons under Vision, and an optional lesson layer on the
+// axis, off by default (ui_settings.appearance.lifeLessonsOnAxis).
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/useStore';
@@ -13,6 +16,12 @@ import MilestonePanel from '../LifeTimeline/MilestonePanel';
 import { createGoalUrl } from '../../utils/slugUtils';
 import { fetchMilestones, Milestone } from '../../utils/milestonesService';
 import { fetchProfile, updateUiSettings } from '../../utils/profileService';
+import { Lesson, fetchLessons, lessonKeys } from '../../utils/lessonsService';
+import LessonList from '../Lessons/LessonList';
+import LessonPanel from '../Lessons/LessonPanel';
+
+const LESSON_PREFIX = 'lesson:';
+const LESSON_COLOR = '#d97706';
 
 const NEW_VISION = {
     title: '',
@@ -32,6 +41,11 @@ const LifePage: React.FC = () => {
     const [showMilestones, setShowMilestones] = useState(true);
     const [showGoals, setShowGoals] = useState(true);
     const [axisRtl, setAxisRtl] = useState(false);
+    const [showLessons, setShowLessons] = useState(false);
+    const [lessonOpen, setLessonOpen] = useState<Lesson | null>(null);
+    const { data: lessons = [] } = useSWR(lessonKeys.list(), () =>
+        fetchLessons()
+    );
 
     const reload = useCallback(() => {
         fetchMilestones()
@@ -46,11 +60,14 @@ const LifePage: React.FC = () => {
         reload();
         loadGoals?.();
         fetchProfile()
-            .then((profile) =>
+            .then((profile) => {
                 setAxisRtl(
                     profile.ui_settings?.appearance?.lifeTimelineAxis === 'rtl'
-                )
-            )
+                );
+                setShowLessons(
+                    profile.ui_settings?.appearance?.lifeLessonsOnAxis === true
+                );
+            })
             .catch(() => undefined);
     }, [reload, loadGoals]);
 
@@ -61,6 +78,25 @@ const LifePage: React.FC = () => {
             appearance: { lifeTimelineAxis: rtl ? 'rtl' : 'ltr' },
         }).catch(() => undefined);
     };
+
+    const toggleLessons = (on: boolean) => {
+        setShowLessons(on);
+        void updateUiSettings({
+            appearance: { lifeLessonsOnAxis: on },
+        }).catch(() => undefined);
+    };
+    // Lessons sit above the axis with the milestones, on the day learned.
+    const lessonItems = useMemo<TimelineItem[]>(
+        () =>
+            lessons.map((lesson) => ({
+                id: `${LESSON_PREFIX}${lesson.uid}`,
+                title: lesson.title,
+                date: lesson.learned_on,
+                precision: 'day' as const,
+                color: LESSON_COLOR,
+            })),
+        [lessons]
+    );
 
     const milestoneItems = useMemo<TimelineItem[]>(
         () =>
@@ -177,6 +213,8 @@ const LifePage: React.FC = () => {
                 )}
             </section>
 
+            <LessonList headingId="life-lessons-heading" />
+
             <section
                 aria-labelledby="life-timeline-heading"
                 className="space-y-3"
@@ -207,6 +245,17 @@ const LifePage: React.FC = () => {
                         <label className="flex min-h-[44px] items-center gap-2">
                             <input
                                 type="checkbox"
+                                checked={showLessons}
+                                onChange={(e) =>
+                                    toggleLessons(e.target.checked)
+                                }
+                                data-testid="life-layer-lessons"
+                            />
+                            {t('ltdLessons.layer', 'Lessons')}
+                        </label>
+                        <label className="flex min-h-[44px] items-center gap-2">
+                            <input
+                                type="checkbox"
                                 checked={axisRtl}
                                 onChange={(e) => toggleAxis(e.target.checked)}
                                 data-testid="life-axis-rtl"
@@ -224,15 +273,26 @@ const LifePage: React.FC = () => {
                     </p>
                 )}
                 <LifeTimeline
-                    milestones={milestoneItems}
+                    milestones={[
+                        ...(showMilestones ? milestoneItems : []),
+                        ...(showLessons ? lessonItems : []),
+                    ]}
                     goals={goalItems}
-                    showMilestones={showMilestones}
+                    showMilestones={showMilestones || showLessons}
                     showGoals={showGoals}
                     axisRtl={axisRtl}
                     onMilestoneClick={(uid) =>
-                        setEditing(
-                            milestones.find((m) => m.uid === uid) ?? null
-                        )
+                        uid.startsWith(LESSON_PREFIX)
+                            ? setLessonOpen(
+                                  lessons.find(
+                                      (l) =>
+                                          l.uid ===
+                                          uid.slice(LESSON_PREFIX.length)
+                                  ) ?? null
+                              )
+                            : setEditing(
+                                  milestones.find((m) => m.uid === uid) ?? null
+                              )
                     }
                     onGoalClick={openGoal}
                 />
@@ -253,6 +313,13 @@ const LifePage: React.FC = () => {
                 onClose={() => setEditing(undefined)}
                 onChanged={reload}
             />
+            {lessonOpen && (
+                <LessonPanel
+                    isOpen
+                    lesson={lessonOpen}
+                    onClose={() => setLessonOpen(null)}
+                />
+            )}
             <GoalModal
                 isOpen={visionGoal !== null}
                 goal={visionGoal}

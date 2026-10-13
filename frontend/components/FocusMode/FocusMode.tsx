@@ -1,6 +1,7 @@
 // Life-to-Day (T-502): full-screen, single-task Focus. The clock is the
 // Pomodoro clock (pomodoroClock): time comes from started_at and the system
 // clock, so it is right again the moment a backgrounded tab returns.
+// T-1103: one path line and at most one lesson line under the task.
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FocusSession, endFocus } from '../../utils/todayService';
@@ -11,6 +12,7 @@ import {
     useClockNow,
 } from '../Shared/pomodoroClock';
 import { resolveDisplayLocale } from '../../utils/jalali';
+import EffectLine from '../Lessons/EffectLine';
 
 interface FocusModeProps {
     session: FocusSession;
@@ -86,6 +88,10 @@ const FocusMode: React.FC<FocusModeProps> = ({ session, onClose }) => {
             >
                 <bdi>{session.task_name}</bdi>
             </h1>
+            <EffectLine
+                taskUid={session.task_uid}
+                className="max-w-xl items-center text-gray-600 dark:text-gray-400"
+            />
             {session.resume_note && (
                 <p
                     className="max-w-xl text-gray-700 dark:text-gray-300"

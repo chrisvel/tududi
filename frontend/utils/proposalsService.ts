@@ -45,6 +45,21 @@ export type ProposalOp = OpBase &
               before_day?: string | null;
               after: string;
           }
+        // T-1104: life lessons proposed over MCP.
+        | {
+              type: 'create_lesson';
+              title: string;
+              if_text?: string | null;
+              then_text?: string | null;
+              links?: { type: string; uid: string; title?: string }[];
+          }
+        | {
+              type: 'update_lesson';
+              lesson_uid: string;
+              lesson_title: string;
+              changes: Record<string, string | null>;
+              links?: { type: string; uid: string; title?: string }[];
+          }
     );
 
 export interface Proposal {

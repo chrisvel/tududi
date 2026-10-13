@@ -1,5 +1,6 @@
 // LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
 // LTD-PATCH(T-501): capacity bar, Focus mode (T-502), Recovery and Overwhelmed (T-504), contribution (T-505).
+// LTD-PATCH(T-1103): one lesson review question a day, and a lesson in the day review.
 import React, {
     useCallback,
     useEffect,
@@ -69,6 +70,8 @@ import NowCard from './NowCard';
 import CapacityBar from '../Recovery/CapacityBar';
 import ContributionCard from '../Recovery/ContributionCard';
 import RecoveryControls from '../Recovery/RecoveryControls';
+import LessonReviewPrompt from '../Lessons/LessonReviewPrompt';
+import DayLessonCard from '../Lessons/DayLessonCard';
 
 // The degraded path (blueprint 3.5): from 14:00 with nothing done yet.
 const HEAVY_DAY_FROM = 14 * 60;
@@ -803,9 +806,13 @@ const TodayPage: React.FC = () => {
                     />
                 )}
 
+                {planResponse && <LessonReviewPrompt />}
+
                 {contribution && (
                     <ContributionCard contribution={contribution} />
                 )}
+
+                {planResponse && started && dayIsOver && <DayLessonCard />}
             </div>
         </div>
     );

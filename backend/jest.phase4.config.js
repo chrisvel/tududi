@@ -8,6 +8,8 @@ module.exports = {
         '<rootDir>/tests/integration/ltd-metrics-journal.test.js',
         // T-601: milestone writes are Journal entries with their own Undo.
         '<rootDir>/tests/integration/ltd-milestones.test.js',
+        // T-1102: lesson writes and review checks undo through the Journal.
+        '<rootDir>/tests/integration/ltd-lessons.test.js',
     ],
     collectCoverage: true,
     collectCoverageFrom: [

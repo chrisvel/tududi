@@ -1,5 +1,6 @@
 // LTD-PATCH(T-301): Share quiet Life-to-Day presentation without changing behavior.
 // LTD-PATCH(T-503): show the starter step (or a five-minute start) first; Focus and resume (T-502).
+// LTD-PATCH(T-1103): one path line and at most one lesson line after the first step.
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
@@ -7,6 +8,7 @@ import { DailyPlanItem } from '../../utils/dailyPlanService';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import { FocusSession } from '../../utils/todayService';
 import { formatMinute, itemEnd, pickCurrentItem } from './planUtils';
+import EffectLine from '../Lessons/EffectLine';
 
 interface NowCardProps {
     items: DailyPlanItem[];
@@ -149,6 +151,7 @@ const NowCard: React.FC<NowCardProps> = ({
                         )}
                     </span>
                 )}
+                <EffectLine taskUid={item.task_uid} expandable />
                 {details.length > 0 && (
                     <span className="text-sm text-gray-600 dark:text-gray-400">
                         {details.join(' · ')}

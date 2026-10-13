@@ -24,7 +24,33 @@ const TYPES = [
     'update_task',
     'create_task',
     'move_block',
+    // T-1104: life lessons from MCP, applied through the lessons service.
+    'create_lesson',
+    'update_lesson',
 ];
+
+// A lesson op is checked again on apply: a goal deleted since is a 404.
+async function applyLesson(user, op, actor) {
+    const lessons = require('../ltd-lessons/service');
+    const links = op.links?.map(({ type, uid }) => ({ type, uid }));
+    if (op.type === 'create_lesson') {
+        // eslint-disable-next-line no-unused-vars
+        const { id, type, result, error, ...fields } = op;
+        const { lesson } = await lessons.create(
+            user.id,
+            { ...fields, links },
+            actor
+        );
+        return { lesson_uid: lesson.uid };
+    }
+    await lessons.update(
+        user.id,
+        op.lesson_uid,
+        { ...op.changes, ...(links ? { links } : {}) },
+        actor
+    );
+    return {};
+}
 
 async function createGoal(user, op, actor) {
     let areaId = null;
@@ -182,7 +208,9 @@ async function applyOps(user, ops, actor) {
                     ? await aiOps.createTask(user, op, actor)
                     : op.type === 'create_goal'
                       ? await createGoal(user, op, actor)
-                      : await updateTask(user, op, actor);
+                      : op.type.endsWith('_lesson')
+                        ? await applyLesson(user, op, actor)
+                        : await updateTask(user, op, actor);
         } catch (error) {
             results[op.id] = { error: error.message };
         }

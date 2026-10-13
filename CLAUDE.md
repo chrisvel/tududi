@@ -346,6 +346,12 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Jalali axis and dates; axis left to right by default (A-11) with a saved option
     - Vision editor = goals with `horizon = 'vision'` in the existing goal panel
 
+36. **[Task Effect and Life Lessons](docs/27-task-effect-and-lessons.md)**
+    - `taskEffect`: the path to five-year and Vision, the outcome O, at most one lesson; nothing stored
+    - Finishing a task never moves O; no percent of a task's own effect
+    - `ltd_lessons`, links and review checks; four-box form, if/then pairs, one review a day
+    - `/api/lessons`; human-only delete; MCP reads and R2 Proposals for writes
+
 ---
 
 ## Project Overview
@@ -442,7 +448,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 
 - This repository is a fork of `chrisvel/tududi`. Product source of truth: [docs/ltd/PRODUCT_BLUEPRINT.md](docs/ltd/PRODUCT_BLUEPRINT.md). Phase reports live in `docs/ltd/phases/`, Phase 0 spikes in `docs/ltd/spikes/`.
 - Phase 9: Google Calendar in `backend/modules/ltd-gcal` (read-only busy sync, writes only to its own calendar). Setup steps for the owner: [docs/ltd/gcal-setup.md](docs/ltd/gcal-setup.md).
-- Phase 11 (not started): task effect and life lessons. Spec is blueprint §14.7, ADR-014, and Phase 11 in §24. Tasks T-1101–T-1104.
+- Phase 11: task effect (`backend/modules/ltd-progress/effect.js`) and life lessons (`backend/modules/ltd-lessons`). Spec is blueprint §14.7, ADR-014, and Phase 11 in §24. Report: [docs/ltd/phases/PHASE-11.md](docs/ltd/phases/PHASE-11.md).
 - New code: backend in `backend/modules/ltd-*` (CommonJS, same pattern as tududi modules), frontend in `frontend/components/<Feature>/` (TSX).
 - LTD-PATCH rule: any change to tududi core gets a `// LTD-PATCH(T-xxx): why` comment and a row in [docs/ltd/UPSTREAM.md](docs/ltd/UPSTREAM.md). `bash scripts/ltd-patches.sh` lists them. Upstream sync policy is in the same file.
 - Journal rule: every non-human write (AI, MCP, rules) goes through the Journal/Proposal layer with preview and Undo, and never hard-deletes. The Journal is built in Phase 4.

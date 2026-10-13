@@ -127,6 +127,10 @@ const LtdMcpSetting = require('./ltd_mcp_setting')(sequelize);
 // LTD-PATCH(T-901): Google Calendar account and external event read model.
 const LtdGcalAccount = require('./ltd_gcal_account')(sequelize);
 const LtdExternalEventLink = require('./ltd_external_event_link')(sequelize);
+// LTD-PATCH(T-1102): life lessons with their links and review checks.
+const LtdLesson = require('./ltd_lesson')(sequelize);
+const LtdLessonLink = require('./ltd_lesson_link')(sequelize);
+const LtdLessonCheck = require('./ltd_lesson_check')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
@@ -191,6 +195,24 @@ User.hasMany(LtdMilestone, {
 });
 LtdMilestone.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 LtdMilestone.belongsTo(Goal, { foreignKey: 'goal_id', as: 'Goal' });
+User.hasMany(LtdLesson, {
+    foreignKey: 'user_id',
+    as: 'Lessons',
+    onDelete: 'CASCADE',
+});
+LtdLesson.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+LtdLesson.hasMany(LtdLessonLink, {
+    foreignKey: 'lesson_id',
+    as: 'links',
+    onDelete: 'CASCADE',
+});
+LtdLessonLink.belongsTo(LtdLesson, { foreignKey: 'lesson_id', as: 'Lesson' });
+LtdLesson.hasMany(LtdLessonCheck, {
+    foreignKey: 'lesson_id',
+    as: 'checks',
+    onDelete: 'CASCADE',
+});
+LtdLessonCheck.belongsTo(LtdLesson, { foreignKey: 'lesson_id', as: 'Lesson' });
 User.hasMany(LtdProposal, {
     foreignKey: 'user_id',
     as: 'LtdProposals',
@@ -754,6 +776,9 @@ module.exports = {
     LtdMcpSetting,
     LtdGcalAccount,
     LtdExternalEventLink,
+    LtdLesson,
+    LtdLessonLink,
+    LtdLessonCheck,
     Project,
     Task,
     Tag,

@@ -4,6 +4,7 @@
 // read tools are registered here and call the same planning services.
 // T-803: in-app AI definitions share this registry and require human consent.
 // Out of scope until Phase 9: propose_calendar_changes.
+// T-1104: lesson tools live in ltd-lessons/capabilities.js.
 const moment = require('moment-timezone');
 const { z, define } = require('./registry');
 const { Area, Goal, InboxItem, Task } = require('../../models');
@@ -476,6 +477,8 @@ const CAPABILITIES = [
     ...proposalTools,
     ...writes,
     ...require('../ltd-ai/capabilities').AI_CAPABILITIES,
+    // T-1104: task effect and life lessons.
+    ...require('../ltd-lessons/capabilities').LESSON_CAPABILITIES,
 ];
 
 module.exports = { CAPABILITIES, GOAL_READS: goalReads };

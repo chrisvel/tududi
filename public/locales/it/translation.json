@@ -3854,7 +3854,9 @@
       "createGoal": "New goal",
       "under": "under",
       "due": "due",
-      "noDue": "no date"
+      "noDue": "no date",
+      "createLesson": "New lesson:",
+      "updateLesson": "Edit lesson:"
     },
     "clients": {
       "title": "Connected clients",
@@ -3914,5 +3916,80 @@
     "model_fast": "Fast model (optional)",
     "model_smart": "Smart model (optional)",
     "minutes": "minutes"
+  },
+  "ltdLessons": {
+    "lesson": "Lesson",
+    "heading": "Life lessons",
+    "add": "Add lesson",
+    "new": "New lesson",
+    "edit": "Edit lesson",
+    "deleted": "Lesson deleted",
+    "titleRequired": "A title is required",
+    "ifThenTogether": "Write both “if” and “then”, or leave both empty.",
+    "threeIsEnough": "Saved. Would three be enough? This goal now has more than three active lessons.",
+    "noReview": "No review",
+    "loadError": "Could not load lessons.",
+    "empty": "What has life taught you? Write it once, with an if/then, and it shows up on the tasks it belongs to.",
+    "emptyGoal": "No lesson is linked to this goal yet.",
+    "layer": "Lessons",
+    "fields": {
+      "title": "The lesson in one line",
+      "expected": "What I expected",
+      "happened": "What happened",
+      "if": "If…",
+      "then": "Then…",
+      "learnedOn": "Learned on",
+      "reviewOn": "Look at it again on",
+      "links": "Where it applies",
+      "status": "Status"
+    },
+    "placeholders": {
+      "expected": "I thought…",
+      "happened": "It went well, or not…",
+      "if": "When this happens again",
+      "then": "I will do this"
+    },
+    "links": {
+      "goals": "Goals",
+      "projects": "Projects",
+      "areas": "Areas",
+      "tags": "Tags",
+      "goal": "Goal",
+      "project": "Project",
+      "area": "Area",
+      "tag": "Tag",
+      "remove": "Remove link",
+      "add": "Add a goal, project, area or tag",
+      "hint": "A lesson without a link stays in your Life list and does not show on tasks."
+    },
+    "status": {
+      "active": "Active",
+      "parked": "Set aside",
+      "retired": "Retired"
+    },
+    "effect": {
+      "heading": "Long path",
+      "unlinked": "This task is not linked to a goal yet.",
+      "onPath": "This task is on the path “{{title}}”.",
+      "linkedTo": "This task is linked to “{{vision}}”.",
+      "outcome": "The outcome “{{title}}” is now {{percent}}. Doing the task is activity. The outcome changes when a metric is recorded.",
+      "noOutcome": "No metric has been recorded for this path.",
+      "ifThen": "If {{if}}, then {{then}}.",
+      "why": "Why this goal",
+      "more": "More about this path",
+      "less": "Less"
+    },
+    "review": {
+      "question": "Does this lesson still hold?",
+      "holds": "It holds",
+      "notYet": "Not yet",
+      "park": "Set it aside",
+      "saved": "Noted"
+    },
+    "day": {
+      "title": "Did today teach you something?",
+      "hint": "Optional. One line is enough; an if/then makes it show up on the right task next time.",
+      "write": "Write a lesson"
+    }
   }
 }

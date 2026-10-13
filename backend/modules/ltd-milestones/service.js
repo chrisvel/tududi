@@ -243,4 +243,4 @@ async function remove(userId, uid, actor) {
     });
 }
 
-module.exports = { list, create, update, remove, validate };
+module.exports = { list, create, update, remove, validate, isoDay };

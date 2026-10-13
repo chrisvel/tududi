@@ -3,6 +3,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+// LTD-PATCH(T-1103): the task effect (path, outcome, why, one lesson).
+import TaskEffectCard from '../Lessons/TaskEffectCard';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Area } from '../../entities/Area';
@@ -1648,6 +1650,22 @@ const TaskDetails: React.FC = () => {
                                     onGoalSelect={handleGoalSelection}
                                     onGoalClear={handleClearGoal}
                                 />
+
+                                {task.uid && (
+                                    <TaskEffectCard
+                                        taskUid={task.uid}
+                                        refreshKey={[
+                                            task.goal_id,
+                                            task.project_id,
+                                            task.area_id,
+                                            task.status,
+                                            task.due_date,
+                                            (task.tags || [])
+                                                .map((tag) => tag.uid)
+                                                .join(','),
+                                        ].join('|')}
+                                    />
+                                )}
 
                                 <TaskAssignedToCard
                                     task={task}

@@ -156,6 +156,16 @@ async function restore(entry, userId, transaction) {
             );
         return;
     }
+    if (entry.entity_type === 'lesson') {
+        // T-1102: life lessons, their links and review checks.
+        await require('../ltd-lessons/repository').restore(
+            entry,
+            userId,
+            transaction,
+            assertUnchanged
+        );
+        return;
+    }
     if (entry.entity_type === 'task' && entry.op === 'task_update') {
         // T-705: a due date changed by an applied Proposal.
         const task = await repository.task(
