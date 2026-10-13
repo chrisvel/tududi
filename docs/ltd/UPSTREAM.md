@@ -543,3 +543,9 @@ The embedded OAuth server (T-701, T-702), the Capability Registry (T-703), Propo
 | Task | Files | Reason | Upstream candidate |
 |---|---|---|---|
 | T-201 | `docker-compose.yml`, `docker-compose.local.yml`, `Caddyfile`, `backup.sh`, `deploy.sh`, `restic-backup.sh`, `restore-drill.sh` | The Life-to-Day host setup now lives next to the root `.env`; `deploy/` is removed | No |
+
+### Persian type and Jalali names
+
+| Task | Files | Reason | Upstream candidate |
+|---|---|---|---|
+| T-301 | `frontend/styles/tokens.css` | Force Vazirmatn on `html:lang(fa)`, including `fa-IR` | No |

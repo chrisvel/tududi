@@ -1,11 +1,5 @@
 /* LTD-PATCH(T-301): Named roles stay, values are the project's default Tailwind palette. */
 
-/* LTD-PATCH(T-301): Vazirmatn faces live in public/fonts/vazirmatn/vazirmatn.css */
-html[lang='fa'] {
-    --ltd-font: 'Vazirmatn', ui-sans-serif, system-ui, -apple-system,
-        BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
 :root {
     --ltd-canvas: #f3f4f6;
     --ltd-surface: #ffffff;
@@ -52,4 +46,10 @@ html[lang='fa'] {
     --ltd-nav-active-ink: #93c5fd;
     --ltd-nav-capture: #3b82f6;
     --ltd-nav-capture-ink: #ffffff;
+}
+
+/* LTD-PATCH(T-301): Vazirmatn for Persian, including fa-IR. Faces: public/fonts/vazirmatn/ */
+html:lang(fa) {
+    --ltd-font: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
 }
