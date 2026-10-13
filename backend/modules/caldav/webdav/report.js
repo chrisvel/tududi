@@ -4,6 +4,7 @@ const {
     buildResponse,
     buildPropstat,
     buildHref,
+    resourceNameOf,
 } = require('./utils');
 const { generateETag } = require('../utils/etag-generator');
 const taskRepository = require('../../tasks/repository');
@@ -51,7 +52,7 @@ async function handleReport(req, res) {
                 }
 
                 const uid = decodeURIComponent(match[1]);
-                const task = await taskRepository.findByUid(uid, {
+                const task = await taskRepository.findByUidOrResourceName(uid, {
                     include: CALDAV_TASK_INCLUDES,
                 });
 
@@ -179,7 +180,7 @@ async function buildCalendarQueryResponse(
     userTimezone
 ) {
     try {
-        const href = buildHref(username, task.uid);
+        const href = buildHref(username, resourceNameOf(task));
         const etag = generateETag(task);
 
         const props = {

@@ -16,6 +16,14 @@ module.exports = (sequelize) => {
                 unique: true,
                 defaultValue: uid,
             },
+            // The resource name a CalDAV client uploaded this task under, when
+            // that is not its uid. RFC 4791 5.3.2: the URL of a calendar object
+            // resource is arbitrary and need not match its UID, so the client's
+            // identity (uid) and its URL (this) are kept apart.
+            caldav_resource_name: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             name: {
                 type: DataTypes.TEXT,
                 allowNull: false,

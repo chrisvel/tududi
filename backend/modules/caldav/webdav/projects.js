@@ -14,6 +14,7 @@ const {
     buildPropstat,
     parsePropfind,
     parseCalendarQuery,
+    resourceNameOf,
 } = require('./utils');
 const { generateETag } = require('../utils/etag-generator');
 const { generateCTag } = require('../utils/ctag-generator');
@@ -43,7 +44,7 @@ function perProjectEnabled() {
 const enc = encodeURIComponent;
 const homeHref = (u) => `/caldav/${enc(u)}/projects/`;
 const calHref = (u, p) => `/caldav/${enc(u)}/projects/${enc(p)}/`;
-const itemHref = (u, p, uid) => `${calHref(u, p)}${enc(uid)}.ics`;
+const itemHref = (u, p, name) => `${calHref(u, p)}${enc(name)}.ics`;
 
 // Resolve a :projectUid (or the inbox sentinel) to { name, where, writable }
 // scoping the task query. Returns null if the calendar does not exist or the
@@ -102,7 +103,7 @@ function calendarProps(displayname, ctag, username, writable = true) {
 }
 
 async function buildItemResponse(task, username, projectUid) {
-    const href = itemHref(username, projectUid, task.uid);
+    const href = itemHref(username, projectUid, resourceNameOf(task));
     try {
         const vtodo = await vtodoSerializer.serializeTaskToVTODO(task);
         return buildResponse(
@@ -251,7 +252,7 @@ async function handleProjectPropfind(req, res) {
         const responses = [];
         if (req.params.uid) {
             const uid = req.params.uid.replace('.ics', '');
-            const task = await taskRepository.findByUid(uid, {
+            const task = await taskRepository.findByUidOrResourceName(uid, {
                 include: INCLUDE_PROJECT,
             });
             if (!(await canReadTask(task, userId))) {
@@ -382,7 +383,7 @@ async function handleProjectReport(req, res) {
                 }
                 responses.push(
                     buildResponse(
-                        itemHref(username, projectUid, task.uid),
+                        itemHref(username, projectUid, resourceNameOf(task)),
                         buildPropstat(props)
                     )
                 );

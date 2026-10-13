@@ -9,7 +9,7 @@ const { resolveProjectIdForPut } = require('./projects');
 const { deleteTaskFromRemotes } = require('../services/task-deletion-service');
 const { canReadTask, canWriteTask } = require('../access');
 const { STATUS_TUDUDI_TO_ICAL } = require('../icalendar/field-mappings');
-const { buildHref } = require('./utils');
+const { buildHref, resourceNameOf } = require('./utils');
 
 // RFC 4791 5.3.2.1: a UID may be used by one resource in a calendar only.
 function uidConflictResponse(res, username, task) {
@@ -19,7 +19,7 @@ function uidConflictResponse(res, username, task) {
         .send(
             '<?xml version="1.0" encoding="UTF-8"?>' +
                 '<D:error xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">' +
-                `<C:no-uid-conflict><D:href>${buildHref(username, task.uid)}</D:href></C:no-uid-conflict>` +
+                `<C:no-uid-conflict><D:href>${buildHref(username, resourceNameOf(task))}</D:href></C:no-uid-conflict>` +
                 '</D:error>'
         );
 }
@@ -32,10 +32,13 @@ async function handleGetTask(req, res) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        const taskUid = uid.replace('.ics', '');
-        const task = await taskRepository.findByUid(taskUid, {
-            include: CALDAV_TASK_INCLUDES,
-        });
+        const resourceName = uid.replace('.ics', '');
+        const task = await taskRepository.findByUidOrResourceName(
+            resourceName,
+            {
+                include: CALDAV_TASK_INCLUDES,
+            }
+        );
 
         if (!(await canReadTask(task, req.currentUser.id))) {
             return res.status(404).send('Not Found');
@@ -79,7 +82,7 @@ async function handlePutTask(req, res) {
         }
 
         const userId = req.currentUser.id;
-        const taskUid = uid.replace('.ics', '');
+        const resourceName = uid.replace('.ics', '');
         const vtodoData = req.rawBody;
 
         console.log('[PUT] rawBody:', !!vtodoData, vtodoData?.length);
@@ -89,9 +92,12 @@ async function handlePutTask(req, res) {
             return res.status(400).send('Bad Request: No data provided');
         }
 
-        const existingTask = await taskRepository.findByUid(taskUid, {
-            include: CALDAV_TASK_INCLUDES,
-        });
+        const existingTask = await taskRepository.findByUidOrResourceName(
+            resourceName,
+            {
+                include: CALDAV_TASK_INCLUDES,
+            }
+        );
 
         if (existingTask && !(await canWriteTask(existingTask, userId))) {
             return res.status(403).json({ error: 'Forbidden' });
@@ -117,18 +123,52 @@ async function handlePutTask(req, res) {
             return res.status(400).send('Bad Request: Invalid VTODO data');
         }
 
-        // The resource is addressed by its filename. A client that uploads a
-        // VTODO under a new filename while its UID already belongs to another
-        // task would get a second row for the same task, so refuse it the way
-        // the spec says to, pointing the client at the existing resource.
-        if (!existingTask && taskData.uid && taskData.uid !== taskUid) {
-            const uidOwner = await taskRepository.findByUid(taskData.uid);
-            if (uidOwner && (await canReadTask(uidOwner, userId))) {
-                return uidConflictResponse(res, username, uidOwner);
+        // RFC 4791 5.3.2: the URL of a calendar object resource is arbitrary
+        // and need not match the UID inside it. The UID the client sent is the
+        // task's identity; the name it uploaded under is only its URL, and both
+        // are kept (see caldav_resource_name). Reading the URL as the identity
+        // made a client see its own task change identity after every upload,
+        // re-upload it, and leave a row behind each time (#1371).
+        const clientUid = taskData.uid ? String(taskData.uid).trim() : null;
+
+        if (clientUid) {
+            // A UID belongs to one resource in a calendar collection, so an
+            // upload that would give it a second one is refused rather than
+            // stored as another row for the same task - the duplicate that made
+            // deleting a task pointless.
+            const uidOwner = await taskRepository.findByUid(clientUid);
+
+            if (
+                uidOwner &&
+                (!existingTask || uidOwner.id !== existingTask.id)
+            ) {
+                if (await canReadTask(uidOwner, userId)) {
+                    return uidConflictResponse(res, username, uidOwner);
+                }
+                // Someone else's task owns this UID. Refuse without naming it:
+                // that href is a uid the caller has no business seeing.
+                return res
+                    .status(409)
+                    .json({ error: 'This UID is already in use' });
             }
+
+            // The URL already answers with a task that has a different uid: the
+            // request would change the UID of an existing resource, which the
+            // spec refuses as plainly as it refuses a duplicate UID.
+            if (existingTask && existingTask.uid !== clientUid) {
+                return uidConflictResponse(res, username, existingTask);
+            }
+
+            taskData.uid = clientUid;
+            if (resourceName !== clientUid) {
+                taskData.caldav_resource_name = resourceName;
+            }
+        } else {
+            // No UID in the object, so the URL is all there is to identify it
+            // by - which is what this always did.
+            taskData.uid = resourceName;
         }
 
-        taskData.uid = taskUid;
         // An edit by a collaborator keeps the task with its owner.
         taskData.user_id = existingTask ? existingTask.user_id : userId;
         // Only the sync engine uses LAST-MODIFIED.
@@ -198,10 +238,13 @@ async function handleDeleteTask(req, res) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        const taskUid = uid.replace('.ics', '');
-        const task = await taskRepository.findByUid(taskUid, {
-            include: CALDAV_TASK_INCLUDES,
-        });
+        const resourceName = uid.replace('.ics', '');
+        const task = await taskRepository.findByUidOrResourceName(
+            resourceName,
+            {
+                include: CALDAV_TASK_INCLUDES,
+            }
+        );
 
         if (!task) {
             return res.status(404).send('Not Found');

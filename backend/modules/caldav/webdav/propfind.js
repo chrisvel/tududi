@@ -4,6 +4,7 @@ const {
     buildResponse,
     buildPropstat,
     buildHref,
+    resourceNameOf,
 } = require('./utils');
 const { generateETag } = require('../utils/etag-generator');
 const { generateCTag } = require('../utils/ctag-generator');
@@ -140,7 +141,7 @@ async function buildTaskResponse(
     propfindRequest,
     userTimezone
 ) {
-    const href = buildHref(username, task.uid);
+    const href = buildHref(username, resourceNameOf(task));
     const etag = generateETag(task);
 
     try {

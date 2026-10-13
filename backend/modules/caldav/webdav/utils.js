@@ -234,6 +234,15 @@ function buildHref(username, taskUid = null) {
     return taskUid ? `${base}${encodeURIComponent(taskUid)}.ics` : base;
 }
 
+// The name this task's resource answers to: the one the client uploaded it
+// under, or its uid when the client never chose one (Tududi-created tasks, and
+// rows made before the name was kept). RFC 4791 5.3.2: a resource URL is
+// arbitrary and need not be the object's UID, so hrefs follow the name while
+// the VTODO keeps reporting the uid.
+function resourceNameOf(task) {
+    return task?.caldav_resource_name || task?.uid || null;
+}
+
 function escapeXml(unsafe) {
     if (typeof unsafe !== 'string') {
         return unsafe;
@@ -257,6 +266,7 @@ module.exports = {
     buildError,
     buildCalendarData,
     buildHref,
+    resourceNameOf,
     findResultNode,
     parseCalendarQuery,
     parsePropfind,
