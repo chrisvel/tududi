@@ -2,6 +2,7 @@ import {
     setLocalePreferences,
     getCalendarSystem,
     resolveDisplayLocale,
+    resolveDateLocale,
     formatDisplayDate,
     toPersianParts,
     jalaliToUtcDate,
@@ -42,13 +43,15 @@ describe('resolveDisplayLocale', () => {
 
     it('adds the latin digits extension when enabled', () => {
         setLocalePreferences({ latinDigits: true });
-        expect(resolveDisplayLocale('fa')).toBe(
-            'fa-IR-u-ca-persian-nu-latn'
-        );
+        expect(resolveDisplayLocale('fa')).toBe('fa-IR-u-ca-persian-nu-latn');
     });
 
-    it('can attach the persian calendar to en', () => {
+    it('can attach the persian calendar to en for numbers', () => {
         expect(resolveDisplayLocale('en')).toBe('en-u-ca-persian');
+    });
+
+    it('uses Persian month and weekday names for Jalali dates in English', () => {
+        expect(resolveDateLocale('en')).toBe('fa-IR-u-ca-persian');
     });
 });
 
@@ -88,6 +91,22 @@ describe('formatDisplayDate', () => {
         const formatted = formatDisplayDate(new Date(FIXED_UTC), options, 'en');
         expect(formatted).toContain('2024');
         expect(formatted).toContain('March');
+    });
+
+    it('shows a Persian month and weekday when the UI language is English', () => {
+        const formatted = formatDisplayDate(
+            new Date(FIXED_UTC),
+            {
+                timeZone: 'UTC',
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            },
+            'en'
+        );
+        expect(formatted).toContain('فروردین');
+        expect(formatted).toContain('چهارشنبه');
     });
 });
 

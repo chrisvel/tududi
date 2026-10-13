@@ -549,3 +549,5 @@ The embedded OAuth server (T-701, T-702), the Capability Registry (T-703), Propo
 | Task | Files | Reason | Upstream candidate |
 |---|---|---|---|
 | T-301 | `frontend/styles/tokens.css` | Force Vazirmatn on `html:lang(fa)`, including `fa-IR` | No |
+| T-303 | `frontend/components/DailyPlan/planUtils.ts` | Jalali date labels use Persian month and weekday names in any UI language | No |
+| T-303 | `frontend/components/Task/TaskRow/TaskRowCollapsed.tsx`, `frontend/components/Task/TaskDetails/TaskRecurrenceCard.tsx`, `frontend/components/Shared/DateTimePicker.tsx`, `frontend/components/Habits/HabitDayPanel.tsx`, `frontend/utils/habitUtils.ts` | Jalali month and weekday names stay Persian when the UI language is English | No |

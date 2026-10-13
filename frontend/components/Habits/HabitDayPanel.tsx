@@ -19,6 +19,7 @@ import {
     isScheduledOn,
 } from '../../utils/habitUtils';
 import { FORM } from '../../constants/formClasses';
+import { formatDisplayDate } from '../../utils/jalali';
 
 interface HabitDayPanelProps {
     habit: Task;
@@ -111,7 +112,8 @@ const HabitDayPanel: React.FC<HabitDayPanelProps> = ({
         });
     };
 
-    const heading = date.toLocaleDateString(undefined, {
+    // LTD-PATCH(T-303): Jalali month and weekday names stay Persian.
+    const heading = formatDisplayDate(date, {
         weekday: 'long',
         month: 'long',
         day: 'numeric',

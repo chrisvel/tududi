@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import { isTaskDone } from '../../constants/taskStatus';
 import { CalendarEvent } from '../../utils/calendarFeedsService';
 import { DailyPlanItem, DayHours } from '../../utils/dailyPlanService';
+import { resolveDateLocale } from '../../utils/jalali';
 
 export const DURATION_OPTIONS = [15, 30, 60, 120];
 export const DEFAULT_DURATION = 30;
@@ -50,11 +51,9 @@ export const formatDuration = (minutes: number): string => {
         : translate('dailyPlan.durationHours', '{{hours}}h', { hours });
 };
 
-// The app's language codes are not all valid locales (jp, ua).
-export const intlLocale = (language: string | undefined): string => {
-    const code = (language || 'en').split('-')[0];
-    return { jp: 'ja', ua: 'uk' }[code] || language || 'en';
-};
+// LTD-PATCH(T-303): Jalali month and weekday names stay Persian in any UI language.
+export const intlLocale = (language: string | undefined): string =>
+    resolveDateLocale(language);
 
 export const snapToSlot = (minute: number): number =>
     Math.round(minute / SLOT_MINUTES) * SLOT_MINUTES;

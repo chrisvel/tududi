@@ -8,6 +8,7 @@ import { Task, RecurrenceType } from '../../../entities/Task';
 import { TaskIteration } from '../../../utils/tasksService';
 import { getTodayDateString, parseDateString } from '../../../utils/dateUtils';
 import { resolveUserLocale } from '../../../utils/localeUtils';
+import { formatDisplayDate, isPersianCalendar } from '../../../utils/jalali';
 
 interface TaskRecurrenceCardProps {
     task: Task;
@@ -67,6 +68,21 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
 
         const today = getTodayDateString();
         const isToday = dateString === today;
+
+        // LTD-PATCH(T-303): Jalali month and weekday names stay Persian.
+        if (isPersianCalendar()) {
+            const dayName = formatDisplayDate(date, { weekday: 'long' });
+            const formattedDate = formatDisplayDate(date, {
+                day: 'numeric',
+                month: 'long',
+            });
+            return {
+                dayName,
+                formattedDate,
+                fullText: `${dayName}, ${formattedDate}`,
+                isToday,
+            };
+        }
 
         const dayName = date.toLocaleDateString(displayLocale, {
             weekday: 'long',

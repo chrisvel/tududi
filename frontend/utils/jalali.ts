@@ -49,7 +49,8 @@ export const getCalendarSystem = (language?: string): CalendarSystem => {
     return lng === 'fa' ? 'persian' : 'gregorian';
 };
 
-export const isPersianCalendar = (): boolean => getCalendarSystem() === 'persian';
+export const isPersianCalendar = (): boolean =>
+    getCalendarSystem() === 'persian';
 
 export const useLatinDigits = (): boolean =>
     localePreferences.latinDigits ?? false;
@@ -58,8 +59,9 @@ export const useLatinDigits = (): boolean =>
 const INTL_LOCALE: Record<string, string> = { jp: 'ja', ua: 'uk' };
 
 /**
- * Builds the BCP 47 locale used for date/number display, e.g.
+ * Builds the BCP 47 locale used for number display, e.g.
  * fa-IR-u-ca-persian, fa-IR-u-ca-persian-nu-latn or en-u-ca-persian.
+ * Date names use resolveDateLocale so a Jalali calendar stays in Persian.
  */
 export const resolveDisplayLocale = (language?: string): string => {
     const raw = (language ?? getActiveLanguage()).split('-')[0];
@@ -79,6 +81,15 @@ export const resolveDisplayLocale = (language?: string): string => {
 };
 
 /**
+ * Locale for date names. Jalali month and weekday names stay Persian even
+ * when the UI language is English. Digit choice still follows latinDigits.
+ */
+export const resolveDateLocale = (language?: string): string =>
+    getCalendarSystem(language) === 'persian'
+        ? resolveDisplayLocale('fa')
+        : resolveDisplayLocale(language);
+
+/**
  * Formats a date for display with the active calendar and digit settings.
  * This is the only supported way to render a user-facing date when the
  * Persian calendar may be active.
@@ -88,7 +99,7 @@ export const formatDisplayDate = (
     options: Intl.DateTimeFormatOptions,
     language?: string
 ): string => {
-    return new Intl.DateTimeFormat(resolveDisplayLocale(language), {
+    return new Intl.DateTimeFormat(resolveDateLocale(language), {
         timeZone: getDisplayTimezone(),
         ...options,
     }).format(date);
@@ -166,7 +177,10 @@ export const jalaliToUtcDate = (
     const estimate =
         Date.UTC(year + 621, 2, 21) + dayOfYearOffset(month, day) * DAY_MS;
     for (let delta = 0; delta <= 4; delta++) {
-        for (const candidate of [estimate + delta * DAY_MS, estimate - delta * DAY_MS]) {
+        for (const candidate of [
+            estimate + delta * DAY_MS,
+            estimate - delta * DAY_MS,
+        ]) {
             const parts = toPersianParts(candidate);
             if (
                 parts.year === year &&
@@ -214,7 +228,7 @@ export const persianMonthName = (
     language?: string
 ): string => {
     const date = jalaliToUtcDate(year, month, 1);
-    return new Intl.DateTimeFormat(resolveDisplayLocale(language), {
+    return new Intl.DateTimeFormat(resolveDateLocale(language), {
         timeZone: 'UTC',
         month: 'long',
     }).format(date);
@@ -239,7 +253,8 @@ export const formatDisplayNumber = (
     options?: Intl.NumberFormatOptions,
     language?: string
 ): string => {
-    return new Intl.NumberFormat(resolveDisplayLocale(language), options).format(
-        value
-    );
+    return new Intl.NumberFormat(
+        resolveDisplayLocale(language),
+        options
+    ).format(value);
 };

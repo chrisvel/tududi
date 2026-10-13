@@ -27,6 +27,7 @@ import {
     getTomorrowDateString,
     getYesterdayDateString,
 } from '../../../utils/dateUtils';
+import { formatDisplayDate, isPersianCalendar } from '../../../utils/jalali';
 import TaskWhyChain from '../../GoalTree/TaskWhyChain';
 import TaskStatusControl from '../TaskStatusControl';
 import PriorityBadge, {
@@ -174,23 +175,36 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
         if (d === getYesterdayDateString())
             return t('dateIndicators.yesterday', 'YESTERDAY');
         const date = parseDateString(d);
-        return date
-            ? date.toLocaleDateString(undefined, {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-              })
-            : d;
+        if (!date) return d;
+        // LTD-PATCH(T-303): Jalali month names stay Persian in any UI language.
+        if (isPersianCalendar()) {
+            return formatDisplayDate(date, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+            });
+        }
+        return date.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
     };
 
     const formatDefer = (v: string): string | null => {
         const date = new Date(v);
         if (Number.isNaN(date.getTime())) return null;
-        const datePart = date.toLocaleDateString(undefined, {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-        });
+        const datePart = isPersianCalendar()
+            ? formatDisplayDate(date, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+              })
+            : date.toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+              });
         const timePart = date.toLocaleTimeString(undefined, {
             hour: 'numeric',
             minute: '2-digit',

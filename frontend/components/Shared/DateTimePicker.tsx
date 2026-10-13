@@ -12,6 +12,10 @@ import {
 } from '../../utils/profileService';
 import { useTranslation } from 'react-i18next';
 import { resolveUserLocale } from '../../utils/localeUtils';
+import {
+    formatDisplayDate as formatJalaliDate,
+    isPersianCalendar,
+} from '../../utils/jalali';
 import { FORM } from '../../constants/formClasses';
 
 interface DateTimePickerProps {
@@ -122,16 +126,28 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
             displayDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
         }
 
-        const dateStr = displayDate.toLocaleDateString(displayLocale, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
+        // LTD-PATCH(T-303): Jalali month names stay Persian in any UI language.
+        const dateStr = isPersianCalendar()
+            ? formatJalaliDate(displayDate, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+              })
+            : displayDate.toLocaleDateString(displayLocale, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+              });
 
-        const timeStr = displayDate.toLocaleTimeString(displayLocale, {
-            hour: 'numeric',
-            minute: '2-digit',
-        });
+        const timeStr = isPersianCalendar()
+            ? formatJalaliDate(displayDate, {
+                  hour: 'numeric',
+                  minute: '2-digit',
+              })
+            : displayDate.toLocaleTimeString(displayLocale, {
+                  hour: 'numeric',
+                  minute: '2-digit',
+              });
 
         return `${dateStr} at ${timeStr}`;
     };
