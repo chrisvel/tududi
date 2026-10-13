@@ -167,7 +167,7 @@ const LtdNav: React.FC = () => {
                         data-testid="ltd-nav-more"
                         aria-expanded={moreOpen}
                         onClick={() => setMoreOpen((v) => !v)}
-                        className={`flex flex-col items-center gap-0.5 px-2 py-1 text-[11px] ${
+                        className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 px-2 py-1 text-[11px] ${
                             moreOpen
                                 ? 'text-[var(--ltd-nav-active-ink)]'
                                 : 'text-[var(--ltd-nav-ink)]'
@@ -234,7 +234,7 @@ const MobileLink: React.FC<{
         to={to}
         data-testid={testId}
         aria-current={active ? 'page' : undefined}
-        className={`flex flex-col items-center gap-0.5 px-2 py-1 text-[11px] ${
+        className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 px-2 py-1 text-[11px] ${
             active
                 ? 'text-[var(--ltd-nav-active-ink)]'
                 : 'text-[var(--ltd-nav-ink)]'

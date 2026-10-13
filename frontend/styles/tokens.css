@@ -34,7 +34,8 @@
     --ltd-ink: #f9fafb;
     --ltd-secondary: #9ca3af;
     --ltd-separator: #374151;
-    --ltd-primary: #3b82f6;
+    /* LTD-PATCH(T-1002): white on #3b82f6 is 3.7:1; #2563eb keeps 5.2:1. */
+    --ltd-primary: #2563eb;
     --ltd-on-primary: #ffffff;
     --ltd-risk: #fbbf24;
     --ltd-paper: #111827;

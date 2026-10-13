@@ -30,7 +30,7 @@ export default function ProposalsPage() {
             <PlanningAssistant onChanged={changed} />
             {error && <p role="alert">{error.message}</p>}
             {data && !pending.length && (
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                     {t('ltdProposals.empty')}
                 </p>
             )}

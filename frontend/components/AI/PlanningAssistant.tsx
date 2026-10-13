@@ -59,7 +59,9 @@ export default function PlanningAssistant({
             aria-label={t('ltdAi.title')}
         >
             <h2 className="font-semibold">{t('ltdAi.title')}</h2>
-            <p className="text-sm text-gray-500">{t('ltdAi.intro')}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+                {t('ltdAi.intro')}
+            </p>
             <label className="block">
                 {t('ltdAi.feature')}
                 <select

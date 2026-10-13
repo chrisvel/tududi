@@ -448,6 +448,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 
 - This repository is a fork of `chrisvel/tududi`. Product source of truth: [docs/ltd/PRODUCT_BLUEPRINT.md](docs/ltd/PRODUCT_BLUEPRINT.md). Phase reports live in `docs/ltd/phases/`, Phase 0 spikes in `docs/ltd/spikes/`.
 - Phase 9: Google Calendar in `backend/modules/ltd-gcal` (read-only busy sync, writes only to its own calendar). Setup steps for the owner: [docs/ltd/gcal-setup.md](docs/ltd/gcal-setup.md).
+- Phase 10: production readiness report [docs/ltd/phases/PHASE-10.md](docs/ltd/phases/PHASE-10.md); Persian runbooks in `docs/ltd/runbooks/` and the Persian user guide [docs/ltd/guide.md](docs/ltd/guide.md). `bash scripts/test-deploy.sh` dry-runs `deploy.sh` rollback.
 - Phase 11: task effect (`backend/modules/ltd-progress/effect.js`) and life lessons (`backend/modules/ltd-lessons`). Spec is blueprint §14.7, ADR-014, and Phase 11 in §24. Report: [docs/ltd/phases/PHASE-11.md](docs/ltd/phases/PHASE-11.md).
 - New code: backend in `backend/modules/ltd-*` (CommonJS, same pattern as tududi modules), frontend in `frontend/components/<Feature>/` (TSX).
 - LTD-PATCH rule: any change to tududi core gets a `// LTD-PATCH(T-xxx): why` comment and a row in [docs/ltd/UPSTREAM.md](docs/ltd/UPSTREAM.md). `bash scripts/ltd-patches.sh` lists them. Upstream sync policy is in the same file.

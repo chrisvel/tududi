@@ -2,10 +2,7 @@
 // ui_settings.locale and applied immediately without a reload.
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    fetchProfile,
-    updateUiSettings,
-} from '../../utils/profileService';
+import { fetchProfile, updateUiSettings } from '../../utils/profileService';
 import {
     setLocalePreferences,
     type LocalePreferences,
@@ -24,8 +21,7 @@ const LocalePreferencesSection: React.FC = () => {
                 const locale =
                     (
                         profile.ui_settings as
-                            | { locale?: LocalePreferences }
-                            | undefined
+                            { locale?: LocalePreferences } | undefined
                     )?.locale || {};
                 setPrefs(locale);
                 setLocalePreferences(locale);
@@ -50,10 +46,14 @@ const LocalePreferencesSection: React.FC = () => {
     return (
         <>
             <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                    htmlFor="locale-calendar-system"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                     {t('profile.calendarSystem', 'Calendar')}
                 </label>
                 <select
+                    id="locale-calendar-system"
                     value={prefs.calendarSystem || ''}
                     onChange={(e) =>
                         save({

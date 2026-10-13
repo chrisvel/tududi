@@ -572,3 +572,11 @@ The embedded OAuth server (T-701, T-702), the Capability Registry (T-703), Propo
 | Task | Files | Reason | Upstream candidate |
 |---|---|---|---|
 | T-1203 | `backend/models/task.js`, `backend/modules/tasks/core/{builders,parsers}.js`, `backend/modules/users/service.js`, `backend/tests/integration/mcp/mcp-tools.test.js`, `backend/tests/upgrade/legacy-sqlite-upgrade.test.js`, `frontend/{Layout.tsx,entities/Task.ts,utils/tasksService.ts}`, `frontend/components/{Navbar.tsx,Shared/PomodoroTimer.tsx,DailyPlan/{TodayPage,NowCard}.tsx,Task/{TaskDetails.tsx,TaskDetails/TaskEstimateCard.tsx,TaskRow/TaskRowCollapsed.tsx}}` | Task-bound Focus length; the minute estimate supports twelve 90-minute intervals; one server-session chip and lifetime projection; preserve Focus through initial loading and preserve preferences through profile saves | No; independent fork |
+
+### Production readiness
+
+Phase 10 fixes (T-1001 to T-1004). The other files it touches are Life-to-Day files. No upstream pull request was created.
+
+| Task | Files | Reason | Upstream candidate |
+|---|---|---|---|
+| T-1001 | `backend/middleware/auth.js` | Keep the issue time of a sign-in provider (OIDC) bearer token on the request, so the MCP kill switch also ends tokens issued before it | No; Life-to-Day MCP controls only |

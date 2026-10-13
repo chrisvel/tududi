@@ -61,6 +61,15 @@ async function resolveClient(req) {
             scopes: SCOPES,
             issued_at: new Date(req.authToken.created_at),
         };
+    } else if (req.oidcClaims) {
+        // A sign-in provider token is a bearer too: the kill switch ends it.
+        // It is not listed, because it cannot be revoked one by one here.
+        client = {
+            kind: 'oidc',
+            key: 'oidc',
+            scopes: SCOPES,
+            issued_at: new Date((req.oidcClaims.iat || 0) * 1000),
+        };
     } else {
         client = { kind: 'session', key: 'session', scopes: SCOPES };
     }
@@ -73,7 +82,7 @@ async function resolveClient(req) {
     const seen = state.clients[client.key]?.last_used_at;
     if (
         !client.revoked &&
-        client.kind !== 'session' &&
+        ['oauth', 'token'].includes(client.kind) &&
         (!seen || Date.now() - new Date(seen) > TOUCH_MS)
     ) {
         patchClient(userId, client.key, {
