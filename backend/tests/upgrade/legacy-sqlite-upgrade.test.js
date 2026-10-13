@@ -320,6 +320,64 @@ describe.each(fixtures)('upgrade from $name', (fixture) => {
         }
     });
 
+    // LTD-PATCH(T-1102): the Phase 11 lesson tables on real legacy fixtures.
+    it('adds the Phase 11 lesson tables with cascading foreign keys', async () => {
+        expect(await inspect.tableNames(temp.file)).toEqual(
+            expect.arrayContaining([
+                'ltd_lessons',
+                'ltd_lesson_links',
+                'ltd_lesson_checks',
+            ])
+        );
+        const columns = (
+            await inspect.query(temp.file, 'PRAGMA table_info(ltd_lessons)')
+        ).map((c) => c.name);
+        expect(columns).toEqual(
+            expect.arrayContaining([
+                'uid',
+                'user_id',
+                'title',
+                'expected',
+                'happened',
+                'if_text',
+                'then_text',
+                'learned_on',
+                'source_type',
+                'source_uid',
+                'status',
+                'review_on',
+                'created_at',
+                'updated_at',
+            ])
+        );
+        expect(
+            await inspect.query(
+                temp.file,
+                'PRAGMA foreign_key_list(ltd_lessons)'
+            )
+        ).toEqual([
+            expect.objectContaining({
+                from: 'user_id',
+                table: 'users',
+                on_delete: 'CASCADE',
+            }),
+        ]);
+        for (const table of ['ltd_lesson_links', 'ltd_lesson_checks']) {
+            expect(
+                await inspect.query(
+                    temp.file,
+                    `PRAGMA foreign_key_list(${table})`
+                )
+            ).toEqual([
+                expect.objectContaining({
+                    from: 'lesson_id',
+                    table: 'ltd_lessons',
+                    on_delete: 'CASCADE',
+                }),
+            ]);
+        }
+    });
+
     it('records every migration file in SequelizeMeta', async () => {
         expect(await inspect.metaNames(temp.file)).toEqual(migrationFiles());
     });

@@ -162,6 +162,27 @@ function project(snapshot, now = new Date()) {
         outcomes.set(id, result);
         return result;
     }
+    // W(g): a non-habit task due or planned inside the goal's period.
+    const inWindow = (task, goal) =>
+        inside(
+            utcToUserDateString(task.due_date, user?.timezone || 'UTC'),
+            goal
+        ) || (scheduled.get(task.id) || []).some((date) => inside(date, goal));
+    // T-1101: whether finishing this task can move A of the goal (W, or the
+    // habit part of A). It never says anything about O.
+    function activity(task, goalId) {
+        const goal = goalById.get(goalId);
+        if (!goal) return false;
+        const ids = descendants(goalId);
+        if (
+            !ids.has(task.goal_id) &&
+            !ids.has(projectById.get(task.project_id)?.goal_id)
+        )
+            return false;
+        return task.habit_mode
+            ? Boolean(goal.period_start && goal.period_end)
+            : inWindow(task, goal);
+    }
     const result = new Map();
     for (const goal of goals) {
         const ids = descendants(goal.id);
@@ -184,15 +205,7 @@ function project(snapshot, now = new Date()) {
                 );
                 done += activity.done;
                 total += activity.total;
-            } else if (
-                inside(
-                    utcToUserDateString(task.due_date, user?.timezone || 'UTC'),
-                    goal
-                ) ||
-                (scheduled.get(task.id) || []).some((date) =>
-                    inside(date, goal)
-                )
-            ) {
+            } else if (inWindow(task, goal)) {
                 total += weight(task);
                 if (task.status === 2 || task.status === 'done')
                     done += weight(task);
@@ -254,6 +267,6 @@ function project(snapshot, now = new Date()) {
             whyChain: chain(goal.id),
         });
     }
-    return { progress: result, chain, goalById, projectById };
+    return { progress: result, chain, activity, goalById, projectById };
 }
 module.exports = { metricOutcome, weightedOutcome, habitActivity, project };

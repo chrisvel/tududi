@@ -93,6 +93,12 @@ const EXPECTED = {
     reschedule_tasks: ['ltd.propose', 'R2'],
     capture: ['ltd.write', 'R1'],
     checkin_metric: ['ltd.write', 'R1'],
+    // T-1104: lesson reads, and lesson writes only as Proposals.
+    get_task_effect: ['ltd.read', 'R0'],
+    list_lessons: ['ltd.read', 'R0'],
+    get_lesson: ['ltd.read', 'R0'],
+    create_lesson: ['ltd.propose', 'R2'],
+    update_lesson: ['ltd.propose', 'R2'],
 };
 
 describe('Capability Registry', () => {
@@ -112,7 +118,13 @@ describe('Capability Registry', () => {
                 capability.writes
             );
         }
-        for (const name of ['plan_tomorrow', 'create_goal', 'reschedule_tasks'])
+        for (const name of [
+            'plan_tomorrow',
+            'create_goal',
+            'reschedule_tasks',
+            'create_lesson',
+            'update_lesson',
+        ])
             expect(
                 CAPABILITIES.find((c) => c.name === name).description
             ).toMatch(

@@ -1,5 +1,6 @@
 // LTD-PATCH(T-405): add metric check-ins and transactional journal Undo to goal details.
 // LTD-PATCH(T-302): physical Tailwind classes rewritten to logical utilities for RTL
+// LTD-PATCH(T-1103): list the life lessons linked to this goal.
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +26,7 @@ import GoalMetrics from '../Metrics/GoalMetrics';
 import JournalPanel from '../Journal/JournalPanel';
 import { refreshPlanning } from '../../utils/planningService';
 import GoalHero from './GoalHero';
+import LessonList from '../Lessons/LessonList';
 
 const TASK_STATUS_DONE = [2, 3, 'done', 'archived'];
 
@@ -199,6 +201,15 @@ const GoalDetails: React.FC = () => {
             />
 
             {goal.uid && <GoalMetrics goalUid={goal.uid} />}
+            {goal.uid && (
+                <div className="mb-6">
+                    <LessonList
+                        goalUid={goal.uid}
+                        goalTitle={goal.title}
+                        headingId="goal-lessons-heading"
+                    />
+                </div>
+            )}
             <JournalPanel
                 onReverted={async () => {
                     if (goal.uid) setGoal(await fetchGoalByUid(goal.uid));

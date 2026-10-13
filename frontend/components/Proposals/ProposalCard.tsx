@@ -12,6 +12,7 @@ import {
     rejectProposal,
     undoProposal,
 } from '../../utils/proposalsService';
+import { lessonLine } from '../Lessons/effectText';
 
 const day = (value: string) =>
     formatDisplayDate(new Date(`${value}T12:00:00Z`), { dateStyle: 'medium' });
@@ -54,6 +55,66 @@ function OpPreview({ op }: { op: ProposalOp }) {
                         {t('ltdProposals.ops.under')}{' '}
                         <bdi>{op.parent_title}</bdi>
                     </>
+                )}
+            </span>
+        );
+    }
+    // T-1104: a lesson to create or edit, with its if/then and links.
+    if (op.type === 'create_lesson' || op.type === 'update_lesson') {
+        const ifText =
+            op.type === 'create_lesson' ? op.if_text : op.changes.if_text;
+        const thenText =
+            op.type === 'create_lesson' ? op.then_text : op.changes.then_text;
+        return (
+            <span>
+                {op.type === 'create_lesson'
+                    ? t('ltdProposals.ops.createLesson', 'New lesson:')
+                    : t('ltdProposals.ops.updateLesson', 'Edit lesson:')}{' '}
+                <bdi>
+                    {op.type === 'create_lesson' ? op.title : op.lesson_title}
+                </bdi>
+                {op.type === 'update_lesson' &&
+                    op.changes.title &&
+                    op.changes.title !== op.lesson_title && (
+                        <>
+                            {' → '}
+                            <bdi>{op.changes.title}</bdi>
+                        </>
+                    )}
+                {op.type === 'update_lesson' && op.changes.status && (
+                    <span className="text-gray-500">
+                        {' '}
+                        (
+                        {t(
+                            `ltdLessons.status.${op.changes.status}`,
+                            op.changes.status
+                        )}
+                        )
+                    </span>
+                )}
+                {ifText && thenText && (
+                    <bdi className="block">
+                        {lessonLine(
+                            {
+                                uid: op.id,
+                                title: '',
+                                if_text: ifText,
+                                then_text: thenText,
+                                review_on: null,
+                            },
+                            t
+                        )}
+                    </bdi>
+                )}
+                {op.links && op.links.length > 0 && (
+                    <span className="block text-gray-500">
+                        {op.links.map((link, index) => (
+                            <React.Fragment key={`${link.type}:${link.uid}`}>
+                                {index > 0 && ' · '}
+                                <bdi>{link.title ?? link.uid}</bdi>
+                            </React.Fragment>
+                        ))}
+                    </span>
                 )}
             </span>
         );

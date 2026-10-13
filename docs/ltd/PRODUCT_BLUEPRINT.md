@@ -275,6 +275,7 @@ Life-to-Day ابزار درمانی یا پزشکی نیست و ادعای در�
 | F44 | OIDC SSO | Auth | ✅ | C (موجود) |
 | F45 | اثر تسک روی مسیر پنج‌ساله و Vision | Meaning | 🆕 روی whyChain و Metric | M |
 | F46 | درس زندگی با اگر/آنگاه، وصل به هدف و تسک | Meaning | 🆕 | L |
+| F47 | پومودوروی هر تسک: طول بازه، شمارش، و دقیقه‌های واقعی روی همان تسک | Execution | 🆕 روی Focus و `PomodoroTimer` | S |
 
 ---
 
@@ -856,7 +857,7 @@ erDiagram
 | `ltd_gcal_accounts` | `id, user_id, google_sub, refresh_token_enc, scopes, target_calendar_id, sync_token, status, last_sync_at` |
 | `ltd_external_event_links` | `id, user_id, source('gcal'), calendar_id, event_id, etag, entity_type, entity_uid, last_hash, updated_at` |
 
-**`tasks` (LTD-PATCH):** `starter_step TEXT NULL` (Must)؛ `energy ENUM(low,medium,high) NULL` و `original_plan JSON NULL` (🔁 write-once) در وضعیت Should.
+**`tasks` (LTD-PATCH):** `starter_step TEXT NULL` (Must)؛ `energy ENUM(low,medium,high) NULL` و `original_plan JSON NULL` (🔁 write-once) در وضعیت Should. فاز ۱۲: `focus_minutes INTEGER NULL` (۵ تا ۹۰، گام ۵). `NULL` یعنی طول پیش‌فرض کاربر. تعداد پومودورو ستون جدا نیست؛ از `estimated_minutes` حساب می‌شود (۱۴.۸).
 
 ### ۱۳.۴ استراتژی SSOT
 
@@ -1027,6 +1028,46 @@ Recovery Mode    : capacity_rest = 0.6 × باقی‌ماندهٔ روز
 قابلیت ۶ در ۱۶.۴، وقتی فاز ۸ ساخته شد، فقط JSON همین تابع را به مدل می‌دهد. عددی که در آن JSON نیست در خروجی مدل رد می‌شود و هیچ فیلدی نوشته نمی‌شود. تا آن فاز، دکمهٔ جملهٔ انسانی در رابط نیست و تعریف انجام فاز ۱۱ به آن وابسته نیست.
 
 تا وجود Proposal (T-704)، ابزار MCP درس فقط خواندنی است. بعد از آن، ساخت و ویرایش درس عملیات R2 است. حذف در allowlist نیست.
+
+### ۱۴.۸ پومودوروی هر تسک (فاز ۱۲)
+
+تایمر گوجه‌ای نوار بالا (`PomodoroTimer.tsx`) ۲۵ دقیقهٔ ثابت در `localStorage` است و به هیچ تسکی وصل نیست. Focus (T-502) از قبل یک تسک، `started_at` و `actual_minutes` دارد، ولی صفحهٔ سفید و دو دکمه است، استراحت ندارد، و روی ردیف تسک دیده نمی‌شود. فاز ۱۲ همین جلسه را نگه می‌دارد. تایمر دوم، جدول زمان دوم، و دفترچهٔ آمار ساخته نمی‌شود.
+
+**چرا این شکل، نه پومودوروی کتاب.** روش چیریلو سه کار است: انتخاب کار، یک بازه با زمانِ باقی‌ماندهٔ همیشه دیدنی، و مقایسهٔ تخمین با واقعیت. بازه در کتاب تجزیه‌ناپذیر است و وقفه آن را باطل می‌کند. شواهد استراحت منظم قوی‌تر از عدد ۲۵ است: Biwer و همکاران (۲۰۲۳، doi:10.1111/bjep.12593، ۸۷ دانشجو) برای استراحت ازپیش‌تعیین‌شده خلق بهتر و زمان کمتر برای همان حجم کار دیدند، بدون تفاوت در تمام‌کردن کار. آلبولسکو و همکاران (۲۰۲۲، doi:10.1371/journal.pone.0272460) برای میکروبریک زیر ۱۰ دقیقه روی نیرومندی d = .36 و روی خستگی d = .35 گزارش کردند و روی عملکرد کلی اثر معنادار ندیدند. هیچ‌کدام آزمون ADHD نیست. Life-to-Day ابزار درمانی نیست (۳.۲). وقفه شکست نیست (P7) و رنگ شکست نداریم (P10). پس دقیقهٔ واقعی حتی اگر بازه تمام نشده باشد روی تسک می‌ماند. فقط نقطهٔ «بازهٔ کامل» به وقفه داده نمی‌شود.
+
+**طول و تعداد، یک بودجه.**
+
+| نماد | قاعده |
+|---|---|
+| `length` | `tasks.focus_minutes`، وگرنه `ui_settings.pomodoro.focus_minutes`، وگرنه ۲۵. مجاز: ۵ تا ۹۰، گام ۵. پیش‌فرض کاربر: تمرکز ۲۵، استراحت کوتاه ۵، استراحت بلند ۱۵، بلند هر ۴ بازهٔ کاملِ امروز، صدا خاموش |
+| `target` | اگر `estimated_minutes` خالی است `null`. وگرنه `max(1, round(estimated_minutes / length))`. سقف نمایش استپر ۱۲ است |
+| نوشتن «این کار N پومودورو است» | همان `estimated_minutes = N × length`. چیپ مدتِ برنامهٔ روز (۱۵، ۳۰، ۶۰، ۱۲۰) همان ستون را می‌نویسد. ستون شمارش جدا ساخته نمی‌شود تا دو عدد از هم جدا نشوند |
+| عوض‌کردن `length` بعداً | تخمین دقیقه را بازنویسی نمی‌کند. `target` دوباره حساب می‌شود. جلسه‌های قبلی `planned_minutes` خودشان را نگه می‌دارند |
+
+**چه چیزی یک بازهٔ کامل است.** جلسهٔ تمام‌شده، `interrupted = false`، و `actual_minutes + 1 >= planned_minutes`. دقیقهٔ صرف‌شده = جمع `actual_minutes` جلسه‌های تمام‌شدهٔ همان تسک، در تمام عمر تسک، نه فقط امروز. جلسهٔ باز در این جمع نیست تا عدد نپرد. استراحت جلسه نیست و در جمع، در نقطه، و در ضریب `f` (۱۴.۵) نمی‌آید. `f` همچنان فقط جلسه‌های کارِ بدون‌وقفه است.
+
+**پایان زنگ.** با صفر شدن حلقه جلسه هنوز بسته نمی‌شود.
+
+| انتخاب | اثر |
+|---|---|
+| استراحت | `POST .../end` با `ended_at = started_at + planned`. دقیقه‌های انتظار روی صفحهٔ زنگ شمرده نمی‌شود. بعد تایمر محلی استراحت. بلند اگر تعداد بازهٔ کاملِ امروز بر `long_every` بخش‌پذیر باشد، وگرنه کوتاه. جملهٔ حرکت: «بلند شو و کمی راه برو.» با صفر شدن، فقط دکمهٔ «بازهٔ بعد». شروع خودکار ممنوع |
+| ادامه می‌دهم | جلسه باز می‌ماند. حلقه پر می‌ماند و رقم‌ها `+mm:ss` می‌شوند. پایان بعدی `actual` را از ساعت سرور تا همان لحظه می‌نویسد |
+| هنوز هستی؟ | اگر تب دیده شود و گذشته از برنامه + ۱۵ دقیقه بیشتر باشد. «ادامه» یا «بستن روی زنگ». اگر گذشته از برنامه + ۱۲۰ دقیقه بیشتر باشد، بدون پرسش روی زنگ بسته می‌شود و یک خط: «بازه بسته شد. زمان بعد از زنگ شمرده نشد.» |
+| وقفه | همان مسیر T-502: `interrupted`، یادداشت «کجا بودم؟»، دقیقهٔ واقعی تا همان لحظه، بدون نقطهٔ کامل |
+
+**ثبت دستی** برای وقتی تایمر فراموش شده. `POST /api/focus-sessions/manual` با `task_uid`، `started_at`، `ended_at`. مدت ۱ تا ۲۴۰ دقیقه، نه در آینده، نه کهنه‌تر از ۷ روز، بدون هم‌پوشانی با جلسهٔ دیگرِ همان کاربر (`409`). نقطهٔ کامل فقط با همان قاعدهٔ بالا. نوشتن انسان است و Journal نمی‌خواهد. توکن و MCP در این فاز جلسه نمی‌سازند.
+
+**خواندن.** `GET /api/focus-sessions/summary?task_uids=` حداکثر ۱۰۰ شناسه: برای هر تسک `spent_minutes`، `completed_count`، `target_count`، `length_minutes`. `GET /api/focus-sessions/today` جمع امروز را برای یک خط روی Today می‌دهد. این‌ها projection هستند و ذخیره نمی‌شوند. ایندکس `(user_id, task_id)` روی `ltd_focus_sessions`.
+
+**شکل.** یک حلقهٔ SVG. محیط دایره در `stroke-dasharray`، پیشرفت در `stroke-dashoffset`. کار: حلقه خالی می‌شود. استراحت: حلقه پر می‌شود. رنگ `--ltd-primary` روی خط `--ltd-separator`. گذار `1s linear` فقط داخل `prefers-reduced-motion: no-preference` (W3C C39). با کاهش حرکت، حلقه همان کسر را بی‌گذار نشان می‌دهد. ورود ۴۰۰ms یک‌بار کشیده می‌شود و بعد تیک ساعت همان `pomodoroClock` است. کتابخانهٔ انیمیشن اضافه نمی‌شود. زنگ تمام: یک نبض ۶۰۰ms، بدون کانفتی. ارقام با همان `Intl` فارسی. حلقه جهت ندارد. نقطه‌ها با جهت خط پر می‌شوند. دکمه حداقل ۴۴px.
+
+نوار بالا دیگر گوجهٔ محلی نیست. اگر جلسه باز است: حلقهٔ ۲۸px، رقم، نام تسک (`bdi`). کلیک همان Focus را باز می‌کند. اگر نیست: انتخاب از کارِ Now و برنامهٔ امروز، بعد `POST /api/focus-sessions` با `planned_minutes = length`. کلید `tududi_pomodoro_timer` هنگام باز شدن پاک می‌شود و مهاجرت نمی‌شود.
+
+ردیف تسک و کارت Now، اگر تخمین یا دقیقهٔ صرف‌شده باشد: «۲ / ۴» و «۵۰ دقیقه». نقطه حداکثر ۸ تا. اگر انجام‌شده از هدف بیشتر شد، جملهٔ آرام «بیشتر از تخمین» با رنگ `--ltd-ink`، نه `--ltd-risk`. صفحهٔ تسک کنار کارت تخمین: طول این کار، و استپر تعداد. راهنما: «برای برنامهٔ روز هم همین مدت حساب می‌شود.»
+
+صدا پیش‌فرض خاموش (P13). اگر روشن باشد یک بوق کوتاه با `OscillatorNode`، بدون فایل صوتی.
+
+**بیرون از این فاز:** مسدودکردن سایت، درخت و streak، داشبورد آمار (F42)، body-doubling (F41)، موسیقی، شروع خودکار بازهٔ بعد، ابزار MCP، نوشتن جلسه در گوگل‌کلندر، و باطل‌کردن دقیقهٔ وقفه.
 
 ---
 
@@ -1497,7 +1538,7 @@ Life-to-Day
 
 **داخل MVP (Must):** F01 تا F21 (بخش ۴)، یعنی Areas؛ درخت افق‌ها؛ Metric و check-in؛ سه سیگنال پیشرفت؛ زنجیرهٔ چرا؛ Projects، Tasks و Habits پیوندشده؛ Inbox و Capture؛ Daily Plan و Time-blocking؛ Weekly Plan (۳ اولویت)؛ بافر و سقف بار و هشدار غیرواقعی؛ Focus تک‌تسکی؛ Recovery و Overwhelmed؛ قدم شروع؛ فارسی RTL و جلالی؛ PWA با شناسهٔ آفلاین؛ Docker، Caddy و بکاپ restic؛ فید iCal گوگل؛ MCP با Bearer برای Claude Code؛ Journal و Undo.
 
-**بیرون از MVP (Won't for v0.1):** قابلیت‌های LLM داخل اپ (فاز ۸)، OAuth برای claude.ai و ChatGPT (فاز ۷)، Google Calendar API (فاز ۹)، Life Timeline (فاز ۶)، Frames و انرژی (Should، اگر زمان بماند)، مرور هفتگی هدایت‌شده (Should)، اثر تسک و درس زندگی (فاز ۱۱، پس از v1)، گیمیفیکیشن، صوت، چندکاربره، replica محلی، اپ native و آزمون CalDAV.
+**بیرون از MVP (Won't for v0.1):** قابلیت‌های LLM داخل اپ (فاز ۸)، OAuth برای claude.ai و ChatGPT (فاز ۷)، Google Calendar API (فاز ۹)، Life Timeline (فاز ۶)، Frames و انرژی (Should، اگر زمان بماند)، مرور هفتگی هدایت‌شده (Should)، اثر تسک و درس زندگی (فاز ۱۱، پس از v1)، پومودوروی هر تسک (فاز ۱۲، پس از فاز ۵)، گیمیفیکیشن، صوت، چندکاربره، replica محلی، اپ native و آزمون CalDAV.
 
 ### ۲۲.۲ معیار موفقیت
 
@@ -1559,13 +1600,14 @@ Life-to-Day
 | F42 | تحلیل الگوها | — | F24 | ❌ | M | C |
 | F45 | اثر تسک روی مسیر پنج‌ساله | دیدن اثر کار امروز | F02، F04 | ❌ | M | S |
 | F46 | درس زندگی و اگر/آنگاه روی تسک | تجربه به کار بعدی برسد | F45 | ❌ | L | S |
+| F47 | پومودوروی هر تسک | زمان این کار دیده و ثبت شود | F13 | جزئی ✅ | L | S |
 | F37، F38، F40، F41 | صوت، contributions، replica، body-doubling | — | — | ❌ | — | F |
 
 ---
 
 ## 24. Complete Phased Development Roadmap
 
-> **ترتیب نهایی فازها بر اساس وابستگی‌های واقعی تغییر کرده است:** MCP راه‌دور (فاز ۷) پیش از AI داخلی (فاز ۸) می‌آید. دلیل: tududi از قبل MCP دارد، و از این مسیر ChatGPT و Claude زودتر و ارزان‌تر به داده‌ها دسترسی پیدا می‌کنند. Capability Registry و Proposalها در فاز ۷ ساخته می‌شوند و فاز ۸ از آن‌ها استفاده می‌کند. Journal در فاز ۴ ساخته می‌شود چون پیش‌نیاز هر نوشتن غیرانسانی است. **MVP = پایان فاز ۵ + چک‌لیست Production-lite از فاز ۱۰.** فاز ۱۱ پس از v1 است و به فازهای ۷ تا ۱۰ وابسته نیست.
+> **ترتیب نهایی فازها بر اساس وابستگی‌های واقعی تغییر کرده است:** MCP راه‌دور (فاز ۷) پیش از AI داخلی (فاز ۸) می‌آید. دلیل: tududi از قبل MCP دارد، و از این مسیر ChatGPT و Claude زودتر و ارزان‌تر به داده‌ها دسترسی پیدا می‌کنند. Capability Registry و Proposalها در فاز ۷ ساخته می‌شوند و فاز ۸ از آن‌ها استفاده می‌کند. Journal در فاز ۴ ساخته می‌شود چون پیش‌نیاز هر نوشتن غیرانسانی است. **MVP = پایان فاز ۵ + چک‌لیست Production-lite از فاز ۱۰.** فاز ۱۱ پس از v1 است و به فازهای ۷ تا ۱۰ وابسته نیست. فاز ۱۲ بعد از فاز ۵ است و به فازهای ۶ تا ۱۱ وابسته نیست.
 
 ```mermaid
 flowchart LR
@@ -1576,6 +1618,7 @@ flowchart LR
   P7 --> P8[8 In-app AI]
   P5 --> P9[9 Google Calendar API]
   P4 --> P11[11 Task effect and life lessons]
+  P5 --> P12[12 Task-bound pomodoro]
   P10[10 Production readiness — continuous gates] -.-> MVP
 ```
 
@@ -1772,7 +1815,24 @@ flowchart LR
 | DoD | معیار F45 و F46. یک تسک زیر هدف پنج‌ساله با سنجه، روی Now و صفحهٔ تسک مسیر و درصد پیامد را نشان می‌دهد و با تکمیل تسک آن درصد ثابت می‌ماند. یک درس با اگر/آنگاه که به همان هدف لینک شده، همان یک خط را روی آن تسک نشان می‌دهد و روی تسک بی‌ارتباط نشان نمی‌دهد. فاز ۸ و OAuth برای این DoD لازم نیستند |
 | وابستگی | ۴ |
 
-**تخمین زمانی (🟡 A-12؛ برای یک توسعه‌دهنده با Agent، حدود ۱۵ ساعت در هفته):** فاز ۰: ۱ هفته · ۱: ۲ روز · ۲: ۱ هفته · ۳: ۲ تا ۳ هفته · ۴: ۳ هفته · ۵: ۳ هفته ← **MVP حدود ۱۰ تا ۱۲ هفته** · ۶: ۲ هفته · ۷: ۳ هفته · ۸: ۳ هفته · ۹: ۲ هفته · ۱۰ (نهایی): ۲ هفته · ۱۱: ۲ هفته. فاز ۱۱ می‌تواند بعد از فاز ۴ شروع شود و منتظر ۷ تا ۱۰ نماند.
+### فاز ۱۲: پومودوروی هر تسک
+
+| فیلد | محتوا |
+|---|---|
+| هدف | هر تسک طول پومودوروی خودش را داشته باشد، زمان واقعی به همان تسک بچسبد، و ساعت به‌صورت یک حلقهٔ آرام دیده شود |
+| پیش‌نیاز | فاز ۵ (T-502: `ltd_focus_sessions`، FocusMode، `pomodoroClock`). فازهای ۶ تا ۱۱ لازم نیستند |
+| کارها | ستون `tasks.focus_minutes`. قواعد ۱۴.۸ در `backend/modules/ltd-focus` (طول، هدف، نقطهٔ کامل، جمع دقیقه). `ended_at` روی پایان جلسه، ثبت دستی، و دو GET خلاصه. بازنویسی `PomodoroTimer` به چیپ جلسهٔ سرور. حلقهٔ SVG در FocusMode، صفحهٔ استراحت، و پرسش «هنوز هستی؟». استپر تعداد و طول روی صفحهٔ تسک. یک خط روی ردیف تسک، Now و Today. رشته‌های fa و en. لمس هسته با `LTD-PATCH(T-12xx)` و ردیف در `docs/ltd/UPSTREAM.md` |
+| فایل‌ها | `backend/modules/ltd-focus/*`، migration با `safeAddColumns` برای `tasks.focus_minutes`، `frontend/components/FocusMode/FocusMode.tsx`، `frontend/components/Shared/PomodoroTimer.tsx`، `frontend/components/Shared/pomodoroClock.ts`، `frontend/components/Task/TaskDetails/TaskEstimateCard.tsx`، ردیف تسک و Now. بدون وابستگی تازه |
+| تصمیم‌ها | ADR-015. قرارداد ۱۴.۸. ضریب `f` در ۱۴.۵ عوض نمی‌شود |
+| API | `PATCH` تسک فیلد `focus_minutes` را مثل بقیهٔ فیلدها می‌پذیرد. `POST /api/focus-sessions` همان است و `planned_minutes` را از `length` می‌گیرد. `POST /api/focus-sessions/:uid/end` بدنهٔ اختیاری `ended_at`. `POST /api/focus-sessions/manual`. `GET /api/focus-sessions/summary?task_uids=`. `GET /api/focus-sessions/today`. تنظیم در `ui_settings.pomodoro` |
+| ابزار | Jest با ساعت جعلی. Playwright روی Today، تسک، و Focus. بدون مدل زبانی و بدون کتابخانهٔ حرکت |
+| تست | واحد قواعد ۱۴.۸: طول پیش‌فرض ۲۵، گام نامعتبر `400`، هدف `round(50/25) = 2`، تخمین خالی هدف `null`، نوشتن «۲ پومودورو» `estimated_minutes = 50`، عوض‌کردن طول تخمین را بازنویسی نمی‌کند، وقفه دقیقه دارد و نقطه ندارد، استراحت در جمع نیست، جلسهٔ باز در جمع نیست، بیش‌ازهدف رنگ ریسک نیست. integration: کاربر A خلاصهٔ B را نمی‌بیند، هم‌پوشانی دستی `409`، آینده و کهنه‌تر از ۷ روز `400`، `ended_at` بعد از الآن `400`، پایان روی زنگ دقیقهٔ انتظار صفحه را اضافه نمی‌کند، جلسهٔ رهاشده بعد از برنامه+۱۲۰ روی زنگ بسته می‌شود. upgrade: ستون روی fixture قدیمی `NULL` می‌ماند. ساعت: پس‌زمینهٔ تب و `visibilitychange` مثل T-502. UI: `prefers-reduced-motion: reduce` گذار حلقه را برمی‌دارد. E2E: شروع از ردیف تسک، قطع در دقیقهٔ ۱۲، بازگشت، و دیدن «۱۲ دقیقه» روی همان تسک. چیپ نوار بالا همان جلسه است و کلید `localStorage` پاک شده |
+| ریسک | دو تایمر (گوجهٔ محلی و Focus) همزمان دو حقیقت بسازند. کاهش: گوجه حذف می‌شود و فقط جلسهٔ سرور می‌ماند. ریسک دوم: فراموش‌کردن توقف، ساعت‌ها را به تسک بچسباند. کاهش: بستن خودکار روی زنگ بعد از برنامه+۱۲۰ |
+| خروجی | روی تسک، تعداد و دقیقه. در Focus، حلقه و استراحت. در نوار بالا، همان جلسه |
+| DoD | معیار F47. یک تسک با طول ۲۵ و تخمین ۵۰، بعد از یک بازهٔ کامل و یک وقفهٔ ۱۲ دقیقه‌ای، «۱ / ۲» و «۳۷ دقیقه» نشان می‌دهد. استراحت در جمع نیست. زنگ، حلقه را با گذار ۱ ثانیه خالی می‌کند و با کاهش حرکت بی‌گذار است. تایمر `localStorage` دیگر زمان نمی‌شمارد |
+| وابستگی | ۵ |
+
+**تخمین زمانی (🟡 A-12؛ برای یک توسعه‌دهنده با Agent، حدود ۱۵ ساعت در هفته):** فاز ۰: ۱ هفته · ۱: ۲ روز · ۲: ۱ هفته · ۳: ۲ تا ۳ هفته · ۴: ۳ هفته · ۵: ۳ هفته ← **MVP حدود ۱۰ تا ۱۲ هفته** · ۶: ۲ هفته · ۷: ۳ هفته · ۸: ۳ هفته · ۹: ۲ هفته · ۱۰ (نهایی): ۲ هفته · ۱۱: ۲ هفته · ۱۲: ۲ هفته. فاز ۱۱ می‌تواند بعد از فاز ۴ شروع شود. فاز ۱۲ می‌تواند بعد از فاز ۵ شروع شود. هیچ‌کدام منتظر ۷ تا ۱۰ نمی‌مانند.
 
 ---
 
@@ -2044,6 +2104,13 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 - *Decision:* `taskEffect` هنگام خواندن از whyChain و `O` ساخته می‌شود و ذخیره نمی‌شود. انجام تسک درصد پیامد را عوض نمی‌کند. درس در `ltd_lessons` است، با لینک به هدف یا پروژه یا Area یا برچسب، و با اگر/آنگاه که حداکثر یکی از آن‌ها روی تسک مرتبط دیده می‌شود. تب ناوبری تازه ساخته نمی‌شود.
 - *Alternatives:* درصد اثر هر تسک روی Vision (فعالیت را به‌جای پیامد جا می‌زند و ADR-006 را می‌شکند). ذخیرهٔ درس به‌صورت Note یا Milestone (رویداد و یادداشت به تسک بعدی وصل نمی‌شوند). جملهٔ مدل به‌عنوان منبع اثر (فاز ۸ فقط اجازه دارد همان JSON را به زبان انسان بگوید).
 - *Consequences:* یک ماژول و سه جدول. کارت Now یک خط مسیر و حداکثر یک خط درس می‌گیرد.
+
+**ADR-015: پومودورو همان جلسهٔ Focus است و تعدادش از تخمین دقیقه می‌آید**
+- *Status:* Accepted (2026-10-13) — تصمیم برنامه‌ریزی فاز ۱۲. شواهد در ۳۱.۲ و ۳۱.۳.
+- *Context:* تایمر نوار بالا به تسک وصل نیست و فقط در `localStorage` است. Focus از فاز ۵ جلسه، تسک و دقیقهٔ واقعی دارد، ولی بازهٔ هر تسک، استراحت، و شکل دیدنی زمان را ندارد. روش چیریلو وقفه را باطل می‌کند. اصول P7 و P10 این کار را نمی‌خواهند.
+- *Decision:* یک ساعت، همان `ltd_focus_sessions` و `pomodoroClock`. طول روی `tasks.focus_minutes` (خالی = پیش‌فرض کاربر). تعداد = `round(estimated_minutes / length)` و ستون شمارش جدا ندارد. استراحت ذخیره نمی‌شود و وارد `f` نمی‌شود. دقیقهٔ وقفه می‌ماند و فقط نقطهٔ بازهٔ کامل را نمی‌گیرد. حلقه SVG با توکن‌های موجود، بدون کتابخانهٔ حرکت، و با `prefers-reduced-motion`.
+- *Alternatives:* تایمر دوم کنار Focus (دو حقیقت). ستون `pomodoro_count` جدا از `estimated_minutes` (برنامهٔ روز و پومودورو از هم جدا می‌شوند). باطل‌کردن بازهٔ ناقص طبق کتاب (وقت واقعی پاک می‌شود). داشبورد آمار و مسدودکردن سایت (F42 و گیمیفیکیشن را جلو می‌اندازد). Forest یا کانفتی (P10 و P14).
+- *Consequences:* `PomodoroTimer` چیپ همان جلسه می‌شود. یک ستون و دو مسیر خواندن. ضریب ۱۴.۵ دست نمی‌خورد.
 
 ---
 
@@ -2327,9 +2394,20 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 **T-1104: ابزارهای خواندنی MCP** · Phase 11 · S · Should · AI/MCP
 - *Scope:* `get_task_effect`، `list_lessons`، `get_lesson`. نوشتن تا T-704 ساخته نمی‌شود. *Tests:* جداسازی کاربر و schema.
 
-> فاز ۱۱ در جمع امتیاز v1 (۲۰۵) نیست. Must همان ۱۰۱ می‌ماند.
+#### فاز ۱۲
 
-> برای تسک‌های فشرده‌شدهٔ فازهای ۶ تا ۱۱، فیلدهای Purpose، Acceptance و Tests از جدول فاز مربوط در بخش ۲۴ و معیارهای بخش ۲۳ گرفته می‌شوند. Agent اجراکننده موظف است پیش از شروع، این فیلدها را در PR description بنویسد.
+**T-1201: قواعد و API پومودورو** · Phase 12 · M · Should · Backend
+- *Scope:* `tasks.focus_minutes` با `safeAddColumns`. طول، هدف، نقطهٔ کامل و جمع دقیقه طبق ۱۴.۸. `ended_at`، ثبت دستی، `summary` و `today`. ایندکس `(user_id, task_id)`. بدون Journal. *Acceptance:* F47 سمت سرور. *Tests:* واحد و integration همان فاز، به‌علاوه upgrade.
+
+**T-1202: حلقهٔ Focus و استراحت** · Phase 12 · L · Should · Frontend
+- *Scope:* حلقهٔ SVG در FocusMode، صفحهٔ استراحت، «ادامه می‌دهم»، «هنوز هستی؟»، بستن روی زنگ بعد از برنامه+۱۲۰، صدا پیش‌فرض خاموش. گذار فقط با `prefers-reduced-motion: no-preference`. fa و en. *Acceptance:* DoD بصری فاز ۱۲. *Tests:* ساعت جعلی و کاهش حرکت.
+
+**T-1203: چیپ نوار و نشان تسک** · Phase 12 · M · Should · Frontend
+- *Scope:* جایگزینی گوجهٔ `localStorage` با چیپ جلسهٔ سرور. انتخاب تسک از Now و برنامهٔ امروز. استپر طول و تعداد روی کارت تخمین، که همان `estimated_minutes` را می‌نویسد. یک خط روی ردیف تسک و Now. `LTD-PATCH(T-1203)`. *Acceptance:* E2E فاز ۱۲. *Tests:* پاک‌شدن کلید محلی و جدانبودن دو تایمر.
+
+> فاز ۱۱ و فاز ۱۲ در جمع امتیاز v1 (۲۰۵) نیستند. Must همان ۱۰۱ می‌ماند.
+
+> برای تسک‌های فشرده‌شدهٔ فازهای ۶ تا ۱۲، فیلدهای Purpose، Acceptance و Tests از جدول فاز مربوط در بخش ۲۴ و معیارهای بخش ۲۳ گرفته می‌شوند. Agent اجراکننده موظف است پیش از شروع، این فیلدها را در PR description بنویسد.
 
 **جمع امتیاز:** Must = ۱۰۱، Should و Could = ۱۰۴، کل v1 = ۲۰۵ ← **سهم Must ≈ ۴۹٪** (≤ ۶۰٪ ✅).
 
@@ -2344,6 +2422,7 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 | فاز ۴ | Backend (T-401 تا T-404، T-407) ∥ Frontend (T-405، T-406) | **قرارداد OpenAPI اول** (Architecture Agent) | mock از Swagger برای frontend |
 | پس از فاز ۴ | فاز ۵ (Frontend) ∥ فاز ۷ (AI/MCP) ∥ فاز ۶ (Frontend-2) | ماژول‌ها و کامپوننت‌های جدا | `public/locales/fa/<feature>.json` جدا برای هر feature؛ migrationها با timestamp یکتا و بازبینی Architecture |
 | فاز ۸ و ۹ | ∥ | — | `ltd-planner` فقط با PR بازبینی‌شده |
+| پس از T-502 | فاز ۱۲ ∥ فاز ۶ و ۷ و ۱۱ | `ltd-focus` و FocusMode مال فاز ۱۲ | `PomodoroTimer.tsx` و `FocusMode.tsx` فقط در فاز ۱۲. ضریب `f` در ۱۴.۵ تغییر نمی‌کند |
 
 ---
 
@@ -2374,6 +2453,7 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 - PWA و iOS: [MagicBell — PWA iOS limitations](https://www.magicbell.com/blog/pwa-ios-limitations-safari-support-complete-guide) · [Monterail — PWA for iOS](https://monterail.com/blog/pwa-for-apple-ios)
 - ADHD و دسترس‌پذیری: [Zheng et al. meta-analysis (CADDRA)](https://www.caddra.ca/time-perception-deficits-in-children-and-adolescents-with-adhd-a-meta-analysis/) · [Gawrilow & Gollwitzer 2008](https://www.socmot.uni-konstanz.de/publications/implementation-intentions-facilitate-response-inhibition-adhd-children) · [NICE NG87](https://www.nice.org.uk/guidance/ng87) · [BLMK ICB Adult ADHD SCG (quoting NG87)](https://medicines.bedfordshirelutonandmiltonkeynes.icb.nhs.uk/wp-content/uploads/2020/04/Adult-ADHD-SCG-Luton-Bedfordshire-2022_Final.pdf) · [W3C COGA — Making Content Usable](https://www.w3.org/TR/coga-usable/) · [Habi — time blindness (non-academic)](https://habi.app/insights/time-blindness-adhd/)
 - اثر تسک و درس (بازیابی ۲۰۲۶-۱۰-۱۲): [Gollwitzer & Sheeran 2006](https://doi.org/10.1016/S0065-2601(06)38002-1) · [متاآنالیز اگر/آنگاه ۲۰۲۴، doi:10.1080/10463283.2024.2334563](https://doi.org/10.1080/10463283.2024.2334563) · [Harkin et al. 2016](https://doi.org/10.1037/bul0000025) · [Ellis & Davidi 2005](https://cebma.org/assets/Uploads/Ellis-2005.pdf) · [Sheldon & Elliot 1999](https://doi.org/10.1037/0022-3514.76.3.482) · [Koestner et al. 2002](https://selfdeterminationtheory.org/SDT/documents/2002_KoestnerLekesPowersChicoine_JPSP.pdf)
+- پومودورو (بازیابی ۲۰۲۶-۱۰-۱۳): [Pomodoro Technique — Cirillo](https://www.pomodorotechnique.com/) · [کتاب](https://www.pomodorotechnique.com/pomodoro-book/) · [Biwer et al. 2023](https://doi.org/10.1111/bjep.12593) · [Albulescu et al. 2022](https://doi.org/10.1371/journal.pone.0272460) · [TickTick Timer](https://help.ticktick.com/articles/7055781980423585792) · [TickTick Focus statistics](https://help.ticktick.com/articles/7055781966800486400) · [TickTick updates 2025](https://help.ticktick.com/external/articles/7505896563223298048) · [Super Productivity time tracker](https://super-productivity.com/use-cases/time-tracker/) · [W3C C39 prefers-reduced-motion](https://www.w3.org/WAI/WCAG22/Techniques/css/C39)
 - نسخه‌های npm (registry.npmjs.org، 2026-10-10): `@modelcontextprotocol/sdk` 1.32.1 (MIT) · `@modelcontextprotocol/server` 2.3.1 (Apache-2.0) · `ai` 7.0.137 · `@ai-sdk/openai` 4.0.91 · `@ai-sdk/anthropic` 4.0.78 (Apache-2.0) · `oidc-provider` 9.12.2 (MIT) · `better-auth` 1.7.7 (MIT) · `date-fns-jalali` dist-tag 4.4.0-0 (MIT) · `tailwindcss` 4.3.3 (tududi از 3.4 استفاده می‌کند) · `vite-plugin-pwa` 2.0.0
 
 ### ۳۱.۳ Research log
@@ -2413,6 +2493,13 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 | 2026-10-12 | 11 | پایش پیشرفت | WebSearch | Harkin et al. 2016، doi:10.1037/bul0000025 | ۱۳۸ مطالعه، d+ = 0.40 برای رسیدن به هدف. ثبت فیزیکی اثر را بیشتر می‌کند | ۱۴.۷ |
 | 2026-10-12 | 11 | درس از موفقیت و شکست | WebSearch | Ellis & Davidi 2005، PDF CEBMa | مرور هر دو، بهتر از مرور فقط شکست، عملکرد بعدی را بالا برد | ۱۴.۷ فرم `expected` و `happened` |
 | 2026-10-12 | 11 | هدف خودهماهنگ | WebSearch | Sheldon & Elliot 1999، doi:10.1037/0022-3514.76.3.482؛ Koestner et al. 2002 | پیوند هدف با ارزش شخصی تلاش را نگه می‌دارد. اگر/آنگاه و خودهماهنگی با هم به رسیدن کمک می‌کنند | `goals.why` + اگر/آنگاه درس |
+| 2026-10-13 | 12 | روش چیریلو | WebSearch + صفحهٔ رسمی | pomodorotechnique.com | روش = برنامه، تمرکز، بازتاب و مقایسهٔ تخمین با واقعیت. ۲۵ دقیقه فقط یک تکه است. زمان باقی‌مانده باید دیده شود | ۱۴.۸، ADR-015 |
+| 2026-10-13 | 12 | استراحت منظم | WebFetch | Biwer 2023، doi:10.1111/bjep.12593 | ۸۷ دانشجو. استراحت ازپیش‌تعیین‌شده خلق بهتر و زمان کمتر برای همان کار، بدون تفاوت در تمام‌کردن. آزمون ADHD نیست | استراحت پیشنهاد می‌شود، اجباری با شروع خودکار نیست |
+| 2026-10-13 | 12 | میکروبریک | WebFetch | Albulescu 2022، doi:10.1371/journal.pone.0272460 | ۲۲ نمونه، N=2335. نیرومندی d=.36، خستگی d=.35، عملکرد کلی غیرمعنادار d=.16 | استراحت کوتاه ۵، بلند ۱۵ |
+| 2026-10-13 | 12 | تخمین روی تسک | WebFetch راهنمای TickTick | help.ticktick.com تایمر، آمار Focus، به‌روزرسانی ۲۰۲۵ | تایمر به تسک وصل می‌شود. تخمین تعداد یا مدت زیر نام تسک با واقع مقایسه می‌شود. بعد از زنگ می‌شود زمان اضافه را چسباند یا مدت را دستی درست کرد. رکورد گذشته اضافه می‌شود | ۱۴.۸ تعداد از `estimated_minutes`، «ادامه می‌دهم»، ثبت دستی |
+| 2026-10-13 | 12 | یک ساعت برای تسک و تمرکز | صفحهٔ محصول Super Productivity | super-productivity.com/use-cases/time-tracker | شروع تایمر از خود تسک. پومودورو و زمان ثبت‌شده یکی هستند و استراحت جدا از کار لگ می‌شود | استراحت در `ltd_focus_sessions` ذخیره نمی‌شود |
+| 2026-10-13 | 12 | حرکت | WebFetch | W3C C39 | `prefers-reduced-motion` برای خاموش‌کردن حرکت تعاملی کافی است | گذار حلقه فقط وقتی `no-preference` |
+| 2026-10-13 | 12 | وضعیت کد | graphify + خواندن `PomodoroTimer.tsx` و `FocusMode.tsx` و `docs/20-daily-plan.md` | مخزن | گوجهٔ نوار بالا ۲۵ دقیقه در `localStorage` و بی‌تسک است. Focus جلسهٔ تسک، `actual_minutes` و ساعت timestamp دارد و صفحهٔ ساده است. `estimated_minutes` از قبل بودجهٔ برنامهٔ روز است | ADR-015: تایمر دوم ساخته نمی‌شود |
 
 ---
 
@@ -2423,3 +2510,4 @@ grep -rn "LTD-PATCH(" backend frontend public --include=*.js --include=*.ts --in
 | 2026-10-10 | 1.0 | نسخهٔ اول: پژوهش، تصمیم پایه (fork tududi)، معماری، MVP، نقشهٔ راه، backlog |
 | 2026-10-11 | 1.1 | نتایج فاز ۰: G1 GREEN، G2 GREEN، G3 GREEN (7.5 روز در برابر 8)، G4 YELLOW، G5 GREEN-ثبت‌شده (دستگاه‌ها BLOCKED)، G6 DRAFT. هر ۱۳ ADR Accepted. A-03 رد شد؛ A-08 و A-14 تأیید شدند؛ A-06 BLOCKED؛ A-13 فقط از مستند. تصمیم: ادامه با fork tududi؛ فاز ۳ فقط پس از فاز ۱ و ۲. شاهد: `docs/ltd/spikes/` |
 | 2026-10-12 | 1.2 | فاز ۱۱ تعریف شد و شروع نشده است: اثر تسک (F45) و درس زندگی (F46). قرارداد در ۱۴.۷، ADR-014، و جدول فاز ۱۱ در بخش ۲۴. در امتیاز Mustِ v1 نیست |
+| 2026-10-13 | 1.3 | فاز ۱۲ تعریف شد و شروع نشده است: پومودوروی هر تسک (F47). قرارداد در ۱۴.۸، ADR-015، و جدول فاز ۱۲ در بخش ۲۴. در امتیاز Mustِ v1 نیست |

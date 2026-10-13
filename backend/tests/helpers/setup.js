@@ -32,6 +32,10 @@ const { isSqlite, truncateTables } = require('../../utils/db-dialect');
 // LTD-PATCH(T-305): fork-only table must be cleaned before users (FK).
 // LTD-PATCH(T-404): remove planning children before goals/users on both dialects.
 const CLEANUP_TABLES = [
+    // LTD-PATCH(T-1102): lesson checks and links reference lessons, lessons users.
+    'ltd_lesson_checks',
+    'ltd_lesson_links',
+    'ltd_lessons',
     // LTD-PATCH(T-901): Google Calendar rows reference users.
     'ltd_external_event_links',
     'ltd_gcal_accounts',

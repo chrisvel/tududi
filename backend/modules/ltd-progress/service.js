@@ -4,14 +4,18 @@ const cache = require('./cache');
 const { project } = require('./projection');
 const { NotFoundError } = require('../../shared/errors');
 
-async function read(userId) {
-    let snapshot = cache.get(userId);
-    if (!snapshot) {
+async function snapshot(userId) {
+    let value = cache.get(userId);
+    if (!value) {
         const revision = cache.revision();
-        snapshot = await repository.snapshot(userId);
-        cache.set(userId, snapshot, revision);
+        value = await repository.snapshot(userId);
+        cache.set(userId, value, revision);
     }
-    return { snapshot, ...project(snapshot) };
+    return value;
+}
+async function read(userId) {
+    const value = await snapshot(userId);
+    return { snapshot: value, ...project(value) };
 }
 async function tree(userId, filters = {}) {
     const data = await read(userId);
@@ -64,6 +68,7 @@ async function whyChain(userId, uid) {
     );
 }
 module.exports = {
+    snapshot,
     tree,
     progress,
     lifeVision,

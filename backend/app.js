@@ -542,6 +542,8 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, require('./modules/ltd-focus/routes'));
     // LTD-PATCH(T-601): Life timeline milestones (Phase 6).
     app.use(basePath, require('./modules/ltd-milestones/routes'));
+    // LTD-PATCH(T-1102): task effect and life lessons (Phase 11).
+    app.use(basePath, require('./modules/ltd-lessons/routes'));
     app.use(basePath, goalsModule.routes);
     app.use(basePath, dailyPlanModule.routes);
     app.use(basePath, onboardingModule.routes);

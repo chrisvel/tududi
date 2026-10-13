@@ -538,6 +538,19 @@ The embedded OAuth server (T-701, T-702), the Capability Registry (T-703), Propo
 | T-901 | `backend/.env.example` | Document `GOOGLE_CALENDAR_CLIENT_ID`, `GOOGLE_CALENDAR_CLIENT_SECRET`, `GOOGLE_CALENDAR_REDIRECT_URI` | No |
 | T-901 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert the Phase 9 tables and foreign keys on real legacy fixtures | No |
 
+### T-1101–T-1104 task effect and life lessons
+
+| Task | Files | Reason | Upstream candidate |
+|---|---|---|---|
+| T-1102 | `backend/app.js` | Mount `/api/lessons` (lessons and the task effect) | No |
+| T-1102 | `backend/models/index.js`, `backend/tests/helpers/setup.js` | Register and clean `ltd_lessons`, `ltd_lesson_links` and `ltd_lesson_checks` | No |
+| T-1102 | `backend/tests/upgrade/legacy-sqlite-upgrade.test.js` | Assert the Phase 11 tables and cascading foreign keys on real legacy fixtures | No |
+| T-1103 | `frontend/components/DailyPlan/NowCard.tsx` | One path line and at most one lesson line under the Now title | No |
+| T-1103 | `frontend/components/DailyPlan/TodayPage.tsx` | One lesson review question a day, and an optional lesson in the day review | No |
+| T-1103 | `frontend/components/Task/TaskDetails.tsx` | Task effect card under the goal card | No |
+| T-1103 | `frontend/components/Goal/GoalDetails.tsx` | Lessons linked to the goal | No |
+| T-1103 | `public/locales/*/translation.json` | `ltdLessons` and two `ltdProposals.ops` strings; English and Persian, English placeholders elsewhere | No |
+
 ### One env at the repo root
 
 | Task | Files | Reason | Upstream candidate |
