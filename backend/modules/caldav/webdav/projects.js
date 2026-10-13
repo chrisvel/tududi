@@ -385,13 +385,9 @@ async function handleProjectReport(req, res) {
                     const props = { 'D:getetag': generateETag(task) };
                     if (includeData) {
                         props['C:calendar-data'] =
-                            await vtodoSerializer.serializeTaskToVTODO(
-                                task
-                            );
+                            await vtodoSerializer.serializeTaskToVTODO(task);
                     }
-                    responses.push(
-                        buildResponse(href, buildPropstat(props))
-                    );
+                    responses.push(buildResponse(href, buildPropstat(props)));
                 } catch (error) {
                     console.error(
                         `Error serializing task ${task.uid} in project REPORT:`,
