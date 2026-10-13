@@ -1,3 +1,4 @@
+const { DataTypes } = require('sequelize');
 const {
     safeAddColumns,
     safeCreateTable,
@@ -340,6 +341,35 @@ describe('migration-utils', () => {
             );
             expect(createCall).toContain('VARCHAR(255)');
             expect(createCall).toContain('NOT NULL');
+        });
+
+        it('should render a data type class as SQL rather than its bare name', async () => {
+            queryInterface.showAllTables.mockResolvedValue(['tasks']);
+            queryInterface.describeTable.mockResolvedValue({
+                id: {
+                    type: 'INTEGER',
+                    primaryKey: true,
+                    autoIncrement: true,
+                    allowNull: false,
+                },
+                uid: { type: 'STRING', allowNull: false },
+            });
+            queryInterface.showIndex.mockResolvedValue([]);
+            queryInterface.sequelize.getDialect.mockReturnValue('sqlite');
+
+            await safeChangeColumn(queryInterface, 'tasks', 'uid', {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+            });
+
+            const createCall = queryInterface.sequelize.query.mock.calls
+                .map((call) => call[0])
+                .find((query) => query.includes('CREATE TABLE tasks_new'));
+            // A column declared "STRING" gets NUMERIC affinity in SQLite, which
+            // stores a numeric uid as an integer and mangles it past 2^53.
+            expect(createCall).toContain('VARCHAR(255)');
+            expect(createCall).not.toContain('`uid` STRING');
         });
 
         it('should re-throw errors', async () => {
