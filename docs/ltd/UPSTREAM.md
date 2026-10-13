@@ -42,7 +42,22 @@ Phase 1 CI repairs and Phase 2 deployment patches are listed below. `scripts/ltd
 
 Identity and presentation only. Task, goal, habit and planning logic are unchanged. Existing `TUDUDI_*` environment variables, cookie/session/storage keys, npm script names, license and attribution remain intact. JSON and binary files cannot carry `//` comments; their patch marker is this inventory.
 
-The bundled `public/generate-favicon.html` only writes PNG, not ICO. It now previews the supplied PNG instead of drawing the old symbol. No ICO encoder or dependency was added: the old ICO files are retained, while the document, static cache and push badge use the new PNGs. No preview artwork was installed.
+The bundled `public/generate-favicon.html` previews the installed artwork and downloads PNG only. On 2026-10-13 the owner approved the Path to Today identity. Its exact generated master is preserved under `docs/ltd/brand/proposals/path-to-today-v1/`. Production PNGs and multi-size ICOs now use that artwork, including every old ICO file. No runtime dependency was added. The concept presentation board is retained for reference and is not served as a production logo.
+
+### Approved Path to Today identity — 2026-10-13
+
+<!-- LTD-PATCH(T-301): Replace the previous identity and prevent stale branded assets. -->
+
+| Task | Files | Why | Upstream PR |
+| --- | --- | --- | --- |
+| T-301 | `frontend/components/Shared/BrandMark.tsx`, `frontend/config/paths.ts` | Render the approved sculptural mark in the compact sidebar and mobile header, respect subdirectory deployments, and version all shared wordmark URLs | No; independent fork |
+| T-301 | `public/{brand-mark.png,brand-badge.png,life-wordmark-*.png,wide-logo-*.png,icon-logo.png,apple-touch-icon.png,favicon*.png,favicon*.ico}`, `docs/ltd/brand/` | Export the exact approved master at production sizes; retain a 58% mark width for the maskable icon safe circle; replace legacy ICOs and brand reference previews | No; independent fork |
+| T-301 | `public/index.html`, `public/manifest.json`, `public/sw.js`, `webpack.config.js`, `public/generate-favicon.html` | Refresh browser, installation, push and static-cache assets; retain build-specific cache names and the existing API cache/queue | No; independent fork |
+| T-301 | `backend/modules/landing/public/{wide-logo-dark.png,icon-logo.png,favicon.ico,og-1.png,og-path-to-today.png,screenshots/}` | Replace the public logos, shared-link artwork and screenshots/video that contained the inherited logo, using synthetic data captured from the current app | No; independent fork |
+| T-301 | `backend/modules/landing/views/{landing,cloud,contact,legal}.ejs`, `backend/modules/landing/views/partials/{nav,footer,social-meta}.ejs` | Use the approved identity, correct logo alternative text and version changed media URLs | No; independent fork |
+| T-301 | `backend/tests/integration/landing.test.js` | Keep the existing shared-preview and hero-media assertions aligned with the new asset URLs | No; independent fork |
+
+See `docs/ltd/brand/README.md` for the source, exports and visual verification. Historical product screenshots without a brand mark, licenses and source attribution are retained.
 
 | Task | File | Why | Upstream PR |
 | --- | --- | --- | --- |
