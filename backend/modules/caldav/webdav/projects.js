@@ -375,17 +375,38 @@ async function handleProjectReport(req, res) {
                 include: INCLUDE_PROJECT,
             });
             for (const task of tasks) {
-                const props = { 'D:getetag': generateETag(task) };
-                if (includeData) {
-                    props['C:calendar-data'] =
-                        await vtodoSerializer.serializeTaskToVTODO(task);
+                // One row that cannot be serialized must not fail the whole
+                // calendar (or silently drop out of the listing, which a
+                // client reads as a deletion). Keep the href with an
+                // item-level error so the client keeps its copy and retries
+                // on the next sync.
+                const href = itemHref(username, projectUid, task.uid);
+                try {
+                    const props = { 'D:getetag': generateETag(task) };
+                    if (includeData) {
+                        props['C:calendar-data'] =
+                            await vtodoSerializer.serializeTaskToVTODO(
+                                task
+                            );
+                    }
+                    responses.push(
+                        buildResponse(href, buildPropstat(props))
+                    );
+                } catch (error) {
+                    console.error(
+                        `Error serializing task ${task.uid} in project REPORT:`,
+                        error
+                    );
+                    responses.push(
+                        buildResponse(
+                            href,
+                            buildPropstat(
+                                {},
+                                'HTTP/1.1 500 Internal Server Error'
+                            )
+                        )
+                    );
                 }
-                responses.push(
-                    buildResponse(
-                        itemHref(username, projectUid, task.uid),
-                        buildPropstat(props)
-                    )
-                );
             }
         }
 
