@@ -36,6 +36,7 @@ import {
     splitFirstLine,
 } from '../../utils/captureText';
 import type { CaptureProject } from '../../utils/captureUi';
+import { InboxTokenKind, splitInboxTokens } from '../../utils/inboxTokens';
 import {
     isTouchDevice,
     updateCaptureSettings,
@@ -201,6 +202,14 @@ interface PickedTokens {
     area: { uid: string; name: string } | null;
 }
 const NO_PICKS: PickedTokens = { tags: [], project: null, area: null };
+// Text colours for the tokens in the edit box, matching their chips.
+
+const TOKEN_TEXT_CLASS: Record<InboxTokenKind, string> = {
+    tag: 'text-blue-600 dark:text-blue-400',
+    project: 'text-green-700 dark:text-green-400',
+    person: 'text-indigo-600 dark:text-indigo-400',
+    area: 'text-purple-600 dark:text-purple-400',
+};
 
 const QuickCaptureInput = React.forwardRef<
     QuickCaptureInputHandle,
@@ -389,6 +398,8 @@ const QuickCaptureInput = React.forwardRef<
         const lastAnalyzedTextRef = useRef<string>('');
 
         const isEditMode = mode === 'edit';
+        // The edit box and the main capture box both colour their tokens as you type.
+        const colourTokens = isEditMode || Boolean(unified);
 
         useEffect(() => {
             setTarget(defaultTarget);
@@ -1812,6 +1823,7 @@ const QuickCaptureInput = React.forwardRef<
                 analysis?.cleaned_content ??
                 line
                     .replace(/#[a-zA-Z0-9_-]+/g, '')
+                    .replace(/(^|\s)~(?:"[^"]+"|\S+)/g, '$1')
                     .replace(/\+(?:"[^"]+"|\S+)/g, '')
             ).trim();
             return cleaned || line.trim();
@@ -3050,26 +3062,58 @@ const QuickCaptureInput = React.forwardRef<
                                 )}
                                 <div className="relative z-10 flex items-start">
                                     {multiline ? (
-                                        <textarea
-                                            ref={(el) => {
-                                                inputRef.current = el;
-                                            }}
-                                            data-testid="quick-capture-input"
-                                            value={inputText}
-                                            rows={3}
-                                            onChange={handleChange}
-                                            onSelect={handleCaretEvent}
-                                            onKeyUp={handleCaretEvent}
-                                            onClick={handleCaretEvent}
-                                            className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
-                                            placeholder=""
-                                            onKeyDown={handleKeyDown}
-                                            onPaste={
-                                                unified
-                                                    ? handlePaste
-                                                    : undefined
-                                            }
-                                        ></textarea>
+                                        <>
+                                            {/* Edit mode colours the tokens behind a transparent
+                                            textarea, so the text is still typed and selected
+                                            in the textarea itself. */}
+                                            {colourTokens && (
+                                                <div
+                                                    aria-hidden="true"
+                                                    className={`pointer-events-none absolute inset-0 w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal whitespace-pre-wrap break-words overflow-hidden text-gray-900 dark:text-gray-100 px-0 py-1.5`}
+                                                >
+                                                    {splitInboxTokens(
+                                                        inputText
+                                                    ).map((segment, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className={
+                                                                segment.kind
+                                                                    ? TOKEN_TEXT_CLASS[
+                                                                          segment
+                                                                              .kind
+                                                                      ]
+                                                                    : undefined
+                                                            }
+                                                        >
+                                                            {segment.text}
+                                                        </span>
+                                                    ))}
+                                                    {inputText.endsWith('\n')
+                                                        ? ' '
+                                                        : null}
+                                                </div>
+                                            )}
+                                            <textarea
+                                                ref={(el) => {
+                                                    inputRef.current = el;
+                                                }}
+                                                data-testid="quick-capture-input"
+                                                value={inputText}
+                                                rows={3}
+                                                onChange={handleChange}
+                                                onSelect={handleCaretEvent}
+                                                onKeyUp={handleCaretEvent}
+                                                onClick={handleCaretEvent}
+                                                className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent ${colourTokens ? 'relative text-transparent caret-gray-900 dark:caret-gray-100' : 'text-gray-900 dark:text-gray-100'} border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
+                                                placeholder=""
+                                                onKeyDown={handleKeyDown}
+                                                onPaste={
+                                                    unified
+                                                        ? handlePaste
+                                                        : undefined
+                                                }
+                                            ></textarea>
+                                        </>
                                     ) : (
                                         <input
                                             ref={(el) => {

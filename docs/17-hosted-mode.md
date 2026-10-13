@@ -367,6 +367,40 @@ Admins read the list at `/admin/waitlist` in the app: newest first, search
 by address, and "Export CSV" (`GET /api/admin/waitlist/export`). The
 dashboard shows the total and the last seven days beside it.
 
+## Visits and dashboard metrics
+
+The admin dashboard (`/admin`) shows two panels. **Last 7 days** holds
+signups and their activation, verified-email share, tasks created and
+completed, active users, waitlist joins and, when hosted, the trial and
+churn signals. **Visits, last 7 days** shows how people arrive and what they
+do: visitors and page views per day, visit-to-signup rate, blog readers, app
+opens, app users (this week, today, last 30 days), top pages and top
+referrers. Every figure sits next to the week before.
+
+A visit is a navigation answered with a page: a marketing page, a blog page
+(a blog host, or `/blog` on the app host), or the app shell. Redirects,
+errors, API calls, assets, prefetches, requests without a browser
+`Accept: text/html` header and crawlers, monitors and scripts (by user agent)
+are not counted. The app counts full page loads, not in-app navigation, so
+"App opens" is sessions rather than screens. Each load is one `site_visits`
+row: surface (`landing`, `blog`, `app`), the page (two path segments on the
+marketing site and blog, one in the app, never a query string or a record
+id), the referring hostname when it is another site, and for the app the
+signed-in user.
+
+No address or user agent is stored. The visitor is a hash of the address and
+user agent salted with the UTC day and the session secret, so it separates
+two people within one day and cannot follow anyone to the next. Visitors are
+therefore counted per day (back on another day counts again), the marketing
+site and the blog are added together, and a restart without a fixed
+`TUDUDI_SESSION_SECRET` can count a returning visitor twice that day.
+Rows older than 90 days are deleted by the nightly token cleanup, and an
+account's rows go with it when it is erased.
+
+| Variable | Meaning |
+|---|---|
+| `TUDUDI_VISIT_TRACKING` | `false` stops recording visits and hides the Visits panel. Default on |
+
 ## Deploying on one machine
 
 `docs/examples/docker-compose.hosted.yml` and `docs/examples/Caddyfile` are

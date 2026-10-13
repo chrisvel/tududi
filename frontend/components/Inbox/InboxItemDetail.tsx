@@ -54,11 +54,32 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    // The edit box opens with the cleaned title (tokens like #tag, ~area,
+    // dates and @person removed). Null until the analysis returns.
+    const [cleanedEditText, setCleanedEditText] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const composerRef = useRef<QuickCaptureInputHandle>(null);
 
     useEffect(() => {
         onEditingChange?.(isEditing);
+    }, [isEditing]);
+
+    useEffect(() => {
+        if (!isEditing) {
+            setCleanedEditText(null);
+            return;
+        }
+        let cancelled = false;
+        analyzeInboxText(fullContent)
+            .then((result) => {
+                const cleaned = result?.cleaned_content?.trim();
+                if (!cancelled && cleaned) setCleanedEditText(cleaned);
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+        // Only when the editor opens; the text is read once for that session.
     }, [isEditing]);
 
     // Tell the list in the same render that this item is opening, so its
@@ -246,7 +267,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         // Only render the first line for the preview
         const firstLine = text.split('\n')[0];
         const re =
-            /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))/gu;
+            /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))|(?<!\S)~(?:"([^"]+)"|([\w.'-]*\w))/gu;
         const nodes: React.ReactNode[] = [];
         let last = 0;
         let m: RegExpExecArray | null;
@@ -300,6 +321,28 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             }}
                             className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
                             aria-label={`Remove person ${personName}`}
+                        >
+                            ×
+                        </button>
+                    </span>
+                );
+            } else if (m[6] || m[7]) {
+                // ~area
+                const areaName = m[6] || m[7];
+                nodes.push(
+                    <span
+                        key={`area-${idx}`}
+                        className="inline-flex items-center gap-0.5 mx-0.5 align-middle text-[11px] font-semibold leading-none text-purple-700 dark:text-purple-300 bg-purple-100/70 dark:bg-purple-400/10 rounded-full px-2 py-[3px]"
+                    >
+                        ~{areaName}
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                void removeTokenFromText(raw);
+                            }}
+                            className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
+                            aria-label={`Remove area ${areaName}`}
                         >
                             ×
                         </button>
@@ -521,7 +564,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
     const handleSubmitEdit = async (text: string) => {
         if (!onUpdate || item.uid === undefined) return;
-        if (baseContent.trim() === text.trim()) {
+        // An untouched box (raw or cleaned) saves nothing, so the stored text
+        // keeps its tokens.
+        if (
+            baseContent.trim() === text.trim() ||
+            cleanedEditText === text.trim()
+        ) {
             setIsEditing(false);
             return;
         }
@@ -593,7 +641,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 <QuickCaptureInput
                     ref={composerRef}
                     mode="edit"
-                    initialValue={fullContent}
+                    initialValue={cleanedEditText ?? fullContent}
                     hidePrimaryButton
                     projects={projects}
                     onSubmitOverride={handleSubmitEdit}
@@ -608,7 +656,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             ) : (
                 /* ── Flat row (no card, no shadow) ─────────────────────────── */
                 <div
-                    className={`group flex items-start gap-2.5 px-4 py-2.5 rounded-lg cursor-pointer hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors${isNew ? ' animate-inbox-row-in' : ''}`}
+                    className={`group flex items-start gap-2.5 px-4 py-3 cursor-pointer${isNew ? ' animate-inbox-row-in' : ''}`}
                     onClick={startEditing}
                     role="button"
                     tabIndex={0}
@@ -621,7 +669,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 >
                     {/* Text content */}
                     <div className="flex-1 min-w-0">
-                        <p className="text-[13.5px] font-normal text-gray-700 dark:text-gray-300 leading-relaxed break-words">
+                        <p className="text-[15px] font-normal tracking-tight text-gray-900 dark:text-gray-100 leading-snug break-words">
                             {isBlank ? (
                                 <span className="italic text-gray-400 dark:text-gray-500">
                                     {t('inbox.emptyItem', '(Empty item)')}

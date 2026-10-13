@@ -32,6 +32,7 @@ import {
     updateUiSettings,
 } from '../../utils/profileService';
 import { useStore } from '../../store/useStore';
+import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 const InboxItems: React.FC = () => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
@@ -478,7 +479,6 @@ const InboxItems: React.FC = () => {
         return <LoadingScreen />;
     }
 
-    const segmentClass = 'bg-white dark:bg-gray-900';
     const openIndex = openItemUid
         ? inboxItems.findIndex((item) => item.uid === openItemUid)
         : -1;
@@ -553,15 +553,11 @@ const InboxItems: React.FC = () => {
 
                 {/* ── Item list ────────────────────────────────────────────── */}
                 {inboxItems.length > 0 && (
-                    <div className="w-full">
+                    <div
+                        className={`w-full task-list-container overflow-visible ${TASK_SHEET_CLASS} task-sheet-rails`}
+                    >
                         {/* Recently captured – collapsible header */}
-                        <div
-                            className={`${segmentClass} rounded-t-2xl px-1.5 pt-1.5 ${
-                                !inboxListExpanded || openIndex === 0
-                                    ? 'rounded-b-2xl pb-1.5'
-                                    : ''
-                            }`}
-                        >
+                        <div>
                             <button
                                 onClick={() =>
                                     setInboxListExpanded((prev) => {
@@ -598,40 +594,15 @@ const InboxItems: React.FC = () => {
                         </div>
 
                         {inboxListExpanded && (
-                            <div className="flex flex-col">
+                            <>
                                 {/* The open item detaches into its own card,
-                                    splitting the list around it. */}
-                                {inboxItems.map((item, index) => {
-                                    const isOpen = index === openIndex;
-                                    // The open item's card is drawn by this wrapper, so its
-                                    // corners, background and shadow animate with the
-                                    // neighbouring rows' corners.
-                                    const rowClass = isOpen
-                                        ? 'my-3 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 shadow-lg'
-                                        : `${segmentClass} px-1.5 ${
-                                              openIndex >= 0 && index === openIndex + 1
-                                                  ? 'rounded-t-2xl pt-1.5'
-                                                  : ''
-                                          } ${
-                                              index === openIndex - 1
-                                                  ? 'rounded-b-2xl pb-1.5'
-                                                  : ''
-                                          } ${
-                                              // A soft line between rows, as in task
-                                              // sheets. It drops next to the open item.
-                                              // The border always takes up its 1px and
-                                              // only its colour fades, so the rounded
-                                              // corners do not move while animating.
-                                              index > 0 &&
-                                              index !== openIndex &&
-                                              index !== openIndex + 1
-                                                  ? 'border-t border-gray-100 dark:border-white/5'
-                                                  : 'border-t border-transparent'
-                                          }`;
-                                    return (
+                                    splitting the list around it (see .task-sheet). */}
+                                {inboxItems.map((item, index) => (
+                                    <div key={item.uid || item.id}>
                                         <div
-                                            key={item.uid || item.id}
-                                            className={`transition-all duration-300 ease-out ${rowClass}`}
+                                            data-task-expanded={
+                                                index === openIndex || undefined
+                                            }
                                         >
                                             <InboxItemDetail
                                                 item={item}
@@ -653,16 +624,10 @@ const InboxItems: React.FC = () => {
                                                 }
                                             />
                                         </div>
-                                    );
-                                })}
+                                    </div>
+                                ))}
 
-                                <div
-                                    className={`${segmentClass} rounded-b-2xl px-1.5 pb-1.5 ${
-                                        openIndex === inboxItems.length - 1
-                                            ? 'rounded-t-2xl'
-                                            : ''
-                                    }`}
-                                >
+                                <div>
                                     {/* Load more */}
                                     {pagination.hasMore && (
                                         <div className="flex justify-center pt-5">
@@ -698,7 +663,7 @@ const InboxItems: React.FC = () => {
                                         )}
                                     </div>
                                 </div>
-                            </div>
+                            </>
                         )}
                     </div>
                 )}
