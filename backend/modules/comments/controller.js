@@ -40,6 +40,22 @@ const commentsController = {
     },
 
     /**
+     * POST /api/task/:uid/comments/images
+     */
+    async uploadImage(req, res, next) {
+        try {
+            const image = await commentsService.addInlineImage(
+                req.currentUser.id,
+                req.params.uid,
+                req.file
+            );
+            res.status(201).json(image);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
      * DELETE /api/comment/:uid
      * Soft delete: returns the tombstoned comment (empty body, deleted_at
      * set) so the client can render a "Comment deleted" placeholder in

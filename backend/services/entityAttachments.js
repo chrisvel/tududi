@@ -405,6 +405,7 @@ module.exports = {
     MAX_ATTACHMENTS,
     createAttachmentStore,
     createAttachmentRouter,
+    uploadSingleFile,
     inboxAttachments,
     taskAttachments,
     projectAttachments,

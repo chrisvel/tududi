@@ -110,7 +110,7 @@ router.post(
 
             // Check attachment count limit (20 max)
             const attachmentCount = await TaskAttachment.count({
-                where: { task_id: task.id },
+                where: { task_id: task.id, inline: false },
             });
 
             if (attachmentCount >= 20) {
@@ -197,8 +197,9 @@ router.get('/tasks/:taskUid/attachments', async (req, res) => {
         }
 
         // Get attachments
+        // Skip images pasted into comments
         const attachments = await TaskAttachment.findAll({
-            where: { task_id: task.id },
+            where: { task_id: task.id, inline: false },
             order: [['created_at', 'ASC']],
         });
 
