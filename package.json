@@ -100,7 +100,7 @@
     "html-webpack-plugin": "^5.6.3",
     "i18next": "^24.2.3",
     "i18next-browser-languagedetector": "^8.0.4",
-    "i18next-http-backend": "^3.0.5",
+    "i18next-http-backend": "^4.0.2",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^30.3.0",
@@ -193,7 +193,7 @@
     "http-proxy-middleware": "^3.0.6",
     "form-data": "^4.0.6",
     "launch-editor": "^2.14.1",
-    "shell-quote": "^1.10.0",
+    "shell-quote": "^1.11.0",
     "ws": "^8.21.0",
     "qs": "^6.16.0",
     "js-cookie": "^3.0.8",
@@ -228,7 +228,10 @@
     },
     "babel-plugin-istanbul": {
       "js-yaml": "^3.15.2"
-    }
+    },
+    "handlebars": "^4.7.10",
+    "katex": "^0.19.0",
+    "postcss-selector-parser": "^7.1.6"
   },
   "lint-staged": {
     "frontend/**/*.{js,jsx,ts,tsx}": [
