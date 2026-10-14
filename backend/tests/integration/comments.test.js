@@ -1,6 +1,15 @@
 const request = require('supertest');
+const path = require('path');
+const fs = require('fs').promises;
 const app = require('../../app');
-const { sequelize, Person, TaskEvent, Notification } = require('../../models');
+const {
+    sequelize,
+    Person,
+    TaskEvent,
+    Notification,
+    TaskAttachment,
+} = require('../../models');
+const { getConfig } = require('../../config/config');
 const {
     createTestUser,
     acceptAllInvitations,
@@ -533,6 +542,123 @@ describe('Task comments and mentions', () => {
             const listedParent = listResponse.body.comments[0];
             expect(listedParent.likes_count).toBe(0);
             expect(listedParent.replies[0].likes_count).toBe(1);
+        });
+    });
+
+    describe('pasted images', () => {
+        let readerUser, readerAgent;
+
+        const pasteImage = (agent, contentType = 'image/png') =>
+            agent
+                .post(`/api/task/${task.uid}/comments/images`)
+                .attach('file', Buffer.from('image bytes'), {
+                    filename: 'image.png',
+                    contentType,
+                });
+
+        const tasksDir = () => path.join(getConfig().uploadPath, 'tasks');
+        const listTaskFiles = async () =>
+            fs.readdir(tasksDir()).catch(() => []);
+
+        beforeEach(async () => {
+            readerUser = await createTestUser({
+                email: `reader_${Date.now()}@test.com`,
+                name: 'Reader',
+                timezone: 'UTC',
+            });
+            await peopleService.createSelfPerson(readerUser);
+            readerAgent = request.agent(app);
+            await readerAgent
+                .post('/api/login')
+                .send({ email: readerUser.email, password: 'password123' });
+            await ownerAgent.post('/api/shares').send({
+                resource_type: 'project',
+                resource_uid: project.uid,
+                target_user_email: readerUser.email,
+                access_level: 'ro',
+            });
+            await acceptAllInvitations(readerAgent);
+        });
+
+        afterEach(async () => {
+            const rows = await TaskAttachment.findAll({
+                where: { inline: true },
+            });
+            for (const row of rows) {
+                await fs.rm(path.join(getConfig().uploadPath, row.file_path), {
+                    force: true,
+                });
+            }
+        });
+
+        test('a read-only collaborator can paste an image into a comment', async () => {
+            const upload = await pasteImage(readerAgent);
+            expect(upload.status).toBe(201);
+            expect(upload.body.file_url).toMatch(
+                /^\/api\/uploads\/tasks\/task-.+\.png$/
+            );
+
+            const row = await TaskAttachment.findOne({
+                where: { uid: upload.body.uid },
+            });
+            expect(row.inline).toBe(true);
+
+            const file = await readerAgent.get(upload.body.file_url);
+            expect(file.status).toBe(200);
+
+            const comment = await readerAgent
+                .post(`/api/task/${task.uid}/comments`)
+                .send({ body: `![shot](${upload.body.file_url})` });
+            expect(comment.status).toBe(201);
+            expect(comment.body.body).toBe(`![shot](${upload.body.file_url})`);
+        });
+
+        test('a pasted image is not listed with the task files', async () => {
+            const upload = await pasteImage(ownerAgent);
+            expect(upload.status).toBe(201);
+
+            const list = await ownerAgent.get(
+                `/api/tasks/${task.uid}/attachments`
+            );
+            expect(list.status).toBe(200);
+            expect(list.body).toEqual([]);
+        });
+
+        test('someone without access cannot paste an image', async () => {
+            const before = await listTaskFiles();
+            const response = await pasteImage(outsiderAgent);
+            expect(response.status).toBe(404);
+            expect(await TaskAttachment.count()).toBe(0);
+            expect(await listTaskFiles()).toEqual(before);
+        });
+
+        test('only images can be pasted, and a refused file is removed', async () => {
+            const before = await listTaskFiles();
+            const response = await pasteImage(ownerAgent, 'application/pdf');
+            expect(response.status).toBe(400);
+            expect(await TaskAttachment.count()).toBe(0);
+            expect(await listTaskFiles()).toEqual(before);
+        });
+
+        test('notifications show [image] instead of the image markdown', async () => {
+            const collaboratorSelf = await Person.findOne({
+                where: {
+                    user_id: collaboratorUser.id,
+                    linked_user_id: collaboratorUser.id,
+                },
+            });
+            const upload = await pasteImage(ownerAgent);
+
+            await ownerAgent.post(`/api/task/${task.uid}/comments`).send({
+                body: `@Collaborator look\n![shot](${upload.body.file_url})`,
+                mentioned_person_uids: [collaboratorSelf.uid],
+            });
+
+            const notification = await Notification.findOne({
+                where: { user_id: collaboratorUser.id, type: 'mention' },
+            });
+            expect(notification.message).toContain('[image]');
+            expect(notification.message).not.toContain('/api/uploads');
         });
     });
 });

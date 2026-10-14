@@ -9,6 +9,7 @@ import {
     createComment,
     deleteComment,
     setCommentReaction,
+    uploadCommentImage,
 } from '../../../utils/commentsService';
 import { fetchPeople } from '../../../utils/peopleService';
 
@@ -23,10 +24,11 @@ jest.mock('react-router-dom', () => ({
     useNavigate: () => jest.fn(),
 }));
 
+const mockShowErrorToast = jest.fn();
 jest.mock('../../Shared/ToastContext', () => ({
     useToast: () => ({
         showSuccessToast: jest.fn(),
-        showErrorToast: jest.fn(),
+        showErrorToast: mockShowErrorToast,
     }),
 }));
 
@@ -35,6 +37,7 @@ jest.mock('../../../utils/commentsService', () => ({
     createComment: jest.fn(),
     deleteComment: jest.fn(),
     setCommentReaction: jest.fn(),
+    uploadCommentImage: jest.fn(),
 }));
 
 jest.mock('../../../utils/peopleService', () => ({
@@ -63,7 +66,27 @@ function typeIntoComposer(container: HTMLElement, text: string, index = 0) {
     return editor;
 }
 
+function pasteImage(editor: HTMLElement) {
+    fireEvent.paste(editor, {
+        clipboardData: {
+            files: [new File(['x'], 'image.png', { type: 'image/png' })],
+            getData: () => '',
+        },
+    });
+}
+
 const task = { id: 1, uid: 'task-1', name: 'Task' } as Task;
+
+const uploadedImage = {
+    uid: 'image-1',
+    original_filename: 'shot.png',
+    stored_filename: 'task-1.png',
+    file_size: 1,
+    mime_type: 'image/png',
+    file_url: '/api/uploads/tasks/task-1.png',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+};
 
 const baseComment: Comment = {
     uid: 'comment-1',
@@ -429,6 +452,142 @@ describe('TaskComments', () => {
                     'dislike'
                 )
             );
+        });
+    });
+
+    describe('pasted images', () => {
+        it('uploads a pasted image and posts it inside the comment text', async () => {
+            (fetchComments as jest.Mock).mockResolvedValue([]);
+            (uploadCommentImage as jest.Mock).mockResolvedValue(uploadedImage);
+            (createComment as jest.Mock).mockResolvedValue({
+                ...baseComment,
+                uid: 'comment-image',
+                body: 'Look\n![shot.png](/api/uploads/tasks/task-1.png)',
+            });
+
+            const { container } = render(<TaskComments task={task} />);
+            await screen.findByText('No comments yet');
+
+            const editor = typeIntoComposer(container, 'Look');
+            pasteImage(editor);
+
+            await waitFor(() =>
+                expect(
+                    editor.querySelector(
+                        'img[data-image-url="/api/uploads/tasks/task-1.png"]'
+                    )
+                ).toBeInTheDocument()
+            );
+            expect(uploadCommentImage).toHaveBeenCalledWith(
+                'task-1',
+                expect.any(File)
+            );
+
+            fireEvent.click(screen.getByText('Comment'));
+
+            await waitFor(() =>
+                expect(createComment).toHaveBeenCalledWith('task-1', {
+                    body: 'Look\n![shot.png](/api/uploads/tasks/task-1.png)',
+                    mentionedPersonUids: [],
+                })
+            );
+        });
+
+        it('keeps Comment disabled while the image uploads', async () => {
+            (fetchComments as jest.Mock).mockResolvedValue([]);
+            let finishUpload: (value: unknown) => void = () => {};
+            (uploadCommentImage as jest.Mock).mockReturnValue(
+                new Promise((resolve) => {
+                    finishUpload = resolve;
+                })
+            );
+
+            const { container } = render(<TaskComments task={task} />);
+            await screen.findByText('No comments yet');
+
+            pasteImage(
+                container.querySelector(
+                    '[contenteditable="true"]'
+                ) as HTMLElement
+            );
+
+            expect(
+                await screen.findByText('Uploading image...')
+            ).toBeInTheDocument();
+            expect(screen.getByText('Comment')).toBeDisabled();
+
+            finishUpload(uploadedImage);
+
+            await waitFor(() =>
+                expect(screen.getByText('Comment')).not.toBeDisabled()
+            );
+            expect(
+                screen.queryByText('Uploading image...')
+            ).not.toBeInTheDocument();
+        });
+
+        it('drops the image and shows an error when the upload fails', async () => {
+            (fetchComments as jest.Mock).mockResolvedValue([]);
+            (uploadCommentImage as jest.Mock).mockRejectedValue(
+                new Error('Failed to upload image.')
+            );
+            const consoleError = jest
+                .spyOn(console, 'error')
+                .mockImplementation(() => {});
+
+            const { container } = render(<TaskComments task={task} />);
+            await screen.findByText('No comments yet');
+
+            const editor = container.querySelector(
+                '[contenteditable="true"]'
+            ) as HTMLElement;
+            pasteImage(editor);
+
+            await waitFor(() =>
+                expect(mockShowErrorToast).toHaveBeenCalledWith(
+                    'Could not upload image'
+                )
+            );
+            expect(editor.querySelector('[data-uploading]')).toBeNull();
+            expect(editor.querySelector('img')).toBeNull();
+            expect(screen.getByText('Comment')).toBeDisabled();
+            consoleError.mockRestore();
+        });
+
+        it('still pastes plain text as text', async () => {
+            (fetchComments as jest.Mock).mockResolvedValue([]);
+
+            const { container } = render(<TaskComments task={task} />);
+            await screen.findByText('No comments yet');
+
+            const editor = typeIntoComposer(container, 'Hi ');
+            fireEvent.paste(editor, {
+                clipboardData: { files: [], getData: () => 'there' },
+            });
+
+            expect(editor.textContent).toBe('Hi there');
+            expect(uploadCommentImage).not.toHaveBeenCalled();
+        });
+
+        it('shows an image line as an image, but not an outside one', async () => {
+            (fetchComments as jest.Mock).mockResolvedValue([
+                {
+                    ...baseComment,
+                    body: 'Look\n![shot](/api/uploads/tasks/task-1.png)\n![x](https://example.com/x.png)',
+                },
+            ]);
+
+            const { container } = render(<TaskComments task={task} />);
+
+            const image = await screen.findByAltText('shot');
+            expect(image).toHaveAttribute(
+                'src',
+                '/api/uploads/tasks/task-1.png'
+            );
+            expect(container.querySelectorAll('img')).toHaveLength(1);
+            expect(
+                screen.getByText(/!\[x\]\(https:\/\/example\.com\/x\.png\)/)
+            ).toBeInTheDocument();
         });
     });
 });
