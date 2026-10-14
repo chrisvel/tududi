@@ -155,8 +155,18 @@ function getFileUrl(storedFilename) {
     return `/api/uploads/tasks/${storedFilename}`;
 }
 
+// Multer hands back the filename from the multipart header decoded as latin1,
+// so UTF-8 names (browsers send them raw) come out as mojibake. Re-read the
+// bytes as UTF-8 when that yields valid text, and keep the name otherwise.
+function decodeUploadFilename(name) {
+    if (typeof name !== 'string' || !/^[\x00-\xff]*$/.test(name)) return name;
+    const decoded = Buffer.from(name, 'latin1').toString('utf8');
+    return decoded.includes('�') ? name : decoded;
+}
+
 module.exports = {
     ALLOWED_TYPES,
+    decodeUploadFilename,
     INLINE_SAFE_EXTENSIONS,
     UNKNOWN_TYPE_EXTENSION,
     getExtensionFromMimeType,

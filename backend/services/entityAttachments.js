@@ -14,6 +14,7 @@ const { getConfig } = require('../config/config');
 const {
     getExtensionFromMimeType,
     deleteFileFromDisk,
+    decodeUploadFilename,
 } = require('../utils/attachment-utils');
 const entitlements = require('./entitlementsService');
 const { logError } = require('./logService');
@@ -99,7 +100,7 @@ function createAttachmentStore({ model, ownerKey, dir, prefix }) {
                 const attachment = await Model().create({
                     [ownerKey]: ownerId,
                     user_id: userId,
-                    original_filename: file.originalname,
+                    original_filename: decodeUploadFilename(file.originalname),
                     stored_filename: file.filename,
                     file_size: file.size,
                     mime_type: file.mimetype,
