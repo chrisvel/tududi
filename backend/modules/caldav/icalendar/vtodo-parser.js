@@ -1,4 +1,5 @@
 const ICAL = require('ical.js');
+const moment = require('moment-timezone');
 const {
     STATUS_ICAL_TO_TUDUDI,
     icalToTududiPriority,
@@ -7,7 +8,38 @@ const { parseRRULE } = require('./rrule-parser');
 const {
     processDueDateForStorage,
     processDeferUntilForStorage,
+    isValidTimezone,
 } = require('../../../utils/timezone-utils');
+
+// ical.js turns a floating time (no Z, no TZID) and a TZID it cannot resolve
+// into a floating time, then reads it in the server's timezone. Read those in
+// the TZID when it names a real zone, otherwise in the user's timezone.
+function dateTimeToJSDate(property, userTimezone) {
+    const time = property.getFirstValue();
+    if (time.zone && time.zone.tzid !== 'floating') {
+        return time.toJSDate();
+    }
+
+    const tzid = property.getParameter('tzid');
+    const zone = isValidTimezone(tzid)
+        ? tzid
+        : isValidTimezone(userTimezone)
+          ? userTimezone
+          : 'UTC';
+    return moment
+        .tz(
+            [
+                time.year,
+                time.month - 1,
+                time.day,
+                time.hour,
+                time.minute,
+                time.second,
+            ],
+            zone
+        )
+        .toDate();
+}
 
 async function parseVTODOToTask(vtodoString, userTimezone) {
     try {
@@ -82,7 +114,8 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
             task.priority = icalToTududiPriority(priority);
         }
 
-        const due = vtodo.getFirstPropertyValue('due');
+        const dueProp = vtodo.getFirstProperty('due');
+        const due = dueProp && dueProp.getFirstValue();
         if (due) {
             if (due.isDate) {
                 // DATE-only values are timezone-independent; store as end-of-day
@@ -94,11 +127,12 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
                     userTimezone || 'UTC'
                 );
             } else {
-                task.due_date = due.toJSDate();
+                task.due_date = dateTimeToJSDate(dueProp, userTimezone);
             }
         }
 
-        const dtstart = vtodo.getFirstPropertyValue('dtstart');
+        const dtstartProp = vtodo.getFirstProperty('dtstart');
+        const dtstart = dtstartProp && dtstartProp.getFirstValue();
         if (dtstart) {
             if (dtstart.isDate) {
                 const dateStr = `${dtstart.year}-${String(dtstart.month).padStart(2, '0')}-${String(dtstart.day).padStart(2, '0')}`;
@@ -107,7 +141,7 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
                     userTimezone || 'UTC'
                 );
             } else {
-                task.defer_until = dtstart.toJSDate();
+                task.defer_until = dateTimeToJSDate(dtstartProp, userTimezone);
             }
         }
 
