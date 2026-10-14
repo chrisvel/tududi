@@ -104,7 +104,7 @@ const GoalDropdown: React.FC<GoalDropdownProps> = ({
                     <div
                         ref={menuRef}
                         data-portal-menu
-                        className="fixed z-50 bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600 max-h-60 overflow-y-auto"
+                        className="fixed z-[10050] bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600 max-h-60 overflow-y-auto"
                         style={{
                             top: `${position.top}px`,
                             left: `${position.left}px`,
