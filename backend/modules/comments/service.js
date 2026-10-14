@@ -10,7 +10,10 @@ const {
 const permissionsService = require('../../services/permissionsService');
 const entitlements = require('../../services/entitlementsService');
 const { taskAttachments } = require('../../services/entityAttachments');
-const { deleteFileFromDisk } = require('../../utils/attachment-utils');
+const {
+    deleteFileFromDisk,
+    decodeUploadFilename,
+} = require('../../utils/attachment-utils');
 const taskEventService = require('../tasks/taskEventService');
 const { resolveAssigneeUser } = require('../tasks/operations/assignment');
 const {
@@ -375,7 +378,7 @@ async function addInlineImage(userId, taskUid, file) {
         const attachment = await TaskAttachment.create({
             task_id: task.id,
             user_id: userId,
-            original_filename: file.originalname,
+            original_filename: decodeUploadFilename(file.originalname),
             stored_filename: file.filename,
             file_size: file.size,
             mime_type: file.mimetype,

@@ -12,6 +12,7 @@ const {
     getExtensionFromMimeType,
     deleteFileFromDisk,
     getFileUrl,
+    decodeUploadFilename,
 } = require('../../utils/attachment-utils');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const permissionsService = require('../../services/permissionsService');
@@ -142,7 +143,7 @@ router.post(
                 uid: uid(),
                 task_id: task.id,
                 user_id: userId,
-                original_filename: req.file.originalname,
+                original_filename: decodeUploadFilename(req.file.originalname),
                 stored_filename: req.file.filename,
                 file_size: req.file.size,
                 mime_type: req.file.mimetype,
