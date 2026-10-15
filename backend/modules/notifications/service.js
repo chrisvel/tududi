@@ -121,6 +121,11 @@ class NotificationsService {
             return { channel, delivered: true };
         }
 
+        if (channel === 'apprise') {
+            const appriseService = require('../apprise/service');
+            return appriseService.sendTest(userId);
+        }
+
         if (channel === 'email') {
             throw new ValidationError(
                 'Email notifications are not available yet'

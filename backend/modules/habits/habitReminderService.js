@@ -10,7 +10,7 @@ const { getSafeTimezone } = require('../../utils/timezone-utils');
 const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
-    shouldSendPushNotification,
+    reminderSources,
 } = require('../../utils/notificationPreferences');
 
 // A reminder that was missed (server down, reminder set later in the day)
@@ -103,9 +103,7 @@ async function checkHabitReminders(now = new Date()) {
                 message,
                 sources: [
                     ...(telegram ? ['telegram'] : []),
-                    ...(shouldSendPushNotification(user, 'habitReminders')
-                        ? ['push']
-                        : []),
+                    ...reminderSources(user, 'habitReminders'),
                 ],
                 data: {
                     habitUid: habit.uid,

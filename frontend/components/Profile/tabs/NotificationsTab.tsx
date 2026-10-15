@@ -13,6 +13,7 @@ import {
 import type { NotificationPreferences } from '../types';
 import { getCsrfToken } from '../../../utils/csrfService';
 import PushDeviceCard from './PushDeviceCard';
+import AppriseCard from './AppriseCard';
 import { PushState, countPushDevices } from '../../../utils/pushService';
 
 interface NotificationsTabProps {
@@ -22,27 +23,65 @@ interface NotificationsTabProps {
 }
 
 const DEFAULT_PREFERENCES: NotificationPreferences = {
-    dueTasks: { inApp: true, email: false, push: false, telegram: false },
-    overdueTasks: { inApp: true, email: false, push: false, telegram: false },
-    dueProjects: { inApp: true, email: false, push: false, telegram: false },
+    dueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
+    overdueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
+    dueProjects: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
     overdueProjects: {
         inApp: true,
         email: false,
         push: false,
         telegram: false,
+        apprise: false,
     },
-    deferUntil: { inApp: true, email: false, push: false, telegram: false },
-    taskAssigned: { inApp: true, email: false, push: false, telegram: false },
+    deferUntil: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
+    taskAssigned: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
     habitReminders: {
         inApp: true,
         email: false,
         push: false,
         telegram: false,
+        apprise: false,
     },
-    comments: { inApp: true, email: false, push: false, telegram: false },
+    comments: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
 };
 
-type Channel = 'inApp' | 'email' | 'push' | 'telegram';
+type Channel = 'inApp' | 'email' | 'push' | 'telegram' | 'apprise';
 
 interface NotificationTypeRowProps {
     icon: React.ComponentType<{ className?: string }>;
@@ -53,13 +92,15 @@ interface NotificationTypeRowProps {
         email: boolean;
         push: boolean;
         telegram: boolean;
+        apprise: boolean;
     };
     onToggle: (
-        channel: 'inApp' | 'email' | 'push' | 'telegram',
+        channel: 'inApp' | 'email' | 'push' | 'telegram' | 'apprise',
         value: boolean
     ) => void;
     telegramConfigured: boolean;
     pushAvailable: boolean;
+    appriseConfigured: boolean;
 }
 
 const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
@@ -70,9 +111,10 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
     onToggle,
     telegramConfigured,
     pushAvailable,
+    appriseConfigured,
 }) => {
     const renderToggle = (
-        channel: 'inApp' | 'email' | 'push' | 'telegram',
+        channel: 'inApp' | 'email' | 'push' | 'telegram' | 'apprise',
         isEnabled: boolean,
         isAvailable: boolean
     ) => (
@@ -129,6 +171,13 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
                     telegramConfigured
                 )}
             </td>
+            <td className="py-4 px-4 text-center">
+                {renderToggle(
+                    'apprise',
+                    preferences.apprise,
+                    appriseConfigured
+                )}
+            </td>
         </tr>
     );
 };
@@ -149,6 +198,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
     } | null>(null);
     const [pushState, setPushState] = React.useState<PushState | null>(null);
     const [pushDevices, setPushDevices] = React.useState<number>(0);
+    const [appriseConfigured, setAppriseConfigured] = React.useState(false);
 
     // Fetch profile data to check telegram configuration
     React.useEffect(() => {
@@ -182,7 +232,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 
     const handleToggle = (
         notificationType: keyof NotificationPreferences,
-        channel: 'inApp' | 'email' | 'push' | 'telegram',
+        channel: 'inApp' | 'email' | 'push' | 'telegram' | 'apprise',
         value: boolean
     ) => {
         const updatedPreferences = {
@@ -247,6 +297,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
             email: t('notifications.channels.email', 'Email'),
             push: t('notifications.channels.push', 'Push'),
             telegram: t('notifications.channels.telegram', 'Telegram'),
+            apprise: t('notifications.channels.apprise', 'Apprise'),
         })[channel];
 
     const channelAvailable: Record<Channel, boolean> = {
@@ -254,6 +305,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         email: false,
         push: pushAvailable,
         telegram: telegramConfigured,
+        apprise: appriseConfigured,
     };
 
     const renderTestButton = (channel: Channel) => (
@@ -291,6 +343,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 
             <PushDeviceCard onStateChange={setPushState} />
 
+            <AppriseCard onStateChange={setAppriseConfigured} />
+
             {/* Notifications Table */}
             <div className="overflow-x-auto">
                 <table className="w-full">
@@ -323,6 +377,9 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                     'Telegram'
                                 )}
                             </th>
+                            <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                {t('notifications.channels.apprise', 'Apprise')}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -342,6 +399,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            appriseConfigured={appriseConfigured}
                         />
                         <NotificationTypeRow
                             icon={ExclamationTriangleIcon}
@@ -359,6 +417,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            appriseConfigured={appriseConfigured}
                         />
                         <NotificationTypeRow
                             icon={ClockIcon}
@@ -376,6 +435,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            appriseConfigured={appriseConfigured}
                         />
                         <NotificationTypeRow
                             icon={BellIcon}
@@ -393,6 +453,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            appriseConfigured={appriseConfigured}
                         />
                         <NotificationTypeRow
                             icon={ChatBubbleLeftRightIcon}
@@ -410,6 +471,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            appriseConfigured={appriseConfigured}
                         />
                         <NotificationTypeRow
                             icon={FireIcon}
@@ -427,6 +489,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            appriseConfigured={appriseConfigured}
                         />
                         <NotificationTypeRow
                             icon={FolderIcon}
@@ -444,6 +507,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            appriseConfigured={appriseConfigured}
                         />
                         <NotificationTypeRow
                             icon={FolderOpenIcon}
@@ -461,6 +525,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             }
                             telegramConfigured={telegramConfigured}
                             pushAvailable={pushAvailable}
+                            appriseConfigured={appriseConfigured}
                         />
                     </tbody>
                     <tfoot>
@@ -472,7 +537,13 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 )}
                             </td>
                             {(
-                                ['inApp', 'email', 'push', 'telegram'] as const
+                                [
+                                    'inApp',
+                                    'email',
+                                    'push',
+                                    'telegram',
+                                    'apprise',
+                                ] as const
                             ).map((channel) => (
                                 <td
                                     key={channel}
