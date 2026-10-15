@@ -1,11 +1,34 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+interface WeekCount {
+    last7d: number;
+    prev7d: number;
+}
+
+interface SurfaceVisits {
+    views: WeekCount;
+    visitors: WeekCount;
+}
+
+// Page views as the admin overview reports them. `days` is the marketing
+// site and the blog together; visitors are per day, so a week's figure is
+// the sum of its days.
+export interface Visits {
+    landing: SurfaceVisits;
+    blog: SurfaceVisits;
+    app: SurfaceVisits;
+    days: { date: string; views: number; visitors: number }[];
+    top_pages: { surface: 'landing' | 'blog'; path: string; views: number }[];
+    top_referrers: { host: string; views: number }[];
+    app_users: { dau: number; wau: number; prev_wau: number; mau: number };
+}
+
 export interface Trends {
     days: { date: string; signups: number; waitlist: number }[];
     signups: { last7d: number; prev7d: number };
     waitlist: { last7d: number; prev7d: number };
-    activation: { new_users: number; activated: number };
+    activation: { new_users: number; activated: number; verified?: number };
     onboarding?: {
         new_users: number;
         first_plan: number;
@@ -13,6 +36,11 @@ export interface Trends {
         three_days: number;
     };
     active_users_7d: number;
+    tasks?: {
+        created: { last7d: number; prev7d: number };
+        completed: { last7d: number; prev7d: number };
+    };
+    visits?: Visits | null;
     billing: {
         trials_started_7d: number;
         trials_ending_7d: number;
@@ -22,7 +50,10 @@ export interface Trends {
 }
 
 // "+3 vs last week" style change, coloured only when it moved.
-const Delta: React.FC<{ now: number; before: number }> = ({ now, before }) => {
+export const Delta: React.FC<{ now: number; before: number }> = ({
+    now,
+    before,
+}) => {
     const { t } = useTranslation();
     const diff = now - before;
     const tone =
@@ -40,7 +71,7 @@ const Delta: React.FC<{ now: number; before: number }> = ({ now, before }) => {
     );
 };
 
-const Tile: React.FC<{
+export const Tile: React.FC<{
     label: string;
     value: React.ReactNode;
     hint?: React.ReactNode;
@@ -63,24 +94,31 @@ const Tile: React.FC<{
     </div>
 );
 
-// Signups per day for the last 7 days, last week's day faint behind it so
-// the shape of the two weeks can be compared at a glance.
-const SignupBars: React.FC<{ days: Trends['days'] }> = ({ days }) => {
-    const { t } = useTranslation();
+// One bar per day for the last 7 days, last week's day faint behind it so
+// the shape of the two weeks can be compared at a glance. `values` runs
+// alongside `days`, 14 entries, oldest first.
+export const DayBars: React.FC<{
+    days: { date: string }[];
+    values: number[];
+    label: string;
+    barTitle: (date: string, n: number, prev: number) => string;
+    testId: string;
+}> = ({ days, values, label, barTitle, testId }) => {
     const thisWeek = days.slice(-7);
-    const lastWeek = days.slice(-14, -7);
-    const max = Math.max(1, ...days.map((d) => d.signups));
+    const offset = days.length - 7;
+    const max = Math.max(1, ...values);
     const pct = (n: number) => `${Math.round((n / max) * 100)}%`;
 
     return (
         <div
             className="flex items-end gap-2 h-28"
             role="img"
-            aria-label={t('admin.trends.chartLabel', 'Signups per day')}
-            data-testid="admin-trends-bars"
+            aria-label={label}
+            data-testid={testId}
         >
             {thisWeek.map((day, i) => {
-                const prev = lastWeek[i]?.signups ?? 0;
+                const n = values[offset + i] ?? 0;
+                const prev = values[offset + i - 7] ?? 0;
                 const weekday = new Date(
                     `${day.date}T00:00:00Z`
                 ).toLocaleDateString(undefined, {
@@ -91,14 +129,10 @@ const SignupBars: React.FC<{ days: Trends['days'] }> = ({ days }) => {
                     <div
                         key={day.date}
                         className="flex-1 flex flex-col items-center h-full"
-                        title={t(
-                            'admin.trends.barTitle',
-                            '{{date}}: {{n}} signups ({{prev}} a week before)',
-                            { date: day.date, n: day.signups, prev }
-                        )}
+                        title={barTitle(day.date, n, prev)}
                     >
                         <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                            {day.signups || ''}
+                            {n || ''}
                         </span>
                         <div className="relative w-full flex-1">
                             <div
@@ -107,7 +141,7 @@ const SignupBars: React.FC<{ days: Trends['days'] }> = ({ days }) => {
                             />
                             <div
                                 className="absolute bottom-0 left-1/4 right-1/4 rounded-t bg-blue-500 dark:bg-blue-400"
-                                style={{ height: pct(day.signups) }}
+                                style={{ height: pct(n) }}
                             />
                         </div>
                         <span className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
@@ -151,7 +185,19 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                             before={trends.signups.prev7d}
                         />
                     </div>
-                    <SignupBars days={trends.days} />
+                    <DayBars
+                        days={trends.days}
+                        values={trends.days.map((d) => d.signups)}
+                        label={t('admin.trends.chartLabel', 'Signups per day')}
+                        barTitle={(date, n, prev) =>
+                            t(
+                                'admin.trends.barTitle',
+                                '{{date}}: {{n}} signups ({{prev}} a week before)',
+                                { date, n, prev }
+                            )
+                        }
+                        testId="admin-trends-bars"
+                    />
                 </div>
                 <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-3 content-start">
                     <Tile
@@ -235,6 +281,60 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                             </span>
                         }
                     />
+                    {trends.tasks && (
+                        <>
+                            <Tile
+                                label={t(
+                                    'admin.trends.tasksCreated',
+                                    'Tasks created'
+                                )}
+                                value={trends.tasks.created.last7d}
+                                hint={
+                                    <Delta
+                                        now={trends.tasks.created.last7d}
+                                        before={trends.tasks.created.prev7d}
+                                    />
+                                }
+                                testId="admin-trends-tasks-created"
+                            />
+                            <Tile
+                                label={t(
+                                    'admin.trends.tasksCompleted',
+                                    'Tasks completed'
+                                )}
+                                value={trends.tasks.completed.last7d}
+                                hint={
+                                    <Delta
+                                        now={trends.tasks.completed.last7d}
+                                        before={trends.tasks.completed.prev7d}
+                                    />
+                                }
+                                testId="admin-trends-tasks-completed"
+                            />
+                        </>
+                    )}
+                    {activation.verified !== undefined && (
+                        <Tile
+                            label={t('admin.trends.verified', 'Verified email')}
+                            value={rate(
+                                activation.verified,
+                                activation.new_users
+                            )}
+                            hint={
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    {t(
+                                        'admin.trends.verifiedHint',
+                                        '{{n}} of {{total}} new users',
+                                        {
+                                            n: activation.verified,
+                                            total: activation.new_users,
+                                        }
+                                    )}
+                                </span>
+                            }
+                            testId="admin-trends-verified"
+                        />
+                    )}
                     <Tile
                         label={t('admin.trends.waitlist', 'Waitlist joins')}
                         value={trends.waitlist.last7d}

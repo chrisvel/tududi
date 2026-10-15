@@ -11,6 +11,9 @@ const { parseEstimatedMinutes } = require('../../tasks/core/parsers');
 const {
     handleRecurrenceUpdate,
     skipRecurringOccurrence,
+    planOccurrenceAdvance,
+    recordOccurrence,
+    completeOccurrence,
 } = require('../../tasks/operations/recurring');
 const { handleCompletionStatus } = require('../../tasks/operations/completion');
 const { Op } = require('sequelize');
@@ -831,6 +834,20 @@ function registerTaskTools(server, context, tools) {
             // future recurring instances get regenerated, matching PATCH /api/task/:uid
             await handleRecurrenceUpdate(task, RECURRENCE_FIELDS, params);
 
+            // recurring tasks advance in place, same as PATCH /api/task/:uid
+            const recurringOccurrence =
+                updates.status === Task.STATUS.DONE
+                    ? planOccurrenceAdvance(task, {
+                          overrides: updates,
+                          timezone: context.user.timezone,
+                      })
+                    : null;
+            if (recurringOccurrence?.hasNext) {
+                updates.status = Task.STATUS.NOT_STARTED;
+                updates.completed_at = null;
+                updates.due_date = recurringOccurrence.nextDueDate;
+            }
+
             await sequelize.transaction(async (transaction) => {
                 await task.update(updates, { transaction });
 
@@ -843,6 +860,14 @@ function registerTaskTools(server, context, tools) {
                     await task.setTags(tagInstances, { transaction });
                 }
             });
+
+            if (recurringOccurrence) {
+                await recordOccurrence(
+                    task,
+                    recurringOccurrence,
+                    context.userId
+                );
+            }
 
             const reloadedTask = await taskRepository.findById(task.id, {
                 include: [
@@ -870,7 +895,12 @@ function registerTaskTools(server, context, tools) {
                         type: 'text',
                         text: JSON.stringify(
                             {
-                                message: 'Task updated successfully',
+                                message: recurringOccurrence?.hasNext
+                                    ? `Occurrence completed, next due ${serialized.due_date}`
+                                    : 'Task updated successfully',
+                                ...(recurringOccurrence?.hasNext
+                                    ? { next_due_date: serialized.due_date }
+                                    : {}),
                                 task: serialized,
                             },
                             null,
@@ -925,12 +955,21 @@ function registerTaskTools(server, context, tools) {
                           context.userId
                       )
                     : [];
-            const updates = {
-                status: newStatus,
-                completed_at: newStatus === 2 ? new Date() : null,
-            };
+            // recurring tasks advance in place, same as PATCH /api/task/:uid
+            const recurringOccurrence =
+                newStatus === 2
+                    ? await completeOccurrence(task, {
+                          timezone: context.user.timezone,
+                          userId: context.userId,
+                      })
+                    : null;
 
-            await task.update(updates);
+            if (!recurringOccurrence) {
+                await task.update({
+                    status: newStatus,
+                    completed_at: newStatus === 2 ? new Date() : null,
+                });
+            }
 
             const reloadedTask = await taskRepository.findById(task.id, {
                 include: [
@@ -954,8 +993,13 @@ function registerTaskTools(server, context, tools) {
                             {
                                 message:
                                     newStatus === 2
-                                        ? 'Task completed'
+                                        ? recurringOccurrence?.hasNext
+                                            ? `Occurrence completed, next due ${serialized.due_date}`
+                                            : 'Task completed'
                                         : 'Task reopened',
+                                ...(recurringOccurrence?.hasNext
+                                    ? { next_due_date: serialized.due_date }
+                                    : {}),
                                 ...(openBlockers.length > 0
                                     ? {
                                           warning: `Completed while blocked by ${openBlockers.length} open task(s)`,

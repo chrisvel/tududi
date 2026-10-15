@@ -254,6 +254,13 @@ const config = {
         siteUrl: blogSiteUrl(),
     },
 
+    // Page views for the admin dashboard: marketing, blog and app loads. No
+    // address is stored (see models/site_visit.js). TUDUDI_VISIT_TRACKING=false
+    // turns it off, and the dashboard then shows no visit numbers.
+    visits: {
+        enabled: process.env.TUDUDI_VISIT_TRACKING !== 'false',
+    },
+
     // Same object the marketing page uses, so /api/billing can quote the
     // price without the frontend hardcoding numbers of its own.
     pricing: displayPricing(),

@@ -12,6 +12,7 @@ const {
     getExtensionFromMimeType,
     deleteFileFromDisk,
     getFileUrl,
+    decodeUploadFilename,
 } = require('../../utils/attachment-utils');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const permissionsService = require('../../services/permissionsService');
@@ -110,7 +111,7 @@ router.post(
 
             // Check attachment count limit (20 max)
             const attachmentCount = await TaskAttachment.count({
-                where: { task_id: task.id },
+                where: { task_id: task.id, inline: false },
             });
 
             if (attachmentCount >= 20) {
@@ -142,7 +143,7 @@ router.post(
                 uid: uid(),
                 task_id: task.id,
                 user_id: userId,
-                original_filename: req.file.originalname,
+                original_filename: decodeUploadFilename(req.file.originalname),
                 stored_filename: req.file.filename,
                 file_size: req.file.size,
                 mime_type: req.file.mimetype,
@@ -197,8 +198,9 @@ router.get('/tasks/:taskUid/attachments', async (req, res) => {
         }
 
         // Get attachments
+        // Skip images pasted into comments
         const attachments = await TaskAttachment.findAll({
-            where: { task_id: task.id },
+            where: { task_id: task.id, inline: false },
             order: [['created_at', 'ASC']],
         });
 

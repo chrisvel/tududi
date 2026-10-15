@@ -1,7 +1,19 @@
 'use strict';
 
-const { Task, User, Person, Notification } = require('../../models');
+const {
+    Task,
+    TaskAttachment,
+    User,
+    Person,
+    Notification,
+} = require('../../models');
 const permissionsService = require('../../services/permissionsService');
+const entitlements = require('../../services/entitlementsService');
+const { taskAttachments } = require('../../services/entityAttachments');
+const {
+    deleteFileFromDisk,
+    decodeUploadFilename,
+} = require('../../utils/attachment-utils');
 const taskEventService = require('../tasks/taskEventService');
 const { resolveAssigneeUser } = require('../tasks/operations/assignment');
 const {
@@ -18,6 +30,18 @@ const commentsRepository = require('./repository');
 const peopleRepository = require('../people/repository');
 
 const MAX_BODY_LENGTH = 10000;
+
+// Images that can go inside a comment
+const INLINE_IMAGE_TYPES = [
+    'image/png',
+    'image/jpeg',
+    'image/gif',
+    'image/webp',
+];
+
+// Notifications show [image] instead of the image markdown
+const INLINE_IMAGE_LINE = /^!\[[^\]\n]*\]\(\/api\/uploads\/tasks\/[\w.-]+\)$/gm;
+const notificationText = (body) => body.replace(INLINE_IMAGE_LINE, '[image]');
 
 // Resolves mention uids to names server-side, so the composer can insert a
 // plain `@Name ` (no id embedded in the text to keep it readable while
@@ -196,7 +220,7 @@ async function notifyAboutComment(
                     userId: parentAuthor.id,
                     type: 'comment_added',
                     title: `${actorLabel} replied to your comment`,
-                    message: comment.body,
+                    message: notificationText(comment.body),
                     data: {
                         taskUid: task.uid,
                         taskName: task.name,
@@ -222,7 +246,7 @@ async function notifyAboutComment(
                 userId: mentionedUser.id,
                 type: 'mention',
                 title: `${actorLabel} mentioned you`,
-                message: `"${comment.body}" on "${task.name}"`,
+                message: `"${notificationText(comment.body)}" on "${task.name}"`,
                 data: {
                     taskUid: task.uid,
                     taskName: task.name,
@@ -259,7 +283,7 @@ async function notifyAboutComment(
                 userId: recipient.id,
                 type: 'comment_added',
                 title: `${actorLabel} commented on "${task.name}"`,
-                message: comment.body,
+                message: notificationText(comment.body),
                 data: {
                     taskUid: task.uid,
                     taskName: task.name,
@@ -338,6 +362,36 @@ async function addComment(
     };
 }
 
+// Saves a pasted image as a hidden task file, removes it if anything fails
+async function addInlineImage(userId, taskUid, file) {
+    if (!file) {
+        throw new ValidationError('No file uploaded');
+    }
+    try {
+        if (!INLINE_IMAGE_TYPES.includes(file.mimetype)) {
+            throw new ValidationError(
+                'Only PNG, JPEG, GIF and WebP images are allowed'
+            );
+        }
+        const task = await requireTaskAccess(userId, taskUid);
+        await entitlements.assertStorage(userId, file.size);
+        const attachment = await TaskAttachment.create({
+            task_id: task.id,
+            user_id: userId,
+            original_filename: decodeUploadFilename(file.originalname),
+            stored_filename: file.filename,
+            file_size: file.size,
+            mime_type: file.mimetype,
+            file_path: `tasks/${file.filename}`,
+            inline: true,
+        });
+        return taskAttachments.serialize(attachment);
+    } catch (error) {
+        await deleteFileFromDisk(file.path);
+        throw error;
+    }
+}
+
 // A delete is a tombstone, not a removal: the row (and its place in the
 // thread) stays, but the content is gone for good - the body and mentions
 // are cleared, and the client renders a "Comment deleted" placeholder in
@@ -412,4 +466,10 @@ async function setReaction(userId, commentUid, type) {
     };
 }
 
-module.exports = { listComments, addComment, removeComment, setReaction };
+module.exports = {
+    listComments,
+    addComment,
+    addInlineImage,
+    removeComment,
+    setReaction,
+};

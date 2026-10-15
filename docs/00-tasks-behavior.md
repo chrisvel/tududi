@@ -317,7 +317,7 @@ Task responses include `is_blocked` and `blocked_by_count`. Names of blockers co
 ## **Comments**
 
 1. **Anyone who can read the task can comment** - Read-only collaborators included; no access answers 404
-2. **Body** - Plain text, trimmed, up to 10,000 characters
+2. **Body** - Plain text, trimmed, up to 10,000 characters. Pasted images show inside the comment and are not listed under Attachments
 3. **Replies are one level deep** - You can reply to a comment but not to a reply (`Cannot reply to a reply`)
 4. **@mentions** - The composer inserts people you can assign to; mentioned people are stored as person uids and resolved to names when comments are listed
 5. **Reactions** - One reaction per person per comment, `like` or `dislike`; sending `null` removes yours. Counts come back as `likes_count` / `dislikes_count` with your own `my_reaction`
@@ -329,7 +329,7 @@ Task responses include `is_blocked` and `blocked_by_count`. Names of blockers co
    - Nobody is notified twice for one comment, and never for their own comment
    - A failed notification never fails the comment
 
-**Endpoints:** `GET`/`POST /api/task/:uid/comments` (post takes `body`, optional `mentioned_person_uids` and `parent_comment_uid`), `DELETE /api/comment/:uid`, `POST /api/comment/:uid/reaction` (takes `type`).
+**Endpoints:** `GET`/`POST /api/task/:uid/comments` (post takes `body`, optional `mentioned_person_uids` and `parent_comment_uid`), `DELETE /api/comment/:uid`, `POST /api/comment/:uid/reaction` (takes `type`), `POST /api/task/:uid/comments/images` (multipart `file`).
 
 ---
 

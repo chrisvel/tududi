@@ -43,7 +43,7 @@ function escapeRegExp(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function renderBody(
+function renderMentions(
     body: string,
     mentionedPeople: { uid: string; name: string }[]
 ) {
@@ -86,6 +86,55 @@ function renderBody(
     if (lastIndex < body.length) {
         parts.push(body.slice(lastIndex));
     }
+    return parts;
+}
+
+// Only our own task uploads show as images, anything else stays text
+const INLINE_IMAGE_LINE =
+    /^!\[([^\]\n]*)\]\((\/api\/uploads\/tasks\/[\w.-]+)\)$/;
+
+function renderBody(
+    body: string,
+    mentionedPeople: { uid: string; name: string }[]
+) {
+    const parts: React.ReactNode[] = [];
+    let textLines: string[] = [];
+    const flushText = () => {
+        if (textLines.length === 0) return;
+        parts.push(
+            <React.Fragment key={`text-${parts.length}`}>
+                {renderMentions(textLines.join('\n'), mentionedPeople)}
+            </React.Fragment>
+        );
+        textLines = [];
+    };
+
+    for (const line of body.split('\n')) {
+        const image = INLINE_IMAGE_LINE.exec(line);
+        if (!image) {
+            textLines.push(line);
+            continue;
+        }
+        flushText();
+        parts.push(
+            <a
+                key={`image-${parts.length}`}
+                href={image[2]}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="block w-fit my-1"
+            >
+                <img
+                    src={image[2]}
+                    alt={image[1]}
+                    loading="lazy"
+                    className="max-h-64 max-w-full rounded-lg"
+                />
+            </a>
+        );
+    }
+    flushText();
     return parts;
 }
 

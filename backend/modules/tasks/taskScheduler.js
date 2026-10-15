@@ -155,6 +155,8 @@ const cleanupExpiredTokens = async () => {
     } = require('../../middleware/rateLimitStore');
     await cleanupExpiredRateLimits();
 
+    await require('../../services/visitService').prune();
+
     return count;
 };
 

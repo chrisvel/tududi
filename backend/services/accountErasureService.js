@@ -49,6 +49,7 @@ const {
     UsageCounter,
     Feedback,
     PushSubscription,
+    SiteVisit,
 } = require('../models');
 const { getConfig } = require('../config/config');
 const { assertAnotherAdminRemains } = require('./rolesService');
@@ -231,6 +232,7 @@ async function eraseUserAccount(userId) {
         await UsageCounter.destroy(byUser);
         await Feedback.destroy(byUser);
         await PushSubscription.destroy(byUser);
+        await SiteVisit.destroy(byUser);
         await BillingAccount.destroy(byUser);
 
         // A hosted account this one owned goes with it; its members stay.

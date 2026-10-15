@@ -15,6 +15,7 @@ import { handleAuthResponse } from '../../utils/authUtils';
 import AdminBlogSettings from './AdminBlogSettings';
 import AdminUserStatusTable from './AdminUserStatusTable';
 import AdminTrends, { Trends } from './AdminTrends';
+import AdminVisits from './AdminVisits';
 
 interface Overview {
     users: {
@@ -176,6 +177,12 @@ const AdminDashboardPage: React.FC = () => {
             </div>
 
             {data.trends && <AdminTrends trends={data.trends} />}
+            {data.trends?.visits && (
+                <AdminVisits
+                    visits={data.trends.visits}
+                    signups={data.trends.signups}
+                />
+            )}
 
             <div className="flex flex-wrap gap-3 mb-8">
                 <Link
