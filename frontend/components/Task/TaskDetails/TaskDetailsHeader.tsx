@@ -19,6 +19,7 @@ import BackButton from '../../Shared/BackButton';
 import { formatDateTime } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
 import { getStatusValue } from '../../../constants/taskStatus';
+import QuickCaptureInput from '../../Inbox/QuickCaptureInput';
 
 interface TaskDetailsHeaderProps {
     task: Task;
@@ -80,7 +81,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         useState<React.CSSProperties>({});
     const [actionsMenuReady, setActionsMenuReady] = useState(false);
     const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
-    const titleInputRef = useRef<HTMLInputElement>(null);
+    const pressingInsideTitleRef = useRef(false);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     const actionsMenuDropdownRef = useRef<HTMLDivElement>(null);
     const priorityDropdownRef = useRef<HTMLDivElement>(null);
@@ -88,13 +89,6 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     useEffect(() => {
         setEditedTitle(task.name);
     }, [task.name]);
-
-    useEffect(() => {
-        if (isEditingTitle && titleInputRef.current) {
-            titleInputRef.current.focus();
-            titleInputRef.current.select();
-        }
-    }, [isEditingTitle]);
 
     useLayoutEffect(() => {
         if (!actionsMenuOpen) {
@@ -173,24 +167,17 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         setIsEditingTitle(true);
     };
 
-    const handleSaveTitle = async () => {
-        if (editedTitle.trim() && editedTitle !== task.name) {
-            await onTitleUpdate(editedTitle.trim());
+    const handleSaveTitle = async (text: string = editedTitle) => {
+        if (text.trim() && text !== task.name) {
+            await onTitleUpdate(text.trim());
         }
         setIsEditingTitle(false);
     };
 
-    const handleCancelTitleEdit = () => {
-        setEditedTitle(task.name);
-        setIsEditingTitle(false);
-    };
-
-    const handleTitleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleSaveTitle();
-        } else if (e.key === 'Escape') {
-            handleCancelTitleEdit();
-        }
+    // Clicking a suggestion in the box must not count as leaving it
+    const handleTitleBlur = () => {
+        if (pressingInsideTitleRef.current) return;
+        void handleSaveTitle();
     };
 
     const handleStatusControlUpdate = async (updatedTask: Task) => {
@@ -287,19 +274,33 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         {isEditingTitle ? (
-                            <input
-                                ref={titleInputRef}
-                                type="text"
-                                value={editedTitle}
-                                onChange={(e) => setEditedTitle(e.target.value)}
-                                onKeyDown={handleTitleKeyDown}
-                                onBlur={handleSaveTitle}
-                                className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
-                                placeholder={t(
-                                    'task.titlePlaceholder',
-                                    'Enter task title'
-                                )}
-                            />
+                            <div
+                                onMouseDownCapture={() => {
+                                    pressingInsideTitleRef.current = true;
+                                    document.addEventListener(
+                                        'mouseup',
+                                        () => {
+                                            pressingInsideTitleRef.current = false;
+                                        },
+                                        { once: true }
+                                    );
+                                }}
+                                onBlur={handleTitleBlur}
+                            >
+                                <QuickCaptureInput
+                                    mode="edit"
+                                    compact
+                                    autoFocus
+                                    multiline={false}
+                                    hidePrimaryButton
+                                    initialValue={task.name}
+                                    onTextChange={setEditedTitle}
+                                    onSubmitOverride={(text) =>
+                                        handleSaveTitle(text)
+                                    }
+                                    cardClassName="mb-0 !rounded-lg"
+                                />
+                            </div>
                         ) : (
                             <>
                                 <div className="flex items-center gap-3 flex-wrap min-w-0">

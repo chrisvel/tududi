@@ -114,6 +114,8 @@ interface QuickCaptureInputProps {
     hidePrimaryButton?: boolean;
     onSubmitOverride?: (text: string) => Promise<void>;
     onAfterSubmit?: () => void;
+    // Tells a host that keeps its own Save button what the box holds
+    onTextChange?: (text: string) => void;
     renderFooterActions?: (
         context: InboxComposerFooterContext
     ) => React.ReactNode;
@@ -226,6 +228,7 @@ const QuickCaptureInput = React.forwardRef<
             hidePrimaryButton = false,
             onSubmitOverride,
             onAfterSubmit,
+            onTextChange,
             renderFooterActions,
             openTaskModal,
             openProjectModal,
@@ -398,6 +401,11 @@ const QuickCaptureInput = React.forwardRef<
         const lastAnalyzedTextRef = useRef<string>('');
 
         const isEditMode = mode === 'edit';
+
+        useEffect(() => {
+            onTextChange?.(inputText);
+            // Only when the text changes, not when the host passes a new callback
+        }, [inputText]);
         // The edit box and the main capture box both colour their tokens as you type.
         const colourTokens = isEditMode || Boolean(unified);
 
