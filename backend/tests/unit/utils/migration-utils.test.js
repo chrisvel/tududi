@@ -387,4 +387,118 @@ describe('migration-utils', () => {
             ).rejects.toThrow('Change failed');
         });
     });
+
+    // The definitions below are the ones the migrations on disk actually pass to
+    // safeChangeColumn. Rendering a data type class by its bare name (`STRING`,
+    // `BOOLEAN`) is what gives a SQLite column NUMERIC affinity and stores a
+    // numeric uid as an integer, so the fix instantiates the class and renders
+    // SQL instead. That changes the DDL these migrations emit, so pin it here:
+    // anything that renders differently than this table is a behaviour change to
+    // migrations that have already shipped, not a local detail.
+    describe('safeChangeColumn: the DDL the existing migrations emit', () => {
+        const ddlFor = async (definition) => {
+            queryInterface.showAllTables.mockResolvedValue(['tasks']);
+            queryInterface.describeTable.mockResolvedValue({
+                id: {
+                    type: 'INTEGER',
+                    primaryKey: true,
+                    autoIncrement: true,
+                    allowNull: false,
+                },
+                uid: { type: 'STRING', allowNull: false },
+            });
+            queryInterface.showIndex.mockResolvedValue([]);
+            queryInterface.sequelize.getDialect.mockReturnValue('sqlite');
+
+            await safeChangeColumn(queryInterface, 'tasks', 'uid', definition);
+
+            return queryInterface.sequelize.query.mock.calls
+                .map((call) => call[0])
+                .find((query) => query.includes('CREATE TABLE tasks_new'));
+        };
+
+        // A data type is described by its `key` when it is passed as the class
+        // itself (`DataTypes.STRING`), and by an instance carrying its length
+        // when it is called (`DataTypes.STRING(100)`). The key is what the fix
+        // stopped rendering.
+        const keyOf = (definition) =>
+            typeof definition === 'string'
+                ? definition
+                : definition.key || String(definition);
+
+        // label, definition, the SQL type it must render as.
+        const cases = [
+            [
+                'TEXT(long) - oidc picture, inbox content',
+                DataTypes.TEXT('long'),
+                'LONGTEXT',
+            ],
+            ['INTEGER - goals area_id', DataTypes.INTEGER, 'INTEGER'],
+            ['JSON - notification preferences', DataTypes.JSON, 'JSON'],
+            ['TEXT', DataTypes.TEXT, 'TEXT'],
+            [
+                'STRING(100) - a call, not the class',
+                DataTypes.STRING(100),
+                'VARCHAR(100)',
+            ],
+            ['a literal string', 'VARCHAR(255)', 'VARCHAR(255)'],
+            ['STRING - uid columns', DataTypes.STRING, 'VARCHAR(255)'],
+            ['BOOLEAN - not used yet', DataTypes.BOOLEAN, 'TINYINT(1)'],
+            ['DATE - not used yet', DataTypes.DATE, 'DATETIME'],
+        ];
+
+        // A bare `toContain` is not enough for the negative check: "`uid` DATE"
+        // is a substring of the correct "`uid` DATETIME", so the match has to end
+        // at a word boundary.
+        const escapeForRegex = (value) =>
+            value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        it.each(cases)(
+            'renders %s as %s',
+            async (label, definition, expected) => {
+                const ddl = await ddlFor({
+                    type: definition,
+                    allowNull: false,
+                });
+
+                // A trailing \b would not match after ")" - both it and the
+                // space that follows are non-word characters - so the type has to
+                // end at whitespace, a semicolon, or the end of the statement.
+                expect(ddl).toMatch(
+                    new RegExp(
+                        `\`uid\` ${escapeForRegex(expected)}(?=[\\s;]|$)`
+                    )
+                );
+
+                // Before the fix the key was rendered instead: `uid` STRING,
+                // `uid` DATE. Where the key is not the SQL the column needs it
+                // must be gone from the statement; where the two are the same
+                // string it is what the column is supposed to say. The match for
+                // the key ends at whitespace or the end of the statement, so that
+                // "`uid` DATE" is not read as a substring of the correct
+                // "`uid` DATETIME", nor "`uid` STRING" of a "STRING(100)" that
+                // happens to be part of a longer word.
+                const key = keyOf(definition);
+                expect({
+                    key,
+                    declared: new RegExp(
+                        `\`uid\` ${escapeForRegex(key)}(?=[\\s;]|$)`
+                    ).test(ddl),
+                }).toEqual({ key, declared: key === expected });
+            }
+        );
+
+        it('leaves every other column of the rebuilt table alone', async () => {
+            const ddl = await ddlFor({
+                type: DataTypes.STRING,
+                allowNull: false,
+            });
+
+            // The rebuild copies the whole table, so a type regression on any
+            // other column would be silent data loss rather than a failed change.
+            expect(ddl).toContain(
+                '`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL'
+            );
+        });
+    });
 });
