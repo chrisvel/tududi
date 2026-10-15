@@ -161,6 +161,20 @@ class SearchService {
             extraConditions.push({ completed_at: null });
         }
 
+        if (extras.has('no_tags')) {
+            extraConditions.push({
+                id: {
+                    [Op.notIn]: sequelize.literal(
+                        '(SELECT task_id FROM tasks_tags)'
+                    ),
+                },
+            });
+        }
+
+        if (extras.has('no_due_date')) {
+            extraConditions.push({ due_date: null });
+        }
+
         if (extras.has('has_content')) {
             extraConditions.push(
                 sequelize.where(
@@ -348,6 +362,26 @@ class SearchService {
 
         if (dueDateCondition) {
             conditions.due_date_at = dueDateCondition.due_date;
+        }
+
+        const projectExtraConditions = [];
+        if (extras.has('no_tags')) {
+            projectExtraConditions.push({
+                id: {
+                    [Op.notIn]: sequelize.literal(
+                        '(SELECT project_id FROM projects_tags)'
+                    ),
+                },
+            });
+        }
+        if (extras.has('no_due_date')) {
+            projectExtraConditions.push({ due_date_at: null });
+        }
+        if (projectExtraConditions.length > 0) {
+            conditions[Op.and] = [
+                ...(conditions[Op.and] || []),
+                ...projectExtraConditions,
+            ];
         }
 
         const requireTags = tagIds.length > 0 || extras.has('has_tags');
