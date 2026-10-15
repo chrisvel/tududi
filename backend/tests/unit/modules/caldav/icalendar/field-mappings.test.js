@@ -41,21 +41,21 @@ describe('CalDAV Field Mappings', () => {
                 expect(tududiToIcalPriority(2)).toBe(3);
             });
 
-            it('should return 0 for null priority', () => {
-                expect(tududiToIcalPriority(null)).toBe(0);
-                expect(tududiToIcalPriority(undefined)).toBe(0);
+            it('should return null for a task with no priority', () => {
+                expect(tududiToIcalPriority(null)).toBeNull();
+                expect(tududiToIcalPriority(undefined)).toBeNull();
             });
         });
 
         describe('icalToTududiPriority', () => {
-            it('should map iCal 1-3 to High (2)', () => {
+            it('should map iCal 1-4 to High (2)', () => {
                 expect(icalToTududiPriority(1)).toBe(2);
                 expect(icalToTududiPriority(2)).toBe(2);
                 expect(icalToTududiPriority(3)).toBe(2);
+                expect(icalToTududiPriority(4)).toBe(2);
             });
 
-            it('should map iCal 4-6 to Medium (1)', () => {
-                expect(icalToTududiPriority(4)).toBe(1);
+            it('should map iCal 5-6 to Medium (1)', () => {
                 expect(icalToTududiPriority(5)).toBe(1);
                 expect(icalToTududiPriority(6)).toBe(1);
             });
@@ -66,10 +66,20 @@ describe('CalDAV Field Mappings', () => {
                 expect(icalToTududiPriority(9)).toBe(0);
             });
 
-            it('should return 0 for undefined/null/0 priority', () => {
-                expect(icalToTududiPriority(null)).toBe(0);
-                expect(icalToTududiPriority(undefined)).toBe(0);
-                expect(icalToTududiPriority(0)).toBe(0);
+            // RFC 5545 3.8.1.9: PRIORITY:0 is "undefined priority", so it is
+            // not Low and must not come back out as PRIORITY:7 (#1907).
+            it('should return null for undefined/null/0 priority', () => {
+                expect(icalToTududiPriority(null)).toBeNull();
+                expect(icalToTududiPriority(undefined)).toBeNull();
+                expect(icalToTududiPriority(0)).toBeNull();
+                expect(icalToTududiPriority('')).toBeNull();
+                expect(icalToTududiPriority(NaN)).toBeNull();
+            });
+
+            it('should round-trip a task with no priority as no priority', () => {
+                expect(
+                    icalToTududiPriority(tududiToIcalPriority(null))
+                ).toBeNull();
             });
         });
 

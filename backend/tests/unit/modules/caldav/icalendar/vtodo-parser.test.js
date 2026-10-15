@@ -75,6 +75,20 @@ END:VCALENDAR`;
         }
     });
 
+    it('should map iCal PRIORITY 4 to High and 0 to no priority', async () => {
+        const high = basicVTODO.replace('PRIORITY:5', 'PRIORITY:4');
+        expect((await parseVTODOToTask(high)).priority).toBe(2);
+
+        const undefinedPriority = basicVTODO.replace(
+            'PRIORITY:5',
+            'PRIORITY:0'
+        );
+        expect((await parseVTODOToTask(undefinedPriority)).priority).toBeNull();
+
+        const none = basicVTODO.replace(/PRIORITY:5\r?\n/, '');
+        expect((await parseVTODOToTask(none)).priority).toBeNull();
+    });
+
     it('should parse DUE date', async () => {
         const task = await parseVTODOToTask(basicVTODO);
         expect(task.due_date).toBeInstanceOf(Date);
@@ -89,6 +103,59 @@ END:VCALENDAR`;
         const task = await parseVTODOToTask(vtodo);
         expect(task.defer_until).toBeInstanceOf(Date);
         expect(task.defer_until.toISOString()).toBe('2026-04-25T09:00:00.000Z');
+    });
+
+    // 2Do and EventKit send DTSTART together with DUE, set to the same value,
+    // for a task with no start date. DTSTART on a VTODO only means "the to-do
+    // starts", so that is not a defer date (#1906).
+    it('should not defer a task whose DTSTART equals DUE', async () => {
+        const dateOnly = `BEGIN:VCALENDAR\r
+VERSION:2.0\r
+BEGIN:VTODO\r
+UID:dtstart-equals-due\r
+SUMMARY:Same day\r
+DTSTAMP:20261015T095140Z\r
+DTSTART;VALUE=DATE:20261017\r
+DUE;VALUE=DATE:20261017\r
+END:VTODO\r
+END:VCALENDAR`;
+
+        const task = await parseVTODOToTask(dateOnly, 'Europe/Berlin');
+        expect(task.defer_until).toBeNull();
+        expect(task.due_date.toISOString()).toBe('2026-10-17T21:59:59.999Z');
+
+        const timed = `BEGIN:VCALENDAR\r
+VERSION:2.0\r
+BEGIN:VTODO\r
+UID:dtstart-equals-due-timed\r
+SUMMARY:Same instant\r
+DTSTAMP:20261015T095140Z\r
+DTSTART:20261016T090000Z\r
+DUE:20261016T090000Z\r
+END:VTODO\r
+END:VCALENDAR`;
+
+        const timedTask = await parseVTODOToTask(timed, 'Europe/Berlin');
+        expect(timedTask.defer_until).toBeNull();
+        expect(timedTask.due_date.toISOString()).toBe(
+            '2026-10-16T09:00:00.000Z'
+        );
+    });
+
+    it('should keep DTSTART as defer_until when it is before DUE', async () => {
+        const vtodo = `BEGIN:VCALENDAR\r
+VERSION:2.0\r
+BEGIN:VTODO\r
+UID:real-defer\r
+SUMMARY:Real start\r
+DTSTAMP:20261015T095140Z\r
+DTSTART;VALUE=DATE:20261015\r
+DUE;VALUE=DATE:20261017\r
+END:VTODO\r
+END:VCALENDAR`;
+
+        const task = await parseVTODOToTask(vtodo, 'Europe/Berlin');
+        expect(task.defer_until.toISOString()).toBe('2026-10-14T22:00:00.000Z');
     });
 
     it('should parse COMPLETED date', async () => {
@@ -220,6 +287,49 @@ END:VCALENDAR`;
         const task = await parseVTODOToTask(vtodo);
         expect(task.reminder_at).toBeInstanceOf(Date);
         expect(task.reminder_at.toISOString()).toBe('2026-06-04T09:00:00.000Z');
+    });
+
+    // A relative trigger runs from DTSTART (RELATED defaults to START), and a
+    // DATE value means 00:00 in the user's timezone - not the 23:59:59.999 the
+    // due date is stored as. PT9H on an all-day task is 09:00 that day (#1905).
+    it('should measure a relative trigger from DTSTART even when DTSTART equals DUE', async () => {
+        const vtodo = `BEGIN:VCALENDAR\r
+VERSION:2.0\r
+BEGIN:VTODO\r
+UID:two-do-reminder\r
+SUMMARY:Remindertest\r
+DTSTAMP:20261015T095140Z\r
+DTSTART;VALUE=DATE:20261017\r
+DUE;VALUE=DATE:20261017\r
+BEGIN:VALARM\r
+TRIGGER;VALUE=DURATION:PT9H\r
+ACTION:AUDIO\r
+END:VALARM\r
+END:VTODO\r
+END:VCALENDAR`;
+
+        const task = await parseVTODOToTask(vtodo, 'Europe/Berlin');
+        expect(task.reminder_at.toISOString()).toBe('2026-10-17T07:00:00.000Z');
+    });
+
+    it('should measure a relative RELATED=END trigger from the due date', async () => {
+        const vtodo = `BEGIN:VCALENDAR\r
+VERSION:2.0\r
+BEGIN:VTODO\r
+UID:related-end\r
+SUMMARY:Alarm before the due date\r
+DTSTAMP:20261015T095140Z\r
+DTSTART;VALUE=DATE:20261007\r
+DUE;VALUE=DATE:20261017\r
+BEGIN:VALARM\r
+TRIGGER;RELATED=END;VALUE=DURATION:-PT1H\r
+ACTION:DISPLAY\r
+END:VALARM\r
+END:VTODO\r
+END:VCALENDAR`;
+
+        const task = await parseVTODOToTask(vtodo, 'Europe/Berlin');
+        expect(task.reminder_at.toISOString()).toBe('2026-10-17T20:59:59.999Z');
     });
 
     it('should handle VTODO without optional properties', async () => {
