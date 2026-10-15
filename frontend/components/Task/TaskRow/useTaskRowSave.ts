@@ -24,7 +24,7 @@ export interface TaskRowSetters {
     setTitle: (title: string) => Promise<void>;
     setNote: (note: string) => Promise<void>;
     setPriority: (priority: PriorityType) => Promise<void>;
-    setDueDate: (dueDate: string | null) => Promise<void>;
+    setDue: (date: string | null, time: string | null) => Promise<void>;
     setDeferUntil: (deferUntil: string | null) => Promise<void>;
     setProject: (projectId: number | null) => Promise<void>;
     setTags: (tagNames: string[]) => Promise<void>;
@@ -100,9 +100,12 @@ export const useTaskRowSave = (
                 'task.priorityUpdateError',
                 'Failed to update priority'
             ),
-        setDueDate: (dueDate) =>
+        setDue: (date, time) =>
             save(
-                { due_date: dueDate || null },
+                {
+                    due_date: date || null,
+                    due_time: date ? time || null : null,
+                },
                 'task.dueDateUpdateError',
                 'Failed to update due date'
             ),

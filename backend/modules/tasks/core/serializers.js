@@ -2,6 +2,7 @@ const {
     getSafeTimezone,
     processDueDateForResponse,
     processDeferUntilForResponse,
+    utcToUserTimeString,
 } = require('../../../utils/timezone-utils');
 const {
     getTaskTodayMoveCount,
@@ -122,6 +123,9 @@ async function serializeTask(
         goal_uid: taskJson.Goal?.uid || null,
         recurring_parent_uid: recurringParentUid,
         due_date: processDueDateForResponse(taskJson.due_date, safeTimezone),
+        due_time: taskJson.due_has_time
+            ? utcToUserTimeString(taskJson.due_date, safeTimezone)
+            : null,
         defer_until: processDeferUntilForResponse(
             taskJson.defer_until,
             safeTimezone
@@ -148,6 +152,9 @@ async function serializeTask(
                       subtask.due_date,
                       safeTimezone
                   ),
+                  due_time: subtask.due_has_time
+                      ? utcToUserTimeString(subtask.due_date, safeTimezone)
+                      : null,
                   defer_until: processDeferUntilForResponse(
                       subtask.defer_until,
                       safeTimezone

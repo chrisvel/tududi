@@ -9,7 +9,8 @@ import QuickCaptureInput from '../Inbox/QuickCaptureInput';
 import { resolveTaskTokens } from '../../utils/taskTokens';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import AreaDropdown from '../Shared/AreaDropdown';
-import DatePicker from '../Shared/DatePicker';
+import DateTimePicker from '../Shared/DateTimePicker';
+import { fromDueParts, toDueParts } from '../../utils/dueDateTime';
 import EntitySidePanel from '../SidePanel/EntitySidePanel';
 import {
     SidePanelField,
@@ -61,6 +62,7 @@ interface TaskFormState {
     projectId: number | null;
     areaId: number | null;
     dueDate: string;
+    dueTime: string;
     tags: string[];
 }
 
@@ -72,6 +74,7 @@ const toFormState = (task: Task): TaskFormState => ({
     projectId: task.project_id ?? null,
     areaId: task.area_id ?? null,
     dueDate: task.due_date ? String(task.due_date).split('T')[0] : '',
+    dueTime: task.due_has_time ? (task.due_time ?? '') : '',
     tags: task.tags?.map((tag) => tag.name) ?? [],
 });
 
@@ -160,8 +163,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
         if (form.projectId !== original.projectId)
             changes.project_id = form.projectId;
         if (form.areaId !== original.areaId) changes.area_id = form.areaId;
-        if (form.dueDate !== original.dueDate)
+        if (
+            form.dueDate !== original.dueDate ||
+            form.dueTime !== original.dueTime
+        ) {
             changes.due_date = form.dueDate || null;
+            changes.due_time =
+                form.dueDate && form.dueTime ? form.dueTime : null;
+        }
         if (JSON.stringify(form.tags) !== JSON.stringify(original.tags)) {
             const existing = tagsStore.tags?.map((tag: any) => tag.name) ?? [];
             const newNames = form.tags.filter(
@@ -307,9 +316,13 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
             </SidePanelSection>
 
             <SidePanelSection title={t('forms.dueDate', 'Due Date')}>
-                <DatePicker
-                    value={form.dueDate}
-                    onChange={(value) => setField('dueDate', value)}
+                <DateTimePicker
+                    value={fromDueParts(form.dueDate, form.dueTime || null)}
+                    onChange={(iso) => {
+                        const parts = toDueParts(iso);
+                        setField('dueDate', parts.date || '');
+                        setField('dueTime', parts.time || '');
+                    }}
                     placeholder={t('projects.selectDueDatePlaceholder')}
                 />
             </SidePanelSection>

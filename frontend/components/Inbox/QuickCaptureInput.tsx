@@ -396,7 +396,6 @@ const QuickCaptureInput = React.forwardRef<
         const [dismissedDateText, setDismissedDateText] = useState<
             string | null
         >(null);
-        const [isAnalyzing, setIsAnalyzing] = useState(false);
         const analysisTimeoutRef = useRef<NodeJS.Timeout>();
         const analysisRequestIdRef = useRef(0);
         const [urlPreview, setUrlPreview] = useState<UrlPreviewState | null>(
@@ -1232,55 +1231,16 @@ const QuickCaptureInput = React.forwardRef<
             return matchingProject ? matchingProject.uid : undefined;
         };
 
-        const getSuggestion = (): {
-            type: 'note' | 'task' | null;
-            message: string | null;
-            projectName: string | null;
-        } => {
-            if (!analysisResult || !analysisResult.suggested_type) {
-                return { type: null, message: null, projectName: null };
-            }
-
-            const projectName = analysisResult.parsed_projects[0] || null;
-            const type = analysisResult.suggested_type;
-
-            if (type === 'note') {
-                const isUrlNote =
-                    analysisResult.suggested_reason === 'url_detected';
-                const message = isUrlNote
-                    ? `Will be saved as a bookmark note${projectName ? ` for ${projectName}` : ''}.`
-                    : `Will be saved as a note${projectName ? ` for ${projectName}` : ''}.`;
-
-                return {
-                    type: 'note',
-                    message,
-                    projectName,
-                };
-            } else if (type === 'task') {
-                return {
-                    type: 'task',
-                    message: `Will be created as a task${projectName ? ` under ${projectName}` : ''}.`,
-                    projectName,
-                };
-            }
-
-            return { type: null, message: null, projectName: null };
-        };
-
         const analyzeText = useCallback(
             async (text: string, requestId: number) => {
                 if (!text.trim()) {
                     if (analysisRequestIdRef.current === requestId) {
                         setAnalysisResult(null);
-                        setIsAnalyzing(false);
                     }
                     return;
                 }
 
                 try {
-                    if (analysisRequestIdRef.current === requestId) {
-                        setIsAnalyzing(true);
-                    }
                     const result = await analyzeInboxText(text, {
                         parseDates: !(
                             dismissedDateText &&
@@ -1301,10 +1261,6 @@ const QuickCaptureInput = React.forwardRef<
                     console.error('Error analyzing text:', error);
                     setAnalysisResult(null);
                     lastAnalyzedTextRef.current = '';
-                } finally {
-                    if (analysisRequestIdRef.current === requestId) {
-                        setIsAnalyzing(false);
-                    }
                 }
             },
             [dismissedDateText]
@@ -2555,6 +2511,7 @@ const QuickCaptureInput = React.forwardRef<
             currentAnalysis?.parsed_due_date && !dateIsDismissed
                 ? {
                       date: currentAnalysis.parsed_due_date,
+                      time: currentAnalysis.parsed_due_time,
                       phrase: currentAnalysis.parsed_date_text,
                       recurring: !!currentAnalysis.parsed_recurrence,
                   }
@@ -3413,60 +3370,6 @@ const QuickCaptureInput = React.forwardRef<
                                     </div>
                                 </div>
                             )}
-
-                            {!unified &&
-                                (() => {
-                                    const suggestion = getSuggestion();
-                                    return suggestion.type &&
-                                        suggestion.message ? (
-                                        <div className="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex items-start flex-1">
-                                                    <div className="text-purple-600 dark:text-purple-400 mr-2 mt-0.5">
-                                                        <svg
-                                                            className="h-3 w-3"
-                                                            fill="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path d="M12 2l2.09 6.26L20 10.27l-5.91 2.01L12 18.54l-2.09-6.26L4 10.27l5.91-2.01L12 2z" />
-                                                            <path d="M8 1l1.18 3.52L12 5.64l-2.82.96L8 10.12l-1.18-3.52L4 5.64l2.82-.96L8 1z" />
-                                                            <path d="M20 14l.79 2.37L23 17.45l-2.21.75L20 20.57l-.79-2.37L17 17.45l2.21-.75L20 14z" />
-                                                        </svg>
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <p className="text-xs text-purple-700 dark:text-purple-300 mb-1">
-                                                            {suggestion.message}
-                                                        </p>
-                                                        <div className="flex items-center gap-2 text-xs">
-                                                            <span className="text-gray-600 dark:text-gray-400">
-                                                                {t(
-                                                                    'inbox.or',
-                                                                    'or'
-                                                                )}
-                                                            </span>
-                                                            <button
-                                                                onClick={() => {
-                                                                    handleSubmit(
-                                                                        true
-                                                                    );
-                                                                }}
-                                                                className="text-purple-600 dark:text-purple-400 hover:underline"
-                                                            >
-                                                                {t(
-                                                                    'inbox.saveAsInboxItem',
-                                                                    'save as inbox item'
-                                                                )}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {isAnalyzing && (
-                                                    <div className="ml-2 h-3 w-3 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ) : null;
-                                })()}
                         </div>
                         {shouldShowPrimaryButton && (
                             <button
