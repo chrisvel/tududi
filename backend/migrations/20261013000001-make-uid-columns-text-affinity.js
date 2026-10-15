@@ -12,7 +12,13 @@ const { safeChangeColumn } = require('../utils/migration-utils');
 // completed. Declaring the column VARCHAR(255) gives it text affinity, which
 // keeps new uids as text and converts the stored integers back to their exact
 // value while the table is copied.
-const TABLES = ['tasks', 'projects', 'areas', 'notes'];
+// Every table 20250805000001 rebuilt through safeChangeColumn. `tasks`,
+// `projects`, `areas` and `notes` are declared STRING in the databases this
+// runs against, so they carry the bug; `tags` was in the same migration and the
+// same call renders its uid as STRING too, even though the databases seen so
+// far already have VARCHAR(255) there. It is converted when it needs to be and
+// skipped when it does not.
+const TABLES = ['tasks', 'projects', 'areas', 'notes', 'tags'];
 
 // SQLite's affinity rules, https://sqlite.org/datatype3.html#affname. Only a
 // column with TEXT affinity is safe for a uid.
@@ -76,6 +82,7 @@ module.exports = {
 
         const { sequelize } = queryInterface;
         const present = await queryInterface.showAllTables();
+        const converted = [];
 
         for (const table of TABLES) {
             if (!present.includes(table)) continue;
@@ -86,22 +93,39 @@ module.exports = {
 
             const restore = await indexesToRestore(sequelize, table);
 
-            await safeChangeColumn(queryInterface, table, 'uid', {
-                type: Sequelize.STRING,
-                allowNull: false,
-                unique: true,
-            });
+            // A rebuild that fails part way leaves the tables it already
+            // finished converted and the rest as they were. That is safe to
+            // resume - the next run skips the converted ones - but the message
+            // has to say which table stopped it and what state the file is in,
+            // rather than reporting one shared error for all of them.
+            try {
+                await safeChangeColumn(queryInterface, table, 'uid', {
+                    type: Sequelize.STRING,
+                    allowNull: false,
+                    unique: true,
+                });
 
-            for (const sql of restore) {
-                await sequelize.query(sql);
+                for (const sql of restore) {
+                    await sequelize.query(sql);
+                }
+
+                // Copies made before the column was rebuilt can still hold an
+                // integer, and SQLite converts one to text exactly.
+                await sequelize.query(
+                    `UPDATE "${table}" SET uid = CAST(uid AS TEXT)
+                      WHERE typeof(uid) <> 'text'`
+                );
+            } catch (error) {
+                error.message =
+                    `${table}.uid could not be converted to text affinity: ` +
+                    `${error.message}. Converted so far: ` +
+                    `${converted.length ? converted.join(', ') : 'none'}; ` +
+                    `the tables listed as unconverted are unchanged. Re-running ` +
+                    `the migration resumes from ${table}.`;
+                throw error;
             }
 
-            // Copies made before the column was rebuilt can still hold an
-            // integer, and SQLite converts one to text exactly.
-            await sequelize.query(
-                `UPDATE "${table}" SET uid = CAST(uid AS TEXT)
-                  WHERE typeof(uid) <> 'text'`
-            );
+            converted.push(table);
         }
     },
 
