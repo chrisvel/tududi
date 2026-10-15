@@ -221,17 +221,21 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
                 label={t('forms.taskName', 'Name')}
                 htmlFor="taskName"
             >
-                <QuickCaptureInput
-                    mode="edit"
-                    compact
-                    multiline={false}
-                    hidePrimaryButton
-                    initialValue={nameSeed}
-                    projects={projects}
-                    onTextChange={(text) => setField('name', text)}
-                    onSubmitOverride={applyTokens}
-                    cardClassName="mb-0 !rounded-lg"
-                />
+                <div
+                    className={sidePanelInputClass}
+                    data-testid="task-name-field"
+                >
+                    <QuickCaptureInput
+                        mode="edit"
+                        bare
+                        multiline={false}
+                        hidePrimaryButton
+                        initialValue={nameSeed}
+                        projects={projects}
+                        onTextChange={(text) => setField('name', text)}
+                        onSubmitOverride={applyTokens}
+                    />
+                </div>
             </SidePanelField>
 
             <SidePanelField

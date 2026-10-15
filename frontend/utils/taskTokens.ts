@@ -58,3 +58,29 @@ export const resolveTaskTokens = async (
             : null,
     };
 };
+
+// The PATCH body for a name that held tokens: the cleaned name plus whatever
+// the tokens set. Tags are sent only when the tokens added some.
+export const tokenChanges = (
+    title: string,
+    resolved: TokenResolved | null,
+    currentTags: string[]
+): { changes: Record<string, unknown>; newTags: string[] } => {
+    const changes: Record<string, unknown> = {
+        name: resolved?.name ?? title,
+    };
+    let newTags: string[] = [];
+    if (resolved) {
+        if (resolved.tags.length !== currentTags.length) {
+            changes.tags = resolved.tags.map((name) => ({ name }));
+            newTags = resolved.tags.filter(
+                (name) => !currentTags.includes(name)
+            );
+        }
+        if (resolved.projectId !== null)
+            changes.project_id = resolved.projectId;
+        if (resolved.areaId !== null) changes.area_id = resolved.areaId;
+        if (resolved.dueDate) changes.due_date = resolved.dueDate;
+    }
+    return { changes, newTags };
+};

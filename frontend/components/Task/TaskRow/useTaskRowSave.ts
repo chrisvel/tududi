@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Task, PriorityType } from '../../../entities/Task';
 import { updateTask } from '../../../utils/tasksService';
 import { useToast } from '../../Shared/ToastContext';
+import { useStore } from '../../../store/useStore';
+import { resolveTaskTokens, tokenChanges } from '../../../utils/taskTokens';
 
 type RecurrencePayload = Partial<
     Pick<
@@ -62,12 +64,30 @@ export const useTaskRowSave = (
     );
 
     return {
-        setTitle: (title) =>
-            save(
-                { name: title.trim() },
+        setTitle: async (title) => {
+            const state = useStore.getState() as any;
+            const currentTags = task.tags?.map((tag) => tag.name) ?? [];
+            const resolved = await resolveTaskTokens(
+                title.trim(),
+                state.projectsStore?.projects ?? [],
+                state.areasStore?.areas ?? [],
+                currentTags
+            );
+            const { changes, newTags } = tokenChanges(
+                title.trim(),
+                resolved,
+                currentTags
+            );
+            const known =
+                state.tagsStore?.tags?.map((tag: any) => tag.name) ?? [];
+            const created = newTags.filter((name) => !known.includes(name));
+            if (created.length > 0) state.tagsStore?.addNewTags?.(created);
+            await save(
+                changes as Partial<Task>,
                 'task.titleUpdateError',
                 'Failed to update task'
-            ),
+            );
+        },
         setNote: (note) =>
             save(
                 { note: note.trim() },

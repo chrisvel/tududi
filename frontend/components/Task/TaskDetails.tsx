@@ -42,7 +42,7 @@ import {
 } from './TaskDetails/';
 import TaskAIInsights, { TaskAIInsightsHandle } from '../AI/TaskAIInsights';
 import TaskModal from './TaskModal';
-import { resolveTaskTokens } from '../../utils/taskTokens';
+import { resolveTaskTokens, tokenChanges } from '../../utils/taskTokens';
 import {
     isTaskOverdueInTodayPlan,
     isTaskPastDue,
@@ -1187,25 +1187,14 @@ const TaskDetails: React.FC = () => {
                 areasStore.areas,
                 task.tags?.map((tag: any) => tag.name) ?? []
             );
-            const changes: Record<string, unknown> = {
-                name: resolved?.name ?? newTitle.trim(),
-            };
-            if (resolved) {
-                const before = task.tags?.map((tag: any) => tag.name) ?? [];
-                if (resolved.tags.length !== before.length) {
-                    const existing =
-                        tagsStore.tags?.map((tag: any) => tag.name) ?? [];
-                    const added = resolved.tags.filter(
-                        (name) => !existing.includes(name)
-                    );
-                    if (added.length > 0) tagsStore.addNewTags(added);
-                    changes.tags = resolved.tags.map((name) => ({ name }));
-                }
-                if (resolved.projectId !== null)
-                    changes.project_id = resolved.projectId;
-                if (resolved.areaId !== null) changes.area_id = resolved.areaId;
-                if (resolved.dueDate) changes.due_date = resolved.dueDate;
-            }
+            const { changes, newTags } = tokenChanges(
+                newTitle.trim(),
+                resolved,
+                task.tags?.map((tag: any) => tag.name) ?? []
+            );
+            const existing = tagsStore.tags?.map((tag: any) => tag.name) ?? [];
+            const created = newTags.filter((name) => !existing.includes(name));
+            if (created.length > 0) tagsStore.addNewTags(created);
             await updateTask(task.uid, changes as Partial<Task>);
 
             if (uid) {

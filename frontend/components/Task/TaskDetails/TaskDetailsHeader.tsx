@@ -287,19 +287,24 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                 }}
                                 onBlur={handleTitleBlur}
                             >
-                                <QuickCaptureInput
-                                    mode="edit"
-                                    compact
-                                    autoFocus
-                                    multiline={false}
-                                    hidePrimaryButton
-                                    initialValue={task.name}
-                                    onTextChange={setEditedTitle}
-                                    onSubmitOverride={(text) =>
-                                        handleSaveTitle(text)
-                                    }
-                                    cardClassName="mb-0 !rounded-lg"
-                                />
+                                <div className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 w-full">
+                                    <QuickCaptureInput
+                                        mode="edit"
+                                        bare
+                                        autoFocus
+                                        multiline={false}
+                                        hidePrimaryButton
+                                        initialValue={task.name}
+                                        onTextChange={setEditedTitle}
+                                        onSubmitOverride={(text) =>
+                                            handleSaveTitle(text)
+                                        }
+                                        onEscape={() => {
+                                            setEditedTitle(task.name);
+                                            setIsEditingTitle(false);
+                                        }}
+                                    />
+                                </div>
                             </div>
                         ) : (
                             <>

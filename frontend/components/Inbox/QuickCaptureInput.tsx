@@ -116,6 +116,11 @@ interface QuickCaptureInputProps {
     onAfterSubmit?: () => void;
     // Tells a host that keeps its own Save button what the box holds
     onTextChange?: (text: string) => void;
+    // A single-line box with no card, padding, chips, suggestions or footer,
+    // for editing a title inside another editor. It inherits the host's font.
+    bare?: boolean;
+    // Escape in a bare box calls this instead of saving
+    onEscape?: () => void;
     renderFooterActions?: (
         context: InboxComposerFooterContext
     ) => React.ReactNode;
@@ -229,6 +234,8 @@ const QuickCaptureInput = React.forwardRef<
             onSubmitOverride,
             onAfterSubmit,
             onTextChange,
+            bare = false,
+            onEscape,
             renderFooterActions,
             openTaskModal,
             openProjectModal,
@@ -2501,7 +2508,9 @@ const QuickCaptureInput = React.forwardRef<
 
             if (e.key === 'Escape') {
                 e.preventDefault();
-                if (isEditMode && !isSaving) {
+                if (onEscape) {
+                    onEscape();
+                } else if (isEditMode && !isSaving) {
                     handleSubmit();
                 } else if (unified) {
                     onClose?.();
@@ -3013,6 +3022,76 @@ const QuickCaptureInput = React.forwardRef<
         };
 
         const cardClasses = cardClassName ?? 'mb-6';
+
+        if (bare) {
+            return (
+                <div className="relative w-full">
+                    <div {...fileDropHandlers} data-testid="capture-field">
+                        <input
+                            ref={(el) => {
+                                inputRef.current = el;
+                            }}
+                            type="text"
+                            data-testid="quick-capture-input"
+                            value={inputText}
+                            onChange={handleChange}
+                            onSelect={handleCaretEvent}
+                            onKeyUp={handleCaretEvent}
+                            onClick={handleCaretEvent}
+                            style={{
+                                font: 'inherit',
+                                letterSpacing: 'inherit',
+                            }}
+                            className="w-full bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 p-0"
+                            placeholder=""
+                            onKeyDown={handleKeyDown}
+                        />
+                    </div>
+                    <SuggestionsDropdown
+                        isVisible={
+                            showPersonSuggestions && filteredPeople.length > 0
+                        }
+                        items={filteredPeople}
+                        position={dropdownPosition}
+                        selectedIndex={selectedSuggestionIndex}
+                        onSelect={(person) => handlePersonSelect(person.name)}
+                        renderLabel={(person) => <>@{person.name}</>}
+                    />
+                    <SuggestionsDropdown
+                        isVisible={
+                            showTagSuggestions && filteredTags.length > 0
+                        }
+                        items={filteredTags}
+                        position={dropdownPosition}
+                        selectedIndex={selectedSuggestionIndex}
+                        onSelect={(tag) => handleTagSelect(tag.name)}
+                        renderLabel={(tag) => <>#{tag.name}</>}
+                    />
+                    <SuggestionsDropdown
+                        isVisible={
+                            showProjectSuggestions &&
+                            filteredProjects.length > 0
+                        }
+                        items={filteredProjects}
+                        position={dropdownPosition}
+                        selectedIndex={selectedSuggestionIndex}
+                        onSelect={(project) =>
+                            handleProjectSelect(project.name)
+                        }
+                        renderLabel={(project) => <>+{project.name}</>}
+                    />
+                    <SuggestionsDropdown
+                        isVisible={slashItemsNow.length > 0}
+                        items={slashItemsNow}
+                        position={dropdownPosition}
+                        selectedIndex={selectedSuggestionIndex}
+                        onSelect={pickSlashItem}
+                        rich
+                        renderLabel={(item) => <SlashItemRow item={item} />}
+                    />
+                </div>
+            );
+        }
 
         return (
             <div
