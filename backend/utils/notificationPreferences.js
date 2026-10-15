@@ -20,6 +20,12 @@ const DEFAULT_PREFERENCES = {
         push: false,
         telegram: false,
     },
+    taskReminders: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+    },
     comments: { inApp: true, email: false, push: false, telegram: false },
 };
 
@@ -28,6 +34,7 @@ const DEFAULT_PREFERENCES = {
  */
 const NOTIFICATION_TYPE_MAPPING = {
     task_due_soon: 'dueTasks',
+    task_reminder: 'taskReminders',
     task_overdue: 'overdueTasks',
     project_due_soon: 'dueProjects',
     project_overdue: 'overdueProjects',

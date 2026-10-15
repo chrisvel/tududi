@@ -59,6 +59,7 @@ interface TaskFormState {
     projectId: number | null;
     areaId: number | null;
     dueDate: string;
+    dueTime: string;
     tags: string[];
 }
 
@@ -70,6 +71,7 @@ const toFormState = (task: Task): TaskFormState => ({
     projectId: task.project_id ?? null,
     areaId: task.area_id ?? null,
     dueDate: task.due_date ? String(task.due_date).split('T')[0] : '',
+    dueTime: task.due_has_time ? (task.due_time ?? '') : '',
     tags: task.tags?.map((tag) => tag.name) ?? [],
 });
 
@@ -127,8 +129,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
         if (form.projectId !== original.projectId)
             changes.project_id = form.projectId;
         if (form.areaId !== original.areaId) changes.area_id = form.areaId;
-        if (form.dueDate !== original.dueDate)
+        if (
+            form.dueDate !== original.dueDate ||
+            form.dueTime !== original.dueTime
+        ) {
             changes.due_date = form.dueDate || null;
+            changes.due_time =
+                form.dueDate && form.dueTime ? form.dueTime : null;
+        }
         if (JSON.stringify(form.tags) !== JSON.stringify(original.tags)) {
             const existing = tagsStore.tags?.map((tag: any) => tag.name) ?? [];
             const newNames = form.tags.filter(
@@ -272,6 +280,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
                     onChange={(value) => setField('dueDate', value)}
                     placeholder={t('projects.selectDueDatePlaceholder')}
                 />
+                {form.dueDate && (
+                    <input
+                        type="time"
+                        aria-label={t('forms.dueTime', 'Due time')}
+                        value={form.dueTime}
+                        onChange={(e) => setField('dueTime', e.target.value)}
+                        className="mt-2 w-full rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                    />
+                )}
             </SidePanelSection>
 
             <SidePanelSection title={t('forms.tags', 'Tags')}>

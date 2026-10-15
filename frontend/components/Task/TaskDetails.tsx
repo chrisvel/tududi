@@ -403,6 +403,10 @@ const TaskDetails: React.FC = () => {
             taskModifiedRef.current = true;
             await updateTask(task.uid, {
                 due_date: editedDueDate || null,
+                due_time:
+                    editedDueDate && task.due_has_time
+                        ? (task.due_time ?? null)
+                        : null,
             });
 
             if (uid) {

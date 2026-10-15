@@ -166,6 +166,9 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
                                             />
                                             <span className="text-sm font-medium">
                                                 {display.formattedDate}
+                                                {task.due_has_time &&
+                                                    task.due_time &&
+                                                    ` ${task.due_time}`}
                                             </span>
                                             <span
                                                 className={`text-sm italic ${

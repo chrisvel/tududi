@@ -6,7 +6,11 @@ const {
     serializeTask,
     serializeTasks,
 } = require('../../tasks/core/serializers');
-const { calculateInitialDueDate } = require('../../tasks/core/builders');
+const {
+    calculateInitialDueDate,
+    applyDueTime,
+    applyReminderAt,
+} = require('../../tasks/core/builders');
 const { parseEstimatedMinutes } = require('../../tasks/core/parsers');
 const {
     handleRecurrenceUpdate,
@@ -389,6 +393,16 @@ function registerTaskTools(server, context, tools) {
                     description:
                         "Due date (YYYY-MM-DD). Treated as the whole day in the user's timezone, matching the web UI.",
                 },
+                due_time: {
+                    type: 'string',
+                    description:
+                        "Optional time of day (HH:mm, 24-hour) in the user's timezone, applied to due_date. Requires due_date. Omit for a whole-day due date.",
+                },
+                reminder_at: {
+                    type: 'string',
+                    description:
+                        'Optional ISO 8601 date-time to send a reminder notification at.',
+                },
                 defer_until: {
                     type: 'string',
                     description:
@@ -456,10 +470,18 @@ function registerTaskTools(server, context, tools) {
             // Normalize to end-of-day in the user's timezone, matching
             // POST /api/task, so a date-only due_date doesn't shift to the
             // previous day for users behind UTC.
-            const dueDate = processDueDateForStorage(
-                dueDateInput,
+            const dueAttrs = {
+                due_date: processDueDateForStorage(
+                    dueDateInput,
+                    context.user.timezone
+                ),
+            };
+            applyDueTime(
+                dueAttrs,
+                { due_date: dueDateInput, due_time: params.due_time },
                 context.user.timezone
             );
+            const dueDate = dueAttrs.due_date;
             const deferUntil = processDeferUntilForStorage(
                 params.defer_until,
                 context.user.timezone
@@ -467,13 +489,18 @@ function registerTaskTools(server, context, tools) {
 
             validateDeferUntilAndDueDate(deferUntil, dueDate);
 
+            const reminderAttrs = {};
+            applyReminderAt(reminderAttrs, params);
+
             const taskData = {
+                ...reminderAttrs,
                 user_id: context.userId,
                 name: params.name,
                 note: params.note ?? params.description ?? '',
                 priority: params.priority ? priorityMap[params.priority] : 1,
                 status: 0, // pending
                 due_date: dueDate,
+                due_has_time: dueAttrs.due_has_time ?? false,
                 defer_until: deferUntil,
                 project_id: resolvedProjectId,
                 area_id: resolvedAreaId,
@@ -602,6 +629,16 @@ function registerTaskTools(server, context, tools) {
             description:
                 "New due date (YYYY-MM-DD). Treated as the whole day in the user's timezone, matching the web UI.",
         },
+        due_time: {
+            type: 'string',
+            description:
+                "Time of day (HH:mm, 24-hour) in the user's timezone to apply to the due date. Set null to clear the time and keep the whole day.",
+        },
+        reminder_at: {
+            type: 'string',
+            description:
+                'ISO 8601 date-time to send a reminder notification at. Set null to remove.',
+        },
         defer_until: {
             type: 'string',
             description:
@@ -715,6 +752,8 @@ function registerTaskTools(server, context, tools) {
                     context.user.timezone
                 );
             }
+            applyDueTime(updates, params, context.user.timezone, task.due_date);
+            applyReminderAt(updates, params);
             if (params.defer_until !== undefined) {
                 updates.defer_until = processDeferUntilForStorage(
                     params.defer_until,
