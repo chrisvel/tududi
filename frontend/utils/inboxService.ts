@@ -21,6 +21,8 @@ export interface InboxAnalysis {
     parsed_projects: string[];
     cleaned_content: string;
     parsed_due_date: string | null;
+    parsed_due_time: string | null;
+    parsed_reminder_at: string | null;
     parsed_date_text: string | null;
     parsed_recurrence: InboxRecurrence | null;
     parsed_person: string | null;
@@ -77,6 +79,13 @@ export const applyAnalysisToTask = (
     const next: Task = { ...task };
     if (analysis.parsed_due_date) {
         next.due_date = analysis.parsed_due_date;
+        if (analysis.parsed_due_time) {
+            next.due_time = analysis.parsed_due_time;
+            next.due_has_time = true;
+        }
+    }
+    if (analysis.parsed_reminder_at) {
+        next.reminder_at = analysis.parsed_reminder_at;
     }
     if (analysis.parsed_recurrence) {
         Object.assign(next, analysis.parsed_recurrence);
@@ -178,9 +187,7 @@ export const updateInboxItem = async (
 
 // What an item became when it was processed. The item's files move onto it.
 export type ProcessedInto =
-    | { task_uid: string }
-    | { project_uid: string }
-    | { note_uid: string };
+    { task_uid: string } | { project_uid: string } | { note_uid: string };
 
 export const processInboxItem = async (
     itemUid: string,

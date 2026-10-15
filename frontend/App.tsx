@@ -59,6 +59,7 @@ import DailyBriefPage from './components/Insights/DailyBriefPage';
 import PeopleList from './components/People/PeopleList';
 import PersonDetails from './components/People/PersonDetails';
 import EveryoneDashboard from './components/Everyone/EveryoneDashboard';
+import GroupPage from './components/Groups/GroupPage';
 import Templates from './components/Templates/Templates';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import type { StarterResult } from './utils/onboardingService';
@@ -616,6 +617,10 @@ const App: React.FC = () => {
                             <Route
                                 path="/everyone"
                                 element={<EveryoneDashboard />}
+                            />
+                            <Route
+                                path="/groups/:uid"
+                                element={<GroupPage />}
                             />
                             <Route
                                 path="/admin/billing"

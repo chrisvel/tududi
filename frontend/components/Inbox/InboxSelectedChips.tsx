@@ -21,6 +21,7 @@ import { formatLocalizedDate, parseDateString } from '../../utils/dateUtils';
 
 export interface InboxDateChip {
     date: string;
+    time?: string | null;
     phrase: string | null;
     recurring: boolean;
 }
@@ -89,12 +90,13 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
         const formatted = parsed
             ? formatLocalizedDate(parsed, 'EEE, MMM d')
             : chip.date;
+        const withTime = chip.time ? `${formatted} ${chip.time}` : formatted;
         return chip.recurring
             ? t('inbox.recurringFrom', '{{phrase}}, from {{date}}', {
                   phrase: chip.phrase,
                   date: formatted,
               })
-            : formatted;
+            : withTime;
     };
 
     const renderTagChip = (tagName: string, index: number) => {

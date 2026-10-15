@@ -1105,6 +1105,86 @@ describe('Universal Search Routes', () => {
                 expect(names).not.toContain('Regular Task');
             });
 
+            it('should return only tasks without tags when extras include no_tags', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'no_tags',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).not.toContain('Tagged Task');
+            });
+
+            it('should return only tasks without a due date when extras include no_due_date', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'no_due_date',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).not.toContain('Overdue Task');
+            });
+
+            it('should return only projects without tags when extras include no_tags', async () => {
+                const taggedProject = await Project.create({
+                    user_id: user.id,
+                    name: 'Untagged Check Tagged Project',
+                    state: 'active',
+                });
+                const plainProject = await Project.create({
+                    user_id: user.id,
+                    name: 'Untagged Check Plain Project',
+                    state: 'active',
+                });
+                const projectTag = await Tag.create({
+                    user_id: user.id,
+                    name: 'no-tags-project-tag',
+                });
+                await taggedProject.addTag(projectTag);
+
+                const response = await agent.get('/api/search').query({
+                    filters: 'Project',
+                    extras: 'no_tags',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Project')
+                    .map((p) => p.name);
+                expect(names).toContain(plainProject.name);
+                expect(names).not.toContain(taggedProject.name);
+            });
+
+            it('should return only projects without a due date when extras include no_due_date', async () => {
+                const datedProject = await Project.create({
+                    user_id: user.id,
+                    name: 'Dated Check Project',
+                    state: 'active',
+                    due_date_at: moment().add(3, 'days').toDate(),
+                });
+                const undatedProject = await Project.create({
+                    user_id: user.id,
+                    name: 'Undated Check Project',
+                    state: 'active',
+                });
+
+                const response = await agent.get('/api/search').query({
+                    filters: 'Project',
+                    extras: 'no_due_date',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Project')
+                    .map((p) => p.name);
+                expect(names).toContain(undatedProject.name);
+                expect(names).not.toContain(datedProject.name);
+            });
+
             it('should return only projects that have tags when extras include has_tags', async () => {
                 const taggedProject = await Project.create({
                     user_id: user.id,

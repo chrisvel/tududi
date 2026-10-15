@@ -8,7 +8,63 @@ const {
 const {
     processDueDateForStorage,
     processDeferUntilForStorage,
+    dueDateTimeToUTC,
+    utcToUserDateString,
 } = require('../../../utils/timezone-utils');
+
+// Sets an absolute reminder instant. Setting a new time re-arms the reminder.
+function applyReminderAt(attrs, body) {
+    if (body.reminder_at === undefined) return;
+
+    if (!body.reminder_at) {
+        attrs.reminder_at = null;
+        attrs.reminder_sent_at = null;
+        return;
+    }
+
+    const reminderAt = new Date(body.reminder_at);
+    if (Number.isNaN(reminderAt.getTime())) {
+        throw new Error('reminder_at must be a valid date-time');
+    }
+    attrs.reminder_at = reminderAt;
+    attrs.reminder_sent_at = null;
+}
+
+const DUE_TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+// Applies an optional due_time (HH:mm, user timezone) on top of the due date.
+// Without a time the due date stays end-of-day and due_has_time is false.
+// Changing due_date alone drops the time.
+function applyDueTime(attrs, body, timezone, storedDueDate = null) {
+    if (body.due_time === undefined) {
+        if (body.due_date !== undefined) attrs.due_has_time = false;
+        return;
+    }
+
+    const timeString = body.due_time ? String(body.due_time).trim() : '';
+    if (timeString && !DUE_TIME_PATTERN.test(timeString)) {
+        throw new Error('due_time must be in HH:mm format');
+    }
+
+    const source = 'due_date' in attrs ? attrs.due_date : storedDueDate;
+    const dateString =
+        body.due_date !== undefined
+            ? body.due_date || null
+            : source && utcToUserDateString(source, timezone);
+    if (!dateString) {
+        attrs.due_has_time = false;
+        return;
+    }
+
+    if (!timeString) {
+        attrs.due_has_time = false;
+        attrs.due_date = processDueDateForStorage(dateString, timezone);
+        return;
+    }
+
+    attrs.due_date = dueDateTimeToUTC(dateString, timeString, timezone);
+    attrs.due_has_time = true;
+}
 
 function resolveNote(body) {
     return body.note !== undefined ? body.note : body.description;
@@ -181,6 +237,9 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         completion_based: body.completion_based || false,
     };
 
+    applyDueTime(attrs, body, timezone);
+    applyReminderAt(attrs, body);
+
     if (!isUpdate) {
         attrs.user_id = userId;
     }
@@ -303,6 +362,9 @@ function buildUpdateAttributes(body, task, timezone) {
         attrs.involves = Array.isArray(body.involves) ? body.involves : [];
     }
 
+    applyDueTime(attrs, body, timezone, task.due_date);
+    applyReminderAt(attrs, body);
+
     return attrs;
 }
 
@@ -310,4 +372,6 @@ module.exports = {
     buildTaskAttributes,
     buildUpdateAttributes,
     calculateInitialDueDate,
+    applyDueTime,
+    applyReminderAt,
 };

@@ -126,6 +126,15 @@ class GroupsRepository {
         return rows.map((row) => row.User.get({ plain: true }));
     }
 
+    async findGroupIdsForUser(userId) {
+        const rows = await UserGroupMember.findAll({
+            where: { user_id: userId },
+            attributes: ['group_id'],
+            raw: true,
+        });
+        return rows.map((r) => r.group_id);
+    }
+
     async findUsersByIds(userIds) {
         return User.findAll({
             where: { id: { [Op.in]: userIds } },

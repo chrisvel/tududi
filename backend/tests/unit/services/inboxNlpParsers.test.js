@@ -47,10 +47,16 @@ describe('inbox natural-language parsing', () => {
             expect(parseDueDate(text, options)).toBeNull();
         });
 
-        it('keeps a phrase with a time in the title', () => {
+        it('parses the time but keeps a phrase with a time in the title', () => {
             const result = parseDueDate('Dentist tomorrow at 3pm', options);
             expect(result.date).toBe('2026-09-26');
+            expect(result.time).toBe('15:00');
             expect(result.removable).toBe(false);
+        });
+
+        it('returns no time for a date-only phrase', () => {
+            const result = parseDueDate('Dentist tomorrow', options);
+            expect(result.time).toBeNull();
         });
 
         it('uses the user timezone for "today"', () => {

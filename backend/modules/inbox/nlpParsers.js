@@ -251,11 +251,19 @@ const parseDueDate = (
         String(result.start.get('day')).padStart(2, '0'),
     ].join('-');
 
+    const time = result.start.isCertain('hour')
+        ? [
+              String(result.start.get('hour')).padStart(2, '0'),
+              String(result.start.get('minute') ?? 0).padStart(2, '0'),
+          ].join(':')
+        : null;
+
     return {
         date,
+        time,
         text: text.substr(result.index, result.text.length),
         index: result.index,
-        // Times are not stored, so a phrase with one stays in the title.
+        // The time is attached to the item, so the phrase stays in the title.
         removable: !result.start.isCertain('hour'),
     };
 };

@@ -62,6 +62,13 @@ describe('notificationPreferences utils', () => {
                     telegram: false,
                     apprise: false,
                 },
+                taskReminders: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                    apprise: false,
+                },
                 comments: {
                     inApp: true,
                     email: false,
@@ -232,6 +239,7 @@ describe('notificationPreferences utils', () => {
                 project_due_soon: 'dueProjects',
                 project_overdue: 'overdueProjects',
                 task_assigned: 'taskAssigned',
+                task_reminder: 'taskReminders',
                 comment_added: 'comments',
                 mention: 'comments',
             });
@@ -383,6 +391,13 @@ describe('notificationPreferences utils', () => {
                     apprise: false,
                 },
                 habitReminders: {
+                    inApp: false,
+                    email: false,
+                    push: false,
+                    telegram: true,
+                    apprise: false,
+                },
+                taskReminders: {
                     inApp: false,
                     email: false,
                     push: false,

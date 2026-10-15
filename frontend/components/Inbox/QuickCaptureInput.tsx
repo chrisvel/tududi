@@ -114,6 +114,13 @@ interface QuickCaptureInputProps {
     hidePrimaryButton?: boolean;
     onSubmitOverride?: (text: string) => Promise<void>;
     onAfterSubmit?: () => void;
+    // Tells a host that keeps its own Save button what the box holds
+    onTextChange?: (text: string) => void;
+    // A single-line box with no card, padding, chips, suggestions or footer,
+    // for editing a title inside another editor. It inherits the host's font.
+    bare?: boolean;
+    // Escape in a bare box calls this instead of saving
+    onEscape?: () => void;
     renderFooterActions?: (
         context: InboxComposerFooterContext
     ) => React.ReactNode;
@@ -226,6 +233,9 @@ const QuickCaptureInput = React.forwardRef<
             hidePrimaryButton = false,
             onSubmitOverride,
             onAfterSubmit,
+            onTextChange,
+            bare = false,
+            onEscape,
             renderFooterActions,
             openTaskModal,
             openProjectModal,
@@ -386,7 +396,6 @@ const QuickCaptureInput = React.forwardRef<
         const [dismissedDateText, setDismissedDateText] = useState<
             string | null
         >(null);
-        const [isAnalyzing, setIsAnalyzing] = useState(false);
         const analysisTimeoutRef = useRef<NodeJS.Timeout>();
         const analysisRequestIdRef = useRef(0);
         const [urlPreview, setUrlPreview] = useState<UrlPreviewState | null>(
@@ -398,6 +407,11 @@ const QuickCaptureInput = React.forwardRef<
         const lastAnalyzedTextRef = useRef<string>('');
 
         const isEditMode = mode === 'edit';
+
+        useEffect(() => {
+            onTextChange?.(inputText);
+            // Only when the text changes, not when the host passes a new callback
+        }, [inputText]);
         // The edit box and the main capture box both colour their tokens as you type.
         const colourTokens = isEditMode || Boolean(unified);
 
@@ -1217,55 +1231,16 @@ const QuickCaptureInput = React.forwardRef<
             return matchingProject ? matchingProject.uid : undefined;
         };
 
-        const getSuggestion = (): {
-            type: 'note' | 'task' | null;
-            message: string | null;
-            projectName: string | null;
-        } => {
-            if (!analysisResult || !analysisResult.suggested_type) {
-                return { type: null, message: null, projectName: null };
-            }
-
-            const projectName = analysisResult.parsed_projects[0] || null;
-            const type = analysisResult.suggested_type;
-
-            if (type === 'note') {
-                const isUrlNote =
-                    analysisResult.suggested_reason === 'url_detected';
-                const message = isUrlNote
-                    ? `Will be saved as a bookmark note${projectName ? ` for ${projectName}` : ''}.`
-                    : `Will be saved as a note${projectName ? ` for ${projectName}` : ''}.`;
-
-                return {
-                    type: 'note',
-                    message,
-                    projectName,
-                };
-            } else if (type === 'task') {
-                return {
-                    type: 'task',
-                    message: `Will be created as a task${projectName ? ` under ${projectName}` : ''}.`,
-                    projectName,
-                };
-            }
-
-            return { type: null, message: null, projectName: null };
-        };
-
         const analyzeText = useCallback(
             async (text: string, requestId: number) => {
                 if (!text.trim()) {
                     if (analysisRequestIdRef.current === requestId) {
                         setAnalysisResult(null);
-                        setIsAnalyzing(false);
                     }
                     return;
                 }
 
                 try {
-                    if (analysisRequestIdRef.current === requestId) {
-                        setIsAnalyzing(true);
-                    }
                     const result = await analyzeInboxText(text, {
                         parseDates: !(
                             dismissedDateText &&
@@ -1286,10 +1261,6 @@ const QuickCaptureInput = React.forwardRef<
                     console.error('Error analyzing text:', error);
                     setAnalysisResult(null);
                     lastAnalyzedTextRef.current = '';
-                } finally {
-                    if (analysisRequestIdRef.current === requestId) {
-                        setIsAnalyzing(false);
-                    }
                 }
             },
             [dismissedDateText]
@@ -2493,7 +2464,9 @@ const QuickCaptureInput = React.forwardRef<
 
             if (e.key === 'Escape') {
                 e.preventDefault();
-                if (isEditMode && !isSaving) {
+                if (onEscape) {
+                    onEscape();
+                } else if (isEditMode && !isSaving) {
                     handleSubmit();
                 } else if (unified) {
                     onClose?.();
@@ -2538,6 +2511,7 @@ const QuickCaptureInput = React.forwardRef<
             currentAnalysis?.parsed_due_date && !dateIsDismissed
                 ? {
                       date: currentAnalysis.parsed_due_date,
+                      time: currentAnalysis.parsed_due_time,
                       phrase: currentAnalysis.parsed_date_text,
                       recurring: !!currentAnalysis.parsed_recurrence,
                   }
@@ -3006,6 +2980,76 @@ const QuickCaptureInput = React.forwardRef<
 
         const cardClasses = cardClassName ?? 'mb-6';
 
+        if (bare) {
+            return (
+                <div className="relative w-full">
+                    <div {...fileDropHandlers} data-testid="capture-field">
+                        <input
+                            ref={(el) => {
+                                inputRef.current = el;
+                            }}
+                            type="text"
+                            data-testid="quick-capture-input"
+                            value={inputText}
+                            onChange={handleChange}
+                            onSelect={handleCaretEvent}
+                            onKeyUp={handleCaretEvent}
+                            onClick={handleCaretEvent}
+                            style={{
+                                font: 'inherit',
+                                letterSpacing: 'inherit',
+                            }}
+                            className="w-full bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 p-0"
+                            placeholder=""
+                            onKeyDown={handleKeyDown}
+                        />
+                    </div>
+                    <SuggestionsDropdown
+                        isVisible={
+                            showPersonSuggestions && filteredPeople.length > 0
+                        }
+                        items={filteredPeople}
+                        position={dropdownPosition}
+                        selectedIndex={selectedSuggestionIndex}
+                        onSelect={(person) => handlePersonSelect(person.name)}
+                        renderLabel={(person) => <>@{person.name}</>}
+                    />
+                    <SuggestionsDropdown
+                        isVisible={
+                            showTagSuggestions && filteredTags.length > 0
+                        }
+                        items={filteredTags}
+                        position={dropdownPosition}
+                        selectedIndex={selectedSuggestionIndex}
+                        onSelect={(tag) => handleTagSelect(tag.name)}
+                        renderLabel={(tag) => <>#{tag.name}</>}
+                    />
+                    <SuggestionsDropdown
+                        isVisible={
+                            showProjectSuggestions &&
+                            filteredProjects.length > 0
+                        }
+                        items={filteredProjects}
+                        position={dropdownPosition}
+                        selectedIndex={selectedSuggestionIndex}
+                        onSelect={(project) =>
+                            handleProjectSelect(project.name)
+                        }
+                        renderLabel={(project) => <>+{project.name}</>}
+                    />
+                    <SuggestionsDropdown
+                        isVisible={slashItemsNow.length > 0}
+                        items={slashItemsNow}
+                        position={dropdownPosition}
+                        selectedIndex={selectedSuggestionIndex}
+                        onSelect={pickSlashItem}
+                        rich
+                        renderLabel={(item) => <SlashItemRow item={item} />}
+                    />
+                </div>
+            );
+        }
+
         return (
             <div
                 className={`relative w-full bg-white dark:bg-gray-900 rounded-2xl ${
@@ -3326,60 +3370,6 @@ const QuickCaptureInput = React.forwardRef<
                                     </div>
                                 </div>
                             )}
-
-                            {!unified &&
-                                (() => {
-                                    const suggestion = getSuggestion();
-                                    return suggestion.type &&
-                                        suggestion.message ? (
-                                        <div className="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex items-start flex-1">
-                                                    <div className="text-purple-600 dark:text-purple-400 mr-2 mt-0.5">
-                                                        <svg
-                                                            className="h-3 w-3"
-                                                            fill="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path d="M12 2l2.09 6.26L20 10.27l-5.91 2.01L12 18.54l-2.09-6.26L4 10.27l5.91-2.01L12 2z" />
-                                                            <path d="M8 1l1.18 3.52L12 5.64l-2.82.96L8 10.12l-1.18-3.52L4 5.64l2.82-.96L8 1z" />
-                                                            <path d="M20 14l.79 2.37L23 17.45l-2.21.75L20 20.57l-.79-2.37L17 17.45l2.21-.75L20 14z" />
-                                                        </svg>
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <p className="text-xs text-purple-700 dark:text-purple-300 mb-1">
-                                                            {suggestion.message}
-                                                        </p>
-                                                        <div className="flex items-center gap-2 text-xs">
-                                                            <span className="text-gray-600 dark:text-gray-400">
-                                                                {t(
-                                                                    'inbox.or',
-                                                                    'or'
-                                                                )}
-                                                            </span>
-                                                            <button
-                                                                onClick={() => {
-                                                                    handleSubmit(
-                                                                        true
-                                                                    );
-                                                                }}
-                                                                className="text-purple-600 dark:text-purple-400 hover:underline"
-                                                            >
-                                                                {t(
-                                                                    'inbox.saveAsInboxItem',
-                                                                    'save as inbox item'
-                                                                )}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {isAnalyzing && (
-                                                    <div className="ml-2 h-3 w-3 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ) : null;
-                                })()}
                         </div>
                         {shouldShowPrimaryButton && (
                             <button

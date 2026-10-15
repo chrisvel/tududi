@@ -560,6 +560,22 @@ describe('Task comments and mentions', () => {
         const listTaskFiles = async () =>
             fs.readdir(tasksDir()).catch(() => []);
 
+        // Other test files write to the same tasks folder while this suite
+        // runs, so count only new files holding this test's image bytes.
+        const leftoverPastedImages = async (before) => {
+            const added = (await listTaskFiles()).filter(
+                (name) => !before.includes(name)
+            );
+            const contents = await Promise.all(
+                added.map((name) =>
+                    fs.readFile(path.join(tasksDir(), name)).catch(() => null)
+                )
+            );
+            return added.filter((_, index) =>
+                contents[index]?.equals(Buffer.from('image bytes'))
+            );
+        };
+
         beforeEach(async () => {
             readerUser = await createTestUser({
                 email: `reader_${Date.now()}@test.com`,
@@ -629,7 +645,7 @@ describe('Task comments and mentions', () => {
             const response = await pasteImage(outsiderAgent);
             expect(response.status).toBe(404);
             expect(await TaskAttachment.count()).toBe(0);
-            expect(await listTaskFiles()).toEqual(before);
+            expect(await leftoverPastedImages(before)).toEqual([]);
         });
 
         test('only images can be pasted, and a refused file is removed', async () => {
@@ -637,7 +653,7 @@ describe('Task comments and mentions', () => {
             const response = await pasteImage(ownerAgent, 'application/pdf');
             expect(response.status).toBe(400);
             expect(await TaskAttachment.count()).toBe(0);
-            expect(await listTaskFiles()).toEqual(before);
+            expect(await leftoverPastedImages(before)).toEqual([]);
         });
 
         test('notifications show [image] instead of the image markdown', async () => {

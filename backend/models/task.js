@@ -38,6 +38,18 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // True when due_date holds a specific time of day, false when it
+            // is a whole-day due (stored as end of day in the user's timezone).
+            due_has_time: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
+            // Set once the reminder_at notification has been sent.
+            reminder_sent_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
             estimated_minutes: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
