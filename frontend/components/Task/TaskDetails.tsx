@@ -160,6 +160,9 @@ const TaskDetails: React.FC = () => {
     const [editedDueDate, setEditedDueDate] = useState<string>(
         task?.due_date || ''
     );
+    const [editedDueTime, setEditedDueTime] = useState<string>(
+        task?.due_has_time ? (task.due_time ?? '') : ''
+    );
     const [isEditingDeferUntil, setIsEditingDeferUntil] = useState(false);
     const [editedDeferUntil, setEditedDeferUntil] = useState<string>(
         task?.defer_until || ''
@@ -182,7 +185,8 @@ const TaskDetails: React.FC = () => {
 
     useEffect(() => {
         setEditedDueDate(task?.due_date || '');
-    }, [task?.due_date]);
+        setEditedDueTime(task?.due_has_time ? (task.due_time ?? '') : '');
+    }, [task?.due_date, task?.due_time, task?.due_has_time]);
 
     useEffect(() => {
         setRecurrenceForm({
@@ -350,6 +354,7 @@ const TaskDetails: React.FC = () => {
 
     const handleStartDueDateEdit = () => {
         setEditedDueDate(task?.due_date || '');
+        setEditedDueTime(task?.due_has_time ? (task.due_time ?? '') : '');
         setIsEditingDueDate(true);
     };
 
@@ -360,7 +365,11 @@ const TaskDetails: React.FC = () => {
             return;
         }
 
-        if ((editedDueDate || '') === (task.due_date || '')) {
+        const currentDueTime = task.due_has_time ? (task.due_time ?? '') : '';
+        if (
+            (editedDueDate || '') === (task.due_date || '') &&
+            (editedDueTime || '') === currentDueTime
+        ) {
             setIsEditingDueDate(false);
             return;
         }
@@ -403,10 +412,7 @@ const TaskDetails: React.FC = () => {
             taskModifiedRef.current = true;
             await updateTask(task.uid, {
                 due_date: editedDueDate || null,
-                due_time:
-                    editedDueDate && task.due_has_time
-                        ? (task.due_time ?? null)
-                        : null,
+                due_time: editedDueDate && editedDueTime ? editedDueTime : null,
             });
 
             if (uid) {
@@ -440,6 +446,7 @@ const TaskDetails: React.FC = () => {
     const handleCancelDueDateEdit = () => {
         setIsEditingDueDate(false);
         setEditedDueDate(task?.due_date || '');
+        setEditedDueTime(task?.due_has_time ? (task.due_time ?? '') : '');
     };
 
     const handleStartDeferUntilEdit = () => {
@@ -1653,6 +1660,8 @@ const TaskDetails: React.FC = () => {
                                     isEditing={isEditingDueDate}
                                     editedDueDate={editedDueDate}
                                     onChangeDate={setEditedDueDate}
+                                    editedDueTime={editedDueTime}
+                                    onChangeTime={setEditedDueTime}
                                     onStartEdit={handleStartDueDateEdit}
                                     onSave={handleSaveDueDate}
                                     onCancel={handleCancelDueDateEdit}

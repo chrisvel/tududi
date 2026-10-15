@@ -18,6 +18,8 @@ interface TaskDueDateCardProps {
     isEditing: boolean;
     editedDueDate: string;
     onChangeDate: (value: string) => void;
+    editedDueTime: string;
+    onChangeTime: (value: string) => void;
     onStartEdit: () => void;
     onSave: () => void;
     onCancel: () => void;
@@ -28,6 +30,8 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
     isEditing,
     editedDueDate,
     onChangeDate,
+    editedDueTime,
+    onChangeTime,
     onStartEdit,
     onSave,
     onCancel,
@@ -103,6 +107,8 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
                         <TaskDueDateSection
                             value={editedDueDate}
                             onChange={onChangeDate}
+                            time={editedDueTime}
+                            onTimeChange={onChangeTime}
                             placeholder={t(
                                 'forms.task.dueDatePlaceholder',
                                 'Select due date'

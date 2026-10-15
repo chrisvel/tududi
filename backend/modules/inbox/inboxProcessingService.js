@@ -4,6 +4,7 @@
  */
 
 const nlp = require('compromise');
+const { dueDateTimeToUTC } = require('../../utils/timezone-utils');
 const {
     parseDueDate,
     parseRecurrence,
@@ -392,6 +393,13 @@ const processInboxItem = (content, options = {}) => {
         person && personResolved ? person : null,
         area,
     ]);
+    // "remind me ..." also sets reminder_at from the parsed date and time
+    // (09:00 when no time is given). The title keeps every word.
+    const remindMe = parseDates && /\bremind me\b/i.test(content);
+    const reminderAt =
+        remindMe && dueDate && !recurrence
+            ? dueDateTimeToUTC(dueDate.date, dueDate.time || '09:00', timezone)
+            : null;
     const cleanedContent = cleanTextFromTagsAndProjects(withoutParsedPhrases);
 
     const schedule = recurrence || dueDate;
@@ -411,6 +419,8 @@ const processInboxItem = (content, options = {}) => {
         parsed_projects: projects,
         cleaned_content: cleanedContent,
         parsed_due_date: schedule ? schedule.date : null,
+        parsed_due_time: dueDate?.time ?? null,
+        parsed_reminder_at: reminderAt ? reminderAt.toISOString() : null,
         parsed_date_text: schedule ? schedule.text : null,
         parsed_recurrence: recurrence ? recurrence.recurrence : null,
         parsed_person: person ? person.name : null,

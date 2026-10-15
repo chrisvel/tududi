@@ -22,8 +22,8 @@ import { Project } from '../../../entities/Project';
 import { Person } from '../../../entities/Person';
 import PriorityDropdown from '../../Shared/PriorityDropdown';
 import PriorityBadge, { toPriorityLevel } from '../../Shared/PriorityBadge';
-import DatePicker from '../../Shared/DatePicker';
 import DateTimePicker from '../../Shared/DateTimePicker';
+import { fromDueParts, toDueParts } from '../../../utils/dueDateTime';
 import PersonDropdown from '../../Shared/PersonDropdown';
 import {
     fetchPeople,
@@ -123,9 +123,15 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
             />
 
             {/* Due date */}
-            <DatePicker
-                value={task.due_date || ''}
-                onChange={(v) => void setters.setDueDate(v || null)}
+            <DateTimePicker
+                value={fromDueParts(
+                    task.due_date,
+                    task.due_has_time ? task.due_time : null
+                )}
+                onChange={(iso) => {
+                    const parts = toDueParts(iso);
+                    void setters.setDue(parts.date, parts.time);
+                }}
                 renderTrigger={({ onClick, isOpen, displayValue }) => (
                     <ToolbarButton
                         onClick={onClick}

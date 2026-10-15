@@ -419,6 +419,9 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                             <span className="flex items-center whitespace-nowrap">
                                 <CalendarIcon className="h-3 w-3 mr-1" />
                                 {formatDue(task.due_date)}
+                                {task.due_has_time &&
+                                    task.due_time &&
+                                    ` ${task.due_time}`}
                             </span>
                         )}
                         {isTaskCompleted(task.status) && task.completed_at && (

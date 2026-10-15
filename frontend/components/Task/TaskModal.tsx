@@ -7,7 +7,8 @@ import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import AreaDropdown from '../Shared/AreaDropdown';
-import DatePicker from '../Shared/DatePicker';
+import DateTimePicker from '../Shared/DateTimePicker';
+import { fromDueParts, toDueParts } from '../../utils/dueDateTime';
 import EntitySidePanel from '../SidePanel/EntitySidePanel';
 import {
     SidePanelField,
@@ -275,20 +276,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
             </SidePanelSection>
 
             <SidePanelSection title={t('forms.dueDate', 'Due Date')}>
-                <DatePicker
-                    value={form.dueDate}
-                    onChange={(value) => setField('dueDate', value)}
+                <DateTimePicker
+                    value={fromDueParts(form.dueDate, form.dueTime || null)}
+                    onChange={(iso) => {
+                        const parts = toDueParts(iso);
+                        setField('dueDate', parts.date || '');
+                        setField('dueTime', parts.time || '');
+                    }}
                     placeholder={t('projects.selectDueDatePlaceholder')}
                 />
-                {form.dueDate && (
-                    <input
-                        type="time"
-                        aria-label={t('forms.dueTime', 'Due time')}
-                        value={form.dueTime}
-                        onChange={(e) => setField('dueTime', e.target.value)}
-                        className="mt-2 w-full rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-100"
-                    />
-                )}
             </SidePanelSection>
 
             <SidePanelSection title={t('forms.tags', 'Tags')}>
