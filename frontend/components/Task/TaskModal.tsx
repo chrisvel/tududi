@@ -5,6 +5,8 @@ import { updateTask, fetchTaskByUid } from '../../utils/tasksService';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
+import QuickCaptureInput from '../Inbox/QuickCaptureInput';
+import { resolveTaskTokens } from '../../utils/taskTokens';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import AreaDropdown from '../Shared/AreaDropdown';
 import DatePicker from '../Shared/DatePicker';
@@ -85,12 +87,16 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
     const tagsStore = useStore((state: any) => state.tagsStore);
 
     const [form, setForm] = useState<TaskFormState>(() => toFormState(task));
+    // What the name box starts from. It changes only on open and after the
+    // typed #tags, +project, ~area and dates are moved into their fields.
+    const [nameSeed, setNameSeed] = useState(task.name ?? '');
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!isOpen) return;
         setForm(toFormState(task));
+        setNameSeed(task.name ?? '');
         setError(null);
     }, [isOpen, task]);
 
@@ -114,9 +120,36 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
         }
     };
 
+    // The name box reads the same tokens as quick capture. They leave the
+    // name and land in the tags, project, area and due date fields.
+    const resolveTokens = async (
+        current: TaskFormState
+    ): Promise<TaskFormState> => {
+        const text = current.name.trim();
+        if (!text || text === original.name) return current;
+        const resolved = await resolveTaskTokens(
+            text,
+            projects,
+            areas,
+            current.tags
+        );
+        if (!resolved) return current;
+        const next = { ...current, name: resolved.name, tags: resolved.tags };
+        if (resolved.projectId !== null) next.projectId = resolved.projectId;
+        if (resolved.areaId !== null) next.areaId = resolved.areaId;
+        if (resolved.dueDate) next.dueDate = resolved.dueDate;
+        return next;
+    };
+
+    const applyTokens = async (text: string) => {
+        const resolved = await resolveTokens({ ...form, name: text });
+        setForm(resolved);
+        setNameSeed(resolved.name);
+    };
+
     // Only the fields that changed are sent, so recurring tasks and other
     // side effects are not triggered by untouched values.
-    const buildChanges = () => {
+    const buildChanges = (form: TaskFormState) => {
         const changes: Record<string, unknown> = {};
         if (form.name.trim() !== original.name) changes.name = form.name.trim();
         if (form.note !== original.note)
@@ -145,13 +178,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
             setError(t('task.nameRequired', 'Task name is required'));
             return;
         }
-        const changes = buildChanges();
+        setSaving(true);
+        const changes = buildChanges(await resolveTokens(form));
         if (Object.keys(changes).length === 0) {
+            setSaving(false);
             onClose();
             return;
         }
 
-        setSaving(true);
         setError(null);
         try {
             await updateTask(task.uid!, changes as Partial<Task>);
@@ -187,15 +221,21 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
                 label={t('forms.taskName', 'Name')}
                 htmlFor="taskName"
             >
-                <input
-                    id="taskName"
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => setField('name', e.target.value)}
-                    required
+                <div
                     className={sidePanelInputClass}
-                    data-testid="task-name-input"
-                />
+                    data-testid="task-name-field"
+                >
+                    <QuickCaptureInput
+                        mode="edit"
+                        bare
+                        multiline={false}
+                        hidePrimaryButton
+                        initialValue={nameSeed}
+                        projects={projects}
+                        onTextChange={(text) => setField('name', text)}
+                        onSubmitOverride={applyTokens}
+                    />
+                </div>
             </SidePanelField>
 
             <SidePanelField

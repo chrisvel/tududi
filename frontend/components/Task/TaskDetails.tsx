@@ -42,6 +42,7 @@ import {
 } from './TaskDetails/';
 import TaskAIInsights, { TaskAIInsightsHandle } from '../AI/TaskAIInsights';
 import TaskModal from './TaskModal';
+import { resolveTaskTokens, tokenChanges } from '../../utils/taskTokens';
 import {
     isTaskOverdueInTodayPlan,
     isTaskPastDue,
@@ -1180,7 +1181,21 @@ const TaskDetails: React.FC = () => {
 
         try {
             taskModifiedRef.current = true;
-            await updateTask(task.uid, { name: newTitle.trim() });
+            const resolved = await resolveTaskTokens(
+                newTitle.trim(),
+                projectsStore.projects,
+                areasStore.areas,
+                task.tags?.map((tag: any) => tag.name) ?? []
+            );
+            const { changes, newTags } = tokenChanges(
+                newTitle.trim(),
+                resolved,
+                task.tags?.map((tag: any) => tag.name) ?? []
+            );
+            const existing = tagsStore.tags?.map((tag: any) => tag.name) ?? [];
+            const created = newTags.filter((name) => !existing.includes(name));
+            if (created.length > 0) tagsStore.addNewTags(created);
+            await updateTask(task.uid, changes as Partial<Task>);
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
