@@ -5,6 +5,7 @@ const groupsRepository = require('./repository');
 const adminService = require('../admin/service');
 const accountsService = require('../../services/accountsService');
 const groupSharing = require('../../services/groupSharing');
+const { getGroupBoard } = require('../everyone/service');
 const {
     validateCreateGroup,
     validateUpdateGroup,
@@ -40,11 +41,45 @@ class GroupsService {
         const accountId = await accountsService.ensureAccountId(requesterId);
         if (accountsService.isHosted() && !accountId) return [];
         const groups = await groupsRepository.findAllWithCounts({ accountId });
+        const mine = new Set(
+            await groupsRepository.findGroupIdsForUser(requesterId)
+        );
         return groups.map((g) => ({
             uid: g.uid,
             name: g.name,
             member_count: g.member_count,
+            is_member: mine.has(g.id),
         }));
+    }
+
+    // The group page: open to the group's members and to admins who manage
+    // it. Anyone else gets a 404, so a group's existence is not leaked.
+    async getPage(requesterId, uid, timezone) {
+        const group = await groupsRepository.findByUid(uid);
+        if (!group) throw new NotFoundError('Group not found');
+
+        const memberUsers = await groupsRepository.listMembers(group.id);
+        const memberIds = memberUsers.map((m) => m.id);
+        if (!memberIds.includes(requesterId)) {
+            let scope;
+            try {
+                scope = await adminService.accessScope(requesterId);
+            } catch (err) {
+                throw new NotFoundError('Group not found');
+            }
+            await this._requireGroup(uid, scope);
+        }
+
+        const board = await getGroupBoard(requesterId, memberIds, timezone);
+        return {
+            group: {
+                uid: group.uid,
+                name: group.name,
+                description: group.description || null,
+                member_count: memberIds.length,
+            },
+            ...board,
+        };
     }
 
     async listForAdmin(requesterId) {

@@ -127,6 +127,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 | `GET /api/shares/candidates` | The workspace members the Share dialog offers (`id`, `uid`, `name`). `POST /api/shares` takes one as `target_user_id`; an id outside your workspace is a `404` |
 | `POST`, `PATCH`, `DELETE /api/people[/:uid]` | Add, change or remove one of your contacts. Adding needs `create_people` |
 | `GET /api/everyone` | The Everyone board |
+| `GET /api/groups/:uid` | One group's board: a column per member (group members and managing admins only, see [User Groups](18-user-groups.md)) |
 | `GET /api/admin/roles` | The three roles, their default capabilities and how many accounts hold each (admin) |
 | `POST /api/admin/users`, `PUT /api/admin/users/:id` | Create or change an account, including `role`, `capabilities` and an optional email (admin) |
 | `PATCH /api/members/:id`, `DELETE /api/members/:id` | Rename a member you added or give it an email (which invites it), or remove it with all its data. Creator or admin; on Cloud removing gives the seat back |

@@ -1,10 +1,12 @@
 import { getApiPath } from '../config/paths';
+import { EveryoneResponse } from './everyoneService';
 import { fetchWithCsrf } from './csrfService';
 
 export interface GroupSummary {
     uid: string;
     name: string;
     member_count: number;
+    is_member?: boolean;
 }
 
 export interface AdminGroup {
@@ -68,6 +70,25 @@ export async function fetchGroups(): Promise<GroupSummary[]> {
     if (!res.ok) throw await readError(res, 'Failed to load groups');
     const data = await res.json();
     return data.groups || [];
+}
+
+export interface GroupPage extends EveryoneResponse {
+    group: {
+        uid: string;
+        name: string;
+        description: string | null;
+        member_count: number;
+    };
+}
+
+// One group's members with the tasks assigned to each. Members and admins.
+export async function fetchGroupPage(uid: string): Promise<GroupPage> {
+    const res = await fetch(getApiPath(`groups/${encodeURIComponent(uid)}`), {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) throw await readError(res, 'Failed to load the group');
+    return res.json();
 }
 
 export async function fetchAdminGroups(): Promise<AdminGroup[]> {

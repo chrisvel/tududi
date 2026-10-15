@@ -21,6 +21,10 @@ jest.mock('../../../utils/everyoneService', () => {
     };
 });
 
+jest.mock('../../../utils/groupsService', () => ({
+    fetchGroups: () => Promise.resolve([]),
+}));
+
 jest.mock('../../../utils/projectsService', () => ({
     fetchProjects: () => Promise.resolve([]),
 }));
