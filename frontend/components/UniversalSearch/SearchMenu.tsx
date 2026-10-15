@@ -78,6 +78,8 @@ const extrasOptions = [
     { value: 'has_content', labelKey: 'search.extrasFilter.hasContent' },
     { value: 'deferred', labelKey: 'search.extrasFilter.isDeferred' },
     { value: 'has_tags', labelKey: 'search.extrasFilter.hasTags' },
+    { value: 'no_tags', labelKey: 'search.extrasFilter.hasNoTags' },
+    { value: 'no_due_date', labelKey: 'search.extrasFilter.hasNoDueDate' },
     {
         value: 'assigned_to_project',
         labelKey: 'search.extrasFilter.isAssignedToProject',
@@ -149,14 +151,20 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 ? prev.filter((t) => t !== tagName)
                 : [...prev, tagName]
         );
+        // A tag and "no tags" contradict each other, so picking a tag drops it
+        setSelectedExtras((prev) => prev.filter((e) => e !== 'no_tags'));
     };
 
     const handleExtrasToggle = (extra: string) => {
+        const isSelecting = !selectedExtras.includes(extra);
         setSelectedExtras((prev) =>
             prev.includes(extra)
                 ? prev.filter((e) => e !== extra)
                 : [...prev, extra]
         );
+        if (isSelecting && extra === 'no_tags') {
+            setSelectedTags([]);
+        }
     };
 
     const handleSaveView = async () => {

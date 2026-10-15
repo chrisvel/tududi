@@ -2582,6 +2582,8 @@
       "hasContent": "has Content",
       "isDeferred": "is Deferred",
       "hasTags": "has Tags",
+      "hasNoTags": "has no Tags",
+      "hasNoDueDate": "has no Due Date",
       "isAssignedToProject": "is Assigned to Project"
     },
     "saveAsSmartView": "Save as Smart View",
