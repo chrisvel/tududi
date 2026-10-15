@@ -5,6 +5,7 @@ const router = express.Router();
 const groupsController = require('./controller');
 
 router.get('/groups', groupsController.listForPicker);
+router.get('/groups/:uid', groupsController.getPage);
 
 router.get('/admin/groups', groupsController.list);
 router.post('/admin/groups', groupsController.create);

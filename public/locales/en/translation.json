@@ -2824,6 +2824,12 @@
     "unavailableTitle": "The demo is not available",
     "unavailableBody": "It may be rebuilding itself. Try again in a moment."
   },
+  "groupPage": {
+    "title": "Group",
+    "subtitle": "What each member has on now",
+    "empty": "Nothing is assigned to this group yet. Assign a task to a member to see it here.",
+    "yourGroups": "Your groups"
+  },
   "everyone": {
     "title": "Everyone",
     "subtitle": "What everyone you share work with has on now",
