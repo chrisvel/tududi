@@ -4,7 +4,7 @@ const { logError } = require('../../services/logService');
 const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
-    shouldSendPushNotification,
+    reminderSources,
 } = require('../../utils/notificationPreferences');
 const telegramPoller = require('../telegram/telegramPoller');
 
@@ -147,12 +147,7 @@ async function checkDueProjects() {
                         title,
                         message,
                         level,
-                        sources: shouldSendPushNotification(
-                            user,
-                            notificationType
-                        )
-                            ? ['push']
-                            : [],
+                        sources: reminderSources(user, notificationType),
                         data: {
                             projectUid: project.uid,
                             projectName: project.name,

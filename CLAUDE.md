@@ -331,6 +331,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Scopes Today, Upcoming, Tasks, Projects, Notes and live search; capture defaults to the Focus project and tags
     - `area_uid`, `project_uid` and `tags` query params resolved by `backend/services/scopeService.js`; the API, MCP and Telegram stay unscoped
 
+35. **[Apprise](docs/26-apprise.md)**
+    - Sends notifications through a self-hosted apprise-api server, which reaches 100+ services
+    - Per-type opt-in in Profile → Notifications; address and config key encrypted at rest
+    - Private addresses follow the `CALDAV_ALLOW_PRIVATE_HOSTS` rule used by calendar feeds
+
 ---
 
 ## Project Overview

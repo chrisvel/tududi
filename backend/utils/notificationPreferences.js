@@ -3,24 +3,62 @@
  */
 
 const DEFAULT_PREFERENCES = {
-    dueTasks: { inApp: true, email: false, push: false, telegram: false },
-    overdueTasks: { inApp: true, email: false, push: false, telegram: false },
-    dueProjects: { inApp: true, email: false, push: false, telegram: false },
+    dueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
+    overdueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
+    dueProjects: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
     overdueProjects: {
         inApp: true,
         email: false,
         push: false,
         telegram: false,
+        apprise: false,
     },
-    deferUntil: { inApp: true, email: false, push: false, telegram: false },
-    taskAssigned: { inApp: true, email: false, push: false, telegram: false },
+    deferUntil: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
+    taskAssigned: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
     habitReminders: {
         inApp: true,
         email: false,
         push: false,
         telegram: false,
+        apprise: false,
     },
-    comments: { inApp: true, email: false, push: false, telegram: false },
+    comments: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        apprise: false,
+    },
 };
 
 /**
@@ -107,6 +145,36 @@ function shouldSendPushNotification(user, notificationType) {
     return prefs[prefKey].push === true;
 }
 
+// Apprise is opt-in per type, like push.
+function shouldSendAppriseNotification(user, notificationType) {
+    if (!user || !user.notification_preferences) {
+        return false;
+    }
+
+    const prefs = user.notification_preferences;
+    const prefKey =
+        NOTIFICATION_TYPE_MAPPING[notificationType] || notificationType;
+
+    if (!prefs[prefKey]) {
+        return false;
+    }
+
+    return prefs[prefKey].apprise === true;
+}
+
+// Sources for reminders that Telegram delivers in its own batch: push and
+// Apprise are sent per notification.
+function reminderSources(user, notificationType) {
+    const sources = [];
+    if (shouldSendPushNotification(user, notificationType)) {
+        sources.push('push');
+    }
+    if (shouldSendAppriseNotification(user, notificationType)) {
+        sources.push('apprise');
+    }
+    return sources;
+}
+
 // The extra delivery channels to pass as `sources` to
 // Notification.createNotification for one preference key.
 function deliverySources(user, notificationType) {
@@ -116,6 +184,9 @@ function deliverySources(user, notificationType) {
     }
     if (shouldSendPushNotification(user, notificationType)) {
         sources.push('push');
+    }
+    if (shouldSendAppriseNotification(user, notificationType)) {
+        sources.push('apprise');
     }
     return sources;
 }
@@ -163,6 +234,10 @@ function ensureNotificationPreferences(preferences) {
                     preferences[key].telegram !== undefined
                         ? preferences[key].telegram
                         : defaults[key].telegram,
+                apprise:
+                    preferences[key].apprise !== undefined
+                        ? preferences[key].apprise
+                        : defaults[key].apprise,
             };
         } else {
             // Missing preference type, use default
@@ -177,7 +252,9 @@ module.exports = {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
     shouldSendPushNotification,
+    shouldSendAppriseNotification,
     deliverySources,
+    reminderSources,
     getDefaultNotificationPreferences,
     ensureNotificationPreferences,
     NOTIFICATION_TYPE_MAPPING,
