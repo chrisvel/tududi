@@ -552,4 +552,30 @@ describe('TaskRow', () => {
             expect(onTaskUpdate).not.toHaveBeenCalled();
         });
     });
+
+    describe('status picked on a subtask row (#1914)', () => {
+        const updateTaskMock = tasksService.updateTask as jest.Mock;
+        beforeEach(() => updateTaskMock.mockReset());
+
+        it('saves the subtask status even though the page does not', async () => {
+            const subtask = baseTask({
+                id: 2,
+                uid: 'sub-1',
+                name: 'Book hotel',
+            });
+            updateTaskMock.mockResolvedValue({
+                ...subtask,
+                status: 'in_progress',
+            });
+            renderRow(baseTask({ subtasks: [subtask] }));
+            fireEvent.click(screen.getByTitle('Show subtasks'));
+            const picks = await screen.findAllByLabelText('pick in_progress');
+            fireEvent.click(picks[picks.length - 1]);
+            await waitFor(() =>
+                expect(updateTaskMock).toHaveBeenCalledWith('sub-1', {
+                    status: 'in_progress',
+                })
+            );
+        });
+    });
 });
