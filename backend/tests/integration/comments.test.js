@@ -1,6 +1,7 @@
 const request = require('supertest');
 const path = require('path');
 const fs = require('fs').promises;
+const net = require('net');
 const app = require('../../app');
 const {
     sequelize,
@@ -605,6 +606,74 @@ describe('Task comments and mentions', () => {
                     force: true,
                 });
             }
+        });
+
+        test('an unauthenticated paste is refused with 401, not a reset connection', async () => {
+            // The refusal happens in middleware that runs before multer (the auth
+            // guard, the rate limiter, the feature gate, hasAccess), so the server
+            // answers while the client is still uploading. Ending the response then
+            // tears the socket down under the unread body, which reaches the client
+            // as ECONNRESET instead of the 401 - see drainRequestBody.js.
+            //
+            // The upload is held open on purpose. A body sent in one go cannot tell
+            // the two behaviours apart: if it has already arrived when the server
+            // refuses there is nothing left to reset, so the assertion would pass
+            // either way. Here the client sends part of the body, waits, then
+            // finishes - which is exactly the shape a real refused upload has.
+            const boundary = '----drainProbe';
+            const head = Buffer.from(
+                `--${boundary}\r\n` +
+                    'Content-Disposition: form-data; name="file"; filename="image.png"\r\n' +
+                    'Content-Type: image/png\r\n\r\n'
+            );
+            const tail = Buffer.from(`\r\n--${boundary}--\r\n`);
+            const chunk = Buffer.alloc(64 * 1024, 0x41);
+
+            // A raw socket, so the upload can be held open; an HTTP client library
+            // buffers and flushes the body itself, which hides the timing.
+            const server = app.listen(0);
+            const { port } = server.address();
+            const socket = net.connect(port, '127.0.0.1');
+            let response = '';
+            let closed = false;
+            socket.on('data', (data) => {
+                response += data.toString('latin1');
+            });
+            socket.on('close', () => {
+                closed = true;
+            });
+            socket.on('error', () => {
+                closed = true;
+            });
+            await new Promise((resolve) => socket.once('connect', resolve));
+
+            socket.write(
+                `POST /api/task/${task.uid}/comments/images HTTP/1.1\r\n` +
+                    `Host: 127.0.0.1:${port}\r\n` +
+                    'Connection: close\r\n' +
+                    'Content-Type: multipart/form-data; boundary=' +
+                    `${boundary}\r\n` +
+                    'Content-Length: ' +
+                    `${head.length + chunk.length * 2 + tail.length}\r\n\r\n`
+            );
+            socket.write(head);
+            socket.write(chunk);
+
+            // Still uploading: the refusal must not have been delivered yet.
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            expect(response).toBe('');
+
+            socket.write(chunk);
+            socket.write(tail);
+
+            const deadline = Date.now() + 5000;
+            while (!closed && Date.now() < deadline) {
+                await new Promise((resolve) => setTimeout(resolve, 50));
+            }
+            server.close();
+
+            expect(response).toMatch(/^HTTP\/1\.1 401 /);
+            expect(closed).toBe(true);
         });
 
         test('a read-only collaborator can paste an image into a comment', async () => {
