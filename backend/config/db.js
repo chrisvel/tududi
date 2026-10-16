@@ -44,7 +44,7 @@ function buildSequelizeOptions({ logging } = {}) {
 
     const dialectOptions = {};
     if (db.ssl) {
-        dialectOptions.ssl = { rejectUnauthorized: db.ssl.rejectUnauthorized };
+        dialectOptions.ssl = db.ssl;
     }
 
     return {

@@ -1,3 +1,6 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const {
     resolveDatabaseSettings,
     parseDatabaseUrl,
@@ -99,6 +102,27 @@ describe('database-settings', () => {
                     null
                 ).ssl
             ).toBe(false);
+        });
+
+        it('loads client certificates from DATABASE_URL for mTLS', () => {
+            const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'db-mtls-'));
+            for (const name of ['ca', 'cert', 'key']) {
+                fs.writeFileSync(path.join(dir, name), name.toUpperCase());
+            }
+            expect(
+                resolveDatabaseSettings(
+                    {
+                        DATABASE_URL: `postgres://u@h/db?sslmode=verify-full&sslrootcert=${dir}/ca&sslcert=${dir}/cert&sslkey=${dir}/key`,
+                        DB_SSL_REJECT_UNAUTHORIZED: 'false',
+                    },
+                    null
+                ).ssl
+            ).toEqual({
+                ca: 'CA',
+                cert: 'CERT',
+                key: 'KEY',
+                rejectUnauthorized: false,
+            });
         });
 
         it('falls back to the default pool size on bad input', () => {

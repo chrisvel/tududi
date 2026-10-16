@@ -172,6 +172,7 @@
     "openai": "^6.45.0",
     "openid-client": "^5.7.1",
     "pg": "^8.23.0",
+    "pg-connection-string": "^2.14.1",
     "pg-hstore": "^2.3.4",
     "pino": "^9.14.0",
     "pino-http": "^10.5.0",
