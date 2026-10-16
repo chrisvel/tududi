@@ -3,6 +3,7 @@ const app = require('../../app');
 const { sequelize, User, Project, Task } = require('../../models');
 const bcrypt = require('bcrypt');
 const { propfind, report } = require('../helpers/caldav-test-utils');
+const taskRepository = require('../../modules/tasks/repository');
 
 const ENC = encodeURIComponent;
 
@@ -264,6 +265,95 @@ describe('CalDAV Per-Project Calendars', () => {
 
                 expect(response.text).toContain('report-proj-task.ics');
                 expect(response.text).not.toContain('report-inbox-task.ics');
+            });
+
+            // A uid made only of digits used to reach ical.js as a number, so
+            // serializing one VTODO threw and the whole collection answered 500.
+            // The client then saw an error for the calendar instead of a task
+            // list, so nothing from that sync arrived.
+            test('digits-only uid still lists and serves a fetchable VTODO', async () => {
+                await Task.create({
+                    uid: '4240044138289854915',
+                    user_id: testUser.id,
+                    project_id: testProject.id,
+                    name: 'Digits-only uid task',
+                    status: 0,
+                });
+
+                const response = await report(app, projectUrl())
+                    .set('Authorization', authHeader)
+                    .set('Content-Type', 'application/xml')
+                    .send(reportXml)
+                    .expect(207);
+
+                expect(response.text).toContain('4240044138289854915.ics');
+                expect(response.text).toContain('UID:4240044138289854915');
+
+                const fetched = await request(app)
+                    .get(
+                        `/caldav/${ENC(testUser.email)}/projects/${ENC(testProject.uid)}/4240044138289854915.ics`
+                    )
+                    .set('Authorization', authHeader)
+                    .expect(200);
+
+                expect(fetched.text).toContain('UID:4240044138289854915');
+            });
+
+            // Values that reach the serializer as a number (the shape the
+            // database handed back after the uid column lost its text affinity)
+            // must not take the collection down with them, and a row that still
+            // fails must stay in the listing so the client keeps its copy
+            // instead of reading the omission as a deletion.
+            test('a bad row does not black out the whole calendar', async () => {
+                const healthy = await Task.create({
+                    uid: 'healthy-row-1',
+                    user_id: testUser.id,
+                    project_id: testProject.id,
+                    name: 'Healthy row',
+                    status: 0,
+                });
+
+                const numericUid = 4240044138289854915;
+                const renderedUid = String(numericUid);
+                const badRow = {
+                    id: 9002,
+                    uid: 'poison-row-1',
+                    user_id: testUser.id,
+                    project_id: testProject.id,
+                    // ical.js calls .replace() on text property values, so an
+                    // object here throws the same way a numeric uid did.
+                    name: { not: 'a string' },
+                    status: 0,
+                    updated_at: new Date(),
+                };
+
+                jest.spyOn(taskRepository, 'findAll').mockResolvedValueOnce([
+                    healthy,
+                    {
+                        id: 9001,
+                        uid: numericUid,
+                        user_id: testUser.id,
+                        project_id: testProject.id,
+                        name: 'Numeric uid row',
+                        status: 0,
+                        updated_at: new Date(),
+                    },
+                    badRow,
+                ]);
+
+                const response = await report(app, projectUrl())
+                    .set('Authorization', authHeader)
+                    .set('Content-Type', 'application/xml')
+                    .send(reportXml)
+                    .expect(207);
+
+                expect(response.text).toContain('healthy-row-1.ics');
+                expect(response.text).toContain('BEGIN:VTODO');
+                expect(response.text).toContain(`UID:${renderedUid}`);
+                expect(response.text).toContain('poison-row-1.ics');
+                expect(response.text).toContain(
+                    'HTTP/1.1 500 Internal Server Error'
+                );
             });
 
             test('REPORT on __inbox__ returns only unassigned tasks', async () => {
