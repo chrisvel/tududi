@@ -1,4 +1,3 @@
-const { parse } = require('pg-connection-string');
 const { getConfig } = require('./config');
 
 // Column naming and timestamp conventions shared by every model.
@@ -45,11 +44,7 @@ function buildSequelizeOptions({ logging } = {}) {
 
     const dialectOptions = {};
     if (db.ssl) {
-        // Keep sslrootcert/sslcert/sslkey from the URL
-        const url = process.env.DATABASE_URL;
-        const urlSsl = url ? parse(url).ssl : null;
-        const { rejectUnauthorized } = db.ssl;
-        dialectOptions.ssl = { ...urlSsl, rejectUnauthorized };
+        dialectOptions.ssl = db.ssl;
     }
 
     return {

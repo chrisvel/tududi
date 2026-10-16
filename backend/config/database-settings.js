@@ -4,6 +4,8 @@
 // SQLite (a file path) stays the default; PostgreSQL is opted into either
 // with DATABASE_URL=postgres://... or DB_DIALECT=postgres plus DB_HOST etc.
 
+const { parse } = require('pg-connection-string');
+
 const SUPPORTED_DIALECTS = ['sqlite', 'postgres'];
 
 function parseDatabaseUrl(rawUrl) {
@@ -69,6 +71,9 @@ function resolveDatabaseSettings(env, dbFile) {
     const rejectUnauthorized =
         (env.DB_SSL_REJECT_UNAUTHORIZED || '').trim().toLowerCase() !== 'false';
 
+    // Keep sslrootcert/sslcert/sslkey from the URL
+    const urlSsl = env.DATABASE_URL ? parse(env.DATABASE_URL).ssl : null;
+
     const poolMax = env.DB_POOL_MAX ? parseInt(env.DB_POOL_MAX, 10) : 10;
 
     return {
@@ -80,7 +85,7 @@ function resolveDatabaseSettings(env, dbFile) {
         database: env.DB_NAME || (fromUrl && fromUrl.database) || 'tududi',
         username: env.DB_USER || (fromUrl && fromUrl.username) || 'tududi',
         password: env.DB_PASSWORD || (fromUrl && fromUrl.password) || '',
-        ssl: sslEnabled ? { rejectUnauthorized } : false,
+        ssl: sslEnabled ? { ...urlSsl, rejectUnauthorized } : false,
         poolMax: Number.isInteger(poolMax) && poolMax > 0 ? poolMax : 10,
     };
 }

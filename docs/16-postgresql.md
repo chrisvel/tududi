@@ -21,6 +21,7 @@ Requirements: PostgreSQL 14 or newer, an existing database (empty is fine) and a
 | `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Connection parts. Each one overrides the matching part of `DATABASE_URL` when both are set. |
 | `DB_SSL` | `true` to connect over TLS. |
 | `DB_SSL_REJECT_UNAUTHORIZED` | Default `true` (the server certificate is verified). Set `false` only for self-signed certificates on a private network. |
+| `sslrootcert`, `sslcert`, `sslkey` | `DATABASE_URL` parameters with file paths to the CA, client certificate and key, for client certificate (mTLS) auth: `?sslmode=verify-full&sslrootcert=/certs/ca.crt&sslcert=/certs/tls.crt&sslkey=/certs/tls.key`. |
 | `DB_POOL_MAX` | Connections kept per app process. Default 10. |
 | `DB_FILE` | SQLite only. Ignored when PostgreSQL is selected. |
 
