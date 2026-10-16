@@ -312,7 +312,7 @@ END:VCALENDAR`;
         expect(task.reminder_at.toISOString()).toBe('2026-10-17T07:00:00.000Z');
     });
 
-    it('should measure a relative RELATED=END trigger from the due date', async () => {
+    it('should measure a RELATED=END trigger on an all-day task from the start of the due date', async () => {
         const vtodo = `BEGIN:VCALENDAR\r
 VERSION:2.0\r
 BEGIN:VTODO\r
@@ -329,7 +329,17 @@ END:VTODO\r
 END:VCALENDAR`;
 
         const task = await parseVTODOToTask(vtodo, 'Europe/Berlin');
-        expect(task.reminder_at.toISOString()).toBe('2026-10-17T20:59:59.999Z');
+        expect(task.reminder_at.toISOString()).toBe('2026-10-16T21:00:00.000Z');
+    });
+
+    // RELATED=END is the other way a client can name an all-day
+    // due date (jacotec on #1910): the same base as the START
+    // branch, since a DATE value names 00:00 and nothing else.
+    it('should measure a RELATED=END trigger on an all-day task from 00:00 of the due date', async () => {
+        const vtodo = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VTODO\r\nUID:related-end-9h\r\nSUMMARY:Alarm on the due day\r\nDTSTAMP:20261015T095140Z\r\nDUE;VALUE=DATE:20261017\r\nBEGIN:VALARM\r\nTRIGGER;RELATED=END;VALUE=DURATION:PT9H\r\nACTION:DISPLAY\r\nEND:VALARM\r\nEND:VTODO\r\nEND:VCALENDAR`;
+
+        const task = await parseVTODOToTask(vtodo, 'Europe/Berlin');
+        expect(task.reminder_at.toISOString()).toBe('2026-10-17T07:00:00.000Z');
     });
 
     it('should handle VTODO without optional properties', async () => {

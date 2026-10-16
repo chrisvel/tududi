@@ -252,18 +252,20 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
                         typeof triggerVal.toSeconds === 'function'
                     ) {
                         // RFC 5545 3.8.6.3: a relative TRIGGER runs from DTSTART
-                        // unless RELATED=END names the due date. For a DATE
-                        // value it runs from 00:00 in the user's timezone, so
-                        // an all-day due date at 09:00 is PT9H and not a day
-                        // late. DTSTART is still used as the base even when it
-                        // was not a defer date, which is what makes that case
-                        // the common one rather than an edge case.
+                        // unless RELATED=END names the due date. Either way a
+                        // DATE value is measured from 00:00 in the user's
+                        // timezone: it names that instant, and not the 23:59:59.999
+                        // a whole-day due date is stored as, so PT9H on an
+                        // all-day task is 09:00 that day and -PT1H is 23:00 the
+                        // evening before. DTSTART is still used as the base even
+                        // when it was not a defer date, which is what makes that
+                        // case the common one rather than an edge case.
                         const related = String(
                             triggerProp.getParameter('related') || 'START'
                         ).toUpperCase();
                         const base =
                             related === 'END'
-                                ? (due && due.end) || null
+                                ? (due && due.start) || null
                                 : (start && start.start) ||
                                   (due && due.start) ||
                                   null;
