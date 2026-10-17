@@ -18,13 +18,20 @@ function serializeTaskToVTODO(task, options = {}) {
 
     vtodo.addPropertyWithValue('uid', task.uid);
     vtodo.addPropertyWithValue('summary', task.name);
-    vtodo.addPropertyWithValue('dtstamp', ICAL.Time.now());
+    // DTSTAMP is defined in UTC (RFC 5545 3.8.7.2); ICAL.Time.now() returns the
+    // process' local time and serializes without the trailing Z.
+    vtodo.addPropertyWithValue(
+        'dtstamp',
+        ICAL.Time.fromJSDate(new Date(), true)
+    );
 
     const status = STATUS_TUDUDI_TO_ICAL[task.status] || 'NEEDS-ACTION';
     vtodo.addPropertyWithValue('status', status);
 
-    if (task.priority !== null && task.priority !== undefined) {
-        const priority = tududiToIcalPriority(task.priority);
+    // A task with no priority is served without PRIORITY at all: 0 would read
+    // as "undefined" on the way out and as Low on the way back in.
+    const priority = tududiToIcalPriority(task.priority);
+    if (priority !== null) {
         vtodo.addPropertyWithValue('priority', priority);
     }
 
