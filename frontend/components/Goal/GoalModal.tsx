@@ -7,6 +7,7 @@ import { createGoalUrl } from '../../utils/slugUtils';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
 import ColorPicker from '../Shared/ColorPicker';
+import DatePicker from '../Shared/DatePicker';
 import EntitySidePanel from '../SidePanel/EntitySidePanel';
 import {
     SidePanelField,
@@ -240,13 +241,12 @@ const GoalModal: React.FC<GoalModalProps> = ({
                 label={t('forms.goalTargetDate', 'Target Date')}
                 htmlFor="goalTargetDate"
             >
-                <input
-                    id="goalTargetDate"
-                    type="date"
-                    name="target_date"
+                <DatePicker
                     value={formData.target_date ?? ''}
-                    onChange={handleChange}
-                    className={sidePanelInputClass}
+                    onChange={(value) =>
+                        setFormData((prev) => ({ ...prev, target_date: value }))
+                    }
+                    placeholder={t('forms.goalTargetDate', 'Target Date')}
                 />
             </SidePanelField>
 
