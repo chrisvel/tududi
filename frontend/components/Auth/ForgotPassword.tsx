@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getApiPath } from '../../config/paths';
+import { getPostHeadersWithCsrf } from '../../utils/authUtils';
 import AuthPageShell from './AuthPageShell';
 import CaptchaWidget from './CaptchaWidget';
 import { fetchCaptchaConfig, CaptchaConfig } from '../../utils/captcha';
@@ -36,7 +37,9 @@ const ForgotPassword: React.FC = () => {
         try {
             const response = await fetch(getApiPath('forgot-password'), {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                // A signed-in session (e.g. the admin who sent the invite,
+                // in the same browser) makes the server require a CSRF token.
+                headers: await getPostHeadersWithCsrf(),
                 body: JSON.stringify({
                     email,
                     ...(captchaToken ? { captcha_token: captchaToken } : {}),
