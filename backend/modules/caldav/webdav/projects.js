@@ -101,10 +101,15 @@ function calendarProps(displayname, ctag, username, writable = true) {
     };
 }
 
-async function buildItemResponse(task, username, projectUid) {
+async function buildItemResponse(task, username, projectUid, userTimezone) {
     const href = itemHref(username, projectUid, task.uid);
     try {
-        const vtodo = await vtodoSerializer.serializeTaskToVTODO(task);
+        // Without the user's timezone the serializer reads a due date's UTC
+        // date parts, and any task due at local midnight leaks into the
+        // previous day for every client in a UTC+ zone (#1905).
+        const vtodo = await vtodoSerializer.serializeTaskToVTODO(task, {
+            userTimezone,
+        });
         return buildResponse(
             href,
             buildPropstat({
@@ -239,6 +244,7 @@ async function handleProjectPropfind(req, res) {
             return res.status(403).json({ error: 'Forbidden' });
         }
         const userId = req.currentUser.id;
+        const userTimezone = req.currentUser.timezone || 'UTC';
         const proj = await resolveProject(projectUid, userId);
         if (!proj) return res.status(404).json({ error: 'Calendar not found' });
         const depth = parseInt(req.headers.depth || '0', 10);
@@ -257,7 +263,14 @@ async function handleProjectPropfind(req, res) {
             if (!(await canReadTask(task, userId))) {
                 return res.status(404).json({ error: 'Task not found' });
             }
-            responses.push(await buildItemResponse(task, username, projectUid));
+            responses.push(
+                await buildItemResponse(
+                    task,
+                    username,
+                    projectUid,
+                    userTimezone
+                )
+            );
         } else {
             const tasks = await taskRepository.findAll(proj.where, {
                 include: INCLUDE_PROJECT,
@@ -278,7 +291,12 @@ async function handleProjectPropfind(req, res) {
             if (depth > 0) {
                 for (const task of tasks) {
                     responses.push(
-                        await buildItemResponse(task, username, projectUid)
+                        await buildItemResponse(
+                            task,
+                            username,
+                            projectUid,
+                            userTimezone
+                        )
                     );
                 }
             }
@@ -304,6 +322,7 @@ async function handleProjectReport(req, res) {
             return res.status(403).json({ error: 'Forbidden' });
         }
         const userId = req.currentUser.id;
+        const userTimezone = req.currentUser.timezone || 'UTC';
         const proj = await resolveProject(projectUid, userId);
         if (!proj) return res.status(404).json({ error: 'Calendar not found' });
 
@@ -350,7 +369,8 @@ async function handleProjectReport(req, res) {
                                 'D:getetag': generateETag(task),
                                 'C:calendar-data':
                                     await vtodoSerializer.serializeTaskToVTODO(
-                                        task
+                                        task,
+                                        { userTimezone }
                                     ),
                             })
                         )
@@ -378,7 +398,9 @@ async function handleProjectReport(req, res) {
                 const props = { 'D:getetag': generateETag(task) };
                 if (includeData) {
                     props['C:calendar-data'] =
-                        await vtodoSerializer.serializeTaskToVTODO(task);
+                        await vtodoSerializer.serializeTaskToVTODO(task, {
+                            userTimezone,
+                        });
                 }
                 responses.push(
                     buildResponse(
