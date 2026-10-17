@@ -2151,7 +2151,13 @@ const QuickCaptureInput = React.forwardRef<
                 remaining: string[],
                 attached = 0
             ) => {
-                setInputText(remaining.join('\n'));
+                // Back to the text the box opened with, e.g. the +"Project"
+                // token from a project page, so the next item lands there too
+                setInputText(
+                    remaining.length > 0
+                        ? remaining.join('\n')
+                        : prefillText || ''
+                );
                 if (remaining.length === 0) setPicked(NO_PICKS);
                 setAnalysisResult(null);
                 setUrlPreview(null);
