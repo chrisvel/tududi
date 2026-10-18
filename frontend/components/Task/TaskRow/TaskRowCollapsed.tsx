@@ -26,6 +26,10 @@ import {
     getYesterdayDateString,
 } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
+import QuickCaptureInput, {
+    QuickCaptureInputHandle,
+} from '../../Inbox/QuickCaptureInput';
+import { useStore } from '../../../store/useStore';
 import PriorityBadge, {
     PriorityLevel,
     toPriorityLevel,
@@ -113,7 +117,9 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
 }) => {
     const { t } = useTranslation();
     const currentName = task.original_name || task.name;
-    const titleInputRef = useRef<HTMLInputElement>(null);
+    const titleInputRef = useRef<QuickCaptureInputHandle>(null);
+    const pressingInsideTitleRef = useRef(false);
+    const projects = useStore((state: any) => state.projectsStore?.projects);
     const [draftName, setDraftName] = useState(currentName);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
@@ -154,8 +160,8 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
         }
     }, [editable]);
 
-    const commitTitle = () => {
-        const trimmed = draftName.trim();
+    const commitTitle = (text: string = draftName) => {
+        const trimmed = text.trim();
         if (trimmed && trimmed !== currentName) {
             void onSaveTitle?.(trimmed);
         } else if (!trimmed) {
@@ -262,29 +268,43 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         />
                     )}
                     {editable && onSaveTitle ? (
-                        <input
-                            ref={titleInputRef}
-                            value={draftName}
+                        <div
+                            className="flex-1 min-w-0 text-[15px] font-normal tracking-tight"
                             onClick={stop}
-                            onChange={(e) => setDraftName(e.target.value)}
-                            onBlur={commitTitle}
-                            onKeyDown={(e) => {
-                                e.stopPropagation();
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
+                            onMouseDownCapture={() => {
+                                pressingInsideTitleRef.current = true;
+                                document.addEventListener(
+                                    'mouseup',
+                                    () => {
+                                        pressingInsideTitleRef.current = false;
+                                    },
+                                    { once: true }
+                                );
+                            }}
+                            onBlur={() => {
+                                if (!pressingInsideTitleRef.current)
                                     commitTitle();
-                                    titleInputRef.current?.blur();
-                                } else if (e.key === 'Escape') {
+                            }}
+                            onKeyDown={(e) => e.stopPropagation()}
+                        >
+                            <QuickCaptureInput
+                                ref={titleInputRef}
+                                mode="edit"
+                                bare
+                                multiline={false}
+                                hidePrimaryButton
+                                initialValue={currentName}
+                                projects={projects}
+                                onTextChange={setDraftName}
+                                onSubmitOverride={async (text) => {
+                                    commitTitle(text);
+                                }}
+                                onEscape={() => {
                                     setDraftName(currentName);
                                     onEscape?.();
-                                }
-                            }}
-                            className="flex-1 min-w-0 bg-transparent text-[15px] font-normal tracking-tight text-gray-900 dark:text-gray-100 border-0 p-0 focus:outline-none focus:ring-0"
-                            placeholder={t(
-                                'forms.task.namePlaceholder',
-                                'Task name'
-                            )}
-                        />
+                                }}
+                            />
+                        </div>
                     ) : (
                         <span
                             className={`text-[15px] font-normal tracking-tight ${
@@ -419,6 +439,9 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                             <span className="flex items-center whitespace-nowrap">
                                 <CalendarIcon className="h-3 w-3 mr-1" />
                                 {formatDue(task.due_date)}
+                                {task.due_has_time &&
+                                    task.due_time &&
+                                    ` ${task.due_time}`}
                             </span>
                         )}
                         {isTaskCompleted(task.status) && task.completed_at && (

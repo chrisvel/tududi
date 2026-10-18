@@ -79,6 +79,7 @@ module.exports = (sequelize) => {
                             'mobile',
                             'email',
                             'push',
+                            'apprise',
                         ];
                         const invalidSources = value.filter(
                             (s) => !validSources.includes(s)
@@ -186,8 +187,34 @@ module.exports = (sequelize) => {
             await sendPushNotification(notification);
         }
 
+        if (sources.includes('apprise')) {
+            await sendAppriseNotification(notification);
+        }
+
         return notification;
     };
+
+    async function sendAppriseNotification(notificationInstance) {
+        try {
+            if (
+                notificationInstance.wasChannelRecentlySent(
+                    'apprise',
+                    24 * 60 * 60 * 1000
+                )
+            ) {
+                return;
+            }
+
+            const appriseService = require('../modules/apprise/service');
+            const delivered =
+                await appriseService.sendNotification(notificationInstance);
+            if (delivered) {
+                await notificationInstance.markChannelAsSent('apprise');
+            }
+        } catch (error) {
+            console.error('Failed to send Apprise notification:', error);
+        }
+    }
 
     async function sendPushNotification(notificationInstance) {
         try {

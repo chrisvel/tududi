@@ -18,48 +18,63 @@ describe('notificationPreferences utils', () => {
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
                 overdueTasks: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
                 dueProjects: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
                 overdueProjects: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
                 deferUntil: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
                 taskAssigned: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
                 habitReminders: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
+                },
+                taskReminders: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                    apprise: false,
                 },
                 comments: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
             });
         });
@@ -224,6 +239,7 @@ describe('notificationPreferences utils', () => {
                 project_due_soon: 'dueProjects',
                 project_overdue: 'overdueProjects',
                 task_assigned: 'taskAssigned',
+                task_reminder: 'taskReminders',
                 comment_added: 'comments',
                 mention: 'comments',
             });
@@ -264,12 +280,14 @@ describe('notificationPreferences utils', () => {
                     email: true,
                     push: false,
                     telegram: true,
+                    apprise: false,
                 },
                 overdueTasks: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
             };
 
@@ -285,18 +303,21 @@ describe('notificationPreferences utils', () => {
                 email: false,
                 push: false,
                 telegram: false,
+                apprise: false,
             });
             expect(result.overdueProjects).toEqual({
                 inApp: true,
                 email: false,
                 push: false,
                 telegram: false,
+                apprise: false,
             });
             expect(result.deferUntil).toEqual({
                 inApp: true,
                 email: false,
                 push: false,
                 telegram: false,
+                apprise: false,
             });
         });
 
@@ -314,12 +335,14 @@ describe('notificationPreferences utils', () => {
                 email: true,
                 push: false,
                 telegram: false,
+                apprise: false,
             });
             expect(result.overdueTasks).toEqual({
                 inApp: true,
                 email: false,
                 push: false,
                 telegram: false,
+                apprise: false,
             });
         });
 
@@ -330,48 +353,63 @@ describe('notificationPreferences utils', () => {
                     email: true,
                     push: false,
                     telegram: true,
+                    apprise: false,
                 },
                 overdueTasks: {
                     inApp: true,
                     email: false,
                     push: true,
                     telegram: false,
+                    apprise: false,
                 },
                 dueProjects: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
                 overdueProjects: {
                     inApp: false,
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
                 deferUntil: {
                     inApp: true,
                     email: true,
                     push: false,
                     telegram: true,
+                    apprise: false,
                 },
                 taskAssigned: {
                     inApp: false,
                     email: true,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
                 habitReminders: {
                     inApp: false,
                     email: false,
                     push: false,
                     telegram: true,
+                    apprise: false,
+                },
+                taskReminders: {
+                    inApp: false,
+                    email: false,
+                    push: false,
+                    telegram: true,
+                    apprise: false,
                 },
                 comments: {
                     inApp: true,
                     email: false,
                     push: true,
                     telegram: false,
+                    apprise: false,
                 },
             };
 
@@ -388,6 +426,7 @@ describe('notificationPreferences utils', () => {
                     email: false,
                     push: false,
                     telegram: false,
+                    apprise: false,
                 },
             };
 
@@ -399,6 +438,7 @@ describe('notificationPreferences utils', () => {
                 email: false,
                 push: false,
                 telegram: false,
+                apprise: false,
             });
 
             // Valid type should be preserved

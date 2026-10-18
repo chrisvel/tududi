@@ -117,6 +117,35 @@ function isOverdue(utcDate, userTimezone) {
 }
 
 /**
+ * Convert a local date and time (YYYY-MM-DD + HH:mm) in the user's timezone to UTC
+ * @param {string} dateString - Date in YYYY-MM-DD format
+ * @param {string} timeString - Time in HH:mm (24-hour) format
+ * @param {string} userTimezone - User's timezone
+ * @returns {Date|null} UTC Date object, or null when either part is missing or invalid
+ */
+function dueDateTimeToUTC(dateString, timeString, userTimezone) {
+    if (!dateString || !timeString) return null;
+
+    const parsed = moment.tz(
+        `${dateString} ${timeString}`,
+        'YYYY-MM-DD HH:mm',
+        true,
+        userTimezone
+    );
+    return parsed.isValid() ? parsed.utc().toDate() : null;
+}
+
+/**
+ * Convert a UTC instant to the user's local HH:mm time
+ * @param {Date} utcDate - UTC Date object
+ * @param {string} userTimezone - User's timezone
+ * @returns {string} Time in HH:mm format
+ */
+function utcToUserTimeString(utcDate, userTimezone) {
+    return moment.utc(utcDate).tz(userTimezone).format('HH:mm');
+}
+
+/**
  * Convert due_date from request body to UTC Date for database storage
  * @param {string} dueDateString - Due date from frontend (YYYY-MM-DD)
  * @param {string} userTimezone - User's timezone
@@ -227,6 +256,8 @@ module.exports = {
     isOverdue,
     processDueDateForStorage,
     processDueDateForResponse,
+    dueDateTimeToUTC,
+    utcToUserTimeString,
     processDeferUntilForStorage,
     processDeferUntilForResponse,
     isValidTimezone,

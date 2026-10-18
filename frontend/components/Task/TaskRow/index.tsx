@@ -578,6 +578,9 @@ const TaskRow: React.FC<TaskRowProps> = ({
                                     }}
                                     projects={projects}
                                     hideProjectName
+                                    // The handler above only updates this
+                                    // list, so the row saves its own status.
+                                    saveStatusChanges
                                     compact
                                 />
                             ))

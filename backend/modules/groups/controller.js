@@ -22,6 +22,19 @@ const groupsController = {
         }
     },
 
+    async getPage(req, res, next) {
+        try {
+            const page = await groupsService.getPage(
+                requireUserId(req),
+                req.params.uid,
+                req.currentUser?.timezone
+            );
+            res.json(page);
+        } catch (err) {
+            next(err);
+        }
+    },
+
     async list(req, res, next) {
         try {
             const groups = await groupsService.listForAdmin(requireUserId(req));

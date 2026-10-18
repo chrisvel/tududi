@@ -99,6 +99,18 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+            apprise_url: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            },
+            apprise_key: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            },
+            apprise_tags: {
+                type: DataTypes.STRING(200),
+                allowNull: true,
+            },
             task_summary_enabled: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

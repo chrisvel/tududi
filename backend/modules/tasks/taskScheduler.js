@@ -33,6 +33,7 @@ const getCronExpression = (frequency) => {
         deferred_tasks: '*/5 * * * *',
         due_tasks: '*/15 * * * *',
         due_projects: '*/15 * * * *',
+        task_reminders: '* * * * *',
         habit_reminders: '*/5 * * * *',
         account_lifecycle: '0 3 * * *',
     };
@@ -53,6 +54,9 @@ const runJob = async (frequency) => {
             runAccountLifecycle,
         } = require('../../services/trialLifecycleService');
         await runAccountLifecycle();
+    } else if (frequency === 'task_reminders') {
+        const { checkTaskReminders } = require('./taskReminderService');
+        await checkTaskReminders();
     } else if (frequency === 'habit_reminders') {
         const {
             checkHabitReminders,
@@ -84,6 +88,7 @@ const createJobEntries = () => {
         'deferred_tasks',
         'due_tasks',
         'due_projects',
+        'task_reminders',
         'habit_reminders',
         'account_lifecycle',
     ];
