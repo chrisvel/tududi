@@ -207,9 +207,10 @@ async function startTrialOnReturn(userId) {
     return startTrial(userId);
 }
 
-// Reasons an owner's plan counts as paid, so the members it added share it.
-// An admin's exemption and a bare trial are not seats anybody paid for.
-const SEAT_REASONS = ['subscription', 'grace', 'override'];
+// Reasons an owner's plan reaches the members it added. An admin's exemption
+// is not a seat anybody paid for. A trial's member shares the trial until it
+// ends.
+const SEAT_REASONS = ['subscription', 'grace', 'override', 'trial'];
 
 // A member of an account sits on the account owner's subscription: when the
 // member has nothing of its own, it gets the owner's plan for as long as the

@@ -1,0 +1,81 @@
+{
+    "common": {
+        "greeting": "Cześć,",
+        "signoff": "Pozdrawiamy,\nZespół Tududi",
+        "copyLink": "Możesz też skopiować ten link i wkleić go w przeglądarce:"
+    },
+    "verification": {
+        "subject": "Witamy w Tududi - Zweryfikuj swój adres e-mail",
+        "welcome": "Witamy w Tududi!",
+        "opening": "Dziękujemy za rejestrację. Aby ją dokończyć i zacząć korzystać z Tududi, zweryfikuj swój adres e-mail, klikając poniższy link:",
+        "button": "Zweryfikuj adres e-mail",
+        "expires_one": "Ten link weryfikacyjny wygaśnie za {{count}} godzinę.",
+        "expires_few": "Ten link weryfikacyjny wygaśnie za {{count}} godziny.",
+        "expires_many": "Ten link weryfikacyjny wygaśnie za {{count}} godzin.",
+        "expires_other": "Ten link weryfikacyjny wygaśnie za {{count}} godziny.",
+        "trial_one": "Weryfikacja rozpoczyna też Twój bezpłatny {{count}}-dniowy okres próbny, bez podawania karty. Obejmuje on Asystenta AI z mniejszym limitem oraz jednego członka, którego możesz dodać, na przykład partnera lub współpracownika. Publiczne linki do notatek zaczną działać, gdy wykupisz subskrypcję.",
+        "trial_few": "Weryfikacja rozpoczyna też Twój bezpłatny {{count}}-dniowy okres próbny, bez podawania karty. Obejmuje on Asystenta AI z mniejszym limitem oraz jednego członka, którego możesz dodać, na przykład partnera lub współpracownika. Publiczne linki do notatek zaczną działać, gdy wykupisz subskrypcję.",
+        "trial_many": "Weryfikacja rozpoczyna też Twój bezpłatny {{count}}-dniowy okres próbny, bez podawania karty. Obejmuje on Asystenta AI z mniejszym limitem oraz jednego członka, którego możesz dodać, na przykład partnera lub współpracownika. Publiczne linki do notatek zaczną działać, gdy wykupisz subskrypcję.",
+        "trial_other": "Weryfikacja rozpoczyna też Twój bezpłatny {{count}}-dniowy okres próbny, bez podawania karty. Obejmuje on Asystenta AI z mniejszym limitem oraz jednego członka, którego możesz dodać, na przykład partnera lub współpracownika. Publiczne linki do notatek zaczną działać, gdy wykupisz subskrypcję.",
+        "benefitsIntro": "Po weryfikacji możesz:",
+        "benefits": [
+            "Łatwo tworzyć i porządkować zadania",
+            "Zarządzać projektami i obszarami",
+            "Ustawiać zadania cykliczne",
+            "Śledzić swoją produktywność"
+        ],
+        "ignore": "Jeśli konto w Tududi nie zostało założone przez Ciebie, możesz po prostu zignorować tę wiadomość."
+    },
+    "verificationReminder": {
+        "subject": "Przypomnienie: zweryfikuj adres e-mail, aby zacząć korzystać z Tududi",
+        "opening": "Mniej więcej dzień temu zarejestrowano konto w Tududi na ten adres, ale adres e-mail nie został jeszcze zweryfikowany. Twoje konto (i bezpłatny okres próbny) zacznie działać, gdy tylko go zweryfikujesz."
+    },
+    "passwordReset": {
+        "subject": "Zresetuj hasło do Tududi",
+        "intro": "Ktoś poprosił o zresetowanie hasła do Twojego konta Tududi.",
+        "action": "Otwórz ten link, aby ustawić nowe hasło:",
+        "button": "Ustaw nowe hasło",
+        "expires_one": "Link wygaśnie za {{count}} minutę. Jeśli to nie była Twoja prośba, zignoruj tę wiadomość; hasło pozostanie bez zmian.",
+        "expires_few": "Link wygaśnie za {{count}} minuty. Jeśli to nie była Twoja prośba, zignoruj tę wiadomość; hasło pozostanie bez zmian.",
+        "expires_many": "Link wygaśnie za {{count}} minut. Jeśli to nie była Twoja prośba, zignoruj tę wiadomość; hasło pozostanie bez zmian.",
+        "expires_other": "Link wygaśnie za {{count}} minuty. Jeśli to nie była Twoja prośba, zignoruj tę wiadomość; hasło pozostanie bez zmian."
+    },
+    "memberInvite": {
+        "subject": "Dodano Cię do obszaru roboczego Tududi",
+        "intro": "Dodano Cię do obszaru roboczego Tududi.",
+        "action": "Ustaw hasło, aby aktywować konto i się zalogować:",
+        "button": "Ustaw hasło",
+        "expires_one": "Link wygaśnie za {{count}} godzinę. Jeśli się tego nie spodziewasz, możesz zignorować tę wiadomość.",
+        "expires_few": "Link wygaśnie za {{count}} godziny. Jeśli się tego nie spodziewasz, możesz zignorować tę wiadomość.",
+        "expires_many": "Link wygaśnie za {{count}} godzin. Jeśli się tego nie spodziewasz, możesz zignorować tę wiadomość.",
+        "expires_other": "Link wygaśnie za {{count}} godziny. Jeśli się tego nie spodziewasz, możesz zignorować tę wiadomość."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Twój okres próbny tududi kończy się jutro",
+        "subjectDays_one": "Twój okres próbny tududi kończy się za {{count}} dzień",
+        "subjectDays_few": "Twój okres próbny tududi kończy się za {{count}} dni",
+        "subjectDays_many": "Twój okres próbny tududi kończy się za {{count}} dni",
+        "subjectDays_other": "Twój okres próbny tududi kończy się za {{count}} dnia",
+        "endsTomorrow": "Twój okres próbny tududi Cloud kończy się jutro, {{date}}.",
+        "endsInDays_one": "Twój okres próbny tududi Cloud kończy się za {{count}} dzień, {{date}}.",
+        "endsInDays_few": "Twój okres próbny tududi Cloud kończy się za {{count}} dni, {{date}}.",
+        "endsInDays_many": "Twój okres próbny tududi Cloud kończy się za {{count}} dni, {{date}}.",
+        "endsInDays_other": "Twój okres próbny tududi Cloud kończy się za {{count}} dnia, {{date}}.",
+        "afterReadOnly_one": "Potem przez {{count}} dzień konto będzie tylko do odczytu, aby można było jeszcze wyeksportować dane, a następnie zostanie usunięte.",
+        "afterReadOnly_few": "Potem przez {{count}} dni konto będzie tylko do odczytu, aby można było jeszcze wyeksportować dane, a następnie zostanie usunięte.",
+        "afterReadOnly_many": "Potem przez {{count}} dni konto będzie tylko do odczytu, aby można było jeszcze wyeksportować dane, a następnie zostanie usunięte.",
+        "afterReadOnly_other": "Potem przez {{count}} dnia konto będzie tylko do odczytu, aby można było jeszcze wyeksportować dane, a następnie zostanie usunięte.",
+        "afterFree": "Potem Twoje konto przejdzie na darmowy plan.",
+        "keep": "Aby dalej korzystać z tududi Cloud tak jak teraz, razem z Asystentem AI i członkami, wykup subskrypcję:",
+        "button": "Subskrybuj"
+    },
+    "deletionWarning": {
+        "subject": "Twoje konto tududi zostanie usunięte {{date}}",
+        "ended": "Twój okres próbny tududi Cloud dobiegł końca i od tego czasu konto jest tylko do odczytu.",
+        "deleteOn": "{{date}} konto i cała jego zawartość zostaną usunięte.",
+        "keep": "Aby je zachować, wykup subskrypcję:",
+        "button": "Zachowaj moje konto",
+        "export": "Jeśli wolisz zabrać swoje dane, wyeksportuj je ze strony Kopia zapasowa i przywracanie:",
+        "final": "Jeśli nic nie zrobisz, konto zostanie usunięte {{date}}, a to ostatni e-mail, jaki w tej sprawie od nas otrzymasz."
+    }
+}

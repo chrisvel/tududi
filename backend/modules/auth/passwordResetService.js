@@ -5,7 +5,8 @@ const { Op } = require('sequelize');
 const { User } = require('../../models');
 const { getConfig } = require('../../config/config');
 const { logError, logInfo } = require('../../services/logService');
-const { sendEmail, isEmailEnabled } = require('../../services/emailService');
+const { isEmailEnabled } = require('../../services/emailService');
+const { deliver } = require('../../services/emailDeliveryService');
 const { destroyUserSessions } = require('../../services/sessionService');
 const {
     validatePassword,
@@ -34,42 +35,10 @@ async function issueResetToken(user, expiresAt = tokenExpiry()) {
     return token;
 }
 
-const buildInviteEmail = (setPasswordUrl, expiryHours) => {
-    const subject = 'You have been added to a Tududi workspace';
-    const text = `You have been added to a Tududi workspace.
-
-Choose a password to activate your account and sign in:
-
-${setPasswordUrl}
-
-The link expires in ${expiryHours} hours. If you were not expecting this, you can ignore this email.
-
-Best regards,
-The Tududi Team`;
-
-    const html = `
-<p>You have been added to a Tududi workspace.</p>
-
-<p>Choose a password to activate your account and sign in:</p>
-
-<p style="text-align: center; margin: 30px 0;">
-    <a href="${setPasswordUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Set your password</a>
-</p>
-
-<p>Or copy and paste this link into your browser:</p>
-<p style="word-break: break-all; color: #666;">${setPasswordUrl}</p>
-
-<p><strong>The link expires in ${expiryHours} hours.</strong> If you were not expecting this, you can ignore this email.</p>
-
-<p>Best regards,<br>The Tududi Team</p>
-`;
-    return { subject, text, html };
-};
-
 // Creates a set-password token for an admin-created account and emails the
 // activation link. Returns whether the email was actually sent so the caller
 // can report it; unlike registration, the account is kept either way.
-async function sendMemberInviteEmail(user) {
+async function sendMemberInviteEmail(user, { triggeredBy = null } = {}) {
     const config = getConfig();
     const hours = config.inviteTokenExpiryHours;
     const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
@@ -83,9 +52,10 @@ async function sendMemberInviteEmail(user) {
     }
 
     const setPasswordUrl = `${config.frontendUrl}/reset-password?token=${token}`;
-    const result = await sendEmail({
-        to: user.email,
-        ...buildInviteEmail(setPasswordUrl, hours),
+    const result = await deliver('memberInvite', {
+        user,
+        triggeredBy,
+        vars: { url: setPasswordUrl, expiryHours: hours },
     });
 
     if (result.success) {
@@ -99,39 +69,9 @@ async function sendMemberInviteEmail(user) {
     return { sent: !!result.success };
 }
 
-const buildResetEmail = (resetUrl, minutes) => {
-    const subject = 'Reset your Tududi password';
-    const text = `Someone asked to reset the password for your Tududi account.
-
-Open this link to choose a new password:
-
-${resetUrl}
-
-The link expires in ${minutes} minutes. If you did not ask for a reset, ignore this email; your password stays as it is.
-
-Best regards,
-The Tududi Team`;
-
-    const html = `
-<p>Someone asked to reset the password for your Tududi account.</p>
-
-<p style="text-align: center; margin: 30px 0;">
-    <a href="${resetUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Choose a new password</a>
-</p>
-
-<p>Or copy and paste this link into your browser:</p>
-<p style="word-break: break-all; color: #666;">${resetUrl}</p>
-
-<p><strong>The link expires in ${minutes} minutes.</strong> If you did not ask for a reset, ignore this email; your password stays as it is.</p>
-
-<p>Best regards,<br>The Tududi Team</p>
-`;
-    return { subject, text, html };
-};
-
 // Records a reset token for the account behind `email` (if any) and emails
 // the link. Returns nothing the caller could use to tell the cases apart.
-async function requestPasswordReset(email) {
+async function requestPasswordReset(email, { triggeredBy = null } = {}) {
     const normalized = String(email).trim().toLowerCase();
     const user = await User.findOne({ where: { email: normalized } });
     if (!user) {
@@ -151,9 +91,10 @@ async function requestPasswordReset(email) {
     const config = getConfig();
     const resetUrl = `${config.frontendUrl}/reset-password?token=${token}`;
     const minutes = config.passwordResetConfig.tokenExpiryMinutes;
-    const result = await sendEmail({
-        to: user.email,
-        ...buildResetEmail(resetUrl, minutes),
+    const result = await deliver('passwordReset', {
+        user,
+        triggeredBy,
+        vars: { url: resetUrl, expiryMinutes: minutes },
     });
 
     if (result.success) {

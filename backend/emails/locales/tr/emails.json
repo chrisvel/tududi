@@ -1,0 +1,67 @@
+{
+    "common": {
+        "greeting": "Merhaba,",
+        "signoff": "Saygılarımızla,\nTududi Ekibi",
+        "copyLink": "Ya da bu bağlantıyı kopyalayıp tarayıcınıza yapıştırın:"
+    },
+    "verification": {
+        "subject": "Tududi'ye hoş geldiniz - E-posta adresinizi doğrulayın",
+        "welcome": "Tududi'ye hoş geldiniz!",
+        "opening": "Kaydolduğunuz için teşekkürler. Kaydınızı tamamlamak ve Tududi'yi kullanmaya başlamak için aşağıdaki bağlantıya tıklayarak e-posta adresinizi doğrulayın:",
+        "button": "E-posta Adresini Doğrula",
+        "expires_one": "Bu doğrulama bağlantısının süresi {{count}} saat içinde dolacak.",
+        "expires_other": "Bu doğrulama bağlantısının süresi {{count}} saat içinde dolacak.",
+        "trial_one": "Doğrulama aynı zamanda {{count}} günlük ücretsiz denemenizi de başlatır, kart gerekmez. Deneme, daha düşük kullanım hakkıyla yapay zeka asistanını ve ekleyebileceğiniz bir üyeyi (örneğin partneriniz veya bir ekip arkadaşınız) içerir. Herkese açık not bağlantıları abone olduğunuzda açılır.",
+        "trial_other": "Doğrulama aynı zamanda {{count}} günlük ücretsiz denemenizi de başlatır, kart gerekmez. Deneme, daha düşük kullanım hakkıyla yapay zeka asistanını ve ekleyebileceğiniz bir üyeyi (örneğin partneriniz veya bir ekip arkadaşınız) içerir. Herkese açık not bağlantıları abone olduğunuzda açılır.",
+        "benefitsIntro": "Doğrulamadan sonra şunları yapabileceksiniz:",
+        "benefits": [
+            "Görevleri kolayca oluşturup düzenlemek",
+            "Projeleri ve alanları yönetmek",
+            "Tekrarlayan görevler ayarlamak",
+            "Verimliliğinizi takip etmek"
+        ],
+        "ignore": "Tududi'de bir hesap oluşturmadıysanız bu e-postayı güvenle yok sayabilirsiniz."
+    },
+    "verificationReminder": {
+        "subject": "Hatırlatma: Tududi'yi kullanmaya başlamak için e-posta adresinizi doğrulayın",
+        "opening": "Yaklaşık bir gün önce Tududi'ye kaydoldunuz, ancak e-posta adresiniz henüz doğrulanmadı. Hesabınız (ve ücretsiz denemeniz) adresinizi doğruladığınız anda başlar."
+    },
+    "passwordReset": {
+        "subject": "Tududi şifrenizi sıfırlayın",
+        "intro": "Biri Tududi hesabınızın şifresini sıfırlamak istedi.",
+        "action": "Yeni bir şifre belirlemek için bu bağlantıyı açın:",
+        "button": "Yeni şifre belirle",
+        "expires_one": "Bağlantının süresi {{count}} dakika içinde dolacak. Sıfırlama isteğinde bulunmadıysanız bu e-postayı yok sayın; şifreniz değişmeden kalır.",
+        "expires_other": "Bağlantının süresi {{count}} dakika içinde dolacak. Sıfırlama isteğinde bulunmadıysanız bu e-postayı yok sayın; şifreniz değişmeden kalır."
+    },
+    "memberInvite": {
+        "subject": "Bir Tududi çalışma alanına eklendiniz",
+        "intro": "Bir Tududi çalışma alanına eklendiniz.",
+        "action": "Hesabınızı etkinleştirip giriş yapmak için bir şifre belirleyin:",
+        "button": "Şifrenizi belirleyin",
+        "expires_one": "Bağlantının süresi {{count}} saat içinde dolacak. Bunu beklemiyorsanız bu e-postayı yok sayabilirsiniz.",
+        "expires_other": "Bağlantının süresi {{count}} saat içinde dolacak. Bunu beklemiyorsanız bu e-postayı yok sayabilirsiniz."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "tududi denemeniz yarın sona eriyor",
+        "subjectDays_one": "tududi denemeniz {{count}} gün içinde sona eriyor",
+        "subjectDays_other": "tududi denemeniz {{count}} gün içinde sona eriyor",
+        "endsTomorrow": "tududi Cloud denemeniz yarın, {{date}} tarihinde sona eriyor.",
+        "endsInDays_one": "tududi Cloud denemeniz {{count}} gün içinde, {{date}} tarihinde sona eriyor.",
+        "endsInDays_other": "tududi Cloud denemeniz {{count}} gün içinde, {{date}} tarihinde sona eriyor.",
+        "afterReadOnly_one": "Bundan sonra hesabınız {{count}} gün boyunca salt okunur olur, böylece verilerinizi yine de dışa aktarabilirsiniz; ardından silinir.",
+        "afterReadOnly_other": "Bundan sonra hesabınız {{count}} gün boyunca salt okunur olur, böylece verilerinizi yine de dışa aktarabilirsiniz; ardından silinir.",
+        "afterFree": "Bundan sonra hesabınız ücretsiz plana geçer.",
+        "keep": "tududi Cloud'u yapay zeka asistanı ve üyeler dahil şimdiki gibi kullanmaya devam etmek için abone olun:",
+        "button": "Abone ol"
+    },
+    "deletionWarning": {
+        "subject": "tududi hesabınız {{date}} tarihinde silinecek",
+        "ended": "tududi Cloud denemeniz sona erdi ve hesabınız o zamandan beri salt okunur durumda.",
+        "deleteOn": "{{date}} tarihinde hesap ve içindeki her şey silinecek.",
+        "keep": "Hesabı korumak için abone olun:",
+        "button": "Hesabımı koru",
+        "export": "Bunun yerine verilerinizi yanınıza almak isterseniz, Yedekleme sayfasından dışa aktarın:",
+        "final": "Hiçbir şey yapmazsanız hesap {{date}} tarihinde silinir ve bu, bu konuda bizden alacağınız son e-posta olur."
+    }
+}

@@ -275,7 +275,7 @@
         "priceNote": "Wszystko włączone. Anuluj w każdej chwili.",
         "actionTrial": "Wypróbuj za darmo →",
         "priceNoteTrial": "{{days}} dni za darmo, bez karty. Rezygnacja w każdej chwili.",
-        "trialNote": "Okres próbny obejmuje wszystko poza asystentem AI, publicznymi linkami do notatek i dodawaniem członków."
+        "trialNote": "Okres próbny obejmuje asystenta AI z mniejszym limitem i jednego członka, którego możesz dodać. Publiczne linki do notatek odblokują się po wykupieniu subskrypcji."
       }
     },
     "fineprint": "Zrezygnuj w każdej chwili i wyeksportuj wszystko. Gdyby tududi Cloud kiedykolwiek został zamknięty, otrzymasz swoje dane i przewodnik migracji na własny serwer. Do przestrzeni i ruchu API stosuje się zasada fair use. 14-dniowa gwarancja zwrotu pieniędzy, bez pytań.",
@@ -355,7 +355,7 @@
       "freePlan": {
         "a": "Nie. Cloud kosztuje {{monthly}} miesięcznie lub {{price}} rocznie za osobę, i to jest cała lista cen: żadnego darmowego poziomu, żadnego zegara próbnego, żadnej karty obciążonej za coś, co później dyskretnie zaczyna naliczać opłaty. Jest 14-dniowa gwarancja zwrotu pieniędzy, jeśli okaże się, że to nie dla Ciebie, i jest na tej stronie demo na żywo, jeśli chcesz najpierw popatrzeć. Darmowy sposób na używanie tududi to prowadzenie go na własnym serwerze, co jest tą samą aplikacją.",
         "q": "Jest darmowy plan lub okres próbny w tududi Cloud?",
-        "aTrial": "Nie ma darmowego planu, ale każde nowe konto dostaje bezpłatny okres próbny na {{days}} dni, bez karty. Okres próbny obejmuje wszystko poza asystentem AI, publicznymi linkami do notatek i dodawaniem członków. Jeśli nie wykupisz subskrypcji, konto przez 30 dni będzie tylko do odczytu, abyś mógł wyeksportować dane, a potem zostanie usunięte. Po okresie próbnym Cloud kosztuje {{monthly}} miesięcznie lub {{price}} rocznie za osobę. Darmowy sposób korzystania z tududi to uruchomienie go na własnym serwerze, to ta sama aplikacja."
+        "aTrial": "Nie ma darmowego planu, ale każde nowe konto dostaje bezpłatny okres próbny na {{days}} dni, bez karty. Okres próbny obejmuje asystenta AI z mniejszym limitem i jednego członka, którego możesz dodać. Publiczne linki do notatek odblokują się po wykupieniu subskrypcji. Jeśli nie wykupisz subskrypcji, konto przez 30 dni będzie tylko do odczytu, abyś mógł wyeksportować dane, a potem zostanie usunięte. Po okresie próbnym Cloud kosztuje {{monthly}} miesięcznie lub {{price}} rocznie za osobę. Darmowy sposób korzystania z tududi to uruchomienie go na własnym serwerze, to ta sama aplikacja."
       },
       "leaving": {
         "q": "Czy mogę odejść i co stanie się z moimi danymi?",

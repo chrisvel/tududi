@@ -69,7 +69,7 @@ describe('entitlementsService with hosted mode on', () => {
 
     afterEach(() => {
         config.hosted.enabled = false;
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         delete process.env.TUDUDI_PLANS_JSON;
         plans._resetCache();
         entitlements.invalidate();
@@ -97,21 +97,22 @@ describe('entitlementsService with hosted mode on', () => {
     });
 
     it('starts no trial until the email is verified', async () => {
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         const ent = await entitlements.getEntitlements(user.id);
         expect(ent.reason).toBe('free');
         expect(ent.trial_ends_at).toBeNull();
     });
 
     it('starts the trial once, on the trial plan', async () => {
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         await entitlements.startTrial(user.id);
         const ent = await entitlements.getEntitlements(user.id);
         expect(ent.plan).toBe('trial');
         expect(ent.reason).toBe('trial');
-        expect(ent.features.ai).toBe(false);
+        expect(ent.features.ai).toBe(true);
+        expect(ent.limits.ai_requests_per_month).toBe(30);
         expect(ent.features.public_notes).toBe(false);
-        expect(ent.limits.max_members).toBe(0);
+        expect(ent.limits.max_members).toBe(1);
         expect(new Date(ent.trial_ends_at).getTime()).toBeGreaterThan(
             Date.now()
         );

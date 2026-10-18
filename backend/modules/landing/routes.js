@@ -9,6 +9,7 @@ const { logError } = require('../../services/logService');
 const { getStats } = require('./stats');
 const waitlist = require('../../services/waitlistService');
 const emailService = require('../../services/emailService');
+const { renderEmail } = require('../../emails');
 const { createRateLimitStore } = require('../../middleware/rateLimitStore');
 
 // Whether to offer the demo, refreshed in the background so a page render
@@ -524,8 +525,12 @@ function createLandingRouter(landing) {
             const result = await emailService.sendEmail({
                 to: LEGAL_OPERATOR.email,
                 replyTo: `"${safeName.replace(/"/g, "'")}" <${email}>`,
-                subject: `[tududi contact] ${safeName}`,
-                text: `From: ${safeName} <${email}>\nIP: ${req.ip}\n\n${message}`,
+                ...renderEmail('contactMessage', {
+                    name: safeName,
+                    email,
+                    ip: req.ip,
+                    message,
+                }),
             });
             if (!result.success) {
                 logError(

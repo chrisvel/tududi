@@ -263,10 +263,10 @@ module.exports = (sequelize) => {
             });
 
             if (user?.email) {
+                const { renderEmail } = require('../emails');
                 await sendEmail({
                     to: user.email,
-                    subject: title,
-                    text: message,
+                    ...renderEmail('notification', { title, message }),
                 });
             }
         } catch (error) {

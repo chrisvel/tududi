@@ -12,6 +12,7 @@ import AdminUserFilter, {
     filterUsers,
     useUserFilterGroups,
 } from './AdminUserFilter';
+import AdminUserEmails from './AdminUserEmails';
 
 export interface AdminUserStatus {
     id: number;
@@ -36,6 +37,8 @@ export interface AdminUserStatus {
         counts: Partial<Record<UsageKind, number>>;
         last_created_at: string | null;
     };
+    // Account emails that went out to this user.
+    emails_sent: number;
 }
 
 // What the breakdown lists, in order, with the English fallback label.
@@ -63,7 +66,7 @@ const TONE = {
 };
 
 const cell = 'px-4 py-2 whitespace-nowrap';
-const COLUMNS = 7;
+const COLUMNS = 8;
 const headerCell = 'px-4 py-2 text-left font-medium';
 
 // Who is on the instance and where each of them stands: signed up or added
@@ -75,22 +78,24 @@ const AdminUserStatusTable: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState<string[]>([]);
     const [expanded, setExpanded] = useState<number | null>(null);
+    const [emailsFor, setEmailsFor] = useState<number | null>(null);
     const filterGroups = useUserFilterGroups(hosted);
 
+    const load = async () => {
+        try {
+            const res = await fetch(getApiPath('admin/overview/users'), {
+                credentials: 'include',
+            });
+            await handleAuthResponse(res, 'Failed to load users.');
+            const data = await res.json();
+            setUsers(data.users);
+            setHosted(!!data.hosted);
+        } catch (err: any) {
+            setError(err.message || 'Could not load users');
+        }
+    };
+
     useEffect(() => {
-        const load = async () => {
-            try {
-                const res = await fetch(getApiPath('admin/overview/users'), {
-                    credentials: 'include',
-                });
-                await handleAuthResponse(res, 'Failed to load users.');
-                const data = await res.json();
-                setUsers(data.users);
-                setHosted(!!data.hosted);
-            } catch (err: any) {
-                setError(err.message || 'Could not load users');
-            }
-        };
         load();
     }, []);
 
@@ -154,6 +159,7 @@ const AdminUserStatusTable: React.FC = () => {
             signedUp: (u) => new Date(u.created_at).getTime(),
             verified: (u) => (u.email ? Number(u.email_verified) : null),
             items: (u) => u.usage.total,
+            emails: (u) => u.emails_sent,
             status: (u) => statusOf(u).label,
             daysLeft: (u) => u.trial_days_left,
             paid: (u) => (u.paid ? 2 : u.ever_paid ? 1 : 0),
@@ -237,6 +243,14 @@ const AdminUserStatusTable: React.FC = () => {
                             <SortHeader
                                 column="items"
                                 label={t('admin.userStatus.items', 'Items')}
+                                sortKey={sortKey}
+                                sortDir={sortDir}
+                                onSort={toggle}
+                                className={headerCell}
+                            />
+                            <SortHeader
+                                column="emails"
+                                label={t('admin.userStatus.emails', 'Emails')}
                                 sortKey={sortKey}
                                 sortDir={sortDir}
                                 onSort={toggle}
@@ -442,6 +456,30 @@ const AdminUserStatusTable: React.FC = () => {
                                                     </div>
                                                 )}
                                             </td>
+                                            <td className={cell}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setEmailsFor(u.id)
+                                                    }
+                                                    className="font-medium text-blue-700 dark:text-blue-300 hover:underline"
+                                                    data-testid={`admin-user-emails-${u.id}`}
+                                                >
+                                                    {u.emails_sent > 0
+                                                        ? t(
+                                                              'admin.userStatus.emailsSent',
+                                                              {
+                                                                  defaultValue:
+                                                                      '{{count}} sent',
+                                                                  count: u.emails_sent,
+                                                              }
+                                                          )
+                                                        : t(
+                                                              'admin.userStatus.emailsNone',
+                                                              'None sent'
+                                                          )}
+                                                </button>
+                                            </td>
                                             {hosted && (
                                                 <>
                                                     <td className={cell}>
@@ -575,6 +613,13 @@ const AdminUserStatusTable: React.FC = () => {
                     </tbody>
                 </table>
             </div>
+            {emailsFor !== null && (
+                <AdminUserEmails
+                    userId={emailsFor}
+                    onClose={() => setEmailsFor(null)}
+                    onSent={load}
+                />
+            )}
         </section>
     );
 };

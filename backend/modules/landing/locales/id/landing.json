@@ -275,7 +275,7 @@
         "priceNote": "Semuanya termasuk. Batalkan kapan saja.",
         "actionTrial": "Coba gratis →",
         "priceNoteTrial": "{{days}} hari gratis, tanpa kartu. Batalkan kapan saja.",
-        "trialNote": "Uji coba mencakup semuanya kecuali asisten AI, tautan catatan publik, dan menambahkan anggota."
+        "trialNote": "Uji coba mencakup asisten AI dengan kuota lebih kecil dan satu anggota yang bisa Anda tambahkan. Tautan catatan publik terbuka setelah Anda berlangganan."
       }
     },
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 14 hari, tanpa pertanyaan.",
@@ -355,7 +355,7 @@
       "freePlan": {
         "a": "Tidak. Cloud berharga {{monthly}} per bulan atau {{price}} per tahun per orang, dan itulah seluruh daftar harganya: tidak ada tingkat gratis, tidak ada jam percobaan, tidak ada kartu yang dikenai biaya untuk sesuatu yang diam-diam mulai menagih nanti. Ada garansi uang kembali 14 hari jika ternyata tidak sesuai untuk Anda, dan ada demo langsung di halaman ini jika Anda ingin melihat-lihat dulu. Cara gratis untuk menggunakan tududi adalah menjalankannya di server Anda sendiri, yang merupakan aplikasi yang sama.",
         "q": "Apakah ada paket gratis atau percobaan di tududi Cloud?",
-        "aTrial": "Tidak ada paket gratis, tetapi setiap akun baru mendapat uji coba gratis {{days}} hari, tanpa kartu. Uji coba mencakup semuanya kecuali asisten AI, tautan catatan publik, dan menambahkan anggota. Jika Anda tidak berlangganan, akun menjadi hanya-baca selama 30 hari agar Anda bisa mengekspor data, lalu dihapus. Setelah uji coba, Cloud seharga {{monthly}} per bulan atau {{price}} per tahun per orang. Cara gratis memakai tududi adalah menjalankannya di server Anda sendiri, aplikasinya sama."
+        "aTrial": "Tidak ada paket gratis, tetapi setiap akun baru mendapat uji coba gratis {{days}} hari, tanpa kartu. Uji coba mencakup asisten AI dengan kuota lebih kecil dan satu anggota yang bisa Anda tambahkan. Tautan catatan publik terbuka setelah Anda berlangganan. Jika Anda tidak berlangganan, akun menjadi hanya-baca selama 30 hari agar Anda bisa mengekspor data, lalu dihapus. Setelah uji coba, Cloud seharga {{monthly}} per bulan atau {{price}} per tahun per orang. Cara gratis memakai tududi adalah menjalankannya di server Anda sendiri, aplikasinya sama."
       },
       "leaving": {
         "q": "Bisakah saya pergi, dan apa yang terjadi pada data saya?",

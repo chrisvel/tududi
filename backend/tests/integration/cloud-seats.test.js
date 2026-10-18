@@ -99,7 +99,7 @@ describe('Cloud seats', () => {
 
     afterEach(() => {
         config.hosted.enabled = false;
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         config.hosted.requireSubscription = false;
         config.hosted.billing.provider = 'stripe';
         config.hosted.lemonsqueezy.apiKey = undefined;

@@ -146,7 +146,7 @@ const config = {
         enabled: process.env.TUDUDI_HOSTED_MODE === 'true',
         trialDays: process.env.TUDUDI_TRIAL_DAYS
             ? parseInt(process.env.TUDUDI_TRIAL_DAYS, 10)
-            : 14,
+            : 7,
         // After a trial ends without a subscription the account can still
         // read (and export) its data for this many days, then it is deleted.
         trialReadOnlyDays: process.env.TUDUDI_TRIAL_READ_ONLY_DAYS

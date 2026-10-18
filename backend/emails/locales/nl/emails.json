@@ -1,0 +1,67 @@
+{
+    "common": {
+        "greeting": "Hoi,",
+        "signoff": "Met vriendelijke groet,\nHet Tududi-team",
+        "copyLink": "Of kopieer en plak deze link in je browser:"
+    },
+    "verification": {
+        "subject": "Welkom bij Tududi - Bevestig je e-mailadres",
+        "welcome": "Welkom bij Tududi!",
+        "opening": "Bedankt voor je registratie. Bevestig je e-mailadres via de link hieronder om je registratie af te ronden en Tududi te gaan gebruiken:",
+        "button": "E-mailadres bevestigen",
+        "expires_one": "Deze bevestigingslink verloopt over {{count}} uur.",
+        "expires_other": "Deze bevestigingslink verloopt over {{count}} uur.",
+        "trial_one": "Met de bevestiging start ook je gratis proefperiode van {{count}} dag, zonder creditcard. Je krijgt de AI-assistent met een kleiner tegoed en één lid dat je kunt toevoegen, zoals je partner of een teamgenoot. Openbare notitielinks werken zodra je een abonnement neemt.",
+        "trial_other": "Met de bevestiging start ook je gratis proefperiode van {{count}} dagen, zonder creditcard. Je krijgt de AI-assistent met een kleiner tegoed en één lid dat je kunt toevoegen, zoals je partner of een teamgenoot. Openbare notitielinks werken zodra je een abonnement neemt.",
+        "benefitsIntro": "Na de bevestiging kun je:",
+        "benefits": [
+            "Eenvoudig taken maken en ordenen",
+            "Projecten en gebieden beheren",
+            "Terugkerende taken instellen",
+            "Je productiviteit bijhouden"
+        ],
+        "ignore": "Heb je geen account bij Tududi aangemaakt? Dan kun je deze e-mail gerust negeren."
+    },
+    "verificationReminder": {
+        "subject": "Herinnering: bevestig je e-mailadres om Tududi te gaan gebruiken",
+        "opening": "Je hebt je ongeveer een dag geleden aangemeld bij Tududi, maar je e-mailadres is nog niet bevestigd. Je account (en je gratis proefperiode) start zodra je het bevestigt."
+    },
+    "passwordReset": {
+        "subject": "Stel je Tududi-wachtwoord opnieuw in",
+        "intro": "Iemand heeft gevraagd om het wachtwoord van je Tududi-account opnieuw in te stellen.",
+        "action": "Open deze link om een nieuw wachtwoord te kiezen:",
+        "button": "Kies een nieuw wachtwoord",
+        "expires_one": "De link verloopt over {{count}} minuut. Heb je hier niet om gevraagd? Negeer dan deze e-mail; je wachtwoord blijft ongewijzigd.",
+        "expires_other": "De link verloopt over {{count}} minuten. Heb je hier niet om gevraagd? Negeer dan deze e-mail; je wachtwoord blijft ongewijzigd."
+    },
+    "memberInvite": {
+        "subject": "Je bent toegevoegd aan een Tududi-werkruimte",
+        "intro": "Je bent toegevoegd aan een Tududi-werkruimte.",
+        "action": "Kies een wachtwoord om je account te activeren en in te loggen:",
+        "button": "Stel je wachtwoord in",
+        "expires_one": "De link verloopt over {{count}} uur. Verwachtte je dit niet? Dan kun je deze e-mail negeren.",
+        "expires_other": "De link verloopt over {{count}} uur. Verwachtte je dit niet? Dan kun je deze e-mail negeren."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Je tududi-proefperiode eindigt morgen",
+        "subjectDays_one": "Je tududi-proefperiode eindigt over {{count}} dag",
+        "subjectDays_other": "Je tududi-proefperiode eindigt over {{count}} dagen",
+        "endsTomorrow": "Je proefperiode van tududi Cloud eindigt morgen, op {{date}}.",
+        "endsInDays_one": "Je proefperiode van tududi Cloud eindigt over {{count}} dag, op {{date}}.",
+        "endsInDays_other": "Je proefperiode van tududi Cloud eindigt over {{count}} dagen, op {{date}}.",
+        "afterReadOnly_one": "Daarna is je account {{count}} dag alleen-lezen, zodat je je gegevens nog kunt exporteren, en daarna wordt het verwijderd.",
+        "afterReadOnly_other": "Daarna is je account {{count}} dagen alleen-lezen, zodat je je gegevens nog kunt exporteren, en daarna wordt het verwijderd.",
+        "afterFree": "Daarna gaat je account over naar het gratis abonnement.",
+        "keep": "Wil je tududi Cloud blijven gebruiken zoals nu, inclusief de AI-assistent en leden? Neem dan een abonnement:",
+        "button": "Abonneren"
+    },
+    "deletionWarning": {
+        "subject": "Je tududi-account wordt verwijderd op {{date}}",
+        "ended": "Je proefperiode van tududi Cloud is afgelopen en sindsdien is je account alleen-lezen.",
+        "deleteOn": "Op {{date}} worden het account en alles wat erin staat verwijderd.",
+        "keep": "Wil je het houden? Neem dan een abonnement:",
+        "button": "Mijn account behouden",
+        "export": "Wil je je gegevens liever meenemen? Exporteer ze dan via de pagina Back-up & Herstellen:",
+        "final": "Als je niets doet, wordt het account op {{date}} verwijderd en is dit de laatste e-mail die je hierover van ons krijgt."
+    }
+}

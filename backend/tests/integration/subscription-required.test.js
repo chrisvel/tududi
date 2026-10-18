@@ -33,7 +33,7 @@ describe('Instances that require a subscription', () => {
     afterEach(async () => {
         config.hosted.enabled = false;
         config.hosted.requireSubscription = false;
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         entitlements.invalidate();
     });
 

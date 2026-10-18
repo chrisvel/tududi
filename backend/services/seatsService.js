@@ -17,8 +17,9 @@ const {
 
 // Reasons an owner's own plan lets it add members. A comp (override) adds
 // members without touching billing; a subscription or its grace window adds
-// a paid seat.
-const ADD_REASONS = ['subscription', 'grace', 'override'];
+// a paid seat. A trial adds up to its max_members for free, and they become
+// paid seats if the owner subscribes.
+const ADD_REASONS = ['subscription', 'grace', 'override', 'trial'];
 const BILLED_STATUSES = new Set(['active', 'trialing', 'past_due']);
 
 function models() {
@@ -46,7 +47,7 @@ async function assertCanAddSeat(ownerId) {
     }
     // Said as a missing feature, so the app can offer the subscription page
     // rather than treating the trial as having no access at all.
-    if (ent.reason === 'trial') {
+    if (ent.reason === 'trial' && ent.limits.max_members === 0) {
         throw new FeatureNotInPlanError('members', ent.plan);
     }
     if (!ADD_REASONS.includes(ent.reason)) {

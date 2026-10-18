@@ -129,9 +129,15 @@ class MembersService {
         // switch only matters for accounts that are given a password.
         const verify = requireVerification && !invite && hasEmail;
 
+        // The member starts in the language of whoever added them, so the
+        // invite reads in it; they can change it in their profile.
+        const actor = await User.findByPk(actorId, {
+            attributes: ['language'],
+        });
         const userData = {
             notification_preferences: getDefaultNotificationPreferences(),
             created_by_user_id: actorId,
+            language: actor?.language || 'en',
         };
         if (hasEmail) userData.email = email;
         if (password) {

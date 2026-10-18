@@ -50,6 +50,7 @@ const {
     Feedback,
     PushSubscription,
     SiteVisit,
+    EmailDelivery,
 } = require('../models');
 const { getConfig } = require('../config/config');
 const { assertAnotherAdminRemains } = require('./rolesService');
@@ -233,6 +234,12 @@ async function eraseUserAccount(userId) {
         await Feedback.destroy(byUser);
         await PushSubscription.destroy(byUser);
         await SiteVisit.destroy(byUser);
+        await EmailDelivery.destroy(byUser);
+        // Emails this account sent by hand as an admin stay in the log.
+        await EmailDelivery.update(
+            { triggered_by_user_id: null },
+            { where: { triggered_by_user_id: userId }, ...tx }
+        );
         await BillingAccount.destroy(byUser);
 
         // A hosted account this one owned goes with it; its members stay.

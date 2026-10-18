@@ -1,0 +1,67 @@
+{
+    "common": {
+        "greeting": "Hej,",
+        "signoff": "Vänliga hälsningar,\nTududi-teamet",
+        "copyLink": "Eller kopiera och klistra in den här länken i webbläsaren:"
+    },
+    "verification": {
+        "subject": "Välkommen till Tududi - bekräfta din e-postadress",
+        "welcome": "Välkommen till Tududi!",
+        "opening": "Tack för att du registrerade dig. Bekräfta din e-postadress via länken nedan för att slutföra registreringen och börja använda Tududi:",
+        "button": "Bekräfta e-postadress",
+        "expires_one": "Den här bekräftelselänken slutar gälla om {{count}} timme.",
+        "expires_other": "Den här bekräftelselänken slutar gälla om {{count}} timmar.",
+        "trial_one": "När du bekräftar startar också din kostnadsfria provperiod på {{count}} dag, inget kort behövs. Den omfattar AI-assistenten med en mindre kvot och en medlem som du kan lägga till, till exempel en partner eller en kollega. Offentliga länkar till anteckningar öppnas när du prenumererar.",
+        "trial_other": "När du bekräftar startar också din kostnadsfria provperiod på {{count}} dagar, inget kort behövs. Den omfattar AI-assistenten med en mindre kvot och en medlem som du kan lägga till, till exempel en partner eller en kollega. Offentliga länkar till anteckningar öppnas när du prenumererar.",
+        "benefitsIntro": "Efter bekräftelsen kan du:",
+        "benefits": [
+            "Skapa och organisera uppgifter enkelt",
+            "Hantera projekt och områden",
+            "Lägga upp återkommande uppgifter",
+            "Följa din produktivitet"
+        ],
+        "ignore": "Om du inte har skapat något konto hos Tududi kan du bortse från det här mejlet."
+    },
+    "verificationReminder": {
+        "subject": "Påminnelse: bekräfta din e-postadress för att börja använda Tududi",
+        "opening": "Du registrerade dig på Tududi för ungefär en dag sedan, men din e-postadress är inte bekräftad än. Ditt konto (och din kostnadsfria provperiod) startar så fort du bekräftar den."
+    },
+    "passwordReset": {
+        "subject": "Återställ ditt lösenord för Tududi",
+        "intro": "Någon har bett om att återställa lösenordet för ditt Tududi-konto.",
+        "action": "Öppna den här länken för att välja ett nytt lösenord:",
+        "button": "Välj ett nytt lösenord",
+        "expires_one": "Länken slutar gälla om {{count}} minut. Om du inte bad om en återställning kan du bortse från det här mejlet; ditt lösenord förblir oförändrat.",
+        "expires_other": "Länken slutar gälla om {{count}} minuter. Om du inte bad om en återställning kan du bortse från det här mejlet; ditt lösenord förblir oförändrat."
+    },
+    "memberInvite": {
+        "subject": "Du har lagts till i en Tududi-arbetsyta",
+        "intro": "Du har lagts till i en Tududi-arbetsyta.",
+        "action": "Välj ett lösenord för att aktivera ditt konto och logga in:",
+        "button": "Välj lösenord",
+        "expires_one": "Länken slutar gälla om {{count}} timme. Om du inte väntade dig detta kan du bortse från det här mejlet.",
+        "expires_other": "Länken slutar gälla om {{count}} timmar. Om du inte väntade dig detta kan du bortse från det här mejlet."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Din provperiod för tududi slutar i morgon",
+        "subjectDays_one": "Din provperiod för tududi slutar om {{count}} dag",
+        "subjectDays_other": "Din provperiod för tududi slutar om {{count}} dagar",
+        "endsTomorrow": "Din provperiod för tududi Cloud slutar i morgon, {{date}}.",
+        "endsInDays_one": "Din provperiod för tududi Cloud slutar om {{count}} dag, {{date}}.",
+        "endsInDays_other": "Din provperiod för tududi Cloud slutar om {{count}} dagar, {{date}}.",
+        "afterReadOnly_one": "Därefter blir ditt konto skrivskyddat i {{count}} dag, så att du fortfarande kan exportera dina data, och sedan raderas det.",
+        "afterReadOnly_other": "Därefter blir ditt konto skrivskyddat i {{count}} dagar, så att du fortfarande kan exportera dina data, och sedan raderas det.",
+        "afterFree": "Därefter flyttas ditt konto till gratisplanen.",
+        "keep": "Prenumerera för att fortsätta använda tududi Cloud som nu, med AI-assistent och medlemmar:",
+        "button": "Prenumerera"
+    },
+    "deletionWarning": {
+        "subject": "Ditt tududi-konto raderas {{date}}",
+        "ended": "Din provperiod för tududi Cloud har tagit slut, och sedan dess har ditt konto varit skrivskyddat.",
+        "deleteOn": "{{date}} raderas kontot och allt som finns i det.",
+        "keep": "Prenumerera för att behålla det:",
+        "button": "Behåll mitt konto",
+        "export": "Vill du hellre ta med dig dina data kan du exportera dem från sidan Säkerhetskopiera:",
+        "final": "Om du inte gör något raderas kontot {{date}}, och det här är det sista mejlet du får från oss om det."
+    }
+}

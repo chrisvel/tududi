@@ -275,7 +275,7 @@
         "priceNote": "Kaikki mukana. Peruuta milloin tahansa.",
         "actionTrial": "Kokeile ilmaiseksi →",
         "priceNoteTrial": "{{days}} päivää ilmaiseksi, ei maksukorttia. Peru milloin tahansa.",
-        "trialNote": "Kokeilujaksossa on kaikki paitsi tekoälyavustaja, julkiset muistiinpanolinkit ja jäsenten lisääminen."
+        "trialNote": "Kokeilujaksoon sisältyy tekoälyavustaja pienemmällä käyttökiintiöllä ja yksi jäsen, jonka voit lisätä. Julkiset muistiinpanolinkit avautuvat, kun tilaat."
       }
     },
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 14 päivän rahat takaisin -takuu, ilman kysymyksiä.",
@@ -355,7 +355,7 @@
       "freePlan": {
         "a": "Ei. Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa henkilöltä, ja se on koko hinnasto: ei ilmaistasoa, ei kokeiluaikaa, ei korttia veloitettuna jostain, joka alkaa hiljaa laskuttaa myöhemmin. Tarjolla on 14 päivän rahat takaisin -takuu, jos se ei osoittaudu sopivaksi, ja tällä sivulla on live-demo, jos haluat vilkaista ensin. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimellasi, joka on samat sovellus.",
         "q": "Onko tududi Cloudissa ilmaistaso tai kokeilua?",
-        "aTrial": "Ilmaista tilausta ei ole, mutta jokainen uusi tili saa {{days}} päivän ilmaisen kokeilun ilman maksukorttia. Kokeilussa on kaikki paitsi AI-avustaja, julkiset muistiinpanolinkit ja jäsenten lisääminen. Jos et tilaa, tili muuttuu vain luku -tilaan 30 päiväksi, jotta voit viedä tietosi, ja poistetaan sen jälkeen. Kokeilun jälkeen Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa henkilöltä. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimella, se on sama sovellus."
+        "aTrial": "Ilmaista tilausta ei ole, mutta jokainen uusi tili saa {{days}} päivän ilmaisen kokeilun ilman maksukorttia. Kokeiluun sisältyy AI-avustaja pienemmällä käyttökiintiöllä ja yksi jäsen, jonka voit lisätä. Julkiset muistiinpanolinkit avautuvat, kun tilaat. Jos et tilaa, tili muuttuu vain luku -tilaan 30 päiväksi, jotta voit viedä tietosi, ja poistetaan sen jälkeen. Kokeilun jälkeen Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa henkilöltä. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimella, se on sama sovellus."
       },
       "leaving": {
         "q": "Voinko lähteä, ja mitä tiedoilleni tapahtuu?",

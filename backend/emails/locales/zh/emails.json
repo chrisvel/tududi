@@ -1,0 +1,60 @@
+{
+    "common": {
+        "greeting": "您好，",
+        "signoff": "祝好，\nTududi 团队",
+        "copyLink": "或将此链接复制并粘贴到浏览器中："
+    },
+    "verification": {
+        "subject": "欢迎使用 Tududi - 请验证您的邮箱",
+        "welcome": "欢迎使用 Tududi！",
+        "opening": "感谢您的注册。要完成注册并开始使用 Tududi，请点击下方链接验证您的邮箱地址：",
+        "button": "验证邮箱地址",
+        "expires_other": "此验证链接将在 {{count}} 小时后失效。",
+        "trial_other": "完成验证后，您的 {{count}} 天免费试用也将开始，无需绑定银行卡。试用包含额度较低的 AI 助手，以及一位可添加的成员，例如伴侣或同事。订阅后即可使用笔记的公开链接。",
+        "benefitsIntro": "验证后，您可以：",
+        "benefits": [
+            "轻松创建和整理任务",
+            "管理项目和区域",
+            "设置重复任务",
+            "追踪您的效率"
+        ],
+        "ignore": "如果您没有注册过 Tududi 账户，可以放心忽略此邮件。"
+    },
+    "verificationReminder": {
+        "subject": "提醒：验证邮箱后即可开始使用 Tududi",
+        "opening": "您大约一天前注册了 Tududi，但您的邮箱地址尚未验证。验证完成后，您的账户（以及免费试用）会立即开始。"
+    },
+    "passwordReset": {
+        "subject": "重置您的 Tududi 密码",
+        "intro": "有人请求重置您 Tududi 账户的密码。",
+        "action": "打开此链接设置新密码：",
+        "button": "设置新密码",
+        "expires_other": "该链接将在 {{count}} 分钟后失效。如果您没有请求重置，请忽略此邮件，您的密码不会改变。"
+    },
+    "memberInvite": {
+        "subject": "您已被添加到一个 Tududi 工作区",
+        "intro": "您已被添加到一个 Tududi 工作区。",
+        "action": "设置密码以激活账户并登录：",
+        "button": "设置密码",
+        "expires_other": "该链接将在 {{count}} 小时后失效。如果您并未预期收到此邮件，可以忽略它。"
+    },
+    "trialReminder": {
+        "subjectTomorrow": "您的 tududi 试用将于明天结束",
+        "subjectDays_other": "您的 tududi 试用将在 {{count}} 天后结束",
+        "endsTomorrow": "您的 tududi Cloud 试用将于明天（{{date}}）结束。",
+        "endsInDays_other": "您的 tududi Cloud 试用将在 {{count}} 天后（{{date}}）结束。",
+        "afterReadOnly_other": "之后，您的账户将进入只读状态 {{count}} 天，期间您仍可导出数据，随后账户将被删除。",
+        "afterFree": "之后，您的账户将转为免费方案。",
+        "keep": "如需继续像现在这样使用 tududi Cloud（包括 AI 助手和成员），请订阅：",
+        "button": "订阅"
+    },
+    "deletionWarning": {
+        "subject": "您的 tududi 账户将于 {{date}} 被删除",
+        "ended": "您的 tududi Cloud 试用已结束，此后您的账户一直处于只读状态。",
+        "deleteOn": "{{date}}，该账户及其中的所有内容将被删除。",
+        "keep": "如需保留账户，请订阅：",
+        "button": "保留我的账户",
+        "export": "如果您想带走数据，可以在备份页面导出：",
+        "final": "如果您不采取任何操作，账户将于 {{date}} 被删除，这也是我们就此事发送给您的最后一封邮件。"
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "common": {
+        "greeting": "Hej,",
+        "signoff": "Venlig hilsen\nTududi-teamet",
+        "copyLink": "Eller kopiér og indsæt dette link i din browser:"
+    },
+    "verification": {
+        "subject": "Velkommen til Tududi: Bekræft din e-mail",
+        "welcome": "Velkommen til Tududi!",
+        "opening": "Tak for din tilmelding. For at fuldføre din registrering og komme i gang med Tududi skal du bekræfte din e-mailadresse ved at klikke på linket nedenfor:",
+        "button": "Bekræft e-mailadresse",
+        "expires_one": "Dette bekræftelseslink udløber om {{count}} time.",
+        "expires_other": "Dette bekræftelseslink udløber om {{count}} timer.",
+        "trial_one": "Når du bekræfter, starter din gratis prøveperiode på {{count}} dag også, uden betalingskort. Den omfatter AI-assistenten med en mindre kvote og ét medlem, du kan tilføje, fx din partner eller en kollega. Offentlige notelinks åbner, så snart du abonnerer.",
+        "trial_other": "Når du bekræfter, starter din gratis prøveperiode på {{count}} dage også, uden betalingskort. Den omfatter AI-assistenten med en mindre kvote og ét medlem, du kan tilføje, fx din partner eller en kollega. Offentlige notelinks åbner, så snart du abonnerer.",
+        "benefitsIntro": "Når du har bekræftet, kan du:",
+        "benefits": [
+            "Oprette og organisere opgaver med lethed",
+            "Administrere projekter og områder",
+            "Oprette tilbagevendende opgaver",
+            "Følge din produktivitet"
+        ],
+        "ignore": "Hvis du ikke har oprettet en konto hos Tududi, kan du roligt se bort fra denne e-mail."
+    },
+    "verificationReminder": {
+        "subject": "Påmindelse: Bekræft din e-mail for at komme i gang med Tududi",
+        "opening": "Du tilmeldte dig Tududi for omkring en dag siden, men din e-mailadresse er endnu ikke bekræftet. Din konto (og din gratis prøveperiode) starter, så snart du bekræfter den."
+    },
+    "passwordReset": {
+        "subject": "Nulstil din Tududi-adgangskode",
+        "intro": "Nogen har bedt om at nulstille adgangskoden til din Tududi-konto.",
+        "action": "Åbn dette link for at vælge en ny adgangskode:",
+        "button": "Vælg en ny adgangskode",
+        "expires_one": "Linket udløber om {{count}} minut. Hvis du ikke har bedt om en nulstilling, kan du se bort fra denne e-mail; din adgangskode forbliver uændret.",
+        "expires_other": "Linket udløber om {{count}} minutter. Hvis du ikke har bedt om en nulstilling, kan du se bort fra denne e-mail; din adgangskode forbliver uændret."
+    },
+    "memberInvite": {
+        "subject": "Du er blevet tilføjet til et Tududi-arbejdsområde",
+        "intro": "Du er blevet tilføjet til et Tududi-arbejdsområde.",
+        "action": "Vælg en adgangskode for at aktivere din konto og logge ind:",
+        "button": "Vælg din adgangskode",
+        "expires_one": "Linket udløber om {{count}} time. Hvis du ikke ventede dette, kan du se bort fra denne e-mail.",
+        "expires_other": "Linket udløber om {{count}} timer. Hvis du ikke ventede dette, kan du se bort fra denne e-mail."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Din tududi-prøveperiode slutter i morgen",
+        "subjectDays_one": "Din tududi-prøveperiode slutter om {{count}} dag",
+        "subjectDays_other": "Din tududi-prøveperiode slutter om {{count}} dage",
+        "endsTomorrow": "Din prøveperiode på tududi Cloud slutter i morgen, den {{date}}.",
+        "endsInDays_one": "Din prøveperiode på tududi Cloud slutter om {{count}} dag, den {{date}}.",
+        "endsInDays_other": "Din prøveperiode på tududi Cloud slutter om {{count}} dage, den {{date}}.",
+        "afterReadOnly_one": "Derefter bliver din konto skrivebeskyttet i {{count}} dag, så du stadig kan eksportere dine data, og bliver derefter slettet.",
+        "afterReadOnly_other": "Derefter bliver din konto skrivebeskyttet i {{count}} dage, så du stadig kan eksportere dine data, og bliver derefter slettet.",
+        "afterFree": "Derefter overgår din konto til gratisplanen.",
+        "keep": "Abonnér for at fortsætte med at bruge tududi Cloud, som du gør nu, med AI-assistent og medlemmer:",
+        "button": "Abonnér"
+    },
+    "deletionWarning": {
+        "subject": "Din tududi-konto slettes den {{date}}",
+        "ended": "Din prøveperiode på tududi Cloud er slut, og din konto har været skrivebeskyttet siden.",
+        "deleteOn": "Den {{date}} slettes kontoen og alt i den.",
+        "keep": "Abonnér for at beholde den:",
+        "button": "Behold min konto",
+        "export": "Vil du hellere tage dine data med, kan du eksportere dem fra siden Backup & Gendan:",
+        "final": "Hvis du ikke gør noget, slettes kontoen den {{date}}, og dette er den sidste e-mail, du får fra os om det."
+    }
+}

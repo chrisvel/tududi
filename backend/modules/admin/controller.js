@@ -50,6 +50,48 @@ const adminController = {
         }
     },
 
+    // The account emails a user got, and the ones an admin can send.
+    async userEmails(req, res, next) {
+        try {
+            res.json(
+                await adminService.userEmails(
+                    getRequesterId(req),
+                    req.params.id
+                )
+            );
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async previewUserEmail(req, res, next) {
+        try {
+            res.json(
+                await adminService.previewUserEmail(
+                    getRequesterId(req),
+                    req.params.id,
+                    req.params.key
+                )
+            );
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async sendUserEmail(req, res, next) {
+        try {
+            res.json(
+                await adminService.sendUserEmail(
+                    getRequesterId(req),
+                    req.params.id,
+                    req.params.key
+                )
+            );
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async listWaitlist(req, res, next) {
         try {
             res.json(

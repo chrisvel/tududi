@@ -275,7 +275,7 @@
         "priceNote": "Her şey dahil. İstediğiniz zaman iptal edin.",
         "actionTrial": "Ücretsiz dene →",
         "priceNoteTrial": "{{days}} gün ücretsiz, kart gerekmez. İstediğin zaman iptal et.",
-        "trialNote": "Deneme süresi, AI asistanı, herkese açık not bağlantıları ve üye ekleme dışında her şeyi içerir."
+        "trialNote": "Deneme süresi, daha küçük bir kullanım hakkıyla AI asistanını ve ekleyebileceğin bir üyeyi içerir. Herkese açık not bağlantıları abone olunca açılır."
       }
     },
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 14 gün para iade garantisi, soru sorulmaz.",
@@ -355,7 +355,7 @@
       "freePlan": {
         "a": "Hayır. Cloud kişi başı ayda {{monthly}} veya yılda {{price}}'dır, ve bu tüm fiyat listesi: ücretsiz katman yok, deneme saati yok, daha sonra sessizce faturalandırmaya başlayan bir şey için tahsil edilen kart yok. Size uymadığı ortaya çıkarsa 14 günlük para geri garantisi var, ve önce bakmak isterseniz bu sayfada canlı bir demo var. tududi'yi kullanmanın ücretsiz yolu, aynı uygulama olan kendi sunucunuzda çalıştırmaktır.",
         "q": "tududi Cloud'da ücretsiz bir plan veya deneme var mı?",
-        "aTrial": "Ücretsiz plan yok, ama her yeni hesap kart gerektirmeyen {{days}} günlük ücretsiz deneme alır. Deneme, yapay zeka asistanı, herkese açık not bağlantıları ve üye ekleme dışında her şeyi içerir. Abone olmazsan hesap, verilerini dışa aktarabilmen için 30 gün salt okunur olur ve ardından silinir. Denemeden sonra Cloud kişi başı aylık {{monthly}} ya da yıllık {{price}}. tududi'yi ücretsiz kullanmanın yolu onu kendi sunucunda çalıştırmak, aynı uygulama."
+        "aTrial": "Ücretsiz plan yok, ama her yeni hesap kart gerektirmeyen {{days}} günlük ücretsiz deneme alır. Deneme, daha küçük bir kullanım hakkıyla yapay zeka asistanını ve ekleyebileceğin bir üyeyi içerir. Herkese açık not bağlantıları abone olunca açılır. Abone olmazsan hesap, verilerini dışa aktarabilmen için 30 gün salt okunur olur ve ardından silinir. Denemeden sonra Cloud kişi başı aylık {{monthly}} ya da yıllık {{price}}. tududi'yi ücretsiz kullanmanın yolu onu kendi sunucunda çalıştırmak, aynı uygulama."
       },
       "leaving": {
         "q": "Ayrılabilir miyim, verilerime ne olur?",

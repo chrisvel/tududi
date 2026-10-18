@@ -1,0 +1,67 @@
+{
+    "common": {
+        "greeting": "Hei,",
+        "signoff": "Ystävällisin terveisin\nTududi-tiimi",
+        "copyLink": "Tai kopioi ja liitä tämä linkki selaimeesi:"
+    },
+    "verification": {
+        "subject": "Tervetuloa Tududiin: vahvista sähköpostiosoitteesi",
+        "welcome": "Tervetuloa Tududiin!",
+        "opening": "Kiitos rekisteröitymisestä. Viimeistele rekisteröityminen ja ota Tududi käyttöön vahvistamalla sähköpostiosoitteesi alla olevasta linkistä:",
+        "button": "Vahvista sähköpostiosoite",
+        "expires_one": "Tämä vahvistuslinkki vanhenee {{count}} tunnissa.",
+        "expires_other": "Tämä vahvistuslinkki vanhenee {{count}} tunnissa.",
+        "trial_one": "Vahvistus käynnistää samalla {{count}} päivän ilmaisen kokeilusi, eikä korttia tarvita. Siihen kuuluu AI-avustaja pienemmällä käyttökiintiöllä ja yksi jäsen, jonka voit lisätä, esimerkiksi kumppanisi tai työkaverisi. Julkiset muistiinpanolinkit avautuvat, kun tilaat.",
+        "trial_other": "Vahvistus käynnistää samalla {{count}} päivän ilmaisen kokeilusi, eikä korttia tarvita. Siihen kuuluu AI-avustaja pienemmällä käyttökiintiöllä ja yksi jäsen, jonka voit lisätä, esimerkiksi kumppanisi tai työkaverisi. Julkiset muistiinpanolinkit avautuvat, kun tilaat.",
+        "benefitsIntro": "Vahvistuksen jälkeen voit:",
+        "benefits": [
+            "Luoda ja järjestää tehtäviä vaivatta",
+            "Hallita projekteja ja alueita",
+            "Määrittää toistuvia tehtäviä",
+            "Seurata tuottavuuttasi"
+        ],
+        "ignore": "Jos et luonut tiliä Tududiin, voit jättää tämän viestin huomiotta."
+    },
+    "verificationReminder": {
+        "subject": "Muistutus: vahvista sähköpostiosoitteesi ja ota Tududi käyttöön",
+        "opening": "Rekisteröidyit Tududiin noin päivä sitten, mutta sähköpostiosoitettasi ei ole vielä vahvistettu. Tilisi (ja ilmainen kokeilusi) alkaa heti, kun vahvistat sen."
+    },
+    "passwordReset": {
+        "subject": "Vaihda Tududi-salasanasi",
+        "intro": "Joku pyysi Tududi-tilisi salasanan vaihtamista.",
+        "action": "Avaa tämä linkki ja valitse uusi salasana:",
+        "button": "Valitse uusi salasana",
+        "expires_one": "Linkki vanhenee {{count}} minuutissa. Jos et pyytänyt salasanan vaihtoa, voit jättää tämän viestin huomiotta; salasanasi pysyy ennallaan.",
+        "expires_other": "Linkki vanhenee {{count}} minuutissa. Jos et pyytänyt salasanan vaihtoa, voit jättää tämän viestin huomiotta; salasanasi pysyy ennallaan."
+    },
+    "memberInvite": {
+        "subject": "Sinut on lisätty Tududi-työtilaan",
+        "intro": "Sinut on lisätty Tududi-työtilaan.",
+        "action": "Valitse salasana, niin voit aktivoida tilisi ja kirjautua sisään:",
+        "button": "Aseta salasana",
+        "expires_one": "Linkki vanhenee {{count}} tunnissa. Jos et odottanut tätä viestiä, voit jättää sen huomiotta.",
+        "expires_other": "Linkki vanhenee {{count}} tunnissa. Jos et odottanut tätä viestiä, voit jättää sen huomiotta."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "tududi-kokeilusi päättyy huomenna",
+        "subjectDays_one": "tududi-kokeilusi päättyy {{count}} päivän kuluttua",
+        "subjectDays_other": "tududi-kokeilusi päättyy {{count}} päivän kuluttua",
+        "endsTomorrow": "tududi Cloud -kokeilusi päättyy huomenna {{date}}.",
+        "endsInDays_one": "tududi Cloud -kokeilusi päättyy {{count}} päivän kuluttua, {{date}}.",
+        "endsInDays_other": "tududi Cloud -kokeilusi päättyy {{count}} päivän kuluttua, {{date}}.",
+        "afterReadOnly_one": "Sen jälkeen tilisi on {{count}} päivän ajan vain luku -tilassa, jotta voit vielä viedä tietosi, ja sitten se poistetaan.",
+        "afterReadOnly_other": "Sen jälkeen tilisi on {{count}} päivän ajan vain luku -tilassa, jotta voit vielä viedä tietosi, ja sitten se poistetaan.",
+        "afterFree": "Sen jälkeen tilisi siirtyy ilmaiseen pakettiin.",
+        "keep": "Jos haluat jatkaa tududi Cloudin käyttöä nykyiseen tapaan, AI-avustaja ja jäsenet mukaan lukien, tee tilaus:",
+        "button": "Tilaa"
+    },
+    "deletionWarning": {
+        "subject": "tududi-tilisi poistetaan {{date}}",
+        "ended": "tududi Cloud -kokeilusi on päättynyt, ja tilisi on ollut siitä lähtien vain luku -tilassa.",
+        "deleteOn": "{{date}} tili ja kaikki sen sisältö poistetaan.",
+        "keep": "Jos haluat säilyttää sen, tee tilaus:",
+        "button": "Säilytä tilini",
+        "export": "Jos haluat sen sijaan ottaa tietosi mukaasi, vie ne Varmuuskopioi & Palauta -sivulta:",
+        "final": "Jos et tee mitään, tili poistetaan {{date}}, ja tämä on viimeinen viesti, jonka saat meiltä asiasta."
+    }
+}

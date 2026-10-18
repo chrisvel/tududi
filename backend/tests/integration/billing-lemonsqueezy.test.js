@@ -176,7 +176,7 @@ describe('Billing with Lemon Squeezy', () => {
 
     afterEach(() => {
         config.hosted.enabled = false;
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         config.hosted.billing.provider = 'stripe';
         config.hosted.lemonsqueezy.apiKey = undefined;
         config.hosted.lemonsqueezy.storeId = undefined;

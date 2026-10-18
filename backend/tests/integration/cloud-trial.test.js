@@ -3,6 +3,7 @@ const app = require('../../app');
 const { getConfig } = require('../../config/config');
 const { BillingAccount, Note, Role, User } = require('../../models');
 const entitlements = require('../../services/entitlementsService');
+const plans = require('../../config/plans');
 const emailService = require('../../services/emailService');
 const lifecycle = require('../../services/trialLifecycleService');
 const {
@@ -33,13 +34,14 @@ const login = async (user) => {
 let seq = 0;
 const uniqueEmail = (prefix) => `${prefix}_${Date.now()}_${seq++}@example.com`;
 
-// A Cloud trial: it starts when the email is verified, leaves out AI, public
-// notes and members, then turns read-only for a month and is deleted.
+// A Cloud trial: it starts when the email is verified, has a small AI budget
+// and one member but no public notes, then turns read-only for a month and is
+// deleted.
 describe('Cloud trials', () => {
     beforeEach(() => {
         config.hosted.enabled = true;
         config.hosted.requireSubscription = true;
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         config.hosted.trialReadOnlyDays = 30;
         config.hosted.deleteExpiredTrials = true;
         entitlements.invalidate();
@@ -48,7 +50,7 @@ describe('Cloud trials', () => {
     afterEach(() => {
         config.hosted.enabled = false;
         config.hosted.requireSubscription = false;
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         entitlements.invalidate();
     });
 
@@ -67,7 +69,7 @@ describe('Cloud trials', () => {
             });
             expect(account.trial_started_at).not.toBeNull();
             expect(account.trial_ends_at.getTime()).toBeGreaterThan(
-                Date.now() + 13 * DAY
+                Date.now() + 6 * DAY
             );
         });
 
@@ -118,11 +120,13 @@ describe('Cloud trials', () => {
             expect(create.status).toBe(201);
         });
 
-        it('leaves out the AI assistant', async () => {
-            const res = await agent.post('/api/ai-assistant/daily-brief');
-            expect(res.status).toBe(402);
-            expect(res.body.code).toBe('FEATURE_NOT_IN_PLAN');
-            expect(res.body.details).toEqual({ feature: 'ai', plan: 'trial' });
+        it('has the AI assistant, with a smaller budget than Pro', async () => {
+            const ent = await entitlements.getEntitlements(user.id);
+            expect(ent.reason).toBe('trial');
+            expect(ent.features.ai).toBe(true);
+            expect(ent.limits.ai_requests_per_month).toBe(30);
+            expect(ent.limits.ai_credits_per_month).toBe(10);
+            expect(await entitlements.hasFeature(user.id, 'ai')).toBe(true);
         });
 
         it('leaves out public note links, but turning one off still works', async () => {
@@ -140,16 +144,48 @@ describe('Cloud trials', () => {
             expect(off.status).not.toBe(402);
         });
 
-        it('leaves out adding members', async () => {
+        it('adds one member, who shares the trial', async () => {
             const res = await agent
                 .post('/api/members')
                 .send({ name: 'Kid', email: uniqueEmail('kid') });
-            expect(res.status).toBe(402);
-            expect(res.body.code).toBe('FEATURE_NOT_IN_PLAN');
-            expect(res.body.details).toEqual({
-                feature: 'members',
-                plan: 'trial',
+            expect(res.status).toBe(201);
+
+            const member = await User.findOne({
+                where: { created_by_user_id: user.id },
             });
+            const ent = await entitlements.getEntitlements(member.id);
+            expect(ent.reason).toBe('seat');
+            expect(ent.plan).toBe('trial');
+            expect(ent.active).toBe(true);
+
+            const second = await agent
+                .post('/api/members')
+                .send({ name: 'Kid 2', email: uniqueEmail('kid') });
+            expect(second.status).toBe(402);
+            expect(second.body.code).toBe('PLAN_LIMIT_REACHED');
+        });
+
+        it('leaves out members when the trial plan allows none', async () => {
+            process.env.TUDUDI_PLANS_JSON = JSON.stringify({
+                trial: { limits: { max_members: 0 } },
+            });
+            plans._resetCache();
+            entitlements.invalidate();
+            try {
+                const res = await agent
+                    .post('/api/members')
+                    .send({ name: 'Kid', email: uniqueEmail('kid') });
+                expect(res.status).toBe(402);
+                expect(res.body.code).toBe('FEATURE_NOT_IN_PLAN');
+                expect(res.body.details).toEqual({
+                    feature: 'members',
+                    plan: 'trial',
+                });
+            } finally {
+                delete process.env.TUDUDI_PLANS_JSON;
+                plans._resetCache();
+                entitlements.invalidate();
+            }
         });
     });
 
@@ -209,7 +245,7 @@ describe('Cloud trials', () => {
             expect(billing.body.reason).toBe('trial');
             expect(
                 new Date(billing.body.trial_ends_at).getTime()
-            ).toBeGreaterThan(Date.now() + 13 * DAY);
+            ).toBeGreaterThan(Date.now() + 6 * DAY);
             const read = await agent.get('/api/tasks');
             expect(read.status).toBe(200);
         });
@@ -223,7 +259,7 @@ describe('Cloud trials', () => {
             const closed = await agent.get('/api/tasks');
             expect(closed.status).toBe(402);
 
-            config.hosted.trialDays = 14;
+            config.hosted.trialDays = 7;
             entitlements.invalidate();
             const open = await agent.get('/api/tasks');
             expect(open.status).toBe(200);
@@ -368,6 +404,73 @@ describe('Cloud trials', () => {
             config.hosted.deleteExpiredTrials = false;
             expect(await lifecycle.warnExpiringTrials()).toEqual([]);
             expect(await User.findByPk(user.id)).not.toBeNull();
+        });
+
+        describe('trial ending reminders', () => {
+            const runningTrialUser = async (prefix, endsInDays) => {
+                const u = await createTestUser({ email: uniqueEmail(prefix) });
+                await entitlements.startTrial(u.id);
+                await BillingAccount.update(
+                    {
+                        trial_ends_at: new Date(Date.now() + endsInDays * DAY),
+                    },
+                    { where: { user_id: u.id } }
+                );
+                return u;
+            };
+
+            it('emails three days before the end, then on the last day', async () => {
+                const user = await runningTrialUser('ending', 2.5);
+                const later = await runningTrialUser('later', 7);
+
+                expect(await lifecycle.remindEndingTrials()).toEqual([user.id]);
+                const [mail] = emailService.sendEmail.mock.calls[0];
+                expect(mail.to).toBe(user.email);
+                expect(mail.subject).toBe('Your tududi trial ends in 3 days');
+                expect(mail.text).toContain('/subscription/new');
+
+                // The same day again: nothing new.
+                expect(await lifecycle.remindEndingTrials()).toEqual([]);
+
+                const lastDay = new Date(Date.now() + 2 * DAY);
+                expect(
+                    await lifecycle.remindEndingTrials({ now: lastDay })
+                ).toEqual([user.id]);
+                const [last] = emailService.sendEmail.mock.calls.at(-1);
+                expect(last.subject).toBe('Your tududi trial ends tomorrow');
+                expect(
+                    await lifecycle.remindEndingTrials({ now: lastDay })
+                ).toEqual([]);
+                expect(
+                    emailService.sendEmail.mock.calls.some(
+                        ([m]) => m.to === later.email
+                    )
+                ).toBe(false);
+            });
+
+            it('reminds with a free tier too, and leaves paid accounts alone', async () => {
+                config.hosted.requireSubscription = false;
+                const user = await runningTrialUser('freetier', 1);
+                const paid = await runningTrialUser('paidtrial', 1);
+                await BillingAccount.update(
+                    { status: 'active', provider_subscription_id: 'sub_2' },
+                    { where: { user_id: paid.id } }
+                );
+
+                expect(await lifecycle.remindEndingTrials()).toEqual([user.id]);
+                const [mail] = emailService.sendEmail.mock.calls[0];
+                expect(mail.text).toContain('moves to the free plan');
+            });
+
+            it('does not mark a reminder that could not be sent', async () => {
+                const user = await runningTrialUser('nosend', 1);
+                emailService.sendEmail.mockResolvedValue({ success: false });
+                expect(await lifecycle.remindEndingTrials()).toEqual([]);
+                const account = await BillingAccount.findOne({
+                    where: { user_id: user.id },
+                });
+                expect(account.trial_reminder_days).toBeNull();
+            });
         });
 
         it('reminds an unverified sign-up once, with a fresh link', async () => {

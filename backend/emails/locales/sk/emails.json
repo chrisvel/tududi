@@ -1,0 +1,81 @@
+{
+    "common": {
+        "greeting": "Dobrý deň,",
+        "signoff": "S pozdravom,\nTím Tududi",
+        "copyLink": "Alebo skopírujte tento odkaz a vložte ho do prehliadača:"
+    },
+    "verification": {
+        "subject": "Vitajte v Tududi - overte svoju e-mailovú adresu",
+        "welcome": "Vitajte v Tududi!",
+        "opening": "Ďakujeme za registráciu. Ak chcete dokončiť registráciu a začať používať Tududi, overte svoju e-mailovú adresu kliknutím na odkaz nižšie:",
+        "button": "Overiť e-mailovú adresu",
+        "expires_one": "Platnosť tohto overovacieho odkazu vyprší o {{count}} hodinu.",
+        "expires_few": "Platnosť tohto overovacieho odkazu vyprší o {{count}} hodiny.",
+        "expires_many": "Platnosť tohto overovacieho odkazu vyprší o {{count}} hodiny.",
+        "expires_other": "Platnosť tohto overovacieho odkazu vyprší o {{count}} hodín.",
+        "trial_one": "Overením sa zároveň spustí vaša bezplatná {{count}}-dňová skúšobná verzia, bez platobnej karty. Obsahuje AI asistenta s menším limitom a jedného člena, ktorého môžete pridať, napríklad partnera alebo kolegu. Verejné odkazy na poznámky sa sprístupnia po aktivácii predplatného.",
+        "trial_few": "Overením sa zároveň spustí vaša bezplatná {{count}}-dňová skúšobná verzia, bez platobnej karty. Obsahuje AI asistenta s menším limitom a jedného člena, ktorého môžete pridať, napríklad partnera alebo kolegu. Verejné odkazy na poznámky sa sprístupnia po aktivácii predplatného.",
+        "trial_many": "Overením sa zároveň spustí vaša bezplatná {{count}}-dňová skúšobná verzia, bez platobnej karty. Obsahuje AI asistenta s menším limitom a jedného člena, ktorého môžete pridať, napríklad partnera alebo kolegu. Verejné odkazy na poznámky sa sprístupnia po aktivácii predplatného.",
+        "trial_other": "Overením sa zároveň spustí vaša bezplatná {{count}}-dňová skúšobná verzia, bez platobnej karty. Obsahuje AI asistenta s menším limitom a jedného člena, ktorého môžete pridať, napríklad partnera alebo kolegu. Verejné odkazy na poznámky sa sprístupnia po aktivácii predplatného.",
+        "benefitsIntro": "Po overení budete môcť:",
+        "benefits": [
+            "Jednoducho vytvárať a organizovať úlohy",
+            "Spravovať projekty a oblasti",
+            "Nastaviť opakujúce sa úlohy",
+            "Sledovať svoju produktivitu"
+        ],
+        "ignore": "Ak ste si v Tududi účet nevytvorili, tento e-mail môžete pokojne ignorovať."
+    },
+    "verificationReminder": {
+        "subject": "Pripomienka: overte svoj e-mail a začnite používať Tududi",
+        "opening": "Pred zhruba dňom ste sa zaregistrovali v Tududi, ale vaša e-mailová adresa ešte nie je overená. Váš účet (aj bezplatná skúšobná verzia) sa spustí hneď, ako ju overíte."
+    },
+    "passwordReset": {
+        "subject": "Obnovenie hesla do Tududi",
+        "intro": "Niekto požiadal o obnovenie hesla k vášmu účtu Tududi.",
+        "action": "Otvorte tento odkaz a zvoľte si nové heslo:",
+        "button": "Zvoliť nové heslo",
+        "expires_one": "Odkaz vyprší o {{count}} minútu. Ak ste o obnovenie nežiadali, tento e-mail ignorujte; vaše heslo zostane nezmenené.",
+        "expires_few": "Odkaz vyprší o {{count}} minúty. Ak ste o obnovenie nežiadali, tento e-mail ignorujte; vaše heslo zostane nezmenené.",
+        "expires_many": "Odkaz vyprší o {{count}} minúty. Ak ste o obnovenie nežiadali, tento e-mail ignorujte; vaše heslo zostane nezmenené.",
+        "expires_other": "Odkaz vyprší o {{count}} minút. Ak ste o obnovenie nežiadali, tento e-mail ignorujte; vaše heslo zostane nezmenené."
+    },
+    "memberInvite": {
+        "subject": "Pridali vás do pracovného priestoru Tududi",
+        "intro": "Pridali vás do pracovného priestoru Tududi.",
+        "action": "Zvoľte si heslo, aktivujte svoj účet a prihláste sa:",
+        "button": "Nastaviť heslo",
+        "expires_one": "Odkaz vyprší o {{count}} hodinu. Ak ste tento e-mail nečakali, môžete ho ignorovať.",
+        "expires_few": "Odkaz vyprší o {{count}} hodiny. Ak ste tento e-mail nečakali, môžete ho ignorovať.",
+        "expires_many": "Odkaz vyprší o {{count}} hodiny. Ak ste tento e-mail nečakali, môžete ho ignorovať.",
+        "expires_other": "Odkaz vyprší o {{count}} hodín. Ak ste tento e-mail nečakali, môžete ho ignorovať."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Vaša skúšobná verzia tududi končí zajtra",
+        "subjectDays_one": "Vaša skúšobná verzia tududi končí o {{count}} deň",
+        "subjectDays_few": "Vaša skúšobná verzia tududi končí o {{count}} dni",
+        "subjectDays_many": "Vaša skúšobná verzia tududi končí o {{count}} dňa",
+        "subjectDays_other": "Vaša skúšobná verzia tududi končí o {{count}} dní",
+        "endsTomorrow": "Vaša skúšobná verzia tududi Cloud končí zajtra, {{date}}.",
+        "endsInDays_one": "Vaša skúšobná verzia tududi Cloud končí o {{count}} deň, {{date}}.",
+        "endsInDays_few": "Vaša skúšobná verzia tududi Cloud končí o {{count}} dni, {{date}}.",
+        "endsInDays_many": "Vaša skúšobná verzia tududi Cloud končí o {{count}} dňa, {{date}}.",
+        "endsInDays_other": "Vaša skúšobná verzia tududi Cloud končí o {{count}} dní, {{date}}.",
+        "afterReadOnly_one": "Potom bude váš účet {{count}} deň len na čítanie, aby ste si ešte mohli exportovať údaje, a následne bude odstránený.",
+        "afterReadOnly_few": "Potom bude váš účet {{count}} dni len na čítanie, aby ste si ešte mohli exportovať údaje, a následne bude odstránený.",
+        "afterReadOnly_many": "Potom bude váš účet {{count}} dňa len na čítanie, aby ste si ešte mohli exportovať údaje, a následne bude odstránený.",
+        "afterReadOnly_other": "Potom bude váš účet {{count}} dní len na čítanie, aby ste si ešte mohli exportovať údaje, a následne bude odstránený.",
+        "afterFree": "Potom váš účet prejde na bezplatný plán.",
+        "keep": "Ak chcete tududi Cloud naďalej používať tak ako teraz, vrátane AI asistenta a členov, aktivujte si predplatné:",
+        "button": "Predplatiť"
+    },
+    "deletionWarning": {
+        "subject": "Váš účet tududi bude odstránený {{date}}",
+        "ended": "Vaša skúšobná verzia tududi Cloud sa skončila a odvtedy je váš účet len na čítanie.",
+        "deleteOn": "{{date}} bude účet aj všetko v ňom odstránené.",
+        "keep": "Ak si ho chcete ponechať, aktivujte si predplatné:",
+        "button": "Ponechať môj účet",
+        "export": "Ak si chcete radšej vziať svoje údaje so sebou, exportujte ich na stránke Záloha:",
+        "final": "Ak nič neurobíte, účet bude {{date}} odstránený a toto je posledný e-mail, ktorý vám o tom pošleme."
+    }
+}

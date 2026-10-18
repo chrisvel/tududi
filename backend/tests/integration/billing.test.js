@@ -132,7 +132,7 @@ function enableHostedBilling() {
 
 function disableHostedBilling() {
     config.hosted.enabled = false;
-    config.hosted.trialDays = 14;
+    config.hosted.trialDays = 7;
     config.hosted.stripe.secretKey = undefined;
     config.hosted.stripe.webhookSecret = undefined;
     config.hosted.stripe.prices.proMonthly = undefined;

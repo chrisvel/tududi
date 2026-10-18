@@ -1,0 +1,60 @@
+{
+    "common": {
+        "greeting": "안녕하세요,",
+        "signoff": "감사합니다.\nTududi 팀",
+        "copyLink": "또는 이 링크를 복사해 브라우저에 붙여 넣으세요:"
+    },
+    "verification": {
+        "subject": "Tududi에 오신 것을 환영합니다 - 이메일을 인증해 주세요",
+        "welcome": "Tududi에 오신 것을 환영합니다!",
+        "opening": "가입해 주셔서 감사합니다. 가입을 완료하고 Tududi를 사용하려면 아래 링크를 클릭해 이메일 주소를 인증해 주세요:",
+        "button": "이메일 주소 인증",
+        "expires_other": "이 인증 링크는 {{count}}시간 후에 만료됩니다.",
+        "trial_other": "인증하면 {{count}}일 무료 체험도 함께 시작되며, 카드는 필요 없습니다. 체험에는 사용량이 더 적은 AI 어시스턴트와, 파트너나 팀원처럼 추가할 수 있는 멤버 1명이 포함됩니다. 공개 노트 링크는 구독하면 사용할 수 있습니다.",
+        "benefitsIntro": "인증 후에는 다음을 할 수 있습니다:",
+        "benefits": [
+            "작업을 쉽게 만들고 정리하기",
+            "프로젝트와 영역 관리하기",
+            "반복 작업 설정하기",
+            "생산성 추적하기"
+        ],
+        "ignore": "Tududi 계정을 만든 적이 없다면 이 이메일을 무시하셔도 됩니다."
+    },
+    "verificationReminder": {
+        "subject": "알림: Tududi를 사용하려면 이메일을 인증해 주세요",
+        "opening": "하루쯤 전에 Tududi에 가입하셨지만 아직 이메일 주소가 인증되지 않았습니다. 인증하는 즉시 계정(과 무료 체험)이 시작됩니다."
+    },
+    "passwordReset": {
+        "subject": "Tududi 비밀번호 재설정",
+        "intro": "누군가 회원님의 Tududi 계정 비밀번호 재설정을 요청했습니다.",
+        "action": "이 링크를 열어 새 비밀번호를 설정하세요:",
+        "button": "새 비밀번호 설정",
+        "expires_other": "링크는 {{count}}분 후에 만료됩니다. 재설정을 요청하지 않았다면 이 이메일을 무시하세요. 비밀번호는 그대로 유지됩니다."
+    },
+    "memberInvite": {
+        "subject": "Tududi 워크스페이스에 추가되었습니다",
+        "intro": "Tududi 워크스페이스에 추가되었습니다.",
+        "action": "비밀번호를 설정해 계정을 활성화하고 로그인하세요:",
+        "button": "비밀번호 설정",
+        "expires_other": "링크는 {{count}}시간 후에 만료됩니다. 예상하지 못한 이메일이라면 무시하셔도 됩니다."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "tududi 체험이 내일 종료됩니다",
+        "subjectDays_other": "tududi 체험이 {{count}}일 후에 종료됩니다",
+        "endsTomorrow": "tududi Cloud 체험이 내일({{date}}) 종료됩니다.",
+        "endsInDays_other": "tududi Cloud 체험이 {{count}}일 후인 {{date}}에 종료됩니다.",
+        "afterReadOnly_other": "그 후 계정은 {{count}}일 동안 읽기 전용으로 전환되며, 이 기간에도 데이터를 내보낼 수 있습니다. 그 뒤 계정이 삭제됩니다.",
+        "afterFree": "그 후 계정은 무료 플랜으로 전환됩니다.",
+        "keep": "AI 어시스턴트와 멤버를 포함해 지금처럼 tududi Cloud를 계속 사용하려면 구독하세요:",
+        "button": "구독하기"
+    },
+    "deletionWarning": {
+        "subject": "tududi 계정이 {{date}}에 삭제됩니다",
+        "ended": "tududi Cloud 체험이 종료되어, 그 이후로 계정이 읽기 전용 상태입니다.",
+        "deleteOn": "{{date}}에 계정과 그 안의 모든 데이터가 삭제됩니다.",
+        "keep": "계정을 유지하려면 구독하세요:",
+        "button": "내 계정 유지",
+        "export": "데이터를 가져가려면 백업 및 복원 페이지에서 내보내세요:",
+        "final": "아무 조치도 하지 않으면 계정은 {{date}}에 삭제되며, 이 건에 관해 보내드리는 마지막 이메일입니다."
+    }
+}

@@ -276,7 +276,7 @@
         "action": "Get started →",
         "actionTrial": "Start free trial →",
         "priceNoteTrial": "{{days}} days free, no card needed. Cancel any time.",
-        "trialNote": "The trial has everything except the AI assistant, public note links and adding members."
+        "trialNote": "The trial includes the AI assistant with a smaller allowance and one member you can add. Public note links open once you subscribe."
       }
     },
     "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",
@@ -354,7 +354,7 @@
       "freePlan": {
         "q": "Is there a free plan or a trial on tududi Cloud?",
         "a": "No. Cloud is {{monthly}} a month or {{price}} a year per person, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 14-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first. The free way to use tududi is to run it on your own server, which is the same application.",
-        "aTrial": "There is no free plan, but every new account gets a {{days}}-day free trial, no card needed. The trial has everything except the AI assistant, public note links and adding members. If you do not subscribe, the account turns read-only for 30 days so you can export your data, and is then deleted. After the trial, Cloud is {{monthly}} a month or {{price}} a year per person. The free way to use tududi is to run it on your own server, which is the same application."
+        "aTrial": "There is no free plan, but every new account gets a {{days}}-day free trial, no card needed. The trial includes the AI assistant with a smaller allowance and one member you can add. Public note links open once you subscribe. If you do not subscribe, the account turns read-only for 30 days so you can export your data, and is then deleted. After the trial, Cloud is {{monthly}} a month or {{price}} a year per person. The free way to use tududi is to run it on your own server, which is the same application."
       },
       "leaving": {
         "q": "Can I leave, and what happens to my data?",

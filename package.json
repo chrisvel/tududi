@@ -46,6 +46,7 @@
     "db:reset": "cd backend && node scripts/db-reset.js",
     "db:status": "cd backend && node scripts/db-status.js",
     "db:seed": "cd backend && node scripts/seed-dev-data.js",
+    "emails:preview": "cd backend && node scripts/preview-emails.js",
     "db:reset-and-seed": "cd backend && NODE_ENV=development node scripts/reset-and-seed.js",
     "user:create": "cd backend && node scripts/user-create.js",
     "migration:create": "cd backend && node scripts/migration-create.js",
