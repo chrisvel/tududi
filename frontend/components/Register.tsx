@@ -35,7 +35,7 @@ const Register: React.FC = () => {
                 console.error('Error fetching OIDC providers:', err)
             );
     }, []);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [isDarkMode] = useState<boolean>(() => {
         const storedPreference = localStorage.getItem('isDarkMode');
         return storedPreference !== null
@@ -114,6 +114,8 @@ const Register: React.FC = () => {
                 body: JSON.stringify({
                     email,
                     password,
+                    // The first emails go out in the language of this form.
+                    language: i18n.language,
                     ...(captchaToken ? { captcha_token: captchaToken } : {}),
                 }),
                 credentials: 'include',

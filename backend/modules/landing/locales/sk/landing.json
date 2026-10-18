@@ -268,7 +268,7 @@
         "launchNote": "Zavádzacia ročná cena, ktorá vám zostane, kým budete predplatiteľom.",
         "priceNote": "Všetko v cene. Zrušiť môžete kedykoľvek.",
         "priceNoteTrial": "{{days}} dní zadarmo, bez platobnej karty. Zrušiť môžete kedykoľvek.",
-        "trialNote": "Skúšobná verzia obsahuje všetko okrem AI asistenta, verejných odkazov na poznámky a pridávania členov.",
+        "trialNote": "Skúšobná verzia obsahuje AI asistenta s menším limitom a jedného člena, ktorého môžete pridať. Verejné odkazy na poznámky sa sprístupnia po zaplatení predplatného.",
         "features": [
           "Spustené za minútu, bez nastavovania servera",
           "Neobmedzené úlohy, projekty a poznámky, plus prílohy",
@@ -356,7 +356,7 @@
       "freePlan": {
         "q": "Existuje v tududi Cloud bezplatný plán alebo skúšobná verzia?",
         "a": "Nie. Cloud stojí {{monthly}} mesačne alebo {{price}} ročne a to je celý cenník: žiadna bezplatná úroveň, žiadne odpočítavanie skúšobnej doby, žiadna karta zadaná za niečo, čo vám neskôr potichu začne účtovať. Ak vám služba nebude vyhovovať, platí 14-dňová záruka vrátenia peňazí, a ak sa chcete najprv poobzerať, na tejto stránke nájdete živé demo. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri – je to tá istá aplikácia.",
-        "aTrial": "Bezplatná úroveň neexistuje, ale každý nový účet dostane {{days}}-dňovú skúšobnú verziu zadarmo, bez platobnej karty. Skúšobná verzia obsahuje všetko okrem AI asistenta, verejných odkazov na poznámky a pridávania členov. Ak si predplatné nezaplatíte, účet bude 30 dní len na čítanie, aby ste si mohli exportovať dáta, a potom sa vymaže. Po skúšobnej dobe stojí Cloud {{monthly}} mesačne alebo {{price}} ročne na osobu. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri – je to tá istá aplikácia."
+        "aTrial": "Bezplatná úroveň neexistuje, ale každý nový účet dostane {{days}}-dňovú skúšobnú verziu zadarmo, bez platobnej karty. Skúšobná verzia obsahuje AI asistenta s menším limitom a jedného člena, ktorého môžete pridať. Verejné odkazy na poznámky sa sprístupnia po zaplatení predplatného. Ak si predplatné nezaplatíte, účet bude 30 dní len na čítanie, aby ste si mohli exportovať dáta, a potom sa vymaže. Po skúšobnej dobe stojí Cloud {{monthly}} mesačne alebo {{price}} ročne na osobu. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri – je to tá istá aplikácia."
       },
       "leaving": {
         "q": "Môžem odísť a čo sa stane s mojimi dátami?",

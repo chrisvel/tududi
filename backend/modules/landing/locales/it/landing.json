@@ -275,7 +275,7 @@
         "priceNote": "Tutto incluso. Cancella in qualsiasi momento.",
         "actionTrial": "Inizia la prova gratuita →",
         "priceNoteTrial": "{{days}} giorni gratis, senza carta. Disdici quando vuoi.",
-        "trialNote": "La prova include tutto tranne l'assistente IA, i link pubblici alle note e l'aggiunta di membri."
+        "trialNote": "La prova include l'assistente IA con un limite più basso e un membro che puoi aggiungere. I link pubblici alle note si sbloccano quando ti abboni."
       }
     },
     "fineprint": "Annulla quando vuoi ed esporta tutto. Se tududi Cloud dovesse mai chiudere, ricevi i tuoi dati e una guida alla migrazione self-hosted. Per spazio e volume API vale il fair use. Garanzia soddisfatti o rimborsati di 14 giorni, senza domande.",
@@ -355,7 +355,7 @@
       "freePlan": {
         "a": "No. Cloud costa {{monthly}} al mese o {{price}} all'anno a persona, e questo è tutto il listino: nessun piano gratuito, nessun orologio di prova, nessuna carta addebitata per qualcosa che inizia silenziosamente a fatturare più avanti. C'è una garanzia di rimborso di 14 giorni se scopri che non ti si adatta, e c'è una demo dal vivo su questa pagina se vuoi prima dare un'occhiata. Il modo gratuito di usare tududi è farlo funzionare sul tuo server, che è la stessa applicazione.",
         "q": "C'è un piano gratuito o una prova su tududi Cloud?",
-        "aTrial": "Non esiste un piano gratuito, ma ogni nuovo account riceve una prova gratuita di {{days}} giorni, senza carta. La prova include tutto tranne l'assistente IA, i link pubblici alle note e l'aggiunta di membri. Se non ti abboni, l'account passa in sola lettura per 30 giorni così puoi esportare i tuoi dati, poi viene eliminato. Dopo la prova, Cloud costa {{monthly}} al mese o {{price}} all'anno a persona. Il modo gratuito per usare tududi è installarlo sul tuo server, ed è la stessa applicazione."
+        "aTrial": "Non esiste un piano gratuito, ma ogni nuovo account riceve una prova gratuita di {{days}} giorni, senza carta. La prova include l'assistente IA con un limite più basso e un membro che puoi aggiungere. I link pubblici alle note si sbloccano quando ti abboni. Se non ti abboni, l'account passa in sola lettura per 30 giorni così puoi esportare i tuoi dati, poi viene eliminato. Dopo la prova, Cloud costa {{monthly}} al mese o {{price}} all'anno a persona. Il modo gratuito per usare tududi è installarlo sul tuo server, ed è la stessa applicazione."
       },
       "leaving": {
         "q": "Posso andarmene, e che fine fanno i miei dati?",

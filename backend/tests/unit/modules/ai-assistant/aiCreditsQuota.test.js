@@ -48,7 +48,7 @@ describe('AI Assistant - AI Credits monthly quota', () => {
         delete process.env.TUDUDI_PLANS_JSON;
         plans._resetCache();
         config.hosted.enabled = false;
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         entitlements.invalidate();
     });
 

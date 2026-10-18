@@ -5,11 +5,13 @@ const { getConfig } = require('../config/config');
 const entitlements = require('./entitlementsService');
 const { isAdmin } = require('./rolesService');
 const { logError, logInfo } = require('./logService');
+const { deliver } = require('./emailDeliveryService');
 
-// The end of a Cloud trial that nobody paid for: a warning email a week
-// before the account is deleted, then the deletion. Both run from the daily
-// account lifecycle job, and only where access is sold (with a free tier an
-// ended trial is a working free account).
+// The end of a Cloud trial that nobody paid for: reminders while it runs,
+// then a warning email a week before the account is deleted, and the
+// deletion. All run from the daily account lifecycle job; the warning and
+// deletion only where access is sold (with a free tier an ended trial is a
+// working free account).
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -39,7 +41,7 @@ const unpaidTrialWhere = (extra) => ({
 
 async function mayDelete(userId) {
     const user = await models().User.findByPk(userId, {
-        attributes: ['id', 'email', 'created_by_user_id'],
+        attributes: ['id', 'email', 'language', 'created_by_user_id'],
     });
     if (!user || user.created_by_user_id) return null;
     if (await isAdmin(user.id)) return null;
@@ -48,56 +50,24 @@ async function mayDelete(userId) {
     return user;
 }
 
-const formatDate = (date) =>
-    date.toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        timeZone: 'UTC',
-    });
-
-async function sendDeletionWarning(user, deleteOn) {
-    const { sendEmail } = require('./emailService');
+function deletionWarningVars(deleteOn) {
     const base = getConfig().frontendUrl.replace(/\/$/, '');
-    const subscribeUrl = `${base}/subscription/new`;
-    const exportUrl = `${base}/profile`;
-    const date = formatDate(deleteOn);
+    return {
+        deleteOn,
+        subscribeUrl: `${base}/subscription/new`,
+        exportUrl: `${base}/backup`,
+    };
+}
 
-    const text = `Hi,
-
-Your tududi Cloud trial has ended, and your account has been read-only since then. On ${date} the account and everything in it will be deleted.
-
-To keep it, subscribe here:
-${subscribeUrl}
-
-To take your data with you instead, export it from your profile:
-${exportUrl}
-
-If you do nothing, the account is deleted on ${date} and this is the last email you will get from us about it.
-
-The Tududi Team`;
-
-    const html = `
-<p>Hi,</p>
-
-<p>Your tududi Cloud trial has ended, and your account has been read-only since then. <strong>On ${date} the account and everything in it will be deleted.</strong></p>
-
-<p style="text-align: center; margin: 30px 0;">
-    <a href="${subscribeUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Keep my account</a>
-</p>
-
-<p>To take your data with you instead, <a href="${exportUrl}">export it from your profile</a>.</p>
-
-<p>If you do nothing, the account is deleted on ${date} and this is the last email you will get from us about it.</p>
-
-<p>The Tududi Team</p>
-`;
-
-    return sendEmail({
-        to: user.email,
-        subject: `Your tududi account will be deleted on ${date}`,
-        text,
-        html,
+async function sendDeletionWarning(
+    user,
+    deleteOn,
+    { triggeredBy = null } = {}
+) {
+    return deliver('deletionWarning', {
+        user,
+        triggeredBy,
+        vars: deletionWarningVars(deleteOn),
     });
 }
 
@@ -187,18 +157,125 @@ async function deleteExpiredTrials({ now = new Date() } = {}) {
     return deleted;
 }
 
-// The daily job: remind unverified sign-ups, warn, then delete.
+// Days left at which a running trial gets a "your trial ends soon" email,
+// most distant first. Each goes out once; a missed one is not sent late.
+const TRIAL_REMINDER_DAYS = [3, 1];
+
+function trialReminderVars(daysLeft, endsOn) {
+    const base = getConfig().frontendUrl.replace(/\/$/, '');
+    return {
+        daysLeft,
+        endsOn,
+        readOnlyDays: entitlements.isSubscriptionRequired()
+            ? (getConfig().hosted.trialReadOnlyDays ?? 30)
+            : null,
+        subscribeUrl: `${base}/subscription/new`,
+    };
+}
+
+async function sendTrialReminder(
+    user,
+    daysLeft,
+    endsOn,
+    { triggeredBy = null } = {}
+) {
+    return deliver('trialReminder', {
+        user,
+        variant: `${daysLeft}d`,
+        triggeredBy,
+        vars: trialReminderVars(daysLeft, endsOn),
+    });
+}
+
+// Days left in a trial ending at `endsOn` (a started day counts), and the
+// closest reminder day not yet passed by.
+function reminderStep(endsOn, now = new Date()) {
+    const daysLeft = Math.max(
+        1,
+        Math.ceil((new Date(endsOn).getTime() - now.getTime()) / DAY_MS)
+    );
+    // Further out than every reminder day (a reminder sent by hand), the
+    // days left themselves.
+    const ahead = TRIAL_REMINDER_DAYS.filter((d) => d >= daysLeft);
+    const step = ahead.length ? Math.min(...ahead) : daysLeft;
+    return { daysLeft, step };
+}
+
+// Emails every running, never-paid trial that has reached one of the
+// reminder days. Unlike the deletion warning this runs with a free tier too,
+// since the trial still ends there.
+async function remindEndingTrials({ now = new Date() } = {}) {
+    if (!entitlements.isHostedMode()) return [];
+    if ((getConfig().hosted.trialDays || 0) <= 0) return [];
+    const { isEmailEnabled } = require('./emailService');
+    if (!isEmailEnabled()) return [];
+
+    const furthest = Math.max(...TRIAL_REMINDER_DAYS);
+    const accounts = await models().BillingAccount.findAll({
+        where: unpaidTrialWhere({
+            trial_ends_at: {
+                [Op.gt]: now,
+                [Op.lte]: new Date(now.getTime() + furthest * DAY_MS),
+            },
+        }),
+    });
+
+    const reminded = [];
+    for (const account of accounts) {
+        try {
+            const endsOn = new Date(account.trial_ends_at);
+            const { daysLeft, step } = reminderStep(endsOn, now);
+            if (
+                account.trial_reminder_days !== null &&
+                account.trial_reminder_days <= step
+            ) {
+                continue;
+            }
+
+            const user = await models().User.findByPk(account.user_id, {
+                attributes: ['id', 'email', 'language', 'created_by_user_id'],
+            });
+            if (!user || !user.email || user.created_by_user_id) continue;
+            if (await isAdmin(user.id)) continue;
+
+            const result = await sendTrialReminder(user, daysLeft, endsOn);
+            if (!result.success) continue;
+
+            await account.update({ trial_reminder_days: step });
+            reminded.push(user.id);
+        } catch (error) {
+            logError(
+                error,
+                `Could not send trial reminder to account ${account.user_id}`
+            );
+        }
+    }
+    return reminded;
+}
+
+// The daily job: remind unverified sign-ups and ending trials, warn, then
+// delete.
 async function runAccountLifecycle({ now = new Date() } = {}) {
     const {
         sendVerificationReminders,
     } = require('../modules/auth/registrationService');
     const reminded = await sendVerificationReminders({ now });
+    const trialReminders = await remindEndingTrials({ now });
     const warned = await warnExpiringTrials({ now });
     const deleted = await deleteExpiredTrials({ now });
-    return { reminded, warned, deleted };
+    return { reminded, trialReminders, warned, deleted };
 }
 
 module.exports = {
+    isActive,
+    mayDelete,
+    unpaidTrialWhere,
+    reminderStep,
+    trialReminderVars,
+    sendTrialReminder,
+    deletionWarningVars,
+    sendDeletionWarning,
+    remindEndingTrials,
     warnExpiringTrials,
     deleteExpiredTrials,
     runAccountLifecycle,

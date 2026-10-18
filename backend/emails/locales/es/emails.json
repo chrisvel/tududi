@@ -1,0 +1,74 @@
+{
+    "common": {
+        "greeting": "Hola,",
+        "signoff": "Un saludo,\nEl equipo de Tududi",
+        "copyLink": "O copia y pega este enlace en tu navegador:"
+    },
+    "verification": {
+        "subject": "Te damos la bienvenida a Tududi: verifica tu correo electrónico",
+        "welcome": "¡Te damos la bienvenida a Tududi!",
+        "opening": "Gracias por registrarte. Para completar el registro y empezar a usar Tududi, verifica tu dirección de correo electrónico haciendo clic en el enlace de abajo:",
+        "button": "Verificar correo electrónico",
+        "expires_one": "Este enlace de verificación caduca en {{count}} hora.",
+        "expires_many": "Este enlace de verificación caduca en {{count}} horas.",
+        "expires_other": "Este enlace de verificación caduca en {{count}} horas.",
+        "trial_one": "Al verificar también empieza tu prueba gratuita de {{count}} día, sin tarjeta. Incluye el asistente de IA con un límite más reducido y un miembro que puedes añadir, como tu pareja o alguien de tu equipo. Los enlaces públicos de notas se activan en cuanto te suscribes.",
+        "trial_many": "Al verificar también empieza tu prueba gratuita de {{count}} días, sin tarjeta. Incluye el asistente de IA con un límite más reducido y un miembro que puedes añadir, como tu pareja o alguien de tu equipo. Los enlaces públicos de notas se activan en cuanto te suscribes.",
+        "trial_other": "Al verificar también empieza tu prueba gratuita de {{count}} días, sin tarjeta. Incluye el asistente de IA con un límite más reducido y un miembro que puedes añadir, como tu pareja o alguien de tu equipo. Los enlaces públicos de notas se activan en cuanto te suscribes.",
+        "benefitsIntro": "Después de la verificación podrás:",
+        "benefits": [
+            "Crear y organizar tareas fácilmente",
+            "Gestionar proyectos y áreas",
+            "Configurar tareas recurrentes",
+            "Seguir tu productividad"
+        ],
+        "ignore": "Si no creaste una cuenta en Tududi, puedes ignorar este correo sin problema."
+    },
+    "verificationReminder": {
+        "subject": "Recordatorio: verifica tu correo electrónico para empezar a usar Tududi",
+        "opening": "Te registraste en Tududi hace un día más o menos, pero tu dirección de correo electrónico aún no está verificada. Tu cuenta (y tu prueba gratuita) empieza en cuanto la verifiques."
+    },
+    "passwordReset": {
+        "subject": "Restablece tu contraseña de Tududi",
+        "intro": "Alguien ha solicitado restablecer la contraseña de tu cuenta de Tududi.",
+        "action": "Abre este enlace para elegir una nueva contraseña:",
+        "button": "Elegir una nueva contraseña",
+        "expires_one": "El enlace caduca en {{count}} minuto. Si no solicitaste el restablecimiento, ignora este correo; tu contraseña seguirá igual.",
+        "expires_many": "El enlace caduca en {{count}} minutos. Si no solicitaste el restablecimiento, ignora este correo; tu contraseña seguirá igual.",
+        "expires_other": "El enlace caduca en {{count}} minutos. Si no solicitaste el restablecimiento, ignora este correo; tu contraseña seguirá igual."
+    },
+    "memberInvite": {
+        "subject": "Te han añadido a un espacio de trabajo de Tududi",
+        "intro": "Te han añadido a un espacio de trabajo de Tududi.",
+        "action": "Elige una contraseña para activar tu cuenta e iniciar sesión:",
+        "button": "Establecer tu contraseña",
+        "expires_one": "El enlace caduca en {{count}} hora. Si no lo esperabas, puedes ignorar este correo.",
+        "expires_many": "El enlace caduca en {{count}} horas. Si no lo esperabas, puedes ignorar este correo.",
+        "expires_other": "El enlace caduca en {{count}} horas. Si no lo esperabas, puedes ignorar este correo."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Tu prueba de tududi termina mañana",
+        "subjectDays_one": "Tu prueba de tududi termina en {{count}} día",
+        "subjectDays_many": "Tu prueba de tududi termina en {{count}} días",
+        "subjectDays_other": "Tu prueba de tududi termina en {{count}} días",
+        "endsTomorrow": "Tu prueba de tududi Cloud termina mañana, el {{date}}.",
+        "endsInDays_one": "Tu prueba de tududi Cloud termina en {{count}} día, el {{date}}.",
+        "endsInDays_many": "Tu prueba de tududi Cloud termina en {{count}} días, el {{date}}.",
+        "endsInDays_other": "Tu prueba de tududi Cloud termina en {{count}} días, el {{date}}.",
+        "afterReadOnly_one": "Después, tu cuenta pasa a ser de solo lectura durante {{count}} día, para que aún puedas exportar tus datos, y luego se elimina.",
+        "afterReadOnly_many": "Después, tu cuenta pasa a ser de solo lectura durante {{count}} días, para que aún puedas exportar tus datos, y luego se elimina.",
+        "afterReadOnly_other": "Después, tu cuenta pasa a ser de solo lectura durante {{count}} días, para que aún puedas exportar tus datos, y luego se elimina.",
+        "afterFree": "Después, tu cuenta pasa al plan gratuito.",
+        "keep": "Para seguir usando tududi Cloud como ahora, con el asistente de IA y los miembros incluidos, suscríbete:",
+        "button": "Suscribirse"
+    },
+    "deletionWarning": {
+        "subject": "Tu cuenta de tududi se eliminará el {{date}}",
+        "ended": "Tu prueba de tududi Cloud ha terminado y desde entonces tu cuenta es de solo lectura.",
+        "deleteOn": "El {{date}} se eliminarán la cuenta y todo su contenido.",
+        "keep": "Para conservarla, suscríbete:",
+        "button": "Conservar mi cuenta",
+        "export": "Si prefieres llevarte tus datos, expórtalos desde la página de Copia de seguridad:",
+        "final": "Si no haces nada, la cuenta se eliminará el {{date}} y este es el último correo que recibirás de nuestra parte sobre ello."
+    }
+}

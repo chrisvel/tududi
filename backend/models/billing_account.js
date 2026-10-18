@@ -91,6 +91,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            trial_reminder_days: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
             cancel_at_period_end: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

@@ -1,0 +1,74 @@
+{
+    "common": {
+        "greeting": "Ciao,",
+        "signoff": "Un saluto,\nIl team di Tududi",
+        "copyLink": "Oppure copia e incolla questo link nel tuo browser:"
+    },
+    "verification": {
+        "subject": "Ti diamo il benvenuto su Tududi - Verifica la tua email",
+        "welcome": "Ti diamo il benvenuto su Tududi!",
+        "opening": "Grazie per la registrazione. Per completarla e iniziare a usare Tududi, verifica il tuo indirizzo email cliccando sul link qui sotto:",
+        "button": "Verifica indirizzo email",
+        "expires_one": "Questo link di verifica scade tra {{count}} ora.",
+        "expires_many": "Questo link di verifica scade tra {{count}} ore.",
+        "expires_other": "Questo link di verifica scade tra {{count}} ore.",
+        "trial_one": "Con la verifica inizia anche la tua prova gratuita di {{count}} giorno, senza carta. Include l'Assistente IA con un limite d'uso ridotto e un membro che puoi aggiungere, ad esempio il partner o un collega. I link pubblici alle note si attivano quando ti abboni.",
+        "trial_many": "Con la verifica inizia anche la tua prova gratuita di {{count}} giorni, senza carta. Include l'Assistente IA con un limite d'uso ridotto e un membro che puoi aggiungere, ad esempio il partner o un collega. I link pubblici alle note si attivano quando ti abboni.",
+        "trial_other": "Con la verifica inizia anche la tua prova gratuita di {{count}} giorni, senza carta. Include l'Assistente IA con un limite d'uso ridotto e un membro che puoi aggiungere, ad esempio il partner o un collega. I link pubblici alle note si attivano quando ti abboni.",
+        "benefitsIntro": "Dopo la verifica potrai:",
+        "benefits": [
+            "Creare e organizzare le attività con facilità",
+            "Gestire progetti e aree",
+            "Impostare attività ricorrenti",
+            "Monitorare la tua produttività"
+        ],
+        "ignore": "Se non hai creato un account su Tududi, puoi ignorare questa email."
+    },
+    "verificationReminder": {
+        "subject": "Promemoria: verifica la tua email per iniziare a usare Tududi",
+        "opening": "Circa un giorno fa hai creato un account Tududi, ma il tuo indirizzo email non è ancora verificato. Il tuo account (e la tua prova gratuita) parte non appena lo verifichi."
+    },
+    "passwordReset": {
+        "subject": "Reimposta la password di Tududi",
+        "intro": "Qualcuno ha chiesto di reimpostare la password del tuo account Tududi.",
+        "action": "Apri questo link per scegliere una nuova password:",
+        "button": "Scegli una nuova password",
+        "expires_one": "Il link scade tra {{count}} minuto. Se non hai chiesto tu di reimpostarla, ignora questa email; la tua password resta invariata.",
+        "expires_many": "Il link scade tra {{count}} minuti. Se non hai chiesto tu di reimpostarla, ignora questa email; la tua password resta invariata.",
+        "expires_other": "Il link scade tra {{count}} minuti. Se non hai chiesto tu di reimpostarla, ignora questa email; la tua password resta invariata."
+    },
+    "memberInvite": {
+        "subject": "Ti hanno aggiunto a un'area di lavoro Tududi",
+        "intro": "Ti hanno aggiunto a un'area di lavoro Tududi.",
+        "action": "Scegli una password per attivare il tuo account e accedere:",
+        "button": "Imposta la password",
+        "expires_one": "Il link scade tra {{count}} ora. Se non te lo aspettavi, puoi ignorare questa email.",
+        "expires_many": "Il link scade tra {{count}} ore. Se non te lo aspettavi, puoi ignorare questa email.",
+        "expires_other": "Il link scade tra {{count}} ore. Se non te lo aspettavi, puoi ignorare questa email."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "La tua prova di tududi termina domani",
+        "subjectDays_one": "La tua prova di tududi termina tra {{count}} giorno",
+        "subjectDays_many": "La tua prova di tududi termina tra {{count}} giorni",
+        "subjectDays_other": "La tua prova di tududi termina tra {{count}} giorni",
+        "endsTomorrow": "La tua prova di tududi Cloud termina domani, il {{date}}.",
+        "endsInDays_one": "La tua prova di tududi Cloud termina tra {{count}} giorno, il {{date}}.",
+        "endsInDays_many": "La tua prova di tududi Cloud termina tra {{count}} giorni, il {{date}}.",
+        "endsInDays_other": "La tua prova di tududi Cloud termina tra {{count}} giorni, il {{date}}.",
+        "afterReadOnly_one": "Dopodiché il tuo account passa in sola lettura per {{count}} giorno, così puoi ancora esportare i tuoi dati, e poi viene eliminato.",
+        "afterReadOnly_many": "Dopodiché il tuo account passa in sola lettura per {{count}} giorni, così puoi ancora esportare i tuoi dati, e poi viene eliminato.",
+        "afterReadOnly_other": "Dopodiché il tuo account passa in sola lettura per {{count}} giorni, così puoi ancora esportare i tuoi dati, e poi viene eliminato.",
+        "afterFree": "Dopodiché il tuo account passa al piano gratuito.",
+        "keep": "Per continuare a usare tududi Cloud così com'è ora, Assistente IA e membri inclusi, abbonati:",
+        "button": "Abbonati"
+    },
+    "deletionWarning": {
+        "subject": "Il tuo account tududi verrà eliminato il {{date}}",
+        "ended": "La tua prova di tududi Cloud è terminata e da allora il tuo account è in sola lettura.",
+        "deleteOn": "Il {{date}} l'account e tutto ciò che contiene verranno eliminati.",
+        "keep": "Per conservarlo, abbonati:",
+        "button": "Mantieni il mio account",
+        "export": "Se invece vuoi portare con te i tuoi dati, esportali dalla pagina Backup e Ripristino:",
+        "final": "Se non fai nulla, l'account verrà eliminato il {{date}} e questa è l'ultima email che ti invieremo al riguardo."
+    }
+}

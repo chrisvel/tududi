@@ -463,7 +463,7 @@ describe('Landing page', () => {
         const hosted = getConfig().hosted;
         const saved = { enabled: hosted.enabled, trialDays: hosted.trialDays };
         hosted.enabled = true;
-        hosted.trialDays = 14;
+        hosted.trialDays = 7;
         try {
             const res = await request(app).get('/').set('Host', 'tududi.com');
             const heroOpen = res.text.indexOf('<section class="hero"');
@@ -471,34 +471,35 @@ describe('Landing page', () => {
                 heroOpen,
                 res.text.indexOf('</section>', heroOpen)
             );
-            expect(hero).toContain('Start your free 14-day trial');
-            expect(hero).toContain('Free for 14 days, no card needed.');
+            expect(hero).toContain('Start your free 7-day trial');
+            expect(hero).toContain('Free for 7 days, no card needed.');
             expect(res.text).toContain('Start free trial →');
-            expect(res.text).toContain('14-day free trial, no card needed');
+            expect(res.text).toContain('7-day free trial, no card needed');
             expect(res.text).not.toContain('no trial clock');
             expect(res.text).toContain(
-                'The trial has everything except the AI assistant'
+                'The trial includes the AI assistant with a smaller allowance'
             );
             const closingOpen = res.text.indexOf('<div class="closing"');
             const closing = res.text.slice(
                 closingOpen,
                 res.text.indexOf('</section>', closingOpen)
             );
-            expect(closing).toContain('Try it free for 14 days');
+            expect(closing).toContain('Try it free for 7 days');
             expect(closing).toContain('Start free trial');
 
             const cloud = await request(app)
                 .get('/cloud')
                 .set('Host', 'tududi.com');
-            expect(cloud.text).toContain('Try it free for 14 days');
+            expect(cloud.text).toContain('Try it free for 7 days');
             expect(cloud.text).toContain(
-                'The trial has everything except the AI assistant'
+                'The trial includes the AI assistant with a smaller allowance'
             );
 
             const terms = await request(app)
                 .get('/terms')
                 .set('Host', 'tududi.com');
-            expect(terms.text).toContain('free trial of 14 days');
+            expect(terms.text).toContain('free trial of 7 days');
+            expect(terms.text).toContain('one member you can add');
             const privacy = await request(app)
                 .get('/privacy')
                 .set('Host', 'tududi.com');
@@ -537,7 +538,7 @@ describe('Landing page', () => {
         expect(cloudCard).toMatch(/€5/);
         expect(cloudCard).toMatch(/€50/);
         expect(res.text).toContain('Is there a free plan or a trial');
-        expect(res.text).not.toContain('The trial has everything except');
+        expect(res.text).not.toContain('The trial includes the AI assistant');
         expect(res.text).not.toContain('Start free trial');
 
         // Self-hosting is still free, and the page still says so.

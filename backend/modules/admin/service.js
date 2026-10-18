@@ -28,6 +28,15 @@ const { sequelize } = require('../../models');
 const { destroyUserSessions } = require('../../services/sessionService');
 const { getConfig } = require('../../config/config');
 
+// A user id from the URL, as a positive integer.
+function parseUserId(value) {
+    const id = Number(value);
+    if (!Number.isInteger(id) || id <= 0) {
+        throw new ValidationError('Invalid user id');
+    }
+    return id;
+}
+
 class AdminService {
     /**
      * Check if requester is admin or if bootstrapping (no roles yet).
@@ -380,6 +389,25 @@ class AdminService {
     // signed up themselves or added as a member, verified, on the trial
     // (and the days left), paying, comped, or an ended trial waiting to be
     // deleted. The admin dashboard lists it, newest first.
+    async userEmails(requesterId, userId) {
+        await this.verifyAdmin(requesterId);
+        return require('./userEmails').describe(parseUserId(userId));
+    }
+
+    async previewUserEmail(requesterId, userId, key) {
+        await this.verifyAdmin(requesterId);
+        return require('./userEmails').preview(parseUserId(userId), key);
+    }
+
+    async sendUserEmail(requesterId, userId, key) {
+        await this.verifyAdmin(requesterId);
+        return require('./userEmails').send(
+            parseUserId(userId),
+            key,
+            requesterId
+        );
+    }
+
     async userStatuses(requesterId) {
         await this.verifyAdmin(requesterId);
         const { User, Role, Account, BillingAccount } = require('../../models');
@@ -388,36 +416,44 @@ class AdminService {
         const now = new Date();
         const DAY_MS = 24 * 60 * 60 * 1000;
 
-        const [users, adminRoles, accounts, billingRows, identityIds, usage] =
-            await Promise.all([
-                User.findAll({
-                    attributes: [
-                        'id',
-                        'email',
-                        'name',
-                        'surname',
-                        'created_at',
-                        'email_verified',
-                        'password_digest',
-                        'account_id',
-                    ],
-                    order: [['created_at', 'DESC']],
-                }),
-                Role.findAll({
-                    where: { is_admin: true },
-                    attributes: ['user_id'],
-                    raw: true,
-                }),
-                hosted
-                    ? Account.findAll({
-                          attributes: ['id', 'owner_user_id'],
-                          raw: true,
-                      })
-                    : [],
-                hosted ? BillingAccount.findAll() : [],
-                adminRepository.findIdentityUserIds(null),
-                adminRepository.countItemsByUser(),
-            ]);
+        const [
+            users,
+            adminRoles,
+            accounts,
+            billingRows,
+            identityIds,
+            usage,
+            emailCounts,
+        ] = await Promise.all([
+            User.findAll({
+                attributes: [
+                    'id',
+                    'email',
+                    'name',
+                    'surname',
+                    'created_at',
+                    'email_verified',
+                    'password_digest',
+                    'account_id',
+                ],
+                order: [['created_at', 'DESC']],
+            }),
+            Role.findAll({
+                where: { is_admin: true },
+                attributes: ['user_id'],
+                raw: true,
+            }),
+            hosted
+                ? Account.findAll({
+                      attributes: ['id', 'owner_user_id'],
+                      raw: true,
+                  })
+                : [],
+            hosted ? BillingAccount.findAll() : [],
+            adminRepository.findIdentityUserIds(null),
+            adminRepository.countItemsByUser(),
+            adminRepository.countSentEmailsByUser(),
+        ]);
 
         const adminIds = new Set(adminRoles.map((r) => r.user_id));
         const ownerByAccount = new Map(
@@ -497,6 +533,7 @@ class AdminService {
                     subscription_status: payer?.status ?? null,
                     ever_paid: !!payer?.provider_subscription_id,
                     usage: usageOf(usage.get(u.id)),
+                    emails_sent: emailCounts.get(u.id) || 0,
                 };
             }),
         };

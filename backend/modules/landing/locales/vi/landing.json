@@ -275,7 +275,7 @@
         "priceNote": "Mọi thứ đều được bao gồm. Hủy bất cứ lúc nào.",
         "actionTrial": "Dùng thử miễn phí →",
         "priceNoteTrial": "{{days}} ngày miễn phí, không cần thẻ. Hủy bất cứ lúc nào.",
-        "trialNote": "Bản dùng thử có mọi thứ trừ trợ lý AI, liên kết ghi chú công khai và thêm thành viên."
+        "trialNote": "Bản dùng thử có trợ lý AI với hạn mức thấp hơn và một thành viên bạn có thể thêm. Liên kết ghi chú công khai sẽ mở khi bạn đăng ký."
       }
     },
     "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 14 ngày, không cần lý do.",
@@ -355,7 +355,7 @@
       "freePlan": {
         "a": "Không. Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm cho mỗi người, và đó là toàn bộ bảng giá: không có mức miễn phí, không có đồng hồ thử nghiệm, không có thẻ bị tính phí cho thứ mà sau này lặng lẽ bắt đầu tính tiền. Có bảo đảm hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn, và có một bản demo trực tiếp trên trang này nếu bạn muốn xem trước. Cách miễn phí để dùng tududi là chạy nó trên máy chủ riêng của bạn, đó là cùng một ứng dụng.",
         "q": "Có gói miễn phí hoặc bản thử nghiệm nào trên tududi Cloud không?",
-        "aTrial": "Không có gói miễn phí, nhưng mỗi tài khoản mới được dùng thử miễn phí {{days}} ngày, không cần thẻ. Bản dùng thử có mọi thứ trừ trợ lý AI, liên kết ghi chú công khai và thêm thành viên. Nếu bạn không đăng ký, tài khoản chuyển sang chỉ đọc trong 30 ngày để bạn xuất dữ liệu, sau đó bị xóa. Sau thời gian dùng thử, Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm cho mỗi người. Cách miễn phí để dùng tududi là chạy nó trên máy chủ của bạn, đó là cùng một ứng dụng."
+        "aTrial": "Không có gói miễn phí, nhưng mỗi tài khoản mới được dùng thử miễn phí {{days}} ngày, không cần thẻ. Bản dùng thử có trợ lý AI với hạn mức thấp hơn và một thành viên bạn có thể thêm. Liên kết ghi chú công khai sẽ mở khi bạn đăng ký. Nếu bạn không đăng ký, tài khoản chuyển sang chỉ đọc trong 30 ngày để bạn xuất dữ liệu, sau đó bị xóa. Sau thời gian dùng thử, Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm cho mỗi người. Cách miễn phí để dùng tududi là chạy nó trên máy chủ của bạn, đó là cùng một ứng dụng."
       },
       "leaving": {
         "q": "Tôi có thể rời đi không, và dữ liệu của tôi sẽ ra sao?",

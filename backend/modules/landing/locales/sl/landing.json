@@ -275,7 +275,7 @@
         "priceNote": "Vse vključeno. Prekličite kadarkoli.",
         "actionTrial": "Preizkusite brezplačno →",
         "priceNoteTrial": "{{days}} dni brezplačno, brez kartice. Odpoved kadar koli.",
-        "trialNote": "Preizkus vključuje vse razen pomočnika AI, javnih povezav do zapiskov in dodajanja članov."
+        "trialNote": "Preizkus vključuje pomočnika AI z manjšo količino uporabe in enega člana, ki ga lahko dodate. Javne povezave do zapiskov se odprejo, ko se naročite."
       }
     },
     "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 14-dnevna garancija vračila denarja, brez vprašanj.",
@@ -355,7 +355,7 @@
       "freePlan": {
         "a": "Ne. Cloud stane {{monthly}} na mesec ali {{price}} na leto na osebo, in to je celoten cenik: brez brezplačne stopnje, brez preizkusne ure, brez kartice, obremenjene za nekaj, kar se tiho začne zaračunavati kasneje. Obstaja 14-dnevna garancija vračila denarja, če se izkaže, da vam ne ustreza, in obstaja živa predstavitev na tej strani, če želite najprej pogledati. Brezplačen način uporabe tududi je zagon na vašem lastnem strežniku, kar je enaka aplikacija.",
         "q": "Ali obstaja brezplačen paket ali preizkusna doba na tududi Cloud?",
-        "aTrial": "Brezplačnega paketa ni, vsak nov račun pa dobi brezplačen {{days}}-dnevni preizkus, brez kartice. Preizkus vključuje vse razen pomočnika AI, javnih povezav do zapiskov in dodajanja članov. Če se ne naročite, je račun 30 dni samo za branje, da lahko izvozite podatke, nato pa se izbriše. Po preizkusu Cloud stane {{monthly}} na mesec ali {{price}} na leto na osebo. Brezplačen način uporabe tududi je, da ga poganjate na svojem strežniku, gre za isto aplikacijo."
+        "aTrial": "Brezplačnega paketa ni, vsak nov račun pa dobi brezplačen {{days}}-dnevni preizkus, brez kartice. Preizkus vključuje pomočnika AI z manjšo količino uporabe in enega člana, ki ga lahko dodate. Javne povezave do zapiskov se odprejo, ko se naročite. Če se ne naročite, je račun 30 dni samo za branje, da lahko izvozite podatke, nato pa se izbriše. Po preizkusu Cloud stane {{monthly}} na mesec ali {{price}} na leto na osebo. Brezplačen način uporabe tududi je, da ga poganjate na svojem strežniku, gre za isto aplikacijo."
       },
       "leaving": {
         "q": "Lahko odidem in kaj se zgodi z mojimi podatki?",

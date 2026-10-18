@@ -59,3 +59,4 @@ backend/tests/test-files/
 tmp/
 *.bak
 !backend/tests/fixtures/legacy/*.sqlite3
+backend/emails/preview/

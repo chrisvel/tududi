@@ -1,0 +1,67 @@
+{
+    "common": {
+        "greeting": "Hallo,",
+        "signoff": "Viele Grüße\nIhr Tududi-Team",
+        "copyLink": "Oder kopieren Sie diesen Link in Ihren Browser:"
+    },
+    "verification": {
+        "subject": "Willkommen bei Tududi: Bitte bestätigen Sie Ihre E-Mail-Adresse",
+        "welcome": "Willkommen bei Tududi!",
+        "opening": "Vielen Dank für Ihre Registrierung. Um die Registrierung abzuschließen und Tududi zu nutzen, bestätigen Sie bitte Ihre E-Mail-Adresse über den folgenden Link:",
+        "button": "E-Mail-Adresse bestätigen",
+        "expires_one": "Dieser Bestätigungslink läuft in {{count}} Stunde ab.",
+        "expires_other": "Dieser Bestätigungslink läuft in {{count}} Stunden ab.",
+        "trial_one": "Mit der Bestätigung startet auch Ihre kostenlose Testphase von {{count}} Tag, ganz ohne Karte. Sie enthält den KI-Assistenten mit kleinerem Kontingent und ein Mitglied, das Sie hinzufügen können, etwa Ihre Partnerin, Ihren Partner oder jemanden aus dem Team. Öffentliche Notiz-Links stehen Ihnen zur Verfügung, sobald Sie abonnieren.",
+        "trial_other": "Mit der Bestätigung startet auch Ihre kostenlose Testphase von {{count}} Tagen, ganz ohne Karte. Sie enthält den KI-Assistenten mit kleinerem Kontingent und ein Mitglied, das Sie hinzufügen können, etwa Ihre Partnerin, Ihren Partner oder jemanden aus dem Team. Öffentliche Notiz-Links stehen Ihnen zur Verfügung, sobald Sie abonnieren.",
+        "benefitsIntro": "Nach der Bestätigung können Sie:",
+        "benefits": [
+            "Aufgaben ganz einfach erstellen und organisieren",
+            "Projekte und Bereiche verwalten",
+            "Wiederkehrende Aufgaben einrichten",
+            "Ihre Produktivität im Blick behalten"
+        ],
+        "ignore": "Wenn Sie kein Konto bei Tududi erstellt haben, können Sie diese E-Mail einfach ignorieren."
+    },
+    "verificationReminder": {
+        "subject": "Erinnerung: Bestätigen Sie Ihre E-Mail-Adresse, um Tududi zu nutzen",
+        "opening": "Sie haben sich vor etwa einem Tag bei Tududi registriert, aber Ihre E-Mail-Adresse ist noch nicht bestätigt. Ihr Konto (und Ihre kostenlose Testphase) startet, sobald Sie sie bestätigen."
+    },
+    "passwordReset": {
+        "subject": "Ihr Tududi-Passwort zurücksetzen",
+        "intro": "Jemand hat das Zurücksetzen des Passworts für Ihr Tududi-Konto angefordert.",
+        "action": "Öffnen Sie diesen Link, um ein neues Passwort festzulegen:",
+        "button": "Neues Passwort festlegen",
+        "expires_one": "Der Link läuft in {{count}} Minute ab. Wenn Sie das Zurücksetzen nicht angefordert haben, ignorieren Sie diese E-Mail; Ihr Passwort bleibt unverändert.",
+        "expires_other": "Der Link läuft in {{count}} Minuten ab. Wenn Sie das Zurücksetzen nicht angefordert haben, ignorieren Sie diese E-Mail; Ihr Passwort bleibt unverändert."
+    },
+    "memberInvite": {
+        "subject": "Sie wurden zu einem Tududi-Arbeitsbereich hinzugefügt",
+        "intro": "Sie wurden zu einem Tududi-Arbeitsbereich hinzugefügt.",
+        "action": "Legen Sie ein Passwort fest, um Ihr Konto zu aktivieren und sich anzumelden:",
+        "button": "Passwort festlegen",
+        "expires_one": "Der Link läuft in {{count}} Stunde ab. Wenn Sie damit nicht gerechnet haben, können Sie diese E-Mail ignorieren.",
+        "expires_other": "Der Link läuft in {{count}} Stunden ab. Wenn Sie damit nicht gerechnet haben, können Sie diese E-Mail ignorieren."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Ihre tududi-Testphase endet morgen",
+        "subjectDays_one": "Ihre tududi-Testphase endet in {{count}} Tag",
+        "subjectDays_other": "Ihre tududi-Testphase endet in {{count}} Tagen",
+        "endsTomorrow": "Ihre tududi Cloud-Testphase endet morgen, am {{date}}.",
+        "endsInDays_one": "Ihre tududi Cloud-Testphase endet in {{count}} Tag, am {{date}}.",
+        "endsInDays_other": "Ihre tududi Cloud-Testphase endet in {{count}} Tagen, am {{date}}.",
+        "afterReadOnly_one": "Danach ist Ihr Konto {{count}} Tag lang schreibgeschützt, damit Sie Ihre Daten noch exportieren können, und wird anschließend gelöscht.",
+        "afterReadOnly_other": "Danach ist Ihr Konto {{count}} Tage lang schreibgeschützt, damit Sie Ihre Daten noch exportieren können, und wird anschließend gelöscht.",
+        "afterFree": "Danach wechselt Ihr Konto in den kostenlosen Plan.",
+        "keep": "Um tududi Cloud weiterhin so zu nutzen wie jetzt, inklusive KI-Assistent und Mitgliedern, schließen Sie ein Abo ab:",
+        "button": "Abonnieren"
+    },
+    "deletionWarning": {
+        "subject": "Ihr tududi-Konto wird am {{date}} gelöscht",
+        "ended": "Ihre tududi Cloud-Testphase ist abgelaufen, und Ihr Konto ist seitdem schreibgeschützt.",
+        "deleteOn": "Am {{date}} werden das Konto und alle Inhalte darin gelöscht.",
+        "keep": "Um es zu behalten, schließen Sie ein Abo ab:",
+        "button": "Mein Konto behalten",
+        "export": "Wenn Sie Ihre Daten lieber mitnehmen möchten, exportieren Sie sie auf der Seite „Sichern & Wiederherstellen“:",
+        "final": "Wenn Sie nichts unternehmen, wird das Konto am {{date}} gelöscht. Dies ist die letzte E-Mail, die Sie dazu von uns erhalten."
+    }
+}

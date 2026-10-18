@@ -275,7 +275,7 @@
         "priceNote": "Alt inkludert. Avslutt når som helst.",
         "actionTrial": "Prøv gratis →",
         "priceNoteTrial": "{{days}} dager gratis, uten betalingskort. Si opp når som helst.",
-        "trialNote": "Prøveperioden har alt unntatt AI-assistenten, offentlige notatlenker og å legge til medlemmer."
+        "trialNote": "Prøveperioden har AI-assistenten med en mindre kvote og ett medlem du kan legge til. Offentlige notatlenker åpnes når du abonnerer."
       }
     },
     "fineprint": "Si opp når som helst og eksporter alt. Skulle tududi Cloud noen gang stenge, får du dataene dine og en guide til selvhosting. Rimelig bruk gjelder for lagring og API-volum. 14 dagers pengene-tilbake-garanti, ingen spørsmål.",
@@ -355,7 +355,7 @@
       "freePlan": {
         "a": "Nei. Cloud kostet {{monthly}} i måneden eller {{price}} i året per person, og det er hele prislisten: ingen gratis plan, ingen prøveklokke, ingen kort belastet for noe som senere stille begynner å fakturere. Det er en 14-dagers pengene-tilbake-garanti hvis det ikke passer for deg, og det er en live-demo på denne siden hvis du vil ta en titt først. Den gratis måten å bruke tududi er å kjøre det på din egen server, som er samme applikasjon.",
         "q": "Finnes det en gratis plan eller prøveperiode på tududi Cloud?",
-        "aTrial": "Det finnes ingen gratisplan, men alle nye kontoer får en gratis prøveperiode på {{days}} dager, uten betalingskort. Prøveperioden har alt unntatt AI-assistenten, offentlige notatlenker og å legge til medlemmer. Abonnerer du ikke, blir kontoen skrivebeskyttet i 30 dager slik at du kan eksportere dataene dine, og slettes deretter. Etter prøveperioden koster Cloud {{monthly}} i måneden eller {{price}} i året per person. Den gratis måten å bruke tududi på er å kjøre det på din egen server, det er samme applikasjon."
+        "aTrial": "Det finnes ingen gratisplan, men alle nye kontoer får en gratis prøveperiode på {{days}} dager, uten betalingskort. Prøveperioden har AI-assistenten med en mindre kvote og ett medlem du kan legge til. Offentlige notatlenker åpnes når du abonnerer. Abonnerer du ikke, blir kontoen skrivebeskyttet i 30 dager slik at du kan eksportere dataene dine, og slettes deretter. Etter prøveperioden koster Cloud {{monthly}} i måneden eller {{price}} i året per person. Den gratis måten å bruke tududi på er å kjøre det på din egen server, det er samme applikasjon."
       },
       "leaving": {
         "q": "Kan jeg forlate tjenesten, og hva skjer med dataene mine?",

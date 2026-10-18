@@ -1,0 +1,67 @@
+{
+    "common": {
+        "greeting": "Hi,",
+        "signoff": "Best regards,\nThe Tududi Team",
+        "copyLink": "Or copy and paste this link into your browser:"
+    },
+    "verification": {
+        "subject": "Welcome to Tududi - Verify your email",
+        "welcome": "Welcome to Tududi!",
+        "opening": "Thank you for registering. To complete your registration and start using Tududi, please verify your email address by clicking the link below:",
+        "button": "Verify Email Address",
+        "expires_one": "This verification link will expire in {{count}} hour.",
+        "expires_other": "This verification link will expire in {{count}} hours.",
+        "trial_one": "Verifying also starts your free {{count}}-day trial, no card needed. It includes the AI assistant with a smaller allowance and one member you can add, such as a partner or a teammate. Public note links open once you subscribe.",
+        "trial_other": "Verifying also starts your free {{count}}-day trial, no card needed. It includes the AI assistant with a smaller allowance and one member you can add, such as a partner or a teammate. Public note links open once you subscribe.",
+        "benefitsIntro": "After verification, you'll be able to:",
+        "benefits": [
+            "Create and organize tasks with ease",
+            "Manage projects and areas",
+            "Set up recurring tasks",
+            "Track your productivity"
+        ],
+        "ignore": "If you didn't create an account with Tududi, you can safely ignore this email."
+    },
+    "verificationReminder": {
+        "subject": "Reminder: verify your email to start using Tududi",
+        "opening": "You signed up for Tududi a day or so ago, but your email address is not verified yet. Your account (and your free trial) starts as soon as you verify it."
+    },
+    "passwordReset": {
+        "subject": "Reset your Tududi password",
+        "intro": "Someone asked to reset the password for your Tududi account.",
+        "action": "Open this link to choose a new password:",
+        "button": "Choose a new password",
+        "expires_one": "The link expires in {{count}} minute. If you did not ask for a reset, ignore this email; your password stays as it is.",
+        "expires_other": "The link expires in {{count}} minutes. If you did not ask for a reset, ignore this email; your password stays as it is."
+    },
+    "memberInvite": {
+        "subject": "You have been added to a Tududi workspace",
+        "intro": "You have been added to a Tududi workspace.",
+        "action": "Choose a password to activate your account and sign in:",
+        "button": "Set your password",
+        "expires_one": "The link expires in {{count}} hour. If you were not expecting this, you can ignore this email.",
+        "expires_other": "The link expires in {{count}} hours. If you were not expecting this, you can ignore this email."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Your tududi trial ends tomorrow",
+        "subjectDays_one": "Your tududi trial ends in {{count}} day",
+        "subjectDays_other": "Your tududi trial ends in {{count}} days",
+        "endsTomorrow": "Your tududi Cloud trial ends tomorrow, on {{date}}.",
+        "endsInDays_one": "Your tududi Cloud trial ends in {{count}} day, on {{date}}.",
+        "endsInDays_other": "Your tududi Cloud trial ends in {{count}} days, on {{date}}.",
+        "afterReadOnly_one": "After that your account turns read-only for {{count}} day, so you can still export your data, and is then deleted.",
+        "afterReadOnly_other": "After that your account turns read-only for {{count}} days, so you can still export your data, and is then deleted.",
+        "afterFree": "After that your account moves to the free plan.",
+        "keep": "To keep using tududi Cloud as it is now, AI assistant and members included, subscribe:",
+        "button": "Subscribe"
+    },
+    "deletionWarning": {
+        "subject": "Your tududi account will be deleted on {{date}}",
+        "ended": "Your tududi Cloud trial has ended, and your account has been read-only since then.",
+        "deleteOn": "On {{date}} the account and everything in it will be deleted.",
+        "keep": "To keep it, subscribe:",
+        "button": "Keep my account",
+        "export": "To take your data with you instead, export it from the Backup page:",
+        "final": "If you do nothing, the account is deleted on {{date}} and this is the last email you will get from us about it."
+    }
+}

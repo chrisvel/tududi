@@ -1,0 +1,74 @@
+{
+    "common": {
+        "greeting": "Bonjour,",
+        "signoff": "Bien cordialement,\nL'équipe Tududi",
+        "copyLink": "Ou copiez et collez ce lien dans votre navigateur :"
+    },
+    "verification": {
+        "subject": "Bienvenue sur Tududi : confirmez votre adresse e-mail",
+        "welcome": "Bienvenue sur Tududi !",
+        "opening": "Merci pour votre inscription. Pour la finaliser et commencer à utiliser Tududi, veuillez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous :",
+        "button": "Confirmer l'adresse e-mail",
+        "expires_one": "Ce lien de confirmation expire dans {{count}} heure.",
+        "expires_many": "Ce lien de confirmation expire dans {{count}} heures.",
+        "expires_other": "Ce lien de confirmation expire dans {{count}} heures.",
+        "trial_one": "La confirmation lance aussi votre essai gratuit de {{count}} jour, sans carte bancaire. Il comprend l'assistant IA avec un quota réduit et un membre que vous pouvez ajouter, comme votre partenaire ou un collègue. Les liens publics de notes sont disponibles dès que vous vous abonnez.",
+        "trial_many": "La confirmation lance aussi votre essai gratuit de {{count}} jours, sans carte bancaire. Il comprend l'assistant IA avec un quota réduit et un membre que vous pouvez ajouter, comme votre partenaire ou un collègue. Les liens publics de notes sont disponibles dès que vous vous abonnez.",
+        "trial_other": "La confirmation lance aussi votre essai gratuit de {{count}} jours, sans carte bancaire. Il comprend l'assistant IA avec un quota réduit et un membre que vous pouvez ajouter, comme votre partenaire ou un collègue. Les liens publics de notes sont disponibles dès que vous vous abonnez.",
+        "benefitsIntro": "Après la confirmation, vous pourrez :",
+        "benefits": [
+            "Créer et organiser vos tâches en toute simplicité",
+            "Gérer vos projets et vos zones",
+            "Configurer des tâches récurrentes",
+            "Suivre votre productivité"
+        ],
+        "ignore": "Si vous n'avez pas créé de compte sur Tududi, vous pouvez ignorer cet e-mail."
+    },
+    "verificationReminder": {
+        "subject": "Rappel : confirmez votre adresse e-mail pour commencer à utiliser Tududi",
+        "opening": "Vous vous êtes inscrit sur Tududi il y a environ un jour, mais votre adresse e-mail n'est pas encore confirmée. Votre compte (et votre essai gratuit) démarre dès que vous la confirmez."
+    },
+    "passwordReset": {
+        "subject": "Réinitialisez votre mot de passe Tududi",
+        "intro": "Quelqu'un a demandé la réinitialisation du mot de passe de votre compte Tududi.",
+        "action": "Ouvrez ce lien pour choisir un nouveau mot de passe :",
+        "button": "Choisir un nouveau mot de passe",
+        "expires_one": "Le lien expire dans {{count}} minute. Si vous n'avez pas demandé de réinitialisation, ignorez cet e-mail ; votre mot de passe reste inchangé.",
+        "expires_many": "Le lien expire dans {{count}} minutes. Si vous n'avez pas demandé de réinitialisation, ignorez cet e-mail ; votre mot de passe reste inchangé.",
+        "expires_other": "Le lien expire dans {{count}} minutes. Si vous n'avez pas demandé de réinitialisation, ignorez cet e-mail ; votre mot de passe reste inchangé."
+    },
+    "memberInvite": {
+        "subject": "Vous avez été ajouté à un espace de travail Tududi",
+        "intro": "Vous avez été ajouté à un espace de travail Tududi.",
+        "action": "Choisissez un mot de passe pour activer votre compte et vous connecter :",
+        "button": "Définir votre mot de passe",
+        "expires_one": "Le lien expire dans {{count}} heure. Si vous ne vous y attendiez pas, vous pouvez ignorer cet e-mail.",
+        "expires_many": "Le lien expire dans {{count}} heures. Si vous ne vous y attendiez pas, vous pouvez ignorer cet e-mail.",
+        "expires_other": "Le lien expire dans {{count}} heures. Si vous ne vous y attendiez pas, vous pouvez ignorer cet e-mail."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Votre essai tududi se termine demain",
+        "subjectDays_one": "Votre essai tududi se termine dans {{count}} jour",
+        "subjectDays_many": "Votre essai tududi se termine dans {{count}} jours",
+        "subjectDays_other": "Votre essai tududi se termine dans {{count}} jours",
+        "endsTomorrow": "Votre essai tududi Cloud se termine demain, le {{date}}.",
+        "endsInDays_one": "Votre essai tududi Cloud se termine dans {{count}} jour, le {{date}}.",
+        "endsInDays_many": "Votre essai tududi Cloud se termine dans {{count}} jours, le {{date}}.",
+        "endsInDays_other": "Votre essai tududi Cloud se termine dans {{count}} jours, le {{date}}.",
+        "afterReadOnly_one": "Ensuite, votre compte passe en lecture seule pendant {{count}} jour, pour que vous puissiez encore exporter vos données, puis il est supprimé.",
+        "afterReadOnly_many": "Ensuite, votre compte passe en lecture seule pendant {{count}} jours, pour que vous puissiez encore exporter vos données, puis il est supprimé.",
+        "afterReadOnly_other": "Ensuite, votre compte passe en lecture seule pendant {{count}} jours, pour que vous puissiez encore exporter vos données, puis il est supprimé.",
+        "afterFree": "Ensuite, votre compte passe à l'offre gratuite.",
+        "keep": "Pour continuer à utiliser tududi Cloud comme aujourd'hui, assistant IA et membres compris, abonnez-vous :",
+        "button": "S'abonner"
+    },
+    "deletionWarning": {
+        "subject": "Votre compte tududi sera supprimé le {{date}}",
+        "ended": "Votre essai tududi Cloud est terminé, et votre compte est en lecture seule depuis.",
+        "deleteOn": "Le {{date}}, le compte et tout son contenu seront supprimés.",
+        "keep": "Pour le conserver, abonnez-vous :",
+        "button": "Conserver mon compte",
+        "export": "Pour emporter plutôt vos données, exportez-les depuis la page Sauvegarde & Restauration :",
+        "final": "Si vous ne faites rien, le compte sera supprimé le {{date}} et ceci est le dernier e-mail que vous recevrez de notre part à ce sujet."
+    }
+}

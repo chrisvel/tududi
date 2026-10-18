@@ -49,10 +49,9 @@ const DEFAULT_PLANS = {
             public_notes: true,
         },
     },
-    // A new Cloud account before it pays: Pro, minus what costs money or
-    // can be abused by someone who signed up only to misuse it. AI calls
-    // cost per request, public notes could host spam on our domain, and
-    // members are paid seats.
+    // A new Cloud account before it pays: Pro, with a small AI budget (each
+    // call costs money) and one member to try sharing with. Public notes
+    // stay off, since they could host spam on our domain.
     trial: {
         name: 'Pro',
         limits: {
@@ -60,12 +59,12 @@ const DEFAULT_PLANS = {
             max_projects: null,
             max_notes: null,
             storage_mb: 5000,
-            ai_requests_per_month: 0,
-            ai_credits_per_month: 0,
-            max_members: 0,
+            ai_requests_per_month: 30,
+            ai_credits_per_month: 10,
+            max_members: 1,
         },
         features: {
-            ai: false,
+            ai: true,
             mcp: true,
             caldav: true,
             backups_import: true,

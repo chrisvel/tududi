@@ -2,7 +2,8 @@ const crypto = require('crypto');
 const { User, Setting } = require('../../models');
 const { getConfig } = require('../../config/config');
 const { logError, logInfo } = require('../../services/logService');
-const { sendEmail } = require('../../services/emailService');
+const { normalizeLanguage } = require('../../emails');
+const { deliver } = require('../../services/emailDeliveryService');
 const {
     canonicalEmail,
     domainOf,
@@ -85,7 +86,14 @@ const isTakenMailbox = async (email, transaction = null) => {
     return !!existing;
 };
 
-const createUnverifiedUser = async (email, password, transaction = null) => {
+// `language` is the one the sign-up form was shown in, so the first emails
+// already arrive in it.
+const createUnverifiedUser = async (
+    email,
+    password,
+    transaction = null,
+    { language } = {}
+) => {
     if (!validateEmail(email)) {
         throw new Error('Invalid email format');
     }
@@ -113,6 +121,7 @@ const createUnverifiedUser = async (email, password, transaction = null) => {
             email_verification_token: verificationToken,
             email_verification_token_expires_at: tokenExpiresAt,
             notification_preferences: getDefaultNotificationPreferences(),
+            language: normalizeLanguage(language),
         },
         { transaction }
     );
@@ -153,6 +162,25 @@ const resendVerificationEmail = async (email) => {
 
     const result = await sendVerificationEmail(user, verificationToken);
     return { sent: !!result.success };
+};
+
+// Sends the verification email again with a fresh link, from the admin's
+// email panel. `reminder` sends the reminder wording and counts as the one
+// reminder the daily job would send.
+const sendFreshVerification = async (
+    user,
+    { reminder = false, triggeredBy = null } = {}
+) => {
+    const verificationToken = generateVerificationToken();
+    await user.update({
+        email_verification_token: verificationToken,
+        email_verification_token_expires_at: getTokenExpirationDate(),
+        ...(reminder ? { verification_reminder_sent_at: new Date() } : {}),
+    });
+    return sendVerificationEmail(user, verificationToken, {
+        reminder,
+        triggeredBy,
+    });
 };
 
 // One reminder, with a fresh link (the first one has expired by now), for a
@@ -244,7 +272,7 @@ const verifyUserEmail = async (token) => {
 const sendVerificationEmail = async (
     user,
     verificationToken,
-    { reminder = false } = {}
+    { reminder = false, triggeredBy = null } = {}
 ) => {
     const config = getConfig();
     const { isEmailEnabled } = require('../../services/emailService');
@@ -259,64 +287,19 @@ const sendVerificationEmail = async (
     const verificationUrl = `${config.backendUrl}/api/verify-email?token=${verificationToken}`;
     const tokenExpiryHours = config.registrationConfig.tokenExpiryHours;
 
-    const subject = reminder
-        ? 'Reminder: verify your email to start using Tududi'
-        : 'Welcome to Tududi - Verify your email';
-    const opening = reminder
-        ? 'You signed up for Tududi a day or so ago, but your email address is not verified yet. Your account (and your free trial) starts as soon as you verify it.'
-        : 'Thank you for registering. To complete your registration and start using Tududi, please verify your email address by clicking the link below:';
-
-    const text = `${reminder ? 'Hi,' : 'Welcome to Tududi!'}
-
-${opening}
-
-${verificationUrl}
-
-This verification link will expire in ${tokenExpiryHours} hours.
-
-After verification, you'll be able to:
-- Create and organize tasks with ease
-- Manage projects and areas
-- Set up recurring tasks
-- Track your productivity
-
-If you didn't create an account with Tududi, you can safely ignore this email.
-
-Best regards,
-The Tududi Team`;
-
-    const html = `
-<p>${reminder ? 'Hi,' : 'Welcome to Tududi!'}</p>
-
-<p>${opening}</p>
-
-<p style="text-align: center; margin: 30px 0;">
-    <a href="${verificationUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Verify Email Address</a>
-</p>
-
-<p>Or copy and paste this link into your browser:</p>
-<p style="word-break: break-all; color: #666;">${verificationUrl}</p>
-
-<p><strong>This verification link will expire in ${tokenExpiryHours} hours.</strong></p>
-
-<p>After verification, you'll be able to:</p>
-<ul>
-    <li>Create and organize tasks with ease</li>
-    <li>Manage projects and areas</li>
-    <li>Set up recurring tasks</li>
-    <li>Track your productivity</li>
-</ul>
-
-<p>If you didn't create an account with Tududi, you can safely ignore this email.</p>
-
-<p>Best regards,<br>The Tududi Team</p>
-`;
-
-    const result = await sendEmail({
-        to: user.email,
-        subject,
-        text,
-        html,
+    // On Cloud the email also says what the trial gives, since the trial
+    // starts on this link.
+    const trialDays = config.hosted?.enabled ? config.hosted.trialDays || 0 : 0;
+    const result = await deliver('verification', {
+        user,
+        variant: reminder ? 'reminder' : null,
+        triggeredBy,
+        vars: {
+            url: verificationUrl,
+            expiryHours: tokenExpiryHours,
+            trialDays,
+            reminder,
+        },
     });
 
     if (result.success) {
@@ -371,6 +354,7 @@ module.exports = {
     verifyUserEmail,
     sendVerificationEmail,
     resendVerificationEmail,
+    sendFreshVerification,
     sendVerificationReminders,
     isVerificationTokenValid,
     cleanupExpiredTokens,

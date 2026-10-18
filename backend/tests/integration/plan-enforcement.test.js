@@ -50,7 +50,7 @@ describe('Plan enforcement over HTTP (hosted mode on)', () => {
 
     afterEach(() => {
         config.hosted.enabled = false;
-        config.hosted.trialDays = 14;
+        config.hosted.trialDays = 7;
         delete process.env.TUDUDI_PLANS_JSON;
         plans._resetCache();
         entitlements.invalidate();

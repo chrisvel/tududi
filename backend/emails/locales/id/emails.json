@@ -1,0 +1,60 @@
+{
+    "common": {
+        "greeting": "Halo,",
+        "signoff": "Salam hangat,\nTim Tududi",
+        "copyLink": "Atau salin dan tempel tautan ini ke browser Anda:"
+    },
+    "verification": {
+        "subject": "Selamat datang di Tududi - Verifikasi email Anda",
+        "welcome": "Selamat datang di Tududi!",
+        "opening": "Terima kasih telah mendaftar. Untuk menyelesaikan pendaftaran dan mulai menggunakan Tududi, verifikasi alamat email Anda dengan mengklik tautan di bawah ini:",
+        "button": "Verifikasi Alamat Email",
+        "expires_other": "Tautan verifikasi ini akan kedaluwarsa dalam {{count}} jam.",
+        "trial_other": "Verifikasi juga memulai uji coba gratis {{count}} hari Anda, tanpa kartu. Uji coba ini mencakup Asisten AI dengan kuota yang lebih kecil dan satu anggota yang bisa Anda tambahkan, misalnya pasangan atau rekan kerja. Tautan catatan publik aktif setelah Anda berlangganan.",
+        "benefitsIntro": "Setelah verifikasi, Anda dapat:",
+        "benefits": [
+            "Membuat dan mengatur tugas dengan mudah",
+            "Mengelola proyek dan area",
+            "Mengatur tugas berulang",
+            "Memantau produktivitas Anda"
+        ],
+        "ignore": "Jika Anda tidak membuat akun di Tududi, abaikan saja email ini."
+    },
+    "verificationReminder": {
+        "subject": "Pengingat: verifikasi email Anda untuk mulai menggunakan Tududi",
+        "opening": "Anda mendaftar di Tududi sekitar sehari yang lalu, tetapi alamat email Anda belum diverifikasi. Akun Anda (dan uji coba gratis Anda) dimulai begitu Anda memverifikasinya."
+    },
+    "passwordReset": {
+        "subject": "Atur ulang kata sandi Tududi Anda",
+        "intro": "Seseorang meminta untuk mengatur ulang kata sandi akun Tududi Anda.",
+        "action": "Buka tautan ini untuk memilih kata sandi baru:",
+        "button": "Pilih kata sandi baru",
+        "expires_other": "Tautan ini kedaluwarsa dalam {{count}} menit. Jika Anda tidak meminta pengaturan ulang, abaikan email ini; kata sandi Anda tetap seperti semula."
+    },
+    "memberInvite": {
+        "subject": "Anda telah ditambahkan ke ruang kerja Tududi",
+        "intro": "Anda telah ditambahkan ke ruang kerja Tududi.",
+        "action": "Pilih kata sandi untuk mengaktifkan akun Anda dan masuk:",
+        "button": "Atur kata sandi Anda",
+        "expires_other": "Tautan ini kedaluwarsa dalam {{count}} jam. Jika Anda tidak menantikan email ini, abaikan saja."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Uji coba tududi Anda berakhir besok",
+        "subjectDays_other": "Uji coba tududi Anda berakhir dalam {{count}} hari",
+        "endsTomorrow": "Uji coba tududi Cloud Anda berakhir besok, pada {{date}}.",
+        "endsInDays_other": "Uji coba tududi Cloud Anda berakhir dalam {{count}} hari, pada {{date}}.",
+        "afterReadOnly_other": "Setelah itu akun Anda menjadi hanya-baca selama {{count}} hari, sehingga Anda masih bisa mengekspor data, lalu akun akan dihapus.",
+        "afterFree": "Setelah itu akun Anda pindah ke paket gratis.",
+        "keep": "Untuk terus menggunakan tududi Cloud seperti sekarang, termasuk Asisten AI dan anggota, berlanggananlah:",
+        "button": "Berlangganan"
+    },
+    "deletionWarning": {
+        "subject": "Akun tududi Anda akan dihapus pada {{date}}",
+        "ended": "Uji coba tududi Cloud Anda telah berakhir, dan sejak itu akun Anda dalam mode hanya-baca.",
+        "deleteOn": "Pada {{date}}, akun beserta seluruh isinya akan dihapus.",
+        "keep": "Untuk mempertahankannya, berlanggananlah:",
+        "button": "Pertahankan akun saya",
+        "export": "Jika Anda ingin membawa data Anda, ekspor dari halaman Cadangkan & Pulihkan:",
+        "final": "Jika Anda tidak melakukan apa pun, akun akan dihapus pada {{date}} dan ini adalah email terakhir dari kami tentang hal ini."
+    }
+}

@@ -2348,6 +2348,10 @@
       "itemsCreated_other": "{{count}} items",
       "lastCreated": "Last on {{date}}",
       "nothingCreated": "Nothing yet",
+      "emails": "Emails",
+      "emailsSent_one": "{{count}} sent",
+      "emailsSent_other": "{{count}} sent",
+      "emailsNone": "None sent",
       "kinds": {
         "tasks": "Tasks",
         "habits": "Habits",
@@ -2359,6 +2363,38 @@
         "people": "People",
         "views": "Views",
         "inbox": "Inbox"
+      }
+    },
+    "userEmails": {
+      "title": "Emails",
+      "language": "Language: {{language}}",
+      "to": "To",
+      "subject": "Subject",
+      "confirmTitle": "Send \"{{name}}\"?",
+      "sendNow": "Send email",
+      "sending": "Sending...",
+      "send": "Send",
+      "sendAgain": "Send again",
+      "sentOn": "Sent {{date}}",
+      "sentBeforeLog": "Sent (before the log)",
+      "sentOnBeforeLog": "Sent {{date}} (before the log)",
+      "failed": "Failed",
+      "sent": "Sent",
+      "notSent": "Not sent",
+      "history": "History",
+      "noHistory": "Nothing recorded yet.",
+      "sentBy": "by {{email}}",
+      "automatic": "automatic",
+      "sentNotice": "{{name}} sent to {{to}}.",
+      "failedNotice": "Not sent: {{error}}",
+      "linkNote": "The link is created when you send, so the real email has a working link in its place.",
+      "names": {
+        "verification": "Verify your email",
+        "verificationReminder": "Verification reminder",
+        "memberInvite": "Member invite",
+        "passwordReset": "Reset your password",
+        "trialReminder": "Trial ends soon",
+        "deletionWarning": "Account will be deleted"
       }
     },
     "userFilter": {

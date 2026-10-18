@@ -1,0 +1,81 @@
+{
+    "common": {
+        "greeting": "Pozdravljeni,",
+        "signoff": "Lep pozdrav,\nEkipa Tududi",
+        "copyLink": "Lahko pa to povezavo kopirate in prilepite v brskalnik:"
+    },
+    "verification": {
+        "subject": "Dobrodošli v Tududi - potrdite svoj e-poštni naslov",
+        "welcome": "Dobrodošli v Tududi!",
+        "opening": "Hvala za registracijo. Če želite dokončati registracijo in začeti uporabljati Tududi, potrdite svoj e-poštni naslov s klikom na spodnjo povezavo:",
+        "button": "Potrdi e-poštni naslov",
+        "expires_one": "Ta potrditvena povezava poteče čez {{count}} uro.",
+        "expires_two": "Ta potrditvena povezava poteče čez {{count}} uri.",
+        "expires_few": "Ta potrditvena povezava poteče čez {{count}} ure.",
+        "expires_other": "Ta potrditvena povezava poteče čez {{count}} ur.",
+        "trial_one": "S potrditvijo se začne tudi vaš brezplačni {{count}}-dnevni preizkus, kartica ni potrebna. Vključuje AI pomočnika z manjšo količino uporabe in enega člana, ki ga lahko dodate, na primer partnerja ali sodelavca. Javne povezave do zapiskov se odprejo, ko se naročite.",
+        "trial_two": "S potrditvijo se začne tudi vaš brezplačni {{count}}-dnevni preizkus, kartica ni potrebna. Vključuje AI pomočnika z manjšo količino uporabe in enega člana, ki ga lahko dodate, na primer partnerja ali sodelavca. Javne povezave do zapiskov se odprejo, ko se naročite.",
+        "trial_few": "S potrditvijo se začne tudi vaš brezplačni {{count}}-dnevni preizkus, kartica ni potrebna. Vključuje AI pomočnika z manjšo količino uporabe in enega člana, ki ga lahko dodate, na primer partnerja ali sodelavca. Javne povezave do zapiskov se odprejo, ko se naročite.",
+        "trial_other": "S potrditvijo se začne tudi vaš brezplačni {{count}}-dnevni preizkus, kartica ni potrebna. Vključuje AI pomočnika z manjšo količino uporabe in enega člana, ki ga lahko dodate, na primer partnerja ali sodelavca. Javne povezave do zapiskov se odprejo, ko se naročite.",
+        "benefitsIntro": "Po potrditvi boste lahko:",
+        "benefits": [
+            "Preprosto ustvarjali in urejali naloge",
+            "Upravljali projekte in področja",
+            "Nastavili ponavljajoče se naloge",
+            "Spremljali svojo produktivnost"
+        ],
+        "ignore": "Če niste ustvarili računa v Tududi, lahko to sporočilo mirno prezrete."
+    },
+    "verificationReminder": {
+        "subject": "Opomnik: potrdite svoj e-poštni naslov in začnite uporabljati Tududi",
+        "opening": "Pred približno dnevom ste se registrirali v Tududi, vendar vaš e-poštni naslov še ni potrjen. Vaš račun (in brezplačni preizkus) začne delovati takoj, ko ga potrdite."
+    },
+    "passwordReset": {
+        "subject": "Ponastavite geslo za Tududi",
+        "intro": "Nekdo je zahteval ponastavitev gesla za vaš račun Tududi.",
+        "action": "Odprite to povezavo in izberite novo geslo:",
+        "button": "Izberi novo geslo",
+        "expires_one": "Povezava poteče čez {{count}} minuto. Če niste zahtevali ponastavitve, to sporočilo prezrite; vaše geslo ostane nespremenjeno.",
+        "expires_two": "Povezava poteče čez {{count}} minuti. Če niste zahtevali ponastavitve, to sporočilo prezrite; vaše geslo ostane nespremenjeno.",
+        "expires_few": "Povezava poteče čez {{count}} minute. Če niste zahtevali ponastavitve, to sporočilo prezrite; vaše geslo ostane nespremenjeno.",
+        "expires_other": "Povezava poteče čez {{count}} minut. Če niste zahtevali ponastavitve, to sporočilo prezrite; vaše geslo ostane nespremenjeno."
+    },
+    "memberInvite": {
+        "subject": "Dodani ste bili v delovni prostor Tududi",
+        "intro": "Dodani ste bili v delovni prostor Tududi.",
+        "action": "Izberite geslo, da aktivirate račun in se prijavite:",
+        "button": "Nastavi geslo",
+        "expires_one": "Povezava poteče čez {{count}} uro. Če tega niste pričakovali, lahko to sporočilo prezrete.",
+        "expires_two": "Povezava poteče čez {{count}} uri. Če tega niste pričakovali, lahko to sporočilo prezrete.",
+        "expires_few": "Povezava poteče čez {{count}} ure. Če tega niste pričakovali, lahko to sporočilo prezrete.",
+        "expires_other": "Povezava poteče čez {{count}} ur. Če tega niste pričakovali, lahko to sporočilo prezrete."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Vaš preizkus tududi se izteče jutri",
+        "subjectDays_one": "Vaš preizkus tududi se izteče čez {{count}} dan",
+        "subjectDays_two": "Vaš preizkus tududi se izteče čez {{count}} dneva",
+        "subjectDays_few": "Vaš preizkus tududi se izteče čez {{count}} dni",
+        "subjectDays_other": "Vaš preizkus tududi se izteče čez {{count}} dni",
+        "endsTomorrow": "Vaš preizkus tududi Cloud se izteče jutri, {{date}}.",
+        "endsInDays_one": "Vaš preizkus tududi Cloud se izteče čez {{count}} dan, {{date}}.",
+        "endsInDays_two": "Vaš preizkus tududi Cloud se izteče čez {{count}} dneva, {{date}}.",
+        "endsInDays_few": "Vaš preizkus tududi Cloud se izteče čez {{count}} dni, {{date}}.",
+        "endsInDays_other": "Vaš preizkus tududi Cloud se izteče čez {{count}} dni, {{date}}.",
+        "afterReadOnly_one": "Nato bo vaš račun {{count}} dan samo za branje, da lahko še izvozite svoje podatke, potem pa bo izbrisan.",
+        "afterReadOnly_two": "Nato bo vaš račun {{count}} dneva samo za branje, da lahko še izvozite svoje podatke, potem pa bo izbrisan.",
+        "afterReadOnly_few": "Nato bo vaš račun {{count}} dni samo za branje, da lahko še izvozite svoje podatke, potem pa bo izbrisan.",
+        "afterReadOnly_other": "Nato bo vaš račun {{count}} dni samo za branje, da lahko še izvozite svoje podatke, potem pa bo izbrisan.",
+        "afterFree": "Nato vaš račun preide na brezplačni paket.",
+        "keep": "Če želite tududi Cloud še naprej uporabljati tako kot zdaj, z AI pomočnikom in člani, se naročite:",
+        "button": "Naroči se"
+    },
+    "deletionWarning": {
+        "subject": "Vaš račun tududi bo izbrisan {{date}}",
+        "ended": "Vaš preizkus tududi Cloud se je iztekel in vaš račun je od takrat samo za branje.",
+        "deleteOn": "{{date}} bodo račun in vse v njem izbrisani.",
+        "keep": "Če ga želite obdržati, se naročite:",
+        "button": "Obdrži moj račun",
+        "export": "Če želite podatke raje vzeti s seboj, jih izvozite na strani Varnostna kopija:",
+        "final": "Če ne storite ničesar, bo račun izbrisan {{date}} in to je zadnje sporočilo, ki vam ga pošljemo o tem."
+    }
+}

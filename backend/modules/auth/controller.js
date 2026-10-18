@@ -41,8 +41,12 @@ const authController = {
 
     async register(req, res, next) {
         try {
-            const { email, password } = req.body;
-            const result = await authService.register(email, password);
+            const { email, password, language } = req.body;
+            const result = await authService.register(
+                email,
+                password,
+                language
+            );
             res.status(201).json(result);
         } catch (error) {
             // Handle specific error messages for compatibility

@@ -49,6 +49,7 @@ const CLEANUP_TABLES = [
     'calendar_tokens',
     'rate_limits',
     'usage_counters',
+    'email_deliveries',
     'waitlist_subscribers',
     'feedback',
     'push_subscriptions',

@@ -1,0 +1,60 @@
+{
+    "common": {
+        "greeting": "Xin chào,",
+        "signoff": "Trân trọng,\nĐội ngũ Tududi",
+        "copyLink": "Hoặc sao chép và dán liên kết này vào trình duyệt của bạn:"
+    },
+    "verification": {
+        "subject": "Chào mừng bạn đến với Tududi - Xác minh email của bạn",
+        "welcome": "Chào mừng bạn đến với Tududi!",
+        "opening": "Cảm ơn bạn đã đăng ký. Để hoàn tất đăng ký và bắt đầu sử dụng Tududi, vui lòng xác minh địa chỉ email bằng cách nhấp vào liên kết bên dưới:",
+        "button": "Xác minh địa chỉ email",
+        "expires_other": "Liên kết xác minh này sẽ hết hạn sau {{count}} giờ.",
+        "trial_other": "Việc xác minh cũng sẽ bắt đầu thời gian dùng thử miễn phí {{count}} ngày của bạn, không cần thẻ. Gói dùng thử bao gồm trợ lý AI với hạn mức thấp hơn và một thành viên bạn có thể thêm, chẳng hạn như người bạn đời hoặc đồng nghiệp. Liên kết công khai của ghi chú sẽ được mở khi bạn đăng ký gói.",
+        "benefitsIntro": "Sau khi xác minh, bạn có thể:",
+        "benefits": [
+            "Tạo và sắp xếp công việc dễ dàng",
+            "Quản lý dự án và khu vực",
+            "Thiết lập nhiệm vụ định kỳ",
+            "Theo dõi năng suất của bạn"
+        ],
+        "ignore": "Nếu bạn không tạo tài khoản Tududi, bạn có thể yên tâm bỏ qua email này."
+    },
+    "verificationReminder": {
+        "subject": "Nhắc nhở: xác minh email để bắt đầu sử dụng Tududi",
+        "opening": "Bạn đã đăng ký Tududi khoảng một ngày trước, nhưng địa chỉ email của bạn vẫn chưa được xác minh. Tài khoản của bạn (và thời gian dùng thử miễn phí) sẽ bắt đầu ngay khi bạn xác minh."
+    },
+    "passwordReset": {
+        "subject": "Đặt lại mật khẩu Tududi của bạn",
+        "intro": "Có người đã yêu cầu đặt lại mật khẩu cho tài khoản Tududi của bạn.",
+        "action": "Mở liên kết này để chọn mật khẩu mới:",
+        "button": "Chọn mật khẩu mới",
+        "expires_other": "Liên kết sẽ hết hạn sau {{count}} phút. Nếu bạn không yêu cầu đặt lại, hãy bỏ qua email này; mật khẩu của bạn vẫn giữ nguyên."
+    },
+    "memberInvite": {
+        "subject": "Bạn đã được thêm vào một không gian làm việc Tududi",
+        "intro": "Bạn đã được thêm vào một không gian làm việc Tududi.",
+        "action": "Hãy chọn mật khẩu để kích hoạt tài khoản và đăng nhập:",
+        "button": "Đặt mật khẩu",
+        "expires_other": "Liên kết sẽ hết hạn sau {{count}} giờ. Nếu bạn không mong đợi email này, bạn có thể bỏ qua nó."
+    },
+    "trialReminder": {
+        "subjectTomorrow": "Thời gian dùng thử tududi của bạn kết thúc vào ngày mai",
+        "subjectDays_other": "Thời gian dùng thử tududi của bạn kết thúc sau {{count}} ngày",
+        "endsTomorrow": "Thời gian dùng thử tududi Cloud của bạn kết thúc vào ngày mai, {{date}}.",
+        "endsInDays_other": "Thời gian dùng thử tududi Cloud của bạn kết thúc sau {{count}} ngày, vào {{date}}.",
+        "afterReadOnly_other": "Sau đó, tài khoản của bạn sẽ chuyển sang chế độ chỉ đọc trong {{count}} ngày để bạn vẫn có thể xuất dữ liệu, rồi sẽ bị xóa.",
+        "afterFree": "Sau đó, tài khoản của bạn sẽ chuyển sang gói miễn phí.",
+        "keep": "Để tiếp tục dùng tududi Cloud như hiện tại, bao gồm trợ lý AI và thành viên, hãy đăng ký gói:",
+        "button": "Đăng ký"
+    },
+    "deletionWarning": {
+        "subject": "Tài khoản tududi của bạn sẽ bị xóa vào {{date}}",
+        "ended": "Thời gian dùng thử tududi Cloud của bạn đã kết thúc và tài khoản đã ở chế độ chỉ đọc kể từ đó.",
+        "deleteOn": "Vào {{date}}, tài khoản và mọi nội dung trong đó sẽ bị xóa.",
+        "keep": "Để giữ tài khoản, hãy đăng ký gói:",
+        "button": "Giữ tài khoản của tôi",
+        "export": "Nếu bạn muốn mang dữ liệu theo, hãy xuất dữ liệu từ trang Sao lưu:",
+        "final": "Nếu bạn không làm gì, tài khoản sẽ bị xóa vào {{date}} và đây là email cuối cùng chúng tôi gửi cho bạn về việc này."
+    }
+}
