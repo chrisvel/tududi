@@ -221,7 +221,9 @@ After parsing, the system creates "cleaned content":
 - Original: `Review contract tomorrow @Maria +ClientWork #urgent`
 - Cleaned: `Review contract`
 - Tags, projects, the date or recurrence phrase and a matched person are stripped
+- A word that only introduces the date goes with it: `Pay the bill until next thursday` and `Send report by friday` become `Pay the bill` and `Send report` (`until`, `till`, `by`, `before`, `due`, `due by`, `due on`). A phrase with a time stays in the title, and so does its lead word
 - Cleaned version is used as task name, note title, or project name
+- Opening an inbox item shows the cleaned text in its edit box. The stripped words are carried: they show as chips (date, tags, project, person, area), count when the item is saved as a task, note or project, and are added back to the end of the first line when the edited text is saved. A chip's × removes that word. Saving the box untouched changes nothing
 
 ---
 
