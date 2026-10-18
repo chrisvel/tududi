@@ -367,6 +367,26 @@ describe('QuickCaptureInput unified capture', () => {
         expect(createProject).not.toHaveBeenCalled();
     });
 
+    it('puts the project token back after each save from a project page', async () => {
+        renderBox({
+            defaultTarget: 'task',
+            prefillText: '+Website ',
+            defaultProject: { uid: 'proj-uid', name: 'Website' },
+        });
+        expect(textarea()).toHaveValue('+Website ');
+        type('+Website Draft brief');
+        await clickAdd();
+        expect(createTaskInStore).toHaveBeenCalledTimes(1);
+        expect(textarea()).toHaveValue('+Website ');
+
+        type('+Website Review copy');
+        await clickAdd();
+        expect(createTaskInStore).toHaveBeenLastCalledWith(
+            expect.objectContaining({ project_uid: 'proj-uid' })
+        );
+        expect(textarea()).toHaveValue('+Website ');
+    });
+
     it('keeps a +project that names another project on that project', async () => {
         renderBox({
             projects: [
