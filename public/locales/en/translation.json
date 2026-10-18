@@ -254,7 +254,9 @@
     "failedToDelete": "Failed to delete comment",
     "like": "Like",
     "dislike": "Dislike",
-    "failedToReact": "Failed to update reaction"
+    "failedToReact": "Failed to update reaction",
+    "uploadingImage": "Uploading image...",
+    "imageUploadFailed": "Could not upload image"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",
@@ -2580,6 +2582,8 @@
       "hasContent": "has Content",
       "isDeferred": "is Deferred",
       "hasTags": "has Tags",
+      "hasNoTags": "has no Tags",
+      "hasNoDueDate": "has no Due Date",
       "isAssignedToProject": "is Assigned to Project"
     },
     "saveAsSmartView": "Save as Smart View",
@@ -2821,6 +2825,12 @@
     "opening": "Opening the demo...",
     "unavailableTitle": "The demo is not available",
     "unavailableBody": "It may be rebuilding itself. Try again in a moment."
+  },
+  "groupPage": {
+    "title": "Group",
+    "subtitle": "What each member has on now",
+    "empty": "Nothing is assigned to this group yet. Assign a task to a member to see it here.",
+    "yourGroups": "Your groups"
   },
   "everyone": {
     "title": "Everyone",

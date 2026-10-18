@@ -383,6 +383,67 @@ describe('CalDAV Per-Project Calendars', () => {
             });
         });
 
+        // A date at local midnight is the previous day in UTC, so serializing
+        // without the user's timezone served DTSTART a day early (#1905).
+        describe('User timezone', () => {
+            const berlinReportXml = `<?xml version="1.0" encoding="utf-8"?>
+<C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+  <D:prop><D:getetag/><C:calendar-data/></D:prop>
+  <C:filter><C:comp-filter name="VTODO"/></C:filter>
+</C:calendar-query>`;
+
+            const createBerlinTask = async () => {
+                await testUser.update({ timezone: 'Europe/Berlin' });
+                return Task.create({
+                    uid: 'berlin-report-task',
+                    user_id: testUser.id,
+                    project_id: testProject.id,
+                    name: 'Berlin Task',
+                    status: 0,
+                    // 2026-10-17 00:00 and 23:59:59.999 in Europe/Berlin
+                    defer_until: new Date('2026-10-16T22:00:00.000Z'),
+                    due_date: new Date('2026-10-17T21:59:59.999Z'),
+                });
+            };
+
+            test('REPORT calendar-query serves the local date', async () => {
+                await createBerlinTask();
+
+                const response = await report(app, projectUrl())
+                    .set('Authorization', authHeader)
+                    .set('Content-Type', 'application/xml')
+                    .send(berlinReportXml)
+                    .expect(207);
+
+                expect(response.text).toContain('DUE;VALUE=DATE:20261017');
+                expect(response.text).toContain('DTSTART;VALUE=DATE:20261017');
+                expect(response.text).not.toContain(
+                    'DTSTART;VALUE=DATE:20261016'
+                );
+            });
+
+            test('REPORT multiget serves the local date', async () => {
+                await createBerlinTask();
+
+                const multigetXml = `<?xml version="1.0" encoding="utf-8"?>
+<C:calendar-multiget xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+  <D:prop><D:getetag/><C:calendar-data/></D:prop>
+  <D:href>/caldav/${ENC(testUser.email)}/projects/${ENC(testProject.uid)}/berlin-report-task.ics</D:href>
+</C:calendar-multiget>`;
+
+                const response = await report(app, projectUrl())
+                    .set('Authorization', authHeader)
+                    .set('Content-Type', 'application/xml')
+                    .send(multigetXml)
+                    .expect(207);
+
+                expect(response.text).toContain('DTSTART;VALUE=DATE:20261017');
+                expect(response.text).not.toContain(
+                    'DTSTART;VALUE=DATE:20261016'
+                );
+            });
+        });
+
         describe('PUT into project calendar', () => {
             test('creates task with the correct project_id', async () => {
                 const vtodo = [

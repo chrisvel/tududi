@@ -331,7 +331,9 @@ class MergePhase {
             reminder_at,
             completed_at,
             status: status ?? 0,
-            priority: priority ?? 0,
+            // A remote task without PRIORITY has no priority, not Low: the old
+            // default is what made 2Do's tasks come back as PRIORITY:7.
+            priority: priority ?? null,
             recurrence_type: recurrence_type || 'none',
             recurrence_interval,
             recurrence_end_date,

@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TaskModal from '../TaskModal';
 import { updateTask, fetchTaskByUid } from '../../../utils/tasksService';
+import { analyzeInboxText } from '../../../utils/inboxService';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -23,6 +24,22 @@ jest.mock('../../Shared/ToastContext', () => ({
         showSuccessToast: jest.fn(),
         showErrorToast: jest.fn(),
     }),
+}));
+
+jest.mock('../../Inbox/QuickCaptureInput', () => ({
+    __esModule: true,
+    default: ({ initialValue, onTextChange }: any) => (
+        <input
+            data-testid="task-name-input"
+            defaultValue={initialValue}
+            key={initialValue}
+            onChange={(e) => onTextChange(e.target.value)}
+        />
+    ),
+}));
+
+jest.mock('../../../utils/inboxService', () => ({
+    analyzeInboxText: jest.fn(),
 }));
 
 jest.mock('../../../utils/tasksService', () => ({
@@ -70,6 +87,15 @@ const renderPanel = () => {
 describe('TaskModal', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        (analyzeInboxText as jest.Mock).mockImplementation(
+            async (text: string) => ({
+                cleaned_content: text,
+                parsed_tags: [],
+                parsed_projects: [],
+                parsed_area: null,
+                parsed_due_date: null,
+            })
+        );
         (updateTask as jest.Mock).mockResolvedValue({});
         (fetchTaskByUid as jest.Mock).mockResolvedValue({
             ...task,
@@ -93,13 +119,37 @@ describe('TaskModal', () => {
         await waitFor(() => expect(onClose).toHaveBeenCalled());
     });
 
-    it('closes without calling the API when nothing changed', () => {
+    it('closes without calling the API when nothing changed', async () => {
         const { onClose } = renderPanel();
 
         fireEvent.click(screen.getByTestId('task-save-button'));
 
+        await waitFor(() => expect(onClose).toHaveBeenCalled());
         expect(updateTask).not.toHaveBeenCalled();
-        expect(onClose).toHaveBeenCalled();
+    });
+
+    it('moves typed #tags and +project out of the name on save', async () => {
+        (analyzeInboxText as jest.Mock).mockResolvedValue({
+            cleaned_content: 'Fix the shed door',
+            parsed_tags: ['errand'],
+            parsed_projects: ['Shed'],
+            parsed_area: null,
+            parsed_due_date: null,
+        });
+        renderPanel();
+
+        fireEvent.change(screen.getByTestId('task-name-input'), {
+            target: { value: 'Fix the shed door #errand +Shed' },
+        });
+        fireEvent.click(screen.getByTestId('task-save-button'));
+
+        await waitFor(() =>
+            expect(updateTask).toHaveBeenCalledWith('t-1', {
+                name: 'Fix the shed door',
+                project_id: 7,
+                tags: [{ name: 'errand' }],
+            })
+        );
     });
 
     it('sends the chosen project as project_id', async () => {

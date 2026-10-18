@@ -258,7 +258,12 @@ describe('User groups: admin management', () => {
             const res = await memberAgent.get('/api/groups');
             expect(res.status).toBe(200);
             expect(res.body.groups).toEqual([
-                { uid: group.uid, name: 'Family', member_count: 1 },
+                {
+                    uid: group.uid,
+                    name: 'Family',
+                    member_count: 1,
+                    is_member: false,
+                },
             ]);
             expect(JSON.stringify(res.body)).not.toContain('admin@example.com');
         });

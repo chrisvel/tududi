@@ -378,7 +378,7 @@ const Calendar: React.FC = () => {
         <div className="h-full flex flex-col px-4 sm:px-6 lg:px-8 pt-4">
             <div className="w-full max-w-7xl mx-auto flex-1 flex flex-col min-h-0">
                 {/* Header */}
-                <div className="flex items-center justify-between gap-2 mb-6">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
                     <div>
                         <h2 className="text-2xl font-light dark:text-white">
                             {t('sidebar.calendar')}
@@ -388,7 +388,7 @@ const Calendar: React.FC = () => {
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         {/* View selector */}
                         <div className="flex rounded-lg bg-gray-100 dark:bg-gray-800 p-0.5 border border-gray-200 dark:border-gray-600">
                             {(['month', 'week', 'day'] as const).map((viewType) => (

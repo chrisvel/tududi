@@ -1,4 +1,5 @@
 const ICAL = require('ical.js');
+const moment = require('moment-timezone');
 const {
     STATUS_ICAL_TO_TUDUDI,
     icalToTududiPriority,
@@ -7,7 +8,80 @@ const { parseRRULE } = require('./rrule-parser');
 const {
     processDueDateForStorage,
     processDeferUntilForStorage,
+    isValidTimezone,
 } = require('../../../utils/timezone-utils');
+
+// ical.js turns a floating time (no Z, no TZID) and a TZID it cannot resolve
+// into a floating time, then reads it in the server's timezone. Read those in
+// the TZID when it names a real zone, otherwise in the user's timezone.
+function dateTimeToJSDate(property, userTimezone) {
+    const time = property.getFirstValue();
+    if (time.zone && time.zone.tzid !== 'floating') {
+        return time.toJSDate();
+    }
+
+    const tzid = property.getParameter('tzid');
+    const zone = isValidTimezone(tzid)
+        ? tzid
+        : isValidTimezone(userTimezone)
+          ? userTimezone
+          : 'UTC';
+    return moment
+        .tz(
+            [
+                time.year,
+                time.month - 1,
+                time.day,
+                time.hour,
+                time.minute,
+                time.second,
+            ],
+            zone
+        )
+        .toDate();
+}
+
+// Read DUE or DTSTART into everything the rest of the parser needs from it:
+// a DATE value is a whole day, so its start (00:00 in the user's timezone) is
+// not its stored value (Tududi stores a due date as the end of that day), and
+// relative alarms are measured from the start of the day, not from 23:59:59.
+function readDateProperty(property, userTimezone) {
+    if (!property) return null;
+
+    const value = property.getFirstValue();
+    if (!value) return null;
+
+    if (value.isDate) {
+        const dateStr = `${value.year}-${pad(value.month)}-${pad(value.day)}`;
+        const timezone = userTimezone || 'UTC';
+        return {
+            isDate: true,
+            dateStr,
+            start: processDeferUntilForStorage(dateStr, timezone),
+            end: processDueDateForStorage(dateStr, timezone),
+        };
+    }
+
+    const instant = dateTimeToJSDate(property, userTimezone);
+    if (!instant) return null;
+
+    return { isDate: false, dateStr: null, start: instant, end: instant };
+}
+
+// DTSTART and DUE carrying the same value is how 2Do and EventKit say "this
+// task is due then" - they are not asking for a defer date, so such a start is
+// not one. Two DATE values are the same when they name the same day.
+function startsAtDue(start, due) {
+    if (start.isDate && due.isDate) {
+        return start.dateStr === due.dateStr;
+    }
+
+    return start.start.getTime() >= due.start.getTime();
+}
+
+function pad(number) {
+    return String(number).padStart(2, '0');
+}
 
 async function parseVTODOToTask(vtodoString, userTimezone) {
     try {
@@ -36,7 +110,7 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
             reminder_at: null,
             completed_at: null,
             status: 0,
-            priority: 0,
+            priority: null,
             recurrence_type: 'none',
             recurrence_interval: null,
             recurrence_end_date: null,
@@ -82,33 +156,20 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
             task.priority = icalToTududiPriority(priority);
         }
 
-        const due = vtodo.getFirstPropertyValue('due');
+        const due = readDateProperty(
+            vtodo.getFirstProperty('due'),
+            userTimezone
+        );
         if (due) {
-            if (due.isDate) {
-                // DATE-only values are timezone-independent; store as end-of-day
-                // in the user's timezone so Tududi's date display is consistent
-                // with tasks created via the web UI.
-                const dateStr = `${due.year}-${String(due.month).padStart(2, '0')}-${String(due.day).padStart(2, '0')}`;
-                task.due_date = processDueDateForStorage(
-                    dateStr,
-                    userTimezone || 'UTC'
-                );
-            } else {
-                task.due_date = due.toJSDate();
-            }
+            task.due_date = due.isDate ? due.end : due.start;
         }
 
-        const dtstart = vtodo.getFirstPropertyValue('dtstart');
-        if (dtstart) {
-            if (dtstart.isDate) {
-                const dateStr = `${dtstart.year}-${String(dtstart.month).padStart(2, '0')}-${String(dtstart.day).padStart(2, '0')}`;
-                task.defer_until = processDeferUntilForStorage(
-                    dateStr,
-                    userTimezone || 'UTC'
-                );
-            } else {
-                task.defer_until = dtstart.toJSDate();
-            }
+        const start = readDateProperty(
+            vtodo.getFirstProperty('dtstart'),
+            userTimezone
+        );
+        if (start && !(due && startsAtDue(start, due))) {
+            task.defer_until = start.start;
         }
 
         const completed = vtodo.getFirstPropertyValue('completed');
@@ -190,7 +251,21 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
                         triggerVal &&
                         typeof triggerVal.toSeconds === 'function'
                     ) {
-                        const base = task.due_date || task.defer_until;
+                        // RFC 5545 3.8.6.3: a relative TRIGGER runs from DTSTART
+                        // unless RELATED=END names the due date. DTSTART is used
+                        // as the base even when it was not a defer date. A DATE
+                        // value is measured from 00:00 in the user's timezone
+                        // (not the end of that day), so PT9H on an all-day task
+                        // is 09:00 that day, for START and END alike.
+                        const related = String(
+                            triggerProp.getParameter('related') || 'START'
+                        ).toUpperCase();
+                        const base =
+                            related === 'END'
+                                ? (due && due.start) || null
+                                : (start && start.start) ||
+                                  (due && due.start) ||
+                                  null;
                         if (base) {
                             task.reminder_at = new Date(
                                 base.getTime() + triggerVal.toSeconds() * 1000

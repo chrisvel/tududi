@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Task, PriorityType } from '../../../entities/Task';
 import { updateTask } from '../../../utils/tasksService';
 import { useToast } from '../../Shared/ToastContext';
+import { useStore } from '../../../store/useStore';
+import { resolveTaskTokens, tokenChanges } from '../../../utils/taskTokens';
 
 type RecurrencePayload = Partial<
     Pick<
@@ -22,7 +24,7 @@ export interface TaskRowSetters {
     setTitle: (title: string) => Promise<void>;
     setNote: (note: string) => Promise<void>;
     setPriority: (priority: PriorityType) => Promise<void>;
-    setDueDate: (dueDate: string | null) => Promise<void>;
+    setDue: (date: string | null, time: string | null) => Promise<void>;
     setDeferUntil: (deferUntil: string | null) => Promise<void>;
     setProject: (projectId: number | null) => Promise<void>;
     setTags: (tagNames: string[]) => Promise<void>;
@@ -62,12 +64,30 @@ export const useTaskRowSave = (
     );
 
     return {
-        setTitle: (title) =>
-            save(
-                { name: title.trim() },
+        setTitle: async (title) => {
+            const state = useStore.getState() as any;
+            const currentTags = task.tags?.map((tag) => tag.name) ?? [];
+            const resolved = await resolveTaskTokens(
+                title.trim(),
+                state.projectsStore?.projects ?? [],
+                state.areasStore?.areas ?? [],
+                currentTags
+            );
+            const { changes, newTags } = tokenChanges(
+                title.trim(),
+                resolved,
+                currentTags
+            );
+            const known =
+                state.tagsStore?.tags?.map((tag: any) => tag.name) ?? [];
+            const created = newTags.filter((name) => !known.includes(name));
+            if (created.length > 0) state.tagsStore?.addNewTags?.(created);
+            await save(
+                changes as Partial<Task>,
                 'task.titleUpdateError',
                 'Failed to update task'
-            ),
+            );
+        },
         setNote: (note) =>
             save(
                 { note: note.trim() },
@@ -80,9 +100,12 @@ export const useTaskRowSave = (
                 'task.priorityUpdateError',
                 'Failed to update priority'
             ),
-        setDueDate: (dueDate) =>
+        setDue: (date, time) =>
             save(
-                { due_date: dueDate || null },
+                {
+                    due_date: date || null,
+                    due_time: date ? time || null : null,
+                },
                 'task.dueDateUpdateError',
                 'Failed to update due date'
             ),

@@ -74,48 +74,56 @@ export interface NotificationPreferences {
         email: boolean;
         push: boolean;
         telegram: boolean;
+        apprise: boolean;
     };
     overdueTasks: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        apprise: boolean;
     };
     dueProjects: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        apprise: boolean;
     };
     overdueProjects: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        apprise: boolean;
     };
     deferUntil: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        apprise: boolean;
     };
     taskAssigned: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        apprise: boolean;
     };
     habitReminders: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        apprise: boolean;
     };
     comments: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        apprise: boolean;
     };
 }
 

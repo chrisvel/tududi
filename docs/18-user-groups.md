@@ -18,6 +18,10 @@ Groups are managed by admins and belong to the instance, not to a user. Any sign
 
 Admin > Access has a **Users**, a **Groups** and a **Roles** tab on one page, served at `/admin/users`. The Groups tab (`/admin/users?tab=groups`) lists every group with its member and shared-item counts. An admin can create, rename and delete groups and add or remove members. The old `/admin/groups` URL redirects to the Groups tab.
 
+### The group page
+
+Members of a group (and admins who manage it) can open `/groups/:uid` to see one column per member, with the tasks assigned to that member, bucketed like the Everyone board. Members with nothing assigned keep an empty column. Only tasks the viewer can already read are listed, so a task in someone's private project stays hidden even when it is assigned to a member. Anyone else gets a 404. The groups a user belongs to are linked from the top of the Everyone page.
+
 ### Sharing with a group
 
 The share dialog shows a **User | Group** toggle once the instance has at least one group. Choosing a group and a permission (read only or read and write) creates a grant. The dialog lists the groups an item is shared with, with how many members have accepted or still have to answer, and lets the owner revoke a group.
@@ -76,7 +80,8 @@ A group grant on a project writes one `direct` row for the project and `inherite
 
 | Method | Path | Notes |
 |--------|------|-------|
-| GET | `/api/groups` | Any user. `{ groups: [{ uid, name, member_count }] }`. Exposes no member data. |
+| GET | `/api/groups` | Any user. `{ groups: [{ uid, name, member_count, is_member }] }`. Exposes no member data. |
+| GET | `/api/groups/:uid` | Members of the group and admins who manage it, 404 for anyone else. `{ group, columns, summary }` in the Everyone board shape. |
 | GET, POST | `/api/admin/groups` | Admin. List with counts, create. Duplicate names (any case) return 409. |
 | GET, PATCH, DELETE | `/api/admin/groups/:uid` | Admin. Detail includes members and what the group is shared with. |
 | POST | `/api/admin/groups/:uid/members` | Admin. `{ user_ids: [] }` returns `{ added, already_members }`. |
@@ -110,6 +115,8 @@ Anything that goes through `permissionsService.getAccess`, `getSharedUidsForUser
 **Technical Implementation Files:**
 
 - Groups module: `/backend/modules/groups/`
+- Group board query: `getGroupBoard` in `/backend/modules/everyone/service.js`, column builders in `/backend/modules/everyone/core/columns.js`
+- Group page: `/frontend/components/Groups/GroupPage.tsx`, on the shared `/frontend/components/Everyone/PeopleBoard.tsx`
 - Group grants and membership: `/backend/services/groupSharing.js`
 - Reading shared access: `/backend/services/permissionSources.js`
 - Container mirroring: `/backend/services/containerShareSync.js`

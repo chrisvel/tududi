@@ -30,6 +30,25 @@ describe('VTODO Serializer', () => {
         expect(vtodoString).toContain('DTSTAMP:');
     });
 
+    // RFC 5545 3.8.7.2: DTSTAMP is a UTC date-time, so it ends in Z. The old
+    // ICAL.Time.now() wrote the process' local time without one (#1905).
+    it('should write DTSTAMP in UTC', async () => {
+        const vtodoString = await serializeTaskToVTODO(basicTask);
+        expect(vtodoString).toMatch(/DTSTAMP:\d{8}T\d{6}Z/);
+    });
+
+    it('should omit PRIORITY for a task with no priority', async () => {
+        const noPriorityTask = { ...basicTask, priority: null };
+        const undefinedPriorityTask = { ...basicTask, priority: undefined };
+
+        expect(await serializeTaskToVTODO(noPriorityTask)).not.toContain(
+            'PRIORITY'
+        );
+        expect(await serializeTaskToVTODO(undefinedPriorityTask)).not.toContain(
+            'PRIORITY'
+        );
+    });
+
     it('should map tududi status to iCalendar STATUS', async () => {
         const tasks = [
             { ...basicTask, status: 0 },

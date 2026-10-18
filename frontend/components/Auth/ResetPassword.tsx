@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getApiPath } from '../../config/paths';
+import { getPostHeadersWithCsrf } from '../../utils/authUtils';
 import { PASSWORD_MIN_LENGTH } from '../../utils/passwordPolicy';
 import AuthPageShell from './AuthPageShell';
 
@@ -38,7 +39,9 @@ const ResetPassword: React.FC = () => {
         try {
             const response = await fetch(getApiPath('reset-password'), {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                // A signed-in session (e.g. the admin who sent the invite,
+                // in the same browser) makes the server require a CSRF token.
+                headers: await getPostHeadersWithCsrf(),
                 body: JSON.stringify({ token, password }),
                 credentials: 'include',
             });

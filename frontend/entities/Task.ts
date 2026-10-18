@@ -41,6 +41,8 @@ export interface Task {
     status: StatusType | number;
     priority?: PriorityType | number;
     due_date?: string;
+    due_time?: string | null;
+    due_has_time?: boolean;
     defer_until?: string;
     reminder_at?: string;
     estimated_minutes?: number | null;

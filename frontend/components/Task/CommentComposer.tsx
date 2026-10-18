@@ -4,9 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Task } from '../../entities/Task';
 import { Person } from '../../entities/Person';
 import { Comment } from '../../entities/Comment';
-import { createComment } from '../../utils/commentsService';
+import { createComment, uploadCommentImage } from '../../utils/commentsService';
 import { useToast } from '../Shared/ToastContext';
 import SuggestionsDropdown from '../Inbox/SuggestionsDropdown';
+import {
+    filesToAttachFromPaste,
+    nameForPastedFile,
+} from '../Capture/useCaptureFiles';
 
 interface CommentComposerProps {
     task: Task;
@@ -22,6 +26,34 @@ interface CommentComposerProps {
 
 const MENTION_CHIP_CLASS =
     'mention-chip font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer';
+
+const IMAGE_CLASS = 'block max-h-48 max-w-full rounded-lg my-1';
+
+// Brackets would break the markdown image
+const imageLabel = (name: string) =>
+    (name || '').replace(/[[\]()\n]/g, ' ').trim() || 'image';
+
+// Inserts nodes at the caret, or at the end if the caret is elsewhere
+function insertNodesAtCaret(root: HTMLElement, nodes: Node[]) {
+    const fragment = document.createDocumentFragment();
+    nodes.forEach((node) => fragment.appendChild(node));
+    const selection = window.getSelection();
+    if (
+        !selection ||
+        selection.rangeCount === 0 ||
+        !root.contains(selection.anchorNode)
+    ) {
+        root.appendChild(fragment);
+        return;
+    }
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(fragment);
+    range.setStartAfter(nodes[nodes.length - 1]);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
 
 // Reads the composer's caret position out of the live Selection, so a
 // mention typed anywhere in the box can be matched to an "@query" - unlike
@@ -113,7 +145,17 @@ function serializeEditableContent(root: HTMLElement): {
             }
             return;
         }
+        // Pasted image goes on its own line
+        if (el.tagName === 'IMG' && el.dataset.imageUrl) {
+            if (text && !text.endsWith('\n')) text += '\n';
+            text += `![${imageLabel(el.getAttribute('alt') || '')}](${el.dataset.imageUrl})\n`;
+            return;
+        }
+        if (el.dataset.uploading) return;
         if (el.tagName === 'BR') {
+            // Already counted after the image
+            const prev = el.previousSibling as HTMLElement | null;
+            if (prev?.dataset?.imageUrl || prev?.dataset?.uploading) return;
             text += '\n';
             return;
         }
@@ -167,6 +209,7 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
     });
     const [mentionIndex, setMentionIndex] = useState(-1);
     const [submitting, setSubmitting] = useState(false);
+    const [uploading, setUploading] = useState(0);
     const editorRef = useRef<HTMLDivElement>(null);
     // The DOM Range the current "@query" spans, captured when the trigger is
     // detected - insertion uses this instead of the live selection, since
@@ -227,11 +270,59 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
         }
     };
 
+    // Upload the image and show it where it was pasted
+    const insertImage = async (file: File) => {
+        const root = editorRef.current;
+        if (!root || !task.uid) return;
+
+        const placeholder = document.createElement('span');
+        placeholder.contentEditable = 'false';
+        placeholder.dataset.uploading = 'true';
+        placeholder.className = 'italic text-gray-400 dark:text-gray-500';
+        placeholder.textContent = t(
+            'comments.uploadingImage',
+            'Uploading image...'
+        );
+        const lineBreak = document.createElement('br');
+        insertNodesAtCaret(root, [placeholder, lineBreak]);
+        setUploading((count) => count + 1);
+
+        try {
+            const image = await uploadCommentImage(task.uid, file);
+            if (!image.file_url) throw new Error('Missing image URL');
+            const img = document.createElement('img');
+            img.src = image.file_url;
+            img.alt = image.original_filename;
+            img.dataset.imageUrl = image.file_url;
+            img.className = IMAGE_CLASS;
+            placeholder.replaceWith(img);
+        } catch (err) {
+            console.error('Error uploading image:', err);
+            placeholder.remove();
+            lineBreak.remove();
+            showErrorToast(
+                t('comments.imageUploadFailed', 'Could not upload image')
+            );
+        } finally {
+            setUploading((count) => count - 1);
+            handleEditorInput();
+        }
+    };
+
     // Pasting keeps only plain text - a rich paste (from a webpage, another
     // app) would otherwise carry its own formatting straight into the DOM
     // here, which serializeEditableContent then has to strip out anyway.
     const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
         e.preventDefault();
+        // Screenshots go in as images
+        const images = filesToAttachFromPaste(e.clipboardData).filter((file) =>
+            file.type.startsWith('image/')
+        );
+        if (images.length > 0) {
+            images.forEach((file) => void insertImage(nameForPastedFile(file)));
+            return;
+        }
+
         const selection = window.getSelection();
         if (!selection || selection.rangeCount === 0) return;
 
@@ -250,7 +341,7 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
 
     const handleSubmit = async () => {
         const root = editorRef.current;
-        if (!root || !task.uid || submitting) return;
+        if (!root || !task.uid || submitting || uploading > 0) return;
 
         const { text, mentionedUids } = serializeEditableContent(root);
         const trimmed = text.trim();
@@ -279,7 +370,7 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
     return (
         <div className="relative">
             <div className="relative">
-                {!hasContent && (
+                {!hasContent && uploading === 0 && (
                     <span className="pointer-events-none absolute left-3.5 top-3 text-sm text-gray-400 dark:text-gray-500">
                         {placeholder ??
                             t(
@@ -388,7 +479,7 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
                 <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={!hasContent || submitting}
+                    disabled={!hasContent || submitting || uploading > 0}
                     className="px-4 py-2 text-xs font-medium rounded-lg bg-blue-500 dark:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
                 >
                     {submitLabel ?? t('comments.submit', 'Comment')}

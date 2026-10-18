@@ -5,6 +5,7 @@ import TaskRow from '../TaskRow';
 import { TaskRowExpansionProvider } from '../TaskRow/TaskRowExpansionContext';
 import { Task } from '../../../entities/Task';
 import * as tasksService from '../../../utils/tasksService';
+import * as inboxService from '../../../utils/inboxService';
 
 const navigateMock = jest.fn();
 
@@ -53,12 +54,56 @@ jest.mock('../../../utils/profileService', () => ({
     getLocaleFirstDayOfWeek: jest.fn().mockReturnValue(1),
 }));
 
-jest.mock('../../../store/useStore', () => ({
-    useStore: (selector: any) =>
-        selector({
-            tagsStore: { tags: [], loadTags: jest.fn() },
-        }),
+jest.mock('../../../store/useStore', () => {
+    const state: any = {
+        tagsStore: { tags: [], loadTags: jest.fn(), addNewTags: jest.fn() },
+        projectsStore: { projects: [] },
+        areasStore: { areas: [] },
+    };
+    const useStore: any = (selector: any) => selector(state);
+    useStore.getState = () => state;
+    return { useStore };
+});
+
+jest.mock('../../../utils/inboxService', () => ({
+    analyzeInboxText: jest.fn(async (text: string) => ({
+        cleaned_content: text,
+        parsed_tags: [],
+        parsed_projects: [],
+        parsed_area: null,
+        parsed_due_date: null,
+    })),
 }));
+
+jest.mock('../../Inbox/QuickCaptureInput', () => {
+    const React = jest.requireActual('react');
+    const ComposerStub = React.forwardRef(
+        (
+            { initialValue, onTextChange, onSubmitOverride, onEscape }: any,
+            ref: any
+        ) => {
+            const input = React.useRef(null);
+            React.useImperativeHandle(ref, () => ({
+                focus: () => input.current?.focus(),
+                submit: async () => {},
+            }));
+            return (
+                <input
+                    ref={input}
+                    defaultValue={initialValue}
+                    onChange={(e) => onTextChange(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter')
+                            onSubmitOverride(e.currentTarget.value);
+                        if (e.key === 'Escape') onEscape();
+                    }}
+                />
+            );
+        }
+    );
+    ComposerStub.displayName = 'ComposerStub';
+    return { __esModule: true, default: ComposerStub };
+});
 
 jest.mock('../../Shared/MarkdownRenderer', () => ({
     __esModule: true,
@@ -427,6 +472,33 @@ describe('TaskRow', () => {
         expect(payload).not.toHaveProperty('subtasks');
     });
 
+    it('moves #tags typed in the title into the tags field', async () => {
+        const updateTaskMock = tasksService.updateTask as jest.Mock;
+        updateTaskMock.mockReset();
+        updateTaskMock.mockResolvedValue({
+            ...baseTask(),
+            name: 'Buy tickets',
+        });
+        (inboxService.analyzeInboxText as jest.Mock).mockResolvedValueOnce({
+            cleaned_content: 'Buy tickets',
+            parsed_tags: ['errand'],
+            parsed_projects: [],
+            parsed_area: null,
+            parsed_due_date: null,
+        });
+        renderRow(baseTask(), { onTaskUpdate: jest.fn() });
+        fireEvent.click(screen.getByText('Buy tickets'));
+        const input = screen.getByDisplayValue('Buy tickets');
+        fireEvent.change(input, { target: { value: 'Buy tickets #errand' } });
+        fireEvent.keyDown(input, { key: 'Enter' });
+        await waitFor(() =>
+            expect(updateTaskMock).toHaveBeenCalledWith('task-1', {
+                name: 'Buy tickets',
+                tags: [{ name: 'errand' }],
+            })
+        );
+    });
+
     describe('status picked from the status menu (#1805)', () => {
         const updateTaskMock = tasksService.updateTask as jest.Mock;
         beforeEach(() => updateTaskMock.mockReset());
@@ -478,6 +550,32 @@ describe('TaskRow', () => {
                 )
             );
             expect(onTaskUpdate).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('status picked on a subtask row (#1914)', () => {
+        const updateTaskMock = tasksService.updateTask as jest.Mock;
+        beforeEach(() => updateTaskMock.mockReset());
+
+        it('saves the subtask status even though the page does not', async () => {
+            const subtask = baseTask({
+                id: 2,
+                uid: 'sub-1',
+                name: 'Book hotel',
+            });
+            updateTaskMock.mockResolvedValue({
+                ...subtask,
+                status: 'in_progress',
+            });
+            renderRow(baseTask({ subtasks: [subtask] }));
+            fireEvent.click(screen.getByTitle('Show subtasks'));
+            const picks = await screen.findAllByLabelText('pick in_progress');
+            fireEvent.click(picks[picks.length - 1]);
+            await waitFor(() =>
+                expect(updateTaskMock).toHaveBeenCalledWith('sub-1', {
+                    status: 'in_progress',
+                })
+            );
         });
     });
 });

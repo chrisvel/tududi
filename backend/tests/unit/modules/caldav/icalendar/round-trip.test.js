@@ -57,9 +57,30 @@ describe('CalDAV Round-Trip Conversion', () => {
         expect(parsedTask.due_date.toISOString()).toBe(
             '2026-06-04T23:59:59.999Z'
         );
+        // A start that is not before the due date is not a defer date, so the
+        // DTSTART emitted above does not come back as one (#1906).
+        expect(parsedTask.defer_until).toBeNull();
+    });
+
+    it('should keep a defer date that is earlier than the due date', async () => {
+        const originalTask = {
+            uid: 'defer-round-trip',
+            name: 'Deferred Task',
+            status: 0,
+            priority: null,
+            due_date: new Date('2026-06-04T09:00:00Z'),
+            defer_until: new Date('2026-06-01T09:00:00Z'),
+            created_at: new Date('2026-04-01T10:00:00Z'),
+            updated_at: new Date('2026-04-14T12:00:00Z'),
+        };
+
+        const vtodoString = await serializeTaskToVTODO(originalTask);
+        const parsedTask = await parseVTODOToTask(vtodoString);
+
         expect(parsedTask.defer_until.toISOString()).toBe(
-            '2026-06-04T00:00:00.000Z'
+            '2026-06-01T00:00:00.000Z'
         );
+        expect(parsedTask.priority).toBeNull();
     });
 
     it('should preserve iOS VALARM reminder through a note-edit round-trip', async () => {

@@ -148,6 +148,12 @@ const Breadcrumbs: React.FC = () => {
             ];
             break;
         }
+        case 'groups':
+            crumbs = [
+                { label: t('sidebar.everyone', 'Everyone'), to: '/everyone' },
+                { label: t('groupPage.title', 'Group') },
+            ];
+            break;
         case 'views':
             crumbs = [{ label: t('sidebar.views', 'Views'), to: '/views' }];
             break;

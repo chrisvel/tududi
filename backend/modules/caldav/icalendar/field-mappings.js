@@ -15,26 +15,33 @@ const STATUS_ICAL_TO_TUDUDI = {
     CANCELLED: 5,
 };
 
+// RFC 5545 3.8.1.9: 1-4 is high, 5 is medium, 6-9 is low, and 0 (or no
+// PRIORITY at all) is "undefined priority". Tududi has no priority of its own
+// (NULL), so 0 must map to null and not to Low - otherwise a task created
+// without a priority in Apple Reminders or 2Do becomes Low on the way in and
+// comes back to every client as PRIORITY:7.
 function tududiToIcalPriority(priority) {
     if (priority === null || priority === undefined) {
-        return 0;
+        return null;
     }
 
     if (priority === 0) return 7;
     if (priority === 1) return 5;
     if (priority === 2) return 3;
-    return 0;
+    return null;
 }
 
 function icalToTududiPriority(priority) {
-    if (!priority || priority === 0) {
-        return 0;
+    const value = Number(priority);
+
+    if (!Number.isFinite(value) || value <= 0) {
+        return null;
     }
 
-    if (priority <= 3) {
+    if (value <= 4) {
         return 2;
     }
-    if (priority <= 6) {
+    if (value <= 6) {
         return 1;
     }
     return 0;
