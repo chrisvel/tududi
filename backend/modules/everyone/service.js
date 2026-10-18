@@ -18,10 +18,10 @@ const HIDDEN_STATUSES = [
 
 const normalizeName = (name) => (name || '').trim().toLowerCase();
 
-// Projects that are visible to me AND shared with at least one other person.
-// Phase A writes inherited project Permission rows for area/goal shares, so
-// area- and goal-shared projects are already covered.
-async function getSharedProjectIds(userId) {
+// Projects that are visible to me, and the subset of them shared with at
+// least one other person. Phase A writes inherited project Permission rows
+// for area/goal shares, so area- and goal-shared projects are already covered.
+async function getProjectIds(userId) {
     const visibleWhere = await permissionsService.ownershipOrPermissionWhere(
         'project',
         userId
@@ -31,7 +31,9 @@ async function getSharedProjectIds(userId) {
         attributes: ['id', 'uid'],
         raw: true,
     });
-    if (visibleProjects.length === 0) return [];
+    if (visibleProjects.length === 0) {
+        return { visibleProjectIds: [], sharedProjectIds: [] };
+    }
 
     const sharedRows = await permissionSources.findAccepted(
         {
@@ -41,9 +43,12 @@ async function getSharedProjectIds(userId) {
         ['resource_uid']
     );
     const sharedUids = new Set(sharedRows.map((r) => r.resource_uid));
-    return visibleProjects
-        .filter((p) => sharedUids.has(p.uid))
-        .map((p) => p.id);
+    return {
+        visibleProjectIds: visibleProjects.map((p) => p.id),
+        sharedProjectIds: visibleProjects
+            .filter((p) => sharedUids.has(p.uid))
+            .map((p) => p.id),
+    };
 }
 
 async function getEveryoneDashboard(userId, timezone) {
@@ -88,7 +93,7 @@ async function getEveryoneDashboard(userId, timezone) {
         }
     }
 
-    const sharedProjectIds = await getSharedProjectIds(userId);
+    const { visibleProjectIds, sharedProjectIds } = await getProjectIds(userId);
 
     const orConditions = [];
     if (sharedProjectIds.length > 0) {
@@ -99,7 +104,24 @@ async function getEveryoneDashboard(userId, timezone) {
         ...Object.keys(personUidAlias),
     ];
     if (assigneeUids.length > 0) {
-        orConditions.push({ assigned_to: { [Op.in]: assigneeUids } });
+        // Assignment alone never grants read access: a collaborator's
+        // self-assigned task in their private project stays off the board.
+        const readable = await permissionsService.ownershipOrPermissionWhere(
+            'task',
+            userId
+        );
+        const readableConditions = [readable];
+        if (visibleProjectIds.length > 0) {
+            readableConditions.push({
+                project_id: { [Op.in]: visibleProjectIds },
+            });
+        }
+        orConditions.push({
+            [Op.and]: [
+                { assigned_to: { [Op.in]: assigneeUids } },
+                { [Op.or]: readableConditions },
+            ],
+        });
     }
 
     let tasks = [];
