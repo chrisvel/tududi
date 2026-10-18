@@ -369,13 +369,23 @@ dashboard shows the total and the last seven days beside it.
 
 ## Visits and dashboard metrics
 
-The admin dashboard (`/admin`) shows two panels. **Last 7 days** holds
-signups and their activation, verified-email share, tasks created and
-completed, active users, waitlist joins and, when hosted, the trial and
-churn signals. **Visits, last 7 days** shows how people arrive and what they
-do: visitors and page views per day, visit-to-signup rate, blog readers, app
-opens, app users (this week, today, last 30 days), top pages and top
-referrers. Every figure sits next to the week before.
+The admin dashboard (`/admin`) shows three panels. **Trial funnel, last 30
+days** follows the people who signed up in that span: site visitors
+(marketing site and blog), trial signups (people who made their own account;
+members added to another account are left out), activated users (5 or more
+tasks, or a planned day) and paid (activated and has had a subscription).
+Each step shows its count, the share that made it from the step before, and
+how that share moved against the 30 days before. Paid needs a hosted
+instance, and visitors need visit tracking. Recent signups may still be on
+their trial, so the paid step trails the others.
+
+**Last 7 days** groups the week into new users (verified email, created
+something, planned a first day, kept planning, waitlist joins), usage
+(active users, tasks created and completed) and, when hosted, trials and
+churn. **Visits, last 7 days** shows how people arrive and what they do:
+visitors and page views per day, blog readers, app opens, app users (this
+week, today, last 30 days), top pages and top referrers. Every figure sits
+next to the week before.
 
 A visit is a navigation answered with a page: a marketing page, a blog page
 (a blog host, or `/blog` on the app host), or the app shell. Redirects,

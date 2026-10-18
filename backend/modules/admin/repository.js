@@ -119,6 +119,21 @@ class AdminRepository {
         return new Set(results.flat().map((row) => row.user_id));
     }
 
+    // How many tasks each of the given users created, recurring instances
+    // left out, as a Map of user id to count.
+    async countTasksByUser(userIds) {
+        if (!userIds || userIds.length === 0) return new Map();
+        const { Task } = require('../../models');
+        const { fn, col } = require('sequelize');
+        const rows = await Task.findAll({
+            attributes: ['user_id', [fn('COUNT', col('id')), 'tasks']],
+            where: { user_id: userIds, recurring_parent_id: null },
+            group: ['user_id'],
+            raw: true,
+        });
+        return new Map(rows.map((row) => [row.user_id, Number(row.tasks)]));
+    }
+
     // Every day plan of the given users that holds at least one task, as
     // `{ user_id, plan_date, items }` rows, so the dashboard can tell who
     // planned a first day and who kept planning.

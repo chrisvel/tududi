@@ -17,10 +17,32 @@ jest.mock('react-i18next', () => ({
     }),
 }));
 
+const funnel = (hosted: boolean) => ({
+    days: 30,
+    hosted,
+    trials: hosted,
+    activation_tasks: 5,
+    current: {
+        visitors: 400,
+        signups: 20,
+        activated: 10,
+        paid: hosted ? 2 : null,
+        paid_any: hosted ? 3 : null,
+    },
+    previous: {
+        visitors: 300,
+        signups: 15,
+        activated: 6,
+        paid: hosted ? 1 : null,
+        paid_any: hosted ? 1 : null,
+    },
+});
+
 const overview = (hosted: boolean, trendsOverride: object = {}) => ({
     users: { total: 3, admins: 1, verified: 3, last24h: 0 },
     content: { tasks: 10, projects: 2, notes: 1 },
     waitlist: { total: 0, last7d: 0 },
+    funnel: funnel(hosted),
     trends: {
         days: Array.from({ length: 14 }, (_, i) => ({
             date: `2026-10-${String(i + 1).padStart(2, '0')}`,
@@ -202,7 +224,7 @@ describe('Admin dashboard visits', () => {
         jest.restoreAllMocks();
     });
 
-    it('shows visitors, conversion, app users and the rankings', async () => {
+    it('shows visitors, app users and the rankings', async () => {
         mockFetch(false);
 
         render(
@@ -214,11 +236,8 @@ describe('Admin dashboard visits', () => {
         await waitFor(() =>
             expect(screen.getByTestId('admin-visits')).toBeInTheDocument()
         );
-        // 20 landing + 5 blog visitors; 14 signups of them
+        // 20 landing + 5 blog visitors
         expect(screen.getByTestId('admin-visits')).toHaveTextContent('25');
-        expect(screen.getByTestId('admin-visits-conversion')).toHaveTextContent(
-            '56%'
-        );
         expect(screen.getByTestId('admin-visits-app-users')).toHaveTextContent(
             '4 today'
         );
@@ -249,5 +268,67 @@ describe('Admin dashboard visits', () => {
             expect(screen.getByTestId('admin-trends')).toBeInTheDocument()
         );
         expect(screen.queryByTestId('admin-visits')).toBeNull();
+    });
+});
+
+describe('Admin dashboard funnel', () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('shows each step with the share that made it from the step before', async () => {
+        mockFetch(true);
+
+        render(
+            <MemoryRouter>
+                <AdminDashboardPage />
+            </MemoryRouter>
+        );
+
+        await waitFor(() =>
+            expect(screen.getByTestId('admin-funnel')).toBeInTheDocument()
+        );
+        expect(
+            screen.getByText('Trial funnel, last 30 days')
+        ).toBeInTheDocument();
+        // 20 of 400 visitors, 10 of 20 signups, 2 of 10 activated
+        expect(
+            screen.getByTestId('admin-funnel-signups-rate')
+        ).toHaveTextContent('5%');
+        expect(
+            screen.getByTestId('admin-funnel-activated-rate')
+        ).toHaveTextContent('50%');
+        expect(screen.getByTestId('admin-funnel-paid-rate')).toHaveTextContent(
+            '20%'
+        );
+        // 6 of 15 activated the month before: 40% to 50%
+        expect(screen.getByTestId('admin-funnel-activated')).toHaveTextContent(
+            '+10 pts'
+        );
+        expect(screen.getByText('End to end: 0.5%')).toBeInTheDocument();
+        expect(
+            screen.getByText(/1 more paid without activating/)
+        ).toBeInTheDocument();
+    });
+
+    it('stops at activation on a self-hosted instance', async () => {
+        mockFetch(false);
+
+        render(
+            <MemoryRouter>
+                <AdminDashboardPage />
+            </MemoryRouter>
+        );
+
+        await waitFor(() =>
+            expect(screen.getByTestId('admin-funnel')).toBeInTheDocument()
+        );
+        expect(
+            screen.getByText('Signup funnel, last 30 days')
+        ).toBeInTheDocument();
+        expect(
+            screen.getByTestId('admin-funnel-activated')
+        ).toBeInTheDocument();
+        expect(screen.queryByTestId('admin-funnel-paid')).toBeNull();
     });
 });

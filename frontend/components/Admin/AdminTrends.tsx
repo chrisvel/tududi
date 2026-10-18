@@ -43,11 +43,21 @@ export interface Trends {
     visits?: Visits | null;
     billing: {
         trials_started_7d: number;
+        trials_started_prev7d?: number;
         trials_ending_7d: number;
         canceled_7d: number;
         payment_failed_7d: number;
     } | null;
 }
+
+// `part` as a share of `whole`, with one decimal below 10% so a small
+// conversion does not read as 0%. A dash when there is nothing to divide by.
+export const percentOf = (part: number, whole: number): string => {
+    if (!whole) return '-';
+    const pct = (part / whole) * 100;
+    if (pct > 0 && pct < 10) return `${pct.toFixed(1).replace(/\.0$/, '')}%`;
+    return `${Math.round(pct)}%`;
+};
 
 // "+3 vs last week" style change, coloured only when it moved.
 export const Delta: React.FC<{ now: number; before: number }> = ({
@@ -154,14 +164,37 @@ export const DayBars: React.FC<{
     );
 };
 
+const Muted: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <span className="text-xs text-gray-500 dark:text-gray-400">{children}</span>
+);
+
+const Group: React.FC<{ title: string; children: React.ReactNode }> = ({
+    title,
+    children,
+}) => (
+    <div>
+        <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+            {title}
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{children}</div>
+    </div>
+);
+
+// The week at a glance: signups per day next to what this week's new users
+// did, what everyone did, and on a hosted instance the trial and churn
+// signals. Shares are of this week's new users unless the hint says
+// otherwise.
 const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
     const { t } = useTranslation();
     const { activation, billing, onboarding } = trends;
-    const rate = (part: number, whole: number): string =>
-        whole ? `${Math.round((part / whole) * 100)}%` : '-';
-    const activationRate = activation.new_users
-        ? Math.round((activation.activated / activation.new_users) * 100)
-        : null;
+    const ofNewUsers = (n: number, total: number) => (
+        <Muted>
+            {t('admin.trends.ofNewUsers', '{{n}} of {{total}} new users', {
+                n,
+                total,
+            })}
+        </Muted>
+    );
 
     return (
         <section
@@ -199,160 +232,176 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                         testId="admin-trends-bars"
                     />
                 </div>
-                <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-3 content-start">
-                    <Tile
-                        label={t('admin.trends.activation', 'Activated')}
-                        value={
-                            activationRate === null ? '-' : `${activationRate}%`
-                        }
-                        hint={
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {t(
-                                    'admin.trends.activationHint',
-                                    '{{n}} of {{total}} new users created something',
-                                    {
-                                        n: activation.activated,
-                                        total: activation.new_users,
-                                    }
-                                )}
-                            </span>
-                        }
-                        testId="admin-trends-activation"
-                    />
-                    {onboarding && (
-                        <>
+                <div className="lg:col-span-2 space-y-5">
+                    <Group title={t('admin.trends.newUsers', 'New users')}>
+                        {activation.verified !== undefined && (
                             <Tile
                                 label={t(
-                                    'admin.trends.firstPlan',
-                                    'Planned a first day'
+                                    'admin.trends.verified',
+                                    'Verified email'
                                 )}
-                                value={rate(
-                                    onboarding.first_plan,
-                                    onboarding.new_users
+                                value={percentOf(
+                                    activation.verified,
+                                    activation.new_users
                                 )}
-                                hint={
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                        {t(
-                                            'admin.trends.firstPlanHint',
-                                            '{{n}} of {{total}} new users planned 3+ tasks',
-                                            {
-                                                n: onboarding.first_plan,
-                                                total: onboarding.new_users,
-                                            }
-                                        )}
-                                    </span>
-                                }
-                                testId="admin-trends-first-plan"
+                                hint={ofNewUsers(
+                                    activation.verified,
+                                    activation.new_users
+                                )}
+                                testId="admin-trends-verified"
                             />
-                            <Tile
-                                label={t(
-                                    'admin.trends.threeDays',
-                                    'Kept planning'
-                                )}
-                                value={rate(
-                                    onboarding.three_days,
-                                    onboarding.cohort
-                                )}
-                                hint={
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                        {t(
-                                            'admin.trends.threeDaysHint',
-                                            "{{n}} of {{total}} of last week's signups planned 3 days",
-                                            {
-                                                n: onboarding.three_days,
-                                                total: onboarding.cohort,
-                                            }
-                                        )}
-                                    </span>
-                                }
-                                testId="admin-trends-three-days"
-                            />
-                        </>
-                    )}
-                    <Tile
-                        label={t('admin.trends.active', 'Active users')}
-                        value={trends.active_users_7d}
-                        hint={
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {t(
-                                    'admin.trends.activeHint',
-                                    'created something this week'
-                                )}
-                            </span>
-                        }
-                    />
-                    {trends.tasks && (
-                        <>
-                            <Tile
-                                label={t(
-                                    'admin.trends.tasksCreated',
-                                    'Tasks created'
-                                )}
-                                value={trends.tasks.created.last7d}
-                                hint={
-                                    <Delta
-                                        now={trends.tasks.created.last7d}
-                                        before={trends.tasks.created.prev7d}
-                                    />
-                                }
-                                testId="admin-trends-tasks-created"
-                            />
-                            <Tile
-                                label={t(
-                                    'admin.trends.tasksCompleted',
-                                    'Tasks completed'
-                                )}
-                                value={trends.tasks.completed.last7d}
-                                hint={
-                                    <Delta
-                                        now={trends.tasks.completed.last7d}
-                                        before={trends.tasks.completed.prev7d}
-                                    />
-                                }
-                                testId="admin-trends-tasks-completed"
-                            />
-                        </>
-                    )}
-                    {activation.verified !== undefined && (
+                        )}
                         <Tile
-                            label={t('admin.trends.verified', 'Verified email')}
-                            value={rate(
-                                activation.verified,
+                            label={t(
+                                'admin.trends.createdSomething',
+                                'Created something'
+                            )}
+                            value={percentOf(
+                                activation.activated,
                                 activation.new_users
                             )}
-                            hint={
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
-                                    {t(
-                                        'admin.trends.verifiedHint',
-                                        '{{n}} of {{total}} new users',
-                                        {
-                                            n: activation.verified,
-                                            total: activation.new_users,
-                                        }
-                                    )}
-                                </span>
-                            }
-                            testId="admin-trends-verified"
+                            hint={ofNewUsers(
+                                activation.activated,
+                                activation.new_users
+                            )}
+                            testId="admin-trends-activation"
                         />
-                    )}
-                    <Tile
-                        label={t('admin.trends.waitlist', 'Waitlist joins')}
-                        value={trends.waitlist.last7d}
-                        hint={
-                            <Delta
-                                now={trends.waitlist.last7d}
-                                before={trends.waitlist.prev7d}
-                            />
-                        }
-                    />
+                        {onboarding && (
+                            <>
+                                <Tile
+                                    label={t(
+                                        'admin.trends.firstPlan',
+                                        'Planned a first day'
+                                    )}
+                                    value={percentOf(
+                                        onboarding.first_plan,
+                                        onboarding.new_users
+                                    )}
+                                    hint={
+                                        <Muted>
+                                            {t(
+                                                'admin.trends.firstPlanHint',
+                                                '{{n}} of {{total}} new users planned 3+ tasks',
+                                                {
+                                                    n: onboarding.first_plan,
+                                                    total: onboarding.new_users,
+                                                }
+                                            )}
+                                        </Muted>
+                                    }
+                                    testId="admin-trends-first-plan"
+                                />
+                                <Tile
+                                    label={t(
+                                        'admin.trends.threeDays',
+                                        'Kept planning'
+                                    )}
+                                    value={percentOf(
+                                        onboarding.three_days,
+                                        onboarding.cohort
+                                    )}
+                                    hint={
+                                        <Muted>
+                                            {t(
+                                                'admin.trends.threeDaysHint',
+                                                "{{n}} of {{total}} of last week's signups planned 3 days",
+                                                {
+                                                    n: onboarding.three_days,
+                                                    total: onboarding.cohort,
+                                                }
+                                            )}
+                                        </Muted>
+                                    }
+                                    testId="admin-trends-three-days"
+                                />
+                            </>
+                        )}
+                        <Tile
+                            label={t('admin.trends.waitlist', 'Waitlist joins')}
+                            value={trends.waitlist.last7d}
+                            hint={
+                                <Delta
+                                    now={trends.waitlist.last7d}
+                                    before={trends.waitlist.prev7d}
+                                />
+                            }
+                        />
+                    </Group>
+
+                    <Group title={t('admin.trends.usage', 'Usage')}>
+                        <Tile
+                            label={t('admin.trends.active', 'Active users')}
+                            value={trends.active_users_7d}
+                            hint={
+                                <Muted>
+                                    {t(
+                                        'admin.trends.activeHint',
+                                        'created something this week'
+                                    )}
+                                </Muted>
+                            }
+                        />
+                        {trends.tasks && (
+                            <>
+                                <Tile
+                                    label={t(
+                                        'admin.trends.tasksCreated',
+                                        'Tasks created'
+                                    )}
+                                    value={trends.tasks.created.last7d}
+                                    hint={
+                                        <Delta
+                                            now={trends.tasks.created.last7d}
+                                            before={trends.tasks.created.prev7d}
+                                        />
+                                    }
+                                    testId="admin-trends-tasks-created"
+                                />
+                                <Tile
+                                    label={t(
+                                        'admin.trends.tasksCompleted',
+                                        'Tasks completed'
+                                    )}
+                                    value={trends.tasks.completed.last7d}
+                                    hint={
+                                        <Delta
+                                            now={trends.tasks.completed.last7d}
+                                            before={
+                                                trends.tasks.completed.prev7d
+                                            }
+                                        />
+                                    }
+                                    testId="admin-trends-tasks-completed"
+                                />
+                            </>
+                        )}
+                    </Group>
+
                     {billing && (
-                        <>
+                        <Group
+                            title={t(
+                                'admin.trends.trialsAndChurn',
+                                'Trials and churn'
+                            )}
+                        >
                             <Tile
                                 label={t(
                                     'admin.trends.trialsStarted',
                                     'Trials started'
                                 )}
                                 value={billing.trials_started_7d}
+                                hint={
+                                    billing.trials_started_prev7d !==
+                                    undefined ? (
+                                        <Delta
+                                            now={billing.trials_started_7d}
+                                            before={
+                                                billing.trials_started_prev7d
+                                            }
+                                        />
+                                    ) : undefined
+                                }
+                                testId="admin-trends-trials-started"
                             />
                             <Tile
                                 label={t(
@@ -381,7 +430,7 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                                 }
                                 testId="admin-trends-churn"
                             />
-                        </>
+                        </Group>
                     )}
                 </div>
             </div>

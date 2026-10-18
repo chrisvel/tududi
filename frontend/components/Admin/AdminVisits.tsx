@@ -39,10 +39,7 @@ const Ranking: React.FC<{
 // Page views of the marketing site, the blog and the app. Visitors are
 // counted per day (a person back on another day counts again), and the
 // marketing site and the blog are added together.
-const AdminVisits: React.FC<{
-    visits: Visits;
-    signups: { last7d: number; prev7d: number };
-}> = ({ visits, signups }) => {
+const AdminVisits: React.FC<{ visits: Visits }> = ({ visits }) => {
     const { t } = useTranslation();
     const { landing, blog, app, app_users: appUsers } = visits;
 
@@ -54,10 +51,6 @@ const AdminVisits: React.FC<{
         last7d: landing.views.last7d + blog.views.last7d,
         prev7d: landing.views.prev7d + blog.views.prev7d,
     };
-    const conversion = visitors.last7d
-        ? `${Math.round((signups.last7d / visitors.last7d) * 100)}%`
-        : '-';
-
     return (
         <section
             className="bg-white dark:bg-gray-800 rounded-lg p-5 mb-8"
@@ -99,23 +92,6 @@ const AdminVisits: React.FC<{
                             <Delta now={views.last7d} before={views.prev7d} />
                         }
                         testId="admin-visits-views"
-                    />
-                    <Tile
-                        label={t('admin.visits.conversion', 'Visit to signup')}
-                        value={conversion}
-                        hint={
-                            <Muted>
-                                {t(
-                                    'admin.visits.conversionHint',
-                                    '{{n}} signups from {{total}} visitors',
-                                    {
-                                        n: signups.last7d,
-                                        total: visitors.last7d,
-                                    }
-                                )}
-                            </Muted>
-                        }
-                        testId="admin-visits-conversion"
                     />
                     <Tile
                         label={t('admin.visits.blog', 'Blog readers')}

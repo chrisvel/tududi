@@ -2154,7 +2154,7 @@
       "users": "Users",
       "usersHint": "{{verified}} verified · {{admins}} admin · {{new}} today",
       "emptyAccounts": "Nothing created",
-      "emptyAccountsHint": "accounts that never created anything ({{pct}}% of users)",
+      "emptyAccountsHint": "{{pct}} of users never created anything",
       "paying": "Paying",
       "selfHosted": "self-hosted",
       "waitlist": "Waitlist",
@@ -2168,7 +2168,10 @@
       "email": "Email",
       "source": "Source",
       "joined": "Joined",
-      "waitlistAll": "See all"
+      "waitlistAll": "See all",
+      "tasks": "Tasks",
+      "payingShare": "{{pct}} of users",
+      "gated": "gated"
     },
     "waitlist": {
       "title": "Waitlist",
@@ -2389,8 +2392,6 @@
       "vsLastWeek": "{{diff}} vs last week",
       "chartLabel": "Signups per day",
       "barTitle": "{{date}}: {{n}} signups ({{prev}} a week before)",
-      "activation": "Activated",
-      "activationHint": "{{n}} of {{total}} new users created something",
       "active": "Active users",
       "activeHint": "created something this week",
       "waitlist": "Waitlist joins",
@@ -2404,7 +2405,11 @@
       "tasksCreated": "Tasks created",
       "tasksCompleted": "Tasks completed",
       "verified": "Verified email",
-      "verifiedHint": "{{n}} of {{total}} new users"
+      "newUsers": "New users",
+      "usage": "Usage",
+      "createdSomething": "Created something",
+      "ofNewUsers": "{{n}} of {{total}} new users",
+      "trialsAndChurn": "Trials and churn"
     },
     "visits": {
       "title": "Visits, last 7 days",
@@ -2412,8 +2417,6 @@
       "chartLabel": "Visitors per day",
       "barTitle": "{{date}}: {{n}} visitors ({{prev}} a week before)",
       "views": "Page views",
-      "conversion": "Visit to signup",
-      "conversionHint": "{{n}} signups from {{total}} visitors",
       "blog": "Blog readers",
       "appOpens": "App opens",
       "appUsers": "App users",
@@ -2422,6 +2425,23 @@
       "noPages": "No page views yet",
       "topReferrers": "Top referrers",
       "noReferrers": "No referrers yet"
+    },
+    "funnel": {
+      "title": "Trial funnel, last {{days}} days",
+      "titleNoTrial": "Signup funnel, last {{days}} days",
+      "overall": "End to end: {{pct}}",
+      "vsBefore": "{{diff}} pts vs the {{days}} days before",
+      "visitors": "Site visitors",
+      "visitorsHint": "marketing site and blog, counted per day",
+      "trialSignups": "Trial signups",
+      "signups": "Signups",
+      "signupsHint": "made their own account, members left out",
+      "activated": "Activated",
+      "activatedHint": "{{n}}+ tasks or used the planner",
+      "paid": "Paid",
+      "paidHint": "activated and has had a subscription",
+      "maturity": "Recent signups may still be on their trial, so the paid step trails the others.",
+      "paidWithoutActivating": "{{n}} more paid without activating."
     }
   },
   "billing": {
