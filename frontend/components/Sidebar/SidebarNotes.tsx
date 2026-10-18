@@ -71,7 +71,11 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                     }`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        handleNavClick('/notes', t('sidebar.notes'), <BookOpenIcon className="h-4 w-4 mr-2" />);
+                        handleNavClick(
+                            '/notes',
+                            t('sidebar.notes'),
+                            <BookOpenIcon className="h-4 w-4 mr-2" />
+                        );
                     }}
                 >
                     <BookOpenIcon className="h-[14px] w-[14px]" />
@@ -104,7 +108,11 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                             >
                                 <ChevronRightIcon
                                     className="h-3 w-3 transition-transform duration-150"
-                                    style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                                    style={{
+                                        transform: isExpanded
+                                            ? 'rotate(90deg)'
+                                            : 'none',
+                                    }}
                                 />
                             </button>
                         </>
@@ -113,15 +121,18 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
             </div>
 
             {isExpanded && (
-                <>
+                <div className="mt-1 mb-1.5 rounded-xl bg-gray-50 py-1 dark:bg-white/[0.03]">
                     {notes.length > 0 && (
-                        <div className="flex items-center gap-[6px] ml-[30px] mr-[10px] mt-1 mb-1 px-[8px] py-[3px] rounded-md bg-gray-100 dark:bg-white/5">
+                        <div className="flex items-center gap-[6px] ml-[30px] mr-[10px] mt-1 mb-1 px-[8px] py-[3px] rounded-md bg-white dark:bg-white/5">
                             <MagnifyingGlassIcon className="h-3 w-3 text-gray-400 dark:text-gray-500 flex-shrink-0" />
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder={t('notes.searchPlaceholder', 'Search notes...')}
+                                placeholder={t(
+                                    'notes.searchPlaceholder',
+                                    'Search notes...'
+                                )}
                                 className="w-full min-w-0 bg-transparent border-none focus:ring-0 focus:outline-none text-[12px] text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500"
                             />
                         </div>
@@ -133,7 +144,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                         handleNavClick={handleNavClick}
                         searchQuery={searchQuery}
                     />
-                </>
+                </div>
             )}
         </div>
     );

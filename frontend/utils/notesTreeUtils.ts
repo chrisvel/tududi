@@ -27,7 +27,13 @@ export type TreeRow =
           depth: number;
           expanded: boolean;
       }
-    | { type: 'note'; key: string; note: Note; depth: number };
+    | { type: 'note'; key: string; note: Note; depth: number }
+    | { type: 'more'; key: string; folderKey: string; count: number };
+
+export interface NoteTagSummary {
+    name: string;
+    count: number;
+}
 
 const getNoteProject = (note: Note) => note.project || note.Project;
 const getNoteProjectUid = (note: Note): string | undefined =>
@@ -144,8 +150,14 @@ interface FlattenParams {
     tree: NotesTreeData;
     expanded: Record<string, boolean>;
     forceExpandAll: boolean;
-    labels: { folders: string };
+    labels: { folders: string; noProject?: string };
+    // Notes shown per open folder before a "N more" row. No limit if unset.
+    folderLimit?: number;
+    // Folders the user asked to see in full.
+    showAll?: Record<string, boolean>;
 }
+
+export const NO_PROJECT_FOLDER_KEY = 'project:none';
 
 const isExpanded = (
     key: string,
@@ -165,6 +177,8 @@ export const flattenVisibleRows = ({
     expanded,
     forceExpandAll,
     labels,
+    folderLimit,
+    showAll = {},
 }: FlattenParams): TreeRow[] => {
     const rows: TreeRow[] = [];
 
@@ -178,7 +192,26 @@ export const flattenVisibleRows = ({
         label: labels.folders,
     });
 
-    tree.rootFolders.forEach((folder) => {
+    // With a noProject label, notes without a project get a folder of their
+    // own at the end instead of sitting loose under the folders.
+    const folders: Pick<
+        ProjectFolderNode,
+        'key' | 'name' | 'color' | 'notes' | 'count'
+    >[] = labels.noProject
+        ? tree.rootNotes.length > 0
+            ? [
+                  ...tree.rootFolders,
+                  {
+                      key: NO_PROJECT_FOLDER_KEY,
+                      name: labels.noProject,
+                      notes: tree.rootNotes,
+                      count: tree.rootNotes.length,
+                  },
+              ]
+            : tree.rootFolders
+        : tree.rootFolders;
+
+    folders.forEach((folder) => {
         const folderExpanded = isExpanded(folder.key, expanded, forceExpandAll);
         rows.push({
             type: 'folder',
@@ -192,7 +225,16 @@ export const flattenVisibleRows = ({
 
         if (!folderExpanded) return;
 
-        folder.notes.forEach((note) => {
+        const limited =
+            folderLimit !== undefined &&
+            !forceExpandAll &&
+            !showAll[folder.key] &&
+            folder.notes.length > folderLimit;
+        const visibleNotes = limited
+            ? folder.notes.slice(0, folderLimit)
+            : folder.notes;
+
+        visibleNotes.forEach((note) => {
             rows.push({
                 type: 'note',
                 key: `note:${note.uid}`,
@@ -200,7 +242,18 @@ export const flattenVisibleRows = ({
                 depth: 1,
             });
         });
+
+        if (limited) {
+            rows.push({
+                type: 'more',
+                key: `more:${folder.key}`,
+                folderKey: folder.key,
+                count: folder.notes.length - visibleNotes.length,
+            });
+        }
     });
+
+    if (labels.noProject) return rows;
 
     tree.rootNotes.forEach((note) => {
         rows.push({
@@ -226,4 +279,36 @@ export const getActiveFolderKeys = (
     if (!projectUid) return [];
 
     return [`project:${projectUid}`];
+};
+
+const getNoteTags = (note: Note) => note.tags || note.Tags || [];
+
+// The most recently edited notes, newest first.
+export const getRecentNotes = (notes: Note[], limit: number): Note[] =>
+    sortNotesByOrder(notes, 'updated_at:desc').slice(0, limit);
+
+// Every tag used on these notes with how many notes carry it, most used
+// first.
+export const collectNoteTags = (notes: Note[]): NoteTagSummary[] => {
+    const counts = new Map<string, number>();
+    notes.forEach((note) => {
+        getNoteTags(note).forEach((tag) => {
+            if (!tag?.name) return;
+            counts.set(tag.name, (counts.get(tag.name) || 0) + 1);
+        });
+    });
+
+    return [...counts.entries()]
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count || compareLabels(a.name, b.name));
+};
+
+export const filterNotesByTag = (
+    notes: Note[],
+    tagName: string | null
+): Note[] => {
+    if (!tagName) return notes;
+    return notes.filter((note) =>
+        getNoteTags(note).some((tag) => tag?.name === tagName)
+    );
 };

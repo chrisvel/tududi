@@ -1678,7 +1678,14 @@
     "deleteNote": "Delete Note",
     "deleteNoteConfirm": "Are you sure you want to delete the note \"{{title}}\"?",
     "untitled": "Untitled Note",
-    "openInNotes": "Open in Notes"
+    "openInNotes": "Open in Notes",
+    "sidebar": {
+      "recent": "Recent",
+      "projects": "Projects",
+      "tags": "Tags",
+      "noProject": "No project",
+      "more": "{{count}} more"
+    }
   },
   "tags": {
     "addTag": "Add Tag",

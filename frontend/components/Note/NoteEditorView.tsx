@@ -30,6 +30,14 @@ export const shouldUseLightText = (hexColor: string | undefined): boolean => {
     return luminance < 0.5;
 };
 
+// Today's edits show the time, older ones the date.
+export const formatEditedAt = (updatedAt: string, now = new Date()): string => {
+    const date = new Date(updatedAt);
+    return date.toDateString() === now.toDateString()
+        ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : date.toLocaleDateString();
+};
+
 interface NoteEditorViewProps {
     note: Note;
     saveStatus: 'saved' | 'saving' | 'unsaved';
@@ -61,6 +69,10 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
 }) => {
     const { t } = useTranslation();
     const projects = useStore((state) => state.projectsStore.projects);
+    const noteProjectUid = note.project_uid || note.project?.uid;
+    const projectColor = noteProjectUid
+        ? projects.find((p) => p.uid === noteProjectUid)?.color
+        : undefined;
     const [showProjectPicker, setShowProjectPicker] = useState(false);
     const [showTagsInput, setShowTagsInput] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
@@ -146,9 +158,7 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
                                 <ClockIcon className="h-3 w-3 mr-1" />
                                 <span>
                                     {note.updated_at
-                                        ? new Date(
-                                              note.updated_at
-                                          ).toLocaleDateString()
+                                        ? formatEditedAt(note.updated_at)
                                         : 'New'}
                                 </span>
                             </div>
@@ -162,7 +172,17 @@ const NoteEditorView: React.FC<NoteEditorViewProps> = ({
                                         : 'Add project'
                                 }
                             >
-                                <FolderIcon className="h-3 w-3 mr-1" />
+                                {projectColor ? (
+                                    <span
+                                        aria-hidden="true"
+                                        className="h-2 w-2 mr-1.5 rounded-[3px] flex-shrink-0"
+                                        style={{
+                                            backgroundColor: projectColor,
+                                        }}
+                                    />
+                                ) : (
+                                    <FolderIcon className="h-3 w-3 mr-1" />
+                                )}
                                 {note.project
                                     ? note.project.name
                                     : 'Add project'}
