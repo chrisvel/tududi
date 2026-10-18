@@ -174,6 +174,26 @@ describe('GET /api/everyone', () => {
         ).toBeUndefined();
     });
 
+    it("does not expose a collaborator's self-assigned private task", async () => {
+        const priv = await Project.create({
+            name: 'Mate private',
+            user_id: mate.id,
+        });
+        await Task.create({
+            name: 'Private self-assigned',
+            user_id: mate.id,
+            project_id: priv.id,
+            assigned_to: mateSelf.uid,
+            note: 'private note body',
+            due_date: new Date(),
+        });
+
+        const res = await ownerAgent.get('/api/everyone');
+        expect(res.status).toBe(200);
+        expect(JSON.stringify(res.body)).not.toContain('Private self-assigned');
+        expect(JSON.stringify(res.body)).not.toContain('private note body');
+    });
+
     it('buckets tasks by due date in the viewer timezone', async () => {
         const mk = (name, due) =>
             Task.create({
