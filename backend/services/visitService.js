@@ -240,6 +240,25 @@ async function summary(days, now = new Date()) {
     };
 }
 
+// People on the marketing site or the blog from the UTC day `from` up to,
+// not including, `to`. Counted per day like the rest of this file, but a
+// person who read the blog and then the landing page that day counts once.
+async function siteVisitors(from, to) {
+    const rows = await SiteVisit.findAll({
+        attributes: [
+            'day',
+            [fn('COUNT', fn('DISTINCT', col('visitor_hash'))), 'visitors'],
+        ],
+        where: {
+            day: { [Op.gte]: from, [Op.lt]: to },
+            surface: { [Op.in]: ['landing', 'blog'] },
+        },
+        group: ['day'],
+        raw: true,
+    });
+    return rows.reduce((n, row) => n + Number(row.visitors), 0);
+}
+
 async function distinctUsers(dayCondition) {
     const row = await SiteVisit.findOne({
         attributes: [[fn('COUNT', fn('DISTINCT', col('user_id'))), 'users']],
@@ -257,6 +276,7 @@ module.exports = {
     track,
     prune,
     summary,
+    siteVisitors,
     isVisit,
     surfaceOf,
     pathOf,

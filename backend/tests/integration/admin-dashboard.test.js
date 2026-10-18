@@ -153,6 +153,7 @@ describe('Admin dashboard', () => {
             const res = await adminAgent.get('/api/admin/overview');
             expect(res.body.trends.billing).toEqual({
                 trials_started_7d: 1,
+                trials_started_prev7d: 0,
                 trials_ending_7d: 1,
                 canceled_7d: 1,
                 payment_failed_7d: 1,
@@ -161,6 +162,95 @@ describe('Admin dashboard', () => {
             Object.assign(hosted, saved);
             entitlements.invalidate();
         }
+    });
+
+    it('follows signups through activation to paid', async () => {
+        const hosted = getConfig().hosted;
+        const saved = { enabled: hosted.enabled };
+        hosted.enabled = true;
+        entitlements.invalidate();
+        try {
+            const tasker = await createTestUser({
+                email: `tasker_${Date.now()}@example.com`,
+            });
+            for (let i = 0; i < 5; i++) {
+                await Task.create({ name: `t${i}`, user_id: tasker.id });
+            }
+            await BillingAccount.create({
+                user_id: tasker.id,
+                plan: 'pro',
+                status: 'active',
+                provider_subscription_id: 'sub_funnel',
+            });
+
+            const planner = await createTestUser({
+                email: `planner_${Date.now()}@example.com`,
+            });
+            const task = await Task.create({ name: 'p', user_id: planner.id });
+            const plan = await DailyPlan.create({
+                user_id: planner.id,
+                plan_date: new Date().toISOString().slice(0, 10),
+            });
+            await DailyPlanItem.create({
+                daily_plan_id: plan.id,
+                task_id: task.id,
+                position: 0,
+                duration_minutes: 30,
+            });
+
+            // Four tasks is not enough, and paying without activating stays
+            // out of the paid step.
+            const almost = await createTestUser({
+                email: `almost_${Date.now()}@example.com`,
+            });
+            for (let i = 0; i < 4; i++) {
+                await Task.create({ name: `a${i}`, user_id: almost.id });
+            }
+            await BillingAccount.create({
+                user_id: almost.id,
+                plan: 'pro',
+                status: 'active',
+                provider_subscription_id: 'sub_almost',
+            });
+
+            const res = await adminAgent.get('/api/admin/overview');
+            expect(res.status).toBe(200);
+            const { funnel } = res.body;
+            expect(funnel.days).toBe(30);
+            expect(funnel.activation_tasks).toBe(5);
+            // admin, plain, tasker, planner and almost signed up today
+            expect(funnel.current.signups).toBe(5);
+            expect(funnel.current.activated).toBe(2);
+            expect(funnel.current.paid).toBe(1);
+            expect(funnel.current.paid_any).toBe(2);
+            expect(funnel.previous.signups).toBe(0);
+        } finally {
+            Object.assign(hosted, saved);
+            entitlements.invalidate();
+        }
+    });
+
+    it('counts a visitor on the blog and the landing page once a day', async () => {
+        const { SiteVisit } = require('../../models');
+        const visitService = require('../../services/visitService');
+        const day = new Date().toISOString().slice(0, 10);
+        const before = await visitService.siteVisitors(day, '9999-12-31');
+        await SiteVisit.bulkCreate([
+            { surface: 'landing', path: '/', visitor_hash: 'funnel-a', day },
+            { surface: 'blog', path: '/blog', visitor_hash: 'funnel-a', day },
+            { surface: 'landing', path: '/', visitor_hash: 'funnel-b', day },
+            { surface: 'app', path: '/today', visitor_hash: 'funnel-c', day },
+        ]);
+        expect(await visitService.siteVisitors(day, '9999-12-31')).toBe(
+            before + 2
+        );
+    });
+
+    it('leaves the paid step off a self-hosted instance', async () => {
+        const res = await adminAgent.get('/api/admin/overview');
+        expect(res.body.funnel.hosted).toBe(false);
+        expect(res.body.funnel.current.paid).toBeNull();
+        expect(res.body.funnel.current.signups).toBeGreaterThanOrEqual(2);
     });
 
     it('lists users with their trial, days left and payment', async () => {

@@ -14,8 +14,9 @@ import { getApiPath } from '../../config/paths';
 import { handleAuthResponse } from '../../utils/authUtils';
 import AdminBlogSettings from './AdminBlogSettings';
 import AdminUserStatusTable from './AdminUserStatusTable';
-import AdminTrends, { Trends } from './AdminTrends';
+import AdminTrends, { Trends, percentOf } from './AdminTrends';
 import AdminVisits from './AdminVisits';
+import AdminFunnel, { Funnel } from './AdminFunnel';
 
 interface Overview {
     users: {
@@ -29,6 +30,7 @@ interface Overview {
     waitlist: { total: number; last7d: number };
     feedback: { open: number };
     trends?: Trends;
+    funnel?: Funnel;
     billing: {
         paying: number;
         hosted: boolean;
@@ -47,7 +49,7 @@ const Stat: React.FC<{
     value: React.ReactNode;
     hint?: string;
 }> = ({ label, value, hint }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-5">
         <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
         <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-1">
             {value}
@@ -113,7 +115,7 @@ const AdminDashboardPage: React.FC = () => {
                 })}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
                 <Stat
                     label={t('admin.dashboard.users', 'Users')}
                     value={data.users.total}
@@ -121,7 +123,10 @@ const AdminDashboardPage: React.FC = () => {
                         'admin.dashboard.usersHint',
                         '{{verified}} verified · {{admins}} admin · {{new}} today',
                         {
-                            verified: data.users.verified,
+                            verified: percentOf(
+                                data.users.verified,
+                                data.users.total
+                            ),
                             admins: data.users.admins,
                             new: data.users.last24h,
                         }
@@ -135,15 +140,8 @@ const AdminDashboardPage: React.FC = () => {
                     value={data.users.empty}
                     hint={t(
                         'admin.dashboard.emptyAccountsHint',
-                        'accounts that never created anything ({{pct}}% of users)',
-                        {
-                            pct: data.users.total
-                                ? Math.round(
-                                      (data.users.empty / data.users.total) *
-                                          100
-                                  )
-                                : 0,
-                        }
+                        '{{pct}} of users never created anything',
+                        { pct: percentOf(data.users.empty, data.users.total) }
                     )}
                 />
                 <Stat
@@ -151,7 +149,24 @@ const AdminDashboardPage: React.FC = () => {
                     value={data.billing.paying}
                     hint={
                         data.billing.hosted
-                            ? `${data.billing.provider || '-'}${data.billing.subscription_required ? ' · gated' : ''}`
+                            ? [
+                                  t(
+                                      'admin.dashboard.payingShare',
+                                      '{{pct}} of users',
+                                      {
+                                          pct: percentOf(
+                                              data.billing.paying,
+                                              data.users.total
+                                          ),
+                                      }
+                                  ),
+                                  data.billing.provider,
+                                  data.billing.subscription_required
+                                      ? t('admin.dashboard.gated', 'gated')
+                                      : null,
+                              ]
+                                  .filter(Boolean)
+                                  .join(' · ')
                             : t('admin.dashboard.selfHosted', 'self-hosted')
                     }
                 />
@@ -163,7 +178,7 @@ const AdminDashboardPage: React.FC = () => {
                     })}
                 />
                 <Stat
-                    label={t('admin.dashboard.content', 'Content')}
+                    label={t('admin.dashboard.tasks', 'Tasks')}
                     value={data.content.tasks}
                     hint={t(
                         'admin.dashboard.contentHint',
@@ -176,13 +191,9 @@ const AdminDashboardPage: React.FC = () => {
                 />
             </div>
 
+            {data.funnel && <AdminFunnel funnel={data.funnel} />}
             {data.trends && <AdminTrends trends={data.trends} />}
-            {data.trends?.visits && (
-                <AdminVisits
-                    visits={data.trends.visits}
-                    signups={data.trends.signups}
-                />
-            )}
+            {data.trends?.visits && <AdminVisits visits={data.trends.visits} />}
 
             <div className="flex flex-wrap gap-3 mb-8">
                 <Link
