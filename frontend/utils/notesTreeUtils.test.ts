@@ -1,8 +1,12 @@
 import {
+    NO_PROJECT_FOLDER_KEY,
     buildNotesTree,
+    collectNoteTags,
     filterNotesByQuery,
+    filterNotesByTag,
     flattenVisibleRows,
     getActiveFolderKeys,
+    getRecentNotes,
     sortNotesByOrder,
 } from './notesTreeUtils';
 import { Note } from '../entities/Note';
@@ -268,5 +272,112 @@ describe('getActiveFolderKeys', () => {
 
     it('returns no keys when there is no active note', () => {
         expect(getActiveFolderKeys(null)).toEqual([]);
+    });
+});
+
+describe('flattenVisibleRows folder limit and no-project folder', () => {
+    const projects = [makeProject({ uid: 'proj-1', name: 'Blog' })];
+    const manyNotes = ['a', 'b', 'c', 'd'].map((uid) =>
+        makeNote({ uid, project_uid: 'proj-1' })
+    );
+
+    it('cuts an open folder at the limit and adds a more row', () => {
+        const tree = buildNotesTree(manyNotes, projects, 'created_at:desc');
+
+        const rows = flattenVisibleRows({
+            tree,
+            expanded: { 'project:proj-1': true },
+            forceExpandAll: false,
+            labels: { folders: '' },
+            folderLimit: 2,
+        });
+
+        expect(rows.map((r) => r.type)).toEqual([
+            'section-header',
+            'folder',
+            'note',
+            'note',
+            'more',
+        ]);
+        const more = rows.find((r) => r.type === 'more');
+        expect(more && 'count' in more && more.count).toBe(2);
+    });
+
+    it('shows the whole folder once asked to, or while filtering', () => {
+        const tree = buildNotesTree(manyNotes, projects, 'created_at:desc');
+        const base = {
+            tree,
+            expanded: { 'project:proj-1': true },
+            labels: { folders: '' },
+            folderLimit: 2,
+        };
+
+        const shown = flattenVisibleRows({
+            ...base,
+            forceExpandAll: false,
+            showAll: { 'project:proj-1': true },
+        });
+        const filtering = flattenVisibleRows({ ...base, forceExpandAll: true });
+
+        expect(shown.filter((r) => r.type === 'note')).toHaveLength(4);
+        expect(filtering.filter((r) => r.type === 'note')).toHaveLength(4);
+        expect(filtering.some((r) => r.type === 'more')).toBe(false);
+    });
+
+    it('puts notes without a project in their own folder when labelled', () => {
+        const notes = [
+            makeNote({ uid: 'n1', project_uid: 'proj-1' }),
+            makeNote({ uid: 'loose' }),
+        ];
+        const tree = buildNotesTree(notes, projects, 'created_at:desc');
+
+        const rows = flattenVisibleRows({
+            tree,
+            expanded: { [NO_PROJECT_FOLDER_KEY]: true },
+            forceExpandAll: false,
+            labels: { folders: '', noProject: 'No project' },
+        });
+
+        expect(
+            rows.map((r) => (r.type === 'folder' ? r.label : r.type))
+        ).toEqual(['section-header', 'Blog', 'No project', 'note']);
+    });
+});
+
+describe('getRecentNotes', () => {
+    it('returns the most recently edited notes first, up to the limit', () => {
+        const notes = [
+            makeNote({ uid: 'old', updated_at: '2026-01-01' }),
+            makeNote({ uid: 'new', updated_at: '2026-03-01' }),
+            makeNote({ uid: 'mid', updated_at: '2026-02-01' }),
+        ];
+
+        expect(getRecentNotes(notes, 2).map((n) => n.uid)).toEqual([
+            'new',
+            'mid',
+        ]);
+    });
+});
+
+describe('note tags', () => {
+    const notes = [
+        makeNote({ uid: 'n1', tags: [{ name: 'ideas' }, { name: 'work' }] }),
+        makeNote({ uid: 'n2', Tags: [{ name: 'work' }] }),
+        makeNote({ uid: 'n3' }),
+    ];
+
+    it('counts tags across notes, most used first', () => {
+        expect(collectNoteTags(notes)).toEqual([
+            { name: 'work', count: 2 },
+            { name: 'ideas', count: 1 },
+        ]);
+    });
+
+    it('filters notes by tag name, under either association key', () => {
+        expect(filterNotesByTag(notes, 'work').map((n) => n.uid)).toEqual([
+            'n1',
+            'n2',
+        ]);
+        expect(filterNotesByTag(notes, null)).toHaveLength(3);
     });
 });
