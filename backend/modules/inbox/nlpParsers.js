@@ -43,6 +43,10 @@ const ORDINALS = {
 // Bare words chrono reads as dates but that are usually just words.
 const AMBIGUOUS_DATE_WORDS = new Set(['sun', 'sat', 'wed', 'mar', 'may']);
 
+// Words that only introduce a due date ("until next thursday", "due by fri")
+const DATE_LEAD_PATTERN =
+    /(^|\s)((?:due\s+(?:by|on|before)|due|until|till|by|before)\s+)$/i;
+
 const WEEKDAY_PATTERN =
     '(?:sunday|monday|tuesday|wednesday|thursday|friday|saturday|sun|mon|tues|tue|wed|thurs|thur|thu|fri|sat)';
 
@@ -258,13 +262,21 @@ const parseDueDate = (
           ].join(':')
         : null;
 
+    const removable = !result.start.isCertain('hour');
+    // "until", "by" or "due" right before a cut phrase goes with it, so the
+    // title does not end in "pay the bill until".
+    const lead = removable
+        ? DATE_LEAD_PATTERN.exec(masked.slice(0, result.index))
+        : null;
+    const index = lead ? lead.index + lead[1].length : result.index;
+
     return {
         date,
         time,
-        text: text.substr(result.index, result.text.length),
-        index: result.index,
+        text: text.slice(index, result.index + result.text.length),
+        index,
         // The time is attached to the item, so the phrase stays in the title.
-        removable: !result.start.isCertain('hour'),
+        removable,
     };
 };
 

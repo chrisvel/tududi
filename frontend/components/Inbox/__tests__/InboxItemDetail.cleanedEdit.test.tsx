@@ -19,26 +19,46 @@ jest.mock('../../../utils/inboxService', () => ({
     analyzeInboxText: jest.fn(),
 }));
 
-// Shows the text the edit box opens with and submits it unchanged on demand
-jest.mock('../QuickCaptureInput', () => ({
-    __esModule: true,
-    default: function MockQuickCaptureInput({
-        initialValue,
-        onSubmitOverride,
-    }: any) {
-        return (
-            <div>
-                <span data-testid="composer-text">{initialValue}</span>
-                <button
-                    type="button"
-                    onClick={() => onSubmitOverride(initialValue)}
-                >
-                    submit
-                </button>
-            </div>
-        );
-    },
-}));
+// Shows the text the edit box opens with and submits it, like the real
+// box, with the carried words added back
+jest.mock('../QuickCaptureInput', () => {
+    const { withCarried } = jest.requireActual('../../../utils/carriedTokens');
+    return {
+        __esModule: true,
+        default: function MockQuickCaptureInput({
+            initialValue,
+            carriedText = '',
+            onSubmitOverride,
+        }: any) {
+            return (
+                <div>
+                    <span data-testid="composer-text">{initialValue}</span>
+                    <span data-testid="composer-carried">{carriedText}</span>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            onSubmitOverride(
+                                withCarried(initialValue, carriedText)
+                            )
+                        }
+                    >
+                        submit
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            onSubmitOverride(
+                                withCarried(`${initialValue} now`, carriedText)
+                            )
+                        }
+                    >
+                        submit edited
+                    </button>
+                </div>
+            );
+        },
+    };
+});
 
 const noop = () => {};
 
@@ -109,5 +129,52 @@ describe('InboxItemDetail - edit box text', () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
         expect(onUpdate).not.toHaveBeenCalled();
+    });
+
+    it('carries the cut date phrase and keeps it when the text is edited', async () => {
+        (analyzeInboxText as jest.Mock).mockResolvedValue({
+            cleaned_content: 'Pay for water meter',
+        });
+        const onUpdate = jest.fn();
+        render(
+            <InboxItemDetail
+                item={{
+                    uid: 'abc123',
+                    content: 'Pay for water meter until next thursday #home',
+                    title: null,
+                }}
+                onDelete={noop}
+                onUpdate={onUpdate}
+                openTaskModal={noop}
+                openProjectModal={noop}
+                openNoteModal={noop}
+                projects={[]}
+            />
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: /Pay for water/ }));
+        await waitFor(() =>
+            expect(screen.getByTestId('composer-carried').textContent).toBe(
+                'until next thursday #home'
+            )
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        expect(onUpdate).not.toHaveBeenCalled();
+
+        // The untouched submit closed the box; open it again and edit
+        fireEvent.click(screen.getByRole('button', { name: /Pay for water/ }));
+        await waitFor(() =>
+            expect(screen.getByTestId('composer-carried').textContent).toBe(
+                'until next thursday #home'
+            )
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'submit edited' }));
+        await waitFor(() =>
+            expect(onUpdate).toHaveBeenCalledWith(
+                'abc123',
+                'Pay for water meter now until next thursday #home'
+            )
+        );
     });
 });

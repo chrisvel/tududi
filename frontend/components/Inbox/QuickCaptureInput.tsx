@@ -27,6 +27,7 @@ import {
     uploadAttachment,
 } from '../../utils/attachmentsService';
 import { noteLinksFor } from '../../utils/noteAttachmentLinks';
+import { withCarried } from '../../utils/carriedTokens';
 import { createNote, deleteNote, updateNote } from '../../utils/notesService';
 import {
     CaptureTarget,
@@ -111,6 +112,9 @@ interface QuickCaptureInputProps {
     autoFocus?: boolean;
     mode?: 'create' | 'edit';
     initialValue?: string;
+    // Edit mode: words kept out of the box (a date phrase, #tags, +project,
+    // @person, ~area). They show as badges and are added back when saved.
+    carriedText?: string;
     hidePrimaryButton?: boolean;
     onSubmitOverride?: (text: string) => Promise<void>;
     onAfterSubmit?: () => void;
@@ -230,6 +234,7 @@ const QuickCaptureInput = React.forwardRef<
             autoFocus = false,
             mode = 'create',
             initialValue = '',
+            carriedText = '',
             hidePrimaryButton = false,
             onSubmitOverride,
             onAfterSubmit,
@@ -426,6 +431,14 @@ const QuickCaptureInput = React.forwardRef<
             }
         }, [initialValue, isEditMode]);
 
+        const [carried, setCarried] = useState(carriedText);
+        useEffect(() => {
+            setCarried(isEditMode ? carriedText : '');
+        }, [carriedText, isEditMode]);
+        // What the box stands for: its text plus the carried words. Badges,
+        // the analysis and saving all read this.
+        const fullText = withCarried(inputText, carried);
+
         useEffect(() => {
             if (autoFocus && inputRef.current) {
                 inputRef.current.focus();
@@ -465,7 +478,7 @@ const QuickCaptureInput = React.forwardRef<
         // mentioned further down a long note never becomes its due date.
         const analysisSource = unified
             ? splitFirstLine(inputText).first
-            : inputText;
+            : fullText;
 
         const clearComposerText = useCallback(() => {
             setInputText('');
@@ -846,17 +859,26 @@ const QuickCaptureInput = React.forwardRef<
                 .replace(/\n\s+/g, '\n')
                 .trim();
 
+        // Takes a token out of the box and out of the carried words
+        const stripFromText = (...patterns: RegExp[]) => {
+            const strip = (text: string) =>
+                cleanInputSpacing(
+                    patterns.reduce(
+                        (result, pattern) =>
+                            result.replace(pattern, (_, prefix) => prefix ?? ''),
+                        text
+                    )
+                );
+            setInputText(strip(inputText));
+            setCarried(strip(carried));
+            setAnalysisResult(null);
+            inputRef.current?.focus();
+        };
+
         const removeTagFromText = (tagToRemove: string) => {
             const escaped = escapeRegExp(tagToRemove);
             const pattern = new RegExp(`(^|\\s)#${escaped}(?=$|\\s)`, 'gi');
-            const updated = cleanInputSpacing(
-                inputText.replace(pattern, (_, prefix) => prefix ?? '')
-            );
-            setInputText(updated);
-            setAnalysisResult(null);
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
+            stripFromText(pattern);
         };
 
         const removeProjectFromText = (projectToRemove: string) => {
@@ -869,16 +891,7 @@ const QuickCaptureInput = React.forwardRef<
                 `(^|\\s)\\+${escaped}(?=$|\\s)`,
                 'gi'
             );
-            const updated = cleanInputSpacing(
-                inputText
-                    .replace(quotedPattern, (_, prefix) => prefix ?? '')
-                    .replace(simplePattern, (_, prefix) => prefix ?? '')
-            );
-            setInputText(updated);
-            setAnalysisResult(null);
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
+            stripFromText(quotedPattern, simplePattern);
         };
 
         const removePersonFromText = (personName: string) => {
@@ -887,13 +900,7 @@ const QuickCaptureInput = React.forwardRef<
                 `(^|\\s)@(?:"${escaped}"|${escaped})(?=$|[\\s.,;:!?)])`,
                 'gi'
             );
-            setInputText(
-                cleanInputSpacing(
-                    inputText.replace(pattern, (_, prefix) => prefix ?? '')
-                )
-            );
-            setAnalysisResult(null);
-            inputRef.current?.focus();
+            stripFromText(pattern);
         };
 
         const removeAreaFromText = (areaName: string) => {
@@ -902,13 +909,7 @@ const QuickCaptureInput = React.forwardRef<
                 `(^|\\s)~(?:"${escaped}"|${escaped})(?=$|[\\s.,;:!?)])`,
                 'gi'
             );
-            setInputText(
-                cleanInputSpacing(
-                    inputText.replace(pattern, (_, prefix) => prefix ?? '')
-                )
-            );
-            setAnalysisResult(null);
-            inputRef.current?.focus();
+            stripFromText(pattern);
         };
 
         const getCaretViewportCoords = (
@@ -1462,7 +1463,7 @@ const QuickCaptureInput = React.forwardRef<
 
         const handleSubmit = useCallback(
             async (forceInbox = false) => {
-                const trimmedText = inputText.trim();
+                const trimmedText = fullText.trim();
                 if ((!trimmedText && !isEditMode) || isSaving) return;
 
                 setIsSaving(true);
@@ -1718,6 +1719,7 @@ const QuickCaptureInput = React.forwardRef<
             },
             [
                 inputText,
+                fullText,
                 isSaving,
                 onTaskCreate,
                 onNoteCreate,
@@ -2539,19 +2541,19 @@ const QuickCaptureInput = React.forwardRef<
 
         const composerFooterContext = useMemo<InboxComposerFooterContext>(
             () => ({
-                text: inputText,
-                cleanedText: getCleanedContent(inputText.trim()),
-                hashtags: getAllTags(inputText),
-                projectRefs: getAllProjects(inputText),
+                text: fullText,
+                cleanedText: getCleanedContent(fullText.trim()),
+                hashtags: getAllTags(fullText),
+                projectRefs: getAllProjects(fullText),
                 analysis:
                     analysisResult &&
-                    lastAnalyzedTextRef.current.trim() === inputText.trim()
+                    lastAnalyzedTextRef.current.trim() === fullText.trim()
                         ? analysisResult
                         : null,
                 clearText: clearComposerText,
                 updateText: (value: string) => setInputText(value),
             }),
-            [inputText, clearComposerText, analysisResult]
+            [fullText, clearComposerText, analysisResult]
         );
 
         const defaultFooterActions =
@@ -2914,8 +2916,8 @@ const QuickCaptureInput = React.forwardRef<
         const selectedMetadata = (variant: 'chips' | 'line') => {
             // Tags, projects and areas picked from a list live in `picked`
             // and show next to the ones typed in the text.
-            const textTags = getAllTags(inputText);
-            const textProjects = getAllProjects(inputText);
+            const textTags = getAllTags(fullText);
+            const textProjects = getAllProjects(fullText);
             const allTags = [
                 ...textTags,
                 ...picked.tags.filter(
@@ -2954,11 +2956,19 @@ const QuickCaptureInput = React.forwardRef<
                     }}
                     dueDate={dateChip}
                     assignee={assigneeChip}
-                    onDismissDate={() =>
-                        setDismissedDateText(
-                            currentAnalysis?.parsed_date_text ?? null
-                        )
-                    }
+                    onDismissDate={() => {
+                        const phrase = currentAnalysis?.parsed_date_text;
+                        // A carried date is not in view, so its badge
+                        // removes it instead of keeping it as plain text
+                        if (phrase && carried.includes(phrase)) {
+                            setCarried(
+                                cleanInputSpacing(carried.replace(phrase, ' '))
+                            );
+                            setAnalysisResult(null);
+                        } else {
+                            setDismissedDateText(phrase ?? null);
+                        }
+                    }}
                     onRemovePerson={() => {
                         if (currentAnalysis?.parsed_person) {
                             removePersonFromText(currentAnalysis.parsed_person);

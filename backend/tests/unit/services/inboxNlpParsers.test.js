@@ -54,6 +54,25 @@ describe('inbox natural-language parsing', () => {
             expect(result.removable).toBe(false);
         });
 
+        it.each([
+            ['Pay water meter until next thursday', 'until next thursday'],
+            ['Send report by friday', 'by friday'],
+            ['Taxes due by Oct 12', 'due by Oct 12'],
+            ['Renew card before tomorrow', 'before tomorrow'],
+        ])('takes the lead word with the phrase in "%s"', (text, phrase) => {
+            const result = parseDueDate(text, options);
+            expect(result.text).toBe(phrase);
+            expect(text.slice(result.index)).toBe(phrase);
+        });
+
+        it('leaves the lead word when the phrase has a time', () => {
+            const result = parseDueDate(
+                'Call back by tomorrow at 3pm',
+                options
+            );
+            expect(result.text).toBe('tomorrow at 3pm');
+        });
+
         it('returns no time for a date-only phrase', () => {
             const result = parseDueDate('Dentist tomorrow', options);
             expect(result.time).toBeNull();
@@ -199,6 +218,17 @@ describe('inbox natural-language parsing', () => {
                 suggested_type: 'task',
                 suggested_reason: 'date_detected',
             });
+        });
+
+        it('leaves no dangling "until" in the title', () => {
+            const result = processInboxItem(
+                'Visit plumbers office to pay for water meter until next thursday',
+                options
+            );
+            expect(result.cleaned_content).toBe(
+                'Visit plumbers office to pay for water meter'
+            );
+            expect(result.parsed_due_date).toBe('2026-10-01');
         });
 
         it('returns recurrence with its first due date', () => {
