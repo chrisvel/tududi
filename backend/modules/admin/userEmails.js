@@ -178,9 +178,9 @@ const EMAILS = [
             const reason = await engagement.whyNot(user);
             if (reason) return reason;
             const active = await engagement.lastActivity([user.id]);
-            return active.has(user.id)
-                ? 'They have already made something'
-                : null;
+            if (active.has(user.id)) return 'They have already made something';
+            const sent = await engagement.lastSent('emptyAccount', [user.id]);
+            return sent.has(user.id) ? 'Already sent; it goes out once' : null;
         },
         vars: ({ user }) => engagement.emptyAccountVars(user),
         send: async ({ user }, adminId) =>
@@ -194,9 +194,14 @@ const EMAILS = [
             const reason = await engagement.whyNot(user);
             if (reason) return reason;
             const active = await engagement.lastActivity([user.id]);
-            return active.has(user.id)
-                ? null
-                : 'They have not made anything yet (see the empty account email)';
+            const last = active.get(user.id);
+            if (!last) {
+                return 'They have not made anything yet (see the empty account email)';
+            }
+            const sent = await engagement.lastSent('comeBack', [user.id]);
+            return sent.has(user.id) && sent.get(user.id) >= last
+                ? 'Already sent; it goes out again once they have been active'
+                : null;
         },
         vars: ({ user }) => engagement.comeBackVars(user),
         send: async ({ user }, adminId) =>
