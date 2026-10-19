@@ -213,6 +213,32 @@ describe('Admin user emails', () => {
                 `/api/admin/users/${user.id}/emails/comeBack/send`
             );
             expect(sent.body.sent).toBe(true);
+
+            res = await adminAgent.get(`/api/admin/users/${user.id}/emails`);
+            expect(entry(res.body, 'comeBack').can_send).toBe(false);
+            const again = await adminAgent.post(
+                `/api/admin/users/${user.id}/emails/comeBack/send`
+            );
+            expect(again.status).toBe(400);
+        });
+
+        it('sends the empty account email by hand only once', async () => {
+            const user = await createTestUser({ email: uniqueEmail('once') });
+            const first = await adminAgent.post(
+                `/api/admin/users/${user.id}/emails/emptyAccount/send`
+            );
+            expect(first.body.sent).toBe(true);
+
+            const res = await adminAgent.get(
+                `/api/admin/users/${user.id}/emails`
+            );
+            expect(entry(res.body, 'emptyAccount').reason).toBe(
+                'Already sent; it goes out once'
+            );
+            const again = await adminAgent.post(
+                `/api/admin/users/${user.id}/emails/emptyAccount/send`
+            );
+            expect(again.status).toBe(400);
         });
 
         it('warns before deletion only where deletion is on, and says what sending does', async () => {

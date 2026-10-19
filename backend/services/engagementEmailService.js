@@ -235,6 +235,7 @@ module.exports = {
     EMPTY_AFTER_DAYS,
     QUIET_DAYS,
     lastActivity,
+    lastSent,
     whyNot,
     emptyAccountVars,
     comeBackVars,
