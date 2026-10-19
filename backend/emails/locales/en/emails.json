@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Hi,",
         "signoff": "Best regards,\nThe Tududi Team",
-        "copyLink": "Or copy and paste this link into your browser:"
+        "copyLink": "Or copy and paste this link into your browser:",
+        "trialUntil": "Your free trial runs until {{date}}."
     },
     "verification": {
         "subject": "Welcome to Tududi - Verify your email",
@@ -63,5 +64,23 @@
         "button": "Keep my account",
         "export": "To take your data with you instead, export it from the Backup page:",
         "final": "If you do nothing, the account is deleted on {{date}} and this is the last email you will get from us about it."
+    },
+    "emptyAccount": {
+        "subject": "Your tududi is still empty",
+        "intro": "You have had a tududi account for a couple of days, but nothing is in it yet. Most people start with one of these, and each takes less than a minute:",
+        "ideas": [
+            "Write down whatever is on your mind in the Inbox, and sort it out later.",
+            "Open Plan, pick three things for today, and leave the rest.",
+            "Make a project for something you keep putting off, and add its first step."
+        ],
+        "button": "Open my Inbox",
+        "outro": "This is the only email like this we will send."
+    },
+    "comeBack": {
+        "subject": "Your tasks are where you left them",
+        "intro": "You have not been in tududi for a while. Everything you added is still there, just as you left it.",
+        "tip": "If the list got too long, start small: open Plan, pick three things for today, and leave the rest for later.",
+        "button": "Plan today",
+        "outro": "We will not send another one of these until you have been back."
     }
 }

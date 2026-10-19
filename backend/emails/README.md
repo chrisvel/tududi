@@ -13,6 +13,8 @@ missing language or key.
 | Reset your password | `passwordReset.js` | Someone asks for a reset on the sign-in page |
 | Member invite | `memberInvite.js` | An owner or admin adds a member without a password |
 | Trial ends soon | `trialReminder.js` | Hosted only: 3 days before a never-paid trial ends, and on its last day (daily job) |
+| Account still empty | `emptyAccount.js` | Hosted only: once, 2 to 14 days after an owner's account started (trial start, else sign-up) if they have made nothing (daily job) |
+| Come back | `comeBack.js` | Hosted only: an owner who made things and then nothing for 7 to 30 days; again only after they have been active since (daily job) |
 | Account will be deleted | `deletionWarning.js` | Hosted only, deletion on: a week before an ended unpaid trial is deleted (daily job) |
 | Task and project notifications | `notification.js` | A notification fires for a user who turned email on for it; the text is the notification's own |
 | Contact form | `contactMessage.js` | Someone writes from the landing site's contact page; goes to the operator, in English |

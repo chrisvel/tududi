@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Bonjour,",
         "signoff": "Bien cordialement,\nL'équipe Tududi",
-        "copyLink": "Ou copiez et collez ce lien dans votre navigateur :"
+        "copyLink": "Ou copiez et collez ce lien dans votre navigateur :",
+        "trialUntil": "Votre essai gratuit dure jusqu'au {{date}}."
     },
     "verification": {
         "subject": "Bienvenue sur Tududi : confirmez votre adresse e-mail",
@@ -70,5 +71,23 @@
         "button": "Conserver mon compte",
         "export": "Pour emporter plutôt vos données, exportez-les depuis la page Sauvegarde & Restauration :",
         "final": "Si vous ne faites rien, le compte sera supprimé le {{date}} et ceci est le dernier e-mail que vous recevrez de notre part à ce sujet."
+    },
+    "emptyAccount": {
+        "subject": "Votre tududi est encore vide",
+        "intro": "Vous avez un compte tududi depuis quelques jours, mais il n'y a encore rien dedans. La plupart des gens commencent par l'une de ces actions, et chacune prend moins d'une minute :",
+        "ideas": [
+            "Notez dans la Boîte de réception tout ce qui vous passe par la tête, et triez plus tard.",
+            "Ouvrez Planifier, choisissez trois choses pour aujourd'hui et laissez le reste.",
+            "Créez un projet pour quelque chose que vous repoussez sans cesse, et ajoutez sa première étape."
+        ],
+        "button": "Ouvrir ma Boîte de réception",
+        "outro": "C'est le seul e-mail de ce genre que nous vous enverrons."
+    },
+    "comeBack": {
+        "subject": "Vos tâches sont là où vous les avez laissées",
+        "intro": "Vous n'êtes pas venu sur tududi depuis un moment. Tout ce que vous avez ajouté est toujours là, tel que vous l'avez laissé.",
+        "tip": "Si la liste est devenue trop longue, commencez petit : ouvrez Planifier, choisissez trois choses pour aujourd'hui et gardez le reste pour plus tard.",
+        "button": "Planifier aujourd'hui",
+        "outro": "Nous ne vous enverrons pas d'autre e-mail de ce genre avant votre retour."
     }
 }

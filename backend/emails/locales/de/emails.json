@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Hallo,",
         "signoff": "Viele Grüße\nIhr Tududi-Team",
-        "copyLink": "Oder kopieren Sie diesen Link in Ihren Browser:"
+        "copyLink": "Oder kopieren Sie diesen Link in Ihren Browser:",
+        "trialUntil": "Ihre kostenlose Testphase läuft bis zum {{date}}."
     },
     "verification": {
         "subject": "Willkommen bei Tududi: Bitte bestätigen Sie Ihre E-Mail-Adresse",
@@ -63,5 +64,23 @@
         "button": "Mein Konto behalten",
         "export": "Wenn Sie Ihre Daten lieber mitnehmen möchten, exportieren Sie sie auf der Seite „Sichern & Wiederherstellen“:",
         "final": "Wenn Sie nichts unternehmen, wird das Konto am {{date}} gelöscht. Dies ist die letzte E-Mail, die Sie dazu von uns erhalten."
+    },
+    "emptyAccount": {
+        "subject": "Ihr tududi ist noch leer",
+        "intro": "Sie haben Ihr tududi-Konto seit ein paar Tagen, aber es ist noch nichts darin. Die meisten fangen mit einem dieser Schritte an, und jeder dauert weniger als eine Minute:",
+        "ideas": [
+            "Schreiben Sie alles, was Ihnen im Kopf herumgeht, in den Posteingang und sortieren Sie es später.",
+            "Öffnen Sie Planen, wählen Sie drei Dinge für heute aus und lassen Sie den Rest liegen.",
+            "Legen Sie ein Projekt für etwas an, das Sie immer wieder aufschieben, und fügen Sie den ersten Schritt hinzu."
+        ],
+        "button": "Posteingang öffnen",
+        "outro": "Das ist die einzige E-Mail dieser Art, die wir Ihnen schicken."
+    },
+    "comeBack": {
+        "subject": "Ihre Aufgaben sind noch da, wo Sie sie gelassen haben",
+        "intro": "Sie waren eine Weile nicht in tududi. Alles, was Sie angelegt haben, ist noch da, genau so, wie Sie es verlassen haben.",
+        "tip": "Wenn die Liste zu lang geworden ist, fangen Sie klein an: Öffnen Sie Planen, wählen Sie drei Dinge für heute aus und heben Sie den Rest für später auf.",
+        "button": "Heute planen",
+        "outro": "Wir schicken Ihnen keine weitere E-Mail dieser Art, bis Sie wieder vorbeigeschaut haben."
     }
 }

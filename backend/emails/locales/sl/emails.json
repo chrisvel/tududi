@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Pozdravljeni,",
         "signoff": "Lep pozdrav,\nEkipa Tududi",
-        "copyLink": "Lahko pa to povezavo kopirate in prilepite v brskalnik:"
+        "copyLink": "Lahko pa to povezavo kopirate in prilepite v brskalnik:",
+        "trialUntil": "Vaše brezplačno preizkusno obdobje traja do {{date}}."
     },
     "verification": {
         "subject": "Dobrodošli v Tududi - potrdite svoj e-poštni naslov",
@@ -77,5 +78,23 @@
         "button": "Obdrži moj račun",
         "export": "Če želite podatke raje vzeti s seboj, jih izvozite na strani Varnostna kopija:",
         "final": "Če ne storite ničesar, bo račun izbrisan {{date}} in to je zadnje sporočilo, ki vam ga pošljemo o tem."
+    },
+    "emptyAccount": {
+        "subject": "Vaš tududi je še vedno prazen",
+        "intro": "Račun v tududi imate že nekaj dni, vendar v njem še ni ničesar. Večina začne z enim od teh korakov, in vsak vzame manj kot minuto:",
+        "ideas": [
+            "V Prejeto zapišite vse, kar vam roji po glavi, in to uredite pozneje.",
+            "Odprite Načrt, izberite tri stvari za danes in pustite ostalo.",
+            "Ustvarite projekt za nekaj, kar ves čas odlašate, in dodajte prvi korak."
+        ],
+        "button": "Odpri Prejeto",
+        "outro": "To je edino takšno e-sporočilo, ki vam ga bomo poslali."
+    },
+    "comeBack": {
+        "subject": "Vaša opravila so tam, kjer ste jih pustili",
+        "intro": "Že nekaj časa niste bili v tududi. Vse, kar ste dodali, je še vedno tam, točno tako, kot ste pustili.",
+        "tip": "Če je seznam postal predolg, začnite z malim: odprite Načrt, izberite tri stvari za danes in ostalo pustite za pozneje.",
+        "button": "Načrtuj dan",
+        "outro": "Drugega takšnega e-sporočila vam ne bomo poslali, dokler se ne vrnete."
     }
 }

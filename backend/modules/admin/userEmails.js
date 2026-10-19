@@ -6,6 +6,7 @@ const { isAdmin } = require('../../services/rolesService');
 const { renderEmail, normalizeLanguage } = require('../../emails');
 const { deliver, listForUser } = require('../../services/emailDeliveryService');
 const lifecycle = require('../../services/trialLifecycleService');
+const engagement = require('../../services/engagementEmailService');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 
 // The account emails an admin can see and send for one user, from the user
@@ -170,6 +171,38 @@ const EMAILS = [
         },
     },
     {
+        key: 'emptyAccount',
+        email: 'emptyAccount',
+        hostedOnly: true,
+        applies: async ({ user }) => {
+            const reason = await engagement.whyNot(user);
+            if (reason) return reason;
+            const active = await engagement.lastActivity([user.id]);
+            return active.has(user.id)
+                ? 'They have already made something'
+                : null;
+        },
+        vars: ({ user }) => engagement.emptyAccountVars(user),
+        send: async ({ user }, adminId) =>
+            engagement.sendEmptyAccount(user, { triggeredBy: adminId }),
+    },
+    {
+        key: 'comeBack',
+        email: 'comeBack',
+        hostedOnly: true,
+        applies: async ({ user }) => {
+            const reason = await engagement.whyNot(user);
+            if (reason) return reason;
+            const active = await engagement.lastActivity([user.id]);
+            return active.has(user.id)
+                ? null
+                : 'They have not made anything yet (see the empty account email)';
+        },
+        vars: ({ user }) => engagement.comeBackVars(user),
+        send: async ({ user }, adminId) =>
+            engagement.sendComeBack(user, { triggeredBy: adminId }),
+    },
+    {
         key: 'deletionWarning',
         email: 'deletionWarning',
         hostedOnly: true,
@@ -306,7 +339,10 @@ async function preview(userId, key) {
     const reason = await whyNot(def, ctx);
     if (reason) throw new ValidationError(reason);
     const language = normalizeLanguage(ctx.user.language);
-    const email = renderEmail(def.email, { language, ...def.vars(ctx) });
+    const email = renderEmail(def.email, {
+        language,
+        ...(await def.vars(ctx)),
+    });
     return {
         key,
         to: ctx.user.email,

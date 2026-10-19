@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Hola,",
         "signoff": "Un saludo,\nEl equipo de Tududi",
-        "copyLink": "O copia y pega este enlace en tu navegador:"
+        "copyLink": "O copia y pega este enlace en tu navegador:",
+        "trialUntil": "Tu prueba gratuita dura hasta el {{date}}."
     },
     "verification": {
         "subject": "Te damos la bienvenida a Tududi: verifica tu correo electrónico",
@@ -70,5 +71,23 @@
         "button": "Conservar mi cuenta",
         "export": "Si prefieres llevarte tus datos, expórtalos desde la página de Copia de seguridad:",
         "final": "Si no haces nada, la cuenta se eliminará el {{date}} y este es el último correo que recibirás de nuestra parte sobre ello."
+    },
+    "emptyAccount": {
+        "subject": "Tu tududi sigue vacío",
+        "intro": "Tienes una cuenta de tududi desde hace un par de días, pero todavía no hay nada en ella. La mayoría empieza con una de estas cosas, y cada una lleva menos de un minuto:",
+        "ideas": [
+            "Apunta en la Bandeja de entrada todo lo que tengas en la cabeza y ordénalo más tarde.",
+            "Abre Planificar, elige tres cosas para hoy y deja el resto.",
+            "Crea un proyecto para algo que siempre aplazas y añade su primer paso."
+        ],
+        "button": "Abrir mi Bandeja de entrada",
+        "outro": "Este es el único correo de este tipo que te enviaremos."
+    },
+    "comeBack": {
+        "subject": "Tus tareas siguen donde las dejaste",
+        "intro": "Hace tiempo que no entras en tududi. Todo lo que añadiste sigue ahí, tal como lo dejaste.",
+        "tip": "Si la lista se ha hecho demasiado larga, empieza por poco: abre Planificar, elige tres cosas para hoy y deja el resto para después.",
+        "button": "Planificar hoy",
+        "outro": "No te enviaremos otro correo como este hasta que vuelvas."
     }
 }

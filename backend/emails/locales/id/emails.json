@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Halo,",
         "signoff": "Salam hangat,\nTim Tududi",
-        "copyLink": "Atau salin dan tempel tautan ini ke browser Anda:"
+        "copyLink": "Atau salin dan tempel tautan ini ke browser Anda:",
+        "trialUntil": "Uji coba gratis Anda berlaku hingga {{date}}."
     },
     "verification": {
         "subject": "Selamat datang di Tududi - Verifikasi email Anda",
@@ -56,5 +57,23 @@
         "button": "Pertahankan akun saya",
         "export": "Jika Anda ingin membawa data Anda, ekspor dari halaman Cadangkan & Pulihkan:",
         "final": "Jika Anda tidak melakukan apa pun, akun akan dihapus pada {{date}} dan ini adalah email terakhir dari kami tentang hal ini."
+    },
+    "emptyAccount": {
+        "subject": "tududi Anda masih kosong",
+        "intro": "Anda sudah punya akun tududi selama beberapa hari, tetapi belum ada isinya. Kebanyakan orang memulai dengan salah satu dari ini, dan masing-masing butuh kurang dari satu menit:",
+        "ideas": [
+            "Tulis apa pun yang ada di pikiran Anda di Kotak Masuk, lalu rapikan nanti.",
+            "Buka Rencana, pilih tiga hal untuk hari ini, dan biarkan sisanya.",
+            "Buat proyek untuk sesuatu yang terus Anda tunda, lalu tambahkan langkah pertamanya."
+        ],
+        "button": "Buka Kotak Masuk",
+        "outro": "Ini satu-satunya email seperti ini yang akan kami kirim."
+    },
+    "comeBack": {
+        "subject": "Tugas Anda masih di tempat Anda meninggalkannya",
+        "intro": "Sudah lama Anda tidak membuka tududi. Semua yang Anda tambahkan masih ada, persis seperti saat Anda meninggalkannya.",
+        "tip": "Jika daftarnya terlalu panjang, mulailah dari yang kecil: buka Rencana, pilih tiga hal untuk hari ini, dan simpan sisanya untuk nanti.",
+        "button": "Rencanakan hari ini",
+        "outro": "Kami tidak akan mengirim email seperti ini lagi sampai Anda kembali."
     }
 }

@@ -70,6 +70,21 @@ const SAMPLES = {
             },
         },
     ],
+    emptyAccount: [
+        {
+            label: 'on a trial',
+            vars: {
+                url: url('/inbox'),
+                trialEndsOn: new Date(Date.now() + 5 * DAY_MS),
+            },
+        },
+    ],
+    comeBack: [
+        {
+            label: 'subscribed',
+            vars: { url: url('/today/plan') },
+        },
+    ],
     deletionWarning: [
         {
             label: '',

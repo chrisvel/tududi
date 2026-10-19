@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Dobrý deň,",
         "signoff": "S pozdravom,\nTím Tududi",
-        "copyLink": "Alebo skopírujte tento odkaz a vložte ho do prehliadača:"
+        "copyLink": "Alebo skopírujte tento odkaz a vložte ho do prehliadača:",
+        "trialUntil": "Vaše bezplatné skúšobné obdobie trvá do {{date}}."
     },
     "verification": {
         "subject": "Vitajte v Tududi - overte svoju e-mailovú adresu",
@@ -77,5 +78,23 @@
         "button": "Ponechať môj účet",
         "export": "Ak si chcete radšej vziať svoje údaje so sebou, exportujte ich na stránke Záloha:",
         "final": "Ak nič neurobíte, účet bude {{date}} odstránený a toto je posledný e-mail, ktorý vám o tom pošleme."
+    },
+    "emptyAccount": {
+        "subject": "Váš tududi je stále prázdny",
+        "intro": "Účet v tududi máte už pár dní, ale zatiaľ v ňom nič nie je. Väčšina ľudí začína jedným z týchto krokov a každý trvá menej ako minútu:",
+        "ideas": [
+            "Zapíšte do Doručenej pošty všetko, čo máte v hlave, a utrieďte to neskôr.",
+            "Otvorte Plán, vyberte tri veci na dnes a zvyšok nechajte tak.",
+            "Vytvorte projekt pre niečo, čo stále odkladáte, a pridajte jeho prvý krok."
+        ],
+        "button": "Otvoriť Doručenú poštu",
+        "outro": "Toto je jediný takýto e-mail, ktorý vám pošleme."
+    },
+    "comeBack": {
+        "subject": "Vaše úlohy sú tam, kde ste ich nechali",
+        "intro": "Do tududi ste už nejaký čas nezavítali. Všetko, čo ste pridali, je stále tam, presne tak, ako ste to nechali.",
+        "tip": "Ak je zoznam priveľmi dlhý, začnite zľahka: otvorte Plán, vyberte tri veci na dnes a zvyšok si nechajte na neskôr.",
+        "button": "Naplánovať deň",
+        "outro": "Ďalší takýto e-mail vám nepošleme, kým sa nevrátite."
     }
 }

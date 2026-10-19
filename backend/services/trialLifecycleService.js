@@ -253,17 +253,27 @@ async function remindEndingTrials({ now = new Date() } = {}) {
     return reminded;
 }
 
-// The daily job: remind unverified sign-ups and ending trials, warn, then
-// delete.
+// The daily job: remind unverified sign-ups and ending trials, nudge empty
+// and quiet accounts, warn, then delete.
 async function runAccountLifecycle({ now = new Date() } = {}) {
     const {
         sendVerificationReminders,
     } = require('../modules/auth/registrationService');
+    const engagement = require('./engagementEmailService');
     const reminded = await sendVerificationReminders({ now });
     const trialReminders = await remindEndingTrials({ now });
+    const emptyNudges = await engagement.nudgeEmptyAccounts({ now });
+    const quietNudges = await engagement.nudgeQuietAccounts({ now });
     const warned = await warnExpiringTrials({ now });
     const deleted = await deleteExpiredTrials({ now });
-    return { reminded, trialReminders, warned, deleted };
+    return {
+        reminded,
+        trialReminders,
+        emptyNudges,
+        quietNudges,
+        warned,
+        deleted,
+    };
 }
 
 module.exports = {

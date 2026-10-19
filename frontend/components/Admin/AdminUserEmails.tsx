@@ -23,6 +23,8 @@ const EMAIL_NAMES: Record<string, string> = {
     memberInvite: 'Member invite',
     passwordReset: 'Reset your password',
     trialReminder: 'Trial ends soon',
+    emptyAccount: 'Account still empty',
+    comeBack: 'Come back after a quiet spell',
     deletionWarning: 'Account will be deleted',
 };
 
