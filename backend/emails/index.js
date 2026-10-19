@@ -12,6 +12,8 @@ const EMAILS = {
     memberInvite: require('./memberInvite'),
     trialReminder: require('./trialReminder'),
     deletionWarning: require('./deletionWarning'),
+    emptyAccount: require('./emptyAccount'),
+    comeBack: require('./comeBack'),
     notification: require('./notification'),
     contactMessage: require('./contactMessage'),
 };

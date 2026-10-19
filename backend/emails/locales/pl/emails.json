@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Cześć,",
         "signoff": "Pozdrawiamy,\nZespół Tududi",
-        "copyLink": "Możesz też skopiować ten link i wkleić go w przeglądarce:"
+        "copyLink": "Możesz też skopiować ten link i wkleić go w przeglądarce:",
+        "trialUntil": "Twój bezpłatny okres próbny trwa do {{date}}."
     },
     "verification": {
         "subject": "Witamy w Tududi - Zweryfikuj swój adres e-mail",
@@ -77,5 +78,23 @@
         "button": "Zachowaj moje konto",
         "export": "Jeśli wolisz zabrać swoje dane, wyeksportuj je ze strony Kopia zapasowa i przywracanie:",
         "final": "Jeśli nic nie zrobisz, konto zostanie usunięte {{date}}, a to ostatni e-mail, jaki w tej sprawie od nas otrzymasz."
+    },
+    "emptyAccount": {
+        "subject": "Twoje tududi jest nadal puste",
+        "intro": "Masz konto w tududi od kilku dni, ale nic w nim jeszcze nie ma. Większość osób zaczyna od jednej z tych rzeczy, a każda zajmuje mniej niż minutę:",
+        "ideas": [
+            "Zapisz w Skrzynce odbiorczej wszystko, co masz w głowie, i uporządkuj to później.",
+            "Otwórz Plan, wybierz trzy rzeczy na dziś, a resztę zostaw.",
+            "Utwórz projekt dla czegoś, co ciągle odkładasz, i dodaj pierwszy krok."
+        ],
+        "button": "Otwórz Skrzynkę odbiorczą",
+        "outro": "To jedyny taki e-mail, jaki od nas dostaniesz."
+    },
+    "comeBack": {
+        "subject": "Twoje zadania są tam, gdzie je zostawiłeś",
+        "intro": "Od jakiegoś czasu nie zaglądasz do tududi. Wszystko, co dodałeś, nadal tam jest, dokładnie tak, jak to zostawiłeś.",
+        "tip": "Jeśli lista zrobiła się za długa, zacznij od małego kroku: otwórz Plan, wybierz trzy rzeczy na dziś, a resztę zostaw na później.",
+        "button": "Zaplanuj dzień",
+        "outro": "Nie wyślemy kolejnego takiego e-maila, dopóki nie wrócisz."
     }
 }

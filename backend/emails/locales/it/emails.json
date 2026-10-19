@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Ciao,",
         "signoff": "Un saluto,\nIl team di Tududi",
-        "copyLink": "Oppure copia e incolla questo link nel tuo browser:"
+        "copyLink": "Oppure copia e incolla questo link nel tuo browser:",
+        "trialUntil": "La tua prova gratuita dura fino al {{date}}."
     },
     "verification": {
         "subject": "Ti diamo il benvenuto su Tududi - Verifica la tua email",
@@ -70,5 +71,23 @@
         "button": "Mantieni il mio account",
         "export": "Se invece vuoi portare con te i tuoi dati, esportali dalla pagina Backup e Ripristino:",
         "final": "Se non fai nulla, l'account verrà eliminato il {{date}} e questa è l'ultima email che ti invieremo al riguardo."
+    },
+    "emptyAccount": {
+        "subject": "Il tuo tududi è ancora vuoto",
+        "intro": "Hai un account tududi da un paio di giorni, ma non c'è ancora niente. La maggior parte delle persone inizia con una di queste cose, e ognuna richiede meno di un minuto:",
+        "ideas": [
+            "Scrivi nella Posta in arrivo tutto quello che hai in mente, e mettilo in ordine dopo.",
+            "Apri Pianifica, scegli tre cose per oggi e lascia stare il resto.",
+            "Crea un progetto per qualcosa che continui a rimandare, e aggiungi il primo passo."
+        ],
+        "button": "Apri la Posta in arrivo",
+        "outro": "Questa è l'unica email di questo tipo che ti invieremo."
+    },
+    "comeBack": {
+        "subject": "Le tue attività sono dove le hai lasciate",
+        "intro": "È da un po' che non entri in tududi. Tutto quello che hai aggiunto è ancora lì, proprio come l'hai lasciato.",
+        "tip": "Se la lista è diventata troppo lunga, inizia in piccolo: apri Pianifica, scegli tre cose per oggi e lascia il resto per dopo.",
+        "button": "Pianifica oggi",
+        "outro": "Non ti invieremo altre email come questa finché non sarai tornato."
     }
 }

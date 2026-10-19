@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Merhaba,",
         "signoff": "Saygılarımızla,\nTududi Ekibi",
-        "copyLink": "Ya da bu bağlantıyı kopyalayıp tarayıcınıza yapıştırın:"
+        "copyLink": "Ya da bu bağlantıyı kopyalayıp tarayıcınıza yapıştırın:",
+        "trialUntil": "Ücretsiz deneme süreniz {{date}} tarihine kadar devam ediyor."
     },
     "verification": {
         "subject": "Tududi'ye hoş geldiniz - E-posta adresinizi doğrulayın",
@@ -63,5 +64,23 @@
         "button": "Hesabımı koru",
         "export": "Bunun yerine verilerinizi yanınıza almak isterseniz, Yedekleme sayfasından dışa aktarın:",
         "final": "Hiçbir şey yapmazsanız hesap {{date}} tarihinde silinir ve bu, bu konuda bizden alacağınız son e-posta olur."
+    },
+    "emptyAccount": {
+        "subject": "tududi hesabınız hâlâ boş",
+        "intro": "Birkaç gündür bir tududi hesabınız var ama içinde henüz hiçbir şey yok. Çoğu kişi bunlardan biriyle başlar ve her biri bir dakikadan kısa sürer:",
+        "ideas": [
+            "Aklınızdaki her şeyi Gelen Kutusu'na yazın, düzenlemeyi sonraya bırakın.",
+            "Plan'ı açın, bugün için üç şey seçin ve gerisini bırakın.",
+            "Sürekli ertelediğiniz bir şey için proje oluşturun ve ilk adımını ekleyin."
+        ],
+        "button": "Gelen Kutusu'nu aç",
+        "outro": "Bu türden göndereceğimiz tek e-posta bu."
+    },
+    "comeBack": {
+        "subject": "Görevleriniz bıraktığınız yerde",
+        "intro": "Bir süredir tududi'ye girmediniz. Eklediğiniz her şey hâlâ orada, tam bıraktığınız gibi.",
+        "tip": "Liste çok uzadıysa küçük başlayın: Plan'ı açın, bugün için üç şey seçin ve gerisini sonraya bırakın.",
+        "button": "Bugünü planla",
+        "outro": "Siz geri dönene kadar bu türden başka bir e-posta göndermeyeceğiz."
     }
 }

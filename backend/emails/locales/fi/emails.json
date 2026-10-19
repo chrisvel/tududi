@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Hei,",
         "signoff": "Ystävällisin terveisin\nTududi-tiimi",
-        "copyLink": "Tai kopioi ja liitä tämä linkki selaimeesi:"
+        "copyLink": "Tai kopioi ja liitä tämä linkki selaimeesi:",
+        "trialUntil": "Ilmainen kokeilujaksosi on voimassa {{date}} asti."
     },
     "verification": {
         "subject": "Tervetuloa Tududiin: vahvista sähköpostiosoitteesi",
@@ -63,5 +64,23 @@
         "button": "Säilytä tilini",
         "export": "Jos haluat sen sijaan ottaa tietosi mukaasi, vie ne Varmuuskopioi & Palauta -sivulta:",
         "final": "Jos et tee mitään, tili poistetaan {{date}}, ja tämä on viimeinen viesti, jonka saat meiltä asiasta."
+    },
+    "emptyAccount": {
+        "subject": "tududisi on vielä tyhjä",
+        "intro": "Olet ollut tududin käyttäjä pari päivää, mutta tililläsi ei ole vielä mitään. Useimmat aloittavat jollakin näistä, ja jokainen vie alle minuutin:",
+        "ideas": [
+            "Kirjoita Saapuneisiin kaikki, mitä sinulla on mielessä, ja järjestä se myöhemmin.",
+            "Avaa Suunnitelma, valitse kolme asiaa tälle päivälle ja jätä loput.",
+            "Tee projekti asialle, jota lykkäät jatkuvasti, ja lisää sen ensimmäinen askel."
+        ],
+        "button": "Avaa Saapuneet",
+        "outro": "Tämä on ainoa tällainen sähköposti, jonka lähetämme."
+    },
+    "comeBack": {
+        "subject": "Tehtäväsi ovat siellä, mihin ne jätit",
+        "intro": "Et ole käynyt tududissa vähään aikaan. Kaikki, mitä lisäsit, on yhä tallessa juuri niin kuin sen jätit.",
+        "tip": "Jos lista kasvoi liian pitkäksi, aloita pienestä: avaa Suunnitelma, valitse kolme asiaa tälle päivälle ja jätä loput myöhemmäksi.",
+        "button": "Suunnittele päivä",
+        "outro": "Emme lähetä toista tällaista viestiä ennen kuin olet käynyt takaisin."
     }
 }

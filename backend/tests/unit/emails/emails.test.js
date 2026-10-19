@@ -50,6 +50,11 @@ const SAMPLES = {
         subscribeUrl: 'https://example.com/subscription/new',
         exportUrl: 'https://example.com/backup',
     },
+    emptyAccount: {
+        url: 'https://example.com/inbox',
+        trialEndsOn: new Date(Date.now() + 5 * DAY),
+    },
+    comeBack: { url: 'https://example.com/today/plan' },
     notification: { title: 'Due', message: 'A task is due' },
     contactMessage: {
         name: 'Sam',

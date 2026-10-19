@@ -92,6 +92,11 @@ someone who signed up only to misuse them.
 - **Verification reminder.** The same job sends one reminder, with a fresh
   link, to a self-registered sign-up that has not verified 1 to 7 days after
   signing up (`users.verification_reminder_sent_at`).
+- **Empty and quiet accounts.** The same job emails an owner whose account
+  started 2 to 14 days ago and still has nothing in it, once, and an owner
+  who made things and then nothing for 7 to 30 days, again only after they
+  have been active since. Members, admins and read-only accounts are left
+  out; the email log (`email_deliveries`) keeps either from going twice.
 
 ## Selling access rather than upgrades
 

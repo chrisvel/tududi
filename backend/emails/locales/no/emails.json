@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Hei,",
         "signoff": "Vennlig hilsen\nTududi-teamet",
-        "copyLink": "Eller kopier og lim inn denne lenken i nettleseren din:"
+        "copyLink": "Eller kopier og lim inn denne lenken i nettleseren din:",
+        "trialUntil": "Den gratis prøveperioden din varer til {{date}}."
     },
     "verification": {
         "subject": "Velkommen til Tududi - Bekreft e-postadressen din",
@@ -63,5 +64,23 @@
         "button": "Behold kontoen min",
         "export": "Vil du heller ta med deg dataene dine, kan du eksportere dem fra siden Sikkerhetskopiering og gjenoppretting:",
         "final": "Hvis du ikke gjør noe, slettes kontoen {{date}}, og dette er den siste e-posten du får fra oss om dette."
+    },
+    "emptyAccount": {
+        "subject": "tududi-en din er fortsatt tom",
+        "intro": "Du har hatt en tududi-konto i et par dager, men det er ingenting i den ennå. De fleste begynner med en av disse, og hver tar under ett minutt:",
+        "ideas": [
+            "Skriv ned det du har i hodet i Innboksen, og sorter det senere.",
+            "Åpne Plan, velg tre ting for i dag, og la resten ligge.",
+            "Lag et prosjekt for noe du stadig utsetter, og legg til det første steget."
+        ],
+        "button": "Åpne Innboksen",
+        "outro": "Dette er den eneste e-posten av denne typen vi sender."
+    },
+    "comeBack": {
+        "subject": "Oppgavene dine er der du forlot dem",
+        "intro": "Du har ikke vært innom tududi på en stund. Alt du la til er der fortsatt, akkurat slik du forlot det.",
+        "tip": "Hvis listen har blitt for lang, start i det små: åpne Plan, velg tre ting for i dag, og spar resten til senere.",
+        "button": "Planlegg i dag",
+        "outro": "Vi sender ikke flere slike e-poster før du har vært tilbake."
     }
 }

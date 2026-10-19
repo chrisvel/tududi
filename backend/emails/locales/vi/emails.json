@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Xin chào,",
         "signoff": "Trân trọng,\nĐội ngũ Tududi",
-        "copyLink": "Hoặc sao chép và dán liên kết này vào trình duyệt của bạn:"
+        "copyLink": "Hoặc sao chép và dán liên kết này vào trình duyệt của bạn:",
+        "trialUntil": "Bản dùng thử miễn phí của bạn kéo dài đến {{date}}."
     },
     "verification": {
         "subject": "Chào mừng bạn đến với Tududi - Xác minh email của bạn",
@@ -56,5 +57,23 @@
         "button": "Giữ tài khoản của tôi",
         "export": "Nếu bạn muốn mang dữ liệu theo, hãy xuất dữ liệu từ trang Sao lưu:",
         "final": "Nếu bạn không làm gì, tài khoản sẽ bị xóa vào {{date}} và đây là email cuối cùng chúng tôi gửi cho bạn về việc này."
+    },
+    "emptyAccount": {
+        "subject": "tududi của bạn vẫn còn trống",
+        "intro": "Bạn đã có tài khoản tududi được vài ngày nhưng vẫn chưa có gì trong đó. Hầu hết mọi người bắt đầu bằng một trong những việc sau, và mỗi việc mất chưa đến một phút:",
+        "ideas": [
+            "Ghi mọi điều bạn đang nghĩ vào Hộp thư đến, rồi sắp xếp sau.",
+            "Mở Kế hoạch, chọn ba việc cho hôm nay và để lại phần còn lại.",
+            "Tạo một dự án cho việc bạn cứ trì hoãn mãi, rồi thêm bước đầu tiên."
+        ],
+        "button": "Mở Hộp thư đến",
+        "outro": "Đây là email duy nhất thuộc loại này mà chúng tôi gửi."
+    },
+    "comeBack": {
+        "subject": "Công việc của bạn vẫn ở nguyên chỗ cũ",
+        "intro": "Đã lâu bạn chưa vào tududi. Mọi thứ bạn đã thêm vẫn còn đó, đúng như lúc bạn rời đi.",
+        "tip": "Nếu danh sách đã quá dài, hãy bắt đầu từ việc nhỏ: mở Kế hoạch, chọn ba việc cho hôm nay và để phần còn lại cho sau.",
+        "button": "Lên kế hoạch hôm nay",
+        "outro": "Chúng tôi sẽ không gửi email như thế này nữa cho đến khi bạn quay lại."
     }
 }

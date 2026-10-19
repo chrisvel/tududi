@@ -2,7 +2,8 @@
     "common": {
         "greeting": "Bună,",
         "signoff": "Toate cele bune,\nEchipa Tududi",
-        "copyLink": "Sau copiază acest link și lipește-l în browser:"
+        "copyLink": "Sau copiază acest link și lipește-l în browser:",
+        "trialUntil": "Perioada ta de probă gratuită durează până pe {{date}}."
     },
     "verification": {
         "subject": "Bun venit la Tududi - Verifică-ți adresa de e-mail",
@@ -70,5 +71,23 @@
         "button": "Păstrează-mi contul",
         "export": "Dacă preferi să îți iei datele cu tine, exportă-le din pagina Backup:",
         "final": "Dacă nu faci nimic, contul va fi șters pe {{date}}, iar acesta este ultimul e-mail pe care ți-l trimitem despre asta."
+    },
+    "emptyAccount": {
+        "subject": "tududi-ul tău este încă gol",
+        "intro": "Ai un cont tududi de câteva zile, dar încă nu e nimic în el. Cei mai mulți încep cu unul dintre acești pași, și fiecare durează mai puțin de un minut:",
+        "ideas": [
+            "Notează în Inbox tot ce ai în minte și organizează mai târziu.",
+            "Deschide Plan, alege trei lucruri pentru azi și lasă restul.",
+            "Creează un proiect pentru ceva ce tot amâni și adaugă primul pas."
+        ],
+        "button": "Deschide Inboxul",
+        "outro": "Acesta este singurul e-mail de acest fel pe care ți-l trimitem."
+    },
+    "comeBack": {
+        "subject": "Sarcinile tale sunt unde le-ai lăsat",
+        "intro": "Nu ai mai intrat în tududi de ceva vreme. Tot ce ai adăugat este încă acolo, exact cum l-ai lăsat.",
+        "tip": "Dacă lista s-a lungit prea mult, începe cu puțin: deschide Plan, alege trei lucruri pentru azi și lasă restul pentru mai târziu.",
+        "button": "Planifică ziua",
+        "outro": "Nu îți vom mai trimite un astfel de e-mail până nu revii."
     }
 }

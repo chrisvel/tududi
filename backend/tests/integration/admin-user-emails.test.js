@@ -1,6 +1,12 @@
 const request = require('supertest');
 const app = require('../../app');
-const { BillingAccount, EmailDelivery, Role, User } = require('../../models');
+const {
+    BillingAccount,
+    EmailDelivery,
+    Role,
+    Task,
+    User,
+} = require('../../models');
 const { getConfig } = require('../../config/config');
 const entitlements = require('../../services/entitlementsService');
 const emailService = require('../../services/emailService');
@@ -179,6 +185,34 @@ describe('Admin user emails', () => {
             );
             expect(sent.body.sent).toBe(true);
             expect(await lifecycle.remindEndingTrials()).toEqual([]);
+        });
+
+        it('offers the empty account email until they make something, then the come back one', async () => {
+            const user = await createTestUser({ email: uniqueEmail('new') });
+            await entitlements.startTrial(user.id);
+            entitlements.invalidate();
+
+            let res = await adminAgent.get(
+                `/api/admin/users/${user.id}/emails`
+            );
+            expect(entry(res.body, 'emptyAccount').can_send).toBe(true);
+            expect(entry(res.body, 'comeBack').can_send).toBe(false);
+
+            const preview = await adminAgent.get(
+                `/api/admin/users/${user.id}/emails/emptyAccount/preview`
+            );
+            expect(preview.body.subject).toBe('Your tududi is still empty');
+            expect(preview.body.text).toContain('Your free trial runs until');
+
+            await Task.create({ name: 'First', user_id: user.id });
+            res = await adminAgent.get(`/api/admin/users/${user.id}/emails`);
+            expect(entry(res.body, 'emptyAccount').can_send).toBe(false);
+            expect(entry(res.body, 'comeBack').can_send).toBe(true);
+
+            const sent = await adminAgent.post(
+                `/api/admin/users/${user.id}/emails/comeBack/send`
+            );
+            expect(sent.body.sent).toBe(true);
         });
 
         it('warns before deletion only where deletion is on, and says what sending does', async () => {
