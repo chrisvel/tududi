@@ -35,7 +35,17 @@ function serializeTaskToVTODO(task, options = {}) {
         vtodo.addPropertyWithValue('priority', priority);
     }
 
-    if (task.due_date) {
+    if (task.due_date && task.due_has_time) {
+        try {
+            // A due time is an instant, so DUE is a UTC DATE-TIME.
+            vtodo.addPropertyWithValue(
+                'due',
+                ICAL.Time.fromJSDate(new Date(task.due_date), true)
+            );
+        } catch (error) {
+            console.error('Error formatting due date:', error);
+        }
+    } else if (task.due_date) {
         try {
             const d = new Date(task.due_date);
             // Use user timezone to get the correct calendar date; Tududi stores

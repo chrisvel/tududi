@@ -106,6 +106,7 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
             name: null,
             note: null,
             due_date: null,
+            due_has_time: false,
             defer_until: null,
             reminder_at: null,
             completed_at: null,
@@ -162,6 +163,9 @@ async function parseVTODOToTask(vtodoString, userTimezone) {
         );
         if (due) {
             task.due_date = due.isDate ? due.end : due.start;
+            // A DATE-TIME DUE (UTC, TZID or floating) carries a time of day; a
+            // VALUE=DATE one is the whole day, stored as its end.
+            task.due_has_time = !due.isDate;
         }
 
         const start = readDateProperty(

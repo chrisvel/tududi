@@ -211,4 +211,31 @@ describe('VTODO Serializer', () => {
         expect(vtodoString).toContain('UID:minimal-task');
         expect(vtodoString).toContain('SUMMARY:Minimal Task');
     });
+
+    // #1928: a task with a due time keeps it on the way out; a date-only task
+    // stays VALUE=DATE (#1146).
+    it('should write a timed due date as a UTC DATE-TIME', async () => {
+        const vtodoString = await serializeTaskToVTODO(
+            {
+                ...basicTask,
+                due_date: new Date('2026-10-20T07:00:00Z'),
+                due_has_time: true,
+            },
+            { userTimezone: 'Europe/Berlin' }
+        );
+        expect(vtodoString).toContain('DUE:20261020T070000Z');
+        expect(vtodoString).not.toContain('DUE;VALUE=DATE');
+    });
+
+    it('should keep a date-only due date as VALUE=DATE', async () => {
+        const vtodoString = await serializeTaskToVTODO(
+            {
+                ...basicTask,
+                due_date: new Date('2026-10-20T21:59:59.999Z'),
+                due_has_time: false,
+            },
+            { userTimezone: 'Europe/Berlin' }
+        );
+        expect(vtodoString).toContain('DUE;VALUE=DATE:20261020');
+    });
 });
