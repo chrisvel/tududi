@@ -1,9 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Layout from '../Layout';
 
 jest.mock('react-i18next', () => ({
+    initReactI18next: { type: '3rdParty', init: jest.fn() },
     useTranslation: () => ({
         t: (key: string, fallback?: string) => fallback ?? key,
     }),
@@ -196,5 +197,22 @@ describe('Layout loading gate', () => {
         // looping forever when the user has zero tasks.
         expect(screen.getByTestId('routed-page')).toBeInTheDocument();
         expect(screen.queryByText('common.loading')).not.toBeInTheDocument();
+    });
+    it('keeps the routed page when a store fails to load and retries that store', () => {
+        const loadAreas = jest.fn();
+        storeState = {
+            ...baseStoreState,
+            areasStore: {
+                ...baseStoreState.areasStore,
+                isError: true,
+                loadAreas,
+            },
+        };
+
+        renderLayout();
+
+        expect(screen.getByTestId('routed-page')).toBeInTheDocument();
+        fireEvent.click(screen.getByText('common.retry'));
+        expect(loadAreas).toHaveBeenCalledWith(true);
     });
 });

@@ -395,6 +395,17 @@ const Layout: React.FC<LayoutProps> = ({
         isProjectsError ||
         isTagsError;
 
+    // A failed load keeps the page and offers a retry here, instead of
+    // replacing the whole app until a reload (#1936).
+    const retryFailedLoads = () => {
+        const state = useStore.getState();
+        if (state.notesStore.isError) state.notesStore.loadNotes();
+        if (state.areasStore.isError) state.areasStore.loadAreas(true);
+        if (state.projectsStore.isError) state.projectsStore.loadProjects();
+        if (state.tagsStore.isError) state.tagsStore.loadTags(true);
+        if (state.tasksStore.isError) state.tasksStore.setError(false);
+    };
+
     // The app canvas: the sidebar on it, and the page as a rounded panel
     // beside it with its own top bar. The panel sits 8px in, so the bar ends
     // 64px down, where fixed overlays (modals, toasts, search) expect it.
@@ -478,16 +489,6 @@ const Layout: React.FC<LayoutProps> = ({
         );
     }
 
-    if (isError) {
-        return renderShell(
-            <div className="flex-1 flex flex-col items-center justify-center">
-                <div className="text-xl text-red-500">
-                    {t('errors.somethingWentWrong')}
-                </div>
-            </div>
-        );
-    }
-
     return (
         <SidebarProvider isSidebarOpen={isSidebarOpen}>
             <UpgradeModal />
@@ -511,6 +512,23 @@ const Layout: React.FC<LayoutProps> = ({
                                     : 'overflow-auto'
                             }`}
                         >
+                            {isError && (
+                                <div
+                                    role="alert"
+                                    className="mx-4 mb-3 flex items-center justify-between gap-3 rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                                >
+                                    <span>
+                                        {t('errors.somethingWentWrong')}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={retryFailedLoads}
+                                        className="flex-shrink-0 rounded-md px-2.5 py-1 font-medium hover:bg-red-100 dark:hover:bg-red-900/40"
+                                    >
+                                        {t('common.retry')}
+                                    </button>
+                                </div>
+                            )}
                             <TrialBanner />
                             <Breadcrumbs />
                             <TaskRowExpansionProvider key={location.pathname}>
