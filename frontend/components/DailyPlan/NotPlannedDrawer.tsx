@@ -128,16 +128,27 @@ const NotPlannedDrawer: React.FC<NotPlannedDrawerProps> = ({
                                                 saveStatusChanges
                                             />
                                         </div>
+                                        {/* Icon only on phones, so the title keeps the row's width. */}
                                         <button
                                             type="button"
                                             onClick={() => onAdd(task)}
-                                            className="mt-1.5 inline-flex min-h-[36px] shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
-                                        >
-                                            <PlusIcon className="h-4 w-4" />
-                                            {t(
+                                            aria-label={t(
                                                 'dailyPlan.addToToday',
                                                 'Add to today'
                                             )}
+                                            title={t(
+                                                'dailyPlan.addToToday',
+                                                'Add to today'
+                                            )}
+                                            className="mt-1.5 inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center gap-1 rounded-md px-2 text-xs font-medium text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                        >
+                                            <PlusIcon className="h-4 w-4" />
+                                            <span className="hidden sm:inline">
+                                                {t(
+                                                    'dailyPlan.addToToday',
+                                                    'Add to today'
+                                                )}
+                                            </span>
                                         </button>
                                     </div>
                                 ))}
