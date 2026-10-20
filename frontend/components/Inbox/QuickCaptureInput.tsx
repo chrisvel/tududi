@@ -278,6 +278,7 @@ const QuickCaptureInput = React.forwardRef<
         const { showSuccessToast, showErrorToast } = useToast();
         const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
         const fileInputRef = useRef<HTMLInputElement>(null);
+        const tokenOverlayRef = useRef<HTMLDivElement>(null);
         const [draggingFiles, setDraggingFiles] = useState(false);
         const handleFileError = useCallback(
             (error: CaptureFileError) => {
@@ -463,16 +464,37 @@ const QuickCaptureInput = React.forwardRef<
             return () => clearInterval(id);
         }, [isEditMode, unified]);
 
+        const syncTokenOverlayScroll = useCallback(() => {
+            if (tokenOverlayRef.current && inputRef.current) {
+                tokenOverlayRef.current.scrollTop = inputRef.current.scrollTop;
+            }
+        }, []);
+
         useEffect(() => {
             if (!multiline) return;
-            const el = inputRef.current;
-            if (!el) return;
-            el.style.height = 'auto';
-            const maxHeight = 300;
-            el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
-            (el as HTMLElement).style.overflowY =
-                el.scrollHeight > maxHeight ? 'auto' : 'hidden';
-        }, [inputText, multiline]);
+            const resize = () => {
+                const el = inputRef.current;
+                if (!el) return;
+                el.style.height = 'auto';
+                // On a phone with the keyboard up the visible area is about
+                // 480px, so a fixed 300px box would leave no room to scroll
+                // the page past it.
+                const visibleHeight =
+                    window.visualViewport?.height ?? window.innerHeight;
+                const maxHeight = Math.max(
+                    96,
+                    Math.min(300, Math.round(visibleHeight * 0.4))
+                );
+                el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+                (el as HTMLElement).style.overflowY =
+                    el.scrollHeight > maxHeight ? 'auto' : 'hidden';
+                syncTokenOverlayScroll();
+            };
+            resize();
+            const viewport = window.visualViewport;
+            viewport?.addEventListener('resize', resize);
+            return () => viewport?.removeEventListener('resize', resize);
+        }, [inputText, multiline, syncTokenOverlayScroll]);
 
         // Dates and @people are read on the first line only, so a date
         // mentioned further down a long note never becomes its due date.
@@ -865,7 +887,10 @@ const QuickCaptureInput = React.forwardRef<
                 cleanInputSpacing(
                     patterns.reduce(
                         (result, pattern) =>
-                            result.replace(pattern, (_, prefix) => prefix ?? ''),
+                            result.replace(
+                                pattern,
+                                (_, prefix) => prefix ?? ''
+                            ),
                         text
                     )
                 );
@@ -3128,6 +3153,7 @@ const QuickCaptureInput = React.forwardRef<
                                             in the textarea itself. */}
                                             {colourTokens && (
                                                 <div
+                                                    ref={tokenOverlayRef}
                                                     aria-hidden="true"
                                                     className={`pointer-events-none absolute inset-0 w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal whitespace-pre-wrap break-words overflow-hidden text-gray-900 dark:text-gray-100 px-0 py-1.5`}
                                                 >
@@ -3164,6 +3190,11 @@ const QuickCaptureInput = React.forwardRef<
                                                 onSelect={handleCaretEvent}
                                                 onKeyUp={handleCaretEvent}
                                                 onClick={handleCaretEvent}
+                                                onScroll={
+                                                    colourTokens
+                                                        ? syncTokenOverlayScroll
+                                                        : undefined
+                                                }
                                                 className={`w-full ${compact ? 'text-[17px]' : 'text-[18px]'} leading-relaxed font-normal bg-transparent ${colourTokens ? 'relative text-transparent caret-gray-900 dark:caret-gray-100' : 'text-gray-900 dark:text-gray-100'} border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden`}
                                                 placeholder=""
                                                 onKeyDown={handleKeyDown}

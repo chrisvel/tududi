@@ -185,6 +185,19 @@ describe('QuickCaptureInput unified capture', () => {
         );
     });
 
+    it('scrolls the coloured text along with a long note', () => {
+        renderBox();
+        type('a long note #tag');
+        const box = textarea() as HTMLTextAreaElement;
+        const overlay = box.previousElementSibling as HTMLElement;
+
+        box.scrollTop = 120;
+        fireEvent.scroll(box);
+
+        expect(overlay).toHaveAttribute('aria-hidden', 'true');
+        expect(overlay.scrollTop).toBe(120);
+    });
+
     it('replaces the status line with the hint as soon as you type again', async () => {
         renderBox();
         type('one');
