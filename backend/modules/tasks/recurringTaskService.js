@@ -307,14 +307,17 @@ const calculateVirtualOccurrences = (
             break;
         }
 
-        // Convert UTC date to user timezone date string
+        // Date-only occurrences stay a calendar string. A timed occurrence
+        // must keep the real instant: a YYYY-MM-DD string is parsed as UTC
+        // midnight, so Upcoming would show that clock (00:00, or 12:00 in
+        // UTC+12) instead of the stored due time.
         const dateInUserTz = moment
             .utc(currentDate)
             .tz(userTimezone)
             .format('YYYY-MM-DD');
 
         occurrences.push({
-            due_date: dateInUserTz,
+            due_date: task.due_has_time ? new Date(currentDate) : dateInUserTz,
             is_virtual: true,
         });
 

@@ -344,6 +344,34 @@ describe('RecurringTaskService - UTC Consistency', () => {
             expect(occurrences[6].due_date).toBe('2026-01-07');
         });
 
+        it('keeps the clock when the series has a due time', () => {
+            const task = {
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_has_time: true,
+            };
+            const startDate = new Date(Date.UTC(2026, 0, 1, 15, 30, 0, 0));
+
+            const occurrences = calculateVirtualOccurrences(
+                task,
+                3,
+                startDate,
+                'UTC'
+            );
+
+            expect(occurrences).toHaveLength(3);
+            expect(occurrences[0].due_date).toBeInstanceOf(Date);
+            expect(occurrences[0].due_date.toISOString()).toBe(
+                '2026-01-01T15:30:00.000Z'
+            );
+            expect(occurrences[1].due_date.toISOString()).toBe(
+                '2026-01-02T15:30:00.000Z'
+            );
+            expect(occurrences[2].due_date.toISOString()).toBe(
+                '2026-01-03T15:30:00.000Z'
+            );
+        });
+
         it('should respect end date limit', () => {
             const task = {
                 recurrence_type: 'daily',
