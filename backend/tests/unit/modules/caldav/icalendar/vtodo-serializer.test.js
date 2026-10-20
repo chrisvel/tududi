@@ -238,4 +238,34 @@ describe('VTODO Serializer', () => {
         );
         expect(vtodoString).toContain('DUE;VALUE=DATE:20261020');
     });
+
+    it('should write DTSTART as a UTC DATE-TIME next to a timed DUE', async () => {
+        const vtodoString = await serializeTaskToVTODO(
+            {
+                ...basicTask,
+                due_date: new Date('2026-10-20T07:00:00Z'),
+                due_has_time: true,
+                // 2026-10-17 00:00 in Europe/Berlin
+                defer_until: new Date('2026-10-16T22:00:00Z'),
+            },
+            { userTimezone: 'Europe/Berlin' }
+        );
+        expect(vtodoString).toContain('DUE:20261020T070000Z');
+        expect(vtodoString).toContain('DTSTART:20261016T220000Z');
+        expect(vtodoString).not.toContain('VALUE=DATE');
+    });
+
+    it('should keep DTSTART as VALUE=DATE next to a date-only DUE', async () => {
+        const vtodoString = await serializeTaskToVTODO(
+            {
+                ...basicTask,
+                due_date: new Date('2026-10-20T21:59:59.999Z'),
+                due_has_time: false,
+                defer_until: new Date('2026-10-16T22:00:00Z'),
+            },
+            { userTimezone: 'Europe/Berlin' }
+        );
+        expect(vtodoString).toContain('DUE;VALUE=DATE:20261020');
+        expect(vtodoString).toContain('DTSTART;VALUE=DATE:20261017');
+    });
 });

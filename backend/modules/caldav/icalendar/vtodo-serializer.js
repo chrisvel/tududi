@@ -64,7 +64,18 @@ function serializeTaskToVTODO(task, options = {}) {
         }
     }
 
-    if (task.defer_until) {
+    if (task.defer_until && task.due_date && task.due_has_time) {
+        try {
+            // RFC 5545: DTSTART must have the same value type as DUE, so a
+            // timed DUE gets a UTC DATE-TIME DTSTART too.
+            vtodo.addPropertyWithValue(
+                'dtstart',
+                ICAL.Time.fromJSDate(new Date(task.defer_until), true)
+            );
+        } catch (error) {
+            console.error('Error formatting defer_until date:', error);
+        }
+    } else if (task.defer_until) {
         try {
             const d = new Date(task.defer_until);
             // Same timezone-aware conversion for DTSTART.
